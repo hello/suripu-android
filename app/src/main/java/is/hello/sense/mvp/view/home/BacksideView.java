@@ -29,7 +29,7 @@ import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SelectorView;
 
-public final class BacksideView extends PresenterView {
+public class BacksideView extends PresenterView {
     public static final int ITEM_ROOM_CONDITIONS = 0;
     public static final int ITEM_TRENDS = 1;
     public static final int ITEM_INSIGHTS = 2;
@@ -72,15 +72,15 @@ public final class BacksideView extends PresenterView {
         this.adapter = null;
     }
 
-    public final void addOnPageChangeListener(@NonNull final ViewPager.OnPageChangeListener listener) {
+    public void addOnPageChangeListener(@NonNull final ViewPager.OnPageChangeListener listener) {
         pager.addOnPageChangeListener(listener);
     }
 
-    public final void setOnSelectionChangedListener(@NonNull final SelectorView.OnSelectionChangedListener listener) {
+    public void setOnSelectionChangedListener(@NonNull final SelectorView.OnSelectionChangedListener listener) {
         tabSelector.setOnSelectionChangedListener(listener);
     }
 
-    public final void setAdapter(@NonNull final FragmentManager fragmentManager) {
+    public void setAdapter(@NonNull final FragmentManager fragmentManager) {
         this.adapter = new StaticFragmentAdapter(fragmentManager,
                                                  new StaticFragmentAdapter.Item(RoomConditionsFragment.class, getString(R.string.title_current_conditions)),
                                                  new StaticFragmentAdapter.Item(TrendsFragment.class, getString(R.string.title_trends)),

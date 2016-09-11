@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 import is.hello.sense.R;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.ui.widget.util.Styles;
 
 public class SelectorView extends LinearLayout implements View.OnClickListener {
@@ -255,8 +256,14 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         // Creating the button with a style does not actually style it,
         // but on Lollipop it removes the intrusive elevation added to
         // all buttons by default.
-        final ToggleButton optionButton = new ToggleButton(context, null,
-                                                           R.style.AppTheme_Button_ModeSelector);
+        final ToggleButton optionButton;
+        if (SenseApplication.isRunningInRobolectric()) {
+            optionButton = new ToggleButton(context);
+        } else {
+            optionButton = new ToggleButton(context, null,
+                                            R.style.AppTheme_Button_ModeSelector);
+
+        }
 
         optionButton.setTextOn(titleOn);
         optionButton.setTextOff(titleOff);
