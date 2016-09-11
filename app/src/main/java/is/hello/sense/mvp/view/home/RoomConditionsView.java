@@ -47,7 +47,7 @@ public final class RoomConditionsView extends PresenterView {
     @VisibleForTesting
     UnitFormatter unitFormatter;
 
-    private final Map<String, SensorHistoryAdapter> graphAdapters = new HashMap<>(5);
+    private Map<String, SensorHistoryAdapter> graphAdapters = new HashMap<>(5);
 
     public RoomConditionsView(@NonNull final Activity activity,
                               @NonNull final UnitFormatter unitFormatter) {
@@ -80,8 +80,10 @@ public final class RoomConditionsView extends PresenterView {
     @Override
     public final void detach() {
         super.detach();
-        adapter.setOnItemClickedListener(null);
-        unitFormatter = null;
+        this.adapter.setOnItemClickedListener(null);
+        this.unitFormatter = null;
+        this.adapter = null;
+        this.graphAdapters = null;
     }
 
     public final void setOnAdapterItemClickListener(@NonNull final ArrayRecyclerAdapter.OnItemClickedListener<SensorState> listener) {

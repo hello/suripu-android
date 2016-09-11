@@ -28,7 +28,6 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     protected boolean animatorContextFromActivity = false;
     protected LoadingDialogFragment loadingDialogFragment;
     protected T presenterView;
-    private InteractorContainer interactorContainer = new InteractorContainer();
 
     public abstract T getPresenterView();
 
@@ -62,26 +61,8 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
 
     @CallSuper
     @Override
-    public void onActivityCreated(final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState != null) {
-            interactorContainer.onRestoreState(savedInstanceState);
-        }
-    }
-
-    @CallSuper
-    @Override
-    public void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        interactorContainer.onSaveState(outState);
-    }
-
-    @CallSuper
-    @Override
     public void onResume() {
         super.onResume();
-        stateSafeExecutor.executePendingForResume();
-        interactorContainer.onContainerResumed();
         presenterView.resume();
     }
 
@@ -104,7 +85,6 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     public void onDestroyView() {
         super.onDestroyView();
         this.presenterView.destroyView();
-        this.interactorContainer.onContainerDestroyed();
     }
 
     @CallSuper
@@ -115,17 +95,7 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
         this.animatorContextFromActivity = false;
         this.presenterView.detach();
         this.presenterView = null;
-    }
-
-    @CallSuper
-    @Override
-    public void onTrimMemory(final int level) {
-        super.onTrimMemory(level);
-        interactorContainer.onTrimMemory(level);
-    }
-
-    protected final void addInteractor(@NonNull final Interactor interactor) {
-        interactorContainer.addInteractor(interactor);
+        this.loadingDialogFragment = null;
     }
 
     @NonNull
