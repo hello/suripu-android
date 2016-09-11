@@ -63,15 +63,13 @@ public final class BacksideView extends PresenterView {
     }
 
     @Override
-    public final void destroyView() {
-        pager.clearOnPageChangeListeners();
-    }
-
-    @Override
     public void detach() {
         super.detach();
-        pager.clearOnPageChangeListeners();
-        tabSelector.setOnSelectionChangedListener(null);
+        this.pager.clearOnPageChangeListeners();
+        this.tabSelector.setOnSelectionChangedListener(null);
+        this.tabSelector = null;
+        this.pager = null;
+        this.adapter = null;
     }
 
     public final void addOnPageChangeListener(@NonNull final ViewPager.OnPageChangeListener listener) {
