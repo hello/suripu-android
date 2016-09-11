@@ -74,13 +74,9 @@ public final class AppSettingsView extends PresenterView {
     }
 
     @Override
-    public void destroyView() {
-        breadcrumb = null;
-    }
-
-    @Override
     public void detach() {
         super.detach();
+        breadcrumb = null;
         //todo remove click listeners from viewcreated
     }
 

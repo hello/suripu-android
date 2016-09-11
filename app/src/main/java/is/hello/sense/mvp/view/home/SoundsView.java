@@ -74,21 +74,16 @@ public class SoundsView extends PresenterView {
     }
 
     @Override
-    public final void destroyView() {
-        super.destroyView();
-        initialActivityIndicator = null;
-        swipeRefreshLayout = null;
-        subNavSelector.setOnSelectionChangedListener(null);
-        subNavSelector = null;
-        pager = null;
-        adapter = null;
-    }
-
-    @Override
     public final void detach() {
         super.detach();
-        animatorContext = null;
-        stateSafeExecutor = null;
+        this.animatorContext = null;
+        this.stateSafeExecutor = null;
+        this.initialActivityIndicator = null;
+        this.swipeRefreshLayout = null;
+        this.subNavSelector.setOnSelectionChangedListener(null);
+        this.subNavSelector = null;
+        this.pager = null;
+        this.adapter = null;
     }
 
     public final void setSwipeRefreshLayoutOnRefreshListener(@NonNull final SwipeRefreshLayout.OnRefreshListener listener) {
