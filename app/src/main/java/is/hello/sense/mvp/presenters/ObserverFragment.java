@@ -1,6 +1,7 @@
 package is.hello.sense.mvp.presenters;
 
 import android.app.Fragment;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
 import is.hello.sense.ui.common.DelegateObservableContainer;
@@ -13,12 +14,13 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 
 public abstract class ObserverFragment extends ScopedInjectionFragment implements
-        ObservableContainer {
-    protected final StateSafeExecutor stateSafeExecutor = new StateSafeExecutor(this);
+        ObservableContainer,
+        StateSafeExecutor.Resumes {
+    protected StateSafeExecutor stateSafeExecutor = new StateSafeExecutor(this);
     protected static final Func1<Fragment, Boolean> FRAGMENT_VALIDATOR = f -> f.isAdded() && !f.getActivity().isFinishing();
-    protected final StateSafeScheduler observeScheduler = new StateSafeScheduler(stateSafeExecutor);
+    protected StateSafeScheduler observeScheduler = new StateSafeScheduler(stateSafeExecutor);
 
-    protected final DelegateObservableContainer<Fragment> observableContainer = new DelegateObservableContainer<>(observeScheduler, this, FRAGMENT_VALIDATOR);
+    protected DelegateObservableContainer<Fragment> observableContainer = new DelegateObservableContainer<>(observeScheduler, this, FRAGMENT_VALIDATOR);
 
 
     @Override
@@ -54,5 +56,19 @@ public abstract class ObserverFragment extends ScopedInjectionFragment implement
         return observableContainer.bindAndSubscribe(toSubscribe, onNext, onError);
     }
 
+    @CallSuper
+    @Override
+    public void onResume() {
+        super.onResume();
+        stateSafeExecutor.executePendingForResume();
+    }
 
+    @CallSuper
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        this.stateSafeExecutor = null;
+        this.observeScheduler = null;
+        this.observableContainer = null;
+    }
 }

@@ -78,24 +78,16 @@ public final class InsightsView extends PresenterView {
         recyclerView.addItemDecoration(new BottomInsetDecoration(resources));
         return view;
     }
-
     @Override
-    public void destroyView() {
-        super.destroyView();
-
+    public final void detach() {
+        super.detach();
+        this.swipeRefreshLayout.setOnRefreshListener(null);
+        this.dateFormatter = null;
+        this.picasso = null;
         this.insightsAdapter = null;
         this.recyclerView = null;
         this.swipeRefreshLayout = null;
         this.progressBar = null;
-    }
-
-    @Override
-    public final void detach() {
-        super.detach();
-        swipeRefreshLayout.setOnRefreshListener(null);
-        insightsAdapter = null;
-        dateFormatter = null;
-        picasso = null;
     }
 
     public final void setInsightsAdapter(@NonNull final InsightsAdapter.InteractionListener interactionListener) {
