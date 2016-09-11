@@ -2,6 +2,7 @@ package is.hello.sense.mvp.presenters.home;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
@@ -19,18 +20,21 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.InternalPrefManager;
 
 
-public final class BacksideFragment extends PresenterFragment<BacksideView>
+public class BacksideFragment extends PresenterFragment<BacksideView>
         implements
         ViewPager.OnPageChangeListener,
         SelectorView.OnSelectionChangedListener {
     public static final int OPTION_NONE = 0;
 
     private SharedPreferences internalPreferences;
-    @Inject
-    UnreadStateInteractor unreadStateInteractor;
 
+    @VisibleForTesting
     @Inject
-    AccountInteractor accountInteractor;
+    public UnreadStateInteractor unreadStateInteractor;
+
+    @VisibleForTesting
+    @Inject
+    public AccountInteractor accountInteractor;
 
 
     private boolean suppressNextSwipeEvent = false;
