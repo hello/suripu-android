@@ -255,7 +255,7 @@ public final class RoomConditionsView extends PresenterView {
 
         final class WelcomeViewHolder extends BaseViewHolder {
 
-            public WelcomeViewHolder(@NonNull View itemView) {
+            public WelcomeViewHolder(@NonNull final View itemView) {
                 super(itemView);
             }
         }
