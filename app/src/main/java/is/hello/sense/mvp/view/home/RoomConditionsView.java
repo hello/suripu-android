@@ -106,8 +106,8 @@ public final class RoomConditionsView extends PresenterView {
         adapter.notifyDataSetChanged();
     }
 
-    public final void shouldShowWelcomeCard() {
-        adapter.showWelcomeCard();
+    public final void shouldShowWelcomeCard(final boolean show) {
+        adapter.showWelcomeCard(show);
         adapter.notifyDataSetChanged();
     }
 
@@ -160,9 +160,9 @@ public final class RoomConditionsView extends PresenterView {
 
             notifyDataSetChanged();
         }
-        
-        public final void showWelcomeCard() {
-            wantsWelcomeMessage = true;
+
+        public final void showWelcomeCard(boolean show) {
+            wantsWelcomeMessage = show;
             notifyDataSetChanged();
         }
 

@@ -32,7 +32,7 @@ public final class Constants {
     public static final String WHATS_NEW_LAYOUT_FORCE_SHOW = "WHATS_NEW_LAYOUT_FORCE_SHOW";
 
     public static final String ROOM_CONDITIONS_PREFS = "room_conditions_prefs";
-    public static final String ROOM_CONDITIONS_WELCOME_CARD_DATE_SHOWN = "room_conditions_welcome_card_date_shown";
+    public static final String ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN = "room_conditions_welcome_card_times_shown";
 
     /**
      * The point at which a gesture's velocity dictates that

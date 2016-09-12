@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 
-import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +40,7 @@ import static is.hello.sense.ui.adapter.SensorHistoryAdapter.Update;
 public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsView> implements
         ArrayRecyclerAdapter.OnItemClickedListener<SensorState> {
     private final UpdateTimer updateTimer = new UpdateTimer(1, TimeUnit.MINUTES);
-    private final static long TWO_DAY_MILLS = 86400000;
+    private final static long TIMES_SHOWN_LIMIT = 2;
 
     @Inject
     RoomConditionsInteractor roomConditionsInteractor;
@@ -72,9 +71,6 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         presenterView.setOnAdapterItemClickListener(this);
-        if (needsWelcomeCard()) {
-            presenterView.shouldShowWelcomeCard();
-        }
         bindAndSubscribe(unitFormatter.unitPreferenceChanges(),
                          ignored -> presenterView.notifyDataSetChanged(),
                          Functions.LOG_ERROR);
@@ -110,6 +106,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     @Override
     public final void onUpdate() {
         roomConditionsInteractor.update();
+        presenterView.shouldShowWelcomeCard(needsWelcomeCard());
     }
 
     //endregion
@@ -169,14 +166,12 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
 
     public final boolean needsWelcomeCard() {
         final SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Constants.ROOM_CONDITIONS_PREFS, Context.MODE_PRIVATE);
-        final String savedDate = sharedPreferences.getString(Constants.ROOM_CONDITIONS_WELCOME_CARD_DATE_SHOWN, null);
-        final DateTime currentTime = DateTime.now();
-        if (savedDate == null) {
-            sharedPreferences.edit().putString(Constants.ROOM_CONDITIONS_WELCOME_CARD_DATE_SHOWN, currentTime.toString()).apply();
+        final int timesShown = sharedPreferences.getInt(Constants.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, 0);
+        if (timesShown < TIMES_SHOWN_LIMIT) {
+            sharedPreferences.edit().putInt(Constants.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, timesShown + 1).apply();
             return true;
         }
-        final long dateShownMillis = DateTime.parse(savedDate).getMillis();
-        return currentTime.getMillis() - dateShownMillis < TWO_DAY_MILLS;
+        return false;
     }
     //endregion
 
