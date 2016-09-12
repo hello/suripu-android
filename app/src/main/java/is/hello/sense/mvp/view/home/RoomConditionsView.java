@@ -104,7 +104,11 @@ public final class RoomConditionsView extends PresenterView {
         adapter.clear();
         adapter.displayMessage(messageWantsSenseIcon, title, message, actionTitle, actionOnClick);
         adapter.notifyDataSetChanged();
+    }
 
+    public final void shouldShowWelcomeCard() {
+        adapter.showWelcomeCard();
+        adapter.notifyDataSetChanged();
     }
 
 
@@ -118,11 +122,13 @@ public final class RoomConditionsView extends PresenterView {
     }
 
 
-    public final class Adapter extends ArrayRecyclerAdapter<SensorState, ArrayRecyclerAdapter.ViewHolder> {
+    public class Adapter extends ArrayRecyclerAdapter<SensorState, Adapter.BaseViewHolder> {
         private final int VIEW_ID_SENSOR = 0;
         private final int VIEW_ID_MESSAGE = 1;
+        private final int VIEW_ID_WELCOME = 2;
         private final LayoutInflater inflater;
         private boolean messageWantsSenseIcon;
+        private boolean wantsWelcomeMessage = false;
 
         @StringRes
         private int messageTitle;
@@ -154,6 +160,11 @@ public final class RoomConditionsView extends PresenterView {
 
             notifyDataSetChanged();
         }
+        
+        public final void showWelcomeCard() {
+            wantsWelcomeMessage = true;
+            notifyDataSetChanged();
+        }
 
         public final void dismissMessage() {
             this.messageTitle = 0;
@@ -167,7 +178,7 @@ public final class RoomConditionsView extends PresenterView {
             if (messageBody != null) {
                 return 1;
             } else {
-                return super.getItemCount();
+                return super.getItemCount() + (wantsWelcomeMessage ? 1 : 0);
             }
         }
 
@@ -176,12 +187,15 @@ public final class RoomConditionsView extends PresenterView {
             if (messageBody != null) {
                 return VIEW_ID_MESSAGE;
             } else {
+                if (wantsWelcomeMessage && position == 0) {
+                    return VIEW_ID_WELCOME;
+                }
                 return VIEW_ID_SENSOR;
             }
         }
 
         @Override
-        public final ArrayRecyclerAdapter.ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
+        public final BaseViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
             switch (viewType) {
                 case VIEW_ID_MESSAGE: {
                     final View view = inflater.inflate(R.layout.item_message_card, parent, false);
@@ -217,6 +231,10 @@ public final class RoomConditionsView extends PresenterView {
                     final View view = inflater.inflate(R.layout.item_room_sensor_condition, parent, false);
                     return new SensorViewHolder(view);
                 }
+                case VIEW_ID_WELCOME: {
+                    final View view = inflater.inflate(R.layout.item_room_conditions_welcome, parent, false);
+                    return new WelcomeViewHolder(view);
+                }
                 default: {
                     throw new IllegalArgumentException();
                 }
@@ -224,11 +242,25 @@ public final class RoomConditionsView extends PresenterView {
         }
 
         @Override
-        public final void onBindViewHolder(final ArrayRecyclerAdapter.ViewHolder holder, final int position) {
+        public final void onBindViewHolder(final BaseViewHolder holder, final int position) {
             holder.bind(position);
         }
 
-        final class SensorViewHolder extends ArrayRecyclerAdapter.ViewHolder {
+        abstract class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder {
+
+            public BaseViewHolder(@NonNull final View itemView) {
+                super(itemView);
+            }
+        }
+
+        final class WelcomeViewHolder extends BaseViewHolder {
+
+            public WelcomeViewHolder(@NonNull View itemView) {
+                super(itemView);
+            }
+        }
+
+        final class SensorViewHolder extends BaseViewHolder {
             final TextView reading;
             final TextView message;
             final LineGraphDrawable lineGraphDrawable;
@@ -252,7 +284,8 @@ public final class RoomConditionsView extends PresenterView {
 
             @Override
             public final void bind(final int position) {
-                final SensorState sensorState = getItem(position);
+                final int offset = wantsWelcomeMessage ? 1 : 0;
+                final SensorState sensorState = getItem(position - offset);
                 final String sensorName = sensorState.getName();
                 final int sensorColor = ContextCompat.getColor(context, sensorState.getCondition().colorRes);
 
