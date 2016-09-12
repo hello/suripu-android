@@ -48,7 +48,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 24
         versionCode generateVersionCode()
-        versionName "1.5.2"
+        versionName "1.5.3"
     }
 
     compileOptions {
