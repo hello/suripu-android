@@ -64,6 +64,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         super.onCreate(savedInstanceState);
         addInteractor(roomConditionsInteractor);
         addInteractor(unitFormatter);
+        addInteractor(currentConditionsInteractor);
         updateTimer.setOnUpdate(roomConditionsInteractor::update);
     }
 
