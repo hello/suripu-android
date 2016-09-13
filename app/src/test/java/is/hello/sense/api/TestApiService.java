@@ -41,7 +41,6 @@ import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.UserFeatures;
 import is.hello.sense.api.model.VoiceResponse;
 import is.hello.sense.api.model.VoidResponse;
-import is.hello.sense.api.model.v2.CurrentConditions;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.api.model.v2.InsightType;
@@ -59,6 +58,7 @@ import is.hello.sense.api.model.v2.TimelineBuilder;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.TimelineEventBuilder;
 import is.hello.sense.api.model.v2.Trends;
+import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.util.Logger;
@@ -440,7 +440,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<CurrentConditions> getSensors() {
+    public Observable<SensorResponse> getSensors() {
         return unimplemented();
     }
 }
