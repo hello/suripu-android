@@ -17,6 +17,25 @@
         <item name="android:textColor">@color/blue6</item>
     </style>
 
+    <style name="Card" parent="AppTheme.Text.Body">
+
+    </style>
+
+    <style name="Card.Title">
+        <item name="android:textSize">@dimen/text_h7</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray6</item>
+    </style>
+
+    <style name="Card.Body">
+        <item name="android:textSize">@dimen/text_h8</item>
+        <item name="android:textColor">@color/gray5</item>
+    </style>
+
+    <style name="Card.Value">
+        <item name="android:textSize">@dimen/text_h4</item>
+    </style>
+
 
     ​<!-- Generic -->
     <style name="AppTheme.Text.Heading">
