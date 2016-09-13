@@ -3,6 +3,7 @@ package is.hello.sense.mvp.presenters.home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.RoomConditionsInteractor;
+import is.hello.sense.interactors.CurrentConditionsInteractor;
 import is.hello.sense.mvp.view.home.RoomConditionsView;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
@@ -40,6 +42,8 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
 
     @Inject
     RoomConditionsInteractor roomConditionsInteractor;
+    @Inject
+    CurrentConditionsInteractor currentConditionsInteractor;
     @Inject
     UnitFormatter unitFormatter;
 
@@ -73,6 +77,15 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         bindAndSubscribe(roomConditionsInteractor.currentConditions,
                          this::bindConditions,
                          this::conditionsUnavailable);
+        bindAndSubscribe(currentConditionsInteractor.sensors,
+                         sensors -> {
+                             int len = -1;
+                             if (sensors != null) {
+                                 len = sensors.getSensors().size();
+                             }
+                             Log.e("Sensors: ", "" + len);
+                         },
+                         throwable -> Log.e("Sensors: ", "Error: " + throwable));
     }
 
     @Override
@@ -86,6 +99,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     public final void onResume() {
         super.onResume();
         updateTimer.schedule();
+        currentConditionsInteractor.update();
     }
 
     @Override
