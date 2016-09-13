@@ -26,10 +26,12 @@ import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.UserFeatures;
 import is.hello.sense.api.model.VoiceResponse;
 import is.hello.sense.api.model.VoidResponse;
+import is.hello.sense.api.model.v2.CurrentConditions;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.api.model.v2.MultiDensityImage;
+import is.hello.sense.api.model.v2.Sensor;
 import is.hello.sense.api.model.v2.ShareUrl;
 import is.hello.sense.api.model.v2.SleepDurations;
 import is.hello.sense.api.model.v2.SleepSoundActionPlay;
@@ -175,6 +177,9 @@ public interface ApiService {
     @GET("/v1/room/{sensor}/week")
     Observable<ArrayList<SensorGraphSample>> sensorHistoryForWeek(@Path("sensor") String sensor,
                                                                   @Query("from") long timestamp);
+
+    @GET("/v2/sensors")
+    Observable<CurrentConditions> getSensors();
 
     //endregion
 

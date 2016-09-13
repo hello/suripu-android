@@ -41,6 +41,7 @@ import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.UserFeatures;
 import is.hello.sense.api.model.VoiceResponse;
 import is.hello.sense.api.model.VoidResponse;
+import is.hello.sense.api.model.v2.CurrentConditions;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.api.model.v2.InsightType;
@@ -436,5 +437,10 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<SenseDevice.SwapResponse> swapDevices(@NonNull @Body final SenseDevice.SwapRequest oldSenseId) {
         return loadResponse("swap_sense_"+oldSenseId.senseId, new TypeToken<SenseDevice.SwapResponse>(){}.getType());
+    }
+
+    @Override
+    public Observable<CurrentConditions> getSensors() {
+        return unimplemented();
     }
 }
