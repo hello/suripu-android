@@ -81,7 +81,9 @@ public final class InsightsView extends PresenterView {
     @Override
     public final void detach() {
         super.detach();
-        this.swipeRefreshLayout.setOnRefreshListener(null);
+        if (swipeRefreshLayout != null) {
+            this.swipeRefreshLayout.setOnRefreshListener(null);
+        }
         this.dateFormatter = null;
         this.picasso = null;
         this.insightsAdapter = null;
