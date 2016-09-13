@@ -62,9 +62,13 @@ public final class TrendsView extends PresenterView {
     public final void detach() {
         super.detach();
         this.initialActivityIndicator = null;
-        this.swipeRefreshLayout.setOnRefreshListener(null);
+        if (swipeRefreshLayout != null) {
+            this.swipeRefreshLayout.setOnRefreshListener(null);
+        }
         this.swipeRefreshLayout = null;
-        this.timeScaleSelector.setOnSelectionChangedListener(null);
+        if (timeScaleSelector != null) {
+            this.timeScaleSelector.setOnSelectionChangedListener(null);
+        }
         this.timeScaleSelector = null;
         this.trendFeedView = null;
         this.animatorContext = null;

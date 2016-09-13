@@ -80,7 +80,9 @@ public class SoundsView extends PresenterView {
         this.stateSafeExecutor = null;
         this.initialActivityIndicator = null;
         this.swipeRefreshLayout = null;
-        this.subNavSelector.setOnSelectionChangedListener(null);
+        if (subNavSelector != null) {
+            this.subNavSelector.setOnSelectionChangedListener(null);
+        }
         this.subNavSelector = null;
         this.pager = null;
         this.adapter = null;
