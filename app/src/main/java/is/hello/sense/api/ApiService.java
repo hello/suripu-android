@@ -26,12 +26,10 @@ import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.UserFeatures;
 import is.hello.sense.api.model.VoiceResponse;
 import is.hello.sense.api.model.VoidResponse;
-import is.hello.sense.api.model.v2.CurrentConditions;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.api.model.v2.MultiDensityImage;
-import is.hello.sense.api.model.v2.Sensor;
 import is.hello.sense.api.model.v2.ShareUrl;
 import is.hello.sense.api.model.v2.SleepDurations;
 import is.hello.sense.api.model.v2.SleepSoundActionPlay;
@@ -42,6 +40,7 @@ import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.Trends;
+import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import retrofit.http.Body;
@@ -179,7 +178,7 @@ public interface ApiService {
                                                                   @Query("from") long timestamp);
 
     @GET("/v2/sensors")
-    Observable<CurrentConditions> getSensors();
+    Observable<SensorResponse> getSensors();
 
     //endregion
 

@@ -1,18 +1,17 @@
 package is.hello.sense.interactors;
 
-
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.v2.CurrentConditions;
+import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.graph.InteractorSubject;
 import rx.Observable;
 
-public class CurrentConditionsInteractor extends ValueInteractor<CurrentConditions> {
+public class CurrentConditionsInteractor extends ValueInteractor<SensorResponse> {
     @Inject
     ApiService apiService;
 
-    public final InteractorSubject<CurrentConditions> sensors = this.subject;
+    public final InteractorSubject<SensorResponse> sensors = this.subject;
 
     @Override
     protected boolean isDataDisposable() {
@@ -25,7 +24,7 @@ public class CurrentConditionsInteractor extends ValueInteractor<CurrentConditio
     }
 
     @Override
-    protected Observable<CurrentConditions> provideUpdateObservable() {
+    protected Observable<SensorResponse> provideUpdateObservable() {
         return apiService.getSensors();
     }
 
