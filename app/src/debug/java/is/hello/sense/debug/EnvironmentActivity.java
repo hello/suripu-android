@@ -26,7 +26,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.DynamicApiEndpoint;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.graph.NonsensePresenter;
+import is.hello.sense.graph.NonsenseInteractor;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Logger;
@@ -35,7 +35,8 @@ public class EnvironmentActivity extends InjectionActivity
         implements AdapterView.OnItemClickListener {
     private static final String OTHER_ITEM = "other";
 
-    @Inject NonsensePresenter nonsensePresenter;
+    @Inject
+    NonsenseInteractor nonsensePresenter;
 
     private SharedPreferences preferences;
     private EndpointAdapter adapter;

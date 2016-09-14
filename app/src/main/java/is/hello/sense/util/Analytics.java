@@ -28,7 +28,7 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiException;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 
 public class Analytics {
@@ -243,11 +243,6 @@ public class Analytics {
         String EVENT_SENSE_AUDIO = "Onboarding Sense Audio";
 
         /**
-         * When user lands on the No BLE screen
-         */
-        String EVENT_NO_BLE = "Onboarding No BLE";
-
-        /**
          * When user lands on the pairing mode help screen (not glowing purple)
          */
         String EVENT_PAIRING_MODE_HELP = "Onboarding Pairing Mode Help";
@@ -258,19 +253,9 @@ public class Analytics {
         String EVENT_SENSE_SETUP = "Onboarding Sense Setup";
 
         /**
-         * When user lands on the Setting up Sense screen inside the app
-         */
-        String EVENT_SENSE_SETUP_IN_APP = "Sense Setup";
-
-        /**
          * When user lands on the "Pair your Sense" screen
          */
         String EVENT_PAIR_SENSE = "Onboarding Pair Sense";
-
-        /**
-         * When user lands on the "Pair your Sense" screen inside the app
-         */
-        String EVENT_PAIR_SENSE_IN_APP = "Pair Sense";
 
         /**
          * When the user successfully pairs a sense
@@ -278,19 +263,9 @@ public class Analytics {
         String EVENT_SENSE_PAIRED = "Onboarding Sense Paired";
 
         /**
-         * When the user successfully pairs a sense in the app
-         */
-        String EVENT_SENSE_PAIRED_IN_APP = "Sense Paired";
-
-        /**
          * When user lands on the screen to scan for wifi
          */
         String EVENT_WIFI = "Onboarding WiFi";
-
-        /**
-         * When user lands on the screen to scan for wifi in the app
-         */
-        String EVENT_WIFI_IN_APP = "WiFi";
 
         /**
          * When the user implicitly scans for wifi networks.
@@ -298,29 +273,14 @@ public class Analytics {
         String EVENT_WIFI_SCAN = "Onboarding WiFi Scan";
 
         /**
-         * When the user implicitly scans for wifi networks in the app.
-         */
-        String EVENT_WIFI_SCAN_IN_APP = "WiFi Scan";
-
-        /**
          * When the user explicitly rescans for wifi networks.
          */
         String EVENT_WIFI_RESCAN = "Onboarding WiFi Rescan";
 
         /**
-         * When the user explicitly rescans for wifi networks in the app.
-         */
-        String EVENT_WIFI_RESCAN_IN_APP = "WiFi Rescan";
-
-        /**
          * When the user lands on the "Enter Wifi Password" screen
          */
         String EVENT_WIFI_PASSWORD = "Onboarding WiFi Password";
-
-        /**
-         * When the user lands on the "Enter Wifi Password" screen in app
-         */
-        String EVENT_WIFI_PASSWORD_IN_APP = "WiFi Password";
 
         String PROP_WIFI_IS_OTHER = "Is Other";
 
@@ -331,11 +291,6 @@ public class Analytics {
          */
         String EVENT_WIFI_CREDENTIALS_SUBMITTED = "Onboarding WiFi Credentials Submitted";
 
-        /**
-         * When the user or the app sends WiFi credentials to Sense in app.
-         */
-        String EVENT_WIFI_CREDENTIALS_SUBMITTED_IN_APP = "WiFi Credentials Submitted";
-
         String PROP_WIFI_SECURITY_TYPE = "Security Type";
 
         /**
@@ -344,13 +299,6 @@ public class Analytics {
          * @see #PROP_SENSE_WIFI_STATUS
          */
         String EVENT_SENSE_WIFI_UPDATE = "Onboarding Sense WiFi Update";
-
-        /**
-         * Internal logging updates from Sense in app.
-         *
-         * @see #PROP_SENSE_WIFI_STATUS
-         */
-        String EVENT_SENSE_WIFI_UPDATE_IN_APP = "Sense WiFi Update";
 
         String PROP_SENSE_WIFI_STATUS = "status";
         String PROP_SENSE_WIFI_HTTP_RESPONSE_CODE = "http_response_code";
@@ -368,19 +316,9 @@ public class Analytics {
         String EVENT_PAIR_PILL = "Onboarding Pair Pill";
 
         /**
-         * When user lands on the "Pairing your Sleep Pill" screen inside the app
-         */
-        String EVENT_PAIR_PILL_IN_APP = "Pair Pill";
-
-        /**
          * When user lands on the "Pairing your Sleep Pill" screen
          */
         String EVENT_PILL_PAIRED = "Onboarding Pill Paired";
-
-        /**
-         * When user lands on the "Pairing your Sleep Pill" screen inside the app
-         */
-        String EVENT_PILL_PAIRED_IN_APP = "Pill Paired";
 
         /**
          * When user lands on screen where it asks user to place the pill on the pillow
@@ -403,6 +341,17 @@ public class Analytics {
         String EVENT_FIRST_ALARM = "Onboarding First Alarm";
 
         /**
+         * When user has voice feature and enters screen to test voice command
+         */
+        String EVENT_VOICE_TUTORIAL = "Onboarding Voice Tutorial";
+
+        /**
+         * Status of voice command returned
+         */
+        String EVENT_VOICE_COMMAND = "Onboarding Voice Command";
+        String PROP_VOICE_COMMAND_STATUS = "status";
+
+        /**
          * When user lands on the last onboarding Screen
          */
         String EVENT_END = "Onboarding End";
@@ -417,6 +366,8 @@ public class Analytics {
          * When the user long presses on the help button and accesses our secret support menu.
          */
         String EVENT_SUPPORT_OPTIONS = "Support options activated";
+
+        String EVENT_PAIR_PILL_RETRY = "Onboarding Pair Pill Retry";
     }
 
     public interface Timeline {
@@ -530,11 +481,20 @@ public class Analytics {
         String EVENT_TIMESCALE_QUARTER = "quarter";
     }
 
+    public interface General{
+        String EVENT_HELP = "Help";
+        /**
+         * When user lands on the No BLE screen
+         */
+        String EVENT_NO_BLE = "No BLE";
+
+    }
+
     public interface SleepSounds {
         String EVENT_SLEEP_SOUNDS = "Sleep sounds";
         String EVENT_SLEEP_SOUNDS_PLAY = "Play sleep sound";
         String EVENT_SLEEP_SOUNDS_STOP = "Stop sleep sound";
-        String PROP_SLEEP_SOUDNS_SOUND_ID = "sound id";
+        String PROP_SLEEP_SOUNDS_SOUND_ID = "sound id";
         String PROP_SLEEP_SOUNDS_DURATION_ID = "duration id";
         String PROP_SLEEP_SOUNDS_VOLUME = "volume";
     }
@@ -628,6 +588,72 @@ public class Analytics {
 
     }
 
+    public interface Settings {
+        /**
+         * When user lands on the pairing mode help screen (not glowing purple)
+         */
+        String EVENT_PAIRING_MODE_HELP = "Pairing Mode Help";
+
+        /**
+         * When user lands on the Setting up Sense screen
+         */
+        String EVENT_SENSE_SETUP = "Sense Setup";
+
+        /**
+         * When user lands on the "Pair your Sense" screen
+         */
+        String EVENT_PAIR_SENSE = "Pair Sense";
+
+        /**
+         * When the user successfully pairs a sense
+         */
+        String EVENT_SENSE_PAIRED = "Sense Paired";
+
+        /**
+         * When user lands on the screen to scan for wifi
+         */
+        String EVENT_WIFI = "WiFi";
+
+        /**
+         * When the user implicitly scans for wifi networks
+         */
+        String EVENT_WIFI_SCAN = "WiFi Scan";
+
+        /**
+         * When the user explicitly rescans for wifi networks
+         */
+        String EVENT_WIFI_RESCAN = "WiFi Rescan";
+
+        /**
+         * When the user lands on the "Enter Wifi Password" screen
+         */
+        String EVENT_WIFI_PASSWORD = "WiFi Password";
+
+        /**
+         * When the user or the app sends WiFi credentials to Sense
+         */
+        String EVENT_WIFI_CREDENTIALS_SUBMITTED = "WiFi Credentials Submitted";
+
+        /**
+         * Internal logging updates from Sense in app.
+         */
+        String EVENT_SENSE_WIFI_UPDATE = "Sense WiFi Update";
+
+        /**
+         * When user lands on the "Pairing your Sleep Pill" screen inside the app
+         */
+        String EVENT_PILL_PAIRED = "Pill Paired";
+
+
+        /**
+         * When user lands on the "Pairing your Sleep Pill" screen inside the app
+         */
+        String EVENT_PAIR_PILL = "Pair Pill";
+
+        String EVENT_PAIR_PILL_RETRY = "Pair Pill Retry";
+
+    }
+
     /**
      *  {@link this#EVENT_START} - Fire when user reaches "Updating your Sleep Pill" screen after tapping "Update" button or "Update Sleep Pill firmware" row or "Update Now" pop-up button
      *
@@ -654,16 +680,99 @@ public class Analytics {
      *
      *  {@link this#EVENT_START} - fire when user taps on continue and a force ota is triggered
      *
-     *  {@link this#EVENT_STATUS} - Fire when the status changes from the previous status.\nProperties: { {@link this#PROPERY_NAME}: <enum>value from server</enum>}
+     *  {@link this#EVENT_STATUS} - Fire when the status changes from the previous status.\nProperties: { {@link this#PROPERTY_NAME}: <enum>value from server</enum>}
      *
      *  {@link this#EVENT_END} - Fire when the status returned becomes 'COMPLETE'
      */
-    public interface SenseUpdate {
+    public interface SenseOTA {
         String EVENT_ENTER = "Sense DFU";
         String EVENT_START = "Sense DFU begin";
         String EVENT_STATUS = "Sense DFU Status";
         String EVENT_END = "Sense DFU end";
-        String PROPERY_NAME = "status";
+        String PROPERTY_NAME = "status";
+    }
+
+    public interface Upgrade {
+        String ERROR_SENSE_REQUIRED = "No Previously Paired Sense Found";
+        String ERROR_SWAP_API_STATUS = "Swap Api Status was not OK";
+
+        /**
+         * When user lands on the pairing mode help screen (not glowing purple)
+         */
+        String EVENT_PAIRING_MODE_HELP = "Upgrade Pairing Mode Help";
+
+        /**
+         * When user lands on the screen to scan for wifi in the app
+         */
+        String EVENT_WIFI = "Upgrade WiFi";
+
+        /**
+         * When the user implicitly scans for wifi networks.
+         */
+        String EVENT_WIFI_SCAN = "Upgrade WiFi Scan";
+
+        /**
+         * When the user explicitly rescans for wifi networks
+         */
+        String EVENT_WIFI_RESCAN = "Upgrade WiFi Rescan";
+
+        /**
+         * When the user lands on the "Enter Wifi Password" screen
+         */
+        String EVENT_WIFI_PASSWORD = "Upgrade WiFi Password";
+
+        String PROP_WIFI_IS_OTHER = "Is Other";
+
+        String PROP_WIFI_RSSI = "RSSI";
+
+        /**
+         * When user sends WiFi credentials
+         */
+        String EVENT_WIFI_CREDENTIALS_SUBMITTED = "Upgrade WiFi Credentials Submitted";
+
+        String PROP_WIFI_SECURITY_TYPE = "Security Type";
+
+        /**
+         * Internal logging updates from Sense in update flow.
+         *
+         * @see #PROP_SENSE_WIFI_STATUS
+         */
+        String EVENT_SENSE_WIFI_UPDATE = "Upgrade Sense WiFi Update";
+
+        String PROP_SENSE_WIFI_STATUS = "status";
+        String PROP_SENSE_WIFI_HTTP_RESPONSE_CODE = "http_response_code";
+        String PROP_SENSE_WIFI_SOCKET_ERROR_CODE = "socket_error_code";
+
+        String EVENT_PAIR_SENSE = "Upgrade Pair Sense";
+        String EVENT_SENSE_PAIRED = "Upgrade Sense Paired";
+
+        String EVENT_SWAP_ACCOUNTS_REQUEST = "Upgrade Swap Accounts Request";
+        String EVENT_SWAPPED_ACCOUNTS = "Upgrade Accounts Swapped";
+        /**
+         * User taps to factory reset during at end of upgrade flow
+         */
+        String EVENT_FACTORY_RESET = "Upgrade Factory Reset";
+
+        /**
+         * User taps "set up" button
+         */
+        String EVENT_SENSE_VOICE_START = "Upgrade Sense Voice Start";
+
+        String EVENT_PAIR_PILL = "Upgrade Pair Pill";
+
+        String EVENT_PAIR_PILL_RETRY = "Upgrade Pair Pill Retry";
+
+        String EVENT_PILL_PAIRED = "Upgrade Pill Paired";
+
+        String EVENT_HELP = "Upgrade Help";
+
+        /**
+         * "Purchase sense with voice" button tapped.
+         */
+        String EVENT_PURCHASE_SENSE_VOICE = "Purchase Sense Voice";
+
+        String EVENT_UPGRADE_SENSE = "Upgrade Sense";
+
     }
 
 
@@ -813,14 +922,14 @@ public class Analytics {
         final Context context = SenseApplication.getInstance();
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         preferences.edit()
-                   .putString(PreferencesPresenter.PAIRED_SENSE_ID, senseId)
+                   .putString(PreferencesInteractor.PAIRED_SENSE_ID, senseId)
                    .apply();
     }
 
     public static String getSenseId() {
         final Context context = SenseApplication.getInstance();
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return preferences.getString(PreferencesPresenter.PAIRED_SENSE_ID, "");
+        return preferences.getString(PreferencesInteractor.PAIRED_SENSE_ID, "");
     }
 
     //endregion

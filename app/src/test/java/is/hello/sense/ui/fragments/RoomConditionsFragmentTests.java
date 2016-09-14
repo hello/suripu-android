@@ -5,11 +5,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import is.hello.sense.R;
-import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.graph.SenseTestCase;
-import is.hello.sense.graph.presenters.RoomConditionsPresenter;
+import is.hello.sense.interactors.RoomConditionsInteractor;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -39,7 +38,7 @@ public class RoomConditionsFragmentTests extends SenseTestCase {
 
         RoomConditions conditions = RoomConditions.generateTestExample();
         RoomSensorHistory sensorHistory = new RoomSensorHistory();
-        RoomConditionsPresenter.Result result = new RoomConditionsPresenter.Result(conditions, sensorHistory);
+        RoomConditionsInteractor.Result result = new RoomConditionsInteractor.Result(conditions, sensorHistory);
 
         fragment.bindConditions(result);
 
@@ -51,7 +50,7 @@ public class RoomConditionsFragmentTests extends SenseTestCase {
     public void sensorViewHolderBindsCorrectly() {
         RoomConditions conditions = RoomConditions.generateTestExample();
         RoomSensorHistory sensorHistory = new RoomSensorHistory();
-        RoomConditionsPresenter.Result result = new RoomConditionsPresenter.Result(conditions, sensorHistory);
+        RoomConditionsInteractor.Result result = new RoomConditionsInteractor.Result(conditions, sensorHistory);
 
         fragment.bindConditions(result);
 

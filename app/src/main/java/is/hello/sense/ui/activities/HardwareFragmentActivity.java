@@ -3,7 +3,7 @@ package is.hello.sense.ui.activities;
 import javax.inject.Inject;
 
 import is.hello.sense.SenseApplication;
-import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 
 /**
@@ -12,7 +12,8 @@ import is.hello.sense.ui.common.FragmentNavigationActivity;
  * peripherals when it is destroyed by the user pressing back.
  */
 public class HardwareFragmentActivity extends FragmentNavigationActivity {
-    @Inject HardwarePresenter hardwarePresenter;
+    @Inject
+    HardwareInteractor hardwarePresenter;
 
     public HardwareFragmentActivity() {
         SenseApplication.getInstance().inject(this);
@@ -23,7 +24,7 @@ public class HardwareFragmentActivity extends FragmentNavigationActivity {
         super.onDestroy();
 
         if (isFinishing()) {
-            hardwarePresenter.clearPeripheral();
+            hardwarePresenter.reset();
         }
     }
 }

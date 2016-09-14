@@ -32,14 +32,15 @@ import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.VoiceResponse;
-import is.hello.sense.graph.presenters.SenseVoicePresenter;
-import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.interactors.SenseVoiceInteractor;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.ViewAnimator;
 import is.hello.sense.ui.common.VoiceHelpDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.fragments.BaseHardwareFragment;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.AnimatorSetHandler;
 import rx.Observable;
 import rx.Subscription;
@@ -48,10 +49,10 @@ import rx.subscriptions.Subscriptions;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class SenseVoiceFragment extends InjectionFragment {
+public class SenseVoiceFragment extends BaseHardwareFragment {
 
     @Inject
-    SenseVoicePresenter senseVoicePresenter;
+    SenseVoiceInteractor senseVoicePresenter;
 
     private static final int MAX_ALPHA = 20;
     private static final int VOICE_FAIL_COUNT_THRESHOLD = 2;
@@ -81,6 +82,10 @@ public class SenseVoiceFragment extends InjectionFragment {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPresenter(senseVoicePresenter);
+
+        if(savedInstanceState == null){
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_VOICE_TUTORIAL, null);
+        }
     }
 
     @Nullable
@@ -317,13 +322,15 @@ public class SenseVoiceFragment extends InjectionFragment {
 
     private void requestDelayed() {
         //retry once again after a delay respecting fragment lifecycle
-        requestDelayedSubscription = bind(Observable.timer(SenseVoicePresenter.UPDATE_DELAY_SECONDS, TimeUnit.SECONDS))
+        requestDelayedSubscription = bind(Observable.timer(SenseVoiceInteractor.UPDATE_DELAY_SECONDS, TimeUnit.SECONDS))
                                            .subscribe(ignored -> senseVoicePresenter.update(),
                                                       this::presentError);
     }
 
     private void handleVoiceResponse(@Nullable final VoiceResponse voiceResponse) {
-        if(SenseVoicePresenter.hasSuccessful(voiceResponse)){
+        sendAnalyticsEvent(voiceResponse);
+
+        if(SenseVoiceInteractor.hasSuccessful(voiceResponse)){
             updateState(R.string.sense_voice_question_temperature,
                         R.color.primary,
                         View.GONE,
@@ -421,5 +428,14 @@ public class SenseVoiceFragment extends InjectionFragment {
         animSet.setStartDelay(200);
 
         return animSet;
+    }
+
+    private void sendAnalyticsEvent(@Nullable final VoiceResponse voiceResponse){
+        if(voiceResponse == null){
+            return;
+        }
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_VOICE_COMMAND,
+                             Analytics.createProperties(Analytics.Onboarding.PROP_VOICE_COMMAND_STATUS,
+                                                        voiceResponse.result));
     }
 }

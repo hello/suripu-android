@@ -7,10 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.fragments.HardwareFragment;
+import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.util.Analytics;
 
-public class OnboardingUnsupportedDeviceFragment extends HardwareFragment {
+public class OnboardingUnsupportedDeviceFragment extends SenseFragment {
     private OnboardingSimpleStepView view;
 
     @Override
@@ -45,6 +45,6 @@ public class OnboardingUnsupportedDeviceFragment extends HardwareFragment {
     }
 
     public void continueAnyway() {
-        getOnboardingActivity().showGetStarted(true);
+        finishFlow();
     }
 }

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import is.hello.sense.graph.PresenterSubject;
+import is.hello.sense.graph.InteractorSubject;
 import is.hello.sense.graph.SenseTestCase;
 import rx.Observable;
 import rx.Subscription;
@@ -80,7 +80,7 @@ public class DelegateObservableContainerTests extends SenseTestCase {
 
     @Test
     public void subscribe() {
-        final PresenterSubject<Integer> source = PresenterSubject.create();
+        final InteractorSubject<Integer> source = InteractorSubject.create();
 
         final AtomicInteger accumulator = new AtomicInteger();
         final List<Throwable> errors = new ArrayList<>();

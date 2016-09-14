@@ -20,9 +20,9 @@ import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.SleepPillDevice;
-import is.hello.sense.bluetooth.PillDfuPresenter;
+import is.hello.sense.bluetooth.PillDfuInteractor;
 import is.hello.sense.bluetooth.PillPeripheral;
-import is.hello.sense.graph.presenters.DevicesPresenter;
+import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
@@ -34,9 +34,9 @@ import is.hello.sense.util.SenseCache;
 
 public class ConnectPillFragment extends PillHardwareFragment implements OnBackPressedInterceptor {
     @Inject
-    DevicesPresenter devicesPresenter;
+    DevicesInteractor devicesPresenter;
     @Inject
-    PillDfuPresenter pillDfuPresenter;
+    PillDfuInteractor pillDfuPresenter;
     @Inject
     BluetoothStack bluetoothStack;
     @Inject
@@ -60,13 +60,13 @@ public class ConnectPillFragment extends PillHardwareFragment implements OnBackP
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_onboarding_pair_pill, container, false);
-        this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_onboarding_pair_pill_activity);
-        this.activityStatus = (TextView) view.findViewById(R.id.fragment_onboarding_pair_pill_status);
-        this.retryButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_retry);
-        this.skipButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_skip);
-        this.diagram = (DiagramVideoView) view.findViewById(R.id.fragment_onboarding_pair_pill_diagram);
-        ((TextView)view.findViewById(R.id.fragment_onboarding_pair_pill_title)).setText(R.string.title_connect_sleep_pill);
+        final View view = inflater.inflate(R.layout.fragment_pair_pill, container, false);
+        this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_pair_pill_activity);
+        this.activityStatus = (TextView) view.findViewById(R.id.fragment_pair_pill_status);
+        this.retryButton = (Button) view.findViewById(R.id.fragment_pair_pill_retry);
+        this.skipButton = (Button) view.findViewById(R.id.fragment_pair_pill_skip);
+        this.diagram = (DiagramVideoView) view.findViewById(R.id.fragment_pair_pill_diagram);
+        ((TextView)view.findViewById(R.id.fragment_pair_pill_title)).setText(R.string.title_connect_sleep_pill);
 
         this.skipButton.setText(R.string.action_cancel);
         Views.setTimeOffsetOnClickListener(retryButton, ignored -> searchForPill());

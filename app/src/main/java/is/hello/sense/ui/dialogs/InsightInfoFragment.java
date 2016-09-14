@@ -38,7 +38,7 @@ import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.api.model.v2.ShareUrl;
-import is.hello.sense.graph.presenters.InsightInfoPresenter;
+import is.hello.sense.interactors.InsightInfoInteractor;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.common.AnimatedInjectionFragment;
 import is.hello.sense.ui.widget.ExtendedScrollView;
@@ -75,7 +75,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     @Inject
     Picasso picasso;
     @Inject
-    InsightInfoPresenter presenter;
+    InsightInfoInteractor presenter;
     @Inject
     ApiService apiService;
 

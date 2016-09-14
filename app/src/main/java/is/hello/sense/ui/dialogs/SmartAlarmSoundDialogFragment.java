@@ -17,7 +17,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
-import is.hello.sense.graph.presenters.SmartAlarmPresenter;
+import is.hello.sense.interactors.SmartAlarmInteractor;
 import is.hello.sense.ui.adapter.SmartAlarmSoundAdapter;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -30,7 +30,8 @@ public class SmartAlarmSoundDialogFragment extends InjectionDialogFragment imple
 
     public static final String TAG = SmartAlarmSoundDialogFragment.class.getSimpleName();
 
-    @Inject SmartAlarmPresenter presenter;
+    @Inject
+    SmartAlarmInteractor presenter;
 
     private Alarm.Sound selectedSound;
     private SmartAlarmSoundAdapter adapter;

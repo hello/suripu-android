@@ -24,10 +24,11 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.zendesk.TicketsPresenter;
+import is.hello.sense.zendesk.TicketsInteractor;
 
 public class TicketListFragment extends InjectionFragment implements AdapterView.OnItemClickListener {
-    @Inject TicketsPresenter ticketsPresenter;
+    @Inject
+    TicketsInteractor ticketsPresenter;
 
     private ProgressBar activityIndicator;
     private TextView empty;

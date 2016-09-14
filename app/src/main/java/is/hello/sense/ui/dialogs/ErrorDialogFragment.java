@@ -44,7 +44,7 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
 
     //region Lifecycle
-
+    @Deprecated
     public static void presentError(@NonNull final Activity activity, @Nullable final Throwable e, @StringRes final int titleRes) {
         final ErrorDialogFragment fragment = new Builder(e, activity)
                 .withTitle(titleRes)
@@ -52,8 +52,13 @@ public class ErrorDialogFragment extends SenseDialogFragment {
         fragment.showAllowingStateLoss(activity.getFragmentManager(), TAG);
     }
 
+    @Deprecated
     public static void presentError(@NonNull final Activity activity, @Nullable final Throwable e) {
         presentError(activity, e, R.string.dialog_error_title);
+    }
+
+    public static PresenterBuilder newInstance(@NonNull final Throwable e) {
+        return new PresenterBuilder(e);
     }
 
     @Override
@@ -100,12 +105,12 @@ public class ErrorDialogFragment extends SenseDialogFragment {
                     final Intent intent = arguments.getParcelable(ARG_ACTION_INTENT);
                     startActivity(intent);
                 });
-            } else if( arguments.containsKey(ARG_ACTION_URI_STRING)) {
+            } else if (arguments.containsKey(ARG_ACTION_URI_STRING)) {
                 dialog.setNegativeButton(titleRes, (button, which) -> {
                     final Uri uri = Uri.parse(arguments.getString(ARG_ACTION_URI_STRING));
                     UserSupport.openUri(getActivity(), uri);
                 });
-            }else {
+            } else {
                 dialog.setNegativeButton(titleRes, (button, which) -> {
                     if (getTargetFragment() != null) {
                         final int resultCode = arguments.getInt(ARG_ACTION_RESULT_CODE);
@@ -167,13 +172,17 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
     //endregion
 
-
     public static class Builder {
         protected final Bundle arguments = new Bundle();
 
+        @Deprecated
+        /**
+         * See {@link is.hello.sense.ui.dialogs.ErrorDialogFragment.PresenterBuilder}
+         */
         public Builder() {
         }
 
+        @Deprecated
         public Builder(@Nullable final Throwable e, @NonNull final Context context) {
             withMessage(Errors.getDisplayMessage(e));
             withErrorType(Errors.getType(e));
@@ -237,12 +246,13 @@ public class ErrorDialogFragment extends SenseDialogFragment {
             return this;
         }
 
-        public Builder withAction(@NonNull final String uriString, @StringRes final int titleRes){
+        public Builder withAction(@NonNull final String uriString, @StringRes final int titleRes) {
             arguments.putString(ARG_ACTION_URI_STRING, uriString);
             arguments.putInt(ARG_ACTION_TITLE_RES, titleRes);
             return this;
         }
 
+        @Deprecated
         public Builder withUnstableBluetoothHelp(@NonNull final Context context) {
             final Uri uri = UserSupport.DeviceIssue.UNSTABLE_BLUETOOTH.getUri();
             final Intent intent = UserSupport.createViewUriIntent(context, uri);
@@ -251,10 +261,33 @@ public class ErrorDialogFragment extends SenseDialogFragment {
             return this;
         }
 
+        @Deprecated
         public ErrorDialogFragment build() {
             final ErrorDialogFragment instance = new ErrorDialogFragment();
             instance.setArguments(arguments);
             return instance;
         }
     }
+
+    public static class PresenterBuilder extends Builder {
+        public PresenterBuilder(@NonNull final Throwable e) {
+            withMessage(Errors.getDisplayMessage(e));
+            withErrorType(Errors.getType(e));
+            withContextInfo(Errors.getContextInfo(e));
+            withWarning(ApiException.isNetworkError(e));
+            if (BuruberiException.isInstabilityLikely(e)) {
+                withUnstableBluetoothHelp();
+            }
+        }
+
+        public Builder withUnstableBluetoothHelp() {
+            final Uri uri = UserSupport.DeviceIssue.UNSTABLE_BLUETOOTH.getUri();
+            withAction(uri.toString(), R.string.action_more_info);
+            withAddendum(R.string.error_addendum_unstable_stack);
+            return this;
+        }
+
+
+    }
+
 }

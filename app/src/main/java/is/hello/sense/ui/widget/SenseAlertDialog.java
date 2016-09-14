@@ -1,5 +1,6 @@
 package is.hello.sense.ui.widget;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,6 +21,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.Serializable;
+
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -39,15 +42,19 @@ public class SenseAlertDialog extends Dialog {
     private View view;
     private View topViewDivider, bottomViewDivider;
 
-    public SenseAlertDialog(@NonNull Context context) {
-        this(context,R.style.AppTheme_Dialog_Simple);
+
+    @Deprecated // todo make private
+    public SenseAlertDialog(@NonNull final Context context) {
+        this(context, R.style.AppTheme_Dialog_Simple);
     }
 
-    public SenseAlertDialog(@NonNull Context context, final int style){
-        this(context,style,R.layout.dialog_sense_alert);
+    @Deprecated // todo make private
+    public SenseAlertDialog(@NonNull final Context context, final int style) {
+        this(context, style, R.layout.dialog_sense_alert);
     }
 
-    private SenseAlertDialog(@NonNull Context context, final int style, @LayoutRes final int layout){
+    @Deprecated // todo make private
+    private SenseAlertDialog(@NonNull final Context context, final int style, @LayoutRes final int layout) {
         super(context, style);
 
         setContentView(layout);
@@ -64,10 +71,9 @@ public class SenseAlertDialog extends Dialog {
     }
 
     /**
-     *
      * @return a dialog with the properties of {@link SenseBottomAlertDialog} except is dismissed easily.
      */
-    public static SenseAlertDialog newBottomSheetInstance(@NonNull Context context) {
+    public static SenseAlertDialog newBottomSheetInstance(@NonNull final Context context) {
         final SenseAlertDialog dialog = new SenseAlertDialog(context,
                                                              R.style.AppTheme_Dialog_BottomSheet,
                                                              R.layout.dialog_sense_bottom_sheet);
@@ -78,28 +84,28 @@ public class SenseAlertDialog extends Dialog {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Views.runWhenLaidOut(container, () -> {
-                 final DisplayMetrics metrics = container.getResources().getDisplayMetrics();
+            final DisplayMetrics metrics = container.getResources().getDisplayMetrics();
 
-                 final int padding = getContext().getResources().getDimensionPixelSize(R.dimen.gap_medium);
-                 final int maxHeight = metrics.heightPixels - (padding * 2);
+            final int padding = getContext().getResources().getDimensionPixelSize(R.dimen.gap_medium);
+            final int maxHeight = metrics.heightPixels - (padding * 2);
 
-                 if (container.getMeasuredHeight() > maxHeight) {
-                     container.getLayoutParams().height = maxHeight;
-                     container.requestLayout();
-                     container.invalidate();
-                 }
-             });
+            if (container.getMeasuredHeight() > maxHeight) {
+                container.getLayoutParams().height = maxHeight;
+                container.requestLayout();
+                container.invalidate();
+            }
+        });
     }
 
     private void updatePaddingAndDividers() {
-        boolean hasText = (titleText.getVisibility() == View.VISIBLE ||
+        final boolean hasText = (titleText.getVisibility() == View.VISIBLE ||
                 messageText.getVisibility() == View.VISIBLE);
         if (hasText) {
-            int padding = getContext().getResources().getDimensionPixelSize(R.dimen.gap_outer);
+            final int padding = getContext().getResources().getDimensionPixelSize(R.dimen.gap_outer);
             container.setPadding(0, padding, 0, 0);
             if (topViewDivider != null) {
                 topViewDivider.setVisibility(View.VISIBLE);
@@ -113,7 +119,7 @@ public class SenseAlertDialog extends Dialog {
     }
 
     @Override
-    public void setTitle(@Nullable CharSequence title) {
+    public void setTitle(@Nullable final CharSequence title) {
         super.setTitle(title);
 
         if (TextUtils.isEmpty(title)) {
@@ -127,7 +133,7 @@ public class SenseAlertDialog extends Dialog {
     }
 
     @Override
-    public void setTitle(@StringRes int titleId) {
+    public void setTitle(@StringRes final int titleId) {
 
         if (titleId == NO_TITLE_ID) {
             titleText.setVisibility(View.GONE);
@@ -140,7 +146,7 @@ public class SenseAlertDialog extends Dialog {
         updatePaddingAndDividers();
     }
 
-    public void setMessage(@Nullable CharSequence message) {
+    public void setMessage(@Nullable final CharSequence message) {
         if (TextUtils.isEmpty(message)) {
             messageText.setVisibility(View.GONE);
         } else {
@@ -151,7 +157,7 @@ public class SenseAlertDialog extends Dialog {
         updatePaddingAndDividers();
     }
 
-    public void setMessage(@StringRes int messageId) {
+    public void setMessage(@StringRes final int messageId) {
         if (messageId == 0) {
             messageText.setVisibility(View.GONE);
             messageText.setText(null);
@@ -166,14 +172,14 @@ public class SenseAlertDialog extends Dialog {
         return messageText.getText();
     }
 
-    private View.OnClickListener createClickListener(@Nullable DialogInterface.OnClickListener onClickListener, int which) {
+    private View.OnClickListener createClickListener(@Nullable final DialogInterface.OnClickListener onClickListener, final int which) {
         if (onClickListener != null) {
-            return view -> {
+            return view1 -> {
                 onClickListener.onClick(this, which);
                 dismiss();
             };
         } else {
-            return view -> dismiss();
+            return view1 -> dismiss();
         }
     }
 
@@ -185,7 +191,7 @@ public class SenseAlertDialog extends Dialog {
         }
     }
 
-    public void setPositiveButton(@Nullable CharSequence title, @Nullable OnClickListener onClickListener) {
+    public void setPositiveButton(@Nullable final CharSequence title, @Nullable final OnClickListener onClickListener) {
         if (title != null) {
             positiveButton.setVisibility(View.VISIBLE);
             positiveButton.setText(title);
@@ -197,11 +203,15 @@ public class SenseAlertDialog extends Dialog {
         updateButtonDivider();
     }
 
-    public void setPositiveButton(@StringRes int titleId, @Nullable OnClickListener onClickListener) {
+    public void setPositiveButton(@StringRes final int titleId, @Nullable final OnClickListener onClickListener) {
         setPositiveButton(getContext().getString(titleId), onClickListener);
     }
 
-    public void setNegativeButton(@Nullable CharSequence title, @Nullable OnClickListener onClickListener) {
+    public void setPositiveRunnableButton(@StringRes final int titleId, @Nullable final SerializedRunnable runnable) {
+        setPositiveButton(titleId, runnable == null ? null : (dialog, which) -> runnable.run());
+    }
+
+    public void setNegativeButton(@Nullable final CharSequence title, @Nullable final OnClickListener onClickListener) {
         if (title != null) {
             negativeButton.setVisibility(View.VISIBLE);
             negativeButton.setText(title);
@@ -213,15 +223,19 @@ public class SenseAlertDialog extends Dialog {
         updateButtonDivider();
     }
 
-    public void setNegativeButton(@StringRes int titleId, @Nullable OnClickListener onClickListener) {
+    public void setNegativeButton(@StringRes final int titleId, @Nullable final OnClickListener onClickListener) {
         setNegativeButton(getContext().getString(titleId), onClickListener);
+    }
+
+    public void setNegativeRunnableButton(@StringRes final int titleId, @Nullable final SerializedRunnable runnable) {
+        setNegativeButton(titleId, runnable == null ? null : (dialog, which) -> runnable.run());
     }
 
     /**
      * @see android.content.DialogInterface#BUTTON_POSITIVE
      * @see android.content.DialogInterface#BUTTON_NEGATIVE
      */
-    public Button getButton(int which) {
+    public Button getButton(final int which) {
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
                 return positiveButton;
@@ -234,8 +248,8 @@ public class SenseAlertDialog extends Dialog {
         }
     }
 
-    public void setButtonDestructive(int which, boolean flag) {
-        Button button = getButton(which);
+    public void setButtonDestructive(final int which, final boolean flag) {
+        final Button button = getButton(which);
         if (button == null) {
             Logger.error(getClass().getSimpleName(), "Unknown button #" + which + ", ignoring.");
             return;
@@ -248,8 +262,8 @@ public class SenseAlertDialog extends Dialog {
         }
     }
 
-    public void setButtonDeemphasized(int which, boolean flag) {
-        Button button = getButton(which);
+    public void setButtonDeemphasized(final int which, final boolean flag) {
+        final Button button = getButton(which);
         if (button == null) {
             Logger.error(getClass().getSimpleName(), "Unknown button #" + which + ", ignoring.");
             return;
@@ -262,8 +276,8 @@ public class SenseAlertDialog extends Dialog {
         }
     }
 
-    public void setButtonEnabled(int which, boolean enabled) {
-        Button button = getButton(which);
+    public void setButtonEnabled(final int which, final boolean enabled) {
+        final Button button = getButton(which);
         if (button == null) {
             Logger.error(getClass().getSimpleName(), "Unknown button #" + which + ", ignoring.");
             return;
@@ -272,7 +286,7 @@ public class SenseAlertDialog extends Dialog {
         button.setEnabled(enabled);
     }
 
-    public void setView(@Nullable View view, boolean wantsDividers) {
+    public void setView(@Nullable final View view, final boolean wantsDividers) {
         if (this.view == view) {
             return;
         }
@@ -288,7 +302,7 @@ public class SenseAlertDialog extends Dialog {
 
             if (bottomViewDivider == null && wantsDividers) {
                 this.bottomViewDivider = Styles.createHorizontalDivider(getContext(), ViewGroup.LayoutParams.MATCH_PARENT);
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(bottomViewDivider.getLayoutParams());
+                final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(bottomViewDivider.getLayoutParams());
                 layoutParams.bottomMargin = getContext().getResources().getDimensionPixelSize(R.dimen.gap_medium);
                 bottomViewDivider.setLayoutParams(layoutParams);
                 container.addView(bottomViewDivider, end);
@@ -315,8 +329,90 @@ public class SenseAlertDialog extends Dialog {
         updatePaddingAndDividers();
     }
 
-    public void setView(@LayoutRes int viewRes) {
-        View view = getLayoutInflater().inflate(viewRes, container, false);
+    public void setView(@LayoutRes final int viewRes) {
+        final View view = getLayoutInflater().inflate(viewRes, container, false);
         setView(view, true);
+    }
+
+
+    public interface SerializedRunnable extends Serializable {
+        void run();
+    }
+
+    public static class Builder {
+        private final static String ARG_TITLE = Builder.class.getSimpleName() + ".ARG_TITLE";
+        private final static String ARG_MESSAGE = Builder.class.getSimpleName() + ".ARG_MESSAGE";
+        private final static String ARG_POSITIVE_CLICK_LISTENER = Builder.class.getSimpleName() + ".ARG_POSITIVE_CLICK_LISTENER";
+        private final static String ARG_POSITIVE_CLICK_TEXT = Builder.class.getSimpleName() + ".ARG_POSITIVE_CLICK_TEXT";
+        private final static String ARG_NEGATIVE_CLICK_LISTENER = Builder.class.getSimpleName() + ".ARG_NEGATIVE_CLICK_LISTENER";
+        private final static String ARG_NEGATIVE_CLICK_TEXT = Builder.class.getSimpleName() + ".ARG_NEGATIVE_CLICK_TEXT";
+        private final static String ARG_DESTRUCTIVE_BUTTON = Builder.class.getSimpleName() + ".ARG_DESTRUCTIVE_BUTTON";
+        private final static String ARG_DESTRUCTIVE_FLAG = Builder.class.getSimpleName() + ".ARG_DESTRUCTIVE_FLAG";
+        private final Bundle bundle = new Bundle();
+
+
+        public Builder setTitle(@StringRes final int titleRes) {
+            bundle.putInt(ARG_TITLE, titleRes);
+            return this;
+        }
+
+        public Builder setMessage(@StringRes final int messageRes) {
+            bundle.putInt(ARG_MESSAGE, messageRes);
+            return this;
+        }
+
+        public Builder setPositiveButton(@StringRes final int textRes, @Nullable final SerializedRunnable action) {
+            if (action != null) {
+                bundle.putSerializable(ARG_POSITIVE_CLICK_LISTENER, action);
+            }
+            bundle.putInt(ARG_POSITIVE_CLICK_TEXT, textRes);
+            return this;
+        }
+
+        public Builder setNegativeButton(@StringRes final int textRes, @Nullable final SerializedRunnable action) {
+            if (action != null) {
+                bundle.putSerializable(ARG_NEGATIVE_CLICK_LISTENER, action);
+            }
+            bundle.putInt(ARG_NEGATIVE_CLICK_TEXT, textRes);
+            return this;
+        }
+
+        public Builder setButtonDestructive(final int which, final boolean flag) {
+            if (which < -2 || which > -1) {
+                return this; // only support two buttons right now.
+            }
+            bundle.putInt(ARG_DESTRUCTIVE_BUTTON, which);
+            bundle.putBoolean(ARG_DESTRUCTIVE_FLAG, flag);
+            return this;
+        }
+
+        public SenseAlertDialog build(@NonNull final Activity activity) {
+            final SenseAlertDialog alertDialog = new SenseAlertDialog(activity);
+            if (bundle.containsKey(ARG_TITLE)) {
+                alertDialog.setTitle(bundle.getInt(ARG_TITLE));
+            }
+            if (bundle.containsKey(ARG_MESSAGE)) {
+                alertDialog.setMessage(bundle.getInt(ARG_MESSAGE));
+            }
+            if (bundle.containsKey(ARG_POSITIVE_CLICK_TEXT)) {
+                final SerializedRunnable runnable;
+                if (bundle.containsKey(ARG_POSITIVE_CLICK_LISTENER)) {
+                    runnable = (SerializedRunnable) bundle.getSerializable(ARG_POSITIVE_CLICK_LISTENER);
+                } else {
+                    runnable = null;
+                }
+                alertDialog.setPositiveRunnableButton(bundle.getInt(ARG_POSITIVE_CLICK_TEXT), runnable);
+            }
+            if (bundle.containsKey(ARG_NEGATIVE_CLICK_TEXT)) {
+                final SerializedRunnable runnable;
+                if (bundle.containsKey(ARG_NEGATIVE_CLICK_LISTENER)) {
+                    runnable = (SerializedRunnable) bundle.getSerializable(ARG_NEGATIVE_CLICK_LISTENER);
+                } else {
+                    runnable = null;
+                }
+                alertDialog.setNegativeRunnableButton(bundle.getInt(ARG_NEGATIVE_CLICK_TEXT), runnable);
+            }
+            return alertDialog;
+        }
     }
 }

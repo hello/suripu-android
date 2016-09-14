@@ -12,10 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginTop="@dimen/gap_small"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_outer"
+        android:layout_marginTop="@dimen/x1"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
+        android:layout_marginBottom="@dimen/x3"
         android:text="@string/action_continue"
         style="@style/AppTheme.Button.Rounded"/>
 
@@ -23,11 +23,12 @@
         android:id="@+id/view_onboarding_simple_step_secondary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
+        android:layout_marginTop="@dimen/x1"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
         android:layout_above="@id/view_onboarding_simple_step_primary"
         android:text="@string/action_skip"
+        android:textAllCaps="false"
         style="@style/AppTheme.Button.Borderless.Accent.Bounded"/>
 
     <ScrollView
@@ -50,9 +51,9 @@
                 android:id="@+id/view_onboarding_simple_step_heading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/gap_outer"
-                android:layout_marginRight="@dimen/gap_outer"
-                android:layout_marginBottom="@dimen/gap_small"
+                android:layout_marginLeft="@dimen/x3"
+                android:layout_marginRight="@dimen/x3"
+                android:layout_marginBottom="@dimen/x1"
                 android:textAppearance="?attr/senseTextAppearanceHeading"
                 android:lineSpacingMultiplier="@dimen/line_multiple_heading"
                 android:text="@string/app_name"/>
@@ -61,9 +62,9 @@
                 android:id="@+id/view_onboarding_simple_step_subheading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/gap_outer"
-                android:layout_marginRight="@dimen/gap_outer"
-                android:layout_marginBottom="@dimen/gap_small"
+                android:layout_marginLeft="@dimen/x3"
+                android:layout_marginRight="@dimen/x3"
+                android:layout_marginBottom="@dimen/x1"
                 android:textAppearance="?attr/senseTextAppearanceSubheading"
                 android:lineSpacingMultiplier="@dimen/line_multiple_subheading" />
 

@@ -2,6 +2,7 @@ package is.hello.sense.ui.adapter;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import org.joda.time.DateTime;
@@ -40,6 +41,26 @@ public class DevicesAdapterTests extends SenseTestCase {
         this.adapter = new DevicesAdapter(parent);
     }
 
+    public static SenseDevice createOkSense() {
+        return new SenseDevice(BaseDevice.State.NORMAL,
+                               SenseDevice.Color.BLACK,
+                               "1234",
+                               "ffffff",
+                               DateTime.now().minusHours(2),
+                               new SenseDevice.WiFiInfo("Mostly Radiation", 50, DateTime.now(), "GOOD"),
+                               SenseDevice.HardwareVersion.SENSE);
+    }
+
+    public static SenseDevice createSenseWithUpgrade() {
+        return new SenseDevice(BaseDevice.State.NORMAL,
+                               SenseDevice.Color.BLACK,
+                               "1234",
+                               "ffffff",
+                               DateTime.now().minusHours(2),
+                               new SenseDevice.WiFiInfo("Mostly Radiation", 50, DateTime.now(), "GOOD"),
+                               SenseDevice.HardwareVersion.SENSE_WITH_VOICE);
+    }
+
     //endregion
 
 
@@ -47,12 +68,7 @@ public class DevicesAdapterTests extends SenseTestCase {
 
     @Test
     public void senseNormalDisplay() throws Exception {
-        final SenseDevice sense = new SenseDevice(SenseDevice.State.NORMAL,
-                                                  SenseDevice.Color.BLACK,
-                                                  "1234",
-                                                  "ffffff",
-                                                  DateTime.now().minusHours(2),
-                                                  new SenseDevice.WiFiInfo("Mostly Radiation", 50, DateTime.now(), "GOOD"));
+        final SenseDevice sense = DevicesAdapterTests.createOkSense();
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
         final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
@@ -75,7 +91,8 @@ public class DevicesAdapterTests extends SenseTestCase {
                                                   "1234",
                                                   "ffffff",
                                                   DateTime.now().minusDays(5),
-                                                  null);
+                                                  null,
+                                                  SenseDevice.HardwareVersion.SENSE);
 
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
@@ -99,7 +116,8 @@ public class DevicesAdapterTests extends SenseTestCase {
                                                   "1234",
                                                   "ffffff",
                                                   DateTime.now().minusHours(2),
-                                                  null);
+                                                  null,
+                                                  SenseDevice.HardwareVersion.SENSE);
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
         final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
@@ -122,7 +140,8 @@ public class DevicesAdapterTests extends SenseTestCase {
                                                   "1234",
                                                   "ffffff",
                                                   DateTime.now().minusHours(2),
-                                                  new SenseDevice.WiFiInfo(null, 50, DateTime.now(), "GOOD"));
+                                                  new SenseDevice.WiFiInfo(null, 50, DateTime.now(), "GOOD"),
+                                                  SenseDevice.HardwareVersion.SENSE);
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
         final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
@@ -140,12 +159,7 @@ public class DevicesAdapterTests extends SenseTestCase {
 
     @Test
     public void sleepPillNormalDisplay() throws Exception {
-        final SenseDevice sense = new SenseDevice(SenseDevice.State.NORMAL,
-                                                  SenseDevice.Color.BLACK,
-                                                  "1234",
-                                                  "ffffff",
-                                                  DateTime.now().minusHours(2),
-                                                  new SenseDevice.WiFiInfo("Mostly Radiation", 50, DateTime.now(), "GOOD"));
+        final SenseDevice sense = DevicesAdapterTests.createOkSense();
 
         final SleepPillDevice sleepPill = new SleepPillDevice(SleepPillDevice.State.NORMAL,
                                                               SleepPillDevice.Color.BLUE,
@@ -169,12 +183,7 @@ public class DevicesAdapterTests extends SenseTestCase {
 
     @Test
     public void sleepPillLowBatteryDisplay() throws Exception {
-        final SenseDevice sense = new SenseDevice(SenseDevice.State.NORMAL,
-                                                  SenseDevice.Color.BLACK,
-                                                  "1234",
-                                                  "ffffff",
-                                                  DateTime.now().minusHours(2),
-                                                  new SenseDevice.WiFiInfo("Mostly Radiation", 50, DateTime.now(), "GOOD"));
+        final SenseDevice sense = DevicesAdapterTests.createOkSense();
 
         final SleepPillDevice sleepPill = new SleepPillDevice(SleepPillDevice.State.LOW_BATTERY,
                                                               SleepPillDevice.Color.BLUE,
@@ -198,12 +207,7 @@ public class DevicesAdapterTests extends SenseTestCase {
 
     @Test
     public void sleepPillMissingDisplay() throws Exception {
-        final SenseDevice sense = new SenseDevice(SenseDevice.State.NORMAL,
-                                                  SenseDevice.Color.BLACK,
-                                                  "1234",
-                                                  "ffffff",
-                                                  DateTime.now().minusHours(2),
-                                                  new SenseDevice.WiFiInfo("Mostly Radiation", 50, DateTime.now(), "GOOD"));
+        final SenseDevice sense = DevicesAdapterTests.createOkSense();
 
         final SleepPillDevice sleepPill = new SleepPillDevice(SleepPillDevice.State.UNKNOWN,
                                                               SleepPillDevice.Color.BLUE,
@@ -270,7 +274,8 @@ public class DevicesAdapterTests extends SenseTestCase {
                                                   "1234",
                                                   "ffffff",
                                                   DateTime.now().minusDays(5),
-                                                  null);
+                                                  null,
+                                                  SenseDevice.HardwareVersion.SENSE);
 
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
@@ -290,8 +295,8 @@ public class DevicesAdapterTests extends SenseTestCase {
         final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                  fakeParent, adapter.getItemViewType(1), 1);
 
-        assertThat("Sleep Pill", is(equalTo(holder.title.getText().toString())));
-        assertThat("Pair New Pill", is(equalTo(holder.actionButton.getText().toString())));
+        assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
+        assertThat(holder.actionButton.getText().toString(), is(equalTo("Pair New Pill")));
         assertThat(holder.actionButton.isEnabled(), is(true));
 
         // For SafeOnClickListener to function properly
@@ -330,15 +335,64 @@ public class DevicesAdapterTests extends SenseTestCase {
         final DevicesAdapter.SleepPillViewHolder holder = RecyclerAdapterTesting.createAndBindView(
                 adapter, fakeParent, adapter.getItemViewType(1), 1);
 
-        assertThat("Sleep Pill", is(equalTo(holder.title.getText().toString())));
-        assertThat(getString(R.string.action_update), is(equalTo(holder.actionButton.getText().toString())));
+        assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
+        assertThat(holder.actionButton.getText().toString(), is(equalTo(getString(R.string.action_update))));
+        assertThat(holder.actionButton.isEnabled(), is(true));
+        assertThat(holder.actionButton.getVisibility(), is(View.VISIBLE));
+        // For SafeOnClickListener to function properly
+        ShadowSystemClock.setCurrentTimeMillis(1000);
+        holder.actionButton.performClick();
+        //fails because getAdapterPosition() returns -1 instead of mocked position
+        //assertThat(clickedDevice.get(), is(instanceOf(SleepPillDevice.class)));
+    }
+
+    @Test
+    public void showSenseUpgradeButton() throws Exception {
+
+        final SenseDevice senseDevice = createOkSense();
+
+        adapter.bindDevices(new Devices(Lists.newArrayList(senseDevice), new ArrayList<>()));
+
+        final LambdaVar<BaseDevice> clickedDevice = LambdaVar.empty();
+        adapter.setOnDeviceInteractionListener(new DevicesAdapter.OnDeviceInteractionListener() {
+            @Override
+            public void onPairNewDevice(@NonNull PlaceholderDevice.Type type) {
+                //do nothing
+            }
+
+            @Override
+            public void onUpdateDevice(@NonNull BaseDevice device) {
+                clickedDevice.set(device);
+            }
+        });
+
+        final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(
+                adapter, fakeParent, adapter.getItemViewType(0), 0);
+
+        assertThat(holder.title.getText().toString(), is(equalTo(getString(R.string.device_hardware_version_sense))));
+        assertThat(holder.actionButton.getText().toString(), is(equalTo(getString(R.string.action_upgrade_sense))));
         assertThat(holder.actionButton.isEnabled(), is(true));
 
         // For SafeOnClickListener to function properly
         ShadowSystemClock.setCurrentTimeMillis(1000);
         holder.actionButton.performClick();
         //fails because getAdapterPosition() returns -1 instead of mocked position
-        //assertThat(clickedDevice.get(), is(instanceOf(SleepPillDevice.class)));
+        //assertThat(clickedDevice.get(), is(instanceOf(SenseDevice.class)));
+    }
+
+    @Test
+    public void hideSenseUpgradeButton() throws Exception {
+
+        final SenseDevice senseDevice = createSenseWithUpgrade();
+
+        adapter.bindDevices(new Devices(Lists.newArrayList(senseDevice), new ArrayList<>()));
+
+        final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(
+                adapter, fakeParent, adapter.getItemViewType(0), 0);
+
+        assertThat(holder.title.getText().toString(), is(equalTo(getString(R.string.device_hardware_version_sense_with_voice))));
+        assertThat(holder.actionButton.isEnabled(), is(false));
+        assertThat(holder.actionButton.getVisibility(), is(View.GONE));
     }
 
     //endregion

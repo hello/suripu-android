@@ -15,7 +15,7 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
-import is.hello.sense.graph.presenters.PhoneBatteryPresenter;
+import is.hello.sense.interactors.PhoneBatteryInteractor;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.common.ViewAnimator;
@@ -27,7 +27,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment implements OnB
     @Inject
     BluetoothStack bluetoothStack;
     @Inject
-    PhoneBatteryPresenter phoneBatteryPresenter;
+    PhoneBatteryInteractor phoneBatteryPresenter;
 
     private Button primaryButton;
     private final ViewAnimator viewAnimator = new ViewAnimator();
@@ -54,7 +54,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment implements OnB
                 .setSecondaryButtonText(R.string.action_cancel)
                 .setWantsSecondaryButton(true)
                 .setToolbarWantsBackButton(false)
-                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATE_PILL));
+                .setToolbarOnHelpClickListener(ignored -> UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.UPDATE_PILL));
         this.primaryButton = (Button) view.findViewById(R.id.view_onboarding_simple_step_primary);
         return view;
     }

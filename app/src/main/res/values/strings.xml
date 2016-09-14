@@ -17,6 +17,7 @@
 
     <string name="action_log_in">Log in</string>
     <string name="action_set_up_sense">Set up Sense</string>
+    <string name="action_set_up">Set up</string>
 
     <string name="device_sense">Sense</string>
     <string name="device_pill">Sleep Pill</string>
@@ -73,10 +74,17 @@
     <string name="action_deny">Deny</string>
     <string name="action_continue">Continue</string>
     <string name="action_turn_on_ble">Turn on Bluetooth</string>
+    <string name="title_upgrade_sense_voice">Sense with Voice</string>
+    <string name="info_upgrade_sense_voice">The new Sense introduces improved sensors, and Voice — which lets you control Sense just by speaking to it. Purchase a Sense with Voice to upgrade.</string>
+    <string name="action_upgrade_sense_voice_help">Purchase Sense with Voice</string>
+    <string name="title_upgrade_ready_sense_voice">Sense with Voice is ready</string>
+    <string name="info_upgrade_ready_sense_voice">Your new Sense with Voice is set up and is currently paired with your original Sleep Pill. Next, you’ll pair your new Sleep Pill.</string>
     <string name="title_setup_sense">Setting up Sense</string>
     <string name="info_setup_sense">Make sure Sense is plugged into a wall outlet next to your bed.</string>
     <string name="title_pair_sense">Pairing with Sense</string>
     <string name="info_pair_sense">Now we’ll pair your phone with Sense. Make sure Sense is plugged in, nearby, and glowing purple. Tap Continue when ready.</string>
+    <string name="title_pair_new_sense">Pairing your new Sense</string>
+    <string name="info_pair_new_sense">Confirm that your new Sense is plugged in nearby and glowing purple.</string>
     <string name="title_pairing">Pairing</string>
     <string name="title_connecting_network">Connecting to WiFi</string>
     <string name="title_connecting_network_wlan_connected">@string/title_connecting_network</string>
@@ -120,6 +128,12 @@
     <string name="info_sense_colors_bad">Sense glows red when the conditions in your bedroom would prevent restful sleep. Check the Sense app for details.</string>
     <string name="title_sense_colors_end">Just wave.</string>
     <string name="info_sense_colors_end">Just wave your hand over Sense and instantly you‘ll know about the conditions in your bedroom. Go ahead, give it a try now.</string>
+
+    <string name="title_sense_reset_original">Reset your original Sense</string>
+    <string name="info_sense_reset_original">Reset your original Sense to use with another account or give away. Plug your original Sense into a power outlet and make sure it’s nearby before resetting.</string>
+    <string name="action_reset_sense_original">Factory Reset Sense</string>
+    <string name="dialog_sense_reset_original">Restoring to Factory Settings</string>
+
     <string name="onboarding_complete_title">You’re all set.</string>
     <string name="onboarding_voice_complete_title">You’re all set</string>
     <string name="onboarding_voice_complete_message">Sense is now ready to use. All you need to do now is sleep.</string>
@@ -183,7 +197,9 @@
     <string name="title_scanning_for_sense">Looking for Sense</string>
     <string name="title_waiting_for_sense">Waiting for Sense</string>
     <string name="title_clearing_bond">Preparing…</string>
-    <string name="title_connecting">Connecting with Sense</string>
+    <string name="title_connecting_with_sense">Connecting with Sense</string>
+    <string name="title_pairing_with_sense">Pairing with Sense</string>
+    <string name="title_paired">Paired</string>
     <string name="title_discovering_services">Pairing</string>
     <string name="title_linking_account">Linking your account</string>
     <string name="label_searching_for_pill">Looking for your Sleep Pill</string>
@@ -408,6 +424,11 @@
     <string name="device_color_blue">Blue</string>
     <string name="device_color_black">Charcoal</string>
     <string name="device_color_white">Cotton</string>
+    <string name="device_hardware_version_sense">Sense</string>
+    <string name="device_hardware_version_sense_with_voice">Sense with voice</string>
+    <string name="device_hardware_version_unknown">Unknown</string>
+    <string name="action_upgrade_sense">Upgrade to Sense with voice</string>
+
     <string name="title_thank_you">Thank You</string>
     <string name="title_have_sense_ready">Have Sense ready?</string>
     <string name="info_have_sense_ready">You‘ll need Sense and Sleep Pill handy to continue. If you‘re not ready now, you can always come back later.</string>
@@ -611,7 +632,19 @@
     <string name="sense_downloading_update">Downloading update…</string>
     <string name="sense_updated">Sense updated</string>
     <string name="sense_try_later_dialog_message">Sense will try again at a later time. You can begin using Sense, but some features may not be available until the update is complete.</string>
-
+    <string name="unpair_pill_title">Pair your new Sleep Pill</string>
+    <string name="unpair_pill_message">Your new Sleep Pill has been redesigned with an improved sensor and better battery life.</string>
+    <string name="action_pair_new_sleep_pill">Pair new Sleep Pill</string>
+    <string name="unpairing_sleep_pill">Unpairing Sleep Pill</string>
+    <string name="unpaired">Unpaired</string>
+    <string name="unpair_pill_dialog_title">About the new Sleep Pill</string>
+    <string name="unpair_pill_dialog_message">Using the new Sleep Pill will improve the accuracy of your Sleep Timeline, and provide better battery life over the original Sleep Pill.</string>
+    <string name="action_dont_pair">No, don\'t pair</string>
+    <string name="update_pair_pill_title">Pairing your new Sleep Pill</string>
+    <string name="update_pair_pill_sub_title">Hold the Sleep Pill close to Sense and shake it quickly for three seconds.</string>
+    <string name="sleep_pill_paired">Sleep Pill paired</string>
+    <string name="update_pair_pill_confirmation_title">Attaching Sleep Pill to your pillow</string>
+    <string name="update_pair_pill_confirmation_message">Attach the new Sleep Pill to the side of your pillowcase closest to the edge of your bed. You may need to pull your pillowcase taut between two hands.</string>
     <string name="voice_result_none">none</string>
     <string name="voice_result_ok">ok</string>
     <string name="voice_result_rejected">rejected</string>

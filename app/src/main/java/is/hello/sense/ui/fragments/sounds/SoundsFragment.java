@@ -15,7 +15,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.SleepSoundsStateDevice;
-import is.hello.sense.graph.presenters.SleepSoundsPresenter;
+import is.hello.sense.interactors.SleepSoundsInteractor;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.common.SubFragment;
 import is.hello.sense.ui.fragments.BacksideTabFragment;
@@ -39,7 +39,7 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     private StaticFragmentAdapter adapter;
 
     @Inject
-    SleepSoundsPresenter sleepSoundsPresenter;
+    SleepSoundsInteractor sleepSoundsPresenter;
 
     @Override
     public void setUserVisibleHint(final boolean isVisibleToUser) {
@@ -62,7 +62,7 @@ public class SoundsFragment extends BacksideTabFragment implements OnSelectionCh
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        presenterContainer.addPresenter(sleepSoundsPresenter);
+        interactorContainer.addInteractor(sleepSoundsPresenter);
     }
 
     @Nullable

@@ -37,11 +37,11 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightType;
-import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
-import is.hello.sense.graph.presenters.InsightsPresenter;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.graph.presenters.QuestionsPresenter;
-import is.hello.sense.graph.presenters.questions.ReviewQuestionProvider;
+import is.hello.sense.interactors.DeviceIssuesInteractor;
+import is.hello.sense.interactors.InsightsInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.interactors.QuestionsInteractor;
+import is.hello.sense.interactors.questions.ReviewQuestionProvider;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -74,17 +74,17 @@ public class InsightsFragment extends BacksideTabFragment
     private static final float FOCUSED_CONTENT_ALPHA = 1f;
 
     @Inject
-    InsightsPresenter insightsPresenter;
+    InsightsInteractor insightsPresenter;
     @Inject
     DateFormatter dateFormatter;
     @Inject
     LocalUsageTracker localUsageTracker;
     @Inject
-    DeviceIssuesPresenter deviceIssuesPresenter;
+    DeviceIssuesInteractor deviceIssuesPresenter;
     @Inject
-    PreferencesPresenter preferences;
+    PreferencesInteractor preferences;
     @Inject
-    QuestionsPresenter questionsPresenter;
+    QuestionsInteractor questionsPresenter;
     @Inject
     Picasso picasso;
     @Inject
@@ -410,23 +410,23 @@ public class InsightsFragment extends BacksideTabFragment
     //region Questions
 
     public void updateQuestion() {
-        final Observable<Boolean> stageOne = deviceIssuesPresenter.latest().map(issue -> (issue == DeviceIssuesPresenter.Issue.NONE &&
+        final Observable<Boolean> stageOne = deviceIssuesPresenter.latest().map(issue -> (issue == DeviceIssuesInteractor.Issue.NONE &&
                 localUsageTracker.isUsageAcceptableForRatingPrompt() &&
-                !preferences.getBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, false)));
+                !preferences.getBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, false)));
         stageOne.subscribe(showReview -> {
                                if (showReview) {
-                                   if (!preferences.getBoolean(PreferencesPresenter.HAS_REVIEWED_ON_AMAZON, false)) {
+                                   if (!preferences.getBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, false)) {
                                        final String country = Locale.getDefault().getCountry();
                                        if (country.equalsIgnoreCase(Locale.US.getCountry())) {
-                                           questionsPresenter.setSource(QuestionsPresenter.Source.REVIEW_AMAZON);
+                                           questionsPresenter.setSource(QuestionsInteractor.Source.REVIEW_AMAZON);
                                        } else if (country.equalsIgnoreCase(Locale.UK.getCountry())) {
-                                           questionsPresenter.setSource(QuestionsPresenter.Source.REVIEW_AMAZON_UK);
+                                           questionsPresenter.setSource(QuestionsInteractor.Source.REVIEW_AMAZON_UK);
                                        }
                                    } else {
-                                       questionsPresenter.setSource(QuestionsPresenter.Source.REVIEW);
+                                       questionsPresenter.setSource(QuestionsInteractor.Source.REVIEW);
                                    }
                                } else {
-                                   questionsPresenter.setSource(QuestionsPresenter.Source.API);
+                                   questionsPresenter.setSource(QuestionsInteractor.Source.API);
                                }
                                questionsPresenter.update();
                            },
@@ -484,7 +484,7 @@ public class InsightsFragment extends BacksideTabFragment
                 case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW:
                     stateSafeExecutor.execute(() -> UserSupport.showProductPage(getActivity()));
                     preferences.edit()
-                               .putBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, true)
+                               .putBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, true)
                                .apply();
                     break;
 
@@ -492,7 +492,7 @@ public class InsightsFragment extends BacksideTabFragment
                     stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity(), "www.amazon.com"));
                     localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
                     preferences.edit()
-                               .putBoolean(PreferencesPresenter.HAS_REVIEWED_ON_AMAZON, true)
+                               .putBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, true)
                                .apply();
                     break;
 
@@ -500,7 +500,7 @@ public class InsightsFragment extends BacksideTabFragment
                     stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity(), "www.amazon.co.uk"));
                     localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
                     preferences.edit()
-                               .putBoolean(PreferencesPresenter.HAS_REVIEWED_ON_AMAZON, true)
+                               .putBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, true)
                                .apply();
                     break;
 
@@ -521,7 +521,7 @@ public class InsightsFragment extends BacksideTabFragment
                 case ReviewQuestionProvider.RESPONSE_SUPPRESS_PERMANENTLY:
                     localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
                     preferences.edit()
-                               .putBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, true)
+                               .putBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, true)
                                .apply();
                     break;
             }

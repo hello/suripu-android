@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.onboarding;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -10,10 +9,10 @@ import android.view.ViewGroup;
 import com.segment.analytics.Properties;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.util.Analytics;
 
-public class VoiceCompleteFragment extends Fragment {
+public class VoiceCompleteFragment extends SenseFragment {
 
     private OnboardingSimpleStepView view;
 
@@ -52,6 +51,6 @@ public class VoiceCompleteFragment extends Fragment {
     }
 
     public void complete(final View ignored) {
-        ((OnboardingActivity) getActivity()).showHomeActivity(OnboardingActivity.FLOW_REGISTER);
+        finishFlow();
     }
 }
