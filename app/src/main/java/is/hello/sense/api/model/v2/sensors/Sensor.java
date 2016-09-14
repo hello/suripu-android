@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 import is.hello.sense.api.gson.Enums;
@@ -39,6 +40,8 @@ public class Sensor implements Serializable {
     @SerializedName("scale")
     private List<Scale> scale;
 
+    private float[] sensorValues = new float[0];
+
     public String getName() {
         return name;
     }
@@ -55,13 +58,29 @@ public class Sensor implements Serializable {
         return value;
     }
 
+    @NonNull
+    public SensorQuery getSensorQuery() {
+        return new SensorQuery(type,
+                               unit,
+                               QueryScope.DAY_5_MINUTE,
+                               AggregationMethod.AVG);
+    }
+
+    public void setSensorValues(@NonNull final float[] values) {
+        this.sensorValues = values;
+    }
+
+    @NonNull
+    public float[] getSensorValues() {
+        return sensorValues;
+    }
+
     public int getColor(@NonNull final Context context) {
         return ContextCompat.getColor(context, condition.colorRes);
     }
 
-    public
     @NonNull
-    CharSequence getFormattedValue(@Nullable final UnitPrinter printer) {
+    public CharSequence getFormattedValue(@Nullable final UnitPrinter printer) {
         if (getValue() == null) {
             return "";
         } else if (printer != null) {
@@ -80,6 +99,7 @@ public class Sensor implements Serializable {
                 ", Message=" + message +
                 ", Condition=" + condition +
                 ", Value=" + value +
+                ", Values=" + Arrays.toString(sensorValues) +
                 "}";
     }
 

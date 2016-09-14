@@ -7,7 +7,7 @@ import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.graph.InteractorSubject;
 import rx.Observable;
 
-public class CurrentConditionsInteractor extends ValueInteractor<SensorResponse> {
+public class SensorResponseInteractor extends ValueInteractor<SensorResponse> {
     @Inject
     ApiService apiService;
 
