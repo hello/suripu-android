@@ -15,7 +15,10 @@ import java.util.ArrayList;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
+import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
+import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
+import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitPrinter;
@@ -81,7 +84,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
                 }
                 return new BaseViewHolder(view);
             case VIEW_SENSOR:
-                return new BaseViewHolder(inflater.inflate(R.layout.item_current_conditions, parent, false));
+                return new BaseViewHolder(inflater.inflate(R.layout.item_sensor_response, parent, false));
             default:
                 throw new IllegalStateException();
         }
@@ -123,13 +126,15 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         private final TextView body;
         private final TextView value;
         private final TextView descriptor;
+        private final SensorGraphView graphView;
 
         public BaseViewHolder(@NonNull final View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.item_current_conditions_title);
-            body = (TextView) itemView.findViewById(R.id.item_current_conditions_body);
-            value = (TextView) itemView.findViewById(R.id.item_current_conditions_value);
-            descriptor = (TextView) itemView.findViewById(R.id.item_current_conditions_descriptor);
+            title = (TextView) itemView.findViewById(R.id.item_server_response_title);
+            body = (TextView) itemView.findViewById(R.id.item_server_response_body);
+            value = (TextView) itemView.findViewById(R.id.item_server_response_value);
+            descriptor = (TextView) itemView.findViewById(R.id.item_server_response_descriptor);
+            graphView = (SensorGraphView) itemView.findViewById(R.id.item_server_response_graph);
         }
 
         @Override
@@ -139,9 +144,15 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             final UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor.getType());
             title.setText(sensor.getName());
             body.setText(sensor.getMessage());
-            value.setText(sensor.getFormattedValue(printer));
-            value.setTextColor(sensor.getColor(inflater.getContext()));
+            if (sensor.getType() == SensorType.TEMPERATURE || sensor.getType() == SensorType.HUMIDITY) {
+                value.setText(sensor.getFormattedValue(printer));
+            } else {
+                value.setText(sensor.getFormattedValue(null));
+            }
 
+            value.setTextColor(sensor.getColor(inflater.getContext()));
+            descriptor.setText(printer.print(sensor.getValue()));
+            graphView.setBackground(new SensorGraphDrawable(inflater.getContext(), sensor));
         }
     }
 

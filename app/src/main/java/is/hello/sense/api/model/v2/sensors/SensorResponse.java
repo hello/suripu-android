@@ -4,7 +4,6 @@ package is.hello.sense.api.model.v2.sensors;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
