@@ -3,8 +3,10 @@ package is.hello.sense.mvp.presenters.home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -12,11 +14,14 @@ import javax.inject.Inject;
 import is.hello.commonsense.util.Errors;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.v2.sensors.Sensor;
+import is.hello.sense.api.model.v2.sensors.SensorData;
+import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.interactors.CurrentConditionsInteractor;
+import is.hello.sense.interactors.SensorResponseInteractor;
 import is.hello.sense.mvp.view.home.RoomConditionsView;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
@@ -33,9 +38,11 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     private final UpdateTimer updateTimer = new UpdateTimer(1, TimeUnit.MINUTES);
 
     @Inject
-    CurrentConditionsInteractor currentConditionsInteractor;
+    SensorResponseInteractor sensorResponseInteractor;
     @Inject
     UnitFormatter unitFormatter;
+    @Inject
+    ApiService apiService;
 
 
     //region Lifecycle
@@ -53,8 +60,8 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(unitFormatter);
-        addInteractor(currentConditionsInteractor);
-        updateTimer.setOnUpdate(currentConditionsInteractor::update);
+        addInteractor(sensorResponseInteractor);
+        updateTimer.setOnUpdate(sensorResponseInteractor::update);
     }
 
     @Override
@@ -64,7 +71,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         bindAndSubscribe(unitFormatter.unitPreferenceChanges(),
                          ignored -> presenterView.notifyDataSetChanged(),
                          Functions.LOG_ERROR);
-        bindAndSubscribe(currentConditionsInteractor.sensors,
+        bindAndSubscribe(sensorResponseInteractor.sensors,
                          this::bindConditions,
                          this::conditionsUnavailable);
     }
@@ -80,7 +87,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     public final void onResume() {
         super.onResume();
         updateTimer.schedule();
-        currentConditionsInteractor.update();
+        sensorResponseInteractor.update();
     }
 
     @Override
@@ -95,8 +102,8 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     }
 
     @Override
-    public  final void onUpdate() {
-        currentConditionsInteractor.update();
+    public final void onUpdate() {
+        sensorResponseInteractor.update();
     }
 
     //endregion
@@ -106,7 +113,23 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
 
 
     public final void bindConditions(@NonNull final SensorResponse currentConditions) {
-        presenterView.replaceAllSensors(currentConditions.getSensors());
+        final List<Sensor> sensors = currentConditions.getSensors();
+        bindAndSubscribe(apiService.postSensors(new SensorDataRequest(sensors)),
+                         sensorsDataResponse -> {
+                             final SensorData sensorData = sensorsDataResponse.getSensorData();
+                             for (final Sensor sensor : sensors) {
+                                 final float[] values = sensorData.get(sensor.getType());
+                                 if (values != null) {
+                                     sensor.setSensorValues(values);
+                                 }
+                             }
+                             presenterView.replaceAllSensors(sensors);
+                         },
+                         throwable -> {
+                             Log.e("Sensor", "error: " + throwable);
+                         });
+
+
     }
 
     public final void conditionsUnavailable(@NonNull final Throwable e) {
@@ -114,7 +137,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         if (ApiException.isNetworkError(e)) {
             presenterView.displayMessage(false, 0, getString(R.string.error_room_conditions_unavailable),
                                          R.string.action_retry,
-                                         ignored -> currentConditionsInteractor.update());
+                                         ignored -> sensorResponseInteractor.update());
         } else if (ApiException.statusEquals(e, 404)) {
             presenterView.displayMessage(true,
                                          0,
@@ -133,7 +156,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
                     : e.getMessage();
             presenterView.displayMessage(false, 0, message,
                                          R.string.action_retry,
-                                         ignored -> currentConditionsInteractor.update());
+                                         ignored -> sensorResponseInteractor.update());
         }
     }
 

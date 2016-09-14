@@ -4,6 +4,8 @@ package is.hello.sense.api.model.v2.sensors;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SensorResponse implements Serializable {
@@ -15,8 +17,9 @@ public class SensorResponse implements Serializable {
 
     @Override
     public String toString() {
-        return "CurrentConditions{" +
+        return "SensorResponse{" +
                 "Status=" + status.toString() +
+                ", Sensors=" + Arrays.toString(sensors.toArray()) +
                 "}";
     }
 
