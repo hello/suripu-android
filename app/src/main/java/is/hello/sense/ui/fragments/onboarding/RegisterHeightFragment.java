@@ -33,7 +33,7 @@ public class RegisterHeightFragment extends SenseFragment {
 
     private boolean hasAnimated = false;
 
-    public RegisterHeightFragment(){
+    public RegisterHeightFragment() {
         SenseApplication.getInstance().inject(this);
     }
 
@@ -102,7 +102,11 @@ public class RegisterHeightFragment extends SenseFragment {
         Account account = AccountEditor.getContainer(this).getAccount();
         if (!hasAnimated && account.getHeight() != null) {
             scale.setValue(scale.getMinValue(), true);
-            scale.postDelayed(() -> scale.animateToValue(account.getHeight()), 250);
+            scale.postDelayed(() -> {
+                if (scale != null) {
+                    scale.animateToValue(account.getHeight());
+                }
+            }, 250);
             this.hasAnimated = true;
         }
     }

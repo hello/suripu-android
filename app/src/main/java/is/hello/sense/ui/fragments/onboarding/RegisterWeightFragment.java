@@ -33,7 +33,7 @@ public class RegisterWeightFragment extends SenseFragment {
 
     private boolean hasAnimated = false;
 
-    public RegisterWeightFragment(){
+    public RegisterWeightFragment() {
         SenseApplication.getInstance().inject(this);
     }
 
@@ -108,9 +108,11 @@ public class RegisterWeightFragment extends SenseFragment {
         if (!hasAnimated && account.getWeight() != null) {
             scale.setValue(scale.getMinValue(), true);
             scale.postDelayed(() -> {
-                int weightInGrams = account.getWeight();
-                int pounds = (int) UnitOperations.gramsToPounds(weightInGrams);
-                scale.animateToValue(pounds);
+                if (scale != null) {
+                    final int weightInGrams = account.getWeight();
+                    final int pounds = (int) UnitOperations.gramsToPounds(weightInGrams);
+                    scale.animateToValue(pounds);
+                }
             }, 250);
             this.hasAnimated = true;
         }
