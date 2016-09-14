@@ -20,8 +20,8 @@ import javax.inject.Inject;
 import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.AccountPresenter;
-import is.hello.sense.graph.presenters.UnreadStatePresenter;
+import is.hello.sense.interactors.AccountInteractor;
+import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.fragments.settings.AppSettingsFragment;
@@ -49,10 +49,10 @@ public class BacksideFragment extends InjectionFragment
     public static final int OPTION_ANIMATE = (1 << 1);
 
     @Inject
-    UnreadStatePresenter unreadStatePresenter;
+    UnreadStateInteractor unreadStatePresenter;
 
     @Inject
-    AccountPresenter accountPresenter;
+    AccountInteractor accountPresenter;
 
     private SharedPreferences internalPreferences;
 

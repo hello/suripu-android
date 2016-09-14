@@ -91,7 +91,7 @@ public abstract class PillHardwareFragment extends InjectionFragment {
     }
 
     protected void help(final View ignored) {
-        UserSupport.showForOnboardingStep(getActivity(), UserSupport.OnboardingStep.UPDATE_PILL);
+        UserSupport.showForHelpStep(getActivity(), UserSupport.HelpStep.UPDATE_PILL);
     }
 
     protected void cancel(final boolean needsBle) {

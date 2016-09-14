@@ -25,8 +25,8 @@ import is.hello.go99.animators.AnimatorContext;
 import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Question;
-import is.hello.sense.graph.presenters.QuestionsPresenter;
-import is.hello.sense.graph.presenters.UnreadStatePresenter;
+import is.hello.sense.interactors.QuestionsInteractor;
+import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.ui.common.InjectionDialogFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -41,8 +41,10 @@ public class QuestionsDialogFragment extends InjectionDialogFragment
     private static final long DELAY_INCREMENT = 20;
     private static final long THANK_YOU_DURATION_MS = 2 * 1000;
 
-    @Inject QuestionsPresenter questionsPresenter;
-    @Inject UnreadStatePresenter unreadStatePresenter;
+    @Inject
+    QuestionsInteractor questionsPresenter;
+    @Inject
+    UnreadStateInteractor unreadStatePresenter;
 
     private final AnimatorContext animatorContext = new AnimatorContext(TAG);
 

@@ -10,7 +10,7 @@ import android.support.annotation.Nullable;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.graph.presenters.DeviceIssuesPresenter;
+import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.InjectionActivity;
@@ -32,7 +32,7 @@ public class PillUpdateActivity extends InjectionActivity
     private String deviceId;
 
     @Inject
-    DeviceIssuesPresenter deviceIssuesPresenter;
+    DeviceIssuesInteractor deviceIssuesPresenter;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {

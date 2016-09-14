@@ -38,7 +38,7 @@ import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.RoomConditionsPresenter;
+import is.hello.sense.interactors.RoomConditionsInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
@@ -63,7 +63,8 @@ public class RoomConditionsFragment extends BacksideTabFragment
         implements ArrayRecyclerAdapter.OnItemClickedListener<SensorState> {
     private final UpdateTimer updateTimer = new UpdateTimer(1, TimeUnit.MINUTES);
 
-    @Inject RoomConditionsPresenter presenter;
+    @Inject
+    RoomConditionsInteractor presenter;
     @Inject UnitFormatter unitFormatter;
 
     private Map<String, SensorHistoryAdapter> graphAdapters = new HashMap<>(5);
@@ -168,7 +169,7 @@ public class RoomConditionsFragment extends BacksideTabFragment
         return adapter;
     }
 
-    public void bindConditions(@NonNull RoomConditionsPresenter.Result result) {
+    public void bindConditions(@NonNull RoomConditionsInteractor.Result result) {
         final RoomSensorHistory roomSensorHistory = result.roomSensorHistory;
         final List<SensorState> sensors = result.conditions.toList();
 

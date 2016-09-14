@@ -11,7 +11,7 @@ import is.hello.sense.debug.WelcomeDialogsActivity;
         injects = {
                 EnvironmentActivity.class,
                 PiruPeaActivity.class,
-                NonsensePresenter.class,
+                NonsenseInteractor.class,
                 WelcomeDialogsActivity.class
         })
 public class DebugModule {

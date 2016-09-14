@@ -20,8 +20,8 @@ import java.util.EnumSet;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.graph.presenters.AccountPresenter;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.interactors.AccountInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.adapter.UnitSettingsAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.ScrollEdge;
@@ -37,8 +37,10 @@ public class UnitSettingsFragment extends InjectionFragment
     private static final int DELAY_PUSH_PREFERENCES = 3000;
     private static final int MSG_PUSH_PREFERENCES = 0x5;
 
-    @Inject AccountPresenter accountPresenter;
-    @Inject PreferencesPresenter preferencesPresenter;
+    @Inject
+    AccountInteractor accountPresenter;
+    @Inject
+    PreferencesInteractor preferencesPresenter;
 
     private final Handler handler = new Handler(Looper.getMainLooper(), this);
 
@@ -75,30 +77,30 @@ public class UnitSettingsFragment extends InjectionFragment
         recyclerView.setAdapter(unitSettingsAdapter);
 
         final boolean defaultIsMetric = UnitFormatter.isDefaultLocaleMetric();
-        unitSettingsAdapter.addItem(new UnitSettingsAdapter.UnitItem(PreferencesPresenter.USE_24_TIME,
+        unitSettingsAdapter.addItem(new UnitSettingsAdapter.UnitItem(PreferencesInteractor.USE_24_TIME,
                                                                      R.string.setting_time_unit,
                                                                      R.string.setting_time_12_hour,
                                                                      R.string.setting_time_24_hour),
-                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_24_TIME,
+                                    preferencesPresenter.getBoolean(PreferencesInteractor.USE_24_TIME,
                                                                     preferencesPresenter.getUse24Time()));
-        unitSettingsAdapter.addItem(new UnitSettingsAdapter.UnitItem(PreferencesPresenter.USE_CELSIUS,
+        unitSettingsAdapter.addItem(new UnitSettingsAdapter.UnitItem(PreferencesInteractor.USE_CELSIUS,
                                                                      R.string.setting_unit_temperature,
                                                                      R.string.setting_option_temperature_us,
                                                                      R.string.setting_option_temperature_metric),
-                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_CELSIUS,
+                                    preferencesPresenter.getBoolean(PreferencesInteractor.USE_CELSIUS,
                                                                     defaultIsMetric));
-        unitSettingsAdapter.addItem(new UnitSettingsAdapter.UnitItem(PreferencesPresenter.USE_GRAMS,
+        unitSettingsAdapter.addItem(new UnitSettingsAdapter.UnitItem(PreferencesInteractor.USE_GRAMS,
                                                                      R.string.setting_unit_weight,
                                                                      R.string.setting_option_weight_us,
                                                                      R.string.setting_option_weight_metric),
-                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_GRAMS,
+                                    preferencesPresenter.getBoolean(PreferencesInteractor.USE_GRAMS,
                                                                     defaultIsMetric));
         //noinspection SuspiciousNameCombination
-        unitSettingsAdapter.addItem(new UnitSettingsAdapter.UnitItem(PreferencesPresenter.USE_CENTIMETERS,
+        unitSettingsAdapter.addItem(new UnitSettingsAdapter.UnitItem(PreferencesInteractor.USE_CENTIMETERS,
                                                                      R.string.setting_unit_height,
                                                                      R.string.setting_option_height_us,
                                                                      R.string.setting_option_height_metric),
-                                    preferencesPresenter.getBoolean(PreferencesPresenter.USE_CENTIMETERS,
+                                    preferencesPresenter.getBoolean(PreferencesInteractor.USE_CENTIMETERS,
                                                                     defaultIsMetric));
         return view;
     }

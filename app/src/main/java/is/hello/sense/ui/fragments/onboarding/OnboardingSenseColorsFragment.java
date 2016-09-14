@@ -17,7 +17,7 @@ import javax.inject.Inject;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.graph.presenters.RoomConditionsPresenter;
+import is.hello.sense.interactors.RoomConditionsInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -37,7 +37,8 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
     private static final int POSITION_ALERT = 3;
     private static final int POSITION_WAVE = 4;
 
-    @Inject RoomConditionsPresenter presenter;
+    @Inject
+    RoomConditionsInteractor presenter;
 
     private ImageView senseBackground, senseGreen, senseYellow, senseRed;
     private DiagramVideoView senseWave;

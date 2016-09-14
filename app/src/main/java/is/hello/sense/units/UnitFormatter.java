@@ -10,7 +10,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.widget.util.Styles;
 import rx.Observable;
 
@@ -21,14 +21,14 @@ public class UnitFormatter {
     public static final String UNIT_SUFFIX_AIR_QUALITY = "µg/m³";
     public static final String UNIT_SUFFIX_NOISE = "dB";
 
-    // Used by PreferencesPresenter
+    // Used by PreferencesInteractor
     @Deprecated
     public static final String LEGACY_UNIT_SYSTEM_METRIC = "Metric";
     @Deprecated
     public static final String LEGACY_UNIT_SYSTEM_US_CUSTOMARY = "UsCustomary";
 
 
-    private final PreferencesPresenter preferences;
+    private final PreferencesInteractor preferences;
     private final boolean defaultMetric;
     private final String placeHolder;
 
@@ -39,16 +39,16 @@ public class UnitFormatter {
                 !"MM".equals(country));
     }
 
-    @Inject public UnitFormatter(@NonNull PreferencesPresenter preferences, @NonNull Context context) {
+    @Inject public UnitFormatter(@NonNull PreferencesInteractor preferences, @NonNull Context context) {
         this.preferences = preferences;
         this.defaultMetric = isDefaultLocaleMetric();
         this.placeHolder = context.getString(R.string.missing_data_placeholder);
     }
 
     public Observable<String> unitPreferenceChanges() {
-        return preferences.observeChangesOn(PreferencesPresenter.USE_CELSIUS,
-                                            PreferencesPresenter.USE_CENTIMETERS,
-                                            PreferencesPresenter.USE_GRAMS);
+        return preferences.observeChangesOn(PreferencesInteractor.USE_CELSIUS,
+                                            PreferencesInteractor.USE_CENTIMETERS,
+                                            PreferencesInteractor.USE_GRAMS);
     }
 
     //region Formatting
@@ -58,7 +58,7 @@ public class UnitFormatter {
             return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_TEMPERATURE);
         }
         double convertedValue = value;
-        if (!preferences.getBoolean(PreferencesPresenter.USE_CELSIUS, defaultMetric)) {
+        if (!preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
             convertedValue = UnitOperations.celsiusToFahrenheit(convertedValue);
         }
 
@@ -66,7 +66,7 @@ public class UnitFormatter {
     }
 
     public @NonNull CharSequence formatWeight(long value) {
-        if (preferences.getBoolean(PreferencesPresenter.USE_GRAMS, defaultMetric)) {
+        if (preferences.getBoolean(PreferencesInteractor.USE_GRAMS, defaultMetric)) {
             long kilograms = UnitOperations.gramsToKilograms(value);
             return kilograms + " kg";
         } else {
@@ -76,7 +76,7 @@ public class UnitFormatter {
     }
 
     public @NonNull CharSequence formatHeight(long value) {
-        if (preferences.getBoolean(PreferencesPresenter.USE_CENTIMETERS, defaultMetric)) {
+        if (preferences.getBoolean(PreferencesInteractor.USE_CENTIMETERS, defaultMetric)) {
             return value + " cm";
         } else {
             long totalInches = UnitOperations.centimetersToInches(value);
@@ -126,7 +126,7 @@ public class UnitFormatter {
     public @NonNull UnitConverter getUnitConverterForSensor(@NonNull String sensor) {
         switch (sensor) {
             case ApiService.SENSOR_NAME_TEMPERATURE: {
-                if (preferences.getBoolean(PreferencesPresenter.USE_CELSIUS, defaultMetric)) {
+                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
                     return UnitConverter.IDENTITY;
                 } else {
                     return UnitOperations::celsiusToFahrenheit;

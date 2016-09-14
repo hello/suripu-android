@@ -209,8 +209,8 @@
     <dimen name="timeline_segment_event_offset_max">7dp</dimen>
     <dimen name="timeline_segment_stolen_height">16dp</dimen>
 
-    <dimen name="timeline_event_popup_left_inset">8dp</dimen>
-    <dimen name="timeline_event_popup_bottom_inset">5dp</dimen>
+    <dimen name="timeline_event_popup_left_inset">@dimen/x1</dimen>
+    <dimen name="timeline_event_popup_bottom_inset">@dimen/x.5</dimen>
 
     <dimen name="timeline_event_start_inset">0dp</dimen>
     <dimen name="timeline_event_end_inset">8dp</dimen>
