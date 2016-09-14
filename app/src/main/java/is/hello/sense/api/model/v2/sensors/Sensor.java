@@ -86,7 +86,7 @@ public class Sensor implements Serializable {
         } else if (printer != null) {
             return printer.print(getValue());
         } else {
-            return Styles.assembleReadingAndUnit(getValue(), unit.toString());
+            return Styles.assembleReadingAndUnit(getValue(), "");
         }
     }
 
