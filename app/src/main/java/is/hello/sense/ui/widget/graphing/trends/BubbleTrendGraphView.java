@@ -1,4 +1,4 @@
-package is.hello.sense.ui.widget.graphing;
+package is.hello.sense.ui.widget.graphing.trends;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
