@@ -40,7 +40,10 @@ import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.Trends;
+import is.hello.sense.api.model.v2.sensors.Sensor;
+import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
+import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import retrofit.http.Body;
@@ -179,6 +182,9 @@ public interface ApiService {
 
     @GET("/v2/sensors")
     Observable<SensorResponse> getSensors();
+
+    @POST("/v2/sensors")
+    Observable<SensorsDataResponse> postSensors(@NonNull @Body SensorDataRequest request);
 
     //endregion
 
