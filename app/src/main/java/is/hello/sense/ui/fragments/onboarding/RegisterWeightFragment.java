@@ -108,9 +108,9 @@ public class RegisterWeightFragment extends SenseFragment {
         if (!hasAnimated && account.getWeight() != null) {
             scale.setValue(scale.getMinValue(), true);
             scale.postDelayed(() -> {
-                int weightInGrams = account.getWeight();
-                int pounds = (int) UnitOperations.gramsToPounds(weightInGrams);
                 if (scale != null) {
+                    int weightInGrams = account.getWeight();
+                    int pounds = (int) UnitOperations.gramsToPounds(weightInGrams);
                     scale.animateToValue(pounds);
                 }
             }, 250);
