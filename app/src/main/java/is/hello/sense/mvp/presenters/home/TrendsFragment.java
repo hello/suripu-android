@@ -17,8 +17,8 @@ import is.hello.sense.interactors.ScopedValueInteractor.BindResult;
 import is.hello.sense.interactors.TrendsInteractor;
 import is.hello.sense.mvp.view.home.TrendsView;
 import is.hello.sense.ui.widget.SelectorView;
-import is.hello.sense.ui.widget.graphing.TrendFeedViewItem;
-import is.hello.sense.ui.widget.graphing.TrendGraphView;
+import is.hello.sense.ui.widget.graphing.trends.TrendFeedViewItem;
+import is.hello.sense.ui.widget.graphing.trends.TrendGraphView;
 import is.hello.sense.util.Analytics;
 
 //todo this class and its view need to be rethought.

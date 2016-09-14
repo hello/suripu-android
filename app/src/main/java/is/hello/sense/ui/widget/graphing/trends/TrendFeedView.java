@@ -1,4 +1,4 @@
-package is.hello.sense.ui.widget.graphing;
+package is.hello.sense.ui.widget.graphing.trends;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
