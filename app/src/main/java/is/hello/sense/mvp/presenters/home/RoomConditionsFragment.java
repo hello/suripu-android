@@ -47,7 +47,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     //region Lifecycle
 
     @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
+    public final void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             Analytics.trackEvent(Analytics.Backside.EVENT_CURRENT_CONDITIONS, null);
@@ -56,7 +56,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
 
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
+    public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(roomConditionsInteractor);
         addInteractor(unitFormatter);
@@ -64,7 +64,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     }
 
     @Override
-    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+    public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         presenterView.setOnAdapterItemClickListener(this);
         bindAndSubscribe(unitFormatter.unitPreferenceChanges(),
@@ -76,32 +76,31 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     }
 
     @Override
-    public RoomConditionsView getPresenterView() {
+    public final void initializePresenterView() {
         if (presenterView == null) {
-            return new RoomConditionsView(getActivity(), unitFormatter);
+            presenterView= new RoomConditionsView(getActivity(), unitFormatter);
         }
-        return presenterView;
     }
 
     @Override
-    public void onResume() {
+    public final void onResume() {
         super.onResume();
         updateTimer.schedule();
     }
 
     @Override
-    public void onPause() {
+    public final void onPause() {
         super.onPause();
         updateTimer.unschedule();
     }
 
     @Override
-    public void onSwipeInteractionDidFinish() {
+    public final void onSwipeInteractionDidFinish() {
         WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_current_conditions, true);
     }
 
     @Override
-    public void onUpdate() {
+    public final void onUpdate() {
         roomConditionsInteractor.update();
     }
 
@@ -111,7 +110,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     //region Displaying Data
 
 
-    public void bindConditions(@NonNull final RoomConditionsInteractor.Result result) {
+    public final void bindConditions(@NonNull final RoomConditionsInteractor.Result result) {
         final RoomSensorHistory roomSensorHistory = result.roomSensorHistory;
         final List<SensorState> sensors = result.conditions.toList();
 
@@ -131,7 +130,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         presenterView.replaceAllSensors(sensors);
     }
 
-    public void conditionsUnavailable(@NonNull final Throwable e) {
+    public final void conditionsUnavailable(@NonNull final Throwable e) {
         Logger.error(RoomConditionsFragment.class.getSimpleName(), "Could not load conditions", e);
         if (ApiException.isNetworkError(e)) {
             presenterView.displayMessage(false, 0, getString(R.string.error_room_conditions_unavailable),
@@ -163,7 +162,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
 
 
     @Override
-    public void onItemClicked(final int position, final SensorState sensorState) {
+    public final void onItemClicked(final int position, final SensorState sensorState) {
         final Intent intent = new Intent(getActivity(), SensorHistoryActivity.class);
         intent.putExtra(SensorHistoryActivity.EXTRA_SENSOR, sensorState.getName());
         startActivity(intent);
