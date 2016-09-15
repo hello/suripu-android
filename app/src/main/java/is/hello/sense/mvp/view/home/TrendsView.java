@@ -59,8 +59,7 @@ public final class TrendsView extends PresenterView {
     }
 
     @Override
-    public final void detach() {
-        super.detach();
+    public final void releaseViews() {
         this.initialActivityIndicator = null;
         if (swipeRefreshLayout != null) {
             this.swipeRefreshLayout.setOnRefreshListener(null);
@@ -116,15 +115,15 @@ public final class TrendsView extends PresenterView {
         timeScaleSelector.setButtonTags(tags);
     }
 
-    public boolean isTimeScaleVisible() {
+    public final boolean isTimeScaleVisible() {
         return timeScaleSelector.getVisibility() == View.VISIBLE;
     }
 
-    public void hideTimeScaleSelector() {
+    public final void hideTimeScaleSelector() {
         timeScaleSelector.setVisibility(View.GONE);
     }
 
-    public Trends.TimeScale setSelectionChanged(final int newSelectionIndex) {
+    public final Trends.TimeScale setSelectionChanged(final int newSelectionIndex) {
         timeScaleSelector.clicked(newSelectionIndex);
         trendFeedView.setLoading(true);
         return (Trends.TimeScale) timeScaleSelector.getButtonTagAt(newSelectionIndex);
@@ -154,7 +153,7 @@ public final class TrendsView extends PresenterView {
         }
     }
 
-    public void transitionInTimeScaleSelector(@NonNull final StateSafeExecutor executor) {
+    public final void transitionInTimeScaleSelector(@NonNull final StateSafeExecutor executor) {
         timeScaleSelector.setVisibility(View.INVISIBLE);
         Views.runWhenLaidOut(timeScaleSelector, executor.bind(() -> {
             timeScaleSelector.setTranslationY(-timeScaleSelector.getMeasuredHeight());
@@ -165,7 +164,7 @@ public final class TrendsView extends PresenterView {
         }));
     }
 
-    public void transitionOutTimeScaleSelector() {
+    public final void transitionOutTimeScaleSelector() {
         animatorFor(timeScaleSelector, animatorContext)
                 .translationY(-timeScaleSelector.getMeasuredHeight())
                 .addOnAnimationCompleted(finished -> {

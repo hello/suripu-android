@@ -32,15 +32,14 @@ public class TrendsFragment extends BacksideTabFragment<TrendsView> implements
 
 
     @Override
-    public TrendsView getPresenterView() {
+    public final void initializePresenterView() {
         if (presenterView == null) {
-            return new TrendsView(getActivity(), getAnimatorContext());
+            presenterView= new TrendsView(getActivity(), getAnimatorContext());
         }
-        return presenterView;
     }
 
     @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
+    public final void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
@@ -48,14 +47,14 @@ public class TrendsFragment extends BacksideTabFragment<TrendsView> implements
     }
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
+    public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(trendsInteractor);
         setHasOptionsMenu(true);
     }
 
     @Override
-    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+    public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         presenterView.setTimeScaleSelectOnSelectionChangedListener(this);
         presenterView.setSwipeRefreshLayoutRefreshListener(this::fetchTrends);
@@ -65,17 +64,17 @@ public class TrendsFragment extends BacksideTabFragment<TrendsView> implements
     }
 
     @Override
-    public void onSwipeInteractionDidFinish() {
+    public final void onSwipeInteractionDidFinish() {
     }
 
     @Override
-    public void onUpdate() {
+    public final void onUpdate() {
         if (trendsInteractor.bindScope(getScope()) == BindResult.WAITING_FOR_VALUE) {
             fetchTrends();
         }
     }
 
-    public void bindTrends(@NonNull final Trends trends) {
+    public final void bindTrends(@NonNull final Trends trends) {
         presenterView.updateTrends(trends);
         final List<TimeScale> availableTimeScales = trends.getAvailableTimeScales();
         if (availableTimeScales.size() > 1) {
@@ -101,19 +100,19 @@ public class TrendsFragment extends BacksideTabFragment<TrendsView> implements
         isFinished();
     }
 
-    public void presentError(final Throwable e) {
+    public final void presentError(final Throwable e) {
         presenterView.showError(this);
 
     }
 
     @Override
-    public void fetchTrends() {
+    public final void fetchTrends() {
         presenterView.setRefreshing(true);
         trendsInteractor.update();
     }
 
     @Override
-    public void onSelectionChanged(final int newSelectionIndex) {
+    public final void onSelectionChanged(final int newSelectionIndex) {
         final Trends.TimeScale newTimeScale = presenterView.setSelectionChanged(newSelectionIndex);
         trendsInteractor.setTimeScale(newTimeScale);
 
@@ -126,7 +125,7 @@ public class TrendsFragment extends BacksideTabFragment<TrendsView> implements
     }
 
     @Override
-    public void isFinished() {
+    public final void isFinished() {
         presenterView.isFinished();
     }
 }
