@@ -44,9 +44,11 @@ public abstract class PresenterView {
 
     }
 
+    @CallSuper
     public void destroyView() {
-
+        release();
     }
+
 
     /**
      * Remove any reference to Fragment using it.
@@ -54,7 +56,17 @@ public abstract class PresenterView {
      */
     @CallSuper
     public void detach() {
+        release();
+    }
+
+    /**
+     * This will be called in both destroyView and detach to ensure nothing survives.
+     */
+    public abstract void releaseViews();
+
+    private void release() {
         context = null;
+        releaseViews();
     }
 
 }

@@ -30,15 +30,14 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
 
 
     @Override
-    public AppSettingsView getPresenterView() {
+    public final void initializePresenterView() {
         if (presenterView == null) {
-            return new AppSettingsView(getActivity());
+            presenterView = new AppSettingsView(getActivity());
         }
-        return presenterView;
     }
 
     @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
+    public final void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             Analytics.trackEvent(Analytics.Backside.EVENT_SETTINGS, null);
@@ -46,13 +45,13 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     }
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
+    public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(accountInteractor);
     }
 
     @Override
-    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+    public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         presenterView.viewCreated(view, this, showDeviceList(), tellAFriend());
         bindAndSubscribe(accountInteractor.account, this::bindAccount, Functions.LOG_ERROR);
@@ -60,32 +59,23 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     }
 
     @Override
-    public void onSwipeInteractionDidFinish() {
+    public final void onSwipeInteractionDidFinish() {
     }
 
     @Override
-    public void onUpdate() {
+    public final void onUpdate() {
+    }
+
+    @Override
+    public final void onResume() {
+        super.onResume();
+        accountInteractor.update();
     }
 
     private void bindAccount(@NonNull final Account account) {
         presenterView.setBreadcrumbVisible(Tutorial.TAP_NAME.shouldShow(getActivity()) && account.getCreated().isBefore(Constants.RELEASE_DATE_FOR_LAST_NAME));
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        accountInteractor.update();
-    }
-
-    private View.OnClickListener showDeviceList() {
-        return v -> {
-            final FragmentNavigationActivity.Builder builder =
-                    new FragmentNavigationActivity.Builder(getActivity(), HardwareFragmentActivity.class);
-            builder.setDefaultTitle(R.string.label_devices);
-            builder.setFragmentClass(DeviceListFragment.class);
-            startActivity(builder.toIntent());
-        };
-    }
 
     @Override
     public final View.OnClickListener create(@NonNull final Class<? extends Fragment> fragmentClass,
@@ -102,6 +92,16 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
             startActivity(builder.toIntent());
         };
 
+    }
+
+    private View.OnClickListener showDeviceList() {
+        return v -> {
+            final FragmentNavigationActivity.Builder builder =
+                    new FragmentNavigationActivity.Builder(getActivity(), HardwareFragmentActivity.class);
+            builder.setDefaultTitle(R.string.label_devices);
+            builder.setFragmentClass(DeviceListFragment.class);
+            startActivity(builder.toIntent());
+        };
     }
 
     private View.OnClickListener tellAFriend() {

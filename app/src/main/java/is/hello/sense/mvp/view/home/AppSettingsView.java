@@ -69,13 +69,12 @@ public final class AppSettingsView extends PresenterView {
     }
 
     @Override
-    public void pause() {
+    public final void pause() {
         breadcrumb.setVisibility(View.GONE);
     }
 
     @Override
-    public void detach() {
-        super.detach();
+    public final void releaseViews() {
         breadcrumb = null;
         //todo remove click listeners from viewcreated
     }

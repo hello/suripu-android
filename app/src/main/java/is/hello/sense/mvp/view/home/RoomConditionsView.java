@@ -78,9 +78,10 @@ public final class RoomConditionsView extends PresenterView {
     }
 
     @Override
-    public final void detach() {
-        super.detach();
-        this.adapter.setOnItemClickedListener(null);
+    public final void releaseViews() {
+        if (adapter != null) {
+            this.adapter.setOnItemClickedListener(null);
+        }
         this.unitFormatter = null;
         this.adapter = null;
         this.graphAdapters = null;
@@ -121,7 +122,7 @@ public final class RoomConditionsView extends PresenterView {
     }
 
 
-    public class Adapter extends ArrayRecyclerAdapter<SensorState, ArrayRecyclerAdapter.ViewHolder> {
+    public final class Adapter extends ArrayRecyclerAdapter<SensorState, ArrayRecyclerAdapter.ViewHolder> {
         private final int VIEW_ID_SENSOR = 0;
         private final int VIEW_ID_MESSAGE = 1;
         private final LayoutInflater inflater;
@@ -144,7 +145,7 @@ public final class RoomConditionsView extends PresenterView {
             this.inflater = LayoutInflater.from(context);
         }
 
-        public void displayMessage(final boolean messageWantsSenseIcon,
+        public final void displayMessage(final boolean messageWantsSenseIcon,
                                    @StringRes final int title,
                                    @NonNull final CharSequence message,
                                    @StringRes final int actionTitle,
@@ -158,7 +159,7 @@ public final class RoomConditionsView extends PresenterView {
             notifyDataSetChanged();
         }
 
-        public void dismissMessage() {
+        public final void dismissMessage() {
             this.messageTitle = 0;
             this.messageBody = null;
             this.messageActionTitle = 0;
@@ -166,7 +167,7 @@ public final class RoomConditionsView extends PresenterView {
         }
 
         @Override
-        public int getItemCount() {
+        public final int getItemCount() {
             if (messageBody != null) {
                 return 1;
             } else {
@@ -175,7 +176,7 @@ public final class RoomConditionsView extends PresenterView {
         }
 
         @Override
-        public int getItemViewType(final int position) {
+        public final int getItemViewType(final int position) {
             if (messageBody != null) {
                 return VIEW_ID_MESSAGE;
             } else {
@@ -184,7 +185,7 @@ public final class RoomConditionsView extends PresenterView {
         }
 
         @Override
-        public ArrayRecyclerAdapter.ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
+        public final ArrayRecyclerAdapter.ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
             switch (viewType) {
                 case VIEW_ID_MESSAGE: {
                     final View view = inflater.inflate(R.layout.item_message_card, parent, false);
@@ -227,11 +228,11 @@ public final class RoomConditionsView extends PresenterView {
         }
 
         @Override
-        public void onBindViewHolder(final ArrayRecyclerAdapter.ViewHolder holder, final int position) {
+        public final void onBindViewHolder(final ArrayRecyclerAdapter.ViewHolder holder, final int position) {
             holder.bind(position);
         }
 
-        class SensorViewHolder extends ArrayRecyclerAdapter.ViewHolder {
+        final class SensorViewHolder extends ArrayRecyclerAdapter.ViewHolder {
             final TextView reading;
             final TextView message;
             final LineGraphDrawable lineGraphDrawable;
@@ -254,7 +255,7 @@ public final class RoomConditionsView extends PresenterView {
             }
 
             @Override
-            public void bind(final int position) {
+            public final void bind(final int position) {
                 final SensorState sensorState = getItem(position);
                 final String sensorName = sensorState.getName();
                 final int sensorColor = ContextCompat.getColor(context, sensorState.getCondition().colorRes);

@@ -42,11 +42,10 @@ public class BacksideFragment extends PresenterFragment<BacksideView>
 
 
     @Override
-    public final BacksideView getPresenterView() {
+    public void initializePresenterView() {
         if (presenterView == null) {
-            return new BacksideView(getActivity());
+            presenterView = new BacksideView(getActivity());
         }
-        return presenterView;
     }
 
     @Override

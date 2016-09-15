@@ -28,7 +28,6 @@ import is.hello.sense.util.StateSafeExecutor;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class SoundsView extends PresenterView {
-    public static final String ARG_HAS_NAVBAR = SoundsView.class.getName() + ".ARG_HAS_NAVBAR";
 
     private ProgressBar initialActivityIndicator;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -74,8 +73,7 @@ public class SoundsView extends PresenterView {
     }
 
     @Override
-    public final void detach() {
-        super.detach();
+    public final void releaseViews() {
         this.animatorContext = null;
         this.stateSafeExecutor = null;
         this.initialActivityIndicator = null;
@@ -97,19 +95,13 @@ public class SoundsView extends PresenterView {
     }
 
     public final void setAdapter(@NonNull final FragmentManager fragmentManager,
-                                 @Nullable final Bundle savedInstanceState) {
+                                 final boolean withNavbar) {
         this.adapter = new StaticFragmentAdapter(fragmentManager,
                                                  new StaticFragmentAdapter.Item(SmartAlarmListFragment.class, getString(R.string.alarm_subnavbar_alarm_list)),
                                                  new StaticFragmentAdapter.Item(SleepSoundsFragment.class, getString(R.string.alarm_subnavbar_sounds_list)));
         pager.setAdapter(adapter);
         pager.setFadePageTransformer(true);
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(ARG_HAS_NAVBAR)) {
-                refreshView(savedInstanceState.getBoolean(ARG_HAS_NAVBAR));
-            }
-        } else {
-            refreshView(false);
-        }
+        refreshView(withNavbar);
         subNavSelector.setSelectedIndex(pager.getCurrentItem()); //todo confirm needed
         swipeRefreshLayout.setRefreshing(true);
     }
@@ -126,7 +118,7 @@ public class SoundsView extends PresenterView {
         return subNavSelector != null && subNavSelector.getVisibility() == View.VISIBLE;
     }
 
-    public void refreshView(final boolean show) {
+    public final void refreshView(final boolean show) {
         if (subNavSelector == null || swipeRefreshLayout == null) {
             return;
         }

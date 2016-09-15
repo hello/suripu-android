@@ -45,7 +45,7 @@ public abstract class BacksideTabFragment<T extends PresenterView> extends Prese
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
         final boolean wasVisibleToUser = getUserVisibleHint();
         super.setUserVisibleHint(isVisibleToUser);
         if (!wasVisibleToUser && isVisibleToUser) {

@@ -94,24 +94,25 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
     private HomeActivity activity;
 
     @Override
-    public InsightsView getPresenterView() {
+    public final void initializePresenterView() {
         if (presenterView == null) {
-            return new InsightsView(getActivity(), dateFormatter, picasso);
+            presenterView = new InsightsView(getActivity(), dateFormatter, picasso);
         }
-        return presenterView;
     }
 
     @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
+    public final void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             Analytics.trackEvent(Analytics.Backside.EVENT_MAIN_VIEW, null);
-            presenterView.updateWhatsNewState();
+            if (presenterView != null) {
+                presenterView.updateWhatsNewState();
+            }
         }
     }
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
+    public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(insightsInteractor);
         addInteractor(dateFormatter);
@@ -130,7 +131,7 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
     }
 
     @Override
-    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+    public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         presenterView.setInsightsAdapter(this);
         presenterView.setSwipeRefreshLayoutRefreshListener(this);
@@ -149,7 +150,7 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
     }
 
     @Override
-    public void onDestroyView() {
+    public final void onDestroyView() {
         super.onDestroyView();
 
         if (tutorialOverlayView != null) {
@@ -161,7 +162,7 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
     }
 
     @Override
-    public void onDestroy() {
+    public final void onDestroy() {
         super.onDestroy();
 
         LocalBroadcastManager.getInstance(getActivity())
@@ -169,11 +170,11 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
     }
 
     @Override
-    public void onSwipeInteractionDidFinish() {
+    public final void onSwipeInteractionDidFinish() {
     }
 
     @Override
-    public void onUpdate() {
+    public final void onUpdate() {
         if (insightsInteractor.updateIfEmpty()) {
             presenterView.setRefreshing(true);
         }
@@ -187,7 +188,7 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
     //region Data Binding
 
     @Override
-    public void onRefresh() {
+    public final void onRefresh() {
         fetchInsights();
     }
 
@@ -252,7 +253,7 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
 
     @Override
     @Nullable
-    public InsightInfoFragment.SharedState provideSharedState(final boolean isEnter) {
+    public final InsightInfoFragment.SharedState provideSharedState(final boolean isEnter) {
         if (selectedInsightHolder != null && getActivity() != null) {
             final InsightInfoFragment.SharedState state = new InsightInfoFragment.SharedState();
             Views.getFrameInWindow(selectedInsightHolder.itemView, state.cardRectInWindow);
@@ -267,7 +268,7 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
 
     @Nullable
     @Override
-    public Drawable getInsightImage() {
+    public final Drawable getInsightImage() {
         if (selectedInsightHolder != null) {
             return selectedInsightHolder.image.getDrawable();
         } else {
@@ -276,7 +277,7 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
     }
 
     @Override
-    public void onInsightClicked(@NonNull final InsightsAdapter.InsightViewHolder viewHolder) {
+    public final void onInsightClicked(@NonNull final InsightsAdapter.InsightViewHolder viewHolder) {
         final Insight insight = viewHolder.getInsight();
         if (insight.isError()) {
             return;
@@ -298,7 +299,7 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
     }
 
     @Override
-    public void shareInsight(@NonNull final Insight insight) {
+    public final void shareInsight(@NonNull final Insight insight) {
         showProgress(true);
         apiService.shareInsight(new InsightType(insight.getId()))
                   .doOnTerminate(() -> showProgress(false))
@@ -327,7 +328,7 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
 
     //region Questions
 
-    public void updateQuestion() {
+    public final void updateQuestion() {
         final Observable<Boolean> stageOne = deviceIssuesInteractor.latest().map(issue -> (issue == DeviceIssuesInteractor.Issue.NONE &&
                 localUsageTracker.isUsageAcceptableForRatingPrompt() &&
                 !preferences.getBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, false)));
@@ -356,12 +357,12 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
     }
 
     @Override
-    public void onDismissLoadingIndicator() {
+    public final void onDismissLoadingIndicator() {
         presenterView.setRefreshing(false);
     }
 
     @Override
-    public void onSkipQuestion() {
+    public final void onSkipQuestion() {
         LoadingDialogFragment.show(getFragmentManager());
         bindAndSubscribe(questionsInteractor.skipQuestion(false),
                          ignored -> LoadingDialogFragment.close(getFragmentManager()),
@@ -373,7 +374,7 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
     }
 
     @Override
-    public void onAnswerQuestion() {
+    public final void onAnswerQuestion() {
         final QuestionsDialogFragment dialogFragment = new QuestionsDialogFragment();
         dialogFragment.showAllowingStateLoss(getActivity().getFragmentManager(), QuestionsDialogFragment.TAG);
         presenterView.clearCurrentQuestion();
@@ -382,7 +383,7 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
     //endregion
 
     @Override
-    public void fetchInsights() {
+    public final void fetchInsights() {
         this.insights = Collections.emptyList();
         this.insightsLoaded = false;
         this.currentQuestion = null;
