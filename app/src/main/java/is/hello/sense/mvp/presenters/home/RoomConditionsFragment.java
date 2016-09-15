@@ -79,7 +79,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     @Override
     public final void initializePresenterView() {
         if (presenterView == null) {
-            presenterView= new RoomConditionsView(getActivity(), unitFormatter);
+            presenterView = new RoomConditionsView(getActivity(), unitFormatter, getAnimatorContext());
         }
     }
 
