@@ -14,8 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import is.hello.go99.animators.AnimatorContext;
-import is.hello.sense.interactors.Interactor;
-import is.hello.sense.interactors.InteractorContainer;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -29,7 +27,7 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     protected LoadingDialogFragment loadingDialogFragment;
     protected T presenterView;
 
-    public abstract T getPresenterView();
+    public abstract void initializePresenterView();
 
     @Nullable
     protected AnimatorContext animatorContext;
@@ -38,17 +36,19 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     @Override
     public void onAttach(final Context context) {
         super.onAttach(context);
+        Log(getClass().getSimpleName(), "onAttach(context)");
         if (animatorContext == null && context instanceof AnimatorContext.Scene) {
             this.animatorContext = ((AnimatorContext.Scene) context).getAnimatorContext();
             this.animatorContextFromActivity = true;
         }
-        presenterView = getPresenterView();
+        initializePresenterView();
     }
 
     @CallSuper
     @Override
     public void onAttach(final Activity activity) {
         super.onAttach(activity);
+        Log(getClass().getSimpleName(), "onAttach(activity)");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return;
         }
@@ -56,13 +56,22 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
             this.animatorContext = ((AnimatorContext.Scene) activity).getAnimatorContext();
             this.animatorContextFromActivity = true;
         }
-        presenterView = getPresenterView();
+        initializePresenterView();
+    }
+
+    @CallSuper
+    @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log(getClass().getSimpleName(), "onSaveInstanceState");
+        initializePresenterView();
     }
 
     @CallSuper
     @Override
     public void onResume() {
         super.onResume();
+        Log(getClass().getSimpleName(), "onResume");
         presenterView.resume();
     }
 
@@ -70,6 +79,8 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log(getClass().getSimpleName(), "onCreate");
+        initializePresenterView();
         presenterView.create();
     }
 
@@ -77,6 +88,8 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     @NonNull
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        Log(getClass().getSimpleName(), "onCreateView");
+        initializePresenterView();
         return presenterView.createView(inflater, container, savedInstanceState);
     }
 
@@ -84,16 +97,28 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        this.presenterView.destroyView();
+        Log(getClass().getSimpleName(), "onDestroyView");
+        if (presenterView != null) {
+            this.presenterView.destroyView();
+        }
+        release();
     }
 
     @CallSuper
     @Override
     public void onDetach() {
         super.onDetach();
+        Log(getClass().getSimpleName(), "onDetach");
+        if (presenterView != null) {
+            this.presenterView.detach();
+        }
+        release();
+    }
+
+    private void release() {
+        Log(getClass().getSimpleName(), "release");
         this.animatorContext = null;
         this.animatorContextFromActivity = false;
-        this.presenterView.detach();
         this.presenterView = null;
         this.loadingDialogFragment = null;
     }

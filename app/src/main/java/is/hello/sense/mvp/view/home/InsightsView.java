@@ -78,9 +78,9 @@ public final class InsightsView extends PresenterView {
         recyclerView.addItemDecoration(new BottomInsetDecoration(resources));
         return view;
     }
+
     @Override
-    public final void detach() {
-        super.detach();
+    public final void releaseViews() {
         if (swipeRefreshLayout != null) {
             this.swipeRefreshLayout.setOnRefreshListener(null);
         }
@@ -90,6 +90,7 @@ public final class InsightsView extends PresenterView {
         this.recyclerView = null;
         this.swipeRefreshLayout = null;
         this.progressBar = null;
+
     }
 
     public final void setInsightsAdapter(@NonNull final InsightsAdapter.InteractionListener interactionListener) {
@@ -136,11 +137,11 @@ public final class InsightsView extends PresenterView {
         return createRecyclerExit();
     }
 
-    public void clearCurrentQuestion() {
+    public final void clearCurrentQuestion() {
         insightsAdapter.clearCurrentQuestion();
     }
 
-    private Animator createRecyclerEnter() {
+    private final Animator createRecyclerEnter() {
         return animatorFor(recyclerView)
                 .scale(UNFOCUSED_CONTENT_SCALE)
                 .alpha(UNFOCUSED_CONTENT_ALPHA)
@@ -155,7 +156,7 @@ public final class InsightsView extends PresenterView {
                 });
     }
 
-    private Animator createRecyclerExit() {
+    private final Animator createRecyclerExit() {
         return animatorFor(recyclerView)
                 .addOnAnimationWillStart(animator -> {
                     // Ensure visual consistency.
@@ -170,7 +171,7 @@ public final class InsightsView extends PresenterView {
     }
 
 
-    static class BottomInsetDecoration extends RecyclerView.ItemDecoration {
+    static final class BottomInsetDecoration extends RecyclerView.ItemDecoration {
         private final int bottomPadding;
 
         public BottomInsetDecoration(@NonNull final Resources resources) {

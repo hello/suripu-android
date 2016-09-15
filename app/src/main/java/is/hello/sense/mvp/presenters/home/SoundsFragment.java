@@ -16,22 +16,21 @@ import is.hello.sense.ui.common.SubFragment;
 import is.hello.sense.ui.widget.SelectorView.OnSelectionChangedListener;
 
 
-
 public class SoundsFragment extends BacksideTabFragment<SoundsView> implements OnSelectionChangedListener, SwipeRefreshLayout.OnRefreshListener {
 
+    private static final String ARG_HAS_NAVBAR = SoundsView.class.getName() + ".ARG_HAS_NAVBAR";
     @Inject
     SleepSoundsInteractor sleepSoundsInteractor;
 
     @Override
-    public SoundsView getPresenterView() {
+    public final void initializePresenterView() {
         if (presenterView == null) {
-            return new SoundsView(getActivity(), getAnimatorContext(), stateSafeExecutor);
+            presenterView = new SoundsView(getActivity(), getAnimatorContext(), stateSafeExecutor);
         }
-        return presenterView;
     }
 
     @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
+    public final void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             sleepSoundsInteractor.update();
@@ -48,48 +47,55 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
     }
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
+    public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(sleepSoundsInteractor);
         setHasOptionsMenu(true);
     }
 
     @Override
-    public void onSaveInstanceState(final Bundle outState) {
-        outState.putBoolean(SoundsView.ARG_HAS_NAVBAR, presenterView.isSubNavBarVisible());
+    public final void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(ARG_HAS_NAVBAR, presenterView.isSubNavBarVisible());
     }
 
     @Override
-    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+    public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        boolean showNavbar = false;
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(ARG_HAS_NAVBAR)) {
+                showNavbar = (savedInstanceState.getBoolean(ARG_HAS_NAVBAR));
+            }
+        }
         presenterView.setSubNavSelectorOnSelectionChangedListener(this);
         presenterView.setSwipeRefreshLayoutOnRefreshListener(this);
-        presenterView.setAdapter(getChildFragmentManager(), savedInstanceState);
+        presenterView.setAdapter(getChildFragmentManager(), showNavbar);
         onUpdate();
     }
 
     @Override
-    public void onResume() {
+    public final void onResume() {
         super.onResume();
         sleepSoundsInteractor.update();
     }
 
     @Override
-    protected void onSwipeInteractionDidFinish() {
+    protected final void onSwipeInteractionDidFinish() {
 
     }
 
     @Override
-    public void onUpdate() {
+    public final void onUpdate() {
         presenterView.updated();
     }
 
     @Override
-    public void onSelectionChanged(final int newSelectionIndex) {
+    public final void onSelectionChanged(final int newSelectionIndex) {
         presenterView.setPagerItem(newSelectionIndex);
     }
 
-    public void bind(@NonNull final SleepSoundsStateDevice stateDevice) {
+    public final void bind(@NonNull final SleepSoundsStateDevice stateDevice) {
         final Devices devices = stateDevice.getDevices();
         final SleepSoundsState state = stateDevice.getSleepSoundsState();
         boolean show = false;
@@ -101,13 +107,13 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
         presenterView.refreshView(show);
     }
 
-    public void presentError(@NonNull final Throwable error) {
+    public final void presentError(@NonNull final Throwable error) {
         presenterView.refreshView(false);
     }
 
 
     @Override
-    public void onRefresh() {
+    public final void onRefresh() {
         sleepSoundsInteractor.update();
         presenterView.refreshed(getChildFragmentManager());
     }

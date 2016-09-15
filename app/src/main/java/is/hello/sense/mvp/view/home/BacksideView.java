@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -62,14 +63,19 @@ public class BacksideView extends PresenterView {
         return view;
     }
 
+    @CallSuper
     @Override
-    public void detach() {
-        super.detach();
-        this.pager.clearOnPageChangeListeners();
-        this.tabSelector.setOnSelectionChangedListener(null);
+    public final void releaseViews() {
+        if (pager != null) {
+            this.pager.clearOnPageChangeListeners();
+        }
+        if (tabSelector != null) {
+            this.tabSelector.setOnSelectionChangedListener(null);
+        }
         this.tabSelector = null;
         this.pager = null;
         this.adapter = null;
+
     }
 
     public void addOnPageChangeListener(@NonNull final ViewPager.OnPageChangeListener listener) {
