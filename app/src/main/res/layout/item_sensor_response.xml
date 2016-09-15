@@ -59,6 +59,6 @@
 
     <is.hello.sense.ui.widget.graphing.sensors.SensorGraphView
         android:id="@+id/item_server_response_graph"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 </LinearLayout>
