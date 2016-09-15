@@ -12,6 +12,7 @@ import android.view.View;
 
 import java.util.List;
 
+import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.mvp.view.PresenterView;
@@ -28,7 +29,8 @@ public final class RoomConditionsView extends PresenterView {
     UnitFormatter unitFormatter;
 
     public RoomConditionsView(@NonNull final Activity activity,
-                              @NonNull final UnitFormatter unitFormatter) {
+                              @NonNull final UnitFormatter unitFormatter,
+                              @NonNull final AnimatorContext animatorContext) {
         super(activity);
         this.unitFormatter = unitFormatter;
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.fragment_room_conditions_refresh_container);
@@ -43,7 +45,7 @@ public final class RoomConditionsView extends PresenterView {
         recyclerView.addItemDecoration(new CardItemDecoration(resources));
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
-        this.adapter = new SensorResponseAdapter(activity.getLayoutInflater(), unitFormatter);
+        this.adapter = new SensorResponseAdapter(activity.getLayoutInflater(), unitFormatter, animatorContext);
         recyclerView.setAdapter(adapter);
     }
 

@@ -1,5 +1,6 @@
 package is.hello.sense.mvp.view.home.roomconditions;
 
+import android.animation.ValueAnimator;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -13,6 +14,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import is.hello.go99.Anime;
+import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorType;
@@ -28,6 +31,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     private static final int VIEW_ID_MESSAGE = 1;
     private final LayoutInflater inflater;
     private final UnitFormatter unitFormatter;
+    private final AnimatorContext animatorContext;
     private boolean messageWantsSenseIcon;
     @StringRes
     private int messageTitle;
@@ -40,10 +44,12 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
 
     public SensorResponseAdapter(@NonNull final LayoutInflater inflater,
-                                 @NonNull final UnitFormatter unitFormatter) {
+                                 @NonNull final UnitFormatter unitFormatter,
+                                 @NonNull final AnimatorContext animatorContext) {
         super(new ArrayList<>());
         this.inflater = inflater;
         this.unitFormatter = unitFormatter;
+        this.animatorContext = animatorContext;
     }
 
     //region adapter overrides
@@ -152,7 +158,14 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
             value.setTextColor(sensor.getColor(inflater.getContext()));
             descriptor.setText(printer.print(sensor.getValue()));
-            graphView.setBackground(new SensorGraphDrawable(inflater.getContext(), sensor));
+
+            final SensorGraphDrawable sensorGraphDrawable = new SensorGraphDrawable(inflater.getContext(), sensor);
+            graphView.setBackground(sensorGraphDrawable);
+            final ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
+            animator.setDuration(Anime.DURATION_NORMAL);
+            animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
+            animator.addUpdateListener(animation -> sensorGraphDrawable.setScaleFactor((float) animation.getAnimatedValue()));
+            animatorContext.startWhenIdle(animator);
         }
     }
 
