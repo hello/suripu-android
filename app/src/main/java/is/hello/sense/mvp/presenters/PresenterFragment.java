@@ -41,7 +41,6 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
             this.animatorContext = ((AnimatorContext.Scene) context).getAnimatorContext();
             this.animatorContextFromActivity = true;
         }
-        initializePresenterView();
     }
 
     @CallSuper
@@ -56,7 +55,6 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
             this.animatorContext = ((AnimatorContext.Scene) activity).getAnimatorContext();
             this.animatorContextFromActivity = true;
         }
-        initializePresenterView();
     }
 
     @CallSuper
@@ -64,15 +62,6 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         Log(getClass().getSimpleName(), "onSaveInstanceState");
-        initializePresenterView();
-    }
-
-    @CallSuper
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log(getClass().getSimpleName(), "onResume");
-        presenterView.resume();
     }
 
     @CallSuper
@@ -80,8 +69,7 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log(getClass().getSimpleName(), "onCreate");
-        initializePresenterView();
-        presenterView.create();
+     //   presenterView.create();
     }
 
     @CallSuper
@@ -90,7 +78,22 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         Log(getClass().getSimpleName(), "onCreateView");
         initializePresenterView();
-        return presenterView.createView(inflater, container, savedInstanceState);
+        return presenterView;
+    }
+
+    @CallSuper
+    @Override
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        presenterView.viewCreated();
+    }
+
+    @CallSuper
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log(getClass().getSimpleName(), "onResume");
+        presenterView.resume();
     }
 
     @CallSuper
@@ -116,7 +119,7 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     }
 
     @CallSuper
-    public void onRelease() {
+    protected void onRelease() {
         Log(getClass().getSimpleName(), "release");
         this.animatorContext = null;
         this.animatorContextFromActivity = false;

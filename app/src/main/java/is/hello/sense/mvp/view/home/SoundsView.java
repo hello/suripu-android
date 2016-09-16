@@ -29,13 +29,14 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class SoundsView extends PresenterView {
 
-    private ProgressBar initialActivityIndicator;
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private SelectorView subNavSelector;
-    private ExtendedViewPager pager;
+    private final ProgressBar initialActivityIndicator;
+    private final SwipeRefreshLayout swipeRefreshLayout;
+    private final SelectorView subNavSelector;
+    private final ExtendedViewPager pager;
+    private final AnimatorContext animatorContext;
+    private final StateSafeExecutor stateSafeExecutor;
     private StaticFragmentAdapter adapter;
-    private AnimatorContext animatorContext;
-    private StateSafeExecutor stateSafeExecutor;
+
 
     public SoundsView(@NonNull final Activity activity,
                       @NonNull final AnimatorContext animatorContext,
@@ -43,19 +44,13 @@ public class SoundsView extends PresenterView {
         super(activity);
         this.animatorContext = animatorContext;
         this.stateSafeExecutor = stateSafeExecutor;
-    }
-
-    @NonNull
-    @Override
-    public final View createView(@NonNull final LayoutInflater inflater, @NonNull final ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_sounds, container, false);
-        this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_sounds_refresh_container);
+        this.swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.fragment_sounds_refresh_container);
         swipeRefreshLayout.setEnabled(true);
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
 
-        this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_sounds_loading);
-        this.pager = (ExtendedViewPager) view.findViewById(R.id.fragment_sounds_scrollview);
-        this.subNavSelector = (SelectorView) view.findViewById(R.id.fragment_sounds_sub_nav);
+        this.initialActivityIndicator = (ProgressBar) findViewById(R.id.fragment_sounds_loading);
+        this.pager = (ExtendedViewPager) findViewById(R.id.fragment_sounds_scrollview);
+        this.subNavSelector = (SelectorView) findViewById(R.id.fragment_sounds_sub_nav);
         pager.setScrollingEnabled(false);
         subNavSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
         subNavSelector.setBackground(new TabsBackgroundDrawable(context.getResources(),
@@ -63,8 +58,13 @@ public class SoundsView extends PresenterView {
         subNavSelector.addOption(R.string.alarm_subnavbar_alarm_list, false);
         subNavSelector.addOption(R.string.alarm_subnavbar_sounds_list, false);
         subNavSelector.setTranslationY(0);
-        return view;
     }
+
+    @Override
+    protected int getLayoutRes() {
+        return R.layout.fragment_sounds;
+    }
+
 
     @Override
     public final void resume() {
@@ -74,15 +74,9 @@ public class SoundsView extends PresenterView {
 
     @Override
     public final void releaseViews() {
-        this.animatorContext = null;
-        this.stateSafeExecutor = null;
-        this.initialActivityIndicator = null;
-        this.swipeRefreshLayout = null;
         if (subNavSelector != null) {
             this.subNavSelector.setOnSelectionChangedListener(null);
         }
-        this.subNavSelector = null;
-        this.pager = null;
         this.adapter = null;
     }
 

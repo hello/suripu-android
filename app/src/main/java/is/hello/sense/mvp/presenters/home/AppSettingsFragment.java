@@ -32,7 +32,7 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     @Override
     public final void initializePresenterView() {
         if (presenterView == null) {
-            presenterView = new AppSettingsView(getActivity());
+            presenterView = new AppSettingsView(getActivity(), this, showDeviceList(), tellAFriend());
         }
     }
 
@@ -53,7 +53,6 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     @Override
     public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        presenterView.viewCreated(view, this, showDeviceList(), tellAFriend());
         bindAndSubscribe(accountInteractor.account, this::bindAccount, Functions.LOG_ERROR);
         accountInteractor.update();
     }

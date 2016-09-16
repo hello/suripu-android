@@ -53,16 +53,9 @@ public final class RoomConditionsView extends PresenterView {
                               @NonNull final UnitFormatter unitFormatter) {
         super(activity);
         this.unitFormatter = unitFormatter;
-    }
-
-    @NonNull
-    @Override
-    public final View createView(@NonNull final LayoutInflater inflater, @NonNull final ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_room_conditions, container, false);
-
-        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_room_conditions_refresh_container);
+        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.fragment_room_conditions_refresh_container);
         swipeRefreshLayout.setEnabled(false);
-        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_room_conditions_recycler);
+        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.fragment_room_conditions_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
 
@@ -74,7 +67,11 @@ public final class RoomConditionsView extends PresenterView {
                                                                      FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
         this.adapter = new Adapter(context);
         recyclerView.setAdapter(adapter);
-        return view;
+    }
+
+    @Override
+    protected int getLayoutRes() {
+        return R.layout.fragment_room_conditions;
     }
 
     @Override
@@ -146,10 +143,10 @@ public final class RoomConditionsView extends PresenterView {
         }
 
         public final void displayMessage(final boolean messageWantsSenseIcon,
-                                   @StringRes final int title,
-                                   @NonNull final CharSequence message,
-                                   @StringRes final int actionTitle,
-                                   @NonNull final View.OnClickListener actionOnClick) {
+                                         @StringRes final int title,
+                                         @NonNull final CharSequence message,
+                                         @StringRes final int actionTitle,
+                                         @NonNull final View.OnClickListener actionOnClick) {
             this.messageWantsSenseIcon = messageWantsSenseIcon;
             this.messageTitle = title;
             this.messageBody = message;

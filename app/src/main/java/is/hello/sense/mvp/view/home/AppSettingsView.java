@@ -25,48 +25,44 @@ import is.hello.sense.util.Distribution;
 public final class AppSettingsView extends PresenterView {
     private ImageView breadcrumb;
 
-    public AppSettingsView(@NonNull final Activity activity) {
+    public AppSettingsView(@NonNull final Activity activity,
+                           @NonNull final ClickListenerGenerator generator,
+                           @NonNull final View.OnClickListener devicesListener,
+                           @NonNull final View.OnClickListener tellAFriendListener) {
         super(activity);
-    }
 
-    @NonNull
-    @Override
-    public final View createView(@NonNull final LayoutInflater inflater,
-                                 @NonNull final ViewGroup container,
-                                 @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_app_settings, container, false);
-    }
+        breadcrumb = (ImageView) findViewById(R.id.fragment_app_settings_breadcrumb);
 
-    public final void viewCreated(@NonNull final View view,
-                                  @NonNull final ClickListenerGenerator generator,
-                                  @NonNull final View.OnClickListener devicesListener,
-                                  @NonNull final View.OnClickListener tellAFriendListener) {
-        breadcrumb = (ImageView) view.findViewById(R.id.fragment_app_settings_breadcrumb);
-
-        final View accountItem = view.findViewById(R.id.fragment_app_settings_account);
+        final View accountItem = findViewById(R.id.fragment_app_settings_account);
         Views.setSafeOnClickListener(accountItem, generator.create(AccountSettingsFragment.class, R.string.label_account, true));
 
-        final View devicesItem = view.findViewById(R.id.fragment_app_settings_devices);
+        final View devicesItem = findViewById(R.id.fragment_app_settings_devices);
         Views.setSafeOnClickListener(devicesItem, devicesListener);
 
-        final View notificationsItem = view.findViewById(R.id.fragment_app_settings_notifications);
+        final View notificationsItem = findViewById(R.id.fragment_app_settings_notifications);
         Views.setSafeOnClickListener(notificationsItem, generator.create(NotificationsSettingsFragment.class, R.string.label_notifications, false));
 
-        final View unitsItem = view.findViewById(R.id.fragment_app_settings_units);
+        final View unitsItem = findViewById(R.id.fragment_app_settings_units);
         Views.setSafeOnClickListener(unitsItem, generator.create(UnitSettingsFragment.class, R.string.label_units_and_time, false));
 
-        final View supportItem = view.findViewById(R.id.fragment_app_settings_support);
+        final View supportItem = findViewById(R.id.fragment_app_settings_support);
         Views.setSafeOnClickListener(supportItem, ignored -> generator.create(SupportFragment.class, R.string.action_support, false));
 
-        final View tellAFriendItem = view.findViewById(R.id.fragment_app_settings_tell_a_friend);
+        final View tellAFriendItem = findViewById(R.id.fragment_app_settings_tell_a_friend);
         Views.setSafeOnClickListener(tellAFriendItem, tellAFriendListener);
 
-        final TextView version = (TextView) view.findViewById(R.id.fragment_app_settings_version);
+        final TextView version = (TextView) findViewById(R.id.fragment_app_settings_version);
         version.setText(context.getString(R.string.app_version_fmt, getString(R.string.app_name), BuildConfig.VERSION_NAME));
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
             Views.setSafeOnClickListener(version, ignored -> Distribution.startDebugActivity((Activity) context));
         }
     }
+
+    @Override
+    protected int getLayoutRes() {
+        return R.layout.fragment_app_settings;
+    }
+
 
     @Override
     public final void pause() {

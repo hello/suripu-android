@@ -56,7 +56,9 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
     @Override
     public final void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(ARG_HAS_NAVBAR, presenterView.isSubNavBarVisible());
+        if (presenterView != null) {
+            outState.putBoolean(ARG_HAS_NAVBAR, presenterView.isSubNavBarVisible());
+        }
     }
 
     @Override
