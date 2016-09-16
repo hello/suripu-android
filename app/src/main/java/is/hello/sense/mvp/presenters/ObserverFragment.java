@@ -65,6 +65,15 @@ public abstract class ObserverFragment extends ScopedInjectionFragment implement
 
     @CallSuper
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (observableContainer != null) {
+            this.observableContainer.clearSubscriptions();
+        }
+    }
+
+    @CallSuper
+    @Override
     public void onDetach() {
         super.onDetach();
         this.stateSafeExecutor = null;

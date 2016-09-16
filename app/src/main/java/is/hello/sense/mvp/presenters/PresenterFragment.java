@@ -101,7 +101,7 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
         if (presenterView != null) {
             this.presenterView.destroyView();
         }
-        release();
+        onRelease();
     }
 
     @CallSuper
@@ -112,10 +112,11 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
         if (presenterView != null) {
             this.presenterView.detach();
         }
-        release();
+        onRelease();
     }
 
-    private void release() {
+    @CallSuper
+    public void onRelease() {
         Log(getClass().getSimpleName(), "release");
         this.animatorContext = null;
         this.animatorContextFromActivity = false;
