@@ -35,7 +35,7 @@ import is.hello.sense.util.Logger;
 
 public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsView> implements
         ArrayRecyclerAdapter.OnItemClickedListener<Sensor> {
-    private final UpdateTimer updateTimer = new UpdateTimer(1, TimeUnit.MINUTES);
+    private UpdateTimer updateTimer;
 
     @Inject
     SensorResponseInteractor sensorResponseInteractor;
@@ -61,12 +61,14 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         super.onCreate(savedInstanceState);
         addInteractor(unitFormatter);
         addInteractor(sensorResponseInteractor);
-        updateTimer.setOnUpdate(sensorResponseInteractor::update);
     }
+
 
     @Override
     public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        updateTimer = new UpdateTimer(1, TimeUnit.MINUTES);
+        updateTimer.setOnUpdate(sensorResponseInteractor::update);
         presenterView.setOnAdapterItemClickListener(this);
         bindAndSubscribe(unitFormatter.unitPreferenceChanges(),
                          ignored -> presenterView.notifyDataSetChanged(),
@@ -87,13 +89,23 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     public final void onResume() {
         super.onResume();
         updateTimer.schedule();
-        sensorResponseInteractor.update();
     }
 
     @Override
     public final void onPause() {
         super.onPause();
-        updateTimer.unschedule();
+        if (updateTimer != null) {
+            updateTimer.unschedule();
+        }
+    }
+
+    @Override
+    public void onRelease() {
+        super.onRelease();
+        if (updateTimer != null) {
+            updateTimer.unschedule();
+        }
+        this.updateTimer = null;
     }
 
     @Override

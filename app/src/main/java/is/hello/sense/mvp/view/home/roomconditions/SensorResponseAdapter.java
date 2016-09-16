@@ -125,6 +125,12 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         this.messageActionOnClick = null;
     }
 
+    public void release() {
+        replaceAll(new ArrayList<>());
+        notifyDataSetChanged();
+
+    }
+
     //endregion
 
     public class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder implements Drawable.Callback {
@@ -149,6 +155,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         @Override
         public void bind(final int position) {
             super.bind(position);
+            Log.e("Binding", "Position: " + position + ". Instance: " + toString());
             final Sensor sensor = getItem(position);
             final UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor.getType());
             title.setText(sensor.getName());
@@ -165,7 +172,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             final SensorGraphDrawable sensorGraphDrawable = new SensorGraphDrawable(inflater.getContext(), sensor);
             graphView.setBackground(sensorGraphDrawable);
             sensorGraphDrawable.setCallback(this);
-            Log.e("Animating", sensor.getType().toString());
+            //Log.e("Animating", sensor.getType().toString());
         }
 
         @Override
