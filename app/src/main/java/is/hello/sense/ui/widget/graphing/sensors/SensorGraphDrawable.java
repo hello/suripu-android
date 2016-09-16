@@ -1,44 +1,60 @@
 package is.hello.sense.ui.widget.graphing.sensors;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.util.TypedValue;
 
-import java.util.Random;
 
-import is.hello.go99.Anime;
-import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 
+
 public class SensorGraphDrawable extends Drawable {
+    /**
+     * This will determine the stroke width based on height of the graph to scale on larger devices.
+     */
+    private static final float STROKE_RATIO = .01f;
+
+    /**
+     * Will scale height so  novalues (except -1) can fall below.
+     */
+    private static final float MIN_HEIGHT_RATIO = .9f;
+
+
     private final Sensor sensor;
     private final int height;
     private final int minHeight;
     private final float scaleRatio;
-    private final ValueLimits valueLimits;
-    private float scaleFactor = 0;
+    private float scaleFactor = 1;
+    private final float strokeWidth;
 
-    private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint gradientPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     public SensorGraphDrawable(@NonNull final Context context, @NonNull final Sensor sensor) {
         this.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 120, context.getResources().getDisplayMetrics());
+        this.strokeWidth = this.height * STROKE_RATIO;
         this.sensor = sensor;
-        final int color = sensor.getColor(context);
-        this.paint.setColor(color);
-        this.paint.setStyle(Paint.Style.FILL);
-        this.valueLimits = new ValueLimits(sensor.getSensorValues());
-        this.minHeight = (int) (height * .99f);
-        this.scaleRatio = minHeight / valueLimits.max;
+        final int strokeColor = sensor.getColor(context);
+        final int topColor = Color.argb(80, Color.red(strokeColor), Color.green(strokeColor), Color.blue(strokeColor));
+        final int bottomColor = Color.argb(30, Color.red(strokeColor), Color.green(strokeColor), Color.blue(strokeColor));
+        this.gradientPaint.setShader(new LinearGradient(0, 0, 0, height, topColor, bottomColor, Shader.TileMode.MIRROR));
+        this.strokePaint.setColor(strokeColor);
+        this.minHeight = (int) ((height * MIN_HEIGHT_RATIO) + strokeWidth*2);
+
+        final float max = sensor.getValueLimits().getMax();
+        if (max >= 1) {
+            this.scaleRatio = minHeight / sensor.getValueLimits().getMax();
+        } else {
+            this.scaleRatio = 0;
+        }
     }
 
     public final void setScaleFactor(final float scaleFactor) {
@@ -52,21 +68,34 @@ public class SensorGraphDrawable extends Drawable {
 
     @Override
     public void draw(final Canvas canvas) {
-        final float[] values = sensor.getSensorValues();
+        final float[] values = this.sensor.getSensorValues();
         final Path path = new Path();
-        final double width = canvas.getWidth() * scaleFactor;
+        final double width = canvas.getWidth();
         final double xIncrement = width / values.length + 1;
-
-        path.moveTo(0, canvas.getHeight());
-        for (int i = 0; i < values.length; i++) {
+        int drawTo = (int) ((this.scaleFactor * width) / xIncrement);
+        if (drawTo > values.length) {
+            drawTo = values.length;
+        }
+        path.moveTo(-10, canvas.getHeight() * 2);// arbitrary value greater than height to make sure there isn't a stroke at the bottom of the graph
+        for (int i = 0; i < drawTo; i++) {
             final float value = values[i];
             final float x = (float) (i * xIncrement);
-            final float y = minHeight - value * scaleRatio;
+            final float y;
+            if (value != -1) {
+                y = this.minHeight - value * this.scaleRatio;
+            } else {
+                y = this.height + strokeWidth * 2;
+            }
             path.lineTo(x, y);
         }
-        path.lineTo((float) width, canvas.getHeight());
-        path.lineTo(0, canvas.getHeight());
-        canvas.drawPath(path, paint);
+        path.lineTo((float) width * this.scaleFactor, canvas.getHeight());
+        path.lineTo(-10, canvas.getHeight() * 2); //  arbitrary value greater than height to make sure there isn't a stroke at the bottom of the graph
+        this.gradientPaint.setStyle(Paint.Style.FILL);
+        canvas.drawPath(path, this.gradientPaint);
+        this.strokePaint.setStyle(Paint.Style.STROKE);
+        this.strokePaint.setStrokeWidth(strokeWidth);
+        canvas.drawPath(path, this.strokePaint);
+
 
     }
 
@@ -85,20 +114,4 @@ public class SensorGraphDrawable extends Drawable {
         return 0;
     }
 
-
-    private class ValueLimits {
-        private float min, max;
-
-        public ValueLimits(@NonNull final float[] values) {
-            for (final Float value : values) {
-                if (value < min) {
-                    min = value;
-                    continue;
-                }
-                if (value > max) {
-                    max = value;
-                }
-            }
-        }
-    }
 }
