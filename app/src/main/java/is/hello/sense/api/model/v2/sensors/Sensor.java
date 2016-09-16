@@ -1,7 +1,6 @@
 package is.hello.sense.api.model.v2.sensors;
 
 import android.content.Context;
-import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -12,7 +11,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.Scale;
 import is.hello.sense.ui.widget.util.Styles;
@@ -41,6 +39,7 @@ public class Sensor implements Serializable {
     private List<Scale> scale;
 
     private float[] sensorValues = new float[0];
+    private ValueLimits valueLimits = null;
 
     public String getName() {
         return name;
@@ -62,7 +61,7 @@ public class Sensor implements Serializable {
     public SensorQuery getSensorQuery() {
         return new SensorQuery(type,
                                unit,
-                               QueryScope.DAY_5_MINUTE,
+                               QueryScope.LAST_3H_5_MINUTE,
                                AggregationMethod.AVG);
     }
 
@@ -90,6 +89,15 @@ public class Sensor implements Serializable {
         }
     }
 
+    @NonNull
+    public ValueLimits getValueLimits() {
+        if (valueLimits == null) {
+            valueLimits = new ValueLimits();
+        }
+        return valueLimits;
+    }
+
+
     @Override
     public String toString() {
         return "Sensor{" +
@@ -100,7 +108,41 @@ public class Sensor implements Serializable {
                 ", Condition=" + condition +
                 ", Value=" + value +
                 ", Values=" + Arrays.toString(sensorValues) +
+                ", ValueLimits=" + getValueLimits().toString() +
                 "}";
+    }
+
+    public class ValueLimits {
+        float min;
+        float max;
+
+        public ValueLimits() {
+            for (final Float value : sensorValues) {
+                if (value < min) {
+                    min = value;
+                    continue;
+                }
+                if (value > max) {
+                    max = value;
+                }
+            }
+        }
+
+        public float getMin() {
+            return min;
+        }
+
+        public float getMax() {
+            return max;
+        }
+
+        @Override
+        public String toString() {
+            return "ValueLimits{" +
+                    "min=" + min +
+                    ", max=" + max +
+                    "}";
+        }
     }
 
 }
