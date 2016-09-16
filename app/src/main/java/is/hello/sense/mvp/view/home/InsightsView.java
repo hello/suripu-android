@@ -38,12 +38,12 @@ public final class InsightsView extends PresenterView {
     private static final float FOCUSED_CONTENT_SCALE = 1f;
     private static final float UNFOCUSED_CONTENT_ALPHA = 0.95f;
     private static final float FOCUSED_CONTENT_ALPHA = 1f;
-    private InsightsAdapter insightsAdapter;
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private RecyclerView recyclerView;
-    private ProgressBar progressBar;
+    private final SwipeRefreshLayout swipeRefreshLayout;
+    private final RecyclerView recyclerView;
+    private final ProgressBar progressBar;
     private DateFormatter dateFormatter;
     private Picasso picasso;
+    private InsightsAdapter insightsAdapter;
 
 
     public InsightsView(@NonNull final Activity activity,
@@ -52,20 +52,13 @@ public final class InsightsView extends PresenterView {
         super(activity);
         this.dateFormatter = dateFormatter;
         this.picasso = picasso;
-    }
-
-    @NonNull
-    @Override
-    public final View createView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_insights, container, false);
-
-        this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_insights_refresh_container);
+        this.swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.fragment_insights_refresh_container);
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
 
-        this.progressBar = (ProgressBar) view.findViewById(R.id.fragment_insights_progress);
+        this.progressBar = (ProgressBar) findViewById(R.id.fragment_insights_progress);
 
         final Resources resources = context.getResources();
-        this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_insights_recycler);
+        this.recyclerView = (RecyclerView) findViewById(R.id.fragment_insights_recycler);
         recyclerView.setHasFixedSize(false);
         recyclerView.addOnScrollListener(new ParallaxRecyclerScrollListener());
         recyclerView.setItemAnimator(null);
@@ -76,7 +69,11 @@ public final class InsightsView extends PresenterView {
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
         recyclerView.addItemDecoration(new BottomInsetDecoration(resources));
-        return view;
+    }
+
+    @Override
+    protected int getLayoutRes() {
+        return R.layout.fragment_insights;
     }
 
     @Override
@@ -87,9 +84,6 @@ public final class InsightsView extends PresenterView {
         this.dateFormatter = null;
         this.picasso = null;
         this.insightsAdapter = null;
-        this.recyclerView = null;
-        this.swipeRefreshLayout = null;
-        this.progressBar = null;
 
     }
 

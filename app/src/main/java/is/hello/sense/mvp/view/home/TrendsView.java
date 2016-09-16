@@ -27,50 +27,43 @@ import is.hello.sense.util.StateSafeExecutor;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public final class TrendsView extends PresenterView {
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private ProgressBar initialActivityIndicator;
-    private TrendFeedView trendFeedView;
-    private SelectorView timeScaleSelector;
-    private AnimatorContext animatorContext;
+    private final SwipeRefreshLayout swipeRefreshLayout;
+    private final ProgressBar initialActivityIndicator;
+    private final TrendFeedView trendFeedView;
+    private final SelectorView timeScaleSelector;
+    private final AnimatorContext animatorContext;
 
 
     public TrendsView(@NonNull final Activity activity, @NonNull final AnimatorContext animatorContext) {
         super(activity);
         this.animatorContext = animatorContext;
-    }
-
-    @NonNull
-    @Override
-    public final View createView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_trends, container, false);
-
-        this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_trends_refresh_container);
+        this.swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.fragment_trends_refresh_container);
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
 
-        this.initialActivityIndicator = (ProgressBar) view.findViewById(R.id.fragment_trends_loading);
-        this.trendFeedView = (TrendFeedView) view.findViewById(R.id.fragment_trends_trendgraph);
+        this.initialActivityIndicator = (ProgressBar) findViewById(R.id.fragment_trends_loading);
+        this.trendFeedView = (TrendFeedView) findViewById(R.id.fragment_trends_trendgraph);
         this.trendFeedView.setAnimatorContext(animatorContext);
-        this.timeScaleSelector = (SelectorView) view.findViewById(R.id.fragment_trends_time_scale);
+        this.timeScaleSelector = (SelectorView) findViewById(R.id.fragment_trends_time_scale);
         timeScaleSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
         timeScaleSelector.setVisibility(View.INVISIBLE);
         timeScaleSelector.setBackground(new TabsBackgroundDrawable(context.getResources(),
                                                                    TabsBackgroundDrawable.Style.SUBNAV));
-        return view;
     }
 
     @Override
+    protected int getLayoutRes() {
+        return R.layout.fragment_trends;
+    }
+
+
+    @Override
     public final void releaseViews() {
-        this.initialActivityIndicator = null;
         if (swipeRefreshLayout != null) {
             this.swipeRefreshLayout.setOnRefreshListener(null);
         }
-        this.swipeRefreshLayout = null;
         if (timeScaleSelector != null) {
             this.timeScaleSelector.setOnSelectionChangedListener(null);
         }
-        this.timeScaleSelector = null;
-        this.trendFeedView = null;
-        this.animatorContext = null;
     }
 
     public final void setSwipeRefreshLayoutRefreshListener(@NonNull final SwipeRefreshLayout.OnRefreshListener listener) {
