@@ -1,9 +1,10 @@
 package is.hello.sense.mvp.view.home.roomconditions;
 
-import android.animation.ValueAnimator;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
@@ -127,15 +127,18 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
     //endregion
 
-    public class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder {
+    public class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder implements Drawable.Callback {
         private final TextView title;
         private final TextView body;
         private final TextView value;
         private final TextView descriptor;
         private final SensorGraphView graphView;
+        private final View view;
+        boolean animated = false;
 
         public BaseViewHolder(@NonNull final View itemView) {
             super(itemView);
+            this.view = itemView;
             title = (TextView) itemView.findViewById(R.id.item_server_response_title);
             body = (TextView) itemView.findViewById(R.id.item_server_response_body);
             value = (TextView) itemView.findViewById(R.id.item_server_response_value);
@@ -161,11 +164,26 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
             final SensorGraphDrawable sensorGraphDrawable = new SensorGraphDrawable(inflater.getContext(), sensor);
             graphView.setBackground(sensorGraphDrawable);
-            final ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
-            animator.setDuration(Anime.DURATION_NORMAL);
-            animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
-            animator.addUpdateListener(animation -> sensorGraphDrawable.setScaleFactor((float) animation.getAnimatedValue()));
-            animatorContext.startWhenIdle(animator);
+            sensorGraphDrawable.setCallback(this);
+            Log.e("Animating", sensor.getType().toString());
+        }
+
+        @Override
+        public void invalidateDrawable(final Drawable who) {
+            this.view.invalidate();
+            this.graphView.invalidate();
+            this.view.requestLayout();
+            this.graphView.requestLayout();
+        }
+
+        @Override
+        public void scheduleDrawable(final Drawable who, final Runnable what, final long when) {
+            invalidateDrawable(who);
+        }
+
+        @Override
+        public void unscheduleDrawable(final Drawable who, final Runnable what) {
+
         }
     }
 

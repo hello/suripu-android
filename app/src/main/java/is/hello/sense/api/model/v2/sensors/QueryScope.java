@@ -6,7 +6,9 @@ import is.hello.sense.api.gson.Enums;
 
 public enum QueryScope implements Enums.FromString {
 
-    DAY_5_MINUTE;
+    DAY_5_MINUTE,
+    LAST_3H_5_MINUTE,
+    WEEK_1_HOUR;
 
 
     public static QueryScope fromString(@Nullable final String string) {

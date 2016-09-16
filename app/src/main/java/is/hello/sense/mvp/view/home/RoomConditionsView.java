@@ -58,6 +58,8 @@ public final class RoomConditionsView extends PresenterView {
     public final void releaseViews() {
         if (adapter != null) {
             this.adapter.setOnItemClickedListener(null);
+            this.adapter.clear();
+
         }
         this.unitFormatter = null;
     }

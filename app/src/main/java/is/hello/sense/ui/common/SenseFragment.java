@@ -18,7 +18,7 @@ import static android.app.Activity.RESULT_OK;
 public class SenseFragment extends Fragment {
     protected void Log(@NonNull final String tag, @Nullable final String message) {
         if (BuildConfig.DEBUG) {
-            Log.e(tag, message);
+            Log.d(tag, message);
         }
     }
 
