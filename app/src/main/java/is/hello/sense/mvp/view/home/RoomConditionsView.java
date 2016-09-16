@@ -43,7 +43,7 @@ import is.hello.sense.units.UnitPrinter;
 
 public final class RoomConditionsView extends PresenterView {
     @VisibleForTesting
-    Adapter adapter;
+    final Adapter adapter;
     @VisibleForTesting
     UnitFormatter unitFormatter;
 
@@ -80,7 +80,6 @@ public final class RoomConditionsView extends PresenterView {
             this.adapter.setOnItemClickedListener(null);
         }
         this.unitFormatter = null;
-        this.adapter = null;
         this.graphAdapters = null;
     }
 

@@ -39,10 +39,10 @@ public class BacksideView extends PresenterView {
     public static final int OPTION_ANIMATE = (1 << 1);
     public static final int DEFAULT_START_ITEM = BacksideView.ITEM_INSIGHTS;
 
-    private int tabSelectorHeight;
+    private final int tabSelectorHeight;
     private final SelectorView tabSelector;
     private final ExtendedViewPager pager;
-    private StaticFragmentAdapter adapter;
+    private final StaticFragmentAdapter adapter;
 
 
     public BacksideView(@NonNull final Activity activity) {
@@ -53,36 +53,7 @@ public class BacksideView extends PresenterView {
         this.tabSelectorHeight = resources.getDimensionPixelSize(R.dimen.action_bar_height);
         this.tabSelector = (SelectorView) findViewById(R.id.fragment_backside_tabs);
         tabSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, SelectorView.LayoutParams.MATCH_PARENT, 1));
-    }
-
-    @Override
-    protected int getLayoutRes() {
-        return R.layout.fragment_backside;
-    }
-
-    @CallSuper
-    @Override
-    public final void releaseViews() {
-        if (pager != null) {
-            this.pager.clearOnPageChangeListeners();
-        }
-        if (tabSelector != null) {
-            this.tabSelector.setOnSelectionChangedListener(null);
-        }
-        this.adapter = null;
-
-    }
-
-    public void addOnPageChangeListener(@NonNull final ViewPager.OnPageChangeListener listener) {
-        pager.addOnPageChangeListener(listener);
-    }
-
-    public void setOnSelectionChangedListener(@NonNull final SelectorView.OnSelectionChangedListener listener) {
-        tabSelector.setOnSelectionChangedListener(listener);
-    }
-
-    public void setAdapter(@NonNull final FragmentManager fragmentManager) {
-        this.adapter = new StaticFragmentAdapter(fragmentManager,
+        this.adapter = new StaticFragmentAdapter(activity.getFragmentManager(),
                                                  new StaticFragmentAdapter.Item(RoomConditionsFragment.class, getString(R.string.title_current_conditions)),
                                                  new StaticFragmentAdapter.Item(TrendsFragment.class, getString(R.string.title_trends)),
                                                  new StaticFragmentAdapter.Item(InsightsFragment.class, getString(R.string.action_insights)),
@@ -112,6 +83,30 @@ public class BacksideView extends PresenterView {
             button.setPadding(0, 0, 0, 0);
         }
         tabSelector.setSelectedIndex(pager.getCurrentItem());
+    }
+
+    @Override
+    protected int getLayoutRes() {
+        return R.layout.fragment_backside;
+    }
+
+    @CallSuper
+    @Override
+    public final void releaseViews() {
+        if (pager != null) {
+            this.pager.clearOnPageChangeListeners();
+        }
+        if (tabSelector != null) {
+            this.tabSelector.setOnSelectionChangedListener(null);
+        }
+    }
+
+    public void addOnPageChangeListener(@NonNull final ViewPager.OnPageChangeListener listener) {
+        pager.addOnPageChangeListener(listener);
+    }
+
+    public void setOnSelectionChangedListener(@NonNull final SelectorView.OnSelectionChangedListener listener) {
+        tabSelector.setOnSelectionChangedListener(listener);
     }
 
     public final void setCurrentItem(final int currentItem, final int options) {
