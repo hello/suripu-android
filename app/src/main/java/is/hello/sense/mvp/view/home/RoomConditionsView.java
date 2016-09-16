@@ -28,6 +28,8 @@ public final class RoomConditionsView extends PresenterView {
     @VisibleForTesting
     UnitFormatter unitFormatter;
 
+    private RecyclerView recyclerView;
+
     public RoomConditionsView(@NonNull final Activity activity,
                               @NonNull final UnitFormatter unitFormatter,
                               @NonNull final AnimatorContext animatorContext) {
@@ -56,11 +58,16 @@ public final class RoomConditionsView extends PresenterView {
 
     @Override
     public final void releaseViews() {
+        if (recyclerView != null) {
+            recyclerView.removeAllViews();
+            recyclerView.setAdapter(null);
+        }
         if (adapter != null) {
+            this.adapter.release();
             this.adapter.setOnItemClickedListener(null);
             this.adapter.clear();
-
         }
+        this.recyclerView = null;
         this.unitFormatter = null;
     }
 
