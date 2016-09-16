@@ -2,18 +2,18 @@ package is.hello.sense.mvp.view;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
 import android.support.annotation.CallSuper;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
-public abstract class PresenterView {
+public abstract class PresenterView extends FrameLayout {
     protected Context context;
 
     public PresenterView(@NonNull final Activity activity) {
+        super(activity);
+        activity.getLayoutInflater().inflate(getLayoutRes(), this);
         this.context = activity;
     }
 
@@ -21,22 +21,12 @@ public abstract class PresenterView {
         return context.getString(res);
     }
 
-    public void attach() {
 
-    }
-
-    public void create() {
+    public void viewCreated() {
 
     }
 
     public void resume() {
-
-    }
-
-    @NonNull
-    public abstract View createView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState);
-
-    public void viewCreated() {
 
     }
 
@@ -58,6 +48,9 @@ public abstract class PresenterView {
     public void detach() {
         release();
     }
+
+    @LayoutRes
+    protected abstract int getLayoutRes();
 
     /**
      * This will be called in both destroyView and detach to ensure nothing survives.
