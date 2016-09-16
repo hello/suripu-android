@@ -27,7 +27,6 @@ public class BacksideFragmentTest extends SenseTestCase {
         fragment.presenterView = Mockito.spy(fragment.presenterView);
         fragment.accountInteractor = Mockito.spy(fragment.accountInteractor);
         fragment.onViewCreated(fragment.getView(), null);
-        Mockito.verify(fragment.presenterView).setAdapter(Mockito.eq(fragment.getFragmentManager()));
         Mockito.verify(fragment.presenterView).addOnPageChangeListener(Mockito.eq(fragment));
         Mockito.verify(fragment.presenterView).setOnSelectionChangedListener(Mockito.eq(fragment));
         Mockito.verify(fragment).bindAndSubscribe(Mockito.eq(fragment.unreadStateInteractor.hasUnreadItems), Mockito.anyObject(), Mockito.anyObject());

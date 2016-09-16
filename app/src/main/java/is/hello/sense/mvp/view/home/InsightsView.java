@@ -23,6 +23,7 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
+import is.hello.sense.interactors.InsightsInteractor;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.adapter.ParallaxRecyclerScrollListener;
@@ -41,17 +42,14 @@ public final class InsightsView extends PresenterView {
     private final SwipeRefreshLayout swipeRefreshLayout;
     private final RecyclerView recyclerView;
     private final ProgressBar progressBar;
-    private DateFormatter dateFormatter;
-    private Picasso picasso;
-    private InsightsAdapter insightsAdapter;
+    private final InsightsAdapter insightsAdapter;
 
 
     public InsightsView(@NonNull final Activity activity,
                         @NonNull final DateFormatter dateFormatter,
-                        @NonNull final Picasso picasso) {
+                        @NonNull final Picasso picasso,
+                        @NonNull final InsightsAdapter.InteractionListener listener) {
         super(activity);
-        this.dateFormatter = dateFormatter;
-        this.picasso = picasso;
         this.swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.fragment_insights_refresh_container);
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
 
@@ -69,6 +67,8 @@ public final class InsightsView extends PresenterView {
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
         recyclerView.addItemDecoration(new BottomInsetDecoration(resources));
+        this.insightsAdapter = new InsightsAdapter(context, dateFormatter, listener, picasso);
+        recyclerView.setAdapter(insightsAdapter);
     }
 
     @Override
@@ -81,16 +81,8 @@ public final class InsightsView extends PresenterView {
         if (swipeRefreshLayout != null) {
             this.swipeRefreshLayout.setOnRefreshListener(null);
         }
-        this.dateFormatter = null;
-        this.picasso = null;
-        this.insightsAdapter = null;
-
     }
 
-    public final void setInsightsAdapter(@NonNull final InsightsAdapter.InteractionListener interactionListener) {
-        this.insightsAdapter = new InsightsAdapter(context, dateFormatter, interactionListener, picasso);
-        recyclerView.setAdapter(insightsAdapter);
-    }
 
     public final void updateWhatsNewState() {
         if (insightsAdapter != null) {

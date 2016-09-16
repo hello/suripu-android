@@ -35,7 +35,7 @@ public class SoundsView extends PresenterView {
     private final ExtendedViewPager pager;
     private final AnimatorContext animatorContext;
     private final StateSafeExecutor stateSafeExecutor;
-    private StaticFragmentAdapter adapter;
+    private final StaticFragmentAdapter adapter;
 
 
     public SoundsView(@NonNull final Activity activity,
@@ -58,6 +58,15 @@ public class SoundsView extends PresenterView {
         subNavSelector.addOption(R.string.alarm_subnavbar_alarm_list, false);
         subNavSelector.addOption(R.string.alarm_subnavbar_sounds_list, false);
         subNavSelector.setTranslationY(0);
+
+        this.adapter = new StaticFragmentAdapter(activity.getFragmentManager(),
+                                                 new StaticFragmentAdapter.Item(SmartAlarmListFragment.class, getString(R.string.alarm_subnavbar_alarm_list)),
+                                                 new StaticFragmentAdapter.Item(SleepSoundsFragment.class, getString(R.string.alarm_subnavbar_sounds_list)));
+        pager.setAdapter(adapter);
+        pager.setFadePageTransformer(true);
+        refreshView(false);
+        subNavSelector.setSelectedIndex(pager.getCurrentItem()); //todo confirm needed
+        swipeRefreshLayout.setRefreshing(true);
     }
 
     @Override
@@ -77,7 +86,6 @@ public class SoundsView extends PresenterView {
         if (subNavSelector != null) {
             this.subNavSelector.setOnSelectionChangedListener(null);
         }
-        this.adapter = null;
     }
 
     public final void setSwipeRefreshLayoutOnRefreshListener(@NonNull final SwipeRefreshLayout.OnRefreshListener listener) {
@@ -86,18 +94,6 @@ public class SoundsView extends PresenterView {
 
     public final void setSubNavSelectorOnSelectionChangedListener(@NonNull final SelectorView.OnSelectionChangedListener listener) {
         subNavSelector.setOnSelectionChangedListener(listener);
-    }
-
-    public final void setAdapter(@NonNull final FragmentManager fragmentManager,
-                                 final boolean withNavbar) {
-        this.adapter = new StaticFragmentAdapter(fragmentManager,
-                                                 new StaticFragmentAdapter.Item(SmartAlarmListFragment.class, getString(R.string.alarm_subnavbar_alarm_list)),
-                                                 new StaticFragmentAdapter.Item(SleepSoundsFragment.class, getString(R.string.alarm_subnavbar_sounds_list)));
-        pager.setAdapter(adapter);
-        pager.setFadePageTransformer(true);
-        refreshView(withNavbar);
-        subNavSelector.setSelectedIndex(pager.getCurrentItem()); //todo confirm needed
-        swipeRefreshLayout.setRefreshing(true);
     }
 
     public final boolean isShowingViews() {

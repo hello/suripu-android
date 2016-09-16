@@ -72,7 +72,7 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
         }
         presenterView.setSubNavSelectorOnSelectionChangedListener(this);
         presenterView.setSwipeRefreshLayoutOnRefreshListener(this);
-        presenterView.setAdapter(getChildFragmentManager(), showNavbar);
+        presenterView.refreshView(showNavbar);
         onUpdate();
     }
 
