@@ -30,7 +30,7 @@ import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SelectorView;
 
-public class BacksideView extends PresenterView {
+public final class BacksideView extends PresenterView {
     public static final int ITEM_ROOM_CONDITIONS = 0;
     public static final int ITEM_TRENDS = 1;
     public static final int ITEM_INSIGHTS = 2;
@@ -40,27 +40,24 @@ public class BacksideView extends PresenterView {
     public static final int DEFAULT_START_ITEM = BacksideView.ITEM_INSIGHTS;
 
     private int tabSelectorHeight;
-    private SelectorView tabSelector;
-    private ExtendedViewPager pager;
+    private final SelectorView tabSelector;
+    private final ExtendedViewPager pager;
     private StaticFragmentAdapter adapter;
 
 
     public BacksideView(@NonNull final Activity activity) {
         super(activity);
-    }
-
-    @NonNull
-    @Override
-    public final View createView(@NonNull final LayoutInflater inflater, @NonNull final ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_backside, container, false);
         final Resources resources = context.getResources();
-        this.pager = (ExtendedViewPager) view.findViewById(R.id.fragment_backside_pager);
+        this.pager = (ExtendedViewPager) findViewById(R.id.fragment_backside_pager);
 
         this.tabSelectorHeight = resources.getDimensionPixelSize(R.dimen.action_bar_height);
-        this.tabSelector = (SelectorView) view.findViewById(R.id.fragment_backside_tabs);
+        this.tabSelector = (SelectorView) findViewById(R.id.fragment_backside_tabs);
         tabSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, SelectorView.LayoutParams.MATCH_PARENT, 1));
+    }
 
-        return view;
+    @Override
+    protected int getLayoutRes() {
+        return R.layout.fragment_backside;
     }
 
     @CallSuper
@@ -72,8 +69,6 @@ public class BacksideView extends PresenterView {
         if (tabSelector != null) {
             this.tabSelector.setOnSelectionChangedListener(null);
         }
-        this.tabSelector = null;
-        this.pager = null;
         this.adapter = null;
 
     }
