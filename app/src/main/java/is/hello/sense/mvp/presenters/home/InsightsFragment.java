@@ -96,7 +96,7 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
     @Override
     public final void initializePresenterView() {
         if (presenterView == null) {
-            presenterView = new InsightsView(getActivity(), dateFormatter, picasso);
+            presenterView = new InsightsView(getActivity(), dateFormatter, picasso, this);
         }
     }
 
@@ -133,7 +133,6 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
     @Override
     public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        presenterView.setInsightsAdapter(this);
         presenterView.setSwipeRefreshLayoutRefreshListener(this);
 
         // Combining these into a single Observable results in error

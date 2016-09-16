@@ -70,7 +70,6 @@ public class BacksideFragment extends PresenterFragment<BacksideView>
     @Override
     public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        presenterView.setAdapter(getFragmentManager());
         presenterView.addOnPageChangeListener(this);
         presenterView.setOnSelectionChangedListener(this);
         final long itemLastUpdated =
