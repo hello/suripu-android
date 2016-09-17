@@ -40,8 +40,7 @@ public class Sensor implements Serializable {
 
     private float[] sensorValues = new float[0];
     private ValueLimits valueLimits = null;
-    private Scale minScale = null;
-    private Scale maxScale = null;
+    private Scale valuesScale = null;
 
     public String getName() {
         return name;
@@ -95,69 +94,28 @@ public class Sensor implements Serializable {
     public ValueLimits getValueLimits() {
         if (valueLimits == null) {
             valueLimits = new ValueLimits();
-            setScales();
         }
         return valueLimits;
     }
 
     @Nullable
-    public Scale getMinScale() {
-        return minScale;
-    }
-
-    @Nullable
-    public Scale getMaxScale() {
-        return maxScale;
-    }
-
-    @Nullable
-    public Scale getMaxScaleFromAvailable() {
-        if (scales == null || scales.isEmpty()) {
-            return null;
-        }
-        return scales.get(scales.size() - 1);
-    }
-
-    @Nullable
-    public Scale getMinScaleFromAvailable() {
-        if (scales == null || scales.isEmpty()) {
-            return null;
-        }
-        return scales.get(0);
-    }
-
-    @Nullable
-    public Scale getScaleFor(@NonNull final Scale scale) {
-        if (scales.size() == 1) {
-            return scales.get(0);
-        }
-        if (scales.get(0).equals(scale)) {
-            return scales.get(1);
-        }
-        for (int i = 1; i < scales.size(); i++) {
-            if (scales.get(i).equals(scale)) {
-                return scales.get(i - 1);
+    public Scale getScaleForSensorValue() {
+        if (valuesScale == null) {
+            if (scales == null || scales.isEmpty()) {
+                return null;
+            }
+            if (value == null) {
+                return scales.get(0);
+            }
+            for (final Scale scale : scales) {
+                if (scale.containsValue(value)) {
+                    valuesScale = scale;
+                    break;
+                }
             }
         }
-        return null;
+        return valuesScale;
     }
-
-    private void setScales() {
-        if (valueLimits == null) {
-            getValueLimits();// will call here again.
-            return;
-        }
-        for (final Scale scale : scales) {
-            if (scale.containsValue(valueLimits.min)) {
-                minScale = scale;
-
-            }
-            if (scale.containsValue(valueLimits.max)) {
-                maxScale = scale;
-            }
-        }
-    }
-
 
     @Override
     public String toString() {
