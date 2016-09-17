@@ -17,6 +17,7 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.commonsense.util.StringRef;
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.SleepPillDevice;
@@ -33,6 +34,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.SenseCache;
 
 public class ConnectPillFragment extends PillHardwareFragment implements OnBackPressedInterceptor {
+
     @Inject
     DevicesInteractor devicesPresenter;
     @Inject
@@ -41,6 +43,8 @@ public class ConnectPillFragment extends PillHardwareFragment implements OnBackP
     BluetoothStack bluetoothStack;
     @Inject
     SenseCache.FirmwareCache firmwareCache;
+
+    private static final String DEFAULT_DEBUG_URL = "https://s3.amazonaws.com/hello-firmware/kodobannin/mobile/pill.bin";
 
     private DiagramVideoView diagram;
     private ProgressBar activityIndicator;
@@ -133,13 +137,18 @@ public class ConnectPillFragment extends PillHardwareFragment implements OnBackP
 
     private void bindDevices(@NonNull final Devices devices) {
         final SleepPillDevice sleepPillDevice = devices.getSleepPill();
-        if (sleepPillDevice == null || !sleepPillDevice.shouldUpdate()) {
+        if (sleepPillDevice == null) {
             cancel(false);
             return;
         }
-        assert sleepPillDevice.firmwareUpdateUrl != null;
 
-        firmwareCache.setUrlLocation(sleepPillDevice.firmwareUpdateUrl);
+        if(BuildConfig.DEBUG && !sleepPillDevice.shouldUpdate()){
+            Log.d(getClass().getName(), "using " + DEFAULT_DEBUG_URL + " for firmwareCache url");
+            firmwareCache.setUrlLocation(DEFAULT_DEBUG_URL);
+        } else if (sleepPillDevice.shouldUpdate()){
+            assert sleepPillDevice.firmwareUpdateUrl != null;
+            firmwareCache.setUrlLocation(sleepPillDevice.firmwareUpdateUrl);
+        }
         pillDfuPresenter.update();
         pillDfuPresenter.setDeviceId(sleepPillDevice.deviceId);
     }
