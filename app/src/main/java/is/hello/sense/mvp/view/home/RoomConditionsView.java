@@ -211,7 +211,7 @@ public final class RoomConditionsView extends PresenterView {
                         Views.setSafeOnClickListener(action, messageActionOnClick);
                     }
 
-                    return new SensorViewHolder(view);
+                    return new ArrayRecyclerAdapter.ViewHolder(view);
                 }
                 case VIEW_ID_SENSOR: {
                     final View view = inflater.inflate(R.layout.item_room_sensor_condition, parent, false);
@@ -238,13 +238,13 @@ public final class RoomConditionsView extends PresenterView {
 
                 this.reading = (TextView) view.findViewById(R.id.item_sensor_condition_reading);
                 this.message = (TextView) view.findViewById(R.id.item_sensor_condition_message);
+                final View graph = view.findViewById(R.id.fragment_room_sensor_condition_graph);
 
                 final Resources resources = context.getResources();
                 final ColorDrawableCompat fill = Styles.createGraphFillSolidDrawable(resources);
                 this.lineGraphDrawable = new LineGraphDrawable(resources, fill);
                 lineGraphDrawable.setBottomInset(0);
 
-                final View graph = view.findViewById(R.id.fragment_room_sensor_condition_graph);
                 graph.setBackground(lineGraphDrawable);
 
                 view.setOnClickListener(this);
