@@ -30,6 +30,10 @@ public class SensorGraphDrawable extends Drawable {
      * Will scale height so  novalues (except -1) can fall below.
      */
     private static final float MIN_HEIGHT_RATIO = .9f;
+    /**
+     * Distance from bottom and top to draw from.
+     */
+    private static final float TEXT_POSITION_RATIO = .14f;
 
 
     private final Sensor sensor;
@@ -38,7 +42,7 @@ public class SensorGraphDrawable extends Drawable {
     private final float scaleRatio;
     private float scaleFactor = 1;
     private final float strokeWidth;
-    private final int textHeight;
+    private final float textPositionOffset;
 
     private final Paint gradientPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -47,7 +51,6 @@ public class SensorGraphDrawable extends Drawable {
     public SensorGraphDrawable(@NonNull final Context context, @NonNull final Sensor sensor) {
         Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.AppTheme_Text_Trends_BarGraph);
         this.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 120, context.getResources().getDisplayMetrics());
-        textHeight = Drawing.getEstimatedLineHeight(textLabelPaint, false);
         this.strokeWidth = this.height * STROKE_RATIO;
         this.sensor = sensor;
         final int strokeColor = sensor.getColor(context);
@@ -56,7 +59,7 @@ public class SensorGraphDrawable extends Drawable {
         this.gradientPaint.setShader(new LinearGradient(0, 0, 0, height, topColor, bottomColor, Shader.TileMode.MIRROR));
         this.strokePaint.setColor(strokeColor);
         this.minHeight = (int) ((height * MIN_HEIGHT_RATIO) + strokeWidth * 2);
-
+        textPositionOffset = height * TEXT_POSITION_RATIO;
         final float max = sensor.getValueLimits().getMax();
         if (max >= 1) {
             this.scaleRatio = minHeight / sensor.getValueLimits().getMax();
@@ -123,11 +126,11 @@ public class SensorGraphDrawable extends Drawable {
         }
 
         if (minScale != null) {
-            canvas.drawText(minScale.getName(), (float) (width * .05f), minHeight - textHeight * 1.5f, textLabelPaint);
+            canvas.drawText(minScale.getName(), (float) (width * .05f), minHeight - textPositionOffset, textLabelPaint);
         }
 
         if (maxScale != null) {
-            canvas.drawText(maxScale.getName(),  (float) (width * .05f), textHeight * 1.5f, textLabelPaint);
+            canvas.drawText(maxScale.getName(), (float) (width * .05f), textPositionOffset, textLabelPaint);
         }
 
 
