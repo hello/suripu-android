@@ -15,6 +15,7 @@ import android.util.TypedValue;
 
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.Scale;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.ui.widget.util.Drawing;
@@ -108,22 +109,13 @@ public class SensorGraphDrawable extends Drawable {
         this.strokePaint.setStrokeWidth(strokeWidth);
         canvas.drawPath(path, this.strokePaint);
 
-        Scale minScale = sensor.getMinScale();
-        Scale maxScale = sensor.getMaxScale();
-        if (minScale == null && maxScale == null) {
-            minScale = sensor.getMinScaleFromAvailable();
-            maxScale = sensor.getMaxScaleFromAvailable();
-        } else if (minScale == null) {
-            minScale = sensor.getScaleFor(maxScale);
-        } else if (maxScale == null) {
-            maxScale = sensor.getScaleFor(minScale);
-        } else if (minScale.equals(maxScale)) {
-            if (minScale.equals(sensor.getMinScaleFromAvailable())) {
-                maxScale = sensor.getScaleFor(minScale);
-            } else {
-                minScale = sensor.getScaleFor(maxScale);
-            }
+
+        final Scale scale = sensor.getScaleForSensorValue();
+        if (scale == null) {
+            return;
         }
+        canvas.drawText(scale.getName(), (float) (width * .05f), textPositionOffset, textLabelPaint);
+        /*
 
         if (minScale != null) {
             canvas.drawText(minScale.getName(), (float) (width * .05f), minHeight - textPositionOffset, textLabelPaint);
@@ -131,7 +123,7 @@ public class SensorGraphDrawable extends Drawable {
 
         if (maxScale != null) {
             canvas.drawText(maxScale.getName(), (float) (width * .05f), textPositionOffset, textLabelPaint);
-        }
+        }*/
 
 
     }
