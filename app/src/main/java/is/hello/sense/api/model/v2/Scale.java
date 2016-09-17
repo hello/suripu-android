@@ -21,7 +21,7 @@ public class Scale implements Serializable {
     @SerializedName("condition")
     private Condition condition;
 
-    public boolean containsValue(final float value) {
+    public boolean containsValue(final double value) {
         if (min == null && value < max) {
             return true;
         } else if (max == null && value > min) {
