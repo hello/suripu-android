@@ -10,10 +10,14 @@ import android.graphics.Path;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.text.TextPaint;
 import android.util.TypedValue;
 
 
+import is.hello.sense.R;
+import is.hello.sense.api.model.v2.Scale;
 import is.hello.sense.api.model.v2.sensors.Sensor;
+import is.hello.sense.ui.widget.util.Drawing;
 
 
 public class SensorGraphDrawable extends Drawable {
@@ -34,12 +38,16 @@ public class SensorGraphDrawable extends Drawable {
     private final float scaleRatio;
     private float scaleFactor = 1;
     private final float strokeWidth;
+    private final int textHeight;
 
     private final Paint gradientPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final TextPaint textLabelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 
     public SensorGraphDrawable(@NonNull final Context context, @NonNull final Sensor sensor) {
+        Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.AppTheme_Text_Trends_BarGraph);
         this.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 120, context.getResources().getDisplayMetrics());
+        textHeight = Drawing.getEstimatedLineHeight(textLabelPaint, false);
         this.strokeWidth = this.height * STROKE_RATIO;
         this.sensor = sensor;
         final int strokeColor = sensor.getColor(context);
@@ -47,7 +55,7 @@ public class SensorGraphDrawable extends Drawable {
         final int bottomColor = Color.argb(30, Color.red(strokeColor), Color.green(strokeColor), Color.blue(strokeColor));
         this.gradientPaint.setShader(new LinearGradient(0, 0, 0, height, topColor, bottomColor, Shader.TileMode.MIRROR));
         this.strokePaint.setColor(strokeColor);
-        this.minHeight = (int) ((height * MIN_HEIGHT_RATIO) + strokeWidth*2);
+        this.minHeight = (int) ((height * MIN_HEIGHT_RATIO) + strokeWidth * 2);
 
         final float max = sensor.getValueLimits().getMax();
         if (max >= 1) {
@@ -55,6 +63,7 @@ public class SensorGraphDrawable extends Drawable {
         } else {
             this.scaleRatio = 0;
         }
+
     }
 
     public final void setScaleFactor(final float scaleFactor) {
@@ -95,6 +104,31 @@ public class SensorGraphDrawable extends Drawable {
         this.strokePaint.setStyle(Paint.Style.STROKE);
         this.strokePaint.setStrokeWidth(strokeWidth);
         canvas.drawPath(path, this.strokePaint);
+
+        Scale minScale = sensor.getMinScale();
+        Scale maxScale = sensor.getMaxScale();
+        if (minScale == null && maxScale == null) {
+            minScale = sensor.getMinScaleFromAvailable();
+            maxScale = sensor.getMaxScaleFromAvailable();
+        } else if (minScale == null) {
+            minScale = sensor.getScaleFor(maxScale);
+        } else if (maxScale == null) {
+            maxScale = sensor.getScaleFor(minScale);
+        } else if (minScale.equals(maxScale)) {
+            if (minScale.equals(sensor.getMinScaleFromAvailable())) {
+                maxScale = sensor.getScaleFor(minScale);
+            } else {
+                minScale = sensor.getScaleFor(maxScale);
+            }
+        }
+
+        if (minScale != null) {
+            canvas.drawText(minScale.getName(), (float) (width * .05f), minHeight - textHeight * 1.5f, textLabelPaint);
+        }
+
+        if (maxScale != null) {
+            canvas.drawText(maxScale.getName(),  (float) (width * .05f), textHeight * 1.5f, textLabelPaint);
+        }
 
 
     }
