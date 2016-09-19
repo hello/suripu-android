@@ -23,6 +23,7 @@ import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.SensorResponseInteractor;
 import is.hello.sense.mvp.view.home.RoomConditionsView;
+import is.hello.sense.mvp.view.home.roomconditions.SensorResponseAdapter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
@@ -44,9 +45,21 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     @Inject
     ApiService apiService;
 
+    private SensorResponseAdapter adapter;
+
+    @Override
+    public final void initializePresenterView() {
+        if (this.presenterView == null) {
+            if (this.adapter == null) {
+                this.adapter = new SensorResponseAdapter(getActivity().getLayoutInflater(), this.unitFormatter, getAnimatorContext());
+                this.adapter.setOnItemClickedListener(this);
+            }
+            this.presenterView = new RoomConditionsView(getActivity(), this.adapter);
+        }
+    }
+
 
     //region Lifecycle
-
     @Override
     public final void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
@@ -59,51 +72,50 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addInteractor(unitFormatter);
-        addInteractor(sensorResponseInteractor);
+        addInteractor(this.unitFormatter);
+        addInteractor(this.sensorResponseInteractor);
     }
 
 
     @Override
     public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        updateTimer = new UpdateTimer(1, TimeUnit.MINUTES);
-        updateTimer.setOnUpdate(sensorResponseInteractor::update);
-        presenterView.setOnAdapterItemClickListener(this);
-        bindAndSubscribe(unitFormatter.unitPreferenceChanges(),
-                         ignored -> presenterView.notifyDataSetChanged(),
+        this.updateTimer = new UpdateTimer(1, TimeUnit.MINUTES);
+        this.updateTimer.setOnUpdate(this.sensorResponseInteractor::update);
+        bindAndSubscribe(this.unitFormatter.unitPreferenceChanges(),
+                         ignored -> this.adapter.notifyDataSetChanged(),
                          Functions.LOG_ERROR);
-        bindAndSubscribe(sensorResponseInteractor.sensors,
+        bindAndSubscribe(this.sensorResponseInteractor.sensors,
                          this::bindConditions,
                          this::conditionsUnavailable);
     }
 
-    @Override
-    public final void initializePresenterView() {
-        if (presenterView == null) {
-            presenterView = new RoomConditionsView(getActivity(), unitFormatter, getAnimatorContext());
-        }
-    }
 
     @Override
     public final void onResume() {
         super.onResume();
-        updateTimer.schedule();
+        this.updateTimer.schedule();
     }
 
     @Override
     public final void onPause() {
         super.onPause();
-        if (updateTimer != null) {
-            updateTimer.unschedule();
+        if (this.updateTimer != null) {
+            this.updateTimer.unschedule();
         }
     }
 
     @Override
     public void onRelease() {
         super.onRelease();
-        if (updateTimer != null) {
-            updateTimer.unschedule();
+        if (this.updateTimer != null) {
+            this.updateTimer.unschedule();
+        }
+        if (this.adapter != null) {
+            this.adapter.release();
+            this.adapter.setOnItemClickedListener(null);
+            this.adapter.clear();
+
         }
         this.updateTimer = null;
     }
@@ -115,7 +127,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
 
     @Override
     public final void onUpdate() {
-        sensorResponseInteractor.update();
+        this.sensorResponseInteractor.update();
     }
 
     //endregion
@@ -126,7 +138,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
 
     public final void bindConditions(@NonNull final SensorResponse currentConditions) {
         final List<Sensor> sensors = currentConditions.getSensors();
-        bindAndSubscribe(apiService.postSensors(new SensorDataRequest(sensors)),
+        bindAndSubscribe(this.apiService.postSensors(new SensorDataRequest(sensors)),
                          sensorsDataResponse -> {
                              final SensorData sensorData = sensorsDataResponse.getSensorData();
                              for (final Sensor sensor : sensors) {
@@ -135,11 +147,10 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
                                      sensor.setSensorValues(values);
                                  }
                              }
-                             presenterView.replaceAllSensors(sensors);
+                             this.adapter.dismissMessage();
+                             this.adapter.replaceAll(sensors);
                          },
-                         throwable -> {
-                             Log.e("Sensor", "error: " + throwable);
-                         });
+                         throwable -> Log.e("Sensor", "error: " + throwable));
 
 
     }
@@ -147,28 +158,28 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     public final void conditionsUnavailable(@NonNull final Throwable e) {
         Logger.error(RoomConditionsFragment.class.getSimpleName(), "Could not load conditions", e);
         if (ApiException.isNetworkError(e)) {
-            presenterView.displayMessage(false, 0, getString(R.string.error_room_conditions_unavailable),
-                                         R.string.action_retry,
-                                         ignored -> sensorResponseInteractor.update());
+            this.adapter.displayMessage(false, 0, getString(R.string.error_room_conditions_unavailable),
+                                        R.string.action_retry,
+                                        ignored -> this.sensorResponseInteractor.update());
         } else if (ApiException.statusEquals(e, 404)) {
-            presenterView.displayMessage(true,
-                                         0,
-                                         getString(R.string.error_room_conditions_no_sense),
-                                         R.string.action_pair_new_sense,
-                                         ignored -> {
-                                             final Intent intent = new Intent(getActivity(), OnboardingActivity.class);
-                                             intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
-                                             intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
-                                             startActivity(intent);
-                                         });
+            this.adapter.displayMessage(true,
+                                        0,
+                                        getString(R.string.error_room_conditions_no_sense),
+                                        R.string.action_pair_new_sense,
+                                        ignored -> {
+                                            final Intent intent = new Intent(getActivity(), OnboardingActivity.class);
+                                            intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
+                                            intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
+                                            startActivity(intent);
+                                        });
         } else {
             final StringRef messageRef = Errors.getDisplayMessage(e);
             final String message = messageRef != null
                     ? messageRef.resolve(getActivity())
                     : e.getMessage();
-            presenterView.displayMessage(false, 0, message,
-                                         R.string.action_retry,
-                                         ignored -> sensorResponseInteractor.update());
+            this.adapter.displayMessage(false, 0, message,
+                                        R.string.action_retry,
+                                        ignored -> sensorResponseInteractor.update());
         }
     }
 
