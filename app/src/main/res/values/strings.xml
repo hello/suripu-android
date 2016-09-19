@@ -579,6 +579,8 @@
     <string name="connect_pill_fragment_preparing">Preparing update</string>
     <string name="connect_pill_fragment_operation">Connect Pill</string>
     <string name="update_ready_pill_fragment_operation">Update Pill</string>
+    <string name="debug_title_confirm_pill_update">Found Pill</string>
+    <string name="debug_message_confirm_pill_update_fmt">Are you sure you want to update ‘%1$s’?</string>
 
     <string name="share_text">See how I\'m improving my sleep with Insights from Sense. %1$s #MySense</string>
 
