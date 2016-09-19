@@ -109,6 +109,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
                                @NonNull final CharSequence message,
                                @StringRes final int actionTitle,
                                @NonNull final View.OnClickListener actionOnClick) {
+        clear();
         this.messageWantsSenseIcon = messageWantsSenseIcon;
         this.messageTitle = title;
         this.messageBody = message;
@@ -128,7 +129,6 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     public void release() {
         replaceAll(new ArrayList<>());
         notifyDataSetChanged();
-
     }
 
     //endregion
@@ -140,7 +140,6 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         private final TextView descriptor;
         private final SensorGraphView graphView;
         private final View view;
-        boolean animated = false;
 
         public BaseViewHolder(@NonNull final View itemView) {
             super(itemView);
@@ -155,7 +154,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         @Override
         public void bind(final int position) {
             super.bind(position);
-            Log.e("Binding", "Position: " + position + ". Instance: " + toString());
+            Log.e("Binding", position + "");
             final Sensor sensor = getItem(position);
             final UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor.getType());
             title.setText(sensor.getName());
@@ -172,7 +171,6 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             final SensorGraphDrawable sensorGraphDrawable = new SensorGraphDrawable(inflater.getContext(), sensor);
             graphView.setBackground(sensorGraphDrawable);
             sensorGraphDrawable.setCallback(this);
-            //Log.e("Animating", sensor.getType().toString());
         }
 
         @Override
