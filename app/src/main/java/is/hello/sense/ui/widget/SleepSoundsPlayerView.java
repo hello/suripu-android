@@ -17,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-
 import java.util.List;
 
 import is.hello.go99.Anime;
@@ -48,7 +47,7 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
                                  final @NonNull SleepSoundsState state,
                                  final @NonNull SleepSoundsAdapter.InteractionListener interactionListener) {
         super(context);
-        ((LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.item_rounded_linearlayout, this);
+        LayoutInflater.from(context).inflate(R.layout.item_rounded_linearlayout, this);
         final RoundedLinearLayout view = (RoundedLinearLayout) findViewById(R.id.item_rounded_linearlayout);
         view.setOrientation(LinearLayout.VERTICAL);
         this.animatorContext = animatorContext;
@@ -56,23 +55,23 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
         this.titleRow = new TitleRow(context);
         this.soundRow = new SleepSoundsPlayerRow(context, state.getSounds());
         this.durationRow = new SleepSoundsPlayerRow(context, state.getDurations());
-        this.volumeRow = new SleepSoundsPlayerRow(context, state.getStatus());
+        this.volumeRow = new VolumePlayerRow(context, state.getStatus());
         view.addView(titleRow);
         view.addView(soundRow);
         view.addView(durationRow);
         view.addView(volumeRow);
         soundRow.setHolderClickListener(v -> {
-            if (!currentStatus.isPlaying()) {
+            if (!currentStatus.isPlaying() && displayedSound() != null) {
                 interactionListener.onSoundClick(displayedSound().getId(), state.getSounds());
             }
         });
         durationRow.setHolderClickListener(v -> {
-            if (!currentStatus.isPlaying()) {
+            if (!currentStatus.isPlaying() && displayedDuration() != null) {
                 interactionListener.onDurationClick(displayedDuration().getId(), state.getDurations());
             }
         });
         volumeRow.setHolderClickListener(v -> {
-            if (!currentStatus.isPlaying()) {
+            if (!currentStatus.isPlaying() && displayedVolume() != null) {
                 interactionListener.onVolumeClick(displayedVolume().getId(), state.getStatus());
             }
         });
@@ -81,7 +80,7 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
     public void bindStatus(final @NonNull SleepSoundStatus status,
                            final @Nullable Sound savedSound,
                            final @Nullable Duration savedDuration,
-                           @Nullable SleepSoundStatus.Volume savedVolume) {
+                           final @Nullable SleepSoundStatus.Volume savedVolume) {
         this.currentStatus = status;
         final ValueAnimator animator;
         if (status.isPlaying()) {
@@ -106,9 +105,6 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
 
         soundRow.bind(status.getSound(), savedSound, null);
         durationRow.bind(status.getDuration(), savedDuration, null);
-        if (savedVolume == SleepSoundStatus.Volume.None) {
-            savedVolume = null;
-        }
         volumeRow.bind(status.getVolume(), savedVolume, SleepSoundStatus.Volume.Medium);
     }
 
@@ -251,7 +247,10 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
                 listItem = savedItem;
             } else if (defaultItem != null) {
                 listItem = defaultItem;
-            } else {
+            } else if (items.isEmpty()) {
+                listItem = null;
+            }
+            else {
                 listItem = items.get(0);
             }
             value.setText(listItem == null ? null : listItem.toString());
@@ -262,7 +261,7 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
             requestLayout();
         }
 
-        public void setHolderClickListener(OnClickListener onClickListener) {
+        public void setHolderClickListener(final OnClickListener onClickListener) {
             holder.setOnClickListener(onClickListener);
         }
 
@@ -271,7 +270,8 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
             return listItem;
         }
 
-        private boolean itemIsContained(@NonNull final List<? extends IListObject.IListItem> items, @NonNull final IListObject.IListItem currentItem) {
+        private boolean itemIsContained(@NonNull final List<? extends IListObject.IListItem> items,
+                                        @NonNull final IListObject.IListItem currentItem) {
             for (int i = 0; i < items.size(); i++) {
                 if (items.get(i).getId() == currentItem.getId()) {
                     return true;
@@ -293,5 +293,23 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
 
     public interface IDisplayedValue {
         IListObject.IListItem displayedItem();
+    }
+
+    private class VolumePlayerRow extends SleepSoundsPlayerRow {
+        public VolumePlayerRow(final Context context,
+                               final SleepSoundStatus status) {
+            super(context, status);
+        }
+
+        @Override
+        public void bind(final @Nullable IListObject.IListItem currentItem,
+                         final @Nullable IListObject.IListItem savedItem,
+                         final @Nullable IListObject.IListItem defaultItem) {
+            if (savedItem == SleepSoundStatus.Volume.None) {
+                super.bind(currentItem, null, defaultItem);
+            } else {
+                super.bind(currentItem, savedItem, defaultItem);
+            }
+        }
     }
 }
