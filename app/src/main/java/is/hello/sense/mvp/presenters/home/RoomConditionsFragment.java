@@ -20,6 +20,7 @@ import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorData;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
+import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.SensorResponseInteractor;
 import is.hello.sense.mvp.view.home.RoomConditionsView;
@@ -30,12 +31,14 @@ import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.units.UnitPrinter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 
 public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsView> implements
-        ArrayRecyclerAdapter.OnItemClickedListener<Sensor> {
+        ArrayRecyclerAdapter.OnItemClickedListener<Sensor>,
+        SensorResponseAdapter.Formatter {
     private UpdateTimer updateTimer;
 
     @Inject
@@ -51,7 +54,8 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     public final void initializePresenterView() {
         if (this.presenterView == null) {
             if (this.adapter == null) {
-                this.adapter = new SensorResponseAdapter(getActivity().getLayoutInflater(), this.unitFormatter, getAnimatorContext());
+                this.adapter = new SensorResponseAdapter(getActivity().getLayoutInflater(), this, getAnimatorContext());
+                this.adapter.setAnimateNextUpdate(true);
                 this.adapter.setOnItemClickedListener(this);
             }
             this.presenterView = new RoomConditionsView(getActivity(), this.adapter);
@@ -111,12 +115,14 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         if (this.updateTimer != null) {
             this.updateTimer.unschedule();
         }
+
         if (this.adapter != null) {
             this.adapter.release();
             this.adapter.setOnItemClickedListener(null);
             this.adapter.clear();
 
         }
+        this.adapter = null;
         this.updateTimer = null;
     }
 
@@ -193,4 +199,10 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         startActivity(intent);
     }
 
+    //region sensorResponse
+    @Override
+    public UnitPrinter printerForSensor(@NonNull final SensorType sensorType) {
+        return unitFormatter.getUnitPrinterForSensor(sensorType);
+    }
+    //endregion
 }
