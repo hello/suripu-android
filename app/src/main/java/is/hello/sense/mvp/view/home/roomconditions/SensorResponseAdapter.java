@@ -1,10 +1,10 @@
 package is.hello.sense.mvp.view.home.roomconditions;
 
+import android.animation.ValueAnimator;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +14,9 @@ import android.widget.TextView;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 
+import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
@@ -30,9 +32,12 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     private static final int VIEW_SENSOR = 0;
     private static final int VIEW_ID_MESSAGE = 1;
     private final LayoutInflater inflater;
-    private final UnitFormatter unitFormatter;
     private final AnimatorContext animatorContext;
+    private final Formatter formatter;
+
     private boolean messageWantsSenseIcon;
+    private boolean animateNextUpdate = false;
+    private float scaleFactor = 0;
     @StringRes
     private int messageTitle;
     @Nullable
@@ -44,11 +49,11 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
 
     public SensorResponseAdapter(@NonNull final LayoutInflater inflater,
-                                 @NonNull final UnitFormatter unitFormatter,
+                                 @NonNull final Formatter formatter,
                                  @NonNull final AnimatorContext animatorContext) {
         super(new ArrayList<>());
         this.inflater = inflater;
-        this.unitFormatter = unitFormatter;
+        this.formatter = formatter;
         this.animatorContext = animatorContext;
     }
 
@@ -62,18 +67,18 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     public BaseViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         switch (viewType) {
             case VIEW_ID_MESSAGE:
-                final View view = inflater.inflate(R.layout.item_message_card, parent, false);
+                final View view = this.inflater.inflate(R.layout.item_message_card, parent, false);
 
                 final TextView title = (TextView) view.findViewById(R.id.item_message_card_title);
-                if (messageTitle != 0) {
-                    title.setText(messageTitle);
+                if (this.messageTitle != 0) {
+                    title.setText(this.messageTitle);
                     title.setVisibility(View.VISIBLE);
                 } else {
                     title.setVisibility(View.GONE);
                 }
 
                 final ImageView image = (ImageView) view.findViewById(R.id.item_message_card_image);
-                if (messageWantsSenseIcon) {
+                if (this.messageWantsSenseIcon) {
                     image.setImageResource(R.drawable.illustration_no_sense);
                     image.setVisibility(View.VISIBLE);
                 } else {
@@ -81,16 +86,16 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
                 }
 
                 final TextView messageText = (TextView) view.findViewById(R.id.item_message_card_message);
-                messageText.setText(messageBody);
+                messageText.setText(this.messageBody);
 
                 final Button action = (Button) view.findViewById(R.id.item_message_card_action);
-                action.setText(messageActionTitle);
-                if (messageActionOnClick != null) {
-                    Views.setSafeOnClickListener(action, messageActionOnClick);
+                action.setText(this.messageActionTitle);
+                if (this.messageActionOnClick != null) {
+                    Views.setSafeOnClickListener(action, this.messageActionOnClick);
                 }
                 return new BaseViewHolder(view);
             case VIEW_SENSOR:
-                return new BaseViewHolder(inflater.inflate(R.layout.item_sensor_response, parent, false));
+                return new BaseViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_sensor_response, parent, false));
             default:
                 throw new IllegalStateException();
         }
@@ -101,9 +106,36 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         holder.bind(position);
     }
 
+    @Override
+    public boolean replaceAll(@NonNull final Collection<? extends Sensor> collection) {
+        super.replaceAll(collection);
+        if (animateNextUpdate) {
+            animateNextUpdate = false;
+            animateGraph();
+        }
+        return true;
+    }
     //endregion
 
     //region adapter helpers
+
+    public void setAnimateNextUpdate(final boolean animateNextUpdate) {
+        this.animateNextUpdate = animateNextUpdate;
+    }
+
+    public void animateGraph() {
+        scaleFactor = 0;
+        final ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
+        animator.setDuration(750);
+        animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
+        animator.addUpdateListener(a -> {
+            scaleFactor = ((float) a.getAnimatedValue());
+            notifyDataSetChanged();
+        });
+        animatorContext.startWhenIdle(animator);
+
+    }
+
     public void displayMessage(final boolean messageWantsSenseIcon,
                                @StringRes final int title,
                                @NonNull final CharSequence message,
@@ -144,32 +176,32 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         public BaseViewHolder(@NonNull final View itemView) {
             super(itemView);
             this.view = itemView;
-            title = (TextView) itemView.findViewById(R.id.item_server_response_title);
-            body = (TextView) itemView.findViewById(R.id.item_server_response_body);
-            value = (TextView) itemView.findViewById(R.id.item_server_response_value);
-            descriptor = (TextView) itemView.findViewById(R.id.item_server_response_descriptor);
-            graphView = (SensorGraphView) itemView.findViewById(R.id.item_server_response_graph);
+            this.title = (TextView) itemView.findViewById(R.id.item_server_response_title);
+            this.body = (TextView) itemView.findViewById(R.id.item_server_response_body);
+            this.value = (TextView) itemView.findViewById(R.id.item_server_response_value);
+            this.descriptor = (TextView) itemView.findViewById(R.id.item_server_response_descriptor);
+            this.graphView = (SensorGraphView) itemView.findViewById(R.id.item_server_response_graph);
         }
 
         @Override
         public void bind(final int position) {
             super.bind(position);
-            Log.e("Binding", position + "");
             final Sensor sensor = getItem(position);
-            final UnitPrinter printer = unitFormatter.getUnitPrinterForSensor(sensor.getType());
-            title.setText(sensor.getName());
-            body.setText(sensor.getMessage());
+            final UnitPrinter printer = SensorResponseAdapter.this.formatter.printerForSensor(sensor.getType());
+            this.title.setText(sensor.getName());
+            this.body.setText(sensor.getMessage());
             if (sensor.getType() == SensorType.TEMPERATURE || sensor.getType() == SensorType.HUMIDITY) {
-                value.setText(sensor.getFormattedValue(printer));
+                this.value.setText(sensor.getFormattedValue(printer));
             } else {
-                value.setText(sensor.getFormattedValue(null));
+                this.value.setText(sensor.getFormattedValue(null));
             }
 
-            value.setTextColor(sensor.getColor(inflater.getContext()));
-            descriptor.setText(printer.print(sensor.getValue()));
+            this.value.setTextColor(sensor.getColor(SensorResponseAdapter.this.inflater.getContext()));
+            this.descriptor.setText(printer.print(sensor.getValue()));
 
-            final SensorGraphDrawable sensorGraphDrawable = new SensorGraphDrawable(inflater.getContext(), sensor);
-            graphView.setBackground(sensorGraphDrawable);
+            final SensorGraphDrawable sensorGraphDrawable = new SensorGraphDrawable(SensorResponseAdapter.this.inflater.getContext(), sensor);
+            sensorGraphDrawable.setScaleFactor(scaleFactor);
+            this.graphView.setBackground(sensorGraphDrawable);
             sensorGraphDrawable.setCallback(this);
         }
 
@@ -190,6 +222,10 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         public void unscheduleDrawable(final Drawable who, final Runnable what) {
 
         }
+    }
+
+    public interface Formatter {
+        UnitPrinter printerForSensor(@NonNull SensorType sensorType);
     }
 
 }
