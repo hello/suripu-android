@@ -37,8 +37,7 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 
 public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsView> implements
-        ArrayRecyclerAdapter.OnItemClickedListener<Sensor>,
-        SensorResponseAdapter.Formatter {
+        ArrayRecyclerAdapter.OnItemClickedListener<Sensor> {
     private UpdateTimer updateTimer;
 
     @Inject
@@ -54,7 +53,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     public final void initializePresenterView() {
         if (this.presenterView == null) {
             if (this.adapter == null) {
-                this.adapter = new SensorResponseAdapter(getActivity().getLayoutInflater(), this, getAnimatorContext());
+                this.adapter = new SensorResponseAdapter(getActivity().getLayoutInflater(), getAnimatorContext());
                 this.adapter.setAnimateNextUpdate(true);
                 this.adapter.setOnItemClickedListener(this);
             }
@@ -148,6 +147,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
                          sensorsDataResponse -> {
                              final SensorData sensorData = sensorsDataResponse.getSensorData();
                              for (final Sensor sensor : sensors) {
+                                 sensor.setSensorSuffix(unitFormatter.getSuffixForSensor(sensor.getType()));
                                  final float[] values = sensorData.get(sensor.getType());
                                  if (values != null) {
                                      sensor.setSensorValues(values);
@@ -199,10 +199,4 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         startActivity(intent);
     }
 
-    //region sensorResponse
-    @Override
-    public UnitPrinter printerForSensor(@NonNull final SensorType sensorType) {
-        return unitFormatter.getUnitPrinterForSensor(sensorType);
-    }
-    //endregion
 }
