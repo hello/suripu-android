@@ -192,7 +192,7 @@ public class ConnectToWiFiFragment extends BasePresenterFragment
         } else {
             networkSecurity = (Spinner) otherContainer.findViewById(R.id.fragment_connect_to_wifi_security);
             networkSecurity.setAdapter(new SecurityTypeAdapter(getActivity()));
-            networkSecurity.setSelection(sec_type.SL_SCAN_SEC_TYPE_WPA2_VALUE);
+            networkSecurity.setSelection(sec_type.SL_SCAN_SEC_TYPE_WPA_VALUE);
             networkSecurity.setOnItemSelectedListener(this);
 
             networkName.requestFocus();
@@ -257,6 +257,14 @@ public class ConnectToWiFiFragment extends BasePresenterFragment
             super(context, R.layout.item_sec_type, sec_type.values());
         }
 
+        @Override
+        public int getCount() {
+            if (super.getCount() > 3) {
+                return 4;
+            }
+            return super.getCount();
+        }
+
         private
         @StringRes
         int getTitle(final int position) {
@@ -270,11 +278,8 @@ public class ConnectToWiFiFragment extends BasePresenterFragment
                 case SL_SCAN_SEC_TYPE_WPA:
                     return R.string.sec_type_wpa;
 
-                case SL_SCAN_SEC_TYPE_WPA2:
-                    return R.string.sec_type_wpa2;
-
                 default:
-                    throw new IllegalArgumentException();
+                    return R.string.sec_type_wpa2;
             }
         }
 
