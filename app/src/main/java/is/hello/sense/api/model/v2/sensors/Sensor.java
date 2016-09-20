@@ -45,7 +45,7 @@ public class Sensor implements Serializable {
 
 
     /**
-     * Set after posting to /v2/Sensors
+     * Individual values over length of time, used for graphing. To be set after POST /v2/sensors
      */
     private float[] sensorValues = new float[0];
 
@@ -53,6 +53,11 @@ public class Sensor implements Serializable {
      * Min / Max Values
      */
     private ValueLimits valueLimits = null;
+
+    /**
+     * Symbol for Sensor. To be set after POST /v2/sensors
+     */
+    private String sensorSuffix = "";
 
     public String getName() {
         return name;
@@ -84,6 +89,10 @@ public class Sensor implements Serializable {
 
     }
 
+    public void setSensorSuffix(@NonNull final String sensorSuffix) {
+        this.sensorSuffix = sensorSuffix;
+    }
+
     @NonNull
     public float[] getSensorValues() {
         return sensorValues;
@@ -94,14 +103,8 @@ public class Sensor implements Serializable {
     }
 
     @NonNull
-    public CharSequence getFormattedValue(@Nullable final UnitPrinter printer) {
-        if (getValue() == null) {
-            return "";
-        } else if (printer != null) {
-            return printer.print(getValue());
-        } else {
-            return Styles.assembleReadingAndUnit(getValue(), "");
-        }
+    public CharSequence getFormattedValue(final boolean withSuffix) {
+        return Styles.assembleReadingAndUnit(getValue(), withSuffix ? sensorSuffix : "");
     }
 
     @NonNull
@@ -110,6 +113,11 @@ public class Sensor implements Serializable {
             valueLimits = new ValueLimits();
         }
         return valueLimits;
+    }
+
+    @NonNull
+    public String getSensorSuffix() {
+        return sensorSuffix;
     }
 
     @Override
