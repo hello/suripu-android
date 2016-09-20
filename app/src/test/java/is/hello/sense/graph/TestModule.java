@@ -54,8 +54,11 @@ import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
 import is.hello.sense.interactors.ZoomedOutTimelineInteractorTests;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractorTests;
+import is.hello.sense.interactors.pairsense.OnboardingPairSenseInteractor;
 import is.hello.sense.interactors.questions.ApiQuestionProviderTests;
 import is.hello.sense.interactors.questions.ReviewQuestionProviderTests;
+import is.hello.sense.mvp.presenters.OnboardingPairSensePresenterTests;
+import is.hello.sense.presenters.OnboardingPairSensePresenter;
 import is.hello.sense.rating.LocalUsageTrackerTests;
 import is.hello.sense.ui.adapter.SmartAlarmAdapterTests;
 import is.hello.sense.units.UnitFormatterTests;
@@ -126,7 +129,9 @@ import static org.mockito.Mockito.mock;
             SenseOTAStatusInteractorTests.class,
 
             SwapSenseInteractor.class,
-            SwapSenseInteractorTests.class
+            SwapSenseInteractorTests.class,
+
+            OnboardingPairSensePresenterTests.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")
@@ -225,5 +230,23 @@ public final class TestModule {
     @Singleton
     DevicesInteractor provideDevicesInteractor(final ApiService service){
         return new DevicesInteractor(service);
+    }
+
+    @Provides
+    @Singleton
+    OnboardingPairSenseInteractor provideOnboardingPairSenseInteractor(final HardwareInteractor hardwareInteractor){
+        return new OnboardingPairSenseInteractor(hardwareInteractor);
+    }
+
+    @Provides
+    @Singleton
+    OnboardingPairSensePresenter providesOnboardingPairSensePresenter(final HardwareInteractor hardwareInteractor,
+                                                                      final UserFeaturesInteractor userFeaturesInteractor,
+                                                                      final ApiService apiService,
+                                                                      final OnboardingPairSenseInteractor pairSenseInteractor){
+        return new OnboardingPairSensePresenter(hardwareInteractor,
+                                                userFeaturesInteractor,
+                                                apiService,
+                                                pairSenseInteractor);
     }
 }
