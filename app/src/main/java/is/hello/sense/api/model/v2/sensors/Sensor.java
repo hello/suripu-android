@@ -85,6 +85,7 @@ public class Sensor implements Serializable {
 
     public void setSensorValues(@NonNull final float[] values) {
         this.sensorValues = values;
+        this.valueLimits = null;
         getValueLimits();
 
     }

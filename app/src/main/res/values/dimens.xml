@@ -196,7 +196,8 @@
     <dimen name="trends_gridgraph_border_inset">1dp</dimen>
     <dimen name="trends_gridgraph_border_quarter_vertical_margins">10dp</dimen>
     <dimen name="trends_gridgraph_border_quarter_horizontal_margins">3dp</dimen>
-    <dimen name="sensor_graph_height">120dp</dimen>
+    <dimen name="sensor_graph_height">112dp</dimen>
+    <dimen name="sensor_line_distance">5dp</dimen>
 
     <!-- Timeline -->
 
