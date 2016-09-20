@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -16,6 +17,10 @@ import is.hello.sense.api.model.v2.Scale;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.units.UnitPrinter;
 
+/**
+ * Represents an individual Sensor. This is returned from GET /v2/sensors.
+ * Fetch the list of "sensorValues" over a given time period via POST /v2/sensors.
+ */
 public class Sensor implements Serializable {
     @SerializedName("name")
     private String name;
@@ -38,9 +43,16 @@ public class Sensor implements Serializable {
     @SerializedName("scale")
     private List<Scale> scales;
 
+
+    /**
+     * Set after posting to /v2/Sensors
+     */
     private float[] sensorValues = new float[0];
+
+    /**
+     * Min / Max Values
+     */
     private ValueLimits valueLimits = null;
-    private Scale valuesScale = null;
 
     public String getName() {
         return name;
@@ -68,6 +80,8 @@ public class Sensor implements Serializable {
 
     public void setSensorValues(@NonNull final float[] values) {
         this.sensorValues = values;
+        getValueLimits();
+
     }
 
     @NonNull
@@ -98,25 +112,6 @@ public class Sensor implements Serializable {
         return valueLimits;
     }
 
-    @Nullable
-    public Scale getScaleForSensorValue() {
-        if (valuesScale == null) {
-            if (scales == null || scales.isEmpty()) {
-                return null;
-            }
-            if (value == null) {
-                return scales.get(0);
-            }
-            for (final Scale scale : scales) {
-                if (scale.containsValue(value)) {
-                    valuesScale = scale;
-                    break;
-                }
-            }
-        }
-        return valuesScale;
-    }
-
     @Override
     public String toString() {
         return "Sensor{" +
@@ -132,28 +127,66 @@ public class Sensor implements Serializable {
                 "}";
     }
 
-    public class ValueLimits {
-        float min;
-        float max;
+
+    /**
+     * Helper class for {@link Sensor} to track the min and max sensorValues.
+     */
+    public class ValueLimits implements Serializable {
+        Float min = null;
+        Float max = null;
+        final String formattedMin;
+        final String formattedMax;
 
         public ValueLimits() {
-            for (final Float value : sensorValues) {
-                if (value < min) {
-                    min = value;
-                    continue;
+            if (sensorValues == null || sensorValues.length == 0) {
+                min = -1f;
+                max = -1f;
+            } else {
+                for (final Float value : sensorValues) {
+                    if (min == null || value < min) {
+                        min = value;
+                    }
+                    if (max == null || value > max) {
+                        max = value;
+                    }
                 }
-                if (value > max) {
-                    max = value;
-                }
+            }
+            if (max != null && min != null && Math.round(min) == Math.round(max)) {
+                formattedMax = "";
+                formattedMin = formatValue(min);
+            } else {
+                formattedMin = formatValue(min);
+                formattedMax = formatValue(max);
             }
         }
 
-        public float getMin() {
+
+        @NonNull
+        private String formatValue(@Nullable final Float value) {
+            if (value == null || value == -1) {
+                return "";
+            }
+            return String.format("%.0f", value);
+        }
+
+        @NonNull
+        public Float getMin() {
             return min;
         }
 
-        public float getMax() {
+        @NonNull
+        public Float getMax() {
             return max;
+        }
+
+        @NonNull
+        public String getFormattedMin() {
+            return formattedMin;
+        }
+
+        @NonNull
+        public String getFormattedMax() {
+            return formattedMax;
         }
 
         @Override
