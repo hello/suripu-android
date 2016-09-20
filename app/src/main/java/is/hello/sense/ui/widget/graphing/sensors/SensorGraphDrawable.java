@@ -4,12 +4,14 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
+import android.graphics.DashPathEffect;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 import android.util.TypedValue;
 
@@ -36,7 +38,6 @@ public class SensorGraphDrawable extends Drawable {
      */
     private static final float TEXT_POSITION_RATIO = .14f;
 
-
     private final Sensor sensor;
     private final int height;
     private final int minHeight;
@@ -47,6 +48,7 @@ public class SensorGraphDrawable extends Drawable {
 
     private final Paint gradientPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint linePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final TextPaint textLabelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 
     public SensorGraphDrawable(@NonNull final Context context, @NonNull final Sensor sensor) {
@@ -60,13 +62,17 @@ public class SensorGraphDrawable extends Drawable {
         this.gradientPaint.setShader(new LinearGradient(0, 0, 0, height, topColor, bottomColor, Shader.TileMode.MIRROR));
         this.strokePaint.setColor(strokeColor);
         this.minHeight = (int) ((height * MIN_HEIGHT_RATIO) + strokeWidth * 2);
-        textPositionOffset = height * TEXT_POSITION_RATIO;
+        this.textPositionOffset = height * TEXT_POSITION_RATIO;
         final float max = sensor.getValueLimits().getMax();
         if (max >= 1) {
             this.scaleRatio = minHeight / sensor.getValueLimits().getMax();
         } else {
             this.scaleRatio = 0;
         }
+
+        this.linePaint.setColor(ContextCompat.getColor(context, R.color.gray3));
+        this.linePaint.setStyle(Paint.Style.STROKE);
+        this.linePaint.setStrokeWidth(1);
 
     }
 
@@ -83,13 +89,13 @@ public class SensorGraphDrawable extends Drawable {
     public void draw(final Canvas canvas) {
         final float[] values = this.sensor.getSensorValues();
         final Path path = new Path();
-        final double width = canvas.getWidth();
+        final float width = canvas.getWidth();
         final double xIncrement = width / values.length + 1;
         int drawTo = (int) ((this.scaleFactor * width) / xIncrement);
         if (drawTo > values.length) {
             drawTo = values.length;
         }
-        path.moveTo(-10, canvas.getHeight() * 2);// arbitrary value greater than height to make sure there isn't a stroke at the bottom of the graph
+        path.moveTo(-width, canvas.getHeight() * 2);// arbitrary value greater than height to make sure there isn't a stroke at the bottom of the graph
         for (int i = 0; i < drawTo; i++) {
             final float value = values[i];
             final float x = (float) (i * xIncrement);
@@ -101,7 +107,7 @@ public class SensorGraphDrawable extends Drawable {
             }
             path.lineTo(x, y);
         }
-        path.lineTo((float) width * this.scaleFactor, canvas.getHeight());
+        path.lineTo(width * this.scaleFactor, canvas.getHeight());
         path.lineTo(-10, canvas.getHeight() * 2); //  arbitrary value greater than height to make sure there isn't a stroke at the bottom of the graph
         this.gradientPaint.setStyle(Paint.Style.FILL);
         canvas.drawPath(path, this.gradientPaint);
@@ -109,24 +115,34 @@ public class SensorGraphDrawable extends Drawable {
         this.strokePaint.setStrokeWidth(strokeWidth);
         canvas.drawPath(path, this.strokePaint);
 
-
-        final Scale scale = sensor.getScaleForSensorValue();
-        if (scale == null) {
-            return;
-        }
-        canvas.drawText(scale.getName(), (float) (width * .05f), textPositionOffset, textLabelPaint);
-        /*
-
-        if (minScale != null) {
-            canvas.drawText(minScale.getName(), (float) (width * .05f), minHeight - textPositionOffset, textLabelPaint);
-        }
-
-        if (maxScale != null) {
-            canvas.drawText(maxScale.getName(), (float) (width * .05f), textPositionOffset, textLabelPaint);
-        }*/
-
+        drawScale(canvas);
 
     }
+
+    private void drawScale(@NonNull final Canvas canvas) {
+        final float width = canvas.getWidth();
+        final Path path = new Path();
+        final float drawX = width * .05f * scaleFactor;
+        float drawY = minHeight - textPositionOffset;
+
+        canvas.drawText(sensor.getValueLimits().getFormattedMin(), drawX, drawY, textLabelPaint);
+        drawY += 10;
+        path.moveTo(drawX, drawY);
+        path.lineTo((width - drawX) * scaleFactor, drawY);
+        canvas.drawPath(path, linePaint);
+        if (sensor.getValueLimits().getFormattedMax().isEmpty()) {
+            return;
+        }
+        drawY = textPositionOffset;
+        canvas.drawText(sensor.getValueLimits().getFormattedMax(), drawX, drawY, textLabelPaint);
+        drawY += 10;
+        path.reset();
+        path.moveTo(drawX, drawY);
+        path.lineTo((width - drawX) * scaleFactor, drawY);
+        canvas.drawPath(path, linePaint);
+
+    }
+
 
     @Override
     public void setAlpha(int alpha) {
