@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
-import android.graphics.DashPathEffect;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -13,12 +12,9 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
-import android.util.TypedValue;
 
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Condition;
-import is.hello.sense.api.model.v2.Scale;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.ui.widget.util.Drawing;
 
@@ -36,7 +32,11 @@ public class SensorGraphDrawable extends Drawable {
     /**
      * Distance from bottom and top to draw from.
      */
-    private static final float TEXT_POSITION_RATIO = .14f;
+    private static final float TEXT_Y_POSITION_RATIO = .14f;
+    /**
+     * Distance from left and right to draw from.
+     */
+    private static final float TEXT_X_POSITION_RATIO = .05f;
     /**
      * Alpha value for the top of the gradient used to draw the graph.
      */
@@ -53,6 +53,7 @@ public class SensorGraphDrawable extends Drawable {
     private final Sensor sensor;
     private final int height;
     private final int minHeight;
+    private final int lineDistance;
     private final float scaleRatio;
     private final float strokeWidth;
     private final float textPositionOffset;
@@ -68,12 +69,13 @@ public class SensorGraphDrawable extends Drawable {
 
         // Sizes
         this.height = context.getResources().getDimensionPixelSize(R.dimen.sensor_graph_height);
+        this.lineDistance = context.getResources().getDimensionPixelSize(R.dimen.sensor_line_distance);
         this.strokeWidth = this.height * STROKE_RATIO;
         this.minHeight = (int) ((this.height * MIN_HEIGHT_RATIO) + (this.strokeWidth * 2));
-        this.textPositionOffset = this.height * TEXT_POSITION_RATIO;
+        this.textPositionOffset = this.height * TEXT_Y_POSITION_RATIO;
         final float max = sensor.getValueLimits().getMax();
         if (max >= 1) { // If it's a fraction or negative the graph will not scale correctly.
-            this.scaleRatio = minHeight / max;
+            this.scaleRatio = this.minHeight / max;
         } else {
             this.scaleRatio = 0;
         }
@@ -97,22 +99,22 @@ public class SensorGraphDrawable extends Drawable {
 
     @Override
     public int getIntrinsicHeight() {
-        return height;
+        return this.height;
     }
 
     @Override
     public void draw(final Canvas canvas) {
         /*
-        Something to remember is the graphs are drawn upside down. The highest point of the graph is 0
+        Something to remember is the canvas is drawn upside down. The highest point of the graph is 0
         and the lowest point of the graph is equal to the canvas height. So the smaller y is, the taller
         the graph is.
 
         (0,0)                           (canvas.getWidth(), 0)
-             ____________________________
-            |                            |
-            |                            |
-            |                            |
-            |____________________________|
+             _____________________________
+            |                _____        |
+            |  __/\    /\___/     \      _|
+            |_/    \__/            \____/ |
+            |_____________________________|
         (0, canvas.getHeight())         (canvas.getWidth(), canvas.getHeight())
 
 
@@ -134,15 +136,15 @@ public class SensorGraphDrawable extends Drawable {
         // start the line off the screen.
         path.moveTo(-width, this.height * 2);
 
-
         for (int i = 0; i < drawTo; i++) {
             final float value = values[i];
-            final float x = (float) (i * xIncrement);
-            final float y = getValueHeight(value);
-            path.lineTo(x, y);
+            final float xPos = (float) (i * xIncrement);
+            final float yPos = getValueHeight(value);
+            path.lineTo(xPos, yPos);
         }
+
         // draw off the screen but keep the height equal to the last drawn point. This makes it so the graph doesn't drop in height near the end.
-        path.lineTo((width + (this.strokeWidth * 2)) * this.scaleFactor, this.minHeight - values[drawTo] * this.scaleRatio);
+        path.lineTo((width + (this.strokeWidth * 2)) * this.scaleFactor, getValueHeight(values[drawTo]));
 
         // Now draw below the graph.
         path.lineTo((width + (this.strokeWidth * 2)) * this.scaleFactor, this.height * 2);
@@ -175,24 +177,24 @@ public class SensorGraphDrawable extends Drawable {
     private void drawScale(@NonNull final Canvas canvas) {
         final float width = canvas.getWidth();
         final Path path = new Path();
-        final float drawX = width * .05f * scaleFactor;
-        float drawY = minHeight - textPositionOffset;
+        final float xPos = width * TEXT_X_POSITION_RATIO *  this.scaleFactor;
+        float yPos = this.minHeight - this.textPositionOffset;
 
-        canvas.drawText(sensor.getValueLimits().getFormattedMin() + " " + sensor.getSensorSuffix(), drawX, drawY, textLabelPaint);
-        drawY += 10;
-        path.moveTo(drawX, drawY);
-        path.lineTo((width - drawX) * scaleFactor, drawY);
-        canvas.drawPath(path, linePaint);
-        if (sensor.getValueLimits().getFormattedMax().isEmpty()) {
+        canvas.drawText(this.sensor.getValueLimits().getFormattedMin() + " " + this.sensor.getSensorSuffix(), xPos, yPos, this.textLabelPaint);
+        yPos += this.lineDistance;
+        path.moveTo(xPos, yPos);
+        path.lineTo((width - xPos) * this.scaleFactor, yPos);
+        canvas.drawPath(path, this.linePaint);
+        if (this.sensor.getValueLimits().getFormattedMax().isEmpty()) {
             return;
         }
-        drawY = textPositionOffset;
-        canvas.drawText(sensor.getValueLimits().getFormattedMax() + " " + sensor.getSensorSuffix(), drawX, drawY, textLabelPaint);
-        drawY += 10;
+        yPos = this.textPositionOffset;
+        canvas.drawText(this.sensor.getValueLimits().getFormattedMax() + " " + this.sensor.getSensorSuffix(), xPos, yPos, this.textLabelPaint);
+        yPos += this.lineDistance;
         path.reset();
-        path.moveTo(drawX, drawY);
-        path.lineTo((width - drawX) * scaleFactor, drawY);
-        canvas.drawPath(path, linePaint);
+        path.moveTo(xPos, yPos);
+        path.lineTo((width - xPos) * this.scaleFactor, yPos);
+        canvas.drawPath(path, this.linePaint);
 
     }
 
