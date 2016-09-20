@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.annotation.VisibleForTesting;
 import android.view.View;
 
 import javax.inject.Inject;
@@ -45,7 +46,7 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     }
 
     @Override
-    public final void onCreate(final Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(accountInteractor);
     }
@@ -71,11 +72,6 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
         accountInteractor.update();
     }
 
-    private void bindAccount(@NonNull final Account account) {
-        presenterView.setBreadcrumbVisible(Tutorial.TAP_NAME.shouldShow(getActivity()) && account.getCreated().isBefore(Constants.RELEASE_DATE_FOR_LAST_NAME));
-    }
-
-
     @Override
     public final View.OnClickListener create(@NonNull final Class<? extends Fragment> fragmentClass,
                                              @StringRes final int titleRes,
@@ -92,6 +88,12 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
         };
 
     }
+
+    @VisibleForTesting
+    public void bindAccount(@NonNull final Account account) {
+        presenterView.setBreadcrumbVisible(Tutorial.TAP_NAME.shouldShow(getActivity()) && account.getCreated().isBefore(Constants.RELEASE_DATE_FOR_LAST_NAME));
+    }
+
 
     private View.OnClickListener showDeviceList() {
         return v -> {
