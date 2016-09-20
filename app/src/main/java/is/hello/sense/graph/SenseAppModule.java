@@ -143,7 +143,13 @@ import is.hello.sense.zendesk.ZendeskModule;
                 //todo remove when fragments use presenters
                 OnboardingSenseColorsFragment.class,
                 OnboardingRegisterAudioFragment.class,
-                OnboardingPairPill.class
+                OnboardingPairPill.class,
+                is.hello.sense.mvp.presenters.home.BacksideFragment.class,
+                is.hello.sense.mvp.presenters.home.RoomConditionsFragment.class,
+                is.hello.sense.mvp.presenters.home.TrendsFragment.class,
+                is.hello.sense.mvp.presenters.home.InsightsFragment.class,
+                is.hello.sense.mvp.presenters.home.SoundsFragment.class,
+                is.hello.sense.mvp.presenters.home.AppSettingsFragment.class
 
         }
 )

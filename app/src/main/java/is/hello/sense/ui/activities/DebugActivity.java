@@ -1,7 +1,9 @@
 package is.hello.sense.ui.activities;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,13 +36,16 @@ import is.hello.sense.util.SessionLogger;
 
 public class DebugActivity extends InjectionActivity {
     public static final String EXTRA_DEBUG_CHECKPOINT = "EXTRA_DEBUG_CHECKPOINT" + DebugActivity.class.getName();
-    @Inject ApiSessionManager sessionManager;
+    @Inject
+    ApiSessionManager sessionManager;
     @Inject
     PreferencesInteractor preferences;
     @Inject
     PersistentPreferencesInteractor persistentPreferences;
-    @Inject LocalUsageTracker localUsageTracker;
-    @Inject ApiEndpoint apiEndpoint;
+    @Inject
+    LocalUsageTracker localUsageTracker;
+    @Inject
+    ApiEndpoint apiEndpoint;
 
 
     @Override
@@ -96,6 +101,7 @@ public class DebugActivity extends InjectionActivity {
             // Do nothing.
         }
         adapter.add(new DetailItem("View What's New Card", this::viewWhatsNewCard));
+        adapter.add(new DetailItem("View Room Conditions Welcome Card", this::viewRoomConditionsWelcomeCard));
         adapter.add(new DetailItem("Simulate Picasso Low Memory", this::simulatePicassoLowMemory));
         adapter.add(new DetailItem("Re-enable review prompt", this::reEnableReviewPrompt));
         adapter.add(new DetailItem("Re-enable Amazon review prompt", this::reEnableAmazonReviewPrompt));
@@ -125,7 +131,7 @@ public class DebugActivity extends InjectionActivity {
         startActivity(onboarding);
     }
 
-    public void showUpdatePill(){
+    public void showUpdatePill() {
         final Intent pillUpdate = new Intent(this, PillUpdateActivity.class);
         startActivity(pillUpdate);
     }
@@ -197,16 +203,21 @@ public class DebugActivity extends InjectionActivity {
     }
 
 
-
     public void simulatePicassoLowMemory() {
         SenseApplication.getInstance().onTrimMemory(TRIM_MEMORY_MODERATE);
         Toast.makeText(getApplicationContext(), "Simulated", Toast.LENGTH_SHORT).show();
     }
 
     public void viewWhatsNewCard() {
-       // WhatsNewLayout.clearState(this); todo add back when we support this.
+        // WhatsNewLayout.clearState(this); todo add back when we support this.
         WhatsNewLayout.forceShow(this);
         Toast.makeText(getApplicationContext(), "Forgot What's New card", Toast.LENGTH_SHORT).show();
+    }
+
+    public void viewRoomConditionsWelcomeCard() {
+        final SharedPreferences sharedPreferences = getSharedPreferences(Constants.ROOM_CONDITIONS_PREFS, Context.MODE_PRIVATE);
+        sharedPreferences.edit().clear().apply();
+        Toast.makeText(getApplicationContext(), "Forgot Room Conditions Welcome Card", Toast.LENGTH_SHORT).show();
     }
 
     public void resetAppUsage() {

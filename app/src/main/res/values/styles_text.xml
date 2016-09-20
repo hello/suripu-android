@@ -9,6 +9,10 @@
         <item name="android:textColor">@color/dim</item>
     </style>
 
+    <style name="CardTitle" parent="AppTheme.Text.Header.H5">
+        <item name="android:textColor">@color/dark</item>
+    </style>
+
     <style name="Label.Error">
         <item name="android:textColor">@color/error</item>
     </style>
