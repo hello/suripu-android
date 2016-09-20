@@ -1,14 +1,11 @@
 package is.hello.sense.mvp.view.home;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,8 +19,16 @@ import is.hello.sense.ui.fragments.support.SupportFragment;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Distribution;
 
-public final class AppSettingsView extends PresenterView {
-    private ImageView breadcrumb;
+@SuppressLint("ViewConstructor")
+public class AppSettingsView extends PresenterView {
+    private final ImageView breadcrumb;
+    private final View accountItem;
+    private final View devicesItem;
+    private final View notificationsItem;
+    private final View unitsItem;
+    private final View supportItem;
+    private final View tellAFriendItem;
+    private final TextView version;
 
     public AppSettingsView(@NonNull final Activity activity,
                            @NonNull final ClickListenerGenerator generator,
@@ -31,30 +36,30 @@ public final class AppSettingsView extends PresenterView {
                            @NonNull final View.OnClickListener tellAFriendListener) {
         super(activity);
 
-        breadcrumb = (ImageView) findViewById(R.id.fragment_app_settings_breadcrumb);
+        this.breadcrumb = (ImageView) findViewById(R.id.fragment_app_settings_breadcrumb);
 
-        final View accountItem = findViewById(R.id.fragment_app_settings_account);
-        Views.setSafeOnClickListener(accountItem, generator.create(AccountSettingsFragment.class, R.string.label_account, true));
+        this.accountItem = findViewById(R.id.fragment_app_settings_account);
+        Views.setSafeOnClickListener(this.accountItem, generator.create(AccountSettingsFragment.class, R.string.label_account, true));
 
-        final View devicesItem = findViewById(R.id.fragment_app_settings_devices);
-        Views.setSafeOnClickListener(devicesItem, devicesListener);
+        this.devicesItem = findViewById(R.id.fragment_app_settings_devices);
+        Views.setSafeOnClickListener(this.devicesItem, devicesListener);
 
-        final View notificationsItem = findViewById(R.id.fragment_app_settings_notifications);
-        Views.setSafeOnClickListener(notificationsItem, generator.create(NotificationsSettingsFragment.class, R.string.label_notifications, false));
+        this.notificationsItem = findViewById(R.id.fragment_app_settings_notifications);
+        Views.setSafeOnClickListener(this.notificationsItem, generator.create(NotificationsSettingsFragment.class, R.string.label_notifications, false));
 
-        final View unitsItem = findViewById(R.id.fragment_app_settings_units);
-        Views.setSafeOnClickListener(unitsItem, generator.create(UnitSettingsFragment.class, R.string.label_units_and_time, false));
+        this.unitsItem = findViewById(R.id.fragment_app_settings_units);
+        Views.setSafeOnClickListener(this.unitsItem, generator.create(UnitSettingsFragment.class, R.string.label_units_and_time, false));
 
-        final View supportItem = findViewById(R.id.fragment_app_settings_support);
-        Views.setSafeOnClickListener(supportItem, ignored -> generator.create(SupportFragment.class, R.string.action_support, false));
+        this.supportItem = findViewById(R.id.fragment_app_settings_support);
+        Views.setSafeOnClickListener(this.supportItem, ignored -> generator.create(SupportFragment.class, R.string.action_support, false));
 
-        final View tellAFriendItem = findViewById(R.id.fragment_app_settings_tell_a_friend);
-        Views.setSafeOnClickListener(tellAFriendItem, tellAFriendListener);
+        this.tellAFriendItem = findViewById(R.id.fragment_app_settings_tell_a_friend);
+        Views.setSafeOnClickListener(this.tellAFriendItem, tellAFriendListener);
 
-        final TextView version = (TextView) findViewById(R.id.fragment_app_settings_version);
-        version.setText(context.getString(R.string.app_version_fmt, getString(R.string.app_name), BuildConfig.VERSION_NAME));
+        this.version = (TextView) findViewById(R.id.fragment_app_settings_version);
+        this.version.setText(context.getString(R.string.app_version_fmt, getString(R.string.app_name), BuildConfig.VERSION_NAME));
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
-            Views.setSafeOnClickListener(version, ignored -> Distribution.startDebugActivity((Activity) context));
+            Views.setSafeOnClickListener(this.version, ignored -> Distribution.startDebugActivity((Activity) super.context));
         }
     }
 
@@ -66,17 +71,22 @@ public final class AppSettingsView extends PresenterView {
 
     @Override
     public final void pause() {
-        breadcrumb.setVisibility(View.GONE);
+        this.breadcrumb.setVisibility(View.GONE);
     }
 
     @Override
     public final void releaseViews() {
-        breadcrumb = null;
-        //todo remove click listeners from viewcreated
+        accountItem.setOnClickListener(null);
+        devicesItem.setOnClickListener(null);
+        notificationsItem.setOnClickListener(null);
+        unitsItem.setOnClickListener(null);
+        supportItem.setOnClickListener(null);
+        tellAFriendItem.setOnClickListener(null);
+        version.setOnClickListener(null);
     }
 
-    public final void setBreadcrumbVisible(final boolean visible) {
-        breadcrumb.setVisibility(visible ? View.VISIBLE : View.GONE);
+    public void setBreadcrumbVisible(final boolean visible) {
+        this.breadcrumb.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
 
