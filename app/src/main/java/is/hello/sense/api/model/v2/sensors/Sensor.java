@@ -152,6 +152,9 @@ public class Sensor implements Serializable {
                 max = -1f;
             } else {
                 for (final Float value : sensorValues) {
+                    if (value <= -1) {
+                        continue;
+                    }
                     if (min == null || value < min) {
                         min = value;
                     }

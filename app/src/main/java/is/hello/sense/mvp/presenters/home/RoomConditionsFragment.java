@@ -153,7 +153,6 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
                              }
                              this.adapter.dismissMessage();
                              this.adapter.replaceAll(sensors);
-                             this.presenterView.postDelayed(this::animateGraph, 300);
                          },
                          throwable -> Log.e("Sensor", "error: " + throwable));
 
@@ -190,16 +189,6 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
 
     //endregion
 
-    public synchronized void animateGraph() {
-        stateSafeExecutor.execute(
-                () -> {
-                    if (!this.adapter.completedAnimation()) {
-                        adapter.stepAnimation();
-                        presenterView.postDelayed(this::animateGraph, 50);
-                    }
-                });
-
-    }
 
 
     @Override
