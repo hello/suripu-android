@@ -93,8 +93,15 @@ public class SensorGraphDrawable extends Drawable {
     }
 
     public final void setScaleFactor(final float scaleFactor) {
-        this.scaleFactor = scaleFactor;
-        invalidateSelf();
+        if (scaleFactor > 1) {
+            if (this.scaleFactor != 1) {
+                this.scaleFactor = 1;
+                invalidateSelf();
+            }
+        } else {
+            this.scaleFactor = scaleFactor;
+            invalidateSelf();
+        }
     }
 
     @Override
@@ -175,13 +182,13 @@ public class SensorGraphDrawable extends Drawable {
     private void drawScale(@NonNull final Canvas canvas) {
         final float width = canvas.getWidth();
         final Path path = new Path();
-        final float xPos = width * TEXT_X_POSITION_RATIO * this.scaleFactor;
+        final float xPos = width * TEXT_X_POSITION_RATIO;
         float yPos = this.minHeight - this.textPositionOffset;
 
         canvas.drawText(this.sensor.getValueLimits().getFormattedMin() + " " + this.sensor.getSensorSuffix(), xPos, yPos, this.textLabelPaint);
         yPos += this.lineDistance;
         path.moveTo(xPos, yPos);
-        path.lineTo((width - xPos) * this.scaleFactor, yPos);
+        path.lineTo(width - xPos, yPos);
         canvas.drawPath(path, this.linePaint);
         if (this.sensor.getValueLimits().getFormattedMax().isEmpty()) {
             return;
@@ -191,7 +198,7 @@ public class SensorGraphDrawable extends Drawable {
         yPos += this.lineDistance;
         path.reset();
         path.moveTo(xPos, yPos);
-        path.lineTo((width - xPos) * this.scaleFactor, yPos);
+        path.lineTo(width - xPos, yPos);
         canvas.drawPath(path, this.linePaint);
 
     }
