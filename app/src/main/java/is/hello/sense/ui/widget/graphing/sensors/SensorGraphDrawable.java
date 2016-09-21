@@ -94,6 +94,7 @@ public class SensorGraphDrawable extends Drawable {
 
     public final void setScaleFactor(final float scaleFactor) {
         this.scaleFactor = scaleFactor;
+        invalidateSelf();
     }
 
     @Override
@@ -102,20 +103,18 @@ public class SensorGraphDrawable extends Drawable {
     }
 
     /**
-        Something to remember is the canvas is drawn upside down. The highest point of the graph is 0
-        and the lowest point of the graph is equal to the canvas height. So the smaller y is, the taller
-        the graph is.
-
-        (0,0)                           (canvas.getWidth(), 0)
-             _____________________________
-            |                _____        |
-            |  __/\    /\___/     \      _|
-            |_/    \__/            \____/ |
-            |_____________________________|
-        (0, canvas.getHeight())         (canvas.getWidth(), canvas.getHeight())
-
-
-         */
+     * Something to remember is the canvas is drawn upside down. The highest point of the graph is 0
+     * and the lowest point of the graph is equal to the canvas height. So the smaller y is, the taller
+     * the graph is.
+     * <p>
+     * (0,0)                           (canvas.getWidth(), 0)
+     * _____________________________
+     * |                _____        |
+     * |  __/\    /\___/     \      _|
+     * |_/    \__/            \____/ |
+     * |_____________________________|
+     * (0, canvas.getHeight())         (canvas.getWidth(), canvas.getHeight())
+     */
     @Override
     public void draw(final Canvas canvas) {
         final Path path = new Path();
@@ -176,7 +175,7 @@ public class SensorGraphDrawable extends Drawable {
     private void drawScale(@NonNull final Canvas canvas) {
         final float width = canvas.getWidth();
         final Path path = new Path();
-        final float xPos = width * TEXT_X_POSITION_RATIO *  this.scaleFactor;
+        final float xPos = width * TEXT_X_POSITION_RATIO * this.scaleFactor;
         float yPos = this.minHeight - this.textPositionOffset;
 
         canvas.drawText(this.sensor.getValueLimits().getFormattedMin() + " " + this.sensor.getSensorSuffix(), xPos, yPos, this.textLabelPaint);

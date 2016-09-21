@@ -52,8 +52,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     public final void initializePresenterView() {
         if (this.presenterView == null) {
             if (this.adapter == null) {
-                this.adapter = new SensorResponseAdapter(getActivity().getLayoutInflater(), getAnimatorContext());
-                this.adapter.setAnimateNextUpdate(true);
+                this.adapter = new SensorResponseAdapter(getActivity().getLayoutInflater());
                 this.adapter.setOnItemClickedListener(this);
             }
             this.presenterView = new RoomConditionsView(getActivity(), this.adapter);
@@ -140,7 +139,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     //region Displaying Data
 
 
-    public final void bindConditions(@NonNull final SensorResponse currentConditions) {
+    public final synchronized void bindConditions(@NonNull final SensorResponse currentConditions) {
         final List<Sensor> sensors = currentConditions.getSensors();
         bindAndSubscribe(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)),
                          sensorsDataResponse -> {
@@ -154,6 +153,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
                              }
                              this.adapter.dismissMessage();
                              this.adapter.replaceAll(sensors);
+                             this.presenterView.postDelayed(this::animateGraph, 300);
                          },
                          throwable -> Log.e("Sensor", "error: " + throwable));
 
@@ -184,11 +184,22 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
                     : e.getMessage();
             this.adapter.displayMessage(false, 0, message,
                                         R.string.action_retry,
-                                        ignored -> sensorResponseInteractor.update());
+                                        ignored -> this.sensorResponseInteractor.update());
         }
     }
 
     //endregion
+
+    public synchronized void animateGraph() {
+        stateSafeExecutor.execute(
+                () -> {
+                    if (!this.adapter.completedAnimation()) {
+                        adapter.stepAnimation();
+                        presenterView.postDelayed(this::animateGraph, 50);
+                    }
+                });
+
+    }
 
 
     @Override
