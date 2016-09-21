@@ -11,7 +11,6 @@ import android.support.annotation.VisibleForTesting;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.interactors.Interactor;
 import is.hello.sense.interactors.InteractorContainer;
-import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.common.SenseFragment;
 
@@ -38,12 +37,6 @@ public abstract class ScopedInjectionFragment extends SenseFragment {
             SenseApplication.getInstance().inject(this); //todo temporary until we phase out old ScopedInjectionActivity
             // throw new ClassCastException(context.getClass() + " needs to be instanceof " + ScopedInjectionActivity.class.getSimpleName());
         }
-    }
-
-
-    @CallSuper
-    public final boolean canObservableEmit() {
-        return isAdded() && !getActivity().isFinishing();
     }
 
     @CallSuper
