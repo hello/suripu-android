@@ -62,6 +62,7 @@ public class SensorGraphDrawable extends Drawable {
     private final Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint linePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final TextPaint textLabelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+    private final Path drawingPath = new Path();
 
     private float scaleFactor = 0; // Animation
 
@@ -77,7 +78,6 @@ public class SensorGraphDrawable extends Drawable {
         this.minHeight = (int) ((this.height * MIN_HEIGHT_RATIO) + (this.strokeWidth * 2));
         this.textPositionOffset = this.height * TEXT_Y_POSITION_RATIO;
         this.maxHeight = (int) (textPositionOffset + lineDistance);
-        final float max = sensor.getValueLimits().getMax();
 
         // Paints
         final int strokeColor = sensor.getColor(context);
@@ -85,7 +85,12 @@ public class SensorGraphDrawable extends Drawable {
                                                         Color.argb(GRADIENT_TOP_ALPHA, Color.red(strokeColor), Color.green(strokeColor), Color.blue(strokeColor)),
                                                         Color.argb(GRADIENT_BOTTOM_ALPHA, Color.red(strokeColor), Color.green(strokeColor), Color.blue(strokeColor)),
                                                         Shader.TileMode.MIRROR));
+        this.gradientPaint.setStyle(Paint.Style.FILL);
+
         this.strokePaint.setColor(strokeColor);
+        this.strokePaint.setStyle(Paint.Style.STROKE);
+        this.strokePaint.setStrokeWidth(this.strokeWidth);
+
         this.linePaint.setColor(ContextCompat.getColor(context, R.color.gray3));
         this.linePaint.setStyle(Paint.Style.STROKE);
         this.linePaint.setStrokeWidth(STROKE_WIDTH);
@@ -124,7 +129,7 @@ public class SensorGraphDrawable extends Drawable {
      */
     @Override
     public void draw(final Canvas canvas) {
-        final Path path = new Path();
+        this.drawingPath.reset();
         final float[] values = this.sensor.getSensorValues();
         // Cast once
         final float width = canvas.getWidth();
@@ -132,39 +137,32 @@ public class SensorGraphDrawable extends Drawable {
         // distance between each value point;
         final double xIncrement = width / values.length;
 
-
         // determine how many values to draw for a smooth animation effect
         int drawTo = (int) ((this.scaleFactor * width) / xIncrement);
         if (drawTo >= values.length) {
             drawTo = values.length - 1;
         }
         // start the line off the screen.
-        path.moveTo(-width, this.height * 2);
+        this.drawingPath.moveTo(-width, this.height * 2);
 
         for (int i = 0; i < drawTo; i++) {
-            final float value = values[i];
-            final float xPos = (float) (i * xIncrement);
-            final float yPos = getValueHeight(value);
-            path.lineTo(xPos, yPos);
+            this.drawingPath.lineTo((float) (i * xIncrement), getValueHeight(values[i]));
         }
 
         // draw off the screen but keep the height equal to the last drawn point. This makes it so the graph doesn't drop in height near the end.
-        path.lineTo((width + (this.strokeWidth * 2)) * this.scaleFactor, getValueHeight(values[drawTo]));
+        this.drawingPath.lineTo((width + (this.strokeWidth * 2)) * this.scaleFactor, getValueHeight(values[drawTo]));
 
         // Now draw below the graph.
-        path.lineTo((width + (this.strokeWidth * 2)) * this.scaleFactor, this.height * 2);
+        this.drawingPath.lineTo((width + (this.strokeWidth * 2)) * this.scaleFactor, this.height * 2);
 
         // Connect back to the start so it fills nicely.
-        path.lineTo(-width, this.height * 2);
+        this.drawingPath.lineTo(-width, this.height * 2);
 
         // First fill the graph with the light colored gradient.
-        this.gradientPaint.setStyle(Paint.Style.FILL);
-        canvas.drawPath(path, this.gradientPaint);
+        canvas.drawPath(this.drawingPath, this.gradientPaint);
 
         // Now draw the darker colored stroke around the graph.
-        this.strokePaint.setStyle(Paint.Style.STROKE);
-        this.strokePaint.setStrokeWidth(this.strokeWidth);
-        canvas.drawPath(path, this.strokePaint);
+        canvas.drawPath(this.drawingPath, this.strokePaint);
 
         // Draw the min/max text and horizontal line.
         drawScale(canvas);
@@ -175,7 +173,9 @@ public class SensorGraphDrawable extends Drawable {
         if (value == 0) {
             return this.minHeight;
         } else if (value != -1) {
-            return this.minHeight - (this.minHeight * ((value - minValue) / valueDifference)) + this.strokeWidth * 2 + maxHeight;
+            return this.minHeight
+                    - (this.minHeight * ((value - this.minValue) / this.valueDifference))
+                    + this.strokeWidth * 2 + this.maxHeight;
         } else {
             return this.height + this.strokeWidth * 2;
         }
