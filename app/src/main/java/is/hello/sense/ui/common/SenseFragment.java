@@ -8,19 +8,11 @@ import android.os.Handler;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
-
-import is.hello.sense.BuildConfig;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class SenseFragment extends Fragment {
-    protected void Log(@NonNull final String tag, @Nullable final String message) {
-        if (BuildConfig.DEBUG) {
-            Log.e(tag, message);
-        }
-    }
 
     /**
      * Shows the fragment using a fragment manager within a given container.
