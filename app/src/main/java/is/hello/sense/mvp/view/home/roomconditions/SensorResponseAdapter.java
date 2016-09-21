@@ -1,6 +1,5 @@
 package is.hello.sense.mvp.view.home.roomconditions;
 
-import android.animation.ValueAnimator;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,8 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-import is.hello.go99.Anime;
-import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorType;
@@ -26,17 +23,14 @@ import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.units.UnitFormatter;
-import is.hello.sense.units.UnitPrinter;
 
 public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorResponseAdapter.BaseViewHolder> {
     private static final int VIEW_SENSOR = 0;
     private static final int VIEW_ID_MESSAGE = 1;
     private final LayoutInflater inflater;
-    private final AnimatorContext animatorContext;
 
     private boolean messageWantsSenseIcon;
-    private boolean animateNextUpdate = false;
+    private boolean completedAnimation;
     private float scaleFactor = 0;
     @StringRes
     private int messageTitle;
@@ -50,11 +44,9 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     private final HashMap<SensorType, SensorGraphDrawable> drawableHolder = new HashMap<>();
 
 
-    public SensorResponseAdapter(@NonNull final LayoutInflater inflater,
-                                 @NonNull final AnimatorContext animatorContext) {
+    public SensorResponseAdapter(@NonNull final LayoutInflater inflater) {
         super(new ArrayList<>());
         this.inflater = inflater;
-        this.animatorContext = animatorContext;
     }
 
     //region adapter overrides
@@ -110,32 +102,26 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     public boolean replaceAll(@NonNull final Collection<? extends Sensor> collection) {
         this.drawableHolder.clear();
         super.replaceAll(collection);
-        if (this.animateNextUpdate) {
-            this.animateNextUpdate = false;
-            animateGraph();
-        }
+        notifyDataSetChanged();
         return true;
     }
     //endregion
 
     //region adapter helpers
 
-    public void setAnimateNextUpdate(final boolean animateNextUpdate) {
-        this.animateNextUpdate = animateNextUpdate;
+    public synchronized void stepAnimation() {
+        scaleFactor += .06f;
+        if (scaleFactor > 1f) {
+            scaleFactor = 1;
+            completedAnimation = true;
+        }
+        notifyDataSetChanged();
     }
 
-    public void animateGraph() {
-        this.scaleFactor = 0;
-        final ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
-        animator.setDuration(Anime.DURATION_SLOW);
-        animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
-        animator.addUpdateListener(a -> {
-            this.scaleFactor = ((float) a.getAnimatedValue());
-            notifyDataSetChanged();
-        });
-        this.animatorContext.startWhenIdle(animator);
-
+    public synchronized boolean completedAnimation() {
+        return completedAnimation;
     }
+
 
     public void displayMessage(final boolean messageWantsSenseIcon,
                                @StringRes final int title,
@@ -199,19 +185,17 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
                 sensorGraphDrawable = SensorResponseAdapter.this.drawableHolder.get(sensor.getType());
             } else {
                 sensorGraphDrawable = new SensorGraphDrawable(SensorResponseAdapter.this.inflater.getContext(), sensor);
+                sensorGraphDrawable.setCallback(this);
                 SensorResponseAdapter.this.drawableHolder.put(sensor.getType(), sensorGraphDrawable);
             }
             sensorGraphDrawable.setScaleFactor(scaleFactor);
             this.graphView.setBackground(sensorGraphDrawable);
-            sensorGraphDrawable.setCallback(this);
         }
 
         @Override
         public void invalidateDrawable(final Drawable who) {
             this.view.invalidate();
-            this.graphView.invalidate();
             this.view.requestLayout();
-            this.graphView.requestLayout();
         }
 
         @Override
