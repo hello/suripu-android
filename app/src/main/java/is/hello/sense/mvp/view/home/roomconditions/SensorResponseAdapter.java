@@ -30,8 +30,6 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     private final LayoutInflater inflater;
 
     private boolean messageWantsSenseIcon;
-    private boolean completedAnimation;
-    private float scaleFactor = 0;
     @StringRes
     private int messageTitle;
     @Nullable
@@ -40,8 +38,6 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     private int messageActionTitle;
     @Nullable
     private View.OnClickListener messageActionOnClick;
-
-    private final HashMap<SensorType, SensorGraphDrawable> drawableHolder = new HashMap<>();
 
 
     public SensorResponseAdapter(@NonNull final LayoutInflater inflater) {
@@ -98,30 +94,9 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         holder.bind(position);
     }
 
-    @Override
-    public boolean replaceAll(@NonNull final Collection<? extends Sensor> collection) {
-        this.drawableHolder.clear();
-        super.replaceAll(collection);
-        notifyDataSetChanged();
-        return true;
-    }
     //endregion
 
     //region adapter helpers
-
-    public synchronized void stepAnimation() {
-        scaleFactor += .06f;
-        if (scaleFactor > 1f) {
-            scaleFactor = 1;
-            completedAnimation = true;
-        }
-        notifyDataSetChanged();
-    }
-
-    public synchronized boolean completedAnimation() {
-        return completedAnimation;
-    }
-
 
     public void displayMessage(final boolean messageWantsSenseIcon,
                                @StringRes final int title,
@@ -148,7 +123,6 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     public void release() {
         replaceAll(new ArrayList<>());
         notifyDataSetChanged();
-        this.drawableHolder.clear();
     }
 
     //endregion
@@ -180,16 +154,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             this.value.setText(sensor.getFormattedValue(sensor.getType() == SensorType.TEMPERATURE || sensor.getType() == SensorType.HUMIDITY));
             this.value.setTextColor(sensor.getColor(SensorResponseAdapter.this.inflater.getContext()));
             this.descriptor.setText(sensor.getSensorSuffix());
-            final SensorGraphDrawable sensorGraphDrawable;
-            if (SensorResponseAdapter.this.drawableHolder.containsKey(sensor.getType())) {
-                sensorGraphDrawable = SensorResponseAdapter.this.drawableHolder.get(sensor.getType());
-            } else {
-                sensorGraphDrawable = new SensorGraphDrawable(SensorResponseAdapter.this.inflater.getContext(), sensor);
-                sensorGraphDrawable.setCallback(this);
-                SensorResponseAdapter.this.drawableHolder.put(sensor.getType(), sensorGraphDrawable);
-            }
-            sensorGraphDrawable.setScaleFactor(scaleFactor);
-            this.graphView.setBackground(sensorGraphDrawable);
+            this.graphView.setSensorGraphDrawable(new SensorGraphDrawable(SensorResponseAdapter.this.inflater.getContext(), sensor));
         }
 
         @Override
