@@ -5,25 +5,32 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SensorDataRequest implements Serializable {
-    @SerializedName("sensors")
-    private final List<SensorQuery> queries;
+import is.hello.sense.api.model.ApiResponse;
 
-    public SensorDataRequest(@NonNull final List<Sensor> sensors) {
+public class SensorDataRequest extends ApiResponse {
+
+    @SerializedName("scope")
+    private final QueryScope queryScope;
+
+    @SerializedName("sensors")
+    private final List<SensorType> queries;
+
+    public SensorDataRequest(@NonNull final QueryScope queryScope, @NonNull final List<Sensor> sensors) {
+        this.queryScope = queryScope;
         this.queries = new ArrayList<>();
         for (final Sensor sensor : sensors) {
-            queries.add(sensor.getSensorQuery());
+            queries.add(sensor.getType());
         }
     }
 
     @Override
     public String toString() {
         return "SensorDataRequest{" +
+                "Scope=" + queryScope +
                 "Queries=" + Arrays.toString(queries.toArray()) +
                 "}";
     }
