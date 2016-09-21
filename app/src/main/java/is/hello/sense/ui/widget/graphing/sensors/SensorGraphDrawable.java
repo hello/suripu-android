@@ -13,7 +13,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 
-
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.ui.widget.util.Drawing;
@@ -102,9 +101,7 @@ public class SensorGraphDrawable extends Drawable {
         return this.height;
     }
 
-    @Override
-    public void draw(final Canvas canvas) {
-        /*
+    /**
         Something to remember is the canvas is drawn upside down. The highest point of the graph is 0
         and the lowest point of the graph is equal to the canvas height. So the smaller y is, the taller
         the graph is.
@@ -119,6 +116,8 @@ public class SensorGraphDrawable extends Drawable {
 
 
          */
+    @Override
+    public void draw(final Canvas canvas) {
         final Path path = new Path();
         final float[] values = this.sensor.getSensorValues();
         // Cast once

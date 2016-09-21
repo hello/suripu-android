@@ -16,11 +16,11 @@ import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
+import is.hello.sense.api.model.v2.sensors.QueryScope;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorData;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
-import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.SensorResponseInteractor;
 import is.hello.sense.mvp.view.home.RoomConditionsView;
@@ -31,7 +31,6 @@ import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.units.UnitFormatter;
-import is.hello.sense.units.UnitPrinter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
@@ -143,7 +142,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
 
     public final void bindConditions(@NonNull final SensorResponse currentConditions) {
         final List<Sensor> sensors = currentConditions.getSensors();
-        bindAndSubscribe(this.apiService.postSensors(new SensorDataRequest(sensors)),
+        bindAndSubscribe(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)),
                          sensorsDataResponse -> {
                              final SensorData sensorData = sensorsDataResponse.getSensorData();
                              for (final Sensor sensor : sensors) {
