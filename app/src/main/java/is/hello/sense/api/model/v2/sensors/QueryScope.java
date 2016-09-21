@@ -12,7 +12,7 @@ public enum QueryScope implements Enums.FromString {
 
 
     public static QueryScope fromString(@Nullable final String string) {
-        return Enums.fromString(string, values(), DAY_5_MINUTE);
+        return Enums.fromString(string, values(), LAST_3H_5_MINUTE);
     }
 
 }
