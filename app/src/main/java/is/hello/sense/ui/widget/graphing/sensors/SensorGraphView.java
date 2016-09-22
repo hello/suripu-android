@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+
 import android.view.MotionEvent;
 import android.view.View;
 
