@@ -80,6 +80,7 @@ implements RoomCheckPresenter.Output{
         super.onDestroyView();
 
         presenterView.stopAnimations();
+        presenterView.releaseViews();
         presenterView = null;
     }
 

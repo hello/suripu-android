@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
@@ -35,8 +36,6 @@ import is.hello.sense.api.model.SensorState;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.widget.SensorConditionView;
 import is.hello.sense.ui.widget.SensorTickerView;
-import is.hello.sense.ui.widget.util.Drawing;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 
 import static is.hello.go99.Anime.cancelAll;
@@ -87,6 +86,8 @@ public class RoomCheckView extends PresenterView {
     @Override
     public void releaseViews() {
         sensorContainerInterpolator = null;
+        animatingSensorView = null;
+        scoreAnimator = null;
     }
 
     public void setSensorContainerInterpolator(@NonNull final TimeInterpolator interpolator){
@@ -144,9 +145,7 @@ public class RoomCheckView extends PresenterView {
                     .start();
         }
 
-        status.setTextAppearance(context, R.style.AppTheme_Text_SectionHeading_Large);
         status.setText(getStatusStringForSensor(sensorName));
-        Drawing.setLetterSpacing(status, Styles.LETTER_SPACING_SECTION_HEADING_LARGE);
         this.animatingSensorView = sensorView;
         sensorView.fadeInProgressIndicator(() -> {
 
@@ -164,10 +163,8 @@ public class RoomCheckView extends PresenterView {
                                 return;
                             }
 
-                            status.setTextAppearance(status.getContext(), R.style.AppTheme_Text_Body);
                             status.setText(null);
                             status.setTransformationMethod(null);
-                            Drawing.setLetterSpacing(status, 0f);
                             status.setText(currentPositionSensor.getMessage());
 
                             animateSenseCondition(currentPositionSensor.getCondition(), false);
@@ -225,24 +222,28 @@ public class RoomCheckView extends PresenterView {
             Views.setSafeOnClickListener(continueButton, onContinueClickListener);
         };
         if (animate) {
-            animatorFor(dynamicContent, animatorContext)
-                    .fadeOut(View.INVISIBLE)
-                    .addOnAnimationCompleted(finishedFadeOut -> {
-                        if (!finishedFadeOut) {
-                            return;
-                        }
+            animatorContext.transaction( transaction -> {
+                transaction.animatorFor(dynamicContent)
+                        .fadeOut(View.INVISIBLE);
+                transaction.animatorFor(sensorViewContainer)
+                        .fadeOut(View.INVISIBLE);
 
-                        dynamicContent.removeAllViews();
+            }, onCompleted -> {
+                if(onCompleted){
+                    Log.d(getClass().getName(), "showCompletion: onCompleted");
+                    dynamicContent.removeAllViews();
 
-                        inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, dynamicContent, true);
+                    inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, dynamicContent, true);
 
-                        animatorFor(dynamicContent, animatorContext)
-                                .fadeIn()
-                                .addOnAnimationCompleted(atEnd)
-                                .postStart();
-                    })
-                    .start();
+                    animatorFor(dynamicContent, animatorContext)
+                            .fadeIn()
+                            .addOnAnimationCompleted(atEnd)
+                            .postStart();
+                }
+            });
+
         } else {
+            sensorViewContainer.setVisibility(INVISIBLE);
             dynamicContent.removeAllViews();
             inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, dynamicContent, true);
             atEnd.onAnimationCompleted(true);
