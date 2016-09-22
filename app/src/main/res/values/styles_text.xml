@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="Heading" parent="AppTheme.Text.Header.H1">
+    </style>
+
     <style name="Body" parent="AppTheme.Text.Body">
         <item name="android:background">@color/background_light</item>
     </style>
