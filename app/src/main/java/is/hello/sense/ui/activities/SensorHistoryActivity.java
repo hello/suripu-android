@@ -10,7 +10,8 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.handholding.util.WelcomeDialogParser;
 import is.hello.sense.util.Analytics;
-
+//todo delete
+@Deprecated
 public class SensorHistoryActivity extends SenseActivity {
     public static final String EXTRA_SENSOR = SensorHistoryActivity.class.getName() + ".EXTRA_SENSOR";
 

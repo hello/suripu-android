@@ -652,4 +652,8 @@
     <string name="voice_result_rejected">rejected</string>
     <string name="voice_result_try_again">try again</string>
     <string name="voice_result_unknown">unknown</string>
+
+    <string name="sensor_detail_last_day">Last Day</string>
+    <string name="sensor_detail_past_week">Past Week</string>
+
 </resources>
