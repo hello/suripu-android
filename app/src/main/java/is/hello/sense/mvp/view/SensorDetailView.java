@@ -18,14 +18,22 @@ public final class SensorDetailView extends PresenterView {
     private final TextView message;
     private final SensorGraphView sensorGraphView;
 
-    public SensorDetailView(@NonNull final Activity activity) {
+    public SensorDetailView(@NonNull final Activity activity,
+                            final int color) {
         super(activity);
         this.subNavSelector = (SelectorView) findViewById(R.id.fragment_sensor_detail_selector);
+        this.subNavSelector.setToggleButtonColor(R.color.white);
+        this.subNavSelector.addOption(R.string.sensor_detail_last_day, false)
+                           .setBackgroundColor(color);
+        this.subNavSelector.addOption(R.string.sensor_detail_past_week, false)
+                           .setBackgroundColor(color);
+        this.subNavSelector.setBackgroundColor(color);
         this.value = (TextView) findViewById(R.id.fragment_sensor_detail_value);
         this.message = (TextView) findViewById(R.id.fragment_sensor_detail_message);
         this.sensorGraphView = (SensorGraphView) findViewById(R.id.fragment_sensor_detail_graph_view);
 
-      }
+    }
+\
 
     @Override
     protected final int getLayoutRes() {
