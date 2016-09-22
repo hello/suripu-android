@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+
 import is.hello.sense.R;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.mvp.view.home.roomconditions.SensorResponseAdapter;
@@ -15,13 +16,14 @@ import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 
 @SuppressLint("ViewConstructor")
 public final class RoomConditionsView extends PresenterView {
+    final RecyclerView recyclerView;
 
     public RoomConditionsView(@NonNull final Activity activity,
                               @NonNull final SensorResponseAdapter adapter) {
         super(activity);
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.fragment_room_conditions_refresh_container);
         swipeRefreshLayout.setEnabled(false);
-        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.fragment_room_conditions_recycler);
+        recyclerView = (RecyclerView) findViewById(R.id.fragment_room_conditions_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
 
@@ -42,5 +44,7 @@ public final class RoomConditionsView extends PresenterView {
 
     @Override
     public final void releaseViews() {
+        recyclerView.setAdapter(null);
+
     }
 }
