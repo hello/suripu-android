@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -65,7 +66,7 @@ public class SensorConditionView extends FrameLayout {
         final int height = resources.getDimensionPixelSize(R.dimen.item_room_sensor_condition_view_height);
         addView(progressBar, new LayoutParams(width, height, Gravity.CENTER));
 
-        setTint(resources.getColor(R.color.sensor_empty));
+        setTint(ContextCompat.getColor(context, R.color.sensor_empty));
     }
 
     @Override
@@ -96,19 +97,19 @@ public class SensorConditionView extends FrameLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        int canvasWidth = canvas.getWidth(),
-            canvasHeight = canvas.getHeight();
-        int canvasMidX = canvasWidth / 2;
+        final int canvasWidth = canvas.getWidth();
+        final int canvasHeight = canvas.getHeight();
+        final int canvasMidX = canvasWidth / 2;
 
         if (icon != null) {
-            int iconMidX = icon.getIntrinsicWidth() / 2;
+            final int iconMidX = icon.getIntrinsicWidth() / 2;
             icon.setBounds(canvasMidX - iconMidX, 0,
                            canvasMidX + iconMidX, canvasHeight);
             icon.draw(canvas);
         }
 
         if (transitionIcon != null) {
-            int iconMidX = transitionIcon.getIntrinsicWidth() / 2;
+            final int iconMidX = transitionIcon.getIntrinsicWidth() / 2;
             transitionIcon.setBounds(canvasMidX - iconMidX, 0,
                                      canvasMidX + iconMidX, canvasHeight);
             transitionIcon.draw(canvas);
