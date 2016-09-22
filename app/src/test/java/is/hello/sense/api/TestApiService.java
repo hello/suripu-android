@@ -58,6 +58,9 @@ import is.hello.sense.api.model.v2.TimelineBuilder;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.TimelineEventBuilder;
 import is.hello.sense.api.model.v2.Trends;
+import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
+import is.hello.sense.api.model.v2.sensors.SensorResponse;
+import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.util.Logger;
@@ -436,5 +439,15 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<SenseDevice.SwapResponse> swapDevices(@NonNull @Body final SenseDevice.SwapRequest oldSenseId) {
         return loadResponse("swap_sense_"+oldSenseId.senseId, new TypeToken<SenseDevice.SwapResponse>(){}.getType());
+    }
+
+    @Override
+    public Observable<SensorResponse> getSensors() {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<SensorsDataResponse> postSensors(@NonNull @Body SensorDataRequest request) {
+        return unimplemented();
     }
 }

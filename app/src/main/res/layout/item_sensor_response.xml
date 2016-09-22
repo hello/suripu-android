@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    style="@style/AppTheme.Card.Clickable"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/x2"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/item_server_response_title"
+                style="@style/Card.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Temp"/>
+
+            <TextView
+                android:id="@+id/item_server_response_body"
+                style="@style/Card.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Temp2"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/item_server_response_value"
+                style="@style/Card.Value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Temp"/>
+
+            <TextView
+                android:id="@+id/item_server_response_descriptor"
+                style="@style/Card.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="F"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <is.hello.sense.ui.widget.graphing.sensors.SensorGraphView
+        android:id="@+id/item_server_response_graph"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

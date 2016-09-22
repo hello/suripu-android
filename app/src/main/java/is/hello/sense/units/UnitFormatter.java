@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.interactors.Interactor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.widget.util.Styles;
@@ -168,6 +169,24 @@ public class UnitFormatter extends Interactor {
 
             default:
                 return UnitPrinter.SIMPLE;
+        }
+    }
+
+    @NonNull
+    public String getSuffixForSensor(@NonNull final SensorType type) {
+        switch (type) {
+            case TEMPERATURE:
+                return UNIT_SUFFIX_TEMPERATURE;
+            case HUMIDITY:
+                return UNIT_SUFFIX_HUMIDITY;
+            case PARTICULATES:
+                return UNIT_SUFFIX_AIR_QUALITY;
+            case LIGHT:
+                return UNIT_SUFFIX_LIGHT;
+            case SOUND:
+                return UNIT_SUFFIX_NOISE;
+            default:
+                return "";
         }
     }
 

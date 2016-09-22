@@ -16,13 +16,16 @@ import android.view.ViewGroup;
 
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.presenters.outputs.HelpOutput;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Logger;
 
-public abstract class PresenterFragment<T extends PresenterView> extends ObserverFragment {
+public abstract class PresenterFragment<T extends PresenterView>
+        extends ObserverFragment
+        implements HelpOutput {
 
     protected boolean animatorContextFromActivity = false;
     protected LoadingDialogFragment loadingDialogFragment;
@@ -38,7 +41,6 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     @Override
     public void onAttach(final Context context) {
         super.onAttach(context);
-        Log(getClass().getSimpleName(), "onAttach(context)");
         if (animatorContext == null && context instanceof AnimatorContext.Scene) {
             this.animatorContext = ((AnimatorContext.Scene) context).getAnimatorContext();
             this.animatorContextFromActivity = true;
@@ -49,7 +51,6 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     @Override
     public void onAttach(final Activity activity) {
         super.onAttach(activity);
-        Log(getClass().getSimpleName(), "onAttach(activity)");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return;
         }
@@ -63,22 +64,18 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log(getClass().getSimpleName(), "onSaveInstanceState");
     }
 
     @CallSuper
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log(getClass().getSimpleName(), "onCreate");
-     //   presenterView.create();
     }
 
     @CallSuper
     @NonNull
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        Log(getClass().getSimpleName(), "onCreateView");
         initializePresenterView();
         return presenterView;
     }
@@ -94,7 +91,6 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     @Override
     public void onResume() {
         super.onResume();
-        Log(getClass().getSimpleName(), "onResume");
         presenterView.resume();
     }
 
@@ -102,7 +98,6 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log(getClass().getSimpleName(), "onDestroyView");
         if (presenterView != null) {
             this.presenterView.destroyView();
         }
@@ -113,7 +108,6 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     @Override
     public void onDetach() {
         super.onDetach();
-        Log(getClass().getSimpleName(), "onDetach");
         if (presenterView != null) {
             this.presenterView.detach();
         }
@@ -122,7 +116,6 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
 
     @CallSuper
     protected void onRelease() {
-        Log(getClass().getSimpleName(), "release");
         this.animatorContext = null;
         this.animatorContextFromActivity = false;
         this.presenterView = null;
@@ -181,26 +174,33 @@ public abstract class PresenterFragment<T extends PresenterView> extends Observe
     public void showAlertDialog(@NonNull final SenseAlertDialog.Builder builder) {
         builder.build(getActivity()).show();
     }
+    //endregion
 
+    //region HelpOutput
+
+    @Override
     public void showHelpUri(@NonNull final Uri uri) {
         UserSupport.openUri(getActivity(), uri);
     }
 
+    @Override
     public void showHelpUri(@NonNull final String uri) {
         showHelpUri(Uri.parse(uri));
     }
 
+    @Override
     public void showHelpUri(@NonNull final UserSupport.HelpStep helpStep) {
         UserSupport.showForHelpStep(getActivity(), helpStep);
     }
 
+    @Override
     public void showHelpUri(@NonNull final UserSupport.DeviceIssue deviceIssue) {
         UserSupport.showForDeviceIssue(getActivity(), deviceIssue);
     }
 
+    //endregion
+
     public void finishActivity() {
         getActivity().finish();
     }
-
-    //endregion
 }

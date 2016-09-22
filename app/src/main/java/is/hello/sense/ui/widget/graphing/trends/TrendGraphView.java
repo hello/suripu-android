@@ -1,8 +1,7 @@
-package is.hello.sense.ui.widget.graphing;
+package is.hello.sense.ui.widget.graphing.trends;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,7 +12,6 @@ import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.ui.widget.graphing.drawables.TrendGraphDrawable;
 
-@SuppressLint("ViewConstructor")
 public abstract class TrendGraphView extends View implements TrendFeedViewItem.OnBindGraph {
     protected TrendGraphDrawable drawable;
     protected AnimatorContext animatorContext;
@@ -22,7 +20,7 @@ public abstract class TrendGraphView extends View implements TrendFeedViewItem.O
     protected boolean isAnimating = false;
     protected AnimationCallback animationCallback;
 
-    protected TrendGraphView(@NonNull Context context, @NonNull AnimatorContext animatorContext, @NonNull AnimationCallback animationCallback) {
+    protected TrendGraphView(@NonNull final Context context, @NonNull final AnimatorContext animatorContext, @NonNull final AnimationCallback animationCallback) {
         super(context);
         this.animatorContext = animatorContext;
         this.animationCallback = animationCallback;
@@ -34,7 +32,7 @@ public abstract class TrendGraphView extends View implements TrendFeedViewItem.O
     }
 
     @Override
-    public void bindGraph(@NonNull Graph graph) {
+    public void bindGraph(@NonNull final Graph graph) {
         drawable.updateGraph(graph);
     }
 
@@ -47,15 +45,15 @@ public abstract class TrendGraphView extends View implements TrendFeedViewItem.O
         animationCallback.isFinished();
     }
 
-    public void fadeOut(@Nullable Animator.AnimatorListener animatorListener) {
+    public void fadeOut(@Nullable final Animator.AnimatorListener animatorListener) {
         fade(ValueAnimator.ofFloat(maxAnimationFactor, minAnimationFactor), animatorListener);
     }
 
-    public void fadeIn(@Nullable Animator.AnimatorListener animatorListener) {
+    public void fadeIn(@Nullable final Animator.AnimatorListener animatorListener) {
         fade(ValueAnimator.ofFloat(minAnimationFactor, maxAnimationFactor), animatorListener);
     }
 
-    private void fade(@NonNull ValueAnimator animator, @Nullable Animator.AnimatorListener animatorListener) {
+    private void fade(@NonNull final ValueAnimator animator, @Nullable final Animator.AnimatorListener animatorListener) {
         animator.setDuration(Anime.DURATION_NORMAL);
         animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
         animator.addUpdateListener(a -> {

@@ -53,10 +53,6 @@
     <item name="line_multiple_large" format="float" type="dimen">1.6</item>
 
 
-
-
-
-
     <dimen name="text_size_body">16sp</dimen>
     <dimen name="text_size_body_mid_sized">14sp</dimen>
     <dimen name="text_size_body_small">13sp</dimen>
@@ -107,7 +103,8 @@
 
     <dimen name="shadow_size">3dp</dimen>
     <dimen name="bottom_line">1dp</dimen>
-    <dimen name="divider_size">1px</dimen> <!-- px is not a typo -->
+    <dimen name="divider_size">1px</dimen>
+    <!-- px is not a typo -->
     <dimen name="divider_size_thick">1dp</dimen>
     <dimen name="pie_graph_stroke_width">1dp</dimen>
 
@@ -172,7 +169,8 @@
     <dimen name="sense_voice_circles_x1_padding">44dp</dimen>
     <dimen name="sense_voice_circles_x2_padding">21dp</dimen>
     <dimen name="sense_voice_translate_y">50dp</dimen>
-    <dimen name="sense_voice_fixed_margin">36px</dimen> <!-- px not typo -->
+    <dimen name="sense_voice_fixed_margin">36px</dimen>
+    <!-- px not typo -->
 
     <!-- Graphs -->
 
@@ -198,6 +196,8 @@
     <dimen name="trends_gridgraph_border_inset">1dp</dimen>
     <dimen name="trends_gridgraph_border_quarter_vertical_margins">10dp</dimen>
     <dimen name="trends_gridgraph_border_quarter_horizontal_margins">3dp</dimen>
+    <dimen name="sensor_graph_height">112dp</dimen>
+    <dimen name="sensor_line_distance">5dp</dimen>
 
     <!-- Timeline -->
 
