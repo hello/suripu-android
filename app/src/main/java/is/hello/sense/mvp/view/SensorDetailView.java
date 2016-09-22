@@ -11,9 +11,12 @@ import android.widget.TextView;
 
 import org.joda.time.DateTime;
 
+import java.util.List;
+
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
+import is.hello.sense.api.model.v2.sensors.X;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.SensorDetailScrollView;
 import is.hello.sense.ui.widget.SensorScaleList;
@@ -39,7 +42,7 @@ public final class SensorDetailView extends PresenterView
     private final TextView about;
     private final Sensor sensor;
     private int graphHeight = 0;
-    private List<X> timestamps;
+    private List<is.hello.sense.api.model.v2.sensors.X> timestamps;
     private boolean use24Hour = false;
     private int lastSelectedIndex = -1;
 
