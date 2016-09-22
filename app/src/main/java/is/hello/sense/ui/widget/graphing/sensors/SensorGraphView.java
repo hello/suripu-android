@@ -19,7 +19,7 @@ public class SensorGraphView extends View {
      */
     private static final int DURATION_MS = 750;
 
-    private final long startTime;
+    private long startTime;
 
     private SensorGraphDrawable graphDrawable;
     private float factor = 0;
@@ -34,7 +34,7 @@ public class SensorGraphView extends View {
 
     public SensorGraphView(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        this.startTime = System.currentTimeMillis();
+        resetTimeToAnimate(StartDelay.SHORT);
     }
 
     @Override
@@ -43,7 +43,12 @@ public class SensorGraphView extends View {
         if (graphDrawable == null) {
             return;
         }
-        factor = (System.currentTimeMillis() - startTime) / (float) DURATION_MS;
+        final long elapsedTime = System.currentTimeMillis() - startTime;
+        if (elapsedTime < 0) {
+            postInvalidateDelayed(Math.abs(elapsedTime));
+            return;
+        }
+        factor = (float) elapsedTime / (float) DURATION_MS;
         graphDrawable.setScaleFactor(factor);
         if (factor < 1) {
             postInvalidateDelayed(DURATION_MS / FPS);
@@ -52,9 +57,27 @@ public class SensorGraphView extends View {
 
     }
 
+    public void resetTimeToAnimate(final StartDelay delay) {
+        this.startTime = System.currentTimeMillis() + delay.length;
+        this.factor = 0;
+    }
+
     public void setSensorGraphDrawable(@NonNull final SensorGraphDrawable drawable) {
         this.graphDrawable = drawable;
         this.graphDrawable.setScaleFactor(factor);
         setBackground(drawable);
+        postInvalidate();
+    }
+
+    public enum StartDelay {
+        SHORT(250),
+        LONG(1500);
+
+        private final int length;
+
+        StartDelay(final int length) {
+            this.length = length;
+
+        }
     }
 }
