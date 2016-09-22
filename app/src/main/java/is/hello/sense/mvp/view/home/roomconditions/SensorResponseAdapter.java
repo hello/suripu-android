@@ -151,9 +151,14 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             final Sensor sensor = getItem(position);
             this.title.setText(sensor.getName());
             this.body.setText(sensor.getMessage());
-            this.value.setText(sensor.getFormattedValue(sensor.getType() == SensorType.TEMPERATURE || sensor.getType() == SensorType.HUMIDITY));
+            if (sensor.getType() == SensorType.TEMPERATURE || sensor.getType() == SensorType.HUMIDITY) {
+                this.value.setText(sensor.getFormattedValue(true));
+                this.descriptor.setText(null);
+            } else {
+                this.value.setText(sensor.getFormattedValue(false));
+                this.descriptor.setText(sensor.getSensorSuffix());
+            }
             this.value.setTextColor(sensor.getColor(SensorResponseAdapter.this.inflater.getContext()));
-            this.descriptor.setText(sensor.getSensorSuffix());
             this.graphView.setSensorGraphDrawable(new SensorGraphDrawable(SensorResponseAdapter.this.inflater.getContext(), sensor));
         }
 
