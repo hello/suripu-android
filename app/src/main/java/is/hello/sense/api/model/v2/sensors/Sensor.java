@@ -105,6 +105,9 @@ public class Sensor implements Serializable {
 
     @NonNull
     public CharSequence getFormattedValue(final boolean withSuffix) {
+        if (getValue() == null) {
+            return "";
+        }
         return Styles.assembleReadingAndUnit(getValue(), withSuffix ? sensorSuffix : "");
     }
 
