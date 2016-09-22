@@ -12,7 +12,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.api.model.Condition;
-import is.hello.sense.api.model.SensorState;
+import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.mvp.view.onboarding.RoomCheckView;
 import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.presenters.RoomCheckPresenter;
@@ -88,7 +88,7 @@ implements RoomCheckPresenter.Output{
     //region Scene Animation
     @Override
     public void showConditionAt(final int position,
-                                final SensorState currentPositionSensor) {
+                                final Sensor currentPositionSensor) {
         presenterView.animateSenseToGray();
         final UnitConverter unitConverter = unitFormatter.getUnitConverterForSensor(currentPositionSensor.getName());
         int convertedValue = 0;
@@ -103,7 +103,7 @@ implements RoomCheckPresenter.Output{
     }
 
     @Override
-    public void updateSensorView(final List<SensorState> sensors) {
+    public void updateSensorView(final List<Sensor> sensors) {
         presenterView.updateSensorView(sensors);
     }
 
@@ -125,8 +125,8 @@ implements RoomCheckPresenter.Output{
     //region Binding
 
     @Override
-    public void bindConditions(@NonNull final List<SensorState> sensors) {
-        presenterView.bindConditions(sensors);
+    public void createSensorConditionViews(@NonNull final List<String> sensorNames) {
+        presenterView.createSensorConditionViews(sensorNames);
         presenter.showConditionAt(0);
     }
 
