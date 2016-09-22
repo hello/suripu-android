@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
@@ -19,10 +20,6 @@ import is.hello.sense.ui.widget.util.Drawing;
 
 
 public class SensorGraphDrawable extends Drawable {
-    /**
-     * This will determine the stroke width based on height of the graph to scale on larger devices.
-     */
-    private static final float STROKE_RATIO = .01f;
     /**
      * Will scale height so no values (except -1) will be drawn below.
      */
@@ -38,22 +35,21 @@ public class SensorGraphDrawable extends Drawable {
     /**
      * Alpha value for the top of the gradient used to draw the graph.
      */
-    private static final int GRADIENT_TOP_ALPHA = 120;
+    private static final int GRADIENT_TOP_ALPHA = 100;
     /**
      * Alpha value for the bottom of the gradient used to draw the graph.
      */
-    private static final int GRADIENT_BOTTOM_ALPHA = 20;
+    private static final int GRADIENT_BOTTOM_ALPHA = 40;
     /**
      * Width of lines
      */
-    private static final int STROKE_WIDTH = 1;
+    private static final float STROKE_WIDTH = 2f;
 
     private final Sensor sensor;
     private final int height;
     private final int minHeight;
     private final int maxHeight;
     private final int lineDistance;
-    private final float strokeWidth;
     private final float textPositionOffset;
     private final float valueDifference;
     private final float minValue;
@@ -65,17 +61,18 @@ public class SensorGraphDrawable extends Drawable {
 
     private float scaleFactor = 0; // Animation
 
-    public SensorGraphDrawable(@NonNull final Context context, @NonNull final Sensor sensor) {
+    public SensorGraphDrawable(@NonNull final Context context,
+                               @NonNull final Sensor sensor,
+                               final int height) {
         this.sensor = sensor;
         this.minValue = sensor.getValueLimits().getMin();
         this.valueDifference = sensor.getValueLimits().getMax() - minValue;
 
         // Sizes
-        this.height = context.getResources().getDimensionPixelSize(R.dimen.sensor_graph_height);
+        this.height = height;
         this.lineDistance = context.getResources().getDimensionPixelSize(R.dimen.sensor_line_distance);
-        this.strokeWidth = this.height * STROKE_RATIO;
-        this.minHeight = (int) ((this.height * MIN_HEIGHT_RATIO) + (this.strokeWidth * 2));
         this.textPositionOffset = this.height * TEXT_Y_POSITION_RATIO;
+        this.minHeight = (int) ((this.height * MIN_HEIGHT_RATIO));
         this.maxHeight = (int) (textPositionOffset + lineDistance);
 
         // Paints
@@ -88,7 +85,7 @@ public class SensorGraphDrawable extends Drawable {
 
         this.strokePaint.setColor(strokeColor);
         this.strokePaint.setStyle(Paint.Style.STROKE);
-        this.strokePaint.setStrokeWidth(this.strokeWidth);
+        this.strokePaint.setStrokeWidth(STROKE_WIDTH);
 
         this.linePaint.setColor(ContextCompat.getColor(context, R.color.gray3));
         this.linePaint.setStyle(Paint.Style.STROKE);
@@ -152,10 +149,10 @@ public class SensorGraphDrawable extends Drawable {
         }
 
         // draw off the screen but keep the height equal to the last drawn point. This makes it so the graph doesn't drop in height near the end.
-        this.drawingPath.lineTo((width + (this.strokeWidth * 2)) * this.scaleFactor, getValueHeight(values[drawTo]));
+        this.drawingPath.lineTo(width  * this.scaleFactor, getValueHeight(values[drawTo]));
 
         // Now draw below the graph.
-        this.drawingPath.lineTo((width + (this.strokeWidth * 2)) * this.scaleFactor, this.height * 2);
+        this.drawingPath.lineTo((width ) * this.scaleFactor, this.height * 2);
 
         // Connect back to the start so it fills nicely.
         this.drawingPath.lineTo(-width, this.height * 2);
@@ -177,9 +174,9 @@ public class SensorGraphDrawable extends Drawable {
         } else if (value != -1) {
             return this.minHeight
                     - (this.minHeight * ((value - this.minValue) / this.valueDifference))
-                    + this.strokeWidth * 2 + this.maxHeight;
+                    + this.maxHeight;
         } else {
-            return this.height + this.strokeWidth * 2;
+            return this.height ;
         }
     }
 
@@ -187,7 +184,7 @@ public class SensorGraphDrawable extends Drawable {
         final float width = canvas.getWidth();
         final Path path = new Path();
         final float xPos = width * TEXT_X_POSITION_RATIO;
-        float yPos = this.minHeight + this.textPositionOffset + strokeWidth * 2;
+        float yPos = this.minHeight + this.textPositionOffset;
 
         canvas.drawText(this.sensor.getValueLimits().getFormattedMin() + " " + this.sensor.getSensorSuffix(), xPos, yPos, this.textLabelPaint);
         yPos += this.lineDistance;
@@ -197,7 +194,7 @@ public class SensorGraphDrawable extends Drawable {
         if (this.sensor.getValueLimits().getFormattedMax().isEmpty()) {
             return;
         }
-        yPos = this.textPositionOffset + strokeWidth * 2;
+        yPos = this.textPositionOffset ;
         canvas.drawText(this.sensor.getValueLimits().getFormattedMax() + " " + this.sensor.getSensorSuffix(), xPos, yPos, this.textLabelPaint);
         yPos += this.lineDistance;
         path.reset();
