@@ -14,8 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/x2"
         android:focusable="false"
-        android:orientation="horizontal"
-        android:baselineAligned="false">
+        android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="0dp"
