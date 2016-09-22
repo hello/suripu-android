@@ -60,7 +60,7 @@
             android:layout_height="wrap_content"
             android:minHeight="@dimen/gap_large"
             android:gravity="center_horizontal|top"
-            android:textAppearance="@style/AppTheme.Text.SectionHeading.Large"
+            android:textAppearance="@style/AppTheme.Text.Body"
             android:text="@string/dialog_loading_message"
             android:maxLines="2"/>
 
