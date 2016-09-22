@@ -1,6 +1,7 @@
 package is.hello.sense.ui.widget.graphing.sensors;
 
 import android.content.Context;
+
 import android.graphics.Canvas;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
