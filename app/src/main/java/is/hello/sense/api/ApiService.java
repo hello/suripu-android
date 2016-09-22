@@ -40,7 +40,6 @@ import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.Trends;
-import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
@@ -68,11 +67,15 @@ public interface ApiService {
 
     String UNIT_TEMPERATURE_CELSIUS = "c";
     String UNIT_TEMPERATURE_US_CUSTOMARY = "f";
-
+    @Deprecated
     String SENSOR_NAME_TEMPERATURE = "temperature";
+    @Deprecated
     String SENSOR_NAME_HUMIDITY = "humidity";
+    @Deprecated
     String SENSOR_NAME_PARTICULATES = "particulates";
+    @Deprecated
     String SENSOR_NAME_LIGHT = "light";
+    @Deprecated
     String SENSOR_NAME_SOUND = "sound";
 
 
