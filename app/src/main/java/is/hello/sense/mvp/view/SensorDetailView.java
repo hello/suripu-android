@@ -25,7 +25,7 @@ public final class SensorDetailView extends PresenterView {
         this.message = (TextView) findViewById(R.id.fragment_sensor_detail_message);
         this.sensorGraphView = (SensorGraphView) findViewById(R.id.fragment_sensor_detail_graph_view);
 
-      }
+    }
 
     @Override
     protected final int getLayoutRes() {
@@ -37,7 +37,7 @@ public final class SensorDetailView extends PresenterView {
 
     }
 
-    public final void showSensor(@NonNull final Sensor sensor){
+    public final void showSensor(@NonNull final Sensor sensor) {
         this.subNavSelector.removeAllButtons();
         final int color = sensor.getColor(context);
         this.subNavSelector.setToggleButtonColor(R.color.white);
@@ -48,9 +48,8 @@ public final class SensorDetailView extends PresenterView {
         this.subNavSelector.setBackgroundColor(color);
         this.value.setText(sensor.getFormattedValue(true));
         this.message.setText(sensor.getMessage());
-        this.sensorGraphView.setSensorGraphDrawable(new SensorGraphDrawable(context, sensor));
         this.value.setTextColor(color);
-
-
+        this.sensorGraphView.resetTimeToAnimate(SensorGraphView.StartDelay.LONG);
+        this.sensorGraphView.setSensorGraphDrawable(new SensorGraphDrawable(context, sensor));
     }
 }
