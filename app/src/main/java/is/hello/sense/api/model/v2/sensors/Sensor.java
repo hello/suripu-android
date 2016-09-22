@@ -163,7 +163,7 @@ public class Sensor implements Serializable {
                     }
                 }
             }
-            if (max != null && min != null && Math.round(min) == Math.round(max)) {
+            if (max != null && min != null && Math.floor(min) == Math.ceil(max)) {
                 formattedMax = "";
                 formattedMin = formatValue(min);
             } else {
@@ -178,7 +178,12 @@ public class Sensor implements Serializable {
             if (value == null || value == -1) {
                 return "";
             }
-            return String.format("%.0f", value);
+            if (getType() == SensorType.LIGHT) {
+                return String.format("%.1f", value);
+
+            } else {
+                return String.format("%.0f", value);
+            }
         }
 
         @NonNull
