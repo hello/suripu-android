@@ -32,7 +32,7 @@ import is.hello.go99.animators.OnAnimationCompleted;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Condition;
-import is.hello.sense.api.model.SensorState;
+import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.widget.SensorConditionView;
 import is.hello.sense.ui.widget.SensorTickerView;
@@ -104,25 +104,25 @@ public class RoomCheckView extends PresenterView {
         });
     }
 
-    public void updateSensorView(final List<SensorState> sensors) {
+    public void updateSensorView(final List<Sensor> sensors) {
         for (int i = 0; i < sensors.size(); i++) {
             final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(i);
-            final SensorState sensor = sensors.get(i);
+            final Sensor sensor = sensors.get(i);
             sensorView.clearAnimation();
             sensorView.setTint(ContextCompat.getColor(context, sensor.getCondition().colorRes));
             sensorView.setIcon(getFinalIconForSensor(sensor.getName()));
         }
     }
 
-    public void bindConditions(final List<SensorState> sensors) {
+    public void createSensorConditionViews(final List<String> sensorNames) {
         sensorViewContainer.removeAllViews();
 
         final Resources resources = getResources();
         final LinearLayout.LayoutParams layoutParams
                 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
-        for (final SensorState sensor : sensors) {
+        for (final String name : sensorNames) {
             final SensorConditionView conditionView = new SensorConditionView(context);
-            final int iconForSensor = getInitialIconForSensor(sensor.getName());
+            final int iconForSensor = getInitialIconForSensor(name);
             final Drawable iconDrawable = ResourcesCompat.getDrawable(resources, iconForSensor, null);
             conditionView.setIcon(iconDrawable);
             conditionView.setAnimatorContext(animatorContext);
@@ -131,7 +131,7 @@ public class RoomCheckView extends PresenterView {
     }
 
     public void showConditionAt(final int position,
-                                final SensorState currentPositionSensor,
+                                final Sensor currentPositionSensor,
                                 final int convertedUnitTickerValue,
                                 final String unitSuffix,
                                 final Runnable onComplete) {
@@ -306,11 +306,13 @@ public class RoomCheckView extends PresenterView {
             case ApiService.SENSOR_NAME_LIGHT: {
                 return R.drawable.light_temperature_gray_nofill;
             }
+            //todo use noise
             case ApiService.SENSOR_NAME_SOUND: {
-                return R.drawable.room_check_sensor_sound;
+                return R.drawable.noise_gray_nofill;
             }
+            //todo default temporary
             default: {
-                return 0;
+                return R.drawable.action_info;
             }
         }
     }
@@ -329,12 +331,12 @@ public class RoomCheckView extends PresenterView {
             case ApiService.SENSOR_NAME_LIGHT: {
                 return R.drawable.light_temperature_gray_fill;
             }
-            //todo replace with new icon once fill is fixed with designers
             case ApiService.SENSOR_NAME_SOUND: {
-                return R.drawable.room_check_sensor_filled_sound;
+                return R.drawable.noise_gray_fill;
             }
+            //todo default temporary
             default: {
-                return 0;
+                return R.drawable.action_info;
             }
         }
     }
