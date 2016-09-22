@@ -9,20 +9,21 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import is.hello.sense.api.model.Condition;
-import is.hello.sense.api.model.SensorState;
+import is.hello.sense.api.model.v2.sensors.Sensor;
+import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.functional.Lists;
-import is.hello.sense.interactors.RoomConditionsInteractor;
+import is.hello.sense.interactors.SensorResponseInteractor;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import rx.Scheduler;
 
 public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output> {
 
     @Inject
-    RoomConditionsInteractor interactor;
+    SensorResponseInteractor interactor;
 
     private static final long CONDITION_VISIBLE_MS = 2500;
     private final Scheduler.Worker deferWorker = observeScheduler.createWorker();
-    private final List<SensorState> sensors = new ArrayList<>();
+    private final List<Sensor> sensors = new ArrayList<>();
 
     @Override
     public void onDetach() {
@@ -36,10 +37,14 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
                         );
     }
 
-    private void bindConditions(final RoomConditionsInteractor.Result current) {
+    private void bindConditions(final SensorResponse current) {
         sensors.clear();
-        sensors.addAll(current.conditions.toList());
-        view.bindConditions(sensors);
+        sensors.addAll(current.getSensors());
+        final List<String> names = new ArrayList<>(sensors.size());
+        for(final Sensor sensor : sensors){
+            names.add(sensor.getName());
+        }
+        view.createSensorConditionViews(names);
     }
 
     private void unavailableConditions(final Throwable e) {
@@ -81,13 +86,13 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
 
     public interface Output extends BaseOutput {
 
-        void bindConditions(List<SensorState> sensors);
+        void createSensorConditionViews(List<String> sensorNames);
 
         void unavailableConditions(Throwable e);
 
-        void showConditionAt(int position, SensorState currentPositionSensor);
+        void showConditionAt(int position, Sensor currentPositionSensor);
 
-        void updateSensorView(List<SensorState> sensors);
+        void updateSensorView(List<Sensor> sensors);
 
         void jumpToEnd(boolean animate);
     }

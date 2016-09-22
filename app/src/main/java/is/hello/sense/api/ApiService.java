@@ -78,7 +78,6 @@ public interface ApiService {
     @Deprecated
     String SENSOR_NAME_SOUND = "sound";
 
-
     /**
      * Sentinel value used by graphing APIs.
      */
