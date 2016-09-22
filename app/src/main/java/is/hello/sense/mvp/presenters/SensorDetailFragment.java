@@ -48,6 +48,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        this.presenterView.showSensor(this.sensor);
+        stateSafeExecutor.execute(() -> this.presenterView.showSensor(sensor));
     }
+
 }

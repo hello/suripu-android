@@ -97,6 +97,9 @@ public class SensorGraphDrawable extends Drawable {
     }
 
     public final void setScaleFactor(final float scaleFactor) {
+        if (scaleFactor < 0) {
+            return;
+        }
         if (scaleFactor > 1) {
             if (this.scaleFactor != 1) {
                 this.scaleFactor = 1;
