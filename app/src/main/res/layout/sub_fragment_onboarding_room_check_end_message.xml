@@ -12,12 +12,12 @@
         android:id="@+id/sub_fragment_room_check_end_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_medium"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
+        android:layout_marginBottom="@dimen/x1"
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.Heading"
-        android:textSize="@dimen/text_size_heading_large"
+        android:textStyle="bold"
         android:lineSpacingMultiplier="@dimen/line_multiple_heading"
         android:text="@string/onboarding_room_check_title_success"/>
 
@@ -25,11 +25,12 @@
         android:id="@+id/sub_fragment_room_check_end_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_medium"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
+        android:layout_marginTop="@dimen/x1"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.Body.New"
+        android:textColor="@color/gray4"
         android:text="@string/onboarding_room_check_info_success"
         android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
 
@@ -42,8 +43,8 @@
         android:id="@+id/sub_fragment_room_check_end_continue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
         android:text="@string/action_continue"
         style="@style/AppTheme.Button.Rounded"/>
 
