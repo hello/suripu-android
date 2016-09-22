@@ -139,7 +139,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     //region Displaying Data
 
 
-    public final synchronized void bindConditions(@NonNull final SensorResponse currentConditions) {
+    public final void bindConditions(@NonNull final SensorResponse currentConditions) {
         final List<Sensor> sensors = currentConditions.getSensors();
         bindAndSubscribe(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)),
                          sensorsDataResponse -> {
