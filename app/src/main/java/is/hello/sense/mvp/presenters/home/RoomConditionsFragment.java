@@ -26,6 +26,7 @@ import is.hello.sense.interactors.SensorResponseInteractor;
 import is.hello.sense.mvp.view.home.RoomConditionsView;
 import is.hello.sense.mvp.view.home.roomconditions.SensorResponseAdapter;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.activities.SensorDetailActivity;
 import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
@@ -190,12 +191,9 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     //endregion
 
 
-
     @Override
     public final void onItemClicked(final int position, final Sensor sensor) {
-        final Intent intent = new Intent(getActivity(), SensorHistoryActivity.class);
-        /// intent.putExtra(SensorHistoryActivity.EXTRA_SENSOR, sensorState.getName()); todo update
-        startActivity(intent);
+        SensorDetailActivity.startActivity(getActivity(), sensor);
     }
 
 }

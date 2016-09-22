@@ -49,6 +49,8 @@ import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
+//todo delete
+@Deprecated
 public class SensorHistoryFragment extends InjectionFragment implements SelectorView.OnSelectionChangedListener, GraphView.OnDrawListener {
     @Inject
     RoomConditionsInteractor conditionsPresenter;

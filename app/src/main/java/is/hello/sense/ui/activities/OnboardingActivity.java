@@ -137,10 +137,10 @@ public class OnboardingActivity extends ScopedInjectionActivity
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_onboarding);
+        setContentView(R.layout.activity_navigation);
 
         this.navigationDelegate = new FragmentNavigationDelegate(this,
-                                                                 R.id.activity_onboarding_container,
+                                                                 R.id.activity_navigation_container,
                                                                  stateSafeExecutor);
 
         if (savedInstanceState != null) {

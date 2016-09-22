@@ -160,6 +160,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             }
             this.value.setTextColor(sensor.getColor(SensorResponseAdapter.this.inflater.getContext()));
             this.graphView.setSensorGraphDrawable(new SensorGraphDrawable(SensorResponseAdapter.this.inflater.getContext(), sensor));
+            view.setOnClickListener(v -> SensorResponseAdapter.this.dispatchItemClicked(position));
         }
 
         @Override
