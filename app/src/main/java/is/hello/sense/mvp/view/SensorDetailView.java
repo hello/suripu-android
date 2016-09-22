@@ -10,15 +10,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-
-import java.util.Calendar;
-import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
-import is.hello.sense.api.model.v2.sensors.X;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.SensorDetailScrollView;
 import is.hello.sense.ui.widget.SensorScaleList;
