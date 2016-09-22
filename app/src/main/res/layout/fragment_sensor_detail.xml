@@ -1,13 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/background_light">
+
     <is.hello.sense.ui.widget.SelectorView
         android:id="@+id/fragment_sensor_detail_selector"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/x6">
+        android:layout_height="@dimen/x6"
+        android:layout_alignParentStart="true">
 
     </is.hello.sense.ui.widget.SelectorView>
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/fragment_sensor_detail_value"
+        style="@style/Heading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fragment_sensor_detail_selector"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/x5"/>
+
+    <TextView
+        android:id="@+id/fragment_sensor_detail_message"
+        style="@style/Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fragment_sensor_detail_value"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/x1"/>
+
+    <is.hello.sense.ui.widget.graphing.sensors.SensorGraphView
+        android:id="@+id/fragment_sensor_detail_graph_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/sensor_graph_height"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"/>
+
+
+</RelativeLayout>

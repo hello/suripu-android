@@ -3,6 +3,7 @@ package is.hello.sense.mvp.presenters;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.view.View;
 
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.mvp.view.SensorDetailView;
@@ -17,13 +18,14 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         sensorDetailFragment.setArguments(bundle);
         return sensorDetailFragment;
     }
+
     private Sensor sensor;
 
 
     @Override
     public final void initializePresenterView() {
         if (presenterView == null) {
-            this.presenterView = new SensorDetailView(getActivity(), sensor.getColor(getActivity()));
+            this.presenterView = new SensorDetailView(getActivity());
         }
     }
 
@@ -40,7 +42,12 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
             return;
         }
 
-        sensor = (Sensor) args.getSerializable(ARG_SENSOR);
+        this.sensor = (Sensor) args.getSerializable(ARG_SENSOR);
+    }
 
+    @Override
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        this.presenterView.showSensor(this.sensor);
     }
 }
