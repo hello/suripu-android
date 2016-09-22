@@ -3,6 +3,10 @@ package is.hello.sense.mvp.view;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.support.annotation.NonNull;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import is.hello.sense.R;
@@ -17,6 +21,9 @@ public final class SensorDetailView extends PresenterView {
     private final TextView value;
     private final TextView message;
     private final SensorGraphView sensorGraphView;
+    private final ScrollView scrollView;
+    private int graphHeight = 0;
+    private Sensor sensor;
 
     public SensorDetailView(@NonNull final Activity activity) {
         super(activity);
@@ -24,6 +31,24 @@ public final class SensorDetailView extends PresenterView {
         this.value = (TextView) findViewById(R.id.fragment_sensor_detail_value);
         this.message = (TextView) findViewById(R.id.fragment_sensor_detail_message);
         this.sensorGraphView = (SensorGraphView) findViewById(R.id.fragment_sensor_detail_graph_view);
+        this.scrollView = (ScrollView) findViewById(R.id.fragment_sensor_detail_scroll_view);
+
+        getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                // gets called after layout has been done but before display
+                // so we can get the height then hide the view
+                final int scrollViewHeight = scrollView.getHeight();
+                final float top = message.getY() + message.getHeight();
+                SensorDetailView.this.graphHeight = (int)((scrollViewHeight - top) * .65f);
+                final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, SensorDetailView.this.graphHeight);
+                layoutParams.topMargin = (int) (scrollViewHeight - top) - SensorDetailView.this.graphHeight;
+                sensorGraphView.setLayoutParams(layoutParams);
+                showSensor(sensor);
+                getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+            }
+        });
 
     }
 
@@ -38,6 +63,7 @@ public final class SensorDetailView extends PresenterView {
     }
 
     public final void showSensor(@NonNull final Sensor sensor) {
+        this.sensor = sensor;
         this.subNavSelector.removeAllButtons();
         final int color = sensor.getColor(context);
         this.subNavSelector.setToggleButtonColor(R.color.white);
@@ -50,6 +76,6 @@ public final class SensorDetailView extends PresenterView {
         this.message.setText(sensor.getMessage());
         this.value.setTextColor(color);
         this.sensorGraphView.resetTimeToAnimate(SensorGraphView.StartDelay.LONG);
-        this.sensorGraphView.setSensorGraphDrawable(new SensorGraphDrawable(context, sensor));
+        this.sensorGraphView.setSensorGraphDrawable(new SensorGraphDrawable(context, sensor, this.graphHeight));
     }
 }

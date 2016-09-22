@@ -39,10 +39,12 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     @Nullable
     private View.OnClickListener messageActionOnClick;
 
+    private final int graphHeight;
 
     public SensorResponseAdapter(@NonNull final LayoutInflater inflater) {
         super(new ArrayList<>());
         this.inflater = inflater;
+        this.graphHeight = this.inflater.getContext().getResources().getDimensionPixelSize(R.dimen.sensor_graph_height);
     }
 
     //region adapter overrides
@@ -159,7 +161,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
                 this.descriptor.setText(sensor.getSensorSuffix());
             }
             this.value.setTextColor(sensor.getColor(SensorResponseAdapter.this.inflater.getContext()));
-            this.graphView.setSensorGraphDrawable(new SensorGraphDrawable(SensorResponseAdapter.this.inflater.getContext(), sensor));
+            this.graphView.setSensorGraphDrawable(new SensorGraphDrawable(SensorResponseAdapter.this.inflater.getContext(), sensor, SensorResponseAdapter.this.graphHeight));
             view.setOnClickListener(v -> SensorResponseAdapter.this.dispatchItemClicked(position));
         }
 
