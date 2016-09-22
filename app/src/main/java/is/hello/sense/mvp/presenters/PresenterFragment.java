@@ -29,9 +29,16 @@ public abstract class PresenterFragment<T extends PresenterView>
 
     protected boolean animatorContextFromActivity = false;
     protected LoadingDialogFragment loadingDialogFragment;
+    /**
+     * Safe to assume this exists at and after {@link PresenterFragment#onViewCreated(View, Bundle)}
+     * Reference is removed at {@link  PresenterFragment#onDestroyView()} and {@link PresenterFragment#onDetach()}
+     */
     @VisibleForTesting
     public T presenterView;
 
+    /**
+     * Only called in {@link PresenterFragment#onCreateView(LayoutInflater, ViewGroup, Bundle)} method.
+     */
     public abstract void initializePresenterView();
 
     @Nullable
