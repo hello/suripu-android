@@ -138,11 +138,15 @@
     <string name="onboarding_voice_complete_title">You’re all set</string>
     <string name="onboarding_voice_complete_message">Sense is now ready to use. All you need to do now is sleep.</string>
 
-    <string name="checking_condition_temperature">Checking Temperature</string>
-    <string name="checking_condition_humidity">Checking Humidity</string>
-    <string name="checking_condition_airquality">Checking Air Quality</string>
-    <string name="checking_condition_sound">Checking Noise</string>
-    <string name="checking_condition_light">Checking Light</string>
+    <string name="checking_condition_temperature">Checking temperature</string>
+    <string name="checking_condition_humidity">Checking humidity</string>
+    <string name="checking_condition_airquality">Checking air quality</string>
+    <string name="checking_condition_sound">Checking noise level</string>
+    <string name="checking_condition_light">Checking light</string>
+    <string name="checking_condition_co2">Checking CO2 level</string>
+    <string name="checking_condition_voc">Checking VOC level</string>
+    <string name="checking_condition_light_temperature">Checking light temperature</string>
+    <string name="checking_condition_uv">Checking UV light</string>
 
     <string name="label_firmware_version">Firmware</string>
     <string name="action_enter_pairing_mode">Put Into Pairing Mode</string>

@@ -13,6 +13,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.sensors.Sensor;
+import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.mvp.view.onboarding.RoomCheckView;
 import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.presenters.RoomCheckPresenter;
@@ -96,7 +97,9 @@ implements RoomCheckPresenter.Output{
             convertedValue = (int) unitConverter.convert(currentPositionSensor.getValue().longValue());
         }
         presenterView.showConditionAt(position,
-                                      currentPositionSensor,
+                                      currentPositionSensor.getType(),
+                                      currentPositionSensor.getMessage(),
+                                      currentPositionSensor.getCondition(),
                                       convertedValue,
                                       unitFormatter.getUnitSuffixForSensor(currentPositionSensor.getName()),
                                       () -> presenter.showConditionAt(position + 1));
@@ -125,8 +128,8 @@ implements RoomCheckPresenter.Output{
     //region Binding
 
     @Override
-    public void createSensorConditionViews(@NonNull final List<String> sensorNames) {
-        presenterView.createSensorConditionViews(sensorNames);
+    public void createSensorConditionViews(@NonNull final List<SensorType> types) {
+        presenterView.createSensorConditionViews(types);
         presenter.showConditionAt(0);
     }
 
