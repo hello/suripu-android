@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
+import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.interactors.SensorResponseInteractor;
 import is.hello.sense.presenters.outputs.BaseOutput;
@@ -40,11 +41,11 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
     private void bindConditions(final SensorResponse current) {
         sensors.clear();
         sensors.addAll(current.getSensors());
-        final List<String> names = new ArrayList<>(sensors.size());
+        final List<SensorType> types = new ArrayList<>(sensors.size());
         for(final Sensor sensor : sensors){
-            names.add(sensor.getName());
+            types.add(sensor.getType());
         }
-        view.createSensorConditionViews(names);
+        view.createSensorConditionViews(types);
     }
 
     private void unavailableConditions(final Throwable e) {
@@ -86,7 +87,7 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
 
     public interface Output extends BaseOutput {
 
-        void createSensorConditionViews(List<String> sensorNames);
+        void createSensorConditionViews(List<SensorType> types);
 
         void unavailableConditions(Throwable e);
 
