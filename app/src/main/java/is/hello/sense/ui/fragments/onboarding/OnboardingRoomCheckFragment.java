@@ -91,7 +91,7 @@ implements RoomCheckPresenter.Output{
     public void showConditionAt(final int position,
                                 final Sensor currentPositionSensor) {
         presenterView.animateSenseToGray();
-        final UnitConverter unitConverter = unitFormatter.getUnitConverterForSensor(currentPositionSensor.getName());
+        final UnitConverter unitConverter = unitFormatter.getUnitConverterForSensor(currentPositionSensor.getType());
         int convertedValue = 0;
         if (currentPositionSensor.getValue() != null) {
             convertedValue = (int) unitConverter.convert(currentPositionSensor.getValue().longValue());
@@ -101,7 +101,7 @@ implements RoomCheckPresenter.Output{
                                       currentPositionSensor.getMessage(),
                                       currentPositionSensor.getCondition(),
                                       convertedValue,
-                                      unitFormatter.getUnitSuffixForSensor(currentPositionSensor.getName()),
+                                      unitFormatter.getSuffixForSensor(currentPositionSensor.getType()),
                                       () -> presenter.showConditionAt(position + 1));
     }
 

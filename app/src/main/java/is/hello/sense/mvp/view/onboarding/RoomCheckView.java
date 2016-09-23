@@ -140,12 +140,12 @@ public class RoomCheckView extends PresenterView {
     }
 
     public void showConditionAt(final int position,
-                                final SensorType sensorType,
-                                final String statusMessage,
-                                final Condition condition,
+                                @NonNull final SensorType sensorType,
+                                @NonNull final String statusMessage,
+                                @NonNull final Condition condition,
                                 final int convertedUnitTickerValue,
-                                final String unitSuffix,
-                                final Runnable onComplete) {
+                                @NonNull final String unitSuffix,
+                                @NonNull final Runnable onComplete) {
         final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(position);
 
         if(position != 0) {
