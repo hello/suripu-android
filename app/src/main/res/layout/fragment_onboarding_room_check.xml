@@ -79,30 +79,34 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/fragment_onboarding_room_check_score_layout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center">
+            android:layout_marginLeft="@dimen/x3"
+            android:layout_marginRight="@dimen/x3">
 
             <TextView
                 android:id="@+id/fragment_onboarding_room_check_score_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/gap_outer"
-                android:textAppearance="@style/AppTheme.Text.Score.Big"/>
+                android:textAppearance="@style/AppTheme.Text.Score.Big"
+                android:layout_centerInParent="true"/>
 
             <TextView
                 android:id="@+id/fragment_onboarding_room_check_score_unit_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/gap_outer"
+                android:layout_marginLeft="@dimen/x1"
+                android:layout_toRightOf="@id/fragment_onboarding_room_check_score_tv"
+                android:layout_alignParentTop="true"
+                android:paddingTop="@dimen/x1"
                 android:textAppearance="@style/AppTheme.Text.Score.Unit"
                 android:maxLines="1"
-                android:gravity="center_horizontal|top"
+                android:layout_gravity="top"
                 android:includeFontPadding="false"/>
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <Space
             android:layout_width="match_parent"
