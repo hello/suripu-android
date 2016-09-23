@@ -30,22 +30,33 @@
         android:src="@drawable/onboarding_sense_grey"
         android:contentDescription="@string/app_name"/>
 
-    <LinearLayout
-        android:id="@+id/fragment_onboarding_room_check_sensors"
+    <is.hello.sense.ui.common.DisabledHorizontalScrollView
+        android:id="@+id/fragment_onboarding_room_check_sensors_scroll_view"
         android:layout_below="@id/fragment_onboarding_room_check_sense"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:orientation="horizontal"
-        android:gravity="center" />
+        android:scrollbars="none"
+        android:fillViewport="false">
+
+        <LinearLayout
+            android:id="@+id/fragment_onboarding_room_check_sensors"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_small"
+            android:layout_marginLeft="@dimen/gap_outer"
+            android:layout_marginRight="@dimen/gap_outer"
+            android:orientation="horizontal"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:gravity="center"
+            tools:ignore="ScrollViewSize"/>
+    </is.hello.sense.ui.common.DisabledHorizontalScrollView>
 
     <LinearLayout
         android:id="@+id/fragment_onboarding_room_check_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/fragment_onboarding_room_check_sensors"
+        android:layout_below="@id/fragment_onboarding_room_check_sensors_scroll_view"
         android:layout_marginBottom="@dimen/gap_outer"
         android:orientation="vertical">
 
