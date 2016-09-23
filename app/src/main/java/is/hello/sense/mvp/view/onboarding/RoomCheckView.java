@@ -14,7 +14,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
@@ -226,28 +225,21 @@ public class RoomCheckView extends PresenterView {
             Views.setSafeOnClickListener(continueButton, onContinueClickListener);
         };
         if (animate) {
-            animatorContext.transaction( transaction -> {
-                transaction.animatorFor(dynamicContent)
-                        .fadeOut(View.INVISIBLE);
-                transaction.animatorFor(sensorViewContainer)
-                        .fadeOut(View.INVISIBLE);
+            animatorFor(dynamicContent, animatorContext)
+                    .fadeOut(View.INVISIBLE)
+                    .addOnAnimationCompleted(onCompleted -> {
+                        if(onCompleted){
+                            dynamicContent.removeAllViews();
+                            inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, dynamicContent, true);
 
-            }, onCompleted -> {
-                if(onCompleted){
-                    Log.d(getClass().getName(), "showCompletion: onCompleted");
-                    dynamicContent.removeAllViews();
-
-                    inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, dynamicContent, true);
-
-                    animatorFor(dynamicContent, animatorContext)
-                            .fadeIn()
-                            .addOnAnimationCompleted(atEnd)
-                            .postStart();
-                }
-            });
+                            animatorFor(dynamicContent, animatorContext)
+                                    .fadeIn()
+                                    .addOnAnimationCompleted(atEnd)
+                                    .postStart();
+                        }
+                    }).start();
 
         } else {
-            sensorViewContainer.setVisibility(INVISIBLE);
             dynamicContent.removeAllViews();
             inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, dynamicContent, true);
             atEnd.onAnimationCompleted(true);
@@ -319,9 +311,8 @@ public class RoomCheckView extends PresenterView {
             case PARTICULATES: {
                 return R.drawable.air_quality_gray_nofill;
             }
-            //todo is there a new light icon?
             case LIGHT: {
-                return R.drawable.room_check_sensor_light;
+                return R.drawable.light_gray_nofill;
             }
             case SOUND: {
                 return R.drawable.noise_gray_nofill;
@@ -358,25 +349,23 @@ public class RoomCheckView extends PresenterView {
                 case PARTICULATES: {
                     return R.drawable.air_quality_gray_fill;
                 }
-                //todo is there a new light icon?
                 case LIGHT: {
-                    return R.drawable.room_check_sensor_filled_light;
+                    return R.drawable.light_gray_fill;
                 }
                 case SOUND: {
                     return R.drawable.noise_gray_fill;
                 }
-                //todo need filled versions
                 case CO2: {
-                    return R.drawable.co2_gray_nofill;
+                    return R.drawable.co2_gray_fill;
                 }
                 case TVOC: {
-                    return R.drawable.voc_gray_nofill;
+                    return R.drawable.voc_gray_fill;
                 }
                 case LIGHT_TEMPERATURE: {
                     return R.drawable.light_temperature_gray_fill;
                 }
                 case UV: {
-                    return R.drawable.uv_gray_nofill;
+                    return R.drawable.uv_gray_fill;
                 }
                 case UNKNOWN: {
                     return R.drawable.error_white;
