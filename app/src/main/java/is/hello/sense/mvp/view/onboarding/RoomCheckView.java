@@ -26,7 +26,6 @@ import java.util.List;
 
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
-import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.go99.animators.OnAnimationCompleted;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
@@ -34,7 +33,6 @@ import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.widget.SensorConditionView;
-import is.hello.sense.ui.widget.SensorTickerView;
 import is.hello.sense.ui.widget.util.Views;
 
 import static is.hello.go99.Anime.cancelAll;
@@ -45,7 +43,8 @@ public class RoomCheckView extends PresenterView {
     private final LinearLayout sensorViewContainer;
     private final LinearLayout dynamicContent;
     private final TextView status;
-    private final SensorTickerView scoreTicker;
+    private final TextView scoreTicker;
+    private final TextView scoreUnit;
     private final Drawable graySense;
 
     private final int startColor;
@@ -67,8 +66,8 @@ public class RoomCheckView extends PresenterView {
         this.sensorViewContainer = (LinearLayout) findViewById(R.id.fragment_onboarding_room_check_sensors);
         this.dynamicContent = (LinearLayout) findViewById(R.id.fragment_onboarding_room_check_content);
         this.status = (TextView) dynamicContent.findViewById(R.id.fragment_onboarding_room_check_status);
-        this.scoreTicker = (SensorTickerView) dynamicContent.findViewById(R.id.fragment_onboarding_room_check_ticker);
-        scoreTicker.setAnimatorContext(animatorContext);
+        this.scoreTicker = (TextView) dynamicContent.findViewById(R.id.fragment_onboarding_room_check_score_tv);
+        this.scoreUnit = (TextView) dynamicContent.findViewById(R.id.fragment_onboarding_room_check_score_unit_tv);
         this.animatorContext = animatorContext;
         this.sensorContainerInterpolator = new OvershootInterpolator(1.0f);
 
@@ -86,6 +85,7 @@ public class RoomCheckView extends PresenterView {
 
     @Override
     public void releaseViews() {
+
         sensorContainerInterpolator = null;
         animatingSensorView = null;
         scoreAnimator = null;
@@ -96,12 +96,19 @@ public class RoomCheckView extends PresenterView {
     }
 
     //todo specifically for onboarding
-    public void setSensorContainerXOffset() {
+    public void initSensorContainerXOffset() {
         sensorViewContainer.post( () -> {
             sensorViewContainer.setX(sense.getX() + sense.getWidth() / 2
                                              - resources.getDimensionPixelSize(R.dimen.item_room_sensor_condition_view_width) );
             sensorViewContainer.invalidate();
         });
+    }
+
+    private void animateSensorContainerTranslateX(final int pixelOffset){
+        animatorFor(sensorViewContainer, animatorContext)
+                .withInterpolator(sensorContainerInterpolator)
+                .translationX(sensorViewContainer.getTranslationX() - pixelOffset)
+                .start();
     }
 
     public void updateSensorView(final List<Sensor> sensors) {
@@ -142,62 +149,60 @@ public class RoomCheckView extends PresenterView {
         final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(position);
 
         if(position != 0) {
-            animatorFor(sensorViewContainer, animatorContext)
-                    .withInterpolator(sensorContainerInterpolator)
-                    .translationX(sensorViewContainer.getTranslationX() - sensorView.getWidth())
-                    .start();
+            animateSensorContainerTranslateX(sensorView.getWidth());
         }
 
         status.setText(getStatusStringForSensor(sensorType));
         this.animatingSensorView = sensorView;
         sensorView.fadeInProgressIndicator(() -> {
-
-            final long duration = scoreTicker.animateToValue(convertedUnitTickerValue,
-                                                             unitSuffix,
-                                                             finishedTicker -> {
-                if (!finishedTicker) {
-                    return;
-                }
-
-                animatorFor(status, animatorContext)
-                        .fadeOut(View.VISIBLE)
-                        .addOnAnimationCompleted(finishedStatus -> {
-                            if (!finishedStatus) {
-                                return;
-                            }
-
-                            status.setText(null);
-                            status.setTransformationMethod(null);
-                            status.setText(statusMessage);
-
-                            animateSenseCondition(condition, false);
-                            sensorView.transitionToIcon(getFinalIconForSensor(sensorType), onComplete);
-
-                            animatorFor(status, animatorContext)
-                                    .fadeIn()
-                                    .start();
-                        })
-                        .start();
-            });
-
             final int endColor = ContextCompat.getColor(context, condition.colorRes);
-            this.scoreAnimator = AnimatorTemplate.DEFAULT.createColorAnimator(startColor, endColor);
-            scoreAnimator.setDuration(duration);
+            scoreUnit.setText(unitSuffix);
+            scoreAnimator = ValueAnimator.ofInt(0, convertedUnitTickerValue);
+            scoreAnimator.setDuration(Anime.DURATION_SLOW);
+            scoreAnimator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
             scoreAnimator.addUpdateListener(a -> {
-                final int color = (int) a.getAnimatedValue();
+                final int color = Anime.interpolateColors(a.getAnimatedFraction(), startColor, endColor);
+                scoreTicker.setText(Integer.toString((int) a.getAnimatedValue(), 10));
                 sensorView.setTint(color);
                 scoreTicker.setTextColor(color);
+                scoreUnit.setTextColor(color);
             });
+
             scoreAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationCancel(final Animator animation) {
-                    sensorView.setTint(endColor);
+                    scoreTicker.setText(convertedUnitTickerValue);
                     scoreTicker.setTextColor(endColor);
+                    scoreUnit.setText(unitSuffix);
+                    scoreUnit.setTextColor(endColor);
+                    sensorView.setTint(endColor);
                 }
 
                 @Override
                 public void onAnimationEnd(final Animator animation) {
-                    RoomCheckView.this.scoreAnimator = null;
+                    if(RoomCheckView.this.scoreAnimator != null) {
+                        RoomCheckView.this.scoreAnimator.removeAllListeners();
+                        RoomCheckView.this.scoreAnimator = null;
+                    }
+                    animatorFor(status, animatorContext)
+                            .fadeOut(View.VISIBLE)
+                            .addOnAnimationCompleted(finishedStatus -> {
+                                if (!finishedStatus) {
+                                    return;
+                                }
+
+                                status.setText(null);
+                                status.setTransformationMethod(null);
+                                status.setText(statusMessage);
+
+                                animateSenseCondition(condition, false);
+                                sensorView.transitionToIcon(getFinalIconForSensor(sensorType), onComplete);
+
+                                animatorFor(status, animatorContext)
+                                        .fadeIn()
+                                        .start();
+                            })
+                            .start();
                 }
             });
             scoreAnimator.start();
@@ -247,7 +252,6 @@ public class RoomCheckView extends PresenterView {
     }
 
     public void stopAnimations() {
-        scoreTicker.stopAnimating();
         cancelAll(status, dynamicContent, sensorViewContainer);
 
         if (scoreAnimator != null) {

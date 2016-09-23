@@ -79,12 +79,30 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <is.hello.sense.ui.widget.SensorTickerView
-            android:id="@+id/fragment_onboarding_room_check_ticker"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:id="@+id/fragment_onboarding_room_check_score_layout"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/gap_outer"
-            android:layout_marginRight="@dimen/gap_outer" />
+            android:layout_gravity="center">
+
+            <TextView
+                android:id="@+id/fragment_onboarding_room_check_score_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/gap_outer"
+                android:textAppearance="@style/AppTheme.Text.Score.Big"/>
+
+            <TextView
+                android:id="@+id/fragment_onboarding_room_check_score_unit_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/gap_outer"
+                android:textAppearance="@style/AppTheme.Text.Score.Unit"
+                android:maxLines="1"
+                android:gravity="center_horizontal|top"
+                android:includeFontPadding="false"/>
+
+        </LinearLayout>
 
         <Space
             android:layout_width="match_parent"
