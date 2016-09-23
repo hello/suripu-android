@@ -64,7 +64,7 @@ implements RoomCheckPresenter.Output{
         if (animationCompleted) {
             presenter.jumpToEnd(false);
         } else {
-            presenterView.setSensorContainerXOffset();
+            presenterView.initSensorContainerXOffset();
             presenter.bindAndSubscribeInteractorLatest();
         }
     }
