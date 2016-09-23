@@ -24,6 +24,10 @@ public class UnitFormatter extends Interactor {
     public static final String UNIT_SUFFIX_HUMIDITY = "%";
     public static final String UNIT_SUFFIX_AIR_QUALITY = "µg/m³";
     public static final String UNIT_SUFFIX_NOISE = "dB";
+    public static final String UNIT_SUFFIX_GAS = "ppm";
+    public static final String UNIT_SUFFIX_LIGHT_TEMPERATURE = "k"; //todo check validity
+    public static final String UNIT_SUFFIX_KELVIN = "k"; //todo check validity
+
 
     // Used by PreferencesInteractor
     @Deprecated
@@ -135,11 +139,10 @@ public class UnitFormatter extends Interactor {
         return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_NOISE);
     }
 
-    @Deprecated
     @NonNull
-    public UnitConverter getUnitConverterForSensor(@NonNull final String sensor) {
-        switch (sensor) {
-            case ApiService.SENSOR_NAME_TEMPERATURE: {
+    public UnitConverter getUnitConverterForSensor(@NonNull final SensorType type) {
+        switch (type) {
+            case TEMPERATURE: {
                 if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
                     return UnitConverter.IDENTITY;
                 } else {
@@ -213,7 +216,16 @@ public class UnitFormatter extends Interactor {
                 return UNIT_SUFFIX_LIGHT;
             case SOUND:
                 return UNIT_SUFFIX_NOISE;
-            default:
+            case CO2:
+                return UNIT_SUFFIX_GAS;
+            case TVOC:
+                return UNIT_SUFFIX_GAS;
+            case LIGHT_TEMPERATURE:
+                return UNIT_SUFFIX_LIGHT_TEMPERATURE;
+            case UV:
+                return UNIT_SUFFIX_KELVIN;
+            case UNKNOWN:
+                default:
                 return "";
         }
     }

@@ -9,7 +9,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.interactors.PreferencesInteractor;
 
@@ -138,15 +138,23 @@ public class UnitFormatterTests extends InjectionTestCase {
 
     @Test
     public void getUnitSuffixForSensor() throws Exception {
-        assertThat(unitFormatter.getUnitSuffixForSensor(ApiService.SENSOR_NAME_TEMPERATURE),
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.TEMPERATURE),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_TEMPERATURE)));
-        assertThat(unitFormatter.getUnitSuffixForSensor(ApiService.SENSOR_NAME_LIGHT),
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.LIGHT),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_LIGHT)));
-        assertThat(unitFormatter.getUnitSuffixForSensor(ApiService.SENSOR_NAME_PARTICULATES),
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.PARTICULATES),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_AIR_QUALITY)));
-        assertThat(unitFormatter.getUnitSuffixForSensor(ApiService.SENSOR_NAME_SOUND),
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.SOUND),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_NOISE)));
-        assertThat(unitFormatter.getUnitSuffixForSensor(ApiService.SENSOR_NAME_HUMIDITY),
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.HUMIDITY),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_HUMIDITY)));
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.CO2),
+                   is(equalTo(UnitFormatter.UNIT_SUFFIX_GAS)));
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.TVOC),
+                   is(equalTo(UnitFormatter.UNIT_SUFFIX_GAS)));
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.UV),
+                   is(equalTo(UnitFormatter.UNIT_SUFFIX_KELVIN)));
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.LIGHT_TEMPERATURE),
+                   is(equalTo(UnitFormatter.UNIT_SUFFIX_LIGHT_TEMPERATURE)));
     }
 }
