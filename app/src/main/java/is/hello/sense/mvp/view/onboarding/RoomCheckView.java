@@ -29,7 +29,6 @@ import is.hello.go99.animators.AnimatorContext;
 import is.hello.go99.animators.OnAnimationCompleted;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
-import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.widget.SensorConditionView;
@@ -111,14 +110,11 @@ public class RoomCheckView extends PresenterView {
                 .start();
     }
 
-    public void updateSensorView(final List<Sensor> sensors) {
-        for (int i = 0; i < sensors.size(); i++) {
-            final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(i);
-            final Sensor sensor = sensors.get(i);
-            sensorView.clearAnimation();
-            sensorView.setTint(ContextCompat.getColor(context, sensor.getCondition().colorRes));
-            sensorView.setIcon(getFinalIconForSensor(sensor.getType()));
-        }
+    public void updateSensorView(final int position, final int conditionColorRes, final SensorType type) {
+        final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(position);
+        sensorView.clearAnimation();
+        sensorView.setTint(ContextCompat.getColor(context, conditionColorRes));
+        sensorView.setIcon(getFinalIconForSensor(type));
     }
 
     public void createSensorConditionViews(final List<SensorType> types) {
@@ -142,7 +138,8 @@ public class RoomCheckView extends PresenterView {
     public void showConditionAt(final int position,
                                 @NonNull final SensorType sensorType,
                                 @NonNull final String statusMessage,
-                                @NonNull final Condition condition,
+                                @NonNull final Drawable senseCondition,
+                                final int conditionEndColorRes,
                                 final int convertedUnitTickerValue,
                                 @NonNull final String unitSuffix,
                                 @NonNull final Runnable onComplete) {
@@ -155,7 +152,7 @@ public class RoomCheckView extends PresenterView {
         status.setText(getStatusStringForSensor(sensorType));
         this.animatingSensorView = sensorView;
         sensorView.fadeInProgressIndicator(() -> {
-            final int endColor = ContextCompat.getColor(context, condition.colorRes);
+            final int endColor = ContextCompat.getColor(context, conditionEndColorRes);
             scoreUnit.setText(unitSuffix);
             scoreAnimator = ValueAnimator.ofInt(0, convertedUnitTickerValue);
             scoreAnimator.setDuration(Anime.DURATION_SLOW);
@@ -195,7 +192,7 @@ public class RoomCheckView extends PresenterView {
                                 status.setTransformationMethod(null);
                                 status.setText(statusMessage);
 
-                                animateSenseCondition(condition, false);
+                                animateSenseCondition(senseCondition, false);
                                 sensorView.transitionToIcon(getFinalIconForSensor(sensorType), onComplete);
 
                                 animatorFor(status, animatorContext)
@@ -209,16 +206,18 @@ public class RoomCheckView extends PresenterView {
         });
     }
 
-    public void showCompletion(final boolean animate,
-                               final Condition condition,
-                               final OnClickListener onContinueClickListener) {
-        if(condition != null) {
+    public void animateSenseCondition(final boolean animate, @Nullable final Drawable senseCondition){
+        if(senseCondition != null) {
             if (animate) {
-                animateSenseCondition(condition, true);
+                animateSenseCondition(senseCondition, true);
             } else {
-                sense.setImageDrawable(getConditionDrawable(condition));
+                sense.setImageDrawable(senseCondition);
             }
         }
+    }
+
+    public void showCompletion(final boolean animate,
+                               final OnClickListener onContinueClickListener) {
 
         final LayoutInflater inflater = LayoutInflater.from(context);
         final OnAnimationCompleted atEnd = finishedTransitionIn -> {
@@ -389,31 +388,13 @@ public class RoomCheckView extends PresenterView {
         }
     }
 
-    private Drawable getConditionDrawable(@NonNull final Condition condition) {
-        switch (condition) {
-            case ALERT: {
-                return ResourcesCompat.getDrawable(resources, R.drawable.onboarding_sense_red, null);
-            }
-
-            case WARNING: {
-                return ResourcesCompat.getDrawable(resources, R.drawable.onboarding_sense_yellow, null);
-            }
-
-            case IDEAL: {
-                return ResourcesCompat.getDrawable(resources, R.drawable.onboarding_sense_green, null);
-            }
-
-            default:
-            case UNKNOWN: {
-                return graySense;
-            }
-        }
+    public Drawable getDefaultSenseCondition() {
+        return graySense;
     }
 
-    private void animateSenseCondition(@NonNull Condition condition, boolean fromCurrent) {
-        TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[] {
-                fromCurrent ? sense.getDrawable() : graySense,
-                getConditionDrawable(condition),
+    private void animateSenseCondition(@NonNull final Drawable newSenseCondition, final boolean fromCurrent) {
+        final TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[] {
+                fromCurrent ? sense.getDrawable() : graySense, newSenseCondition,
         });
         transitionDrawable.setCrossFadeEnabled(true);
         sense.setImageDrawable(transitionDrawable);

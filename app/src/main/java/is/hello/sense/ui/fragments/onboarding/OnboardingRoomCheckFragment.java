@@ -1,8 +1,11 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +14,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorType;
@@ -96,10 +100,12 @@ implements RoomCheckPresenter.Output{
         if (currentPositionSensor.getValue() != null) {
             convertedValue = (int) unitConverter.convert(currentPositionSensor.getValue().longValue());
         }
+        final Condition condition = currentPositionSensor.getCondition();
         presenterView.showConditionAt(position,
                                       currentPositionSensor.getType(),
                                       currentPositionSensor.getMessage(),
-                                      currentPositionSensor.getCondition(),
+                                      getConditionDrawable(condition),
+                                      condition.colorRes,
                                       convertedValue,
                                       unitFormatter.getSuffixForSensor(currentPositionSensor.getType()),
                                       () -> presenter.showConditionAt(position + 1));
@@ -107,7 +113,10 @@ implements RoomCheckPresenter.Output{
 
     @Override
     public void updateSensorView(final List<Sensor> sensors) {
-        presenterView.updateSensorView(sensors);
+        for(int position = 0; position < sensors.size(); position++) {
+            final Sensor sensor = sensors.get(position);
+            presenterView.updateSensorView(position, sensor.getColor(getActivity()), sensor.getType());
+        }
     }
 
     @Override
@@ -117,8 +126,8 @@ implements RoomCheckPresenter.Output{
 
         presenter.execute(() -> {
             final Condition averageCondition = presenter.calculateAverageCondition();
+            presenterView.animateSenseCondition(animate, getConditionDrawable(averageCondition));
             presenterView.showCompletion(animate,
-                                         averageCondition,
                                          this::continueOnboarding);
         });
     }
@@ -147,5 +156,27 @@ implements RoomCheckPresenter.Output{
 
     public void continueOnboarding(@NonNull final View sender) {
         finishFlow();
+    }
+
+    private Drawable getConditionDrawable(@NonNull final Condition condition) {
+        final Resources resources = getResources();
+        switch (condition) {
+            case ALERT: {
+                return ResourcesCompat.getDrawable(resources, R.drawable.onboarding_sense_red, null);
+            }
+
+            case WARNING: {
+                return ResourcesCompat.getDrawable(resources, R.drawable.onboarding_sense_yellow, null);
+            }
+
+            case IDEAL: {
+                return ResourcesCompat.getDrawable(resources, R.drawable.onboarding_sense_green, null);
+            }
+
+            default:
+            case UNKNOWN: {
+                return presenterView.getDefaultSenseCondition();
+            }
+        }
     }
 }
