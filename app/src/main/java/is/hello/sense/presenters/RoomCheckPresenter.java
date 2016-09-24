@@ -1,7 +1,5 @@
 package is.hello.sense.presenters;
 
-import android.support.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -64,7 +62,6 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
                              TimeUnit.MILLISECONDS);
     }
 
-    @Nullable
     public Condition calculateAverageCondition(){
         final int conditionCount = sensors.size();
         if (conditionCount > 0) {
@@ -77,7 +74,7 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
             return Condition.values()[conditionOrdinal];
         }
 
-        return null;
+        return Condition.UNKNOWN;
     }
 
     public void jumpToEnd(final boolean animate) {
