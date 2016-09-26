@@ -394,11 +394,11 @@
     <string name="title_checking_pill_battery">Checking Sleep Pill battery</string>
     <string name="title_checking_bluetooth_connectivity">Checking Bluetooth connectivity</string>
     <string name="title_update_sleep_pill">Updating your Sleep Pill</string>
-    <string name="info_update_sleep_pill">You’ll need to keep the Sense app open for the duration of the update. This process should take less than two minutes.</string>
+    <string name="info_update_sleep_pill">You’ll need to keep the Sense app open for the duration of the update. This process should take less than one minute.</string>
     <string name="title_connect_sleep_pill">Connect your Sleep Pill</string>
     <string name="info_connect_sleep_pill">Hold your Sleep Pill near your mobile device, and then quickly shake it for three seconds to begin the update.</string>
     <string name="message_sleep_pill_connected">Sleep Pill Connected</string>
-    <string name="message_sleep_pill_updating">Sleep Pill Updating</string>
+    <string name="message_sleep_pill_updating">Sleep Pill updating</string>
     <string name="message_sleep_pill_updated">Sleep Pill Updated</string>
     <string name="timeline_info_label_total_sleep">Total sleep</string>
     <string name="timeline_info_label_times_awake">Times awake</string>
