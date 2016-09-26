@@ -2,6 +2,9 @@ package is.hello.sense.onboarding;
 
 import javax.inject.Singleton;
 
+import android.support.annotation.NonNull;
+
+
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.ApiService;
@@ -12,6 +15,8 @@ import is.hello.sense.presenters.OnboardingPairSensePresenter;
 import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.presenters.pairpill.BasePairPillPresenter;
 import is.hello.sense.presenters.pairpill.UpgradePairPillPresenter;
+import is.hello.sense.interactors.SensorResponseInteractor;
+import is.hello.sense.presenters.RoomCheckPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
@@ -22,6 +27,7 @@ import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterWeightFragment;
 import is.hello.sense.ui.fragments.pill.PairPillFragment;
+import is.hello.sense.units.UnitFormatter;
 
 @Module(complete = false,
         library = true,
@@ -43,6 +49,13 @@ import is.hello.sense.ui.fragments.pill.PairPillFragment;
         }
 )
 public class OnboardingModule {
+
+        @Singleton
+        @Provides
+        public RoomCheckPresenter providesRoomCheckPresenter(@NonNull final SensorResponseInteractor interactor,
+                                                             @NonNull final UnitFormatter unitFormatter){
+                return new RoomCheckPresenter(interactor, unitFormatter);
+        }
 
     @Provides
     @Singleton

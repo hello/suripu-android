@@ -22,8 +22,6 @@ import is.hello.sense.mvp.view.onboarding.RoomCheckView;
 import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.presenters.RoomCheckPresenter;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
-import is.hello.sense.units.UnitConverter;
-import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
@@ -32,9 +30,6 @@ implements RoomCheckPresenter.Output{
 
     @Inject
     RoomCheckPresenter presenter;
-    @Inject UnitFormatter unitFormatter;
-
-    private boolean animationCompleted = false;
 
     private RoomCheckView presenterView;
 
@@ -46,9 +41,6 @@ implements RoomCheckPresenter.Output{
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        this.animationCompleted = (savedInstanceState != null);
-
         setRetainInstance(true);
     }
 
@@ -62,25 +54,6 @@ implements RoomCheckPresenter.Output{
     }
 
     @Override
-    public void onViewCreated(final View view, final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        if (animationCompleted) {
-            presenter.jumpToEnd(false);
-        } else {
-            presenterView.initSensorContainerXOffset();
-            presenter.bindAndSubscribeInteractorLatest();
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        presenter.jumpToEnd(false);
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
 
@@ -89,17 +62,33 @@ implements RoomCheckPresenter.Output{
         presenterView = null;
     }
 
+    //region RoomCheck Output
 
-    //region Scene Animation
+    @Override
+    public void initialize(){
+        presenterView.initSensorContainerXOffset();
+    }
+
+    @Override
+    public void createSensorConditionViews(@NonNull final List<SensorType> types) {
+        presenterView.createSensorConditionViews(types);
+    }
+
+    @Override
+    public void unavailableConditions(final Throwable e) {
+        Analytics.trackError(e, "Room check");
+        Logger.error(getClass().getSimpleName(), "Could not load conditions for room check", e);
+        presenterView.removeSensorContainerViews();
+    }
+
     @Override
     public void showConditionAt(final int position,
-                                final Sensor currentPositionSensor) {
+                                @NonNull final Sensor currentPositionSensor,
+                                final int convertedValue,
+                                @NonNull final String unitSuffix,
+                                @NonNull  final Runnable onComplete) {
         presenterView.animateSenseToGray();
-        final UnitConverter unitConverter = unitFormatter.getUnitConverterForSensor(currentPositionSensor.getType());
-        int convertedValue = 0;
-        if (currentPositionSensor.getValue() != null) {
-            convertedValue = (int) unitConverter.convert(currentPositionSensor.getValue().longValue());
-        }
+
         final Condition condition = currentPositionSensor.getCondition();
         presenterView.showConditionAt(position,
                                       currentPositionSensor.getType(),
@@ -107,8 +96,8 @@ implements RoomCheckPresenter.Output{
                                       getConditionDrawable(condition),
                                       condition.colorRes,
                                       convertedValue,
-                                      unitFormatter.getSuffixForSensor(currentPositionSensor.getType()),
-                                      () -> presenter.showConditionAt(position + 1));
+                                      unitSuffix,
+                                      onComplete);
     }
 
     @Override
@@ -120,43 +109,22 @@ implements RoomCheckPresenter.Output{
     }
 
     @Override
-    public void jumpToEnd(final boolean animate) {
-        this.animationCompleted = true;
+    public void stopAnimations(){
         presenterView.stopAnimations();
-
-        presenter.execute(() -> {
-            final Condition averageCondition = presenter.calculateAverageCondition();
-            presenterView.animateSenseCondition(animate, getConditionDrawable(averageCondition));
-            presenterView.showCompletion(animate,
-                                         this::continueOnboarding);
-        });
-    }
-
-    //endregion
-
-    //region Binding
-
-    @Override
-    public void createSensorConditionViews(@NonNull final List<SensorType> types) {
-        presenterView.createSensorConditionViews(types);
-        presenter.showConditionAt(0);
     }
 
     @Override
-    public void unavailableConditions(final Throwable e) {
-        Analytics.trackError(e, "Room check");
-        Logger.error(getClass().getSimpleName(), "Could not load conditions for room check", e);
+    public void animateSenseCondition(final boolean animate, @NonNull final Condition condition){
+        presenterView.animateSenseCondition(animate, getConditionDrawable(condition));
+    }
 
-        presenterView.removeSensorContainerViews();
-        jumpToEnd(true);
+    @Override
+    public void showCompletion(final boolean animate, @NonNull final Runnable onContinue) {
+        presenterView.showCompletion(animate,
+                                     ignored -> onContinue.run());
     }
 
     //endregion
-
-
-    public void continueOnboarding(@NonNull final View sender) {
-        finishFlow();
-    }
 
     private Drawable getConditionDrawable(@NonNull final Condition condition) {
         final Resources resources = getResources();
