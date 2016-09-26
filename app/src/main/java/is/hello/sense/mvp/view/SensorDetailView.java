@@ -6,22 +6,26 @@ import android.support.annotation.NonNull;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.ui.widget.SelectorView;
+import is.hello.sense.ui.widget.SensorDetailScrollView;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
 
 @SuppressLint("ViewConstructor")
 public final class SensorDetailView extends PresenterView {
+    /**
+     * Scales the graph to consume this much of remaining space below text.
+     */
+    private static final float GRAPH_HEIGHT_RATIO = .65f;
     private final SelectorView subNavSelector;
     private final TextView value;
     private final TextView message;
     private final SensorGraphView sensorGraphView;
-    private final ScrollView scrollView;
+    private final SensorDetailScrollView scrollView;
     private int graphHeight = 0;
     private Sensor sensor;
 
@@ -31,7 +35,9 @@ public final class SensorDetailView extends PresenterView {
         this.value = (TextView) findViewById(R.id.fragment_sensor_detail_value);
         this.message = (TextView) findViewById(R.id.fragment_sensor_detail_message);
         this.sensorGraphView = (SensorGraphView) findViewById(R.id.fragment_sensor_detail_graph_view);
-        this.scrollView = (ScrollView) findViewById(R.id.fragment_sensor_detail_scroll_view);
+        this.scrollView = (SensorDetailScrollView) findViewById(R.id.fragment_sensor_detail_scroll_view);
+        this.scrollView.requestDisallowInterceptTouchEvent(true);
+        this.scrollView.setGraphView(sensorGraphView);
 
         getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -40,12 +46,13 @@ public final class SensorDetailView extends PresenterView {
                 // so we can get the height then hide the view
                 final int scrollViewHeight = scrollView.getHeight();
                 final float top = message.getY() + message.getHeight();
-                SensorDetailView.this.graphHeight = (int)((scrollViewHeight - top) * .65f);
+                SensorDetailView.this.graphHeight = (int) ((scrollViewHeight - top) * GRAPH_HEIGHT_RATIO);
                 final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, SensorDetailView.this.graphHeight);
                 layoutParams.topMargin = (int) (scrollViewHeight - top) - SensorDetailView.this.graphHeight;
                 sensorGraphView.setLayoutParams(layoutParams);
                 showSensor(sensor);
                 getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
 
             }
         });
@@ -76,6 +83,7 @@ public final class SensorDetailView extends PresenterView {
         this.message.setText(sensor.getMessage());
         this.value.setTextColor(color);
         this.sensorGraphView.resetTimeToAnimate(SensorGraphView.StartDelay.LONG);
-        this.sensorGraphView.setSensorGraphDrawable(new SensorGraphDrawable(context, sensor, this.graphHeight));
+        this.sensorGraphView.setSensorGraphDrawable(new SensorGraphDrawable(context, sensor, this.graphHeight), true);
     }
+
 }

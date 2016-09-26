@@ -9,7 +9,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
@@ -56,9 +55,12 @@ public class SensorGraphDrawable extends Drawable {
     private final Paint gradientPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint linePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint scrubberPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint whiteFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final TextPaint textLabelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     private final Path drawingPath = new Path();
 
+    private float scrubberLocation = -1;
     private float scaleFactor = 0; // Animation
 
     public SensorGraphDrawable(@NonNull final Context context,
@@ -90,6 +92,12 @@ public class SensorGraphDrawable extends Drawable {
         this.linePaint.setColor(ContextCompat.getColor(context, R.color.gray3));
         this.linePaint.setStyle(Paint.Style.STROKE);
         this.linePaint.setStrokeWidth(STROKE_WIDTH);
+
+        this.scrubberPaint.setColor(strokeColor);
+        this.scrubberPaint.setStyle(Paint.Style.FILL);
+
+        this.whiteFillPaint.setColor(Color.WHITE);
+        this.whiteFillPaint.setStyle(Paint.Style.FILL);
         Drawing.updateTextPaintFromStyle(this.textLabelPaint, context, R.style.AppTheme_Text_Trends_BarGraph);
     }
 
@@ -119,7 +127,7 @@ public class SensorGraphDrawable extends Drawable {
      * the graph is.
      * <p>
      * (0,0)                           (canvas.getWidth(), 0)
-     * _____________________________
+     * ______________________________
      * |                _____        |
      * |  __/\    /\___/     \      _|
      * |_/    \__/            \____/ |
@@ -149,10 +157,10 @@ public class SensorGraphDrawable extends Drawable {
         }
 
         // draw off the screen but keep the height equal to the last drawn point. This makes it so the graph doesn't drop in height near the end.
-        this.drawingPath.lineTo(width  * this.scaleFactor, getValueHeight(values[drawTo]));
+        this.drawingPath.lineTo(width * this.scaleFactor, getValueHeight(values[drawTo]));
 
         // Now draw below the graph.
-        this.drawingPath.lineTo((width ) * this.scaleFactor, this.height * 2);
+        this.drawingPath.lineTo((width) * this.scaleFactor, this.height * 2);
 
         // Connect back to the start so it fills nicely.
         this.drawingPath.lineTo(-width, this.height * 2);
@@ -165,7 +173,7 @@ public class SensorGraphDrawable extends Drawable {
 
         // Draw the min/max text and horizontal line.
         drawScale(canvas);
-
+        drawScrubber(canvas, xIncrement);
     }
 
     private float getValueHeight(final float value) {
@@ -176,31 +184,49 @@ public class SensorGraphDrawable extends Drawable {
                     - (this.minHeight * ((value - this.minValue) / this.valueDifference))
                     + this.maxHeight;
         } else {
-            return this.height ;
+            return this.height;
         }
+    }
+
+    private void drawScrubber(@NonNull final Canvas canvas, final double xInc) {
+        if (scrubberLocation == -1) {
+            return;
+        }
+
+        final int value = (int) (scrubberLocation / xInc);
+        final float yLoc = getValueHeight(sensor.getSensorValues()[value]);
+
+        drawingPath.reset();
+        drawingPath.moveTo(scrubberLocation, lineDistance+ minHeight + this.textPositionOffset);
+        drawingPath.lineTo(scrubberLocation, lineDistance+ this.textPositionOffset);
+        canvas.drawCircle(scrubberLocation, yLoc, 10, whiteFillPaint);
+        canvas.drawCircle(scrubberLocation, yLoc, 6, scrubberPaint);
+        canvas.drawPath(drawingPath, strokePaint);
+
+
     }
 
     private void drawScale(@NonNull final Canvas canvas) {
         final float width = canvas.getWidth();
-        final Path path = new Path();
+        this.drawingPath.reset();
         final float xPos = width * TEXT_X_POSITION_RATIO;
         float yPos = this.minHeight + this.textPositionOffset;
 
         canvas.drawText(this.sensor.getValueLimits().getFormattedMin() + " " + this.sensor.getSensorSuffix(), xPos, yPos, this.textLabelPaint);
         yPos += this.lineDistance;
-        path.moveTo(xPos, yPos);
-        path.lineTo(width - xPos, yPos);
-        canvas.drawPath(path, this.linePaint);
+        this.drawingPath.moveTo(xPos, yPos);
+        this.drawingPath.lineTo(width - xPos, yPos);
+        canvas.drawPath(this.drawingPath, this.linePaint);
         if (this.sensor.getValueLimits().getFormattedMax().isEmpty()) {
             return;
         }
-        yPos = this.textPositionOffset ;
+        yPos = this.textPositionOffset;
         canvas.drawText(this.sensor.getValueLimits().getFormattedMax() + " " + this.sensor.getSensorSuffix(), xPos, yPos, this.textLabelPaint);
         yPos += this.lineDistance;
-        path.reset();
-        path.moveTo(xPos, yPos);
-        path.lineTo(width - xPos, yPos);
-        canvas.drawPath(path, this.linePaint);
+        this.drawingPath.reset();
+        this.drawingPath.moveTo(xPos, yPos);
+        this.drawingPath.lineTo(width - xPos, yPos);
+        canvas.drawPath(this.drawingPath, this.linePaint);
 
     }
 
@@ -219,5 +245,12 @@ public class SensorGraphDrawable extends Drawable {
     public int getOpacity() {
         return 0;
     }
+
+
+    public void setScrubberLocation(final float xLoc) {
+        this.scrubberLocation = xLoc;
+        invalidateSelf();
+    }
+
 
 }

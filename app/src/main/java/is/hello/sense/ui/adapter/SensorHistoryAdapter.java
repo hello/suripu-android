@@ -16,6 +16,7 @@ import is.hello.sense.ui.widget.graphing.adapters.GraphAdapter;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
+@Deprecated
 public class SensorHistoryAdapter implements GraphAdapter {
     private static final int MAX_SECTIONS_COUNT = 7; // like iOS
 
