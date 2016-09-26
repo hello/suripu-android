@@ -4,7 +4,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
+
 
 /**
  * Responsible for animating {@link SensorGraphDrawable} via elapsed time.
@@ -19,10 +21,23 @@ public class SensorGraphView extends View {
      */
     private static final int DURATION_MS = 750;
 
+    /**
+     * Used for tracking elapsed time for animating.
+     */
     private long startTime;
 
-    private SensorGraphDrawable graphDrawable;
+    /**
+     * Ranges from 0 to 1. Graphs are drawn based on the value for smooth animation effects.
+     * When 0 none of the graph is visible.
+     * When 1 all of the graph is visible.
+     */
     private float factor = 0;
+
+    /**
+     * When true a scrubber will be drawn on touch.
+     */
+    private boolean withScrubbing = false;
+    private SensorGraphDrawable graphDrawable;
 
     public SensorGraphView(final Context context) {
         this(context, null);
@@ -62,10 +77,30 @@ public class SensorGraphView extends View {
         this.factor = 0;
     }
 
-    public void setSensorGraphDrawable(@NonNull final SensorGraphDrawable drawable) {
+    @Override
+    public boolean onTouchEvent(final MotionEvent event) {
+        if (!withScrubbing) {
+            return false;
+        }
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_MOVE:
+                graphDrawable.setScrubberLocation(event.getX());
+                return true;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_POINTER_UP:
+            case MotionEvent.ACTION_CANCEL:
+                graphDrawable.setScrubberLocation(-1);
+                break;
+        }
+        return false;
+    }
+
+    public void setSensorGraphDrawable(@NonNull final SensorGraphDrawable drawable, final boolean withScrubbing) {
         this.graphDrawable = drawable;
         this.graphDrawable.setScaleFactor(factor);
         setBackground(drawable);
+        this.withScrubbing = withScrubbing;
         postInvalidate();
     }
 
@@ -80,4 +115,5 @@ public class SensorGraphView extends View {
 
         }
     }
+
 }
