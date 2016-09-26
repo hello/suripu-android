@@ -10,6 +10,7 @@ import android.graphics.Path;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 
@@ -43,6 +44,18 @@ public class SensorGraphDrawable extends Drawable {
      * Width of lines
      */
     private static final float STROKE_WIDTH = 2f;
+    /**
+     * White portion of scrubber
+     */
+    private static final float SCRUBBER_OUTER_RADIUS = 10;
+    /**
+     * Colored portion of scrubber.
+     */
+    private static final float SCRUBBER_INNER_RADIUS = 6;
+    /**
+     * A space.
+     */
+    private static final String SPACE = " ";
 
     private final Sensor sensor;
     private final int height;
@@ -62,6 +75,7 @@ public class SensorGraphDrawable extends Drawable {
 
     private float scrubberLocation = -1;
     private float scaleFactor = 0; // Animation
+    private ScrubberCallback scrubberCallback = null;
 
     public SensorGraphDrawable(@NonNull final Context context,
                                @NonNull final Sensor sensor,
@@ -193,16 +207,19 @@ public class SensorGraphDrawable extends Drawable {
             return;
         }
 
-        final int value = (int) (scrubberLocation / xInc);
-        final float yLoc = getValueHeight(sensor.getSensorValues()[value]);
+        final int position = (int) (scrubberLocation / xInc);
+        final float yLoc = getValueHeight(sensor.getSensorValues()[position]);
 
         drawingPath.reset();
-        drawingPath.moveTo(scrubberLocation, lineDistance+ minHeight + this.textPositionOffset);
-        drawingPath.lineTo(scrubberLocation, lineDistance+ this.textPositionOffset);
-        canvas.drawCircle(scrubberLocation, yLoc, 10, whiteFillPaint);
-        canvas.drawCircle(scrubberLocation, yLoc, 6, scrubberPaint);
+        drawingPath.moveTo(scrubberLocation, lineDistance + minHeight + this.textPositionOffset);
+        drawingPath.lineTo(scrubberLocation, lineDistance + this.textPositionOffset);
+        canvas.drawCircle(scrubberLocation, yLoc, SCRUBBER_OUTER_RADIUS, whiteFillPaint);
+        canvas.drawCircle(scrubberLocation, yLoc, SCRUBBER_INNER_RADIUS, scrubberPaint);
         canvas.drawPath(drawingPath, strokePaint);
 
+        if (scrubberCallback != null) {
+            scrubberCallback.onPositionScrubbed(position);
+        }
 
     }
 
@@ -212,7 +229,7 @@ public class SensorGraphDrawable extends Drawable {
         final float xPos = width * TEXT_X_POSITION_RATIO;
         float yPos = this.minHeight + this.textPositionOffset;
 
-        canvas.drawText(this.sensor.getValueLimits().getFormattedMin() + " " + this.sensor.getSensorSuffix(), xPos, yPos, this.textLabelPaint);
+        canvas.drawText(this.sensor.getValueLimits().getFormattedMin() + SPACE + this.sensor.getSensorSuffix(), xPos, yPos, this.textLabelPaint);
         yPos += this.lineDistance;
         this.drawingPath.moveTo(xPos, yPos);
         this.drawingPath.lineTo(width - xPos, yPos);
@@ -221,7 +238,7 @@ public class SensorGraphDrawable extends Drawable {
             return;
         }
         yPos = this.textPositionOffset;
-        canvas.drawText(this.sensor.getValueLimits().getFormattedMax() + " " + this.sensor.getSensorSuffix(), xPos, yPos, this.textLabelPaint);
+        canvas.drawText(this.sensor.getValueLimits().getFormattedMax() + SPACE + this.sensor.getSensorSuffix(), xPos, yPos, this.textLabelPaint);
         yPos += this.lineDistance;
         this.drawingPath.reset();
         this.drawingPath.moveTo(xPos, yPos);
@@ -250,6 +267,16 @@ public class SensorGraphDrawable extends Drawable {
     public void setScrubberLocation(final float xLoc) {
         this.scrubberLocation = xLoc;
         invalidateSelf();
+    }
+
+    public void setScrubberCallback(@Nullable final ScrubberCallback scrubberCallback) {
+        this.scrubberCallback = scrubberCallback;
+    }
+
+    public interface ScrubberCallback {
+        void onPositionScrubbed(final int position);
+
+        void onScrubberReleased();
     }
 
 

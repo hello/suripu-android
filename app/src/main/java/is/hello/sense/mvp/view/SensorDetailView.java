@@ -16,7 +16,8 @@ import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
 
 @SuppressLint("ViewConstructor")
-public final class SensorDetailView extends PresenterView {
+public final class SensorDetailView extends PresenterView
+        implements SensorGraphDrawable.ScrubberCallback {
     /**
      * Scales the graph to consume this much of remaining space below text.
      */
@@ -53,7 +54,6 @@ public final class SensorDetailView extends PresenterView {
                 showSensor(sensor);
                 getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-
             }
         });
 
@@ -66,7 +66,7 @@ public final class SensorDetailView extends PresenterView {
 
     @Override
     public final void releaseViews() {
-
+        this.sensorGraphView.release();
     }
 
     public final void showSensor(@NonNull final Sensor sensor) {
@@ -83,7 +83,19 @@ public final class SensorDetailView extends PresenterView {
         this.message.setText(sensor.getMessage());
         this.value.setTextColor(color);
         this.sensorGraphView.resetTimeToAnimate(SensorGraphView.StartDelay.LONG);
-        this.sensorGraphView.setSensorGraphDrawable(new SensorGraphDrawable(context, sensor, this.graphHeight), true);
+        this.sensorGraphView.setSensorGraphDrawable(new SensorGraphDrawable(context, sensor, this.graphHeight));
+        this.sensorGraphView.setScrubberCallback(this);
     }
 
+    @Override
+    public void onPositionScrubbed(final int position) {
+        this.value.setText(sensor.getFormattedValueAtPosition(position));
+
+    }
+
+    @Override
+    public void onScrubberReleased() {
+        this.value.setText(sensor.getFormattedValue(true));
+
+    }
 }
