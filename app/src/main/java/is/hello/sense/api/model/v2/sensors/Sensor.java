@@ -43,7 +43,6 @@ public class Sensor implements Serializable {
     @SerializedName("scale")
     private List<Scale> scales;
 
-
     /**
      * Individual values over length of time, used for graphing. To be set after POST /v2/sensors
      */
@@ -94,7 +93,7 @@ public class Sensor implements Serializable {
         this.sensorSuffix = sensorSuffix;
     }
 
-    @NonNull
+    @Nullable
     public float[] getSensorValues() {
         return sensorValues;
     }
@@ -109,6 +108,15 @@ public class Sensor implements Serializable {
             return "";
         }
         return Styles.assembleReadingAndUnit(getValue(), withSuffix ? sensorSuffix : "");
+    }
+
+    @NonNull
+    public CharSequence getFormattedValueAtPosition(final int position) {
+        if (getSensorValues() == null || getSensorValues().length <= position) {
+            return "";
+        }
+        return Styles.assembleReadingAndUnit(getSensorValues()[position], sensorSuffix);
+
     }
 
     @NonNull
