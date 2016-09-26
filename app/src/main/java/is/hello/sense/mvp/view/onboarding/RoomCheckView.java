@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -110,10 +112,10 @@ public class RoomCheckView extends PresenterView {
                 .start();
     }
 
-    public void updateSensorView(final int position, final int conditionColorRes, final SensorType type) {
+    public void updateSensorView(final int position, @ColorInt final int conditionColor, final SensorType type) {
         final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(position);
         sensorView.clearAnimation();
-        sensorView.setTint(ContextCompat.getColor(context, conditionColorRes));
+        sensorView.setTint(conditionColor);
         sensorView.setIcon(getFinalIconForSensor(type));
     }
 
@@ -139,18 +141,17 @@ public class RoomCheckView extends PresenterView {
                                 @NonNull final SensorType sensorType,
                                 @NonNull final String statusMessage,
                                 @NonNull final Drawable senseCondition,
-                                final int conditionEndColorRes,
+                                @ColorRes final int conditionEndColorRes,
                                 final int convertedUnitTickerValue,
                                 @NonNull final String unitSuffix,
                                 @NonNull final Runnable onComplete) {
         final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(position);
-
+        this.animatingSensorView = sensorView;
         if(position != 0) {
             animateSensorContainerTranslateX(sensorView.getWidth());
         }
 
         status.setText(getStatusStringForSensor(sensorType));
-        this.animatingSensorView = sensorView;
         sensorView.fadeInProgressIndicator(() -> {
             final int endColor = ContextCompat.getColor(context, conditionEndColorRes);
             scoreUnit.setText(unitSuffix);
