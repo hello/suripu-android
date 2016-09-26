@@ -92,7 +92,7 @@ public class Sensor implements Serializable {
         this.sensorSuffix = sensorSuffix;
     }
 
-    @NonNull
+    @Nullable
     public float[] getSensorValues() {
         return sensorValues;
     }
@@ -141,6 +141,15 @@ public class Sensor implements Serializable {
      *
      * @return {@link Sensor#valueLimits}
      */
+    @NonNull
+    public CharSequence getFormattedValueAtPosition(final int position) {
+        if (getSensorValues() == null || getSensorValues().length <= position) {
+            return "";
+        }
+        return Styles.assembleReadingAndUnit(getSensorValues()[position], sensorSuffix);
+
+    }
+
     @NonNull
     public ValueLimits getValueLimits() {
         if (valueLimits == null) {
