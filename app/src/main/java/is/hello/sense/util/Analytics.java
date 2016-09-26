@@ -148,6 +148,12 @@ public class Analytics {
         String PROP_INSIGHT= "Insight";
         String PROP_INSIGHT_CATEGORY= "Category";
         String PROP_TYPE = "Type";
+
+        /**
+         * Whenever user taps on a "help" button
+         */
+        String EVENT_HELP = "Help";
+        String PROP_HELP_STEP = "help_step";
     }
 
     public interface Onboarding {
@@ -355,12 +361,6 @@ public class Analytics {
          * When user lands on the last onboarding Screen
          */
         String EVENT_END = "Onboarding End";
-
-        /**
-         * Whenever user taps on a "help" button
-         */
-        String EVENT_HELP = "Onboarding Help";
-        String PROP_HELP_STEP = "onboarding_step";
 
         /**
          * When the user long presses on the help button and accesses our secret support menu.
