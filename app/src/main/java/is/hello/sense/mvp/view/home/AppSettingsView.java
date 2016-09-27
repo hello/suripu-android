@@ -51,7 +51,7 @@ public class AppSettingsView extends PresenterView {
         Views.setSafeOnClickListener(this.unitsItem, generator.create(UnitSettingsFragment.class, R.string.label_units_and_time, false));
 
         this.supportItem = findViewById(R.id.fragment_app_settings_support);
-        Views.setSafeOnClickListener(this.supportItem, ignored -> generator.create(SupportFragment.class, R.string.action_support, false));
+        Views.setSafeOnClickListener(this.supportItem, generator.create(SupportFragment.class, R.string.action_support, false));
 
         this.tellAFriendItem = findViewById(R.id.fragment_app_settings_tell_a_friend);
         Views.setSafeOnClickListener(this.tellAFriendItem, tellAFriendListener);
