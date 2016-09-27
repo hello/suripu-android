@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import java.util.Calendar;
@@ -41,8 +42,11 @@ public final class SensorDetailView extends PresenterView
     private final Sensor sensor;
     private int graphHeight = 0;
     private List<X> timestamps;
+    private boolean use24Hour = false;
 
-    public SensorDetailView(@NonNull final Activity activity, @NonNull final SelectorView.OnSelectionChangedListener listener, @NonNull final Sensor sensor) {
+    public SensorDetailView(@NonNull final Activity activity,
+                            @NonNull final SelectorView.OnSelectionChangedListener listener,
+                            @NonNull final Sensor sensor) {
         super(activity);
         this.sensor = sensor;
         this.subNavSelector = (SelectorView) findViewById(R.id.fragment_sensor_detail_selector);
@@ -68,16 +72,33 @@ public final class SensorDetailView extends PresenterView
         getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                // gets called after layout has been done but before display
-                // so we can get the height then hide the view
+                /*
+
+                There isn't a way to position the graph at the bottom of the screen while it's in a
+                ScrollView via xml.
+
+                The following will wait until the layout is drawn to measure the screen height and
+                how much space remains underneath the message TextView. It will then take that space
+                and scale the graph to fit 65% of it. Then it will set the top margin of the graph
+                to be 45% of the remaining space, pushing it to the bottom of the screen.
+
+                 */
+                // Height of ScrollView
                 final int scrollViewHeight = scrollView.getHeight();
-                final float top = message.getY() + message.getHeight();
-                SensorDetailView.this.graphHeight = (int) ((scrollViewHeight - top) * GRAPH_HEIGHT_RATIO);
+                // Y position of message's bottom
+                final float messageBottomY = message.getY() + message.getHeight();
+                // Scaled graph height
+                SensorDetailView.this.graphHeight = (int) ((scrollViewHeight - messageBottomY) * GRAPH_HEIGHT_RATIO);
                 final RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, SensorDetailView.this.graphHeight);
                 final int topMargin = scrollViewHeight - SensorDetailView.this.graphHeight;
                 layoutParams.setMargins(0, topMargin, 0, 0);
                 sensorGraphView.setLayoutParams(layoutParams);
 
+                /*
+                  Because SensorGraphView is only a view we can't put a progress bar inside of it.
+
+                  The following will position a ProgressBar directly on the center of it.
+                 */
                 final RelativeLayout.LayoutParams progressBarLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 progressBarLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
                 progressBarLayoutParams.setMargins(0, topMargin + (graphHeight / 2) - progressBar.getHeight() / 2, 0, 0);
@@ -100,6 +121,12 @@ public final class SensorDetailView extends PresenterView
         this.sensorGraphView.release();
     }
 
+    public final void set24HourTime(final boolean use24hour) {
+        this.use24Hour = use24hour;
+        refreshView(SensorGraphView.StartDelay.SHORT);
+
+    }
+
     public final void bindServerDataResponse(@NonNull final SensorsDataResponse sensorResponse) {
         this.lockSubNavBar(false);
         this.timestamps = sensorResponse.getTimestamps();
@@ -119,6 +146,9 @@ public final class SensorDetailView extends PresenterView
 
     private void refreshView(@NonNull final SensorGraphView.StartDelay delay) {
         post(() -> {
+            if (context == null) {
+                return;
+            }
             final int color = sensor.getColor(context);
             this.subNavSelector.setBackgroundColor(color);
             this.subNavSelector.getButtonAt(0).setBackgroundColor(color);
@@ -144,10 +174,10 @@ public final class SensorDetailView extends PresenterView
     public void onPositionScrubbed(final int position) {
         this.value.setText(sensor.getFormattedValueAtPosition(position));
         if (timestamps != null && timestamps.size() > position) {
-            final Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(timestamps.get(position).getTimestamp());
-
-            this.message.setText(LocalDate.fromCalendarFields(calendar).toString());
+            this.message.setText(new DateFormatter(context)
+                                         .formatAsTime(new DateTime(timestamps.get(position)
+                                                                              .getTimestamp()),
+                                                       use24Hour));
         }
 
     }
