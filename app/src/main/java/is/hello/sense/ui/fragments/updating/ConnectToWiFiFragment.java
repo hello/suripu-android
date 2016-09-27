@@ -151,14 +151,6 @@ public class ConnectToWiFiFragment extends BasePresenterFragment
     //endregion
 
     @Override
-    public wifi_endpoint.sec_type getNetworkSecurityType() {
-        if (networkSecurity == null) {
-            return null;
-        }
-        return (wifi_endpoint.sec_type) networkSecurity.getSelectedItem();
-    }
-
-    @Override
     public void updateView(@Nullable final wifi_endpoint network) {
         if (view == null) {
             return;
@@ -239,6 +231,14 @@ public class ConnectToWiFiFragment extends BasePresenterFragment
         } else {
             networkPassword.clearFocus();
         }
+    }
+
+    @Override
+    public wifi_endpoint.sec_type getNetworkSecurityType() {
+        if (networkSecurity == null) {
+            return null;
+        }
+        return (wifi_endpoint.sec_type) networkSecurity.getSelectedItem();
     }
 
     @Override
