@@ -120,21 +120,6 @@ public class Sensor implements Serializable {
     }
 
     /**
-     * Format a specific value from the {@link Sensor#valueLimits} list.
-     *
-     * @param position position located within {@link Sensor#valueLimits}
-     * @return formatted value.
-     */
-    @NonNull
-    public CharSequence getFormattedValueAtPosition(final int position) {
-        if (getSensorValues().length <= position) {
-            return "";
-        }
-        return Styles.assembleReadingAndUnit(getSensorValues()[position], sensorSuffix);
-
-    }
-
-    /**
      * Contains a {@link is.hello.sense.api.model.v2.sensors.Sensor.ValueLimits#min} and
      * {@link is.hello.sense.api.model.v2.sensors.Sensor.ValueLimits#max} value corresponding to
      * {@link Sensor#sensorValues}
