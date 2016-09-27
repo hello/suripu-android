@@ -122,7 +122,6 @@ public class RoomCheckView extends PresenterView {
     public void createSensorConditionViews(final List<SensorType> types) {
         sensorViewContainer.removeAllViews();
 
-        final Resources resources = getResources();
         final LinearLayout.LayoutParams layoutParams
                 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         final int padding = resources.getDimensionPixelOffset(R.dimen.item_room_sensor_condition_view_width) / 2;
