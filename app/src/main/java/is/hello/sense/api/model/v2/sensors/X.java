@@ -11,6 +11,9 @@ public class X implements Serializable {
     @SerializedName("o")
     private int offsetMillis;
 
+    public long getTimestamp() {
+        return timestamp;
+    }
 
     @Override
     public String toString() {
