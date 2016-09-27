@@ -72,7 +72,7 @@ public class SensorGraphView extends View {
 
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
-        if (this.scrubberCallback == null) {
+        if (this.scrubberCallback == null || graphDrawable == null) {
             return false;
         }
         switch (event.getAction()) {
