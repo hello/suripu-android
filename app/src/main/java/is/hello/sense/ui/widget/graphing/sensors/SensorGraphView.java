@@ -95,19 +95,19 @@ public class SensorGraphView extends View {
         this.factor = 0;
     }
 
-    public void setSensorGraphDrawable(@NonNull final SensorGraphDrawable drawable) {
+    public synchronized void setSensorGraphDrawable(@NonNull final SensorGraphDrawable drawable) {
         this.graphDrawable = drawable;
         this.graphDrawable.setScaleFactor(this.factor);
+        this.graphDrawable.setScrubberCallback(scrubberCallback);
         setBackground(this.graphDrawable);
         postInvalidate();
     }
 
-    public void setScrubberCallback(@Nullable final SensorGraphDrawable.ScrubberCallback callback) {
+    public synchronized void setScrubberCallback(@Nullable final SensorGraphDrawable.ScrubberCallback callback) {
         this.scrubberCallback = callback;
         if (this.graphDrawable != null) {
             this.graphDrawable.setScrubberCallback(this.scrubberCallback);
         }
-
     }
 
     public void release() {
@@ -115,7 +115,6 @@ public class SensorGraphView extends View {
             this.graphDrawable.setScrubberCallback(null);
         }
         this.scrubberCallback = null;
-
     }
 
 

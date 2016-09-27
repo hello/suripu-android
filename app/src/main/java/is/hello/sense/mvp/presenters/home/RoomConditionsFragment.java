@@ -60,7 +60,6 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         }
     }
 
-
     //region Lifecycle
     @Override
     public final void setUserVisibleHint(final boolean isVisibleToUser) {
@@ -70,14 +69,12 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         }
     }
 
-
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(this.unitFormatter);
         addInteractor(this.sensorResponseInteractor);
     }
-
 
     @Override
     public final void onViewCreated(final View view, final Bundle savedInstanceState) {
@@ -91,7 +88,6 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
                          this::bindConditions,
                          this::conditionsUnavailable);
     }
-
 
     @Override
     public final void onResume() {
@@ -118,8 +114,8 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
             this.adapter.release();
             this.adapter.setOnItemClickedListener(null);
             this.adapter.clear();
-
         }
+
         this.adapter = null;
         this.updateTimer = null;
     }
@@ -147,10 +143,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
                              final SensorData sensorData = sensorsDataResponse.getSensorData();
                              for (final Sensor sensor : sensors) {
                                  sensor.setSensorSuffix(unitFormatter.getSuffixForSensor(sensor.getType()));
-                                 final float[] values = sensorData.get(sensor.getType());
-                                 if (values != null) {
-                                     sensor.setSensorValues(values);
-                                 }
+                                 sensor.updateSensorValues(sensorsDataResponse);
                              }
                              this.adapter.dismissMessage();
                              this.adapter.replaceAll(sensors);

@@ -18,11 +18,10 @@
         android:layout_height="match_parent"
         android:background="@color/background_light"
         android:fillViewport="true"
-
         android:focusable="true"
         android:scrollbars="none">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -33,6 +32,8 @@
                 style="@style/Heading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/x5"/>
 
@@ -41,6 +42,8 @@
                 style="@style/Body"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/fragment_sensor_detail_value"
+                android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/x1"/>
 
@@ -48,62 +51,69 @@
                 android:id="@+id/fragment_sensor_detail_graph_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="false"/>
+                android:layout_below="@id/fragment_sensor_detail_message"
+                android:focusable="false"
+                android:visibility="invisible"/>
+
+            <ProgressBar
+                android:id="@+id/fragment_sensor_detail_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/fragment_sensor_detail_message"
+                android:layout_centerHorizontal="true"
+                android:visibility="visible"/>
+
 
             <Button
                 android:id="@+id/b1"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/x6"
+                android:layout_below="@id/fragment_sensor_detail_graph_view"
                 android:text="button"/>
 
             <Button
                 android:id="@+id/b2"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/x6"
+                android:layout_below="@id/b1"
                 android:text="button"/>
 
             <Button
                 android:id="@+id/b3"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/x6"
+                android:layout_below="@id/b2"
                 android:text="button"/>
 
             <Button
                 android:id="@+id/b4"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/x6"
+                android:layout_below="@id/b3"
                 android:text="button"/>
 
             <Button
                 android:id="@+id/b5"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/x6"
+                android:layout_below="@id/b4"
                 android:text="button"/>
 
             <Button
                 android:id="@+id/b6"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/x6"
+                android:layout_below="@id/b5"
                 android:text="button"/>
 
             <Button
                 android:id="@+id/b7"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/x6"
+                android:layout_below="@id/b6"
                 android:text="button"/>
 
-            <Button
-                android:id="@+id/b8"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/x6"
-                android:text="button"/>
-
-            <Button
-                android:id="@+id/b9"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/x6"
-                android:text="button"/>
-        </LinearLayout>
+        </RelativeLayout>
 
 
     </is.hello.sense.ui.widget.SensorDetailScrollView>

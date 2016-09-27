@@ -82,11 +82,12 @@ public class Sensor implements Serializable {
                                AggregationMethod.AVG);
     }
 
-    public void setSensorValues(@NonNull final float[] values) {
-        this.sensorValues = values;
-        this.valueLimits = null;
-        getValueLimits();
-
+    public void updateSensorValues(@NonNull final SensorsDataResponse response) {
+        if (response.getSensorData().containsKey(getType())) {
+            this.sensorValues = response.getSensorData().get(getType());
+            this.valueLimits = null;
+            getValueLimits();
+        }
     }
 
     public void setSensorSuffix(@NonNull final String sensorSuffix) {
@@ -102,6 +103,12 @@ public class Sensor implements Serializable {
         return ContextCompat.getColor(context, condition.colorRes);
     }
 
+    /**
+     * Return this Sensor's {@link Sensor#value} formatted.
+     *
+     * @param withSuffix when true will append the sensors {@link Sensor#sensorSuffix} as a superscript.
+     * @return Formatted
+     */
     @NonNull
     public CharSequence getFormattedValue(final boolean withSuffix) {
         if (getValue() == null) {
@@ -110,6 +117,12 @@ public class Sensor implements Serializable {
         return Styles.assembleReadingAndUnit(getValue(), withSuffix ? sensorSuffix : "");
     }
 
+    /**
+     * Format a specific value from the {@link Sensor#valueLimits} list.
+     *
+     * @param position position located within {@link Sensor#valueLimits}
+     * @return formatted value.
+     */
     @NonNull
     public CharSequence getFormattedValueAtPosition(final int position) {
         if (getSensorValues() == null || getSensorValues().length <= position) {
