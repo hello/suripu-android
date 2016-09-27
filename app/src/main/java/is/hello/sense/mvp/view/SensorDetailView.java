@@ -146,9 +146,6 @@ public final class SensorDetailView extends PresenterView
 
     private void refreshView(@NonNull final SensorGraphView.StartDelay delay) {
         post(() -> {
-            if (context == null) {
-                return;
-            }
             final int color = sensor.getColor(context);
             this.subNavSelector.setBackgroundColor(color);
             this.subNavSelector.getButtonAt(0).setBackgroundColor(color);

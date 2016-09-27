@@ -9,7 +9,7 @@ import android.support.annotation.StringRes;
 import android.widget.FrameLayout;
 
 public abstract class PresenterView extends FrameLayout {
-    protected Context context;
+    protected final Context context;
 
     public PresenterView(@NonNull final Activity activity) {
         super(activity);
@@ -58,7 +58,6 @@ public abstract class PresenterView extends FrameLayout {
     public abstract void releaseViews();
 
     private void release() {
-        context = null;
         releaseViews();
     }
 
