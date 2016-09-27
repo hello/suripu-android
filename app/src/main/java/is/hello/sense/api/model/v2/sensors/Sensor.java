@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -15,7 +14,6 @@ import java.util.List;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.Scale;
 import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.units.UnitPrinter;
 
 /**
  * Represents an individual Sensor. This is returned from GET /v2/sensors.
@@ -74,14 +72,12 @@ public class Sensor implements Serializable {
         return value;
     }
 
-    @NonNull
-    public SensorQuery getSensorQuery() {
-        return new SensorQuery(type,
-                               unit,
-                               QueryScope.LAST_3H_5_MINUTE,
-                               AggregationMethod.AVG);
-    }
-
+    /**
+     * Update {@link Sensor#sensorValues}. Use {@link SensorsDataResponse} returned from POST /v2/sensors.
+     * Will use {@link Sensor#type} as the key in {@link SensorsDataResponse#getSensorData()}
+     *
+     * @param response The response from the POST.
+     */
     public void updateSensorValues(@NonNull final SensorsDataResponse response) {
         if (response.getSensorData().containsKey(getType())) {
             this.sensorValues = response.getSensorData().get(getType());
@@ -94,7 +90,7 @@ public class Sensor implements Serializable {
         this.sensorSuffix = sensorSuffix;
     }
 
-    @Nullable
+    @NonNull
     public float[] getSensorValues() {
         return sensorValues;
     }
@@ -125,7 +121,7 @@ public class Sensor implements Serializable {
      */
     @NonNull
     public CharSequence getFormattedValueAtPosition(final int position) {
-        if (getSensorValues() == null || getSensorValues().length <= position) {
+        if (getSensorValues().length <= position) {
             return "";
         }
         return Styles.assembleReadingAndUnit(getSensorValues()[position], sensorSuffix);

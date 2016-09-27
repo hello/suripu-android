@@ -3,6 +3,7 @@ package is.hello.sense.mvp.presenters;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.view.View;
 
 import java.util.ArrayList;
 
@@ -12,6 +13,8 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.sensors.QueryScope;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
+import is.hello.sense.functional.Functions;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.mvp.view.SensorDetailView;
 import is.hello.sense.ui.widget.SelectorView;
 
@@ -29,6 +32,8 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
 
     @Inject
     ApiService apiService;
+    @Inject
+    PreferencesInteractor preferences;
 
     private Sensor sensor;
 
@@ -36,13 +41,16 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     @Override
     public final void initializePresenterView() {
         if (presenterView == null) {
-            this.presenterView = new SensorDetailView(getActivity(), this, sensor);
+            this.presenterView = new SensorDetailView(getActivity(),
+                                                      this,
+                                                      sensor);
         }
     }
 
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        addInteractor(preferences);
         final Bundle args = getArguments();
         if (args == null) {
             finishWithResult(Activity.RESULT_CANCELED, null);
@@ -56,6 +64,13 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         this.sensor = (Sensor) args.getSerializable(ARG_SENSOR);
     }
 
+    @Override
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        bindAndSubscribe(preferences.observableUse24Time(),
+                         aBoolean -> presenterView.set24HourTime(aBoolean != null && aBoolean),
+                         Functions.LOG_ERROR);
+    }
 
     @Override
     public synchronized void onSelectionChanged(final int newSelectionIndex) {
