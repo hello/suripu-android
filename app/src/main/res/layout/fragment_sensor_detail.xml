@@ -29,7 +29,7 @@
 
             <TextView
                 android:id="@+id/fragment_sensor_detail_value"
-                style="@style/Heading"
+                style="@style/Heading.Light"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
@@ -63,55 +63,40 @@
                 android:layout_centerHorizontal="true"
                 android:visibility="visible"/>
 
-
-            <Button
-                android:id="@+id/b1"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/x6"
+            <is.hello.sense.ui.widget.SensorScaleList
+                android:id="@+id/fragment_sensor_detail_scales"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/fragment_sensor_detail_graph_view"
-                android:text="button"/>
+                android:layout_marginTop="@dimen/x5"
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/b2"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/x6"
-                android:layout_below="@id/b1"
-                android:text="button"/>
+            </is.hello.sense.ui.widget.SensorScaleList>
 
-            <Button
-                android:id="@+id/b3"
+            <TextView
+                android:id="@+id/fragment_sensor_detail_about_title"
+                style="@style/Title"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/x6"
-                android:layout_below="@id/b2"
-                android:text="button"/>
+                android:layout_height="wrap_content"
+                android:layout_below="@id/fragment_sensor_detail_scales"
+                android:layout_marginLeft="@dimen/x2"
+                android:layout_marginRight="@dimen/x2"
+                android:layout_marginTop="@dimen/x5"
+                android:text="@string/sensor_detail_about_title"/>
 
-            <Button
-                android:id="@+id/b4"
+            <TextView
+                android:id="@+id/fragment_sensor_detail_about_body"
+                style="@style/Body"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/x6"
-                android:layout_below="@id/b3"
-                android:text="button"/>
-
-            <Button
-                android:id="@+id/b5"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/x6"
-                android:layout_below="@id/b4"
-                android:text="button"/>
-
-            <Button
-                android:id="@+id/b6"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/x6"
-                android:layout_below="@id/b5"
-                android:text="button"/>
-
-            <Button
-                android:id="@+id/b7"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/x6"
-                android:layout_below="@id/b6"
-                android:text="button"/>
+                android:layout_height="wrap_content"
+                android:layout_below="@id/fragment_sensor_detail_about_title"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/x5"
+                android:layout_marginLeft="@dimen/x2"
+                android:layout_marginRight="@dimen/x2"
+                android:layout_marginTop="@dimen/x2"
+                android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"/>
 
         </RelativeLayout>
 

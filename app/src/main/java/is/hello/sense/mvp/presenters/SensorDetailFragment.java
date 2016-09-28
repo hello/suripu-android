@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.inject.Inject;
 
@@ -13,6 +14,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.sensors.QueryScope;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
+import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.mvp.view.SensorDetailView;
@@ -86,6 +88,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         }
     }
 
+    //todo consider creating a hashmap to hold these in. Limit requests to time.
     private synchronized void updateSensors(@NonNull final QueryScope queryScope) {
         stateSafeExecutor.execute(() -> {
             final ArrayList<Sensor> sensors = new ArrayList<>();

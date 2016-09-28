@@ -1,5 +1,6 @@
 package is.hello.sense.api.model.v2;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
@@ -21,18 +22,6 @@ public class Scale implements Serializable {
     @SerializedName("condition")
     private Condition condition;
 
-    public boolean containsValue(final double value) {
-        if (min == null && value < max) {
-            return true;
-        } else if (max == null && value > min) {
-            return true;
-        }
-        if (min == null || max == null) {
-            return false;
-        }
-        return min < value && max > value;
-    }
-
     public Condition getCondition() {
         return condition;
     }
@@ -47,6 +36,23 @@ public class Scale implements Serializable {
 
     public Double getMin() {
         return min;
+    }
+
+    @NonNull
+    public final String getScaleViewValueText() {
+        //todo use resources.
+        if (min == null) {
+            if (max != null) {
+                return max + "+";
+            }
+        } else if (min <= 0) {
+            if (max != null) {
+                return "0 to " + max;
+            }
+        } else if (max != null) {
+            return min + " to " + max;
+        }
+        return "";
     }
 
     @Override
