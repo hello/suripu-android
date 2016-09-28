@@ -17,6 +17,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.Scale;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.units.UnitOperations;
 
 /**
  * Represents an individual Sensor. This is returned from GET /v2/sensors.
@@ -59,6 +60,28 @@ public class Sensor implements Serializable {
      */
     private String sensorSuffix = "";
 
+    private boolean useCelsius = true;
+
+    /**
+     * Updates {@link Sensor#sensorValues}. Use {@link SensorsDataResponse} returned from POST /v2/sensors.
+     * Will use {@link Sensor#type} as the key in {@link SensorsDataResponse#getSensorData()}
+     *
+     * @param response The response from the POST.
+     */
+    public void setSensorValues(@NonNull final SensorsDataResponse response) {
+        if (response.getSensorData().containsKey(getType())) {
+            this.sensorValues = response.getSensorData().get(getType());
+            updateValueLimits();
+        }
+    }
+
+    /**
+     * @param sensorSuffix suffix to be shown.
+     */
+    public void setSensorSuffix(@NonNull final String sensorSuffix) {
+        this.sensorSuffix = sensorSuffix;
+    }
+
     public String getName() {
         return name;
     }
@@ -72,30 +95,10 @@ public class Sensor implements Serializable {
     }
 
     public Double getValue() {
-        return value;
-    }
-
-    /**
-     * Update {@link Sensor#sensorValues}. Use {@link SensorsDataResponse} returned from POST /v2/sensors.
-     * Will use {@link Sensor#type} as the key in {@link SensorsDataResponse#getSensorData()}
-     *
-     * @param response The response from the POST.
-     */
-    public void updateSensorValues(@NonNull final SensorsDataResponse response) {
-        if (response.getSensorData().containsKey(getType())) {
-            this.sensorValues = response.getSensorData().get(getType());
-            this.valueLimits = null;
-            getValueLimits();
+        if (!useCelsius && getType() == SensorType.TEMPERATURE) {
+            return UnitOperations.celsiusToFahrenheit(value);
         }
-    }
-
-    public void setSensorSuffix(@NonNull final String sensorSuffix) {
-        this.sensorSuffix = sensorSuffix;
-    }
-
-    @NonNull
-    public float[] getSensorValues() {
-        return sensorValues;
+        return value;
     }
 
     public int getColor(@NonNull final Context context) {
@@ -104,6 +107,15 @@ public class Sensor implements Serializable {
 
     public List<Scale> getScales() {
         return scales;
+    }
+
+    public float[] getSensorValues() {
+        return sensorValues;
+    }
+
+    public void setUseCelsius(final boolean useCelsius) {
+        this.useCelsius = useCelsius;
+        updateValueLimits();
     }
 
     /**
@@ -132,7 +144,11 @@ public class Sensor implements Serializable {
         if (getSensorValues().length <= position) {
             return "";
         }
-        return Styles.assembleReadingAndUnit(getSensorValues()[position], sensorSuffix);
+        float value = getSensorValues()[position];
+        if (!useCelsius && getType() == SensorType.TEMPERATURE) {
+            value = UnitOperations.celsiusToFahrenheit(value);
+        }
+        return Styles.assembleReadingAndUnit(value, sensorSuffix);
 
     }
 
@@ -146,7 +162,7 @@ public class Sensor implements Serializable {
     @NonNull
     public ValueLimits getValueLimits() {
         if (valueLimits == null) {
-            valueLimits = new ValueLimits();
+            updateValueLimits();
         }
         return valueLimits;
     }
@@ -159,11 +175,17 @@ public class Sensor implements Serializable {
         return sensorSuffix;
     }
 
+
+    private void updateValueLimits() {
+        valueLimits = new ValueLimits();
+    }
+
+
     @StringRes
-    public int getAboutStringRes(final boolean useMetric) {
+    public int getAboutStringRes() {
         switch (getType()) {
             case TEMPERATURE:
-                if (useMetric) {
+                if (useCelsius) {
                     return R.string.sensor_about_temperature_celsius;
                 } else {
                     return R.string.sensor_about_temperature_fahrenheit;
@@ -242,9 +264,12 @@ public class Sensor implements Serializable {
 
 
         @NonNull
-        private String formatValue(@Nullable final Float value) {
+        private String formatValue(@Nullable Float value) {
             if (value == null || value == -1) {
                 return "";
+            }
+            if (!useCelsius && getType() == SensorType.TEMPERATURE) {
+                value = UnitOperations.celsiusToFahrenheit(value);
             }
             if (getType() == SensorType.LIGHT) {
                 return String.format("%.1f", value);

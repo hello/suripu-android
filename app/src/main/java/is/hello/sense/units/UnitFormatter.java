@@ -133,6 +133,7 @@ public class UnitFormatter extends Interactor {
         return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_NOISE);
     }
 
+    @Deprecated
     @NonNull
     public UnitConverter getUnitConverterForSensor(@NonNull final String sensor) {
         switch (sensor) {
@@ -149,6 +150,7 @@ public class UnitFormatter extends Interactor {
         }
     }
 
+    @Deprecated
     @NonNull
     public UnitPrinter getUnitPrinterForSensor(@NonNull final String sensor) {
         switch (sensor) {
@@ -172,24 +174,7 @@ public class UnitFormatter extends Interactor {
         }
     }
 
-    @NonNull
-    public String getSuffixForSensor(@NonNull final SensorType type) {
-        switch (type) {
-            case TEMPERATURE:
-                return UNIT_SUFFIX_TEMPERATURE;
-            case HUMIDITY:
-                return UNIT_SUFFIX_HUMIDITY;
-            case PARTICULATES:
-                return UNIT_SUFFIX_AIR_QUALITY;
-            case LIGHT:
-                return UNIT_SUFFIX_LIGHT;
-            case SOUND:
-                return UNIT_SUFFIX_NOISE;
-            default:
-                return "";
-        }
-    }
-
+    @Deprecated
     @Nullable
     public String getUnitSuffixForSensor(@NonNull final String sensor) {
         switch (sensor) {
@@ -212,6 +197,25 @@ public class UnitFormatter extends Interactor {
                 return null;
         }
     }
+
+    @NonNull
+    public String getSuffixForSensor(@NonNull final SensorType type) {
+        switch (type) {
+            case TEMPERATURE:
+                return UNIT_SUFFIX_TEMPERATURE;
+            case HUMIDITY:
+                return UNIT_SUFFIX_HUMIDITY;
+            case PARTICULATES:
+                return UNIT_SUFFIX_AIR_QUALITY;
+            case LIGHT:
+                return UNIT_SUFFIX_LIGHT;
+            case SOUND:
+                return UNIT_SUFFIX_NOISE;
+            default:
+                return "";
+        }
+    }
+
 
     //endregion
 }

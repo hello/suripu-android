@@ -76,7 +76,7 @@ public final class SensorDetailView extends PresenterView
             listener.onSelectionChanged(newSelectionIndex);
         });
         this.scaleList.renderScales(sensor.getScales(), sensor.getSensorSuffix());
-        this.about.setText(sensor.getAboutStringRes(true));
+        this.about.setText(sensor.getAboutStringRes());
         this.sensorGraphView.setScrubberCallback(this);
         this.subNavSelector.getButtonAt(0).callOnClick();
 
@@ -144,8 +144,13 @@ public final class SensorDetailView extends PresenterView
 
     public final void bindServerDataResponse(@NonNull final SensorsDataResponse sensorResponse) {
         this.timestamps = sensorResponse.getTimestamps();
-        this.sensor.updateSensorValues(sensorResponse);
-        refreshWithGraph(SensorGraphView.StartDelay.SHORT);
+        this.sensor.setSensorValues(sensorResponse);
+        if (this.sensorGraphView.getVisibility() == VISIBLE) {
+            refreshWithGraph(SensorGraphView.StartDelay.SHORT);
+        } else {
+            sensorGraphView.setVisibility(VISIBLE);
+            refreshWithGraph(SensorGraphView.StartDelay.LONG);
+        }
     }
 
     public final void bindError(@NonNull final Throwable throwable) {

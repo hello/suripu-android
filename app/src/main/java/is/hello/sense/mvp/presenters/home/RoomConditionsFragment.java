@@ -18,16 +18,16 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.v2.sensors.QueryScope;
 import is.hello.sense.api.model.v2.sensors.Sensor;
-import is.hello.sense.api.model.v2.sensors.SensorData;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
+import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SensorResponseInteractor;
 import is.hello.sense.mvp.view.home.RoomConditionsView;
 import is.hello.sense.mvp.view.home.roomconditions.SensorResponseAdapter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SensorDetailActivity;
-import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
@@ -44,6 +44,8 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     SensorResponseInteractor sensorResponseInteractor;
     @Inject
     UnitFormatter unitFormatter;
+    @Inject
+    PreferencesInteractor preferencesInteractor;
     @Inject
     ApiService apiService;
 
@@ -73,6 +75,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(this.unitFormatter);
+        addInteractor(this.preferencesInteractor);
         addInteractor(this.sensorResponseInteractor);
     }
 
@@ -140,10 +143,12 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         final List<Sensor> sensors = currentConditions.getSensors();
         bindAndSubscribe(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)),
                          sensorsDataResponse -> {
-                             final SensorData sensorData = sensorsDataResponse.getSensorData();
                              for (final Sensor sensor : sensors) {
+                                 if (sensor.getType() == SensorType.TEMPERATURE) {
+                                     sensor.setUseCelsius(preferencesInteractor.getBoolean(PreferencesInteractor.USE_CELSIUS, true));
+                                 }
                                  sensor.setSensorSuffix(unitFormatter.getSuffixForSensor(sensor.getType()));
-                                 sensor.updateSensorValues(sensorsDataResponse);
+                                 sensor.setSensorValues(sensorsDataResponse);
                              }
                              this.adapter.dismissMessage();
                              this.adapter.replaceAll(sensors);
