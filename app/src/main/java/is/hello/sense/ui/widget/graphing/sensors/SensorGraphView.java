@@ -120,7 +120,7 @@ public class SensorGraphView extends View {
 
     public enum StartDelay {
         SHORT(250),
-        LONG(1500);
+        LONG(1200);
 
         private final int length;
 
