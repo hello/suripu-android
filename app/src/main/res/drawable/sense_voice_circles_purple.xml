@@ -4,7 +4,7 @@
         <shape android:shape="oval">
             <size android:height="@dimen/sense_voice_circles_x3"
                   android:width="@dimen/sense_voice_circles_x3"/>
-            <solid android:color="@color/gray3"/>
+            <solid android:color="@color/purple3"/>
         </shape>
     </item>
     <item android:gravity="center"
@@ -15,7 +15,7 @@
         <shape android:shape="oval">
             <size android:height="@dimen/sense_voice_circles_x2"
                   android:width="@dimen/sense_voice_circles_x2"/>
-            <solid android:color="@color/gray4"/>
+            <solid android:color="@color/purple4"/>
         </shape>
     </item>
     <item android:gravity="center"
@@ -26,7 +26,7 @@
         <shape android:shape="oval">
             <size android:height="@dimen/sense_voice_circles_x1"
                   android:width="@dimen/sense_voice_circles_x1"/>
-            <solid android:color="@color/gray5"/>
+            <solid android:color="@color/purple5"/>
         </shape>
     </item>
 </layer-list>
