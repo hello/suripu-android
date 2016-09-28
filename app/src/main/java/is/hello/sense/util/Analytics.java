@@ -342,6 +342,11 @@ public class Analytics {
         String EVENT_ROOM_CHECK = "Onboarding Room Check";
 
         /**
+         * When error occurs during fetching room conditions
+         */
+        String ERROR_MSG_ROOM_CHECK = "Room check";
+
+        /**
          * When user is asked to set up their smart alarm during onboarding
          */
         String EVENT_FIRST_ALARM = "Onboarding First Alarm";
