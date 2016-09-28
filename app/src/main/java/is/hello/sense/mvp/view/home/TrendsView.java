@@ -1,11 +1,10 @@
 package is.hello.sense.mvp.view.home;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -26,6 +25,7 @@ import is.hello.sense.util.StateSafeExecutor;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
+@SuppressLint("ViewConstructor")
 public final class TrendsView extends PresenterView {
     private final SwipeRefreshLayout swipeRefreshLayout;
     private final ProgressBar initialActivityIndicator;
