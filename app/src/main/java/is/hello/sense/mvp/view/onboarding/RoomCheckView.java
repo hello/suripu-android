@@ -24,14 +24,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.List;
-
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.go99.animators.OnAnimationCompleted;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
-import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.widget.SensorConditionView;
 import is.hello.sense.ui.widget.util.Views;
@@ -112,45 +109,47 @@ public class RoomCheckView extends PresenterView {
                 .start();
     }
 
-    public void updateSensorView(final int position, @ColorInt final int conditionColor, final SensorType type) {
+    public void updateSensorView(final int position,
+                                 @ColorInt final int conditionColor,
+                                 @DrawableRes final int icon) {
         final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(position);
         sensorView.clearAnimation();
         sensorView.setTint(conditionColor);
-        sensorView.setIcon(getFinalIconForSensor(type));
+        sensorView.setIcon(icon);
     }
 
-    public void createSensorConditionViews(final List<SensorType> types) {
-        sensorViewContainer.removeAllViews();
-
-        final LinearLayout.LayoutParams layoutParams
-                = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        final int padding = resources.getDimensionPixelOffset(R.dimen.item_room_sensor_condition_view_width) / 2;
-        for (final SensorType type : types) {
-            final SensorConditionView conditionView = new SensorConditionView(context);
-            final int iconForSensor = getInitialIconForSensor(type);
-            final Drawable iconDrawable = ResourcesCompat.getDrawable(resources, iconForSensor, null);
-            conditionView.setIcon(iconDrawable);
-            conditionView.setAnimatorContext(animatorContext);
-            conditionView.setPadding(padding,0,padding,0);
-            sensorViewContainer.addView(conditionView, layoutParams);
-        }
+    public void createSensorConditionView(@DrawableRes final int icon,
+                                          final int padding,
+                                          final LinearLayout.LayoutParams layoutParams) {
+        final SensorConditionView conditionView = new SensorConditionView(context);
+        final Drawable iconDrawable = ResourcesCompat.getDrawable(resources, icon, null);
+        conditionView.setIcon(iconDrawable);
+        conditionView.setAnimatorContext(animatorContext);
+        conditionView.setPadding(padding,0,padding,0);
+        sensorViewContainer.addView(conditionView, layoutParams);
     }
 
     public void showConditionAt(final int position,
-                                @NonNull final SensorType sensorType,
+                                @StringRes final int checkStatusMessage,
                                 @NonNull final String statusMessage,
+                                @DrawableRes final int finalIcon,
                                 @NonNull final Drawable senseCondition,
                                 @ColorRes final int conditionEndColorRes,
                                 final int convertedUnitTickerValue,
                                 @NonNull final String unitSuffix,
                                 @NonNull final Runnable onComplete) {
-        final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(position);
+        final View childAt = sensorViewContainer.getChildAt(position);
+        if(!(childAt instanceof SensorConditionView)){
+            onComplete.run();
+            return;
+        }
+        final SensorConditionView sensorView = (SensorConditionView) childAt;
         this.animatingSensorView = sensorView;
         if(position != 0) {
             animateSensorContainerTranslateX(sensorView.getWidth());
         }
 
-        status.setText(getStatusStringForSensor(sensorType));
+        status.setText(checkStatusMessage);
         sensorView.fadeInProgressIndicator(() -> {
             final int endColor = ContextCompat.getColor(context, conditionEndColorRes);
             scoreUnit.setText(unitSuffix);
@@ -189,11 +188,10 @@ public class RoomCheckView extends PresenterView {
                                 }
 
                                 status.setText(null);
-                                status.setTransformationMethod(null);
                                 status.setText(statusMessage);
 
                                 animateSenseCondition(senseCondition, false);
-                                sensorView.transitionToIcon(getFinalIconForSensor(sensorType), onComplete);
+                                sensorView.transitionToIcon(finalIcon, onComplete);
 
                                 animatorFor(status, animatorContext)
                                         .fadeIn()
@@ -264,119 +262,6 @@ public class RoomCheckView extends PresenterView {
 
     public void removeSensorContainerViews() {
         sensorViewContainer.removeAllViews();
-    }
-
-    private @StringRes
-    int getStatusStringForSensor(@NonNull final SensorType type) {
-        switch (type) {
-            case TEMPERATURE: {
-                return R.string.checking_condition_temperature;
-            }
-            case HUMIDITY: {
-                return R.string.checking_condition_humidity;
-            }
-            case PARTICULATES: {
-                return R.string.checking_condition_airquality;
-            }
-            case LIGHT: {
-                return R.string.checking_condition_light;
-            }
-            case SOUND: {
-                return R.string.checking_condition_sound;
-            }
-            case CO2: {
-                return R.string.checking_condition_co2;
-            }
-            case TVOC: {
-                return R.string.checking_condition_voc;
-            }
-            case LIGHT_TEMPERATURE: {
-                return R.string.checking_condition_light_temperature;
-            }
-            case UV: {
-                return R.string.checking_condition_uv;
-            }
-            default: {
-                return R.string.missing_data_placeholder;
-            }
-        }
-    }
-
-    private @DrawableRes
-    int getInitialIconForSensor(@NonNull final SensorType type) {
-        switch (type) {
-            case TEMPERATURE: {
-                return R.drawable.temperature_gray_nofill;
-            }
-            case HUMIDITY: {
-                return R.drawable.humidity_gray_nofill;
-            }
-            case PARTICULATES: {
-                return R.drawable.air_quality_gray_nofill;
-            }
-            case LIGHT: {
-                return R.drawable.light_gray_nofill;
-            }
-            case SOUND: {
-                return R.drawable.noise_gray_nofill;
-            }
-            case CO2: {
-                return R.drawable.co2_gray_nofill;
-            }
-            case TVOC: {
-                return R.drawable.voc_gray_nofill;
-            }
-            case LIGHT_TEMPERATURE: {
-                return R.drawable.light_temperature_gray_nofill;
-            }
-            case UV: {
-                return R.drawable.uv_gray_nofill;
-            }
-            case UNKNOWN: {
-                return R.drawable.error_white;
-            }
-            default: {
-                return 0;
-            }
-        }
-    }
-
-    private @DrawableRes int getFinalIconForSensor(@NonNull final SensorType type) {
-            switch (type) {
-                case TEMPERATURE: {
-                    return R.drawable.temperature_gray_fill;
-                }
-                case HUMIDITY: {
-                    return R.drawable.humidity_gray_fill;
-                }
-                case PARTICULATES: {
-                    return R.drawable.air_quality_gray_fill;
-                }
-                case LIGHT: {
-                    return R.drawable.light_gray_fill;
-                }
-                case SOUND: {
-                    return R.drawable.noise_gray_fill;
-                }
-                case CO2: {
-                    return R.drawable.co2_gray_fill;
-                }
-                case TVOC: {
-                    return R.drawable.voc_gray_fill;
-                }
-                case LIGHT_TEMPERATURE: {
-                    return R.drawable.light_temperature_gray_fill;
-                }
-                case UV: {
-                    return R.drawable.uv_gray_fill;
-                }
-                case UNKNOWN: {
-                    return R.drawable.error_white;
-                }
-                default: {
-                    return 0;
-                }
-        }
     }
 
     //region Animating Sense

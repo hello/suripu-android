@@ -64,7 +64,7 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
         interactor.onContainerDestroyed();
     }
 
-    public void bindAndSubscribeInteractorLatest() {
+    private void bindAndSubscribeInteractorLatest() {
         bindAndSubscribe(interactor.latest(),
                          this::bindConditions,
                          this::unavailableConditions
