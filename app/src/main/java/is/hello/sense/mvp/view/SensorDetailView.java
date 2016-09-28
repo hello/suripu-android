@@ -15,6 +15,7 @@ import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
+import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
 import is.hello.sense.api.model.v2.sensors.X;
 import is.hello.sense.ui.widget.SelectorView;
@@ -61,27 +62,29 @@ public final class SensorDetailView extends PresenterView
         this.about = (TextView) findViewById(R.id.fragment_sensor_detail_about_body);
         this.scrollView.requestDisallowInterceptTouchEvent(true);
         this.scrollView.setGraphView(sensorGraphView);
+        final int color = sensor.getColor(context);
         this.subNavSelector.setToggleButtonColor(R.color.white);
         this.subNavSelector.addOption(R.string.sensor_detail_last_day, false);
         this.subNavSelector.addOption(R.string.sensor_detail_past_week, false);
         this.subNavSelector.setSelectedButton(subNavSelector.getButtonAt(0));
         this.subNavSelector.setBackground(new TabsBackgroundDrawable(activity.getResources(),
-                                                                     TabsBackgroundDrawable.Style.SUBNAV));
+                                                                     TabsBackgroundDrawable.Style.SENSOR_DETAIL,
+                                                                     color));
         this.subNavSelector.setOnSelectionChangedListener(newSelectionIndex -> {
-            if (lastSelectedIndex == newSelectionIndex) {
+            if (this.lastSelectedIndex == newSelectionIndex) {
                 return;
             }
-            lastSelectedIndex = newSelectionIndex;
+            this.subNavSelector.setEnabled(false);
+            this.lastSelectedIndex = newSelectionIndex;
             refreshWithProgress();
             listener.onSelectionChanged(newSelectionIndex);
         });
-        this.scaleList.renderScales(sensor.getScales(), sensor.getSensorSuffix());
+        this.scaleList.renderScales(sensor.getScales(), (sensor.getType() == SensorType.TEMPERATURE ? sensor.getTemperatureSymbol() : "") + sensor.getSensorSuffix());
         this.about.setText(sensor.getAboutStringRes());
         this.sensorGraphView.setScrubberCallback(this);
         this.subNavSelector.getButtonAt(0).callOnClick();
 
-        final int color = sensor.getColor(context);
-        this.subNavSelector.setBackgroundColor(color);
+        //this.subNavSelector.setBackgroundColor(color);
         this.subNavSelector.getButtonAt(0).setBackgroundColor(color);
         this.subNavSelector.getButtonAt(1).setBackgroundColor(color);
         this.value.setTextColor(color);
@@ -148,7 +151,7 @@ public final class SensorDetailView extends PresenterView
         if (this.sensorGraphView.getVisibility() == VISIBLE) {
             refreshWithGraph(SensorGraphView.StartDelay.SHORT);
         } else {
-            sensorGraphView.setVisibility(VISIBLE);
+            this.sensorGraphView.setVisibility(VISIBLE);
             refreshWithGraph(SensorGraphView.StartDelay.LONG);
         }
     }
@@ -160,20 +163,19 @@ public final class SensorDetailView extends PresenterView
 
     private void refreshWithGraph(@NonNull final SensorGraphView.StartDelay delay) {
         post(() -> {
-            this.value.setText(sensor.getFormattedValue(true));
-            this.message.setText(sensor.getMessage());
+            this.value.setText(this.sensor.getFormattedValue(true));
+            this.message.setText(this.sensor.getMessage());
             this.progressBar.setVisibility(GONE);
             this.sensorGraphView.setVisibility(VISIBLE);
             this.sensorGraphView.resetTimeToAnimate(delay);
-            this.sensorGraphView.setSensorGraphDrawable(new SensorGraphDrawable(context, sensor, this.graphHeight));
+            this.sensorGraphView.setSensorGraphDrawable(new SensorGraphDrawable(this.context, this.sensor, this.graphHeight));
             this.sensorGraphView.invalidate();
-            postDelayed(() -> this.subNavSelector.setClickable(true), delay.getLength());
+            postDelayed(() -> this.subNavSelector.setEnabled(true), delay.getLength());
         });
     }
 
     private void refreshWithProgress() {
         post(() -> {
-            this.subNavSelector.setClickable(false);
             this.progressBar.setVisibility(VISIBLE);
             this.sensorGraphView.setVisibility(INVISIBLE);
         });

@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.Scale;
 import is.hello.sense.ui.widget.util.Styles;
@@ -173,6 +174,18 @@ public class Sensor implements Serializable {
     @NonNull
     public String getSensorSuffix() {
         return sensorSuffix;
+    }
+
+    /**
+     * @return {@link ApiService#UNIT_TEMPERATURE_CELSIUS} or
+     * {@link ApiService#UNIT_TEMPERATURE_US_CUSTOMARY}
+     */
+    @NonNull
+    public String getTemperatureSymbol() {
+        if (useCelsius) {
+            return ApiService.UNIT_TEMPERATURE_CELSIUS;
+        }
+        return ApiService.UNIT_TEMPERATURE_US_CUSTOMARY;
     }
 
 
