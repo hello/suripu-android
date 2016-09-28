@@ -136,6 +136,13 @@ public class Sensor implements Serializable {
 
     }
 
+    /**
+     * Contains a {@link is.hello.sense.api.model.v2.sensors.Sensor.ValueLimits#min} and
+     * {@link is.hello.sense.api.model.v2.sensors.Sensor.ValueLimits#max} value corresponding to
+     * {@link Sensor#sensorValues}
+     *
+     * @return {@link Sensor#valueLimits}
+     */
     @NonNull
     public ValueLimits getValueLimits() {
         if (valueLimits == null) {
