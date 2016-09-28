@@ -305,7 +305,7 @@ public final class Styles {
                     break;
                 }
 
-                case "#facebook-autofill":{
+                case "#facebook-autofill": {
                     clickableSpan = new SimpleClickableSpan(v -> showForHelpStep(activity, HelpStep.AUTO_FILL_FACEBOOK));
                     break;
                 }
@@ -458,5 +458,11 @@ public final class Styles {
         }
     }
 
+    public static int dpToPx(final int dp) {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
+    }
 
+    public static int pxToDp(final int px) {
+        return (int) (px / Resources.getSystem().getDisplayMetrics().density);
+    }
 }

@@ -126,7 +126,10 @@ public class SensorGraphView extends View {
 
         StartDelay(final int length) {
             this.length = length;
+        }
 
+        public int getLength() {
+            return length;
         }
     }
 

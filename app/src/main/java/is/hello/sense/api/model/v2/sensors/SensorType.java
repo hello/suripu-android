@@ -12,7 +12,7 @@ public enum SensorType implements Enums.FromString {
     PARTICULATES,
     SOUND,
     CO2,
-    VOC,
+    TVOC,
     LIGHT_TEMPERATURE,
     UV;
 
