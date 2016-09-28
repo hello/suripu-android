@@ -3,6 +3,7 @@ package is.hello.sense.api.model.v2.sensors;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 
 import com.google.gson.annotations.SerializedName;
@@ -11,6 +12,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
+import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.Scale;
 import is.hello.sense.ui.widget.util.Styles;
@@ -99,6 +101,10 @@ public class Sensor implements Serializable {
         return ContextCompat.getColor(context, condition.colorRes);
     }
 
+    public List<Scale> getScales() {
+        return scales;
+    }
+
     /**
      * Return this Sensor's {@link Sensor#value} formatted.
      *
@@ -128,6 +134,13 @@ public class Sensor implements Serializable {
 
     }
 
+    /**
+     * Contains a {@link is.hello.sense.api.model.v2.sensors.Sensor.ValueLimits#min} and
+     * {@link is.hello.sense.api.model.v2.sensors.Sensor.ValueLimits#max} value corresponding to
+     * {@link Sensor#sensorValues}
+     *
+     * @return {@link Sensor#valueLimits}
+     */
     @NonNull
     public ValueLimits getValueLimits() {
         if (valueLimits == null) {
@@ -136,9 +149,42 @@ public class Sensor implements Serializable {
         return valueLimits;
     }
 
+    /**
+     * @return suffix for this string. Empty string if none exists.
+     */
     @NonNull
     public String getSensorSuffix() {
         return sensorSuffix;
+    }
+
+    @StringRes
+    public int getAboutStringRes(final boolean useMetric) {
+        switch (getType()) {
+            case TEMPERATURE:
+                if (useMetric) {
+                    return R.string.sensor_about_temperature_celsius;
+                } else {
+                    return R.string.sensor_about_temperature_fahrenheit;
+                }
+            case HUMIDITY:
+                return R.string.sensor_about_humidity;
+            case LIGHT:
+                return R.string.sensor_about_light;
+            case CO2:
+                return R.string.sensor_about_co2;
+            case LIGHT_TEMPERATURE:
+                return R.string.sensor_about_light_temp;
+            case PARTICULATES:
+                return R.string.sensor_about_particulates;
+            case SOUND:
+                return R.string.sensor_about_noise;
+            case UV:
+                return R.string.sensor_about_uv_light;
+            case TVOC:
+                return R.string.sensor_about_voc;
+            default:
+                throw new IllegalArgumentException("No string found for type: " + getType());
+        }
     }
 
     @Override
@@ -158,7 +204,7 @@ public class Sensor implements Serializable {
 
 
     /**
-     * Helper class for {@link Sensor} to track the min and max sensorValues.
+     * Helper class for {@link Sensor} to track the min and max {@link Sensor#sensorValues}.
      */
     public class ValueLimits implements Serializable {
         Float min = null;
