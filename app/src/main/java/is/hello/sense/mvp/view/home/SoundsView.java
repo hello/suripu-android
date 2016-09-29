@@ -2,11 +2,8 @@ package is.hello.sense.mvp.view.home;
 
 import android.app.Activity;
 import android.app.FragmentManager;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -39,6 +36,7 @@ public class SoundsView extends PresenterView {
 
 
     public SoundsView(@NonNull final Activity activity,
+                      @NonNull final FragmentManager fragmentManager,
                       @NonNull final AnimatorContext animatorContext,
                       @NonNull final StateSafeExecutor stateSafeExecutor) {
         super(activity);
@@ -59,14 +57,12 @@ public class SoundsView extends PresenterView {
         subNavSelector.addOption(R.string.alarm_subnavbar_sounds_list, false);
         subNavSelector.setTranslationY(0);
 
-        this.adapter = new StaticFragmentAdapter(activity.getFragmentManager(),
+        this.adapter = new StaticFragmentAdapter(fragmentManager,
                                                  new StaticFragmentAdapter.Item(SmartAlarmListFragment.class, getString(R.string.alarm_subnavbar_alarm_list)),
                                                  new StaticFragmentAdapter.Item(SleepSoundsFragment.class, getString(R.string.alarm_subnavbar_sounds_list)));
         pager.setAdapter(adapter);
         pager.setFadePageTransformer(true);
         refreshView(false);
-        subNavSelector.setSelectedIndex(pager.getCurrentItem()); //todo confirm needed
-        swipeRefreshLayout.setRefreshing(true);
     }
 
     @Override
@@ -74,6 +70,13 @@ public class SoundsView extends PresenterView {
         return R.layout.fragment_sounds;
     }
 
+    @Override
+    public void viewCreated() {
+        super.viewCreated();
+        subNavSelector.setSelectedIndex(pager.getCurrentItem());
+        swipeRefreshLayout.setRefreshing(true);
+        updated();
+    }
 
     @Override
     public final void resume() {
@@ -85,6 +88,9 @@ public class SoundsView extends PresenterView {
     public final void releaseViews() {
         if (subNavSelector != null) {
             this.subNavSelector.setOnSelectionChangedListener(null);
+        }
+        if(swipeRefreshLayout != null){
+            this.swipeRefreshLayout.setOnRefreshListener(null);
         }
     }
 
