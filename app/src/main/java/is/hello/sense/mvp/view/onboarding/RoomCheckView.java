@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -109,15 +108,6 @@ public class RoomCheckView extends PresenterView {
                 .start();
     }
 
-    public void updateSensorView(final int position,
-                                 @ColorInt final int conditionColor,
-                                 @DrawableRes final int icon) {
-        final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(position);
-        sensorView.clearAnimation();
-        sensorView.setTint(conditionColor);
-        sensorView.setIcon(icon);
-    }
-
     public void createSensorConditionView(@DrawableRes final int icon,
                                           final int padding,
                                           final LinearLayout.LayoutParams layoutParams) {
@@ -133,7 +123,7 @@ public class RoomCheckView extends PresenterView {
                                 @StringRes final int checkStatusMessage,
                                 @NonNull final String statusMessage,
                                 @DrawableRes final int finalIcon,
-                                @NonNull final Drawable senseCondition,
+                                @Nullable final Drawable senseCondition,
                                 @ColorRes final int conditionEndColorRes,
                                 final int convertedUnitTickerValue,
                                 @NonNull final String unitSuffix,
@@ -204,7 +194,7 @@ public class RoomCheckView extends PresenterView {
         });
     }
 
-    public void animateSenseCondition(final boolean animate, @Nullable final Drawable senseCondition){
+    public void setSenseCondition(final boolean animate, @Nullable final Drawable senseCondition){
         if(senseCondition != null) {
             if (animate) {
                 animateSenseCondition(senseCondition, true);
