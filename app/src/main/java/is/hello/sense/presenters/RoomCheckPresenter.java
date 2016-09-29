@@ -12,7 +12,6 @@ import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.model.v2.sensors.SensorType;
-import is.hello.sense.functional.Lists;
 import is.hello.sense.interactors.SensorResponseInteractor;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.units.UnitConverter;
@@ -90,19 +89,24 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
 
     public void showConditionAt(final int position) {
         if (position >= sensors.size()) {
-            jumpToEnd(true);
+            deferWorker.schedule(() -> jumpToEnd(true),
+                                 CONDITION_VISIBLE_MS,
+                                 TimeUnit.MILLISECONDS);
             return;
         }
 
         final Sensor currentPositionSensor = sensors.get(position);
 
-        deferWorker.schedule(() -> view.showConditionAt(position,
-                                                        currentPositionSensor,
-                                                        getSensorConvertedValue(currentPositionSensor),
-                                                        unitFormatter.getSuffixForSensor(currentPositionSensor.getType()),
-                                                        () -> showConditionAt(position + 1)),
-                             CONDITION_VISIBLE_MS,
-                             TimeUnit.MILLISECONDS);
+        deferWorker.schedule(
+                () -> view.showConditionAt(position,
+                                           currentPositionSensor.getMessage(),
+                                           currentPositionSensor.getCondition(),
+                                           currentPositionSensor.getType(),
+                                           getSensorConvertedValue(currentPositionSensor),
+                                           unitFormatter.getSuffixForSensor(currentPositionSensor.getType()),
+                                           () -> showConditionAt(position + 1)),
+                CONDITION_VISIBLE_MS,
+                TimeUnit.MILLISECONDS);
     }
 
     public int getSensorConvertedValue(@NonNull final Sensor sensor){
@@ -114,27 +118,10 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
         return convertedValue;
     }
 
-    public Condition calculateAverageCondition(){
-        final int conditionCount = sensors.size();
-        if (conditionCount > 0) {
-            final int conditionSum = Lists.sumInt(sensors, c -> c.getCondition().ordinal());
-            final int conditionAverage = (int) Math.ceil(conditionSum / (float) conditionCount);
-            final int conditionOrdinal = Math.min(Condition.IDEAL.ordinal(), conditionAverage);
-
-            view.updateSensorView(sensors);
-
-            return Condition.values()[conditionOrdinal];
-        }
-
-        return Condition.UNKNOWN;
-    }
-
     public void jumpToEnd(final boolean animate) {
         this.animationCompleted = true;
         deferWorker.unsubscribe();
         execute(() -> {
-            view.stopAnimations();
-            view.animateSenseCondition(animate, calculateAverageCondition());
             view.showCompletion(animate, bind(() -> view.finishFlow()));
         });
 
@@ -149,16 +136,12 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
         void unavailableConditions(Throwable e);
 
         void showConditionAt(int position,
-                             Sensor currentPositionSensor,
+                             String message,
+                             Condition condition,
+                             SensorType type,
                              int convertedValue,
                              String unitSuffix,
                              Runnable onComplete);
-
-        void updateSensorView(List<Sensor> sensors);
-
-        void stopAnimations();
-
-        void animateSenseCondition(boolean animate, Condition condition);
 
         void showCompletion(boolean animate, Runnable onContinue);
     }
