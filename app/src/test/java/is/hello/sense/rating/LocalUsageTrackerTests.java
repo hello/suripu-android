@@ -1,5 +1,7 @@
 package is.hello.sense.rating;
 
+import android.database.sqlite.SQLiteException;
+
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Interval;
@@ -28,7 +30,7 @@ public class LocalUsageTrackerTests extends InjectionTestCase {
     }
 
     @Test
-    public void resetClearsAllData() {
+    public void resetClearsAllData() throws SQLiteException{
         LocalUsageTracker timeTravelingTracker = spy(this.localUsageTracker);
         doReturn(DateTime.now().withTimeAtStartOfDay().minusDays(3))
                 .when(timeTravelingTracker)
@@ -47,7 +49,7 @@ public class LocalUsageTrackerTests extends InjectionTestCase {
     }
 
     @Test
-    public void deleteOldUsageStats() {
+    public void deleteOldUsageStats() throws SQLiteException{
         LocalUsageTracker timeTravelingTracker = spy(this.localUsageTracker);
         DateTime distantPast = DateTime.now().withTimeAtStartOfDay().minusDays(90);
         doReturn(distantPast)
@@ -66,7 +68,7 @@ public class LocalUsageTrackerTests extends InjectionTestCase {
     }
 
     @Test
-    public void incrementMultipleTimesInOneDay() {
+    public void incrementMultipleTimesInOneDay() throws SQLiteException{
         localUsageTracker.increment(Identifier.APP_LAUNCHED);
         localUsageTracker.increment(Identifier.APP_LAUNCHED);
         localUsageTracker.increment(Identifier.APP_LAUNCHED);
@@ -76,7 +78,7 @@ public class LocalUsageTrackerTests extends InjectionTestCase {
     }
 
     @Test
-    public void incrementAcrossDaysWithinInterval() {
+    public void incrementAcrossDaysWithinInterval() throws SQLiteException{
         LocalUsageTracker timeTravelingTracker = spy(this.localUsageTracker);
         doReturn(DateTime.now().withTimeAtStartOfDay().minusDays(3))
                 .when(timeTravelingTracker)
@@ -90,7 +92,7 @@ public class LocalUsageTrackerTests extends InjectionTestCase {
     }
 
     @Test
-    public void incrementAcrossDaysOutsideInterval() {
+    public void incrementAcrossDaysOutsideInterval() throws SQLiteException{
         LocalUsageTracker timeTravelingTracker = spy(this.localUsageTracker);
         doReturn(DateTime.now().withTimeAtStartOfDay().minusDays(10))
                 .when(timeTravelingTracker)
@@ -104,7 +106,7 @@ public class LocalUsageTrackerTests extends InjectionTestCase {
     }
 
     @Test
-    public void isUsageAcceptableForRatingPrompt() {
+    public void isUsageAcceptableForRatingPrompt() throws SQLiteException{
         LocalUsageTracker tracker = spy(this.localUsageTracker);
 
         DateTime today = localUsageTracker.today();
