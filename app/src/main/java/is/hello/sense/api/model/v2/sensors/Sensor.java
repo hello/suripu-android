@@ -25,7 +25,6 @@ import is.hello.sense.units.UnitOperations;
  * Fetch the list of "sensorValues" over a given time period via POST /v2/sensors.
  */
 public class Sensor implements Serializable {
-    private static final int LABEL_LENGTH = 7;
     @SerializedName("name")
     private String name;
 
@@ -52,6 +51,7 @@ public class Sensor implements Serializable {
      */
     private float[] sensorValues = new float[0];
 
+
     /**
      * Min / Max Values
      */
@@ -67,10 +67,9 @@ public class Sensor implements Serializable {
      */
     private boolean useCelsius = true;
 
-    /**
-     * Labels to show beneath a graph.
-     */
-    private String[] labels = null;
+
+    private List<X> sensorTimestamps = null;
+    private QueryScope queryScopeForTimestamps = null;
 
     /**
      * Updates {@link Sensor#sensorValues}. Use {@link SensorsDataResponse} returned from POST /v2/sensors.
@@ -83,6 +82,11 @@ public class Sensor implements Serializable {
             this.sensorValues = response.getSensorData().get(getType());
             updateValueLimits();
         }
+    }
+
+    public void setSensorTimestamps(@NonNull final List<X> sensorTimestamps, @NonNull final QueryScope queryScope) {
+        this.sensorTimestamps = sensorTimestamps;
+        this.queryScopeForTimestamps = queryScope;
     }
 
     /**
@@ -98,16 +102,6 @@ public class Sensor implements Serializable {
     public void setUseCelsius(final boolean useCelsius) {
         this.useCelsius = useCelsius;
         updateValueLimits();
-    }
-
-    /**
-     * @param labels 7 length array of strings. If not 7, labels will not update.
-     */
-    public void setLabels(@NonNull final String[] labels) {
-        if (labels.length != LABEL_LENGTH) {
-            return;
-        }
-        this.labels = labels;
     }
 
     public String getName() {
@@ -139,11 +133,6 @@ public class Sensor implements Serializable {
 
     public float[] getSensorValues() {
         return sensorValues;
-    }
-
-    @Nullable
-    public String[] getLabels() {
-        return labels;
     }
 
     /**
@@ -215,6 +204,17 @@ public class Sensor implements Serializable {
         return ApiService.UNIT_TEMPERATURE_US_CUSTOMARY;
     }
 
+
+    public long getTimestampForPosition(final int position) {
+        if (sensorTimestamps == null || sensorTimestamps.size() <= position) {
+            return -1;
+        }
+        return sensorTimestamps.get(position).getTimestamp();
+    }
+
+    public QueryScope getQueryScopeForTimestamps() {
+        return queryScopeForTimestamps;
+    }
 
     private void updateValueLimits() {
         valueLimits = new ValueLimits();
