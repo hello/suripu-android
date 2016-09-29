@@ -2,7 +2,9 @@ package is.hello.sense.mvp.view;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ProgressBar;
@@ -16,47 +18,40 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorType;
-import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
-import is.hello.sense.api.model.v2.sensors.X;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.SensorDetailScrollView;
 import is.hello.sense.ui.widget.SensorScaleList;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
-import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.Constants;
 
 @SuppressLint("ViewConstructor")
-public final class SensorDetailView extends PresenterView
-        implements SensorGraphDrawable.ScrubberCallback {
+public final class SensorDetailView extends PresenterView {
     /**
      * Scales the graph to consume this much of remaining space below text.
      */
     private static final float GRAPH_HEIGHT_RATIO = .65f;
+
+
     private final SelectorView subNavSelector;
-    private final TextView value;
-    private final TextView message;
+    private final TextView valueTextView;
+    private final TextView messageTextView;
     private final SensorGraphView sensorGraphView;
     private final SensorDetailScrollView scrollView;
     private final SensorScaleList scaleList;
     private final ProgressBar progressBar;
     private final TextView about;
-    private final Sensor sensor;
-    private final DateFormatter dateFormatter;
     private int graphHeight = 0;
-    private List<X> timestamps;
-    private boolean use24Hour = false;
     private int lastSelectedIndex = -1;
 
     public SensorDetailView(@NonNull final Activity activity,
                             @NonNull final SelectorView.OnSelectionChangedListener listener,
-                            @NonNull final Sensor sensor) {
+                            @NonNull final SensorGraphDrawable.ScrubberCallback scrubberCallback) {
         super(activity);
-        this.sensor = sensor;
-        this.dateFormatter = new DateFormatter(context);
         this.subNavSelector = (SelectorView) findViewById(R.id.fragment_sensor_detail_selector);
-        this.value = (TextView) findViewById(R.id.fragment_sensor_detail_value);
-        this.message = (TextView) findViewById(R.id.fragment_sensor_detail_message);
+        this.valueTextView = (TextView) findViewById(R.id.fragment_sensor_detail_value);
+        this.messageTextView = (TextView) findViewById(R.id.fragment_sensor_detail_message);
         this.sensorGraphView = (SensorGraphView) findViewById(R.id.fragment_sensor_detail_graph_view);
         this.scrollView = (SensorDetailScrollView) findViewById(R.id.fragment_sensor_detail_scroll_view);
         this.progressBar = (ProgressBar) findViewById(R.id.fragment_sensor_detail_progress);
@@ -64,14 +59,11 @@ public final class SensorDetailView extends PresenterView
         this.about = (TextView) findViewById(R.id.fragment_sensor_detail_about_body);
         this.scrollView.requestDisallowInterceptTouchEvent(true);
         this.scrollView.setGraphView(sensorGraphView);
-        final int color = sensor.getColor(context);
         this.subNavSelector.setToggleButtonColor(R.color.white);
         this.subNavSelector.addOption(R.string.sensor_detail_last_day, false);
         this.subNavSelector.addOption(R.string.sensor_detail_past_week, false);
         this.subNavSelector.setSelectedButton(subNavSelector.getButtonAt(0));
-        this.subNavSelector.setBackground(new TabsBackgroundDrawable(activity.getResources(),
-                                                                     TabsBackgroundDrawable.Style.SENSOR_DETAIL,
-                                                                     color));
+        this.sensorGraphView.setScrubberCallback(scrubberCallback);
         this.subNavSelector.setOnSelectionChangedListener(newSelectionIndex -> {
             if (this.lastSelectedIndex == newSelectionIndex) {
                 return;
@@ -81,41 +73,41 @@ public final class SensorDetailView extends PresenterView
             refreshWithProgress();
             listener.onSelectionChanged(newSelectionIndex);
         });
-        this.scaleList.renderScales(sensor.getScales(), (sensor.getType() == SensorType.TEMPERATURE ? sensor.getTemperatureSymbol() : "") + sensor.getSensorSuffix());
-        this.about.setText(sensor.getAboutStringRes());
-        this.sensorGraphView.setScrubberCallback(this);
-        this.subNavSelector.getButtonAt(0).callOnClick();
 
-        //this.subNavSelector.setBackgroundColor(color);
-        this.subNavSelector.getButtonAt(0).setBackgroundColor(color);
-        this.subNavSelector.getButtonAt(1).setBackgroundColor(color);
-        this.value.setTextColor(color);
 
         getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 /*
 
-                There isn't a way to position the graph at the bottom of the screen while it's in a
-                ScrollView via xml.
+                    There isn't a way to position the graph at the bottom of the screen while it's in a
+                    ScrollView via xml.
 
-                The following will wait until the layout is drawn to measure the screen height and
-                how much space remains underneath the message TextView. It will then take that space
-                and scale the graph to fit 65% of it. Then it will set the top margin of the graph
-                to be 45% of the remaining space, pushing it to the bottom of the screen.
-
-                 */
+                    The following will wait until the layout is drawn to measure the screen height and
+                    how much space remains underneath the message TextView.It will then take that space
+                    and scale the graph to fit 65 % of it.Then it will set the top margin of the graph
+                    to be 45 % of the remaining space, pushing it to the bottom of the screen.
+                */
+                final int topMargin;
                 // Height of ScrollView
                 final int scrollViewHeight = scrollView.getHeight();
                 // Y position of message's bottom
-                final float messageBottomY = message.getY() + message.getHeight();
-                // Scaled graph height
-                SensorDetailView.this.graphHeight = (int) ((scrollViewHeight - messageBottomY) * GRAPH_HEIGHT_RATIO);
+                final float messageBottomY = messageTextView.getY() + messageTextView.getHeight();
+                // Scaled graph height if its larger than default height
+                SensorDetailView.this.graphHeight = Math.max((int) ((scrollViewHeight - messageBottomY) * GRAPH_HEIGHT_RATIO),
+                                                             SensorDetailView.this.context.getResources().getDimensionPixelSize(R.dimen.sensor_graph_height));
+
+                if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    // in portrait mode we want the graph to sit at the bottom of the screen.
+                    topMargin = scrollViewHeight - SensorDetailView.this.graphHeight;
+                } else {
+                    graphHeight *= 1.5f;
+                    // in landscape it can sit underneath the message textview.
+                    topMargin = (int) messageBottomY;
+                }
                 final RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, SensorDetailView.this.graphHeight);
-                final int topMargin = scrollViewHeight - SensorDetailView.this.graphHeight;
                 layoutParams.setMargins(0, topMargin, 0, 0);
                 sensorGraphView.setLayoutParams(layoutParams);
-
                 /*
                   Because SensorGraphView is only a view we can't put a progress bar inside of it.
 
@@ -125,9 +117,8 @@ public final class SensorDetailView extends PresenterView
                 progressBarLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
                 progressBarLayoutParams.setMargins(0, topMargin + (graphHeight / 2) - progressBar.getHeight() / 2, 0, 0);
                 progressBar.setLayoutParams(progressBarLayoutParams);
-                refreshWithGraph(SensorGraphView.StartDelay.LONG);
                 getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
+                subNavSelector.getButtonAt(0).callOnClick();
             }
         });
     }
@@ -143,36 +134,40 @@ public final class SensorDetailView extends PresenterView
         this.sensorGraphView.release();
     }
 
-    public final void set24HourTime(final boolean use24hour) {
-        this.use24Hour = use24hour;
-    }
+    public final void updateSensor(@NonNull final Sensor sensor) {
+        post(() -> {
+            this.scaleList.renderScales(sensor.getScales(), (sensor.getType() == SensorType.TEMPERATURE ? sensor.getTemperatureSymbol() : Constants.EMPTY_STRING) + sensor.getSensorSuffix());
+            this.about.setText(sensor.getAboutStringRes());
 
-    public final void bindServerDataResponse(@NonNull final SensorsDataResponse sensorResponse) {
-        this.timestamps = sensorResponse.getTimestamps();
-        this.sensor.setSensorValues(sensorResponse);
-        if (this.sensorGraphView.getVisibility() == VISIBLE) {
-            refreshWithGraph(SensorGraphView.StartDelay.SHORT);
-        } else {
-            this.sensorGraphView.setVisibility(VISIBLE);
-            refreshWithGraph(SensorGraphView.StartDelay.LONG);
-        }
+            final int color = sensor.getColor(context);
+            this.subNavSelector.setBackgroundColor(color);
+            this.subNavSelector.setBackground(new TabsBackgroundDrawable(context.getResources(),
+                                                                         TabsBackgroundDrawable.Style.SENSOR_DETAIL,
+                                                                         color));
+            this.subNavSelector.getButtonAt(0).setBackgroundColor(color);
+            this.subNavSelector.getButtonAt(1).setBackgroundColor(color);
+            this.valueTextView.setTextColor(color);
+        });
     }
 
     public final void bindError(@NonNull final Throwable throwable) {
-        refreshWithGraph(SensorGraphView.StartDelay.SHORT); // todo change
+        //  refreshGraph(SensorGraphView.StartDelay.SHORT); // todo change
 
     }
 
-    private void refreshWithGraph(@NonNull final SensorGraphView.StartDelay delay) {
+    public void setGraph(@NonNull final Sensor sensor,
+                         @NonNull final SensorGraphView.StartDelay delay,
+                         @NonNull final String[] labels) {
         post(() -> {
-            this.value.setText(this.sensor.getFormattedValue(true));
-            this.message.setText(this.sensor.getMessage());
+            this.valueTextView.setText(sensor.getFormattedValue(true));
+            this.messageTextView.setText(sensor.getMessage());
             this.progressBar.setVisibility(GONE);
             this.sensorGraphView.setVisibility(VISIBLE);
             this.sensorGraphView.resetTimeToAnimate(delay);
             this.sensorGraphView.setSensorGraphDrawable(new SensorGraphDrawable(this.context,
-                                                                                this.sensor,
-                                                                                this.graphHeight));
+                                                                                sensor,
+                                                                                this.graphHeight,
+                                                                                labels));
             this.sensorGraphView.invalidate();
             postDelayed(() -> this.subNavSelector.setEnabled(true), delay.getLength());
         });
@@ -185,30 +180,9 @@ public final class SensorDetailView extends PresenterView
         });
     }
 
-
-    @Override
-    public final void onPositionScrubbed(final int position) {
-        this.value.setText(sensor.getFormattedValueAtPosition(position));
-        if (timestamps != null && timestamps.size() > position) {
-            if (lastSelectedIndex == 0) {
-                this.message.setText(dateFormatter
-                                             .formatAsTime(new DateTime(timestamps.get(position)
-                                                                                  .getTimestamp()),
-                                                           use24Hour));
-            } else {
-                this.message.setText(dateFormatter
-                                             .formatAsDayAndTime(new DateTime(timestamps.get(position)
-                                                                                        .getTimestamp()),
-                                                                 use24Hour));
-            }
-        }
-
-    }
-
-    @Override
-    public final void onScrubberReleased() {
-        this.value.setText(sensor.getFormattedValue(true));
-        this.message.setText(sensor.getMessage());
+    public final void setValueAndMessage(@Nullable final String value, @Nullable final String message) {
+        this.valueTextView.setText(value);
+        this.messageTextView.setText(message);
 
     }
 }

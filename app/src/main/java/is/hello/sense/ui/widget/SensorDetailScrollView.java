@@ -18,13 +18,13 @@ public class SensorDetailScrollView extends ScrollView {
     /**
      * Time to wait before activating the scrubber.
      */
-    private static final int TIME_FOR_FOCUS = 200; //ms
+    private static final int TIME_FOR_FOCUS_START = 250; //ms
 
     /**
      * If the user scrolls up or down by this distance we will assume they're only scrolling
      * vertically and lock the view aka suppress the scrubber.
      */
-    private static final int Y_DIST_FOR_SCROLL = 100;
+    private static final int Y_DIST_FOR_SCROLL =80;
 
     /**
      * Set the current time of the last {@link MotionEvent#ACTION_DOWN} event. Used for determining
@@ -41,7 +41,17 @@ public class SensorDetailScrollView extends ScrollView {
     /**
      * When true the scrubber will not be shown.
      */
-    private boolean locked = false;
+    private boolean lockedForScrolling = true;
+    /**
+     * When true we will not try checking if we should scrub or scroll anymore
+     */
+    private boolean skipScrubbing = false;
+    /**
+     * MotionEvent locations are relative to the screen. The views getY method is relative to the scrollview.
+     * This will let us get the views location based on the screen.
+     */
+    private final int[] locationOnScreen = new int[2];
+
     private SensorGraphView graphView = null;
 
     public SensorDetailScrollView(final Context context) {
@@ -61,45 +71,86 @@ public class SensorDetailScrollView extends ScrollView {
         if (graphView == null) {
             return super.onInterceptTouchEvent(ev);
         }
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_POINTER_DOWN:
-            case MotionEvent.ACTION_DOWN:
-                lastPress.set(System.currentTimeMillis());
-                initialY = ev.getY();
-                return true;
-        }
 
+        release();
+        if (ev.getAction() == MotionEvent.ACTION_DOWN && isTouchingGraphView(ev)) {
+            lastPress.set(System.currentTimeMillis());
+            initialY = ev.getY();
+            return true;
+        }
+        super.onInterceptTouchEvent(ev);
         return false;
     }
 
     @Override
     public boolean onTouchEvent(final MotionEvent ev) {
         if (graphView != null) {
-            switch (ev.getAction()) {
-                case MotionEvent.ACTION_MOVE:
-                    if (wasHeldDownForFocus() && !locked) {
+            if (isTouchingGraphView(ev)) {
+                switch (ev.getAction()) {
+                    case MotionEvent.ACTION_MOVE:
+                        // If view is unlocked then the user is scrubbing. Forward touch events to graph
+                        if (!lockedForScrolling) {
+                            return graphView.onTouchEvent(ev);
+                            // If 250 ms elapsed and we haven't skipped scrubbing yet
+                        } else if (wasHeldDownForFocus() && !skipScrubbing){
+                            // If the user has scrolled a lot in the Y direction assume they don't want to scrub
+                            // else active scrubbing instead of scrolling
+                            if (Math.abs(ev.getY() - initialY) > Y_DIST_FOR_SCROLL){
+                                skipScrubbing = true;
+                            }else {
+                                lockedForScrolling = false;
+                            }
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        release();
                         return graphView.onTouchEvent(ev);
-                    } else if (Math.abs(ev.getY() - initialY) > Y_DIST_FOR_SCROLL) {
-                        locked = true;
-                    }
-                    break;
-                case MotionEvent.ACTION_UP:
-                    lastPress.set(System.currentTimeMillis());
-                    locked = false;
-                    return graphView.onTouchEvent(ev);
+                }
+            } else {
+                switch (ev.getAction()) {
+                    case MotionEvent.ACTION_MOVE:
+                        if (lockedForScrolling) {
+                            release();
+                        } else {
+                            return graphView.onTouchEvent(ev);
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        release();
+                        graphView.onTouchEvent(ev);
+                        break;
+                    default:
+                        release();
+                }
             }
 
         }
         return super.onTouchEvent(ev);
     }
 
+    public boolean isTouchingGraphView(@NonNull final MotionEvent ev) {
+        graphView.getLocationOnScreen(locationOnScreen);
+        final float eventY = ev.getY();
+        final float graphHeight = graphView.getHeight() / 2;
+        final float graphYStart = locationOnScreen[1] - graphHeight;
+        final float graphYEnd = locationOnScreen[1] + graphHeight;
+        return eventY > graphYStart && eventY < graphYEnd;
+    }
+
+
     public boolean wasHeldDownForFocus() {
-        return System.currentTimeMillis() - lastPress.get() > TIME_FOR_FOCUS;
+        return System.currentTimeMillis() - lastPress.get() > TIME_FOR_FOCUS_START;
     }
 
 
     public void setGraphView(@NonNull final SensorGraphView graphView) {
         this.graphView = graphView;
+    }
+
+    private void release() {
+        lastPress.set(System.currentTimeMillis());
+        lockedForScrolling = true;
+        skipScrubbing = false;
     }
 }
 

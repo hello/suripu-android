@@ -7,18 +7,13 @@
     android:focusable="false"
     android:orientation="vertical">
 
-    <is.hello.sense.ui.widget.SelectorView
-        android:id="@+id/fragment_sensor_detail_selector"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/x6"/>
-
     <is.hello.sense.ui.widget.SensorDetailScrollView
         android:id="@+id/fragment_sensor_detail_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background_light"
         android:fillViewport="true"
-        android:focusable="true"
+        android:focusable="false"
         android:scrollbars="none">
 
         <RelativeLayout
@@ -26,13 +21,21 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <is.hello.sense.ui.widget.SelectorView
+                android:id="@+id/fragment_sensor_detail_selector"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/x6"
+                android:layout_alignParentTop="true"
+                android:clickable="true"
+                android:focusable="true"/>
+
 
             <TextView
                 android:id="@+id/fragment_sensor_detail_value"
                 style="@style/Heading.Light"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
+                android:layout_below="@id/fragment_sensor_detail_selector"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/x5"/>
@@ -52,7 +55,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/fragment_sensor_detail_message"
-                android:clickable="false"
                 android:focusable="false"
                 android:visibility="invisible"/>
 

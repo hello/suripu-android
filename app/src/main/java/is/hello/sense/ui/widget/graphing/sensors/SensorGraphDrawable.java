@@ -77,13 +77,22 @@ public class SensorGraphDrawable extends Drawable {
     private float scrubberLocation = -1;
     private float scaleFactor = 0; // Animation
     private ScrubberCallback scrubberCallback = null;
+    private final String[] labels;
 
     public SensorGraphDrawable(@NonNull final Context context,
                                @NonNull final Sensor sensor,
                                final int height) {
+        this(context, sensor, height, null);
+    }
+
+    public SensorGraphDrawable(@NonNull final Context context,
+                               @NonNull final Sensor sensor,
+                               final int height,
+                               @Nullable final String[] labels) {
         this.sensor = sensor;
         this.minValue = sensor.getValueLimits().getMin();
         this.valueDifference = sensor.getValueLimits().getMax() - minValue;
+        this.labels = labels;
 
         // Sizes
         this.height = height;
@@ -205,12 +214,11 @@ public class SensorGraphDrawable extends Drawable {
     }
 
     private void drawText(@NonNull final Canvas canvas) {
-        if (sensor.getLabels() == null) {
+        if (labels == null) {
             return;
         }
         final Rect rect = new Rect();
-        textLabelPaint.getTextBounds(sensor.getLabels()[0], 0, sensor.getLabels()[0].length(), rect);
-        final String[] labels = sensor.getLabels();
+        textLabelPaint.getTextBounds(labels[0], 0, labels[0].length(), rect);
         final float xInc = canvas.getWidth() / labels.length;
         final float textHeight = textLabelPaint.getTextSize();
         final float offset = Math.abs((xInc - rect.width())) / 2;
@@ -261,7 +269,6 @@ public class SensorGraphDrawable extends Drawable {
         this.drawingPath.moveTo(xPos, yPos);
         this.drawingPath.lineTo(width - xPos, yPos);
         canvas.drawPath(this.drawingPath, this.linePaint);
-
     }
 
 

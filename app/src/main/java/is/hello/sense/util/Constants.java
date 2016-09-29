@@ -31,6 +31,8 @@ public final class Constants {
     public static final String WHATS_NEW_LAYOUT_TIMES_SHOWN = "WHATS_NEW_LAYOUT_TIMES_SHOWN";
     public static final String WHATS_NEW_LAYOUT_FORCE_SHOW = "WHATS_NEW_LAYOUT_FORCE_SHOW";
 
+    public static final String EMPTY_STRING = "";
+
     /**
      * The point at which a gesture's velocity dictates that
      * it be completed regardless of relative position.
