@@ -25,7 +25,10 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
     @Override
     public final void initializePresenterView() {
         if (presenterView == null) {
-            presenterView = new SoundsView(getActivity(), getAnimatorContext(), stateSafeExecutor);
+            presenterView = new SoundsView(getActivity(),
+                                           getChildFragmentManager(),
+                                           getAnimatorContext(),
+                                           stateSafeExecutor);
         }
     }
 

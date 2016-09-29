@@ -3,7 +3,6 @@ package is.hello.sense.mvp.view.home;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -12,9 +11,6 @@ import android.support.v4.view.ViewPager;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ToggleButton;
 
 import is.hello.go99.Anime;
@@ -36,6 +32,8 @@ public class BacksideView extends PresenterView {
     public static final int ITEM_INSIGHTS = 2;
     public static final int ITEM_SOUNDS = 3;
     public static final int ITEM_APP_SETTINGS = 4;
+
+    public static final int OPTION_NONE = 0;
     public static final int OPTION_ANIMATE = (1 << 1);
     public static final int DEFAULT_START_ITEM = BacksideView.ITEM_INSIGHTS;
 
