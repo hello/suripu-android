@@ -1,5 +1,6 @@
 package is.hello.sense.api.model.v2;
 
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -7,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
+import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 
 public class Scale implements Serializable {
@@ -39,20 +41,21 @@ public class Scale implements Serializable {
     }
 
     @NonNull
-    public final String getScaleViewValueText() {
-        //todo use resources.
-        if (min == null) {
+    public final String getScaleViewValueText(@NonNull final Resources resources) {
+        if (min == null || min <= 0) {
             if (max != null) {
-                return max + "+";
-            }
-        } else if (min <= 0) {
-            if (max != null) {
-                return "0 to " + max;
+                return resources.getString(R.string.sensor_scale_min_value, format(max));
             }
         } else if (max != null) {
-            return min + " to " + max;
+            return resources.getString(R.string.sensor_scale_mid_value, format(min), format(max));
+        } else {
+            return resources.getString(R.string.sensor_scale_max_value, format(min));
         }
         return "";
+    }
+
+    private String format(final double value) {
+        return String.format("%.0f", value);
     }
 
     @Override

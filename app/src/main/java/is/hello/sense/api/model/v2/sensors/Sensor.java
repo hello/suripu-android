@@ -25,6 +25,7 @@ import is.hello.sense.units.UnitOperations;
  * Fetch the list of "sensorValues" over a given time period via POST /v2/sensors.
  */
 public class Sensor implements Serializable {
+    private static final int LABEL_LENGTH = 7;
     @SerializedName("name")
     private String name;
 
@@ -61,7 +62,15 @@ public class Sensor implements Serializable {
      */
     private String sensorSuffix = "";
 
+    /**
+     * True by default. If false will use Fahrenheit.
+     */
     private boolean useCelsius = true;
+
+    /**
+     * Labels to show beneath a graph.
+     */
+    private String[] labels = null;
 
     /**
      * Updates {@link Sensor#sensorValues}. Use {@link SensorsDataResponse} returned from POST /v2/sensors.
@@ -81,6 +90,24 @@ public class Sensor implements Serializable {
      */
     public void setSensorSuffix(@NonNull final String sensorSuffix) {
         this.sensorSuffix = sensorSuffix;
+    }
+
+    /**
+     * @param useCelsius false to show Fahrenheit
+     */
+    public void setUseCelsius(final boolean useCelsius) {
+        this.useCelsius = useCelsius;
+        updateValueLimits();
+    }
+
+    /**
+     * @param labels 7 length array of strings. If not 7, labels will not update.
+     */
+    public void setLabels(@NonNull final String[] labels) {
+        if (labels.length != LABEL_LENGTH) {
+            return;
+        }
+        this.labels = labels;
     }
 
     public String getName() {
@@ -114,9 +141,9 @@ public class Sensor implements Serializable {
         return sensorValues;
     }
 
-    public void setUseCelsius(final boolean useCelsius) {
-        this.useCelsius = useCelsius;
-        updateValueLimits();
+    @Nullable
+    public String[] getLabels() {
+        return labels;
     }
 
     /**
