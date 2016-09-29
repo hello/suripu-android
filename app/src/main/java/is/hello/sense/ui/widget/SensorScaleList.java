@@ -43,7 +43,7 @@ public class SensorScaleList extends LinearLayout {
             inflate(getContext(), R.layout.item_scale_view, this);
             final View row = getChildAt(getChildCount() - 1);
             ((TextView) row.findViewById(R.id.item_scale_view_name)).setText(scale.getName());
-            ((TextView) row.findViewById(R.id.item_scale_view_value)).setText(scale.getScaleViewValueText());
+            ((TextView) row.findViewById(R.id.item_scale_view_value)).setText(scale.getScaleViewValueText(getResources()));
             row.findViewById(R.id.item_scale_view_circle).setBackground(new CircleDrawable(ContextCompat.getColor(getContext(), scale.getCondition().colorRes)));
         }
     }

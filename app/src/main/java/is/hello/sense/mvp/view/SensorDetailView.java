@@ -42,6 +42,7 @@ public final class SensorDetailView extends PresenterView
     private final ProgressBar progressBar;
     private final TextView about;
     private final Sensor sensor;
+    private final DateFormatter dateFormatter;
     private int graphHeight = 0;
     private List<X> timestamps;
     private boolean use24Hour = false;
@@ -52,6 +53,7 @@ public final class SensorDetailView extends PresenterView
                             @NonNull final Sensor sensor) {
         super(activity);
         this.sensor = sensor;
+        this.dateFormatter = new DateFormatter(context);
         this.subNavSelector = (SelectorView) findViewById(R.id.fragment_sensor_detail_selector);
         this.value = (TextView) findViewById(R.id.fragment_sensor_detail_value);
         this.message = (TextView) findViewById(R.id.fragment_sensor_detail_message);
@@ -168,7 +170,9 @@ public final class SensorDetailView extends PresenterView
             this.progressBar.setVisibility(GONE);
             this.sensorGraphView.setVisibility(VISIBLE);
             this.sensorGraphView.resetTimeToAnimate(delay);
-            this.sensorGraphView.setSensorGraphDrawable(new SensorGraphDrawable(this.context, this.sensor, this.graphHeight));
+            this.sensorGraphView.setSensorGraphDrawable(new SensorGraphDrawable(this.context,
+                                                                                this.sensor,
+                                                                                this.graphHeight));
             this.sensorGraphView.invalidate();
             postDelayed(() -> this.subNavSelector.setEnabled(true), delay.getLength());
         });
@@ -183,19 +187,26 @@ public final class SensorDetailView extends PresenterView
 
 
     @Override
-    public void onPositionScrubbed(final int position) {
+    public final void onPositionScrubbed(final int position) {
         this.value.setText(sensor.getFormattedValueAtPosition(position));
         if (timestamps != null && timestamps.size() > position) {
-            this.message.setText(new DateFormatter(context)
-                                         .formatAsTime(new DateTime(timestamps.get(position)
-                                                                              .getTimestamp()),
-                                                       use24Hour));
+            if (lastSelectedIndex == 0) {
+                this.message.setText(dateFormatter
+                                             .formatAsTime(new DateTime(timestamps.get(position)
+                                                                                  .getTimestamp()),
+                                                           use24Hour));
+            } else {
+                this.message.setText(dateFormatter
+                                             .formatAsDayAndTime(new DateTime(timestamps.get(position)
+                                                                                        .getTimestamp()),
+                                                                 use24Hour));
+            }
         }
 
     }
 
     @Override
-    public void onScrubberReleased() {
+    public final void onScrubberReleased() {
         this.value.setText(sensor.getFormattedValue(true));
         this.message.setText(sensor.getMessage());
 

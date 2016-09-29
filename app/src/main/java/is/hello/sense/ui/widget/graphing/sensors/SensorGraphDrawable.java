@@ -7,6 +7,7 @@ import android.graphics.ColorFilter;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -188,6 +189,7 @@ public class SensorGraphDrawable extends Drawable {
         // Draw the min/max text and horizontal line.
         drawScale(canvas);
         drawScrubber(canvas, xIncrement);
+        drawText(canvas);
     }
 
     private float getValueHeight(final float value) {
@@ -199,6 +201,22 @@ public class SensorGraphDrawable extends Drawable {
                     + this.maxHeight;
         } else {
             return this.height;
+        }
+    }
+
+    private void drawText(@NonNull final Canvas canvas) {
+        if (sensor.getLabels() == null) {
+            return;
+        }
+        final Rect rect = new Rect();
+        textLabelPaint.getTextBounds(sensor.getLabels()[0], 0, sensor.getLabels()[0].length(), rect);
+        final String[] labels = sensor.getLabels();
+        final float xInc = canvas.getWidth() / labels.length;
+        final float textHeight = textLabelPaint.getTextSize();
+        final float offset = Math.abs((xInc - rect.width())) / 2;
+
+        for (int i = 0; i < labels.length; i++) {
+            canvas.drawText(labels[i], xInc * i + offset, canvas.getHeight() - textHeight, textLabelPaint);
         }
     }
 
@@ -220,7 +238,6 @@ public class SensorGraphDrawable extends Drawable {
         if (scrubberCallback != null) {
             scrubberCallback.onPositionScrubbed(position);
         }
-
     }
 
     private void drawScale(@NonNull final Canvas canvas) {

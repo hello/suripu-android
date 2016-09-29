@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Calendar;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -46,6 +48,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
             this.presenterView = new SensorDetailView(getActivity(),
                                                       this,
                                                       sensor);
+            this.presenterView.set24HourTime(preferences.getUse24Time());
         }
     }
 
@@ -62,7 +65,6 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
             finishWithResult(Activity.RESULT_CANCELED, null);
             return;
         }
-
         this.sensor = (Sensor) args.getSerializable(ARG_SENSOR);
     }
 
@@ -91,6 +93,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     //todo consider creating a hashmap to hold these in. Limit requests to time.
     private synchronized void updateSensors(@NonNull final QueryScope queryScope) {
         stateSafeExecutor.execute(() -> {
+            sensor.setLabels(queryScope == QueryScope.DAY_5_MINUTE ? getDayLabels() : getWeekLabels());
             final ArrayList<Sensor> sensors = new ArrayList<>();
             sensors.add(sensor);
             apiService.postSensors(new SensorDataRequest(queryScope, sensors))
@@ -98,4 +101,45 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
                                  this.presenterView::bindError);
         });
     }
+
+    private String[] getWeekLabels() {
+        final String[] labels = new String[7];
+        final Calendar calendar = Calendar.getInstance();
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE", Locale.getDefault());
+        for (int i = 0; i < labels.length; i++) {
+            calendar.add(Calendar.DATE, 1);
+            final String day = dateFormat.format(calendar.getTime());
+            labels[i] = day;
+        }
+        return labels;
+    }
+
+    private String[] getDayLabels() {
+        final String[] labels = new String[7];
+        final Calendar calendar = Calendar.getInstance();
+        final SimpleDateFormat dateFormat;
+        final int minuteDiff;
+        if (preferences.getUse24Time()) {
+            dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            final int unRoundedMins = calendar.get(Calendar.MINUTE) % 15;
+            calendar.add(Calendar.MINUTE, unRoundedMins < 8 ? -unRoundedMins : (15 - unRoundedMins));
+            calendar.add(Calendar.MINUTE, 15);
+            minuteDiff = -25;
+        } else {
+            dateFormat = new SimpleDateFormat("ha", Locale.getDefault());
+            final int unRoundedMins = calendar.get(Calendar.MINUTE) % 30;
+            calendar.add(Calendar.MINUTE, 30 - unRoundedMins);
+            minuteDiff = -30;
+        }
+        calendar.add(Calendar.HOUR, -2);
+
+        for (int i = 6; i >= 0; i--) {
+            final String day = dateFormat.format(calendar.getTime());
+            labels[i] = day;
+            calendar.add(Calendar.HOUR, -3);
+            calendar.add(Calendar.MINUTE, minuteDiff);
+        }
+        return labels;
+    }
+
 }
