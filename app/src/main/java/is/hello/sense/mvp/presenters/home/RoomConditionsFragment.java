@@ -147,16 +147,26 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     //region Displaying Data
 
     public final void bindConditions(@NonNull final SensorResponse currentConditions) {
-        final List<Sensor> sensors = currentConditions.getSensors();
-        bindAndSubscribe(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)),
-                         sensorsDataResponse -> {
-                             for (final Sensor sensor : sensors) {
-                                 sensor.setSensorValues(sensorsDataResponse);
-                             }
-                             this.adapter.dismissMessage();
-                             this.adapter.replaceAll(sensors);
-                         },
-                         throwable -> Log.e("Sensor", "error: " + throwable));
+        switch (currentConditions.getStatus()) {
+            case OK:
+                final List<Sensor> sensors = currentConditions.getSensors();
+                bindAndSubscribe(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)),
+                                 sensorsDataResponse -> {
+                                     for (final Sensor sensor : sensors) {
+                                         sensor.setSensorValues(sensorsDataResponse);
+                                     }
+                                     this.adapter.dismissMessage();
+                                     this.adapter.replaceAll(sensors);
+                                 },
+                                 throwable -> Log.e("Sensor", "error: " + throwable));
+                break;
+            case NO_SENSE:
+                adapter.showSenseMissingCard();
+                break;
+            case WAITING_FOR_DATA:
+            default:
+        }
+
 
 
     }
