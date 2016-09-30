@@ -31,9 +31,20 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     private static final int VIEW_SENSOR = 0;
     private static final int VIEW_ID_MESSAGE = 1;
     private static final int VIEW_AIR_QUALITY = 2;
-    private final LayoutInflater inflater;
 
+
+    private final LayoutInflater inflater;
+    private final int graphHeight;
     private boolean messageWantsSenseIcon;
+    /**
+     * Store air quality sensors within here
+     */
+    private final List<Sensor> airQualitySensors = new ArrayList<>();
+    /**
+     * Avoids having to check if an air quality sensor exists when getting the item count.
+     */
+    private boolean hasAirQuality = false;
+
     @StringRes
     private int messageTitle;
     @Nullable
@@ -54,7 +65,6 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         this.unitFormatter = unitFormatter;
         this.inflater = inflater;
         this.graphHeight = this.inflater.getContext().getResources().getDimensionPixelSize(R.dimen.sensor_graph_height);
-        this.airQualityCard = new AirQualityCard(inflater.getContext());
     }
 
     //region adapter overrides
@@ -72,26 +82,30 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
     @Override
     public int getItemCount() {
-        if (airQualitySensors.isEmpty()) {
-            return super.getItemCount();
+        if (hasAirQuality && !airQualitySensors.isEmpty()) {
+            return super.getItemCount() + 1;
         }
-        return super.getItemCount() + 1;
+        return super.getItemCount();
     }
 
     public void replaceAll(@NonNull final List<Sensor> sensors) {
         airQualitySensors.clear();
+        hasAirQuality = false;
         final ArrayList<Sensor> normalSensors = new ArrayList<>();
         for (final Sensor sensor : sensors) {
             switch (sensor.getType()) {
                 case PARTICULATES:
                 case CO2:
                 case TVOC:
+                    hasAirQuality = true;
                     airQualitySensors.add(sensor);
                     break;
                 default:
                     normalSensors.add(sensor);
             }
         }
+
+        // If there is only one AirQuality item we will display it with a graph.
         if (airQualitySensors.size() == 1) {
             normalSensors.add(airQualitySensors.get(0));
             airQualitySensors.clear();
@@ -226,10 +240,10 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
         @Override
         public void bind(final int position) {
-            airQualityCard = new AirQualityCard(view.getContext());
+            final AirQualityCard airQualityCard = new AirQualityCard(view.getContext());
             airQualityCard.replaceAll(airQualitySensors);
             body.setText(airQualityCard.getWorstMessage());
-            if (root.getChildCount()<3){
+            if (root.getChildCount() < 3) {
                 root.addView(airQualityCard);
             }
         }
