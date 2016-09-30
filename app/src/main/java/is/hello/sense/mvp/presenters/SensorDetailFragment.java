@@ -122,9 +122,6 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     @Override
     protected final void onRelease() {
         super.onRelease();
-        if (this.updateTimer != null) {
-            this.updateTimer.unschedule();
-        }
         this.updateTimer = null;
     }
 
@@ -222,7 +219,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
             message = null;
         }
         final String value;
-        if (sensor.getSensorValues()[position] != -1) {
+        if (sensor.getSensorValues()[position] != Sensor.NO_VALUE) {
             value = sensor.getFormattedValueAtPosition(position).toString();
         } else {
             value = getString(R.string.missing_data_placeholder);
@@ -234,6 +231,6 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
 
     @Override
     public void onScrubberReleased() {
-        presenterView.setValueAndMessage(sensor.getFormattedValue(true).toString(), sensor.getMessage());
+        presenterView.setValueAndMessage(sensor.getFormattedValue(true), sensor.getMessage());
     }
 }

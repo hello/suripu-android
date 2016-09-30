@@ -25,13 +25,13 @@ import is.hello.sense.ui.widget.util.Windows;
 
 public class SensorDetailActivity extends ScopedInjectionActivity
         implements FragmentNavigation {
-    private static final String ARG_SENSOR = SensorDetailActivity.class.getName() + ".ARG_SENSOR";
+    private static final String EXTRA_SENSOR = SensorDetailActivity.class.getName() + ".EXTRA_SENSOR";
     private FragmentNavigationDelegate navigationDelegate;
 
     public static void startActivity(@NonNull final Context context,
                                      @NonNull final Sensor sensor) {
         final Intent intent = new Intent(context, SensorDetailActivity.class);
-        intent.putExtra(ARG_SENSOR, sensor);
+        intent.putExtra(EXTRA_SENSOR, sensor);
         context.startActivity(intent);
     }
 
@@ -48,7 +48,7 @@ public class SensorDetailActivity extends ScopedInjectionActivity
                                                                  R.id.activity_navigation_container,
                                                                  stateSafeExecutor);
 
-        final Sensor sensor = (Sensor) getIntent().getSerializableExtra(ARG_SENSOR);
+        final Sensor sensor = (Sensor) getIntent().getSerializableExtra(EXTRA_SENSOR);
         final int color = sensor.getColor(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
