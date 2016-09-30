@@ -3,6 +3,7 @@ package is.hello.sense.api.model.v2.sensors;
 import android.content.Context;
 import android.support.annotation.ColorRes;
 import android.support.annotation.ColorRes;
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
@@ -91,6 +92,14 @@ public class Sensor extends ApiResponse {
             return new float[0];
         }
         return sensorValues;
+    }
+
+    public Condition getCondition() {
+        return condition;
+    }
+
+    public boolean hasBetterConditionThan(@NonNull final Sensor sensor){
+        return condition.value > sensor.getCondition().value;
     }
 
     public Condition getCondition() {
