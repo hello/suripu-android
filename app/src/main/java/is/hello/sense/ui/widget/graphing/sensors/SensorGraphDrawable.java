@@ -164,6 +164,9 @@ public class SensorGraphDrawable extends Drawable {
     public void draw(final Canvas canvas) {
         this.drawingPath.reset();
         final float[] values = this.sensor.getSensorValues();
+        if (values == null || values.length == 0){
+            return;
+        }
         // Cast once
         final float width = canvas.getWidth();
 
