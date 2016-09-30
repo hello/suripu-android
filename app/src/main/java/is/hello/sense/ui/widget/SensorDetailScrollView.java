@@ -18,7 +18,7 @@ public class SensorDetailScrollView extends ScrollView {
     /**
      * Time to wait before activating the scrubber.
      */
-    private static final int TIME_FOR_FOCUS_START = 250; //ms
+    private static final int TIME_FOR_FOCUS_START_MS = 250;
 
     /**
      * If the user scrolls up or down by this distance we will assume they're only scrolling
@@ -139,7 +139,7 @@ public class SensorDetailScrollView extends ScrollView {
 
 
     public boolean wasHeldDownForFocus() {
-        return System.currentTimeMillis() - lastPress.get() > TIME_FOR_FOCUS_START;
+        return System.currentTimeMillis() - lastPress.get() > TIME_FOR_FOCUS_START_MS;
     }
 
 

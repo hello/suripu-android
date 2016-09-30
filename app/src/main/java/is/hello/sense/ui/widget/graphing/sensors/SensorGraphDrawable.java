@@ -7,6 +7,7 @@ import android.graphics.ColorFilter;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
@@ -58,6 +59,8 @@ public class SensorGraphDrawable extends Drawable {
      */
     private static final String SPACE = " ";
 
+    public static final int NO_LOCATION = -1;
+
     private final Sensor sensor;
     private final int height;
     private final int minHeight;
@@ -74,7 +77,7 @@ public class SensorGraphDrawable extends Drawable {
     private final TextPaint textLabelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     private final Path drawingPath = new Path();
 
-    private float scrubberLocation = -1;
+    private float scrubberLocation = NO_LOCATION;
     private float scaleFactor = 0; // Animation
     private ScrubberCallback scrubberCallback = null;
     private final String[] labels;
@@ -204,12 +207,12 @@ public class SensorGraphDrawable extends Drawable {
     private float getValueHeight(final float value) {
         if (value == 0) {
             return this.minHeight;
-        } else if (value != -1) {
+        } else if (value != Sensor.NO_VALUE) {
             return this.minHeight
                     - (this.minHeight * ((value - this.minValue) / this.valueDifference))
                     + this.maxHeight;
         } else {
-            return this.height*2;
+            return this.height * 2;
         }
     }
 
@@ -229,7 +232,7 @@ public class SensorGraphDrawable extends Drawable {
     }
 
     private void drawScrubber(@NonNull final Canvas canvas, final double xInc) {
-        if (scrubberLocation == -1) {
+        if (scrubberLocation == NO_LOCATION) {
             return;
         }
 
@@ -284,7 +287,7 @@ public class SensorGraphDrawable extends Drawable {
 
     @Override
     public int getOpacity() {
-        return 0;
+        return PixelFormat.TRANSLUCENT;
     }
 
 

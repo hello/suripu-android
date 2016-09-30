@@ -14,6 +14,7 @@ import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.Scale;
 import is.hello.sense.ui.widget.util.Styles;
@@ -23,7 +24,11 @@ import is.hello.sense.units.UnitOperations;
  * Represents an individual Sensor. This is returned from GET /v2/sensors.
  * Fetch the list of "sensorValues" over a given time period via POST /v2/sensors.
  */
-public class Sensor implements Serializable {
+public class Sensor extends ApiResponse {
+    /**
+     * Server value when data is missing.
+     */
+    public static final int NO_VALUE = -1;
     @SerializedName("name")
     private String name;
 
@@ -205,7 +210,7 @@ public class Sensor implements Serializable {
 
     public long getTimestampForPosition(final int position) {
         if (sensorTimestamps == null || sensorTimestamps.size() <= position) {
-            return -1;
+            return NO_VALUE;
         }
         return sensorTimestamps.get(position).getTimestamp();
     }
@@ -276,11 +281,11 @@ public class Sensor implements Serializable {
 
         public ValueLimits() {
             if (sensorValues == null || sensorValues.length == 0) {
-                min = -1f;
-                max = -1f;
+                min = (float)NO_VALUE;
+                max = (float)NO_VALUE;
             } else {
                 for (final Float value : sensorValues) {
-                    if (value <= -1) {
+                    if (value <= NO_VALUE) {
                         continue;
                     }
                     if (min == null || value < min) {
@@ -303,7 +308,7 @@ public class Sensor implements Serializable {
 
         @NonNull
         private String formatValue(@Nullable Float value) {
-            if (value == null || value == -1) {
+            if (value == null || value == NO_VALUE) {
                 return "";
             }
             if (!useCelsius && getType() == SensorType.TEMPERATURE) {
