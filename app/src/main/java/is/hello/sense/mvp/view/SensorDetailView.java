@@ -27,7 +27,8 @@ import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
 import is.hello.sense.util.Constants;
 
 @SuppressLint("ViewConstructor")
-public final class SensorDetailView extends PresenterView {
+public final class SensorDetailView extends PresenterView
+        implements SelectorView.OnSelectionChangedListener {
     /**
      * Scales the graph to consume this much of remaining space below text.
      */
@@ -42,6 +43,7 @@ public final class SensorDetailView extends PresenterView {
     private final SensorScaleList scaleList;
     private final ProgressBar progressBar;
     private final TextView about;
+    private final SelectorView.OnSelectionChangedListener selectionChangedListener;
     private int graphHeight = 0;
     private List<is.hello.sense.api.model.v2.sensors.X> timestamps;
     private boolean use24Hour = false;
@@ -66,15 +68,8 @@ public final class SensorDetailView extends PresenterView {
         this.subNavSelector.addOption(R.string.sensor_detail_past_week, false);
         this.subNavSelector.setSelectedButton(subNavSelector.getButtonAt(0));
         this.sensorGraphView.setScrubberCallback(scrubberCallback);
-        this.subNavSelector.setOnSelectionChangedListener(newSelectionIndex -> {
-            if (this.lastSelectedIndex == newSelectionIndex) {
-                return;
-            }
-            this.subNavSelector.setEnabled(false);
-            this.lastSelectedIndex = newSelectionIndex;
-            refreshWithProgress();
-            listener.onSelectionChanged(newSelectionIndex);
-        });
+        this.subNavSelector.setOnSelectionChangedListener(this);
+        this.selectionChangedListener = listener;
 
 
         getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -182,9 +177,20 @@ public final class SensorDetailView extends PresenterView {
         });
     }
 
-    public final void setValueAndMessage(@Nullable final String value, @Nullable final String message) {
+    public final void setValueAndMessage(@Nullable final CharSequence value, @Nullable final String message) {
         this.valueTextView.setText(value);
         this.messageTextView.setText(message);
 
+    }
+
+    @Override
+    public void onSelectionChanged(final int newSelectionIndex) {
+        if (this.lastSelectedIndex == newSelectionIndex) {
+            return;
+        }
+        this.subNavSelector.setEnabled(false);
+        this.lastSelectedIndex = newSelectionIndex;
+        refreshWithProgress();
+        selectionChangedListener.onSelectionChanged(newSelectionIndex);
     }
 }

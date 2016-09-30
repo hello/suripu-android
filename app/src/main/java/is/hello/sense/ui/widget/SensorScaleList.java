@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -85,7 +86,7 @@ public class SensorScaleList extends LinearLayout {
 
         @Override
         public int getOpacity() {
-            return 0;
+            return PixelFormat.OPAQUE;
         }
     }
 

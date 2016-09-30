@@ -10,6 +10,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import is.hello.sense.api.model.v2.sensors.Sensor;
+
 
 /**
  * Responsible for animating {@link SensorGraphDrawable} via elapsed time.
@@ -85,7 +87,7 @@ public class SensorGraphView extends View {
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
             case MotionEvent.ACTION_CANCEL:
-                this.graphDrawable.setScrubberLocation(-1);
+                this.graphDrawable.setScrubberLocation(SensorGraphDrawable.NO_LOCATION);
                 this.scrubberCallback.onScrubberReleased();
                 break;
         }

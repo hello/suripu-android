@@ -7,7 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class SensorsDataResponse implements Serializable {
+import is.hello.sense.api.model.ApiResponse;
+
+public class SensorsDataResponse extends ApiResponse {
 
 
     @SerializedName("sensors")
