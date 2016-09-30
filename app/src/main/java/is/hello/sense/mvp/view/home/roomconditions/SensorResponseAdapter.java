@@ -4,18 +4,19 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.util.Log;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
@@ -29,6 +30,7 @@ import is.hello.sense.units.UnitFormatter;
 public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorResponseAdapter.BaseViewHolder> {
     private static final int VIEW_SENSOR = 0;
     private static final int VIEW_ID_MESSAGE = 1;
+    private static final int VIEW_AIR_QUALITY = 2;
     private final LayoutInflater inflater;
 
     private boolean messageWantsSenseIcon;
@@ -43,6 +45,8 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
     private final UnitFormatter unitFormatter;
     private final int graphHeight;
+    private AirQualityCard airQualityCard;
+    private final List<Sensor> airQualitySensors = new ArrayList<>();
 
     public SensorResponseAdapter(@NonNull final LayoutInflater inflater,
                                  @NonNull final UnitFormatter unitFormatter) {
@@ -50,12 +54,49 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         this.unitFormatter = unitFormatter;
         this.inflater = inflater;
         this.graphHeight = this.inflater.getContext().getResources().getDimensionPixelSize(R.dimen.sensor_graph_height);
+        this.airQualityCard = new AirQualityCard(inflater.getContext());
     }
 
     //region adapter overrides
+
     @Override
-    public long getItemId(final int position) {
+    public int getItemViewType(final int position) {
+        if (airQualitySensors.isEmpty()) {
+            return VIEW_SENSOR;
+        }
+        if (position == getItemCount() - 1) {
+            return VIEW_AIR_QUALITY;
+        }
         return VIEW_SENSOR;
+    }
+
+    @Override
+    public int getItemCount() {
+        if (airQualitySensors.isEmpty()) {
+            return super.getItemCount();
+        }
+        return super.getItemCount() + 1;
+    }
+
+    public void replaceAll(@NonNull final List<Sensor> sensors) {
+        airQualitySensors.clear();
+        final ArrayList<Sensor> normalSensors = new ArrayList<>();
+        for (final Sensor sensor : sensors) {
+            switch (sensor.getType()) {
+                case PARTICULATES:
+                case CO2:
+                case TVOC:
+                    airQualitySensors.add(sensor);
+                    break;
+                default:
+                    normalSensors.add(sensor);
+            }
+        }
+        if (airQualitySensors.size() == 1) {
+            normalSensors.add(airQualitySensors.get(0));
+            airQualitySensors.clear();
+        }
+        super.replaceAll(normalSensors);
     }
 
     @Override
@@ -90,7 +131,9 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
                 }
                 return new BaseViewHolder(view);
             case VIEW_SENSOR:
-                return new BaseViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_sensor_response, parent, false));
+                return new SensorViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_sensor_response, parent, false));
+            case VIEW_AIR_QUALITY:
+                return new AirQualityViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_sensor_response, parent, false));
             default:
                 throw new IllegalStateException();
         }
@@ -134,13 +177,14 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
     //endregion
 
-    public class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder implements Drawable.Callback {
-        private final TextView title;
-        private final TextView body;
-        private final TextView value;
-        private final TextView descriptor;
-        private final SensorGraphView graphView;
-        private final View view;
+
+    public class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder {
+        protected final TextView title;
+        protected final TextView body;
+        protected final TextView value;
+        protected final TextView descriptor;
+        protected final View view;
+        protected final SensorGraphView graphView;
 
         public BaseViewHolder(@NonNull final View itemView) {
             super(itemView);
@@ -161,10 +205,46 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             this.value.setText(SensorResponseAdapter.this.unitFormatter.getUnitPrinterForSensorAverageValue(sensor.getType()).print(sensor.getValue()));
             if (sensor.getType() == SensorType.TEMPERATURE || sensor.getType() == SensorType.HUMIDITY) {
                 this.descriptor.setText(null);
-            } else {
+            } else {     
                 this.descriptor.setText(SensorResponseAdapter.this.unitFormatter.getSuffixForSensor(sensor.getType()));
             }
             this.value.setTextColor(ContextCompat.getColor(inflater.getContext(), sensor.getColor()));
+        }
+    }
+
+    private class AirQualityViewHolder extends BaseViewHolder {
+        private final LinearLayout root;
+
+        public AirQualityViewHolder(@NonNull final View itemView) {
+            super(itemView);
+            this.root = (LinearLayout) itemView.findViewById(R.id.item_server_response_root);
+            this.title.setText(itemView.getContext().getString(R.string.air_quality));
+            graphView.setVisibility(View.GONE);
+            value.setVisibility(View.GONE);
+            descriptor.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void bind(final int position) {
+            airQualityCard = new AirQualityCard(view.getContext());
+            airQualityCard.replaceAll(airQualitySensors);
+            body.setText(airQualityCard.getWorstMessage());
+            if (root.getChildCount()<3){
+                root.addView(airQualityCard);
+            }
+        }
+    }
+
+    private class SensorViewHolder extends BaseViewHolder implements Drawable.Callback {
+
+        public SensorViewHolder(@NonNull final View itemView) {
+            super(itemView);
+        }
+
+        @Override
+        public void bind(final int position) {
+            super.bind(position);
+            final Sensor sensor = getItem(position);
             this.graphView.setSensorGraphDrawable(new SensorGraphDrawable(SensorResponseAdapter.this.inflater.getContext(),
                                                                           sensor,
                                                                           unitFormatter,
