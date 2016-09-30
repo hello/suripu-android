@@ -65,7 +65,6 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     }
 
     //region adapter overrides
-
     @Override
     public int getItemViewType(final int position) {
         if (airQualitySensors.isEmpty()) {
@@ -246,6 +245,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             }
         }
     }
+
 
     private class SensorViewHolder extends BaseViewHolder implements Drawable.Callback {
 
