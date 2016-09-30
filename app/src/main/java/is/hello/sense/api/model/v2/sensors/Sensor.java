@@ -101,13 +101,6 @@ public class Sensor extends ApiResponse {
         return condition.value > sensor.getCondition().value;
     }
 
-    public Condition getCondition() {
-        return condition;
-    }
-
-    public boolean hasBetterConditionThan(@NonNull final Sensor sensor){
-        return condition.value > sensor.getCondition().value;
-    }
 
     @Override
     public String toString() {
