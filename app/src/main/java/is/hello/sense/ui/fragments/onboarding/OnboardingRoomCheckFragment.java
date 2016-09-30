@@ -24,7 +24,6 @@ import is.hello.sense.mvp.view.onboarding.RoomCheckView;
 import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.presenters.RoomCheckPresenter;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
-import is.hello.sense.util.Analytics;
 
 public class OnboardingRoomCheckFragment extends BasePresenterFragment
 implements RoomCheckPresenter.Output{
@@ -60,9 +59,15 @@ implements RoomCheckPresenter.Output{
 
         if(presenterView != null) {
             presenterView.stopAnimations();
-            presenterView.releaseViews();
+            presenterView.destroyView();
             presenterView = null;
         }
+    }
+
+    @Override
+    public void onDetach(){
+        super.onDetach();
+        presenter = null;
     }
 
     //region RoomCheck Output
@@ -88,7 +93,6 @@ implements RoomCheckPresenter.Output{
 
     @Override
     public void unavailableConditions(final Throwable e) {
-        Analytics.trackError(e, Analytics.Onboarding.ERROR_MSG_ROOM_CHECK);
         presenterView.removeSensorContainerViews();
     }
 
@@ -101,7 +105,6 @@ implements RoomCheckPresenter.Output{
                                 @NonNull final String unitSuffix,
                                 @NonNull  final Runnable onComplete) {
         presenterView.animateSenseToGray();
-
         presenterView.showConditionAt(position,
                                       getCheckStatusStringForSensor(type),
                                       statusMessage,
