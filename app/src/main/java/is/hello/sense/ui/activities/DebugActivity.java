@@ -1,7 +1,9 @@
 package is.hello.sense.ui.activities;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -44,7 +46,7 @@ public class DebugActivity extends InjectionActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.static_recycler);
 
@@ -66,7 +68,7 @@ public class DebugActivity extends InjectionActivity {
             decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
             adapter.add(new DetailItem("Piru-Pea",
                                        () -> startActivity(new Intent(this, activityClass))));
-        } catch (ClassNotFoundException ignored) {
+        } catch (final ClassNotFoundException ignored) {
             // Do nothing.
         }
 
@@ -92,7 +94,7 @@ public class DebugActivity extends InjectionActivity {
             decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
             adapter.add(new DetailItem("View welcome dialogs",
                                        () -> startActivity(new Intent(this, activityClass))));
-        } catch (ClassNotFoundException ignored) {
+        } catch (final ClassNotFoundException ignored) {
             // Do nothing.
         }
         adapter.add(new DetailItem("View What's New Card", this::viewWhatsNewCard));
@@ -101,7 +103,7 @@ public class DebugActivity extends InjectionActivity {
         adapter.add(new DetailItem("Re-enable Amazon review prompt", this::reEnableAmazonReviewPrompt));
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
         adapter.add(new DetailItem("Reset app usage stats", this::resetAppUsage));
-
+        adapter.add(new DetailItem("View Room Conditions Welcome Card", this::viewRoomConditionsWelcomeCard));
         adapter.add(new DetailItem("Log Out", this::logOut));
 
         recyclerView.setAdapter(adapter);
@@ -212,6 +214,12 @@ public class DebugActivity extends InjectionActivity {
     public void resetAppUsage() {
         localUsageTracker.resetAsync();
         Toast.makeText(getApplicationContext(), "Usage Stats Reset", Toast.LENGTH_SHORT).show();
+    }
+
+    public void viewRoomConditionsWelcomeCard(){
+        final SharedPreferences sharedPreferences = getSharedPreferences(Constants.ROOM_CONDITIONS_PREFS, Context.MODE_PRIVATE);
+        sharedPreferences.edit().clear().apply();
+        Toast.makeText(getApplicationContext(), "Forgot Room Conditions Welcome Card", Toast.LENGTH_SHORT).show();
     }
 
     public void logOut() {

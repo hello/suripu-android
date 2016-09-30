@@ -33,6 +33,9 @@ public final class Constants {
 
     public static final String EMPTY_STRING = "";
 
+    public static final String ROOM_CONDITIONS_PREFS = "room_conditions_prefs";
+    public static final String ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN = "room_conditions_welcome_card_times_shown";
+
     /**
      * The point at which a gesture's velocity dictates that
      * it be completed regardless of relative position.

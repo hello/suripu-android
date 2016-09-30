@@ -31,11 +31,13 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     private static final int VIEW_SENSOR = 0;
     private static final int VIEW_ID_MESSAGE = 1;
     private static final int VIEW_AIR_QUALITY = 2;
+    private static final int VIEW_WELCOME_CARD = 3;
 
 
     private final LayoutInflater inflater;
     private final int graphHeight;
     private boolean messageWantsSenseIcon;
+    private boolean showWelcomeCard = false;
     /**
      * Store air quality sensors within here
      */
@@ -66,7 +68,15 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
     //region adapter overrides
     @Override
+    public Sensor getItem(final int position) {
+        return super.getItem(position - (showWelcomeCard ? 1 : 0));
+    }
+
+    @Override
     public int getItemViewType(final int position) {
+        if (showWelcomeCard && position == 0) {
+            return VIEW_WELCOME_CARD;
+        }
         if (airQualitySensors.isEmpty()) {
             return VIEW_SENSOR;
         }
@@ -78,10 +88,11 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
     @Override
     public int getItemCount() {
+        final int welcomeCardCount = showWelcomeCard ? 1 : 0;
         if (hasAirQuality && !airQualitySensors.isEmpty()) {
-            return super.getItemCount() + 1;
+            return super.getItemCount() + 1 + welcomeCardCount;
         }
-        return super.getItemCount();
+        return super.getItemCount() + welcomeCardCount;
     }
 
     public void replaceAll(@NonNull final List<Sensor> sensors) {
@@ -144,6 +155,8 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
                 return new SensorViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_sensor_response, parent, false));
             case VIEW_AIR_QUALITY:
                 return new AirQualityViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_sensor_response, parent, false));
+            case VIEW_WELCOME_CARD:
+                return new WelcomeCardViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_room_conditions_welcome, parent, false));
             default:
                 throw new IllegalStateException();
         }
@@ -178,6 +191,11 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         this.messageBody = null;
         this.messageActionTitle = 0;
         this.messageActionOnClick = null;
+    }
+
+    public void showWelcomeCard(final boolean show) {
+        this.showWelcomeCard = show;
+        notifyDataSetChanged();
     }
 
     public void release() {
@@ -219,6 +237,18 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
                 this.descriptor.setText(SensorResponseAdapter.this.unitFormatter.getSuffixForSensor(sensor.getType()));
             }
             this.value.setTextColor(ContextCompat.getColor(inflater.getContext(), sensor.getColor()));
+        }
+    }
+
+    private class WelcomeCardViewHolder extends BaseViewHolder {
+
+        public WelcomeCardViewHolder(@NonNull final View itemView) {
+            super(itemView);
+        }
+
+        @Override
+        public void bind(final int position) {
+            // do nothing
         }
     }
 

@@ -1,6 +1,8 @@
 package is.hello.sense.mvp.presenters.home;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -38,7 +40,7 @@ import is.hello.sense.util.Logger;
 
 public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsView> implements
         ArrayRecyclerAdapter.OnItemClickedListener<Sensor> {
-    private UpdateTimer updateTimer;
+    private final static long WELCOME_CARD_TIMES_SHOWN_LIMIT = 2;
 
     @Inject
     SensorResponseInteractor sensorResponseInteractor;
@@ -50,6 +52,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     ApiService apiService;
 
     private SensorResponseAdapter adapter;
+    private UpdateTimer updateTimer;
 
     @Override
     public final void initializePresenterView() {
@@ -131,12 +134,24 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     @Override
     public final void onUpdate() {
         this.sensorResponseInteractor.update();
+        this.adapter.showWelcomeCard(needsWelcomeCard());
     }
 
     //endregion
 
 
     //region Displaying Data
+
+    public final boolean needsWelcomeCard() {
+        final SharedPreferences sharedPreferences =
+                getActivity().getSharedPreferences(Constants.ROOM_CONDITIONS_PREFS, Context.MODE_PRIVATE);
+        final int timesShown = sharedPreferences.getInt(Constants.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, 0);
+        if (timesShown < WELCOME_CARD_TIMES_SHOWN_LIMIT) {
+            sharedPreferences.edit().putInt(Constants.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, timesShown + 1).apply();
+            return true;
+        }
+        return false;
+    }
 
 
     public final void bindConditions(@NonNull final SensorResponse currentConditions) {
