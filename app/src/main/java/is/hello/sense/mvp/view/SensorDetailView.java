@@ -2,23 +2,16 @@ package is.hello.sense.mvp.view;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import org.joda.time.DateTime;
-
-import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
-import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.SensorDetailScrollView;
 import is.hello.sense.ui.widget.SensorScaleList;
@@ -73,53 +66,15 @@ public final class SensorDetailView extends PresenterView
         this.subNavSelector.setOnSelectionChangedListener(this);
         this.selectionChangedListener = listener;
 
+        final View frameLayout = findViewById(R.id.fragment_sensor_detail_sensor_graph_container);
+        post(() -> {
+                    SensorDetailView.this.graphHeight = Math.max((int) ((scrollView.getHeight()) * GRAPH_HEIGHT_RATIO),
+                                                                 SensorDetailView.this.context.getResources().getDimensionPixelSize(R.dimen.sensor_graph_height));
+                    frameLayout.setLayoutParams(new LinearLayout.LayoutParams(scrollView.getWidth(), graphHeight));
+                    frameLayout.invalidate();
+                    subNavSelector.getButtonAt(0).callOnClick();
+                });
 
-        getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                /*
-
-                    There isn't a way to position the graph at the bottom of the screen while it's in a
-                    ScrollView via xml.
-
-                    The following will wait until the layout is drawn to measure the screen height and
-                    how much space remains underneath the message TextView.It will then take that space
-                    and scale the graph to fit 65 % of it.Then it will set the top margin of the graph
-                    to be 45 % of the remaining space, pushing it to the bottom of the screen.
-                */
-                final int topMargin;
-                // Height of ScrollView
-                final int scrollViewHeight = scrollView.getHeight();
-                // Y position of message's bottom
-                final float messageBottomY = messageTextView.getY() + messageTextView.getHeight();
-                // Scaled graph height if its larger than default height
-                SensorDetailView.this.graphHeight = Math.max((int) ((scrollViewHeight - messageBottomY) * GRAPH_HEIGHT_RATIO),
-                                                             SensorDetailView.this.context.getResources().getDimensionPixelSize(R.dimen.sensor_graph_height));
-
-                if (context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    // in portrait mode we want the graph to sit at the bottom of the screen.
-                    topMargin = scrollViewHeight - SensorDetailView.this.graphHeight;
-                } else {
-                    graphHeight *= 1.5f;
-                    // in landscape it can sit underneath the message textview.
-                    topMargin = (int) messageBottomY;
-                }
-                final RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, SensorDetailView.this.graphHeight);
-                layoutParams.setMargins(0, topMargin, 0, 0);
-                sensorGraphView.setLayoutParams(layoutParams);
-                /*
-                  Because SensorGraphView is only a view we can't put a progress bar inside of it.
-
-                  The following will position a ProgressBar directly on the center of it.
-                 */
-                final RelativeLayout.LayoutParams progressBarLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                progressBarLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-                progressBarLayoutParams.setMargins(0, topMargin + (graphHeight / 2) - progressBar.getHeight() / 2, 0, 0);
-                progressBar.setLayoutParams(progressBarLayoutParams);
-                getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                subNavSelector.getButtonAt(0).callOnClick();
-            }
-        });
     }
 
     @Override
