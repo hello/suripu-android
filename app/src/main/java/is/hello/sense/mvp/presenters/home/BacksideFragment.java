@@ -19,12 +19,13 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.InternalPrefManager;
 
+import static is.hello.sense.mvp.view.home.BacksideView.OPTION_NONE;
+
 
 public class BacksideFragment extends PresenterFragment<BacksideView>
         implements
         ViewPager.OnPageChangeListener,
         SelectorView.OnSelectionChangedListener {
-    public static final int OPTION_NONE = 0;
 
     private SharedPreferences internalPreferences;
 
@@ -51,16 +52,17 @@ public class BacksideFragment extends PresenterFragment<BacksideView>
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.internalPreferences = InternalPrefManager.getInternalPrefs(getActivity());
+        addInteractor(accountInteractor);
         if (savedInstanceState == null) {
             Analytics.trackEvent(Analytics.Backside.EVENT_SHOWN, null);
         }
-        this.internalPreferences = InternalPrefManager.getInternalPrefs(getActivity());
     }
 
     @Override
     public final void onResume() {
         super.onResume();
-        final BacksideTabFragment fragment = presenterView.getCurrentTabFragment(getFragmentManager());
+        final BacksideTabFragment fragment = getCurrentTabFragment();
         if (fragment != null) {
             fragment.onUpdate();
         }
@@ -157,7 +159,7 @@ public class BacksideFragment extends PresenterFragment<BacksideView>
     }
 
     public final BacksideTabFragment getCurrentTabFragment() {
-        return presenterView.getCurrentTabFragment(getFragmentManager());
+        return presenterView.getCurrentTabFragment(getChildFragmentManager());
     }
 
 
