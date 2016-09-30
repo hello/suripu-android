@@ -209,7 +209,7 @@ public class SensorGraphDrawable extends Drawable {
                     - (this.minHeight * ((value - this.minValue) / this.valueDifference))
                     + this.maxHeight;
         } else {
-            return this.height;
+            return this.height*2;
         }
     }
 

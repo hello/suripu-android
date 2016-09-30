@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.sensors.QueryScope;
 import is.hello.sense.api.model.v2.sensors.Sensor;
@@ -70,9 +71,9 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         addInteractor(this.preferences);
         addInteractor(this.sensorResponseInteractor);
         dateFormatter = new DateFormatter(getActivity());
-        if (savedInstanceState != null && savedInstanceState.containsKey(ARG_SENSOR)){
+        if (savedInstanceState != null && savedInstanceState.containsKey(ARG_SENSOR)) {
             this.sensor = (Sensor) savedInstanceState.getSerializable(ARG_SENSOR);
-        }else {
+        } else {
             final Bundle args = getArguments();
             if (args == null) {
                 finishWithResult(Activity.RESULT_CANCELED, null);
@@ -143,7 +144,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
-        if (sensor != null){
+        if (sensor != null) {
             outState.putSerializable(ARG_SENSOR, sensor);
         }
         super.onSaveInstanceState(outState);
@@ -220,7 +221,13 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         } else {
             message = null;
         }
-        presenterView.setValueAndMessage(sensor.getFormattedValueAtPosition(position).toString(),
+        final String value;
+        if (sensor.getSensorValues()[position] != -1) {
+            value = sensor.getFormattedValueAtPosition(position).toString();
+        } else {
+            value = getString(R.string.missing_data_placeholder);
+        }
+        presenterView.setValueAndMessage(value,
                                          message);
 
     }
