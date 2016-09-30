@@ -16,6 +16,7 @@ import is.hello.sense.interactors.SensorResponseInteractor;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.units.UnitConverter;
 import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.util.Analytics;
 import rx.Scheduler;
 
 public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output> {
@@ -23,10 +24,10 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
 
     private final SensorResponseInteractor interactor;
     private final UnitFormatter unitFormatter;
-    private boolean animationCompleted = false;
+    private boolean canFinish = false;
 
-    public RoomCheckPresenter(final SensorResponseInteractor interactor,
-                              final UnitFormatter unitFormatter){
+    public RoomCheckPresenter(@NonNull final SensorResponseInteractor interactor,
+                              @NonNull final UnitFormatter unitFormatter){
         this.interactor = interactor;
         this.unitFormatter = unitFormatter;
     }
@@ -36,15 +37,15 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
     private final List<Sensor> sensors = new ArrayList<>();
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.animationCompleted = (savedInstanceState != null);
+        this.canFinish = (savedInstanceState != null);
     }
 
     @Override
     public void onViewCreated() {
         super.onViewCreated();
-        if (animationCompleted) {
+        if (canFinish) {
             jumpToEnd(false);
         } else {
             view.initialize();
@@ -70,7 +71,7 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
                         );
     }
 
-    private void bindConditions(final SensorResponse current) {
+    private void bindConditions(@NonNull final SensorResponse current) {
         sensors.clear();
         sensors.addAll(current.getSensors());
         final List<SensorType> types = new ArrayList<>(sensors.size());
@@ -81,7 +82,8 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
         showConditionAt(0);
     }
 
-    private void unavailableConditions(final Throwable e) {
+    private void unavailableConditions(@NonNull final Throwable e) {
+        Analytics.trackError(e, Analytics.Onboarding.ERROR_MSG_ROOM_CHECK);
         sensors.clear();
         view.unavailableConditions(e);
         jumpToEnd(true);
@@ -119,7 +121,7 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
     }
 
     public void jumpToEnd(final boolean animate) {
-        this.animationCompleted = true;
+        this.canFinish = true;
         deferWorker.unsubscribe();
         execute(() -> {
             view.showCompletion(animate, bind(() -> view.finishFlow()));

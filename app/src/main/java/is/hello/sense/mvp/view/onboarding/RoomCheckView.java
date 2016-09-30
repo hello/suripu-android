@@ -82,7 +82,6 @@ public class RoomCheckView extends PresenterView {
 
     @Override
     public void releaseViews() {
-
         sensorContainerInterpolator = null;
         animatingSensorView = null;
         scoreAnimator = null;
@@ -94,7 +93,7 @@ public class RoomCheckView extends PresenterView {
 
     //todo specifically for onboarding
     public void initSensorContainerXOffset() {
-        sensorViewContainer.post( () -> {
+        post( () -> {
             sensorViewContainer.setX(sense.getX() + sense.getWidth() / 2
                                              - resources.getDimensionPixelSize(R.dimen.item_room_sensor_condition_view_width) );
             sensorViewContainer.invalidate();
