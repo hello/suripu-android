@@ -141,7 +141,7 @@ public final class SensorDetailView extends PresenterView
             final int color = ContextCompat.getColor(context, sensor.getColor());
             this.subNavSelector.setBackgroundColor(color);
             this.subNavSelector.setBackground(new TabsBackgroundDrawable(context.getResources(),
-                                                                         TabsBackgroundDrawable.Style.SENSOR_DETAIL,
+                                                                         TabsBackgroundDrawable.Style.SUBNAV,
                                                                          color));
             this.subNavSelector.getButtonAt(0).setBackgroundColor(color);
             this.subNavSelector.getButtonAt(1).setBackgroundColor(color);

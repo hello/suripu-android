@@ -2,8 +2,6 @@ package is.hello.sense.api.model.v2.sensors;
 
 import android.content.Context;
 import android.support.annotation.ColorRes;
-import android.support.annotation.ColorRes;
-import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;

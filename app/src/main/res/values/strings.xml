@@ -650,8 +650,8 @@
     <string name="voice_result_try_again">try again</string>
     <string name="voice_result_unknown">unknown</string>
 
-    <string name="sensor_detail_last_day">Last Day</string>
-    <string name="sensor_detail_past_week">Past Week</string>
+    <string name="sensor_detail_last_day">LAST DAY</string>
+    <string name="sensor_detail_past_week">PAST WEEK</string>
     <string name="sensor_detail_about_title">About</string>
     <string name="sensor_scale_list_title">Scale</string>
     <string name="sensor_scale_list_measured_in">Measured in %1$s</string>
@@ -671,4 +671,6 @@
     <string name="air_quality">Air Quality</string>
     <string name="room_conditions_welcome_title">Your current conditions</string>
     <string name="room_conditions_welcome_message">Recent changes to room conditions may take a few moments to be reflected here. Tap a card for more detail.</string>
+    <string name="temperature_celsius">C</string>
+    <string name="temperature_fahrenheit">F</string>
 </resources>
