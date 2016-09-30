@@ -28,5 +28,7 @@ public class SensorResponse extends ApiResponse {
         return sensors;
     }
 
-
+    public SensorStatus getStatus() {
+        return status;
+    }
 }
