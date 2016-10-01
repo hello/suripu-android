@@ -28,6 +28,7 @@ import is.hello.sense.ui.fragments.onboarding.RegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterWeightFragment;
 import is.hello.sense.ui.fragments.pill.PairPillFragment;
 import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.util.RoomCheckResMapper;
 
 @Module(complete = false,
         library = true,
@@ -50,11 +51,20 @@ import is.hello.sense.units.UnitFormatter;
 )
 public class OnboardingModule {
 
+        @Provides
+        @Singleton
+        public RoomCheckResMapper providesRoomCheckResMapper(){
+                return new RoomCheckResMapper();
+        }
+
         @Singleton
         @Provides
         public RoomCheckPresenter providesRoomCheckPresenter(@NonNull final SensorResponseInteractor interactor,
-                                                             @NonNull final UnitFormatter unitFormatter){
-                return new RoomCheckPresenter(interactor, unitFormatter);
+                                                             @NonNull final UnitFormatter unitFormatter,
+                                                             @NonNull final RoomCheckResMapper roomCheckResMapper){
+                return new RoomCheckPresenter(interactor,
+                                              unitFormatter,
+                                              roomCheckResMapper);
         }
 
     @Provides
