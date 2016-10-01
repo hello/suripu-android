@@ -1,8 +1,11 @@
 package is.hello.sense.presenters;
 
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +20,7 @@ import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.units.UnitConverter;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.RoomCheckResMapper;
 import rx.Scheduler;
 
 public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output> {
@@ -24,12 +28,15 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
 
     private final SensorResponseInteractor interactor;
     private final UnitFormatter unitFormatter;
+    private final RoomCheckResMapper mapper;
     private boolean canFinish = false;
 
     public RoomCheckPresenter(@NonNull final SensorResponseInteractor interactor,
-                              @NonNull final UnitFormatter unitFormatter){
+                              @NonNull final UnitFormatter unitFormatter,
+                              @NonNull final RoomCheckResMapper mapper){
         this.interactor = interactor;
         this.unitFormatter = unitFormatter;
+        this.mapper = mapper;
     }
 
     private static final long CONDITION_VISIBLE_MS = 2500;
@@ -74,9 +81,10 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
     private void bindConditions(@NonNull final SensorResponse current) {
         sensors.clear();
         sensors.addAll(current.getSensors());
-        final List<SensorType> types = new ArrayList<>(sensors.size());
-        for(final Sensor sensor : sensors){
-            types.add(sensor.getType());
+        final int sensorsSize = sensors.size();
+        final @DrawableRes int[] types = new int[sensorsSize];
+        for(int i=0; i < sensorsSize;i++){
+            types[i] = mapper.getInitialIconForSensor(sensors.get(i).getType());
         }
         view.createSensorConditionViews(types);
         showConditionAt(0);
@@ -100,13 +108,19 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
         final Sensor currentPositionSensor = sensors.get(position);
 
         deferWorker.schedule(
-                () -> view.showConditionAt(position,
-                                           currentPositionSensor.getMessage(),
-                                           currentPositionSensor.getCondition(),
-                                           currentPositionSensor.getType(),
-                                           getSensorConvertedValue(currentPositionSensor),
-                                           unitFormatter.getSuffixForSensor(currentPositionSensor.getType()),
-                                           () -> showConditionAt(position + 1)),
+                () -> {
+                    final SensorType type = currentPositionSensor.getType();
+                    final Condition condition = currentPositionSensor.getCondition();
+                    view.showConditionAt(position,
+                                         currentPositionSensor.getMessage(),
+                                         mapper.getConditionDrawable(condition),
+                                         mapper.getCheckStatusStringForSensor(type),
+                                         mapper.getFinalIconForSensor(type),
+                                         condition.colorRes,
+                                         getSensorConvertedValue(currentPositionSensor),
+                                         unitFormatter.getSuffixForSensor(currentPositionSensor.getType()),
+                                         () -> showConditionAt(position + 1));
+                },
                 CONDITION_VISIBLE_MS,
                 TimeUnit.MILLISECONDS);
     }
@@ -133,15 +147,17 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
 
         void initialize();
 
-        void createSensorConditionViews(List<SensorType> types);
+        void createSensorConditionViews(@DrawableRes int[] icons);
 
         void unavailableConditions(Throwable e);
 
         void showConditionAt(int position,
                              String message,
-                             Condition condition,
-                             SensorType type,
-                             int convertedValue,
+                             @DrawableRes int conditionDrawable,
+                             @StringRes int checkStatusMessage,
+                             @DrawableRes int conditionIcon,
+                             @ColorRes int conditionColorRes,
+                             int value,
                              String unitSuffix,
                              Runnable onComplete);
 

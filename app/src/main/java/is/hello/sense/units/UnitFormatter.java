@@ -20,7 +20,7 @@ import rx.Observable;
 
 public class UnitFormatter extends Interactor {
     public static final String UNIT_SUFFIX_TEMPERATURE = "°";
-    public static final String UNIT_SUFFIX_LIGHT = "lux";
+    public static final String UNIT_SUFFIX_LIGHT = "lx";
     public static final String UNIT_SUFFIX_HUMIDITY = "%";
     public static final String UNIT_SUFFIX_AIR_QUALITY = "µg/m³";
     public static final String UNIT_SUFFIX_NOISE = "dB";
