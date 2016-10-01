@@ -48,8 +48,7 @@
                     android:id="@+id/fragment_sensor_detail_sensor_graph_container"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:layout_marginTop="@dimen/x.5">
+                    android:layout_weight="1">
 
                     <is.hello.sense.ui.widget.graphing.sensors.SensorGraphView
                         android:id="@+id/fragment_sensor_detail_graph_view"
@@ -93,7 +92,6 @@
                 style="@style/Body"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="@dimen/x5"
                 android:layout_marginLeft="@dimen/x2"
                 android:layout_marginRight="@dimen/x2"

@@ -67,6 +67,7 @@ public final class SensorDetailView extends PresenterView
         this.selectionChangedListener = listener;
 
         final View frameLayout = findViewById(R.id.fragment_sensor_detail_sensor_graph_container);
+        //resize height and margin of sensor graph container to fit remainder of screen in portrait mode.
         post(() -> {
                     SensorDetailView.this.graphHeight = Math.max((int) ((scrollView.getHeight()) * GRAPH_HEIGHT_RATIO),
                                                                  SensorDetailView.this.context.getResources().getDimensionPixelSize(R.dimen.sensor_graph_height));
@@ -77,6 +78,7 @@ public final class SensorDetailView extends PresenterView
 
     }
 
+    /** in landscape mode only difference is top view uses {@link is.hello.sense.R.dimen#x3} margin */
     @Override
     protected final int getLayoutRes() {
         return R.layout.fragment_sensor_detail;
