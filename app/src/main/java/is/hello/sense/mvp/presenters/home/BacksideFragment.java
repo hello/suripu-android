@@ -45,7 +45,7 @@ public class BacksideFragment extends PresenterFragment<BacksideView>
     @Override
     public void initializePresenterView() {
         if (presenterView == null) {
-            presenterView = new BacksideView(getActivity());
+            presenterView = new BacksideView(getActivity(), getChildFragmentManager());
         }
     }
 
@@ -83,6 +83,7 @@ public class BacksideFragment extends PresenterFragment<BacksideView>
         } else {
             presenterView.setCurrentItem(BacksideView.DEFAULT_START_ITEM, OPTION_NONE);
         }
+
         bindAndSubscribe(unreadStateInteractor.hasUnreadItems,
                          presenterView::setHasUnreadInsightItems,
                          Functions.LOG_ERROR);
