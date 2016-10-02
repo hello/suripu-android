@@ -43,7 +43,7 @@ public class BacksideView extends PresenterView {
     private final StaticFragmentAdapter adapter;
 
 
-    public BacksideView(@NonNull final Activity activity) {
+    public BacksideView(@NonNull final Activity activity, @NonNull final FragmentManager fragmentManager) {
         super(activity);
         final Resources resources = context.getResources();
         this.pager = (ExtendedViewPager) findViewById(R.id.fragment_backside_pager);
@@ -51,13 +51,15 @@ public class BacksideView extends PresenterView {
         this.tabSelectorHeight = resources.getDimensionPixelSize(R.dimen.action_bar_height);
         this.tabSelector = (SelectorView) findViewById(R.id.fragment_backside_tabs);
         tabSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, SelectorView.LayoutParams.MATCH_PARENT, 1));
-        this.adapter = new StaticFragmentAdapter(activity.getFragmentManager(),
+
+        this.adapter = new StaticFragmentAdapter(fragmentManager,
                                                  new StaticFragmentAdapter.Item(RoomConditionsFragment.class, getString(R.string.title_current_conditions)),
                                                  new StaticFragmentAdapter.Item(TrendsFragment.class, getString(R.string.title_trends)),
                                                  new StaticFragmentAdapter.Item(InsightsFragment.class, getString(R.string.action_insights)),
                                                  new StaticFragmentAdapter.Item(SoundsFragment.class, getString(R.string.action_alarm)),
                                                  new StaticFragmentAdapter.Item(AppSettingsFragment.class, getString(R.string.action_settings)));
         pager.setAdapter(adapter);
+
         final @DrawableRes int[] inactiveIcons = {
                 R.drawable.backside_icon_currently,
                 R.drawable.backside_icon_trends,
