@@ -109,13 +109,13 @@ public class UnitFormatterTests extends InjectionTestCase {
     @Test
     public void formatLight() throws Exception {
         assertThat(unitFormatter.formatLight(42.0).toString(),
-                   is(equalTo("42 lux")));
+                   is(equalTo("42 lx")));
         assertThat(unitFormatter.formatLight(9.5).toString(),
-                   is(equalTo("9.5 lux")));
+                   is(equalTo("9.5 lx")));
         assertThat(unitFormatter.formatLight(1.3).toString(),
-                   is(equalTo("1.3 lux")));
+                   is(equalTo("1.3 lx")));
         assertThat(unitFormatter.formatLight(3.7).toString(),
-                   is(equalTo("3.7 lux")));
+                   is(equalTo("3.7 lx")));
     }
 
     @Test
