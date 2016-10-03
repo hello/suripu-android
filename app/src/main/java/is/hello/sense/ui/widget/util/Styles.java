@@ -210,6 +210,12 @@ public final class Styles {
 
     public static
     @NonNull
+    CharSequence assembleReadingAndUnit(final double value, @NonNull final String suffix, final int decimals) {
+        return assembleReadingAndUnit(String.format("%." + decimals + "f", value), suffix, UNIT_STYLE_SUPERSCRIPT);
+    }
+
+    public static
+    @NonNull
     CharSequence assembleReadingAndUnit(String value, @NonNull String suffix) {
         return assembleReadingAndUnit(String.format("%1$2s", value), suffix, UNIT_STYLE_SUPERSCRIPT);
     }

@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.units.UnitFormatter;
 
 public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorResponseAdapter.BaseViewHolder> {
     private static final int VIEW_SENSOR = 0;
@@ -39,10 +41,13 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     @Nullable
     private View.OnClickListener messageActionOnClick;
 
+    private final UnitFormatter unitFormatter;
     private final int graphHeight;
 
-    public SensorResponseAdapter(@NonNull final LayoutInflater inflater) {
+    public SensorResponseAdapter(@NonNull final LayoutInflater inflater,
+                                 @NonNull final UnitFormatter unitFormatter) {
         super(new ArrayList<>());
+        this.unitFormatter = unitFormatter;
         this.inflater = inflater;
         this.graphHeight = this.inflater.getContext().getResources().getDimensionPixelSize(R.dimen.sensor_graph_height);
     }
@@ -153,18 +158,18 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             final Sensor sensor = getItem(position);
             this.title.setText(sensor.getName());
             this.body.setText(sensor.getMessage());
+            this.value.setText(SensorResponseAdapter.this.unitFormatter.getUnitPrinterForSensorAverageValue(sensor.getType()).print(sensor.getValue()));
             if (sensor.getType() == SensorType.TEMPERATURE || sensor.getType() == SensorType.HUMIDITY) {
-                this.value.setText(sensor.getFormattedValue(true));
                 this.descriptor.setText(null);
             } else {
-                this.value.setText(sensor.getFormattedValue(false));
-                this.descriptor.setText(sensor.getSensorSuffix());
+                this.descriptor.setText(SensorResponseAdapter.this.unitFormatter.getSuffixForSensor(sensor.getType()));
             }
-            this.value.setTextColor(sensor.getColor(SensorResponseAdapter.this.inflater.getContext()));
+            this.value.setTextColor(ContextCompat.getColor(inflater.getContext(), sensor.getColor()));
             this.graphView.setSensorGraphDrawable(new SensorGraphDrawable(SensorResponseAdapter.this.inflater.getContext(),
                                                                           sensor,
+                                                                          unitFormatter,
                                                                           SensorResponseAdapter.this.graphHeight));
-            view.setOnClickListener(v -> SensorResponseAdapter.this.dispatchItemClicked(position));
+            this.view.setOnClickListener(v -> SensorResponseAdapter.this.dispatchItemClicked(position));
         }
 
         @Override
