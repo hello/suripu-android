@@ -72,7 +72,6 @@ public final class SensorDetailView extends PresenterView
                     SensorDetailView.this.graphHeight = Math.max((int) ((scrollView.getHeight()) * GRAPH_HEIGHT_RATIO),
                                                                  SensorDetailView.this.context.getResources().getDimensionPixelSize(R.dimen.sensor_graph_height));
                     frameLayout.setLayoutParams(new LinearLayout.LayoutParams(scrollView.getWidth(), graphHeight));
-                    frameLayout.invalidate();
                     subNavSelector.getButtonAt(0).callOnClick();
                 });
 
