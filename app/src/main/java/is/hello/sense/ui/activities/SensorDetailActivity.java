@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.Window;
 
 import java.util.Collections;
@@ -49,7 +50,7 @@ public class SensorDetailActivity extends ScopedInjectionActivity
                                                                  stateSafeExecutor);
 
         final Sensor sensor = (Sensor) getIntent().getSerializableExtra(EXTRA_SENSOR);
-        final int color = sensor.getColor(this);
+        final int color = ContextCompat.getColor(this, sensor.getColor());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             final Window window = getWindow();

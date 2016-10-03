@@ -55,7 +55,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     public final void initializePresenterView() {
         if (this.presenterView == null) {
             if (this.adapter == null) {
-                this.adapter = new SensorResponseAdapter(getActivity().getLayoutInflater());
+                this.adapter = new SensorResponseAdapter(getActivity().getLayoutInflater(), unitFormatter);
                 this.adapter.setOnItemClickedListener(this);
             }
             this.presenterView = new RoomConditionsView(getActivity(), this.adapter);
@@ -144,10 +144,6 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         bindAndSubscribe(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)),
                          sensorsDataResponse -> {
                              for (final Sensor sensor : sensors) {
-                                 if (sensor.getType() == SensorType.TEMPERATURE) {
-                                     sensor.setUseCelsius(preferencesInteractor.getBoolean(PreferencesInteractor.USE_CELSIUS, true));
-                                 }
-                                 sensor.setSensorSuffix(unitFormatter.getSuffixForSensor(sensor.getType()));
                                  sensor.setSensorValues(sensorsDataResponse);
                              }
                              this.adapter.dismissMessage();

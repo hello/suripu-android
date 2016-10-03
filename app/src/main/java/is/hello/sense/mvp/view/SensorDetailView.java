@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ProgressBar;
@@ -24,7 +25,7 @@ import is.hello.sense.ui.widget.SensorScaleList;
 import is.hello.sense.ui.widget.TabsBackgroundDrawable;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
-import is.hello.sense.util.Constants;
+import is.hello.sense.units.UnitFormatter;
 
 @SuppressLint("ViewConstructor")
 public final class SensorDetailView extends PresenterView
@@ -44,15 +45,18 @@ public final class SensorDetailView extends PresenterView
     private final ProgressBar progressBar;
     private final TextView about;
     private final SelectorView.OnSelectionChangedListener selectionChangedListener;
+    private final UnitFormatter unitFormatter;
     private int graphHeight = 0;
     private List<is.hello.sense.api.model.v2.sensors.X> timestamps;
     private boolean use24Hour = false;
     private int lastSelectedIndex = -1;
 
     public SensorDetailView(@NonNull final Activity activity,
+                            @NonNull final UnitFormatter unitFormatter,
                             @NonNull final SelectorView.OnSelectionChangedListener listener,
                             @NonNull final SensorGraphDrawable.ScrubberCallback scrubberCallback) {
         super(activity);
+        this.unitFormatter = unitFormatter;
         this.subNavSelector = (SelectorView) findViewById(R.id.fragment_sensor_detail_selector);
         this.valueTextView = (TextView) findViewById(R.id.fragment_sensor_detail_value);
         this.messageTextView = (TextView) findViewById(R.id.fragment_sensor_detail_message);
@@ -133,10 +137,10 @@ public final class SensorDetailView extends PresenterView
 
     public final void updateSensor(@NonNull final Sensor sensor) {
         post(() -> {
-            this.scaleList.renderScales(sensor.getScales(), (sensor.getType() == SensorType.TEMPERATURE ? sensor.getTemperatureSymbol() : Constants.EMPTY_STRING) + sensor.getSensorSuffix());
-            this.about.setText(sensor.getAboutStringRes());
+            this.scaleList.renderScales(sensor.getScales(), unitFormatter.getMeasuredInString(sensor.getType()));
+            this.about.setText(unitFormatter.getAboutStringRes(sensor.getType()));
 
-            final int color = sensor.getColor(context);
+            final int color = ContextCompat.getColor(context, sensor.getColor());
             this.subNavSelector.setBackgroundColor(color);
             this.subNavSelector.setBackground(new TabsBackgroundDrawable(context.getResources(),
                                                                          TabsBackgroundDrawable.Style.SENSOR_DETAIL,
@@ -156,13 +160,14 @@ public final class SensorDetailView extends PresenterView
                          @NonNull final SensorGraphView.StartDelay delay,
                          @NonNull final String[] labels) {
         post(() -> {
-            this.valueTextView.setText(sensor.getFormattedValue(true));
+            //   this.valueTextView.setText(sensor.getFormattedValue(true));
             this.messageTextView.setText(sensor.getMessage());
             this.progressBar.setVisibility(GONE);
             this.sensorGraphView.setVisibility(VISIBLE);
             this.sensorGraphView.resetTimeToAnimate(delay);
             this.sensorGraphView.setSensorGraphDrawable(new SensorGraphDrawable(this.context,
                                                                                 sensor,
+                                                                                this.unitFormatter,
                                                                                 this.graphHeight,
                                                                                 labels));
             this.sensorGraphView.invalidate();

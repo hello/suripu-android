@@ -3,6 +3,8 @@ package is.hello.sense.units;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+
 
 import java.util.Locale;
 
@@ -213,6 +215,76 @@ public class UnitFormatter extends Interactor {
                 return UNIT_SUFFIX_NOISE;
             default:
                 return "";
+        }
+    }
+
+
+    @NonNull
+    public UnitPrinter getUnitPrinterForSensorAverageValue(@NonNull final SensorType type) {
+        switch (type) {
+            case TEMPERATURE:
+                return this::formatTemperature;
+
+            case HUMIDITY:
+                return this::formatHumidity;
+            default:
+                return UnitPrinter.SIMPLE;
+        }
+    }
+
+    @NonNull
+    public CharSequence getFormattedSensorValue(@NonNull final SensorType type, final float value) {
+        switch (type) {
+            case LIGHT:
+                return Styles.assembleReadingAndUnit(value, getSuffixForSensor(type), 1);
+            default:
+                return Styles.assembleReadingAndUnit(value, getSuffixForSensor(type));
+        }
+    }
+
+    public String getMeasuredInString(@NonNull final SensorType type) {
+        String measuredIn = "";
+        switch (type) {
+            case TEMPERATURE:
+                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, false)) {
+                    measuredIn = ApiService.UNIT_TEMPERATURE_CELSIUS;
+                } else {
+                    measuredIn = ApiService.UNIT_TEMPERATURE_US_CUSTOMARY;
+                }
+            default:
+                measuredIn += getSuffixForSensor(type);
+        }
+        return measuredIn;
+    }
+
+    @StringRes
+    public int getAboutStringRes(@NonNull final SensorType type) {
+        switch (type) {
+            case TEMPERATURE:
+                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, false)) {
+                    return R.string.sensor_about_temperature_celsius;
+                } else {
+                    return R.string.sensor_about_temperature_fahrenheit;
+                }
+            case HUMIDITY:
+                return R.string.sensor_about_humidity;
+            case LIGHT:
+                return R.string.sensor_about_light;
+            case CO2:
+                return R.string.sensor_about_co2;
+            case LIGHT_TEMPERATURE:
+                return R.string.sensor_about_light_temp;
+            case PARTICULATES:
+                return R.string.sensor_about_particulates;
+            case SOUND:
+                return R.string.sensor_about_noise;
+            case UV:
+                return R.string.sensor_about_uv_light;
+            case TVOC:
+                return R.string.sensor_about_voc;
+            default:
+                logEvent("No string found for type: " + type);
+                return 0;
         }
     }
 
