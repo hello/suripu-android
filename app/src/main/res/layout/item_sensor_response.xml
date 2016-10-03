@@ -4,18 +4,24 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clickable="true"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="true"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/x2"
-        android:orientation="horizontal">
+        android:focusable="false"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="3"
+            android:focusable="false"
             android:orientation="vertical">
 
             <TextView
@@ -23,20 +29,21 @@
                 style="@style/Card.Title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Temp"/>
+                android:focusable="false"/>
 
             <TextView
                 android:id="@+id/item_server_response_body"
                 style="@style/Card.Body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Temp2"/>
+                android:focusable="false"/>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:focusable="false"
             android:orientation="vertical">
 
             <TextView
@@ -44,21 +51,22 @@
                 style="@style/Card.Value"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Temp"/>
+                android:focusable="false"
+                android:gravity="center"/>
 
             <TextView
                 android:id="@+id/item_server_response_descriptor"
                 style="@style/Card.Body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="F"/>
+                android:focusable="false"
+                android:gravity="center"/>
         </LinearLayout>
     </LinearLayout>
 
     <is.hello.sense.ui.widget.graphing.sensors.SensorGraphView
         android:id="@+id/item_server_response_graph"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="@dimen/sensor_graph_height"
+        android:focusable="false"/>
 </LinearLayout>

@@ -37,6 +37,15 @@ public class TabsBackgroundDrawable extends SelectorView.SelectionAwareDrawable 
         this.dividerColor = resources.getColor(style.dividerColorRes);
     }
 
+    public TabsBackgroundDrawable(@NonNull Resources resources, @NonNull Style style, int color) {
+        this.selectionHeight = resources.getDimensionPixelSize(style.selectionHeightRes);
+        this.dividerHeight = resources.getDimensionPixelSize(style.dividerHeightRes);
+
+        this.backgroundColor = color;
+        this.selectionColor = resources.getColor(style.selectionColorRes);
+        this.dividerColor = color;
+    }
+
     //endregion
 
 
@@ -105,7 +114,8 @@ public class TabsBackgroundDrawable extends SelectorView.SelectionAwareDrawable 
     public enum Style {
         BACKSIDE(R.dimen.bottom_line, R.dimen.bottom_line, R.color.light_accent, R.color.border_backside_tabs, R.color.background_light),
         INLINE(R.dimen.bottom_line, R.dimen.divider_size, R.color.light_accent, R.color.border, R.color.background_light),
-        SUBNAV(R.dimen.bottom_line,R.dimen.gap_large,R.color.background_light, R.color.background_light, R.color.background_light);
+        SUBNAV(R.dimen.bottom_line, R.dimen.gap_large, R.color.background_light, R.color.background_light, R.color.background_light),
+        SENSOR_DETAIL(R.dimen.bottom_line, R.dimen.x3, R.color.black_25, R.color.white, R.color.white);
 
         public final @DimenRes int selectionHeightRes;
         public final @DimenRes int dividerHeightRes;

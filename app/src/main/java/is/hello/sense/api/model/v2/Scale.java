@@ -1,11 +1,14 @@
 package is.hello.sense.api.model.v2;
 
+import android.content.res.Resources;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
+import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 
 public class Scale implements Serializable {
@@ -21,18 +24,6 @@ public class Scale implements Serializable {
     @SerializedName("condition")
     private Condition condition;
 
-    public boolean containsValue(final double value) {
-        if (min == null && value < max) {
-            return true;
-        } else if (max == null && value > min) {
-            return true;
-        }
-        if (min == null || max == null) {
-            return false;
-        }
-        return min < value && max > value;
-    }
-
     public Condition getCondition() {
         return condition;
     }
@@ -47,6 +38,24 @@ public class Scale implements Serializable {
 
     public Double getMin() {
         return min;
+    }
+
+    @NonNull
+    public final String getScaleViewValueText(@NonNull final Resources resources) {
+        if (min == null || min <= 0) {
+            if (max != null) {
+                return resources.getString(R.string.sensor_scale_min_value, format(max));
+            }
+        } else if (max != null) {
+            return resources.getString(R.string.sensor_scale_mid_value, format(min), format(max));
+        } else {
+            return resources.getString(R.string.sensor_scale_max_value, format(min));
+        }
+        return "";
+    }
+
+    private String format(final double value) {
+        return String.format("%.0f", value);
     }
 
     @Override

@@ -7,7 +7,9 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-public class SensorResponse implements Serializable {
+import is.hello.sense.api.model.ApiResponse;
+
+public class SensorResponse extends ApiResponse {
     @SerializedName("status")
     private SensorStatus status;
 

@@ -18,15 +18,16 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.v2.sensors.QueryScope;
 import is.hello.sense.api.model.v2.sensors.Sensor;
-import is.hello.sense.api.model.v2.sensors.SensorData;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
+import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SensorResponseInteractor;
 import is.hello.sense.mvp.view.home.RoomConditionsView;
 import is.hello.sense.mvp.view.home.roomconditions.SensorResponseAdapter;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.activities.SensorHistoryActivity;
+import is.hello.sense.ui.activities.SensorDetailActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
@@ -44,6 +45,8 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     @Inject
     UnitFormatter unitFormatter;
     @Inject
+    PreferencesInteractor preferencesInteractor;
+    @Inject
     ApiService apiService;
 
     private SensorResponseAdapter adapter;
@@ -52,13 +55,12 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     public final void initializePresenterView() {
         if (this.presenterView == null) {
             if (this.adapter == null) {
-                this.adapter = new SensorResponseAdapter(getActivity().getLayoutInflater());
+                this.adapter = new SensorResponseAdapter(getActivity().getLayoutInflater(), unitFormatter);
                 this.adapter.setOnItemClickedListener(this);
             }
             this.presenterView = new RoomConditionsView(getActivity(), this.adapter);
         }
     }
-
 
     //region Lifecycle
     @Override
@@ -69,14 +71,13 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         }
     }
 
-
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(this.unitFormatter);
+        addInteractor(this.preferencesInteractor);
         addInteractor(this.sensorResponseInteractor);
     }
-
 
     @Override
     public final void onViewCreated(final View view, final Bundle savedInstanceState) {
@@ -90,7 +91,6 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
                          this::bindConditions,
                          this::conditionsUnavailable);
     }
-
 
     @Override
     public final void onResume() {
@@ -117,8 +117,8 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
             this.adapter.release();
             this.adapter.setOnItemClickedListener(null);
             this.adapter.clear();
-
         }
+
         this.adapter = null;
         this.updateTimer = null;
     }
@@ -143,13 +143,8 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         final List<Sensor> sensors = currentConditions.getSensors();
         bindAndSubscribe(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)),
                          sensorsDataResponse -> {
-                             final SensorData sensorData = sensorsDataResponse.getSensorData();
                              for (final Sensor sensor : sensors) {
-                                 sensor.setSensorSuffix(unitFormatter.getSuffixForSensor(sensor.getType()));
-                                 final float[] values = sensorData.get(sensor.getType());
-                                 if (values != null) {
-                                     sensor.setSensorValues(values);
-                                 }
+                                 sensor.setSensorValues(sensorsDataResponse);
                              }
                              this.adapter.dismissMessage();
                              this.adapter.replaceAll(sensors);
@@ -190,12 +185,9 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     //endregion
 
 
-
     @Override
     public final void onItemClicked(final int position, final Sensor sensor) {
-        final Intent intent = new Intent(getActivity(), SensorHistoryActivity.class);
-        /// intent.putExtra(SensorHistoryActivity.EXTRA_SENSOR, sensorState.getName()); todo update
-        startActivity(intent);
+        SensorDetailActivity.startActivity(getActivity(), sensor);
     }
 
 }

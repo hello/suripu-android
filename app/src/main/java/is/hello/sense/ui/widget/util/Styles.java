@@ -210,6 +210,12 @@ public final class Styles {
 
     public static
     @NonNull
+    CharSequence assembleReadingAndUnit(final double value, @NonNull final String suffix, final int decimals) {
+        return assembleReadingAndUnit(String.format("%." + decimals + "f", value), suffix, UNIT_STYLE_SUPERSCRIPT);
+    }
+
+    public static
+    @NonNull
     CharSequence assembleReadingAndUnit(String value, @NonNull String suffix) {
         return assembleReadingAndUnit(String.format("%1$2s", value), suffix, UNIT_STYLE_SUPERSCRIPT);
     }
@@ -305,7 +311,7 @@ public final class Styles {
                     break;
                 }
 
-                case "#facebook-autofill":{
+                case "#facebook-autofill": {
                     clickableSpan = new SimpleClickableSpan(v -> showForHelpStep(activity, HelpStep.AUTO_FILL_FACEBOOK));
                     break;
                 }
@@ -458,5 +464,11 @@ public final class Styles {
         }
     }
 
+    public static int dpToPx(final int dp) {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
+    }
 
+    public static int pxToDp(final int px) {
+        return (int) (px / Resources.getSystem().getDisplayMetrics().density);
+    }
 }
