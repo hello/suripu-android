@@ -10,6 +10,7 @@ import org.joda.time.DateTime;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -20,6 +21,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.sensors.QueryScope;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
+import is.hello.sense.api.model.v2.sensors.X;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SensorResponseInteractor;
@@ -28,6 +30,7 @@ import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
+import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.DateFormatter;
 
 public final class SensorDetailFragment extends PresenterFragment<SensorDetailView>
@@ -49,16 +52,20 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     PreferencesInteractor preferences;
     @Inject
     SensorResponseInteractor sensorResponseInteractor;
+    @Inject
+    UnitFormatter unitFormatter;
 
     private Sensor sensor;
     private UpdateTimer updateTimer;
     private DateFormatter dateFormatter;
+    private TimestampQuery timestampQuery = new TimestampQuery(QueryScope.DAY_5_MINUTE);
 
 
     @Override
     public final void initializePresenterView() {
         if (this.presenterView == null) {
             this.presenterView = new SensorDetailView(getActivity(),
+                                                      unitFormatter,
                                                       this,
                                                       this);
             this.presenterView.updateSensor(sensor);
@@ -95,9 +102,8 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
                          sensorResponse -> {
                              for (final Sensor sensor : sensorResponse.getSensors()) {
                                  if (sensor.getType() == this.sensor.getType()) {
-                                     final QueryScope queryScope = this.sensor.getQueryScopeForTimestamps();
                                      this.sensor = sensor;
-                                     updateSensors(queryScope);
+                                     updateSensors(timestampQuery.queryScope);
                                  }
                              }
                          },
@@ -149,13 +155,14 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
 
     // consider creating a hashmap/cache to hold these in. Limit requests to time.
     private synchronized void updateSensors(@NonNull final QueryScope queryScope) {
+        timestampQuery = new TimestampQuery(queryScope);
         this.stateSafeExecutor.execute(() -> {
             final ArrayList<Sensor> sensors = new ArrayList<>();
             sensors.add(sensor);
             this.apiService.postSensors(new SensorDataRequest(queryScope, sensors))
                            .subscribe(sensorsDataResponse -> {
+                                          timestampQuery.setTimestamps(sensorsDataResponse.getTimestamps());
                                           sensor.setSensorValues(sensorsDataResponse);
-                                          sensor.setSensorTimestamps(sensorsDataResponse.getTimestamps(), queryScope);
                                           presenterView.updateSensor(sensor);
                                           presenterView.setGraph(sensor, SensorGraphView.StartDelay.SHORT, queryScope == QueryScope.DAY_5_MINUTE ? getDayLabels() : getWeekLabels());
                                       },
@@ -205,22 +212,26 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
 
     @Override
     public void onPositionScrubbed(final int position) {
-        final long timestamp = sensor.getTimestampForPosition(position);
-        final String message;
-        if (timestamp != -1) {
-            if (sensor.getQueryScopeForTimestamps() == QueryScope.DAY_5_MINUTE) {
-                message = dateFormatter.formatAsTime(new DateTime(timestamp),
-                                                     preferences.getUse24Time());
-            } else {
-                message = dateFormatter.formatAsDayAndTime(new DateTime(timestamp),
-                                                           preferences.getUse24Time());
-            }
-        } else {
-            message = null;
-        }
         final String value;
-        if (sensor.getSensorValues()[position] != Sensor.NO_VALUE) {
-            value = sensor.getFormattedValueAtPosition(position).toString();
+        final String message;
+        if (timestampQuery.timestamps.size() < position) {
+            message = null;
+        } else {
+            final long timestamp = timestampQuery.timestamps.get(position).getTimestamp();
+            if (timestamp != -1) {
+                if (timestampQuery.queryScope == QueryScope.DAY_5_MINUTE) {
+                    message = dateFormatter.formatAsTime(new DateTime(timestamp),
+                                                         preferences.getUse24Time());
+                } else {
+                    message = dateFormatter.formatAsDayAndTime(new DateTime(timestamp),
+                                                               preferences.getUse24Time());
+                }
+            } else {
+                message = null;
+            }
+        }
+        if (sensor.getSensorValues().length > position && sensor.getSensorValues()[position] != Sensor.NO_VALUE) {
+            value = unitFormatter.getFormattedSensorValue(sensor.getType(), sensor.getSensorValues()[position]).toString();
         } else {
             value = getString(R.string.missing_data_placeholder);
         }
@@ -231,6 +242,19 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
 
     @Override
     public void onScrubberReleased() {
-        presenterView.setValueAndMessage(sensor.getFormattedValue(true), sensor.getMessage());
+        presenterView.setValueAndMessage(unitFormatter.getUnitPrinterForSensorAverageValue(sensor.getType()).print(sensor.getValue()), sensor.getMessage());
+    }
+
+    private class TimestampQuery {
+        private final QueryScope queryScope;
+        private List<X> timestamps = new ArrayList<>();
+
+        public TimestampQuery(@NonNull final QueryScope queryScope) {
+            this.queryScope = queryScope;
+        }
+
+        public void setTimestamps(@NonNull final List<X> timestamps) {
+            this.timestamps = timestamps;
+        }
     }
 }
