@@ -55,9 +55,6 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     private View.OnClickListener messageActionOnClick;
 
     private final UnitFormatter unitFormatter;
-    private final int graphHeight;
-    private AirQualityCard airQualityCard;
-    private final List<Sensor> airQualitySensors = new ArrayList<>();
 
     public SensorResponseAdapter(@NonNull final LayoutInflater inflater,
                                  @NonNull final UnitFormatter unitFormatter) {
@@ -219,7 +216,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             this.value.setText(SensorResponseAdapter.this.unitFormatter.getUnitPrinterForSensorAverageValue(sensor.getType()).print(sensor.getValue()));
             if (sensor.getType() == SensorType.TEMPERATURE || sensor.getType() == SensorType.HUMIDITY) {
                 this.descriptor.setText(null);
-            } else {     
+            } else {
                 this.descriptor.setText(SensorResponseAdapter.this.unitFormatter.getSuffixForSensor(sensor.getType()));
             }
             this.value.setTextColor(ContextCompat.getColor(inflater.getContext(), sensor.getColor()));
@@ -241,6 +238,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         @Override
         public void bind(final int position) {
             final AirQualityCard airQualityCard = new AirQualityCard(view.getContext());
+            airQualityCard.setUnitFormatter(unitFormatter);
             airQualityCard.replaceAll(airQualitySensors);
             body.setText(airQualityCard.getWorstMessage());
             if (root.getChildCount() < 3) {
