@@ -10,7 +10,9 @@ import java.util.List;
 
 public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
     private final List<T> storage;
-    private @Nullable OnItemClickedListener<T> onItemClickedListener;
+    private
+    @Nullable
+    OnItemClickedListener<T> onItemClickedListener;
 
     protected ArrayRecyclerAdapter(@NonNull List<T> storage) {
         this.storage = storage;
@@ -107,6 +109,12 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
     protected void dispatchItemClicked(int position) {
         if (onItemClickedListener != null) {
             onItemClickedListener.onItemClicked(position, getItem(position));
+        }
+    }
+
+    protected void dispatchItemClicked(int position, @NonNull final T item) {
+        if (onItemClickedListener != null) {
+            onItemClickedListener.onItemClicked(position, item);
         }
     }
 

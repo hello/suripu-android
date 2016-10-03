@@ -20,9 +20,11 @@ import is.hello.sense.util.Constants;
 public class AirQualityCard extends LinearLayout {
     private final List<Sensor> sensors = new ArrayList<>();
     private UnitFormatter unitFormatter;
+    private OnRowItemClickListener onRowClickListener;
 
     public AirQualityCard(@NonNull final Context context) {
         this(context, null);
+
     }
 
     public AirQualityCard(@NonNull final Context context, final AttributeSet attrs) {
@@ -44,6 +46,10 @@ public class AirQualityCard extends LinearLayout {
         this.unitFormatter = unitFormatter;
     }
 
+    public void setOnRowClickListener(@NonNull final OnRowItemClickListener listener) {
+        this.onRowClickListener = listener;
+    }
+
     public final void renderSensors() {
         removeAllViews();
         for (final Sensor sensor : sensors) {
@@ -56,7 +62,11 @@ public class AirQualityCard extends LinearLayout {
                 ((TextView) row.findViewById(R.id.item_chevron_view_value)).setText(formatValue(sensor.getValue(), unitFormatter.getSuffixForSensor(sensor.getType())));
             }
             ((TextView) row.findViewById(R.id.item_chevron_view_value)).setTextColor(ContextCompat.getColor(getContext(), sensor.getColor()));
-            row.setOnClickListener(v -> SensorDetailActivity.startActivity(getContext(), sensor));
+            row.setOnClickListener(v -> {
+                if (onRowClickListener != null) {
+                    onRowClickListener.onClick(sensor);
+                }
+            });
         }
         if (getChildCount() > 0) {
             final View row = getChildAt(getChildCount() - 1);
@@ -66,6 +76,10 @@ public class AirQualityCard extends LinearLayout {
 
     private String formatValue(@NonNull final Double value, @NonNull final String suffix) {
         return String.format("%.0f %s", value, suffix);
+    }
+
+    public interface OnRowItemClickListener {
+        void onClick(@NonNull final Sensor sensor);
     }
 
 }
