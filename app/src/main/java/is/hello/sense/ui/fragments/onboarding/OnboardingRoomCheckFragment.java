@@ -188,15 +188,6 @@ implements RoomCheckPresenter.Output{
         animatingSensorView = null;
         scoreAnimator = null;
 
-        status = null;
-        dynamicContent = null;
-        sensorViewContainer = null;
-
-        sense = null;
-        scoreTicker = null;
-        scoreUnit = null;
-        graySense = null;
-
         if(continueButton != null){
             continueButton.setOnClickListener(null);
         }
