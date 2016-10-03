@@ -225,24 +225,25 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
     private class AirQualityViewHolder extends BaseViewHolder {
         private final LinearLayout root;
+        final AirQualityCard airQualityCard = new AirQualityCard(view.getContext());
 
         public AirQualityViewHolder(@NonNull final View itemView) {
             super(itemView);
             this.root = (LinearLayout) itemView.findViewById(R.id.item_server_response_root);
             this.title.setText(itemView.getContext().getString(R.string.air_quality));
-            graphView.setVisibility(View.GONE);
-            value.setVisibility(View.GONE);
-            descriptor.setVisibility(View.GONE);
+            this.graphView.setVisibility(View.GONE);
+            this.value.setVisibility(View.GONE);
+            this.descriptor.setVisibility(View.GONE);
+            this.airQualityCard.setOnRowClickListener(sensor -> SensorResponseAdapter.this.dispatchItemClicked(0, sensor));
         }
 
         @Override
         public void bind(final int position) {
-            final AirQualityCard airQualityCard = new AirQualityCard(view.getContext());
-            airQualityCard.setUnitFormatter(unitFormatter);
-            airQualityCard.replaceAll(airQualitySensors);
-            body.setText(getWorstMessage(airQualitySensors));
-            if (root.getChildCount() < 3) {
-                root.addView(airQualityCard);
+            this.airQualityCard.setUnitFormatter(SensorResponseAdapter.this.unitFormatter);
+            this.airQualityCard.replaceAll(SensorResponseAdapter.this.airQualitySensors);
+            this.body.setText(getWorstMessage(SensorResponseAdapter.this.airQualitySensors));
+            if (this.root.getChildCount() < 3) {
+                this.root.addView(this.airQualityCard);
             }
         }
 
