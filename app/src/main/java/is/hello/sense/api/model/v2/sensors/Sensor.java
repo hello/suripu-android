@@ -96,8 +96,9 @@ public class Sensor extends ApiResponse {
         return condition;
     }
 
-    public boolean hasBetterConditionThan(@NonNull final Sensor sensor){
-        return condition.value > sensor.getCondition().value;
+    public boolean hasBetterConditionThan(@NonNull final Sensor sensor) {
+        // ide complains about simplifying. Basically if a sensor's condition is not available, treat the other sensor as better condition.
+        return condition == null || sensor.condition != null && condition.value > sensor.getCondition().value;
     }
 
     @Override
