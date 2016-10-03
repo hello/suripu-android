@@ -2,7 +2,6 @@ package is.hello.sense.mvp.view.home.roomconditions;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
@@ -63,20 +62,6 @@ public class AirQualityCard extends LinearLayout {
             final View row = getChildAt(getChildCount() - 1);
             row.findViewById(R.id.item_chevron_view_divider).setVisibility(GONE);
         }
-    }
-
-    @Nullable
-    public String getWorstMessage() {
-        if (sensors.isEmpty()) {
-            return null;
-        }
-        Sensor worstCondition = sensors.get(0);
-        for (int i = 1; i < sensors.size(); i++) {
-            if (worstCondition.hasBetterConditionThan(sensors.get(i))) {
-                worstCondition = sensors.get(i);
-            }
-        }
-        return worstCondition.getMessage();
     }
 
     private String formatValue(@NonNull final Double value, @NonNull final String suffix) {

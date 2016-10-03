@@ -269,10 +269,24 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             final AirQualityCard airQualityCard = new AirQualityCard(view.getContext());
             airQualityCard.setUnitFormatter(unitFormatter);
             airQualityCard.replaceAll(airQualitySensors);
-            body.setText(airQualityCard.getWorstMessage());
+            body.setText(getWorstMessage(airQualitySensors));
             if (root.getChildCount() < 3) {
                 root.addView(airQualityCard);
             }
+        }
+
+        @Nullable
+        public String getWorstMessage(@NonNull final List<Sensor> sensors) {
+            if (sensors.isEmpty()) {
+                return null;
+            }
+            Sensor worstCondition = sensors.get(0);
+            for (int i = 1; i < sensors.size(); i++) {
+                if (worstCondition.hasBetterConditionThan(sensors.get(i))) {
+                    worstCondition = sensors.get(i);
+                }
+            }
+            return worstCondition.getMessage();
         }
     }
 
