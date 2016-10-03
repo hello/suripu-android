@@ -235,6 +235,12 @@ public class UnitFormatter extends Interactor {
     @NonNull
     public CharSequence getFormattedSensorValue(@NonNull final SensorType type, final float value) {
         switch (type) {
+            case TEMPERATURE:
+                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, false)) {
+                    return Styles.assembleReadingAndUnit(value, getSuffixForSensor(type));
+                } else {
+                    return Styles.assembleReadingAndUnit(UnitOperations.celsiusToFahrenheit(value), getSuffixForSensor(type));
+                }
             case LIGHT:
                 return Styles.assembleReadingAndUnit(value, getSuffixForSensor(type), 1);
             default:
