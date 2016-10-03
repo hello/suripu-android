@@ -158,7 +158,7 @@ public final class SensorDetailView extends PresenterView
                          @NonNull final SensorGraphView.StartDelay delay,
                          @NonNull final String[] labels) {
         post(() -> {
-            //   this.valueTextView.setText(sensor.getFormattedValue(true));
+            this.valueTextView.setText(unitFormatter.getUnitPrinterForSensorAverageValue(sensor.getType()).print(sensor.getValue()));
             this.messageTextView.setText(sensor.getMessage());
             this.progressBar.setVisibility(GONE);
             this.sensorGraphView.setVisibility(VISIBLE);
