@@ -4,7 +4,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.util.Log;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +12,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -259,21 +257,25 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         public AirQualityViewHolder(@NonNull final View itemView) {
             super(itemView);
             this.root = (LinearLayout) itemView.findViewById(R.id.item_server_response_root);
+            this.root.setClickable(false);
             this.title.setText(itemView.getContext().getString(R.string.air_quality));
             this.graphView.setVisibility(View.GONE);
             this.value.setVisibility(View.GONE);
             this.descriptor.setVisibility(View.GONE);
+            this.airQualityCard.setClickable(true);
             this.airQualityCard.setOnRowClickListener(sensor -> SensorResponseAdapter.this.dispatchItemClicked(0, sensor));
-        }
 
-        @Override
-        public void bind(final int position) {
             this.airQualityCard.setUnitFormatter(SensorResponseAdapter.this.unitFormatter);
             this.airQualityCard.replaceAll(SensorResponseAdapter.this.airQualitySensors);
             this.body.setText(getWorstMessage(SensorResponseAdapter.this.airQualitySensors));
             if (this.root.getChildCount() < 3) {
                 this.root.addView(this.airQualityCard);
             }
+        }
+
+        @Override
+        public void bind(final int position) {
+
         }
 
         @Nullable
