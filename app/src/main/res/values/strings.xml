@@ -403,7 +403,7 @@
     <string name="info_connect_sleep_pill">Hold your Sleep Pill near your mobile device, and then quickly shake it for three seconds to begin the update.</string>
     <string name="message_sleep_pill_connected">Sleep Pill Connected</string>
     <string name="message_sleep_pill_updating">Sleep Pill updating</string>
-    <string name="message_sleep_pill_updated">Sleep Pill Updated</string>
+    <string name="message_sleep_pill_updated">Sleep Pill updated</string>
     <string name="timeline_info_label_total_sleep">Total sleep</string>
     <string name="timeline_info_label_times_awake">Times awake</string>
     <string name="timeline_info_label_sound_sleep">Deep sleep</string>
