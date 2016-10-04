@@ -24,6 +24,7 @@ public class UnitFormatter extends Interactor {
     public static final String UNIT_SUFFIX_HUMIDITY = "%";
     public static final String UNIT_SUFFIX_AIR_QUALITY = "µg/m³";
     public static final String UNIT_SUFFIX_NOISE = "dB";
+    public static final String UNIT_SUFFIX_PRESSURE = "kPa";
 
     // Used by PreferencesInteractor
     @Deprecated
@@ -213,6 +214,8 @@ public class UnitFormatter extends Interactor {
                 return UNIT_SUFFIX_LIGHT;
             case SOUND:
                 return UNIT_SUFFIX_NOISE;
+            case PRESSURE:
+                return UNIT_SUFFIX_PRESSURE;
             default:
                 return "";
         }
@@ -288,6 +291,8 @@ public class UnitFormatter extends Interactor {
                 return R.string.sensor_about_uv_light;
             case TVOC:
                 return R.string.sensor_about_voc;
+            case PRESSURE:
+                return R.string.sensor_about_pressure;
             default:
                 logEvent("No string found for type: " + type);
                 return 0;
