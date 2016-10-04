@@ -56,7 +56,10 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
             jumpToEnd(false);
         } else {
             view.initialize();
-            bindAndSubscribeInteractorLatest();
+            bindAndSubscribe(interactor.latest(),
+                             this::bindConditions,
+                             this::unavailableConditions
+                            );
         }
     }
 
@@ -71,19 +74,12 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
         interactor.onContainerDestroyed();
     }
 
-    private void bindAndSubscribeInteractorLatest() {
-        bindAndSubscribe(interactor.latest(),
-                         this::bindConditions,
-                         this::unavailableConditions
-                        );
-    }
-
     private void bindConditions(@NonNull final SensorResponse current) {
         sensors.clear();
         sensors.addAll(current.getSensors());
         final int sensorsSize = sensors.size();
         final @DrawableRes int[] types = new int[sensorsSize];
-        for(int i=0; i < sensorsSize;i++){
+        for(int i=0; i < sensorsSize; i++){
             types[i] = mapper.getInitialIconForSensor(sensors.get(i).getType());
         }
         view.createSensorConditionViews(types);

@@ -53,10 +53,10 @@ implements RoomCheckPresenter.Output{
 
     private int startColor;
 
-    private @Nullable
-    SensorConditionView animatingSensorView;
-    private @Nullable
-    ValueAnimator scoreAnimator;
+    @Nullable
+    private SensorConditionView animatingSensorView;
+    @Nullable
+    private ValueAnimator scoreAnimator;
 
     private TimeInterpolator sensorContainerInterpolator;
     private Button continueButton;
@@ -71,8 +71,6 @@ implements RoomCheckPresenter.Output{
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
     }
-
-
 
     @Nullable
     @Override
@@ -100,7 +98,6 @@ implements RoomCheckPresenter.Output{
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
         stopAnimations();
         releaseViews();
     }
@@ -108,6 +105,7 @@ implements RoomCheckPresenter.Output{
     @Override
     public void onDetach(){
         super.onDetach();
+        releaseViews();
         presenter = null;
     }
 
