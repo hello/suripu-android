@@ -49,6 +49,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
 
     private SensorResponseAdapter adapter;
     private UpdateTimer updateTimer;
+    private boolean checkRoomConditions = false;
 
     @Override
     public final void initializePresenterView() {
@@ -89,9 +90,6 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         bindAndSubscribe(this.sensorResponseInteractor.sensors,
                          this::bindConditions,
                          this::conditionsUnavailable);
-        bindAndSubscribe(preferencesInteractor.observeChangesOn(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN),
-                         s -> this.adapter.showWelcomeCard(true),
-                         Functions.LOG_ERROR);
     }
 
     @Override
@@ -131,14 +129,8 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
 
     @Override
     public final void onUpdate() {
+        checkRoomConditions = true;
         this.sensorResponseInteractor.update();
-        final int timesShown = preferencesInteractor.getInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, 1);
-        if (timesShown <= WELCOME_CARD_TIMES_SHOWN_LIMIT) {
-            preferencesInteractor.edit().putInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN,
-                                                timesShown + 1).apply();
-        }else {
-            adapter.showWelcomeCard(false);
-        }
     }
 
     //endregion
@@ -146,9 +138,24 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
 
     //region Displaying Data
 
+    private void showWelcomeCardIfNeeded() {
+        if (checkRoomConditions) {
+            checkRoomConditions = false;
+            final int timesShown = preferencesInteractor.getInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, 1);
+            if (timesShown <= WELCOME_CARD_TIMES_SHOWN_LIMIT) {
+                preferencesInteractor.edit().putInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN,
+                                                    timesShown + 1).apply();
+                adapter.showWelcomeCard(true);
+            } else {
+                adapter.showWelcomeCard(false);
+            }
+        }
+    }
+
     public final void bindConditions(@NonNull final SensorResponse currentConditions) {
         switch (currentConditions.getStatus()) {
             case OK:
+                showWelcomeCardIfNeeded();
                 final List<Sensor> sensors = currentConditions.getSensors();
                 bindAndSubscribe(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)),
                                  sensorsDataResponse -> {
@@ -163,9 +170,10 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
                 adapter.showSenseMissingCard();
                 break;
             case WAITING_FOR_DATA:
+                showWelcomeCardIfNeeded();
+                break;
             default:
         }
-
 
 
     }
