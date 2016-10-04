@@ -133,6 +133,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             this.airQualitySensors.clear();
         }
         super.replaceAll(normalSensors);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -315,23 +316,19 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             this.graphView.setVisibility(View.GONE);
             this.value.setVisibility(View.GONE);
             this.descriptor.setVisibility(View.GONE);
-            this.graphView.setVisibility(View.GONE);
-            this.value.setVisibility(View.GONE);
-            this.descriptor.setVisibility(View.GONE);
             this.airQualityCard.setClickable(true);
             this.airQualityCard.setOnRowClickListener(sensor -> SensorResponseAdapter.this.dispatchItemClicked(0, sensor));
-
             this.airQualityCard.setUnitFormatter(SensorResponseAdapter.this.unitFormatter);
+
+        }
+
+        @Override
+        public void bind(final int position) {
             this.airQualityCard.replaceAll(SensorResponseAdapter.this.airQualitySensors);
             this.body.setText(getWorstMessage(SensorResponseAdapter.this.airQualitySensors));
             if (this.root.getChildCount() < 3) {
                 this.root.addView(this.airQualityCard);
             }
-        }
-
-        @Override
-        public void bind(final int position) {
-
         }
 
         @Nullable

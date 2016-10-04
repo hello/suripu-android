@@ -155,7 +155,6 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
                                      for (final Sensor sensor : sensors) {
                                          sensor.setSensorValues(sensorsDataResponse);
                                      }
-                                     this.adapter.dismissMessage();
                                      this.adapter.replaceAll(sensors);
                                  },
                                  throwable -> Log.e("Sensor", "error: " + throwable));
