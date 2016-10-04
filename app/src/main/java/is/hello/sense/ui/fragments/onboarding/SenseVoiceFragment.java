@@ -73,11 +73,20 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     private View nightStandView;
     private Lazy<Integer> TRANSLATE_Y =
             () -> getResources().getDimensionPixelSize(R.dimen.sense_voice_translate_y);
+
     private final ViewAnimator viewAnimator = new ViewAnimator(LoadingDialogFragment.DURATION_DEFAULT,
                                                                new AccelerateDecelerateInterpolator());
 
     private Subscription voiceTipSubscription;
     private Subscription requestDelayedSubscription;
+
+    private Lazy<Runnable> runnableLazy =
+            () -> stateSafeExecutor.bind(() -> {
+                SenseVoiceFragment.this.animateToNormalState();
+                if(senseVoiceInteractor.voiceResponse.hasValue()) {
+                    SenseVoiceFragment.this.requestDelayed();
+                }
+            });
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -192,6 +201,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         requestDelayedSubscription.unsubscribe();
         requestDelayedSubscription = null;
         TRANSLATE_Y = null;
+        runnableLazy = null;
     }
 
     private void onRetry(final View view){
@@ -203,8 +213,8 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
                     updateButtons(false, transaction);
                 }, complete -> {
                     if(complete) {
-                        poll(true);
                         animateToNormalState();
+                        getAnimatorContext().runWhenIdle(() -> poll(true));
                     }
                 });
     }
@@ -318,7 +328,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     }
 
     private void requestDelayed() {
-        //retry once again after a delay respecting fragment lifecycle
+        //request after a delay respecting fragment lifecycle
         requestDelayedSubscription = bind(Observable.timer(SenseVoiceInteractor.UPDATE_DELAY_SECONDS, TimeUnit.SECONDS))
                                            .subscribe(ignored -> senseVoiceInteractor.update(),
                                                       this::presentError);
@@ -327,37 +337,38 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     private void handleVoiceResponse(@Nullable final VoiceResponse voiceResponse) {
         sendAnalyticsEvent(voiceResponse);
 
-        animateToWaitState();
+        getAnimatorContext().runWhenIdle(() -> {
+            questionText.removeCallbacks(runnableLazy.get());
+            if(SenseVoiceInteractor.hasSuccessful(voiceResponse)){
+                animateToWaitState();
+                updateState(R.string.sense_voice_question_temperature,
+                            R.color.primary,
+                            View.GONE,
+                            OK_STATE,
+                            0,
+                            Arrays.equals(senseImageView.getDrawableState(), FAIL_STATE));
+                onFinish(true);
+            } else{
+                @StringRes final int errorText = voiceResponse == null ?
+                        R.string.error_sense_voice_problem :
+                        R.string.error_sense_voice_not_detected;
 
-        if(SenseVoiceInteractor.hasSuccessful(voiceResponse)){
-            updateState(R.string.sense_voice_question_temperature,
-                        R.color.primary,
-                        View.GONE,
-                        OK_STATE,
-                        0,
-                        Arrays.equals(senseImageView.getDrawableState(), FAIL_STATE));
-            onFinish(true);
-        } else{
-            @StringRes final int errorText = voiceResponse == null ?
-                    R.string.error_sense_voice_problem :
-                    R.string.error_sense_voice_not_detected;
-
-            updateState(errorText,
-                        R.color.text_dark,
-                        View.GONE,
-                        FAIL_STATE,
-                        0,
-                        true);
-            if(senseVoiceInteractor.getFailCount() == VOICE_FAIL_COUNT_THRESHOLD){
-                showVoiceTipDialog(true, this::poll);
+                updateState(errorText,
+                            R.color.text_dark,
+                            View.GONE,
+                            FAIL_STATE,
+                            0,
+                            true);
+                if(senseVoiceInteractor.getFailCount() == VOICE_FAIL_COUNT_THRESHOLD){
+                    showVoiceTipDialog(true, this::poll);
+                }
+                //return to normal state
+                questionText.postOnAnimationDelayed(
+                        runnableLazy.get(),
+                        LoadingDialogFragment.DURATION_DEFAULT * 3);
             }
-            //return to normal state
-            questionText.postOnAnimationDelayed(
-                    stateSafeExecutor.bind(this::animateToNormalState),
-                    LoadingDialogFragment.DURATION_DEFAULT * 3);
+        });
 
-            requestDelayed();
-        }
     }
 
     private void updateState(@StringRes final int stringRes,
@@ -413,7 +424,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
                                   final boolean animateText,
                                   final long startDelay){
         if (animateText){
-            animatorFor(questionText)
+            animatorFor(questionText, animatorContext)
                     .withStartDelay(startDelay)
                     .translationY(TRANSLATE_Y.get())
                     .fadeOut(View.INVISIBLE)
@@ -423,7 +434,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
                                 tryText.setVisibility(tryVisibility);
                                 questionText.setText(stringRes);
                                 questionText.setTextColor(ContextCompat.getColor(questionText.getContext(), textColorRes));
-                                animatorFor(questionText)
+                                animatorFor(questionText, animatorContext)
                                         .translationY(0)
                                         .fadeIn()
                                         .start();

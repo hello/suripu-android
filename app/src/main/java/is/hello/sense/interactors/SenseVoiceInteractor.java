@@ -28,7 +28,7 @@ public class SenseVoiceInteractor extends ValueInteractor<VoiceResponse> {
     @Inject public SenseVoiceInteractor(){}
 
 
-    public final static long UPDATE_DELAY_SECONDS = 8; //todo test with real 1.5 senses to adjust
+    public final static long UPDATE_DELAY_SECONDS = 1;
     public final InteractorSubject<VoiceResponse> voiceResponse = this.subject;
     private int failCount = 0;
 
