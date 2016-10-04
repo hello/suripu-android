@@ -2,21 +2,15 @@ package is.hello.sense.api.model.v2.sensors;
 
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import is.hello.sense.R;
-import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.Scale;
-import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.units.UnitOperations;
 
 /**
  * Represents an individual Sensor. This is returned from GET /v2/sensors.
@@ -95,6 +89,15 @@ public class Sensor extends ApiResponse {
             return new float[0];
         }
         return sensorValues;
+    }
+
+    public Condition getCondition() {
+        return condition;
+    }
+
+    public boolean hasBetterConditionThan(@NonNull final Sensor sensor) {
+        // ide complains about simplifying. Basically if a sensor's condition is not available, treat the other sensor as better condition.
+        return condition == null || sensor.condition != null && condition.value > sensor.getCondition().value;
     }
 
     @Override

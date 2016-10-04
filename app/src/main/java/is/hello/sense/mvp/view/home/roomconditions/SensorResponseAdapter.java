@@ -10,12 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
@@ -29,9 +28,21 @@ import is.hello.sense.units.UnitFormatter;
 public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorResponseAdapter.BaseViewHolder> {
     private static final int VIEW_SENSOR = 0;
     private static final int VIEW_ID_MESSAGE = 1;
-    private final LayoutInflater inflater;
+    private static final int VIEW_AIR_QUALITY = 2;
 
+
+    private final LayoutInflater inflater;
+    private final int graphHeight;
     private boolean messageWantsSenseIcon;
+    /**
+     * Store air quality sensors within here
+     */
+    private final List<Sensor> airQualitySensors = new ArrayList<>();
+    /**
+     * Avoids having to check if an air quality sensor exists when getting the item count.
+     */
+    private boolean hasAirQuality = false;
+
     @StringRes
     private int messageTitle;
     @Nullable
@@ -42,7 +53,6 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     private View.OnClickListener messageActionOnClick;
 
     private final UnitFormatter unitFormatter;
-    private final int graphHeight;
 
     public SensorResponseAdapter(@NonNull final LayoutInflater inflater,
                                  @NonNull final UnitFormatter unitFormatter) {
@@ -53,9 +63,49 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     }
 
     //region adapter overrides
+
     @Override
-    public long getItemId(final int position) {
+    public int getItemViewType(final int position) {
+        if (airQualitySensors.isEmpty()) {
+            return VIEW_SENSOR;
+        }
+        if (position == getItemCount() - 1) {
+            return VIEW_AIR_QUALITY;
+        }
         return VIEW_SENSOR;
+    }
+
+    @Override
+    public int getItemCount() {
+        if (hasAirQuality && !airQualitySensors.isEmpty()) {
+            return super.getItemCount() + 1;
+        }
+        return super.getItemCount();
+    }
+
+    public void replaceAll(@NonNull final List<Sensor> sensors) {
+        airQualitySensors.clear();
+        hasAirQuality = false;
+        final ArrayList<Sensor> normalSensors = new ArrayList<>();
+        for (final Sensor sensor : sensors) {
+            switch (sensor.getType()) {
+                case PARTICULATES:
+                case CO2:
+                case TVOC:
+                    hasAirQuality = true;
+                    airQualitySensors.add(sensor);
+                    break;
+                default:
+                    normalSensors.add(sensor);
+            }
+        }
+
+        // If there is only one AirQuality item we will display it with a graph.
+        if (airQualitySensors.size() == 1) {
+            normalSensors.add(airQualitySensors.get(0));
+            airQualitySensors.clear();
+        }
+        super.replaceAll(normalSensors);
     }
 
     @Override
@@ -90,7 +140,9 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
                 }
                 return new BaseViewHolder(view);
             case VIEW_SENSOR:
-                return new BaseViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_sensor_response, parent, false));
+                return new SensorViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_sensor_response, parent, false));
+            case VIEW_AIR_QUALITY:
+                return new AirQualityViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_sensor_response, parent, false));
             default:
                 throw new IllegalStateException();
         }
@@ -134,13 +186,14 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
     //endregion
 
-    public class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder implements Drawable.Callback {
-        private final TextView title;
-        private final TextView body;
-        private final TextView value;
-        private final TextView descriptor;
-        private final SensorGraphView graphView;
-        private final View view;
+
+    public class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder {
+        protected final TextView title;
+        protected final TextView body;
+        protected final TextView value;
+        protected final TextView descriptor;
+        protected final View view;
+        protected final SensorGraphView graphView;
 
         public BaseViewHolder(@NonNull final View itemView) {
             super(itemView);
@@ -165,6 +218,62 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
                 this.descriptor.setText(SensorResponseAdapter.this.unitFormatter.getSuffixForSensor(sensor.getType()));
             }
             this.value.setTextColor(ContextCompat.getColor(inflater.getContext(), sensor.getColor()));
+        }
+    }
+
+    private class AirQualityViewHolder extends BaseViewHolder {
+        private final LinearLayout root;
+        final AirQualityCard airQualityCard = new AirQualityCard(view.getContext());
+
+        public AirQualityViewHolder(@NonNull final View itemView) {
+            super(itemView);
+            this.root = (LinearLayout) itemView.findViewById(R.id.item_server_response_root);
+            this.root.setClickable(false);
+            this.title.setText(itemView.getContext().getString(R.string.air_quality));
+            this.graphView.setVisibility(View.GONE);
+            this.value.setVisibility(View.GONE);
+            this.descriptor.setVisibility(View.GONE);
+            this.airQualityCard.setClickable(true);
+            this.airQualityCard.setOnRowClickListener(sensor -> SensorResponseAdapter.this.dispatchItemClicked(0, sensor));
+
+            this.airQualityCard.setUnitFormatter(SensorResponseAdapter.this.unitFormatter);
+            this.airQualityCard.replaceAll(SensorResponseAdapter.this.airQualitySensors);
+            this.body.setText(getWorstMessage(SensorResponseAdapter.this.airQualitySensors));
+            if (this.root.getChildCount() < 3) {
+                this.root.addView(this.airQualityCard);
+            }
+        }
+
+        @Override
+        public void bind(final int position) {
+
+        }
+
+        @Nullable
+        public String getWorstMessage(@NonNull final List<Sensor> sensors) {
+            if (sensors.isEmpty()) {
+                return null;
+            }
+            Sensor worstCondition = sensors.get(0);
+            for (int i = 1; i < sensors.size(); i++) {
+                if (worstCondition.hasBetterConditionThan(sensors.get(i))) {
+                    worstCondition = sensors.get(i);
+                }
+            }
+            return worstCondition.getMessage();
+        }
+    }
+
+    private class SensorViewHolder extends BaseViewHolder implements Drawable.Callback {
+
+        public SensorViewHolder(@NonNull final View itemView) {
+            super(itemView);
+        }
+
+        @Override
+        public void bind(final int position) {
+            super.bind(position);
+            final Sensor sensor = getItem(position);
             this.graphView.setSensorGraphDrawable(new SensorGraphDrawable(SensorResponseAdapter.this.inflater.getContext(),
                                                                           sensor,
                                                                           unitFormatter,
