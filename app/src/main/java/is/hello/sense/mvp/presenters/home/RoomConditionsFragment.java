@@ -128,7 +128,6 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
 
     @Override
     public final void onSwipeInteractionDidFinish() {
-        WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_current_conditions, true);
     }
 
     @Override
