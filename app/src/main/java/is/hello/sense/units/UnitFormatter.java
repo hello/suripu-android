@@ -2,9 +2,7 @@ package is.hello.sense.units;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-
 
 import java.util.Locale;
 
@@ -12,6 +10,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.interactors.Interactor;
 import is.hello.sense.interactors.PreferencesInteractor;
@@ -64,7 +63,7 @@ public class UnitFormatter extends Interactor {
 
     @NonNull
     public CharSequence formatTemperature(final double value) {
-        if (value == -1) {
+        if (value == Sensor.NO_VALUE) {
             return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_TEMPERATURE);
         }
         double convertedValue = value;
@@ -104,7 +103,7 @@ public class UnitFormatter extends Interactor {
 
     @NonNull
     public CharSequence formatLight(final double value) {
-        if (value == -1) {
+        if (value == Sensor.NO_VALUE) {
             return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_LIGHT);
         } else if (value < 10.0) {
             return Styles.assembleReadingAndUnit(String.format("%.1f", value),
@@ -117,7 +116,7 @@ public class UnitFormatter extends Interactor {
 
     @NonNull
     public CharSequence formatHumidity(final double value) {
-        if (value == -1) {
+        if (value == Sensor.NO_VALUE) {
             return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_HUMIDITY);
         }
         return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_HUMIDITY);
@@ -125,7 +124,7 @@ public class UnitFormatter extends Interactor {
 
     @NonNull
     public CharSequence formatAirQuality(final double value) {
-        if (value == -1) {
+        if (value == Sensor.NO_VALUE) {
             return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_AIR_QUALITY);
         }
         return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_AIR_QUALITY);
@@ -133,7 +132,7 @@ public class UnitFormatter extends Interactor {
 
     @NonNull
     public CharSequence formatNoise(final double value) {
-        if (value == -1) {
+        if (value == Sensor.NO_VALUE) {
             return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_NOISE);
         }
         return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_NOISE);
@@ -179,30 +178,6 @@ public class UnitFormatter extends Interactor {
         }
     }
 
-    @Deprecated
-    @Nullable
-    public String getUnitSuffixForSensor(@NonNull final String sensor) {
-        switch (sensor) {
-            case ApiService.SENSOR_NAME_TEMPERATURE:
-                return UNIT_SUFFIX_TEMPERATURE;
-
-            case ApiService.SENSOR_NAME_HUMIDITY:
-                return UNIT_SUFFIX_HUMIDITY;
-
-            case ApiService.SENSOR_NAME_PARTICULATES:
-                return UNIT_SUFFIX_AIR_QUALITY;
-
-            case ApiService.SENSOR_NAME_LIGHT:
-                return UNIT_SUFFIX_LIGHT;
-
-            case ApiService.SENSOR_NAME_SOUND:
-                return UNIT_SUFFIX_NOISE;
-
-            default:
-                return null;
-        }
-    }
-
     @NonNull
     public String getSuffixForSensor(@NonNull final SensorType type) {
         switch (type) {
@@ -231,6 +206,7 @@ public class UnitFormatter extends Interactor {
     }
 
 
+    //todo expand to handle other types
     @NonNull
     public UnitPrinter getUnitPrinterForSensorAverageValue(@NonNull final SensorType type) {
         switch (type) {
@@ -259,6 +235,8 @@ public class UnitFormatter extends Interactor {
                 return Styles.assembleReadingAndUnit(value, getSuffixForSensor(type));
         }
     }
+
+    //region Sensor Detail specific
 
     public String getMeasuredInString(@NonNull final SensorType type) {
         String measuredIn = "";
@@ -302,9 +280,11 @@ public class UnitFormatter extends Interactor {
                 return R.string.sensor_about_voc;
             default:
                 logEvent("No string found for type: " + type);
-                return 0;
+                return R.string.empty;
         }
     }
+
+    //endregion
 
 
     //endregion
