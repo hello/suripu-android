@@ -40,7 +40,9 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
     OnSelectionChangedListener onSelectionChangedListener;
 
     @ColorRes
-    private int toggleButtonColor = R.color.text_color_selector_toggle_button; // default color
+    private int buttonSelectedColorRes = R.color.text_color_selector_toggle_button; // default color
+    @ColorRes
+    private int buttonNotSelectedColorRes = R.color.text_color_selector_toggle_button; // default color
 
 
     //region Lifecycle
@@ -211,10 +213,14 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         this.buttonLayoutParams = buttonLayoutParams;
     }
 
-    public void setToggleButtonColor(@ColorRes final int colorRes) {
-        toggleButtonColor = colorRes;
+    public void setButtonSelectedColorRes(@ColorRes final int buttonSelectedColorRes) {
+        this.buttonSelectedColorRes = buttonSelectedColorRes;
     }
-    //endregion
+
+    public void setButtonNotSelectedColorRes(@ColorRes final int buttonNotSelectedColorRes) {
+        this.buttonNotSelectedColorRes = buttonNotSelectedColorRes;
+    }
+//endregion
 
 
     //region Button Tags
@@ -289,7 +295,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         optionButton.setMinimumHeight(resources.getDimensionPixelSize(R.dimen.button_min_size));
         optionButton.setBackgroundResource(R.drawable.selectable_dark_bounded);
         optionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(R.dimen.text_size_body_mid_sized));
-        optionButton.setTextColor(Styles.getColorStateList(resources, toggleButtonColor, null));
+        optionButton.setTextColor(Styles.getColorStateList(resources, buttonNotSelectedColorRes, null));
         applyButtonStyles(optionButton, false);
 
         if (getChildCount() > 0 && wantsDivider) {
@@ -320,10 +326,11 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         final Resources resources = getResources();
         if (isSelected) {
             Styles.setTextAppearance(optionButton, R.style.AppTheme_Text_Body_Bold);
+            optionButton.setTextColor(Styles.getColorStateList(resources, buttonSelectedColorRes, null));
         } else {
             Styles.setTextAppearance(optionButton, R.style.AppTheme_Text_Body);
+            optionButton.setTextColor(Styles.getColorStateList(resources, buttonNotSelectedColorRes, null));
         }
-        optionButton.setTextColor(Styles.getColorStateList(resources, toggleButtonColor, null));
         optionButton.setChecked(isSelected);
     }
     //endregion
