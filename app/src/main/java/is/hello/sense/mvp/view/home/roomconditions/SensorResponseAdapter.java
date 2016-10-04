@@ -164,6 +164,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     public void showSenseMissingCard() {
         clear();
         dismissMessage();
+        this.showWelcomeCard = false;
         this.showSenseMissingCard = true;
         notifyDataSetChanged();
     }
