@@ -349,8 +349,6 @@
     <string name="welcome_dialog_timeline_title_events">Sleep Timeline</string>
     <string name="welcome_dialog_timeline_events">Your Timeline shows you everything that happened during the night, from the moment you go to bed until the time you wake up.\n\nThe blue bars represent your time spent sleeping. The wider the bar, the deeper the sleep. Tap on any bar to view more details.\n\nYour Timeline will also show key events from your night, including time spent tossing and turning, noise disturbances, and more.</string>
     <string name="welcome_dialog_current_conditions_title">Current Conditions</string>
-    <string name="welcome_dialog_current_conditions">Here you‘ll see the current conditions in your bedroom: temperature, humidity, air quality, light, and noise.\n
-\nThese values update as Sense uploads new data. So as the conditions in your room change, it may take a few moments for them to be reflected here.\n\nTap a card to see more details.</string>
     <string name="welcome_dialog_alarm_title">Set An Alarm</string>
     <string name="welcome_dialog_alarm">Sense\'s Smart Alarm will wake you up at the lightest part of your natural sleep cycle - in a 30 minute window before the time you set. When it\'s time to wake up, Sense will glow and play your selected tone. Just wave your hand over Sense to dismiss the alarm.</string>
     <string name="welcome_dialog_sensor_temperature_title">Temperature</string>
@@ -676,4 +674,6 @@
     <string name="sensor_about_uv_light"> A sunny day can be enjoyable, but too much sunlight can be dangerous. The sun’s rays give off ultraviolet (UV) radiation, and it’s this radiation that makes overexposure to sunlight damaging to your skin, causing sunburns and putting you at higher risk for skin cancer. Seasonal weather conditions combined with ozone depletion can cause different amounts of UV radiation to reach different regions at different times. The UV Index exists to provide a daily forecast of the severity of UV radiation in your area.</string>
     <string name="sensor_about_light_temp">Light temperatures over 4,500 K are described as cool colors (or blue light) and temperatures between 2,000–3,000 K described as warm colors (or red light). As daylight is a cool color (starting at around 2,000 K during sunrise and sunset and peaking at around 10,000 on a clear blue day), your body uses blue light as a primary signal for your circadian rhythm, suppressing melatonin and keeping you alert during the day. Personal electronics and televisions also generally give off blue light, which means that using these devices before bed can adversely affect your sleep schedule, keeping you awake when you’re trying to get to sleep.</string>
     <string name="air_quality">Air Quality</string>
+    <string name="room_conditions_welcome_title">Your current conditions</string>
+    <string name="room_conditions_welcome_message">Recent changes to room conditions may take a few moments to be reflected here. Tap a card for more detail.</string>
 </resources>

@@ -20,7 +20,6 @@ import is.hello.sense.api.model.v2.sensors.QueryScope;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
-import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SensorResponseInteractor;
@@ -30,7 +29,6 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SensorDetailActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
-import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -38,7 +36,7 @@ import is.hello.sense.util.Logger;
 
 public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsView> implements
         ArrayRecyclerAdapter.OnItemClickedListener<Sensor> {
-    private UpdateTimer updateTimer;
+    private final static long WELCOME_CARD_TIMES_SHOWN_LIMIT = 2;
 
     @Inject
     SensorResponseInteractor sensorResponseInteractor;
@@ -50,6 +48,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     ApiService apiService;
 
     private SensorResponseAdapter adapter;
+    private UpdateTimer updateTimer;
 
     @Override
     public final void initializePresenterView() {
@@ -90,6 +89,9 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         bindAndSubscribe(this.sensorResponseInteractor.sensors,
                          this::bindConditions,
                          this::conditionsUnavailable);
+        bindAndSubscribe(preferencesInteractor.observeChangesOn(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN),
+                         s -> this.adapter.showWelcomeCard(true),
+                         Functions.LOG_ERROR);
     }
 
     @Override
@@ -125,19 +127,24 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
 
     @Override
     public final void onSwipeInteractionDidFinish() {
-        WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_current_conditions, true);
     }
 
     @Override
     public final void onUpdate() {
         this.sensorResponseInteractor.update();
+        final int timesShown = preferencesInteractor.getInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, 1);
+        if (timesShown <= WELCOME_CARD_TIMES_SHOWN_LIMIT) {
+            preferencesInteractor.edit().putInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN,
+                                                timesShown + 1).apply();
+        }else {
+            adapter.showWelcomeCard(false);
+        }
     }
 
     //endregion
 
 
     //region Displaying Data
-
 
     public final void bindConditions(@NonNull final SensorResponse currentConditions) {
         final List<Sensor> sensors = currentConditions.getSensors();
