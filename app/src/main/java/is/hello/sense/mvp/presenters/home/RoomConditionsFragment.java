@@ -22,7 +22,6 @@ import is.hello.sense.api.model.v2.sensors.QueryScope;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
-import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SensorResponseInteractor;
@@ -32,7 +31,6 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.SensorDetailActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
-import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -93,6 +91,9 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         bindAndSubscribe(this.sensorResponseInteractor.sensors,
                          this::bindConditions,
                          this::conditionsUnavailable);
+        bindAndSubscribe(preferencesInteractor.observeChangesOn(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN),
+                         s -> this.adapter.showWelcomeCard(true),
+                         Functions.LOG_ERROR);
     }
 
     @Override
@@ -133,7 +134,13 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     @Override
     public final void onUpdate() {
         this.sensorResponseInteractor.update();
-        this.adapter.showWelcomeCard(needsWelcomeCard());
+        final int timesShown = preferencesInteractor.getInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, 1);
+        if (timesShown < 3) {
+            preferencesInteractor.edit().putInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN,
+                                                timesShown + 1).apply();
+        }else {
+            adapter.showWelcomeCard(false);
+        }
     }
 
     //endregion
@@ -141,17 +148,19 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
 
     //region Displaying Data
 
-    public final boolean needsWelcomeCard() {
-        final SharedPreferences sharedPreferences =
+  /*  public final boolean needsWelcomeCard() {
+     *//*   final SharedPreferences sharedPreferences =
                 getActivity().getSharedPreferences(Constants.ROOM_CONDITIONS_PREFS, Context.MODE_PRIVATE);
         final int timesShown = sharedPreferences.getInt(Constants.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, 0);
         if (timesShown < WELCOME_CARD_TIMES_SHOWN_LIMIT) {
             sharedPreferences.edit().putInt(Constants.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, timesShown + 1).apply();
             return true;
         }
+        return false;*//*
+        preferencesInteractor.edit().putInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, 1).apply();
         return false;
     }
-
+*/
 
     public final void bindConditions(@NonNull final SensorResponse currentConditions) {
         final List<Sensor> sensors = currentConditions.getSensors();
