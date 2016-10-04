@@ -36,13 +36,16 @@ import is.hello.sense.util.SessionLogger;
 
 public class DebugActivity extends InjectionActivity {
     public static final String EXTRA_DEBUG_CHECKPOINT = "EXTRA_DEBUG_CHECKPOINT" + DebugActivity.class.getName();
-    @Inject ApiSessionManager sessionManager;
+    @Inject
+    ApiSessionManager sessionManager;
     @Inject
     PreferencesInteractor preferences;
     @Inject
     PersistentPreferencesInteractor persistentPreferences;
-    @Inject LocalUsageTracker localUsageTracker;
-    @Inject ApiEndpoint apiEndpoint;
+    @Inject
+    LocalUsageTracker localUsageTracker;
+    @Inject
+    ApiEndpoint apiEndpoint;
 
 
     @Override
@@ -127,7 +130,7 @@ public class DebugActivity extends InjectionActivity {
         startActivity(onboarding);
     }
 
-    public void showUpdatePill(){
+    public void showUpdatePill() {
         final Intent pillUpdate = new Intent(this, PillUpdateActivity.class);
         startActivity(pillUpdate);
     }
@@ -199,14 +202,13 @@ public class DebugActivity extends InjectionActivity {
     }
 
 
-
     public void simulatePicassoLowMemory() {
         SenseApplication.getInstance().onTrimMemory(TRIM_MEMORY_MODERATE);
         Toast.makeText(getApplicationContext(), "Simulated", Toast.LENGTH_SHORT).show();
     }
 
     public void viewWhatsNewCard() {
-       // WhatsNewLayout.clearState(this); todo add back when we support this.
+        // WhatsNewLayout.clearState(this); todo add back when we support this.
         WhatsNewLayout.forceShow(this);
         Toast.makeText(getApplicationContext(), "Forgot What's New card", Toast.LENGTH_SHORT).show();
     }
@@ -216,9 +218,8 @@ public class DebugActivity extends InjectionActivity {
         Toast.makeText(getApplicationContext(), "Usage Stats Reset", Toast.LENGTH_SHORT).show();
     }
 
-    public void viewRoomConditionsWelcomeCard(){
-        final SharedPreferences sharedPreferences = getSharedPreferences(Constants.ROOM_CONDITIONS_PREFS, Context.MODE_PRIVATE);
-        sharedPreferences.edit().clear().apply();
+    public void viewRoomConditionsWelcomeCard() {
+        preferences.edit().putInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, 1).apply();
         Toast.makeText(getApplicationContext(), "Forgot Room Conditions Welcome Card", Toast.LENGTH_SHORT).show();
     }
 
