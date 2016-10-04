@@ -109,7 +109,7 @@
         android:layout_marginTop="@dimen/x3"
         android:layout_marginBottom="@dimen/x1"
         android:text="@string/action_do_later"
-        style="@style/AppTheme.Button.Borderless.Accent.Bounded"/>
+        style="@style/AppTheme.Button.Borderless.Accent.Bounded.Lowercase"/>
 
     <Button
         android:id="@+id/fragment_sense_voice_retry"

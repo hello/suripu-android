@@ -69,7 +69,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/action_retry"
                 android:visibility="gone"
-                style="@style/AppTheme.Button.Borderless.Accent.Bounded" />
+                style="@style/AppTheme.Button.Borderless.Accent.Bounded.Lowercase" />
 
             <View
                 android:layout_marginTop="@dimen/device_detail_text_margin"
