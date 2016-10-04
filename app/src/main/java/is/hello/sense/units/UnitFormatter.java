@@ -26,6 +26,7 @@ public class UnitFormatter extends Interactor {
     public static final String UNIT_SUFFIX_GAS = "ppm";
     public static final String UNIT_SUFFIX_LIGHT_TEMPERATURE = "k"; //todo check validity
     public static final String UNIT_SUFFIX_KELVIN = "k"; //todo check validity
+    public static final String UNIT_SUFFIX_PRESSURE = "kPa";
 
 
     // Used by PreferencesInteractor
@@ -199,6 +200,8 @@ public class UnitFormatter extends Interactor {
                 return UNIT_SUFFIX_LIGHT_TEMPERATURE;
             case UV:
                 return UNIT_SUFFIX_KELVIN;
+            case PRESSURE:
+                return UNIT_SUFFIX_PRESSURE;
             case UNKNOWN:
                 default:
                 return "";
@@ -277,6 +280,8 @@ public class UnitFormatter extends Interactor {
             case UV:
                 return R.string.sensor_about_uv_light;
             case TVOC:
+                return R.string.sensor_about_voc;
+            case PRESSURE:
                 return R.string.sensor_about_voc;
             default:
                 logEvent("No string found for type: " + type);
