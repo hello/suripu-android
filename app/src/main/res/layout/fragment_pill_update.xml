@@ -79,7 +79,7 @@
             android:layout_marginTop="@dimen/x3"
             android:layout_marginBottom="@dimen/x1"
             android:text="@string/action_try_again_later"
-            style="@style/AppTheme.Button.Borderless.Accent.Bounded"
+            style="@style/AppTheme.Button.Borderless.Accent.Bounded.Lowercase"
             android:visibility="gone"/>
 
         <Button
