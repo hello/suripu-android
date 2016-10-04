@@ -221,7 +221,7 @@ public class ConnectPillFragment extends PillHardwareFragment implements OnBackP
                                final Action0 negativeAction){
         final SenseAlertDialog.Builder dialog = new SenseAlertDialog.Builder()
                 .setTitle(R.string.debug_title_confirm_sense_pair)
-                .setMessage(getString(R.string.debug_message_confirm_sense_pair_fmt, deviceName))
+                .setMessage(getString(R.string.debug_message_confirm_pill_update_fmt, deviceName))
                 .setPositiveButton(android.R.string.ok, positiveAction::call)
                 .setNegativeButton(android.R.string.cancel, negativeAction::call)
                 .setCancelable(false);

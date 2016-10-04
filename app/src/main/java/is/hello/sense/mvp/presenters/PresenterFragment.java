@@ -151,16 +151,20 @@ public abstract class PresenterFragment<T extends PresenterView>
                                                          text);
     }
 
-    public void hideBlockingActivity(final boolean success, @NonNull final Runnable onCompletion) {
+    public void hideBlockingActivity(final boolean success, @Nullable final Runnable onCompletion) {
         if (success) {
             LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
                 this.loadingDialogFragment = null;
-                onCompletion.run();
+                if(onCompletion != null) {
+                    onCompletion.run();
+                }
             });
         } else {
             LoadingDialogFragment.close(getFragmentManager());
             this.loadingDialogFragment = null;
-            onCompletion.run();
+            if(onCompletion != null) {
+                onCompletion.run();
+            }
         }
     }
 
