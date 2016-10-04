@@ -98,12 +98,9 @@ public class RoomCheckResMapper {
             case UV: {
                 return R.drawable.uv_gray_nofill;
             }
-            case UNKNOWN: {
+            case UNKNOWN:
+            default:
                 return R.drawable.error_white;
-            }
-            default: {
-                throw new IllegalStateException("no matching initial drawable found for " + type);
-            }
         }
     }
 
@@ -137,12 +134,9 @@ public class RoomCheckResMapper {
             case UV: {
                 return R.drawable.uv_gray_fill;
             }
-            case UNKNOWN: {
+            case UNKNOWN:
+            default:
                 return R.drawable.error_white;
-            }
-            default: {
-                throw new IllegalStateException("no matching final drawable found for " + type);
-            }
         }
     }
 }
