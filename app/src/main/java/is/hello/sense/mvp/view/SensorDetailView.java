@@ -43,12 +43,14 @@ public final class SensorDetailView extends PresenterView
     private final UnitFormatter unitFormatter;
     private int graphHeight = 0;
     private int lastSelectedIndex = -1;
+    private final int noDataColor;
 
     public SensorDetailView(@NonNull final Activity activity,
                             @NonNull final UnitFormatter unitFormatter,
                             @NonNull final SelectorView.OnSelectionChangedListener listener,
                             @NonNull final SensorGraphDrawable.ScrubberCallback scrubberCallback) {
         super(activity);
+        noDataColor = ContextCompat.getColor(getContext(), R.color.dim);
         this.unitFormatter = unitFormatter;
         this.subNavSelector = (SelectorView) findViewById(R.id.fragment_sensor_detail_selector);
         this.valueTextView = (TextView) findViewById(R.id.fragment_sensor_detail_value);
@@ -138,13 +140,12 @@ public final class SensorDetailView extends PresenterView
 
     public final void bindError() {
         post(() -> {
-            final int color = ContextCompat.getColor(getContext(), R.color.dim);
-            updateColorScheme(color);
+            updateColorScheme(noDataColor);
             this.scrollView.setGraphView(null);
             this.messageTextView.setText(R.string.sensor_detail_no_data);
             this.progressBar.setVisibility(GONE);
             this.subNavSelector.setEnabled(true);
-            this.valueTextView.setTextColor(color);
+            this.valueTextView.setTextColor(noDataColor);
             this.valueTextView.setText(R.string.missing_data_placeholder);
         });
 
