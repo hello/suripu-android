@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -94,9 +95,9 @@ public class SensorDetailActivity extends ScopedInjectionActivity
     }
 
 
-    public final void setActionbarColor(final int color) {
+    public final void setActionbarColor(@ColorRes final int colorRes) {
         if (actionBar != null) {
-            actionBar.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, color)));
+            actionBar.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, colorRes)));
         }
     }
 
