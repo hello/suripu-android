@@ -61,6 +61,9 @@ public class RoomCheckResMapper {
             case UV: {
                 return R.string.checking_condition_uv;
             }
+            case PRESSURE: {
+                return R.string.checking_condition_pressure;
+            }
             case UNKNOWN:
             default: {
                 return R.string.missing_data_placeholder;
@@ -98,6 +101,9 @@ public class RoomCheckResMapper {
             case UV: {
                 return R.drawable.uv_gray_nofill;
             }
+            case PRESSURE: {
+                return R.drawable.pressure_gray_nofill;
+            }
             case UNKNOWN:
             default:
                 return R.drawable.error_white;
@@ -133,6 +139,9 @@ public class RoomCheckResMapper {
             }
             case UV: {
                 return R.drawable.uv_gray_fill;
+            }
+            case PRESSURE: {
+                return R.drawable.pressure_gray_fill;
             }
             case UNKNOWN:
             default:

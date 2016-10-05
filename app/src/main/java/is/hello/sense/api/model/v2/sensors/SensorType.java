@@ -15,7 +15,8 @@ public enum SensorType implements Enums.FromString {
     TVOC,
     LIGHT_TEMPERATURE,
     UV,
-    UNKNOWN;
+    UNKNOWN,
+    PRESSURE;
 
     public static SensorType fromString(@Nullable final String string) {
         return Enums.fromString(string, values(), UNKNOWN);
