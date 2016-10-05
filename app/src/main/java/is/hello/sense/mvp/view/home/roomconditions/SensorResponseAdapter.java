@@ -1,7 +1,5 @@
 package is.hello.sense.mvp.view.home.roomconditions;
 
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,12 +19,10 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorType;
-import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.util.Constants;
 import is.hello.sense.units.UnitFormatter;
 
 public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorResponseAdapter.BaseViewHolder> {
@@ -61,6 +57,15 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     private View.OnClickListener messageActionOnClick;
 
     private final UnitFormatter unitFormatter;
+    private ErrorItemClickListener errorItemClickListener;
+
+    public interface ErrorItemClickListener {
+        void onErrorItemClicked();
+    }
+
+    public void setErrorItemClickListener(@Nullable final ErrorItemClickListener listener){
+        this.errorItemClickListener = listener;
+    }
 
     public SensorResponseAdapter(@NonNull final LayoutInflater inflater,
                                  @NonNull final UnitFormatter unitFormatter) {
@@ -200,6 +205,12 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         notifyDataSetChanged();
     }
 
+    private void dispatchErrorItemClicked() {
+        if(this.errorItemClickListener != null){
+            this.errorItemClickListener.onErrorItemClicked();
+        }
+    }
+
     //endregion
 
 
@@ -224,24 +235,21 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             this.view = view;
             this.imageView = (ImageView) view.findViewById(R.id.item_message_card_image);
             this.button = (Button) view.findViewById(R.id.item_message_card_action);
+            if (SensorResponseAdapter.this.showSenseMissingCard) {
+                this.imageView.setImageResource(R.drawable.illustration_no_sense);
+                this.messageTextView.setText(R.string.error_room_conditions_no_sense);
+                this.button.setText(R.string.action_pair_new_sense);
+                this.button.setOnClickListener(v -> {
+                    SensorResponseAdapter.this.dispatchErrorItemClicked();
+                });
+
+            }
         }
 
         @Override
         public void bind(final int position) {
             super.bind(position);
-            if (SensorResponseAdapter.this.showSenseMissingCard) {
-                final Context context = SensorResponseAdapter.this.inflater.getContext();
-                this.imageView.setImageResource(R.drawable.illustration_no_sense);
-                this.button.setText(R.string.action_pair_new_sense);
-                this.button.setOnClickListener(v -> {
-                    Intent intent = new Intent(context, OnboardingActivity.class);
-                    intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
-                    intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
-                    context.startActivity(intent);
-                });
-                this.messageTextView.setText(R.string.error_room_conditions_no_sense);
-
-            } else {
+            if (! SensorResponseAdapter.this.showSenseMissingCard) {
                 if (SensorResponseAdapter.this.messageTitle != 0) {
                     this.titleTextView.setText(SensorResponseAdapter.this.messageTitle);
                     this.titleTextView.setVisibility(View.VISIBLE);
@@ -320,15 +328,17 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             this.airQualityCard.setOnRowClickListener(sensor -> SensorResponseAdapter.this.dispatchItemClicked(0, sensor));
             this.airQualityCard.setUnitFormatter(SensorResponseAdapter.this.unitFormatter);
 
-        }
-
-        @Override
-        public void bind(final int position) {
             this.airQualityCard.replaceAll(SensorResponseAdapter.this.airQualitySensors);
             this.body.setText(getWorstMessage(SensorResponseAdapter.this.airQualitySensors));
             if (this.root.getChildCount() < 3) {
                 this.root.addView(this.airQualityCard);
             }
+
+        }
+
+        @Override
+        public void bind(final int position) {
+
         }
 
         @Nullable
@@ -379,5 +389,4 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
         }
     }
-
 }
