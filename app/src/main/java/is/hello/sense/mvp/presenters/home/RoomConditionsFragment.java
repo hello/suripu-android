@@ -161,6 +161,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
 
         switch (currentConditions.getStatus()) {
             case OK:
+            case WAITING_FOR_DATA:
                 showWelcomeCardIfNeeded();
                 final List<Sensor> sensors = currentConditions.getSensors();
                 bind(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)))
@@ -174,9 +175,6 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
                 break;
             case NO_SENSE:
                 adapter.showSenseMissingCard();
-                break;
-            case WAITING_FOR_DATA:
-                showWelcomeCardIfNeeded();
                 break;
             default:
         }

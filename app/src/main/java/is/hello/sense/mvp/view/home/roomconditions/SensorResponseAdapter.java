@@ -63,7 +63,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         void onErrorItemClicked();
     }
 
-    public void setErrorItemClickListener(@Nullable final ErrorItemClickListener listener){
+    public void setErrorItemClickListener(@Nullable final ErrorItemClickListener listener) {
         this.errorItemClickListener = listener;
     }
 
@@ -207,7 +207,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     }
 
     private void dispatchErrorItemClicked() {
-        if(this.errorItemClickListener != null){
+        if (this.errorItemClickListener != null) {
             this.errorItemClickListener.onErrorItemClicked();
         }
     }
@@ -240,9 +240,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
                 this.imageView.setImageResource(R.drawable.illustration_no_sense);
                 this.messageTextView.setText(R.string.error_room_conditions_no_sense);
                 this.button.setText(R.string.action_pair_new_sense);
-                this.button.setOnClickListener(v -> {
-                    SensorResponseAdapter.this.dispatchErrorItemClicked();
-                });
+                this.button.setOnClickListener(v -> SensorResponseAdapter.this.dispatchErrorItemClicked());
 
             }
         }
@@ -250,7 +248,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         @Override
         public void bind(final int position) {
             super.bind(position);
-            if (! SensorResponseAdapter.this.showSenseMissingCard) {
+            if (!SensorResponseAdapter.this.showSenseMissingCard) {
                 if (SensorResponseAdapter.this.messageTitle != 0) {
                     this.titleTextView.setText(SensorResponseAdapter.this.messageTitle);
                     this.titleTextView.setVisibility(View.VISIBLE);
@@ -303,7 +301,11 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             final Sensor sensor = getItem(position);
             this.title.setText(sensor.getName());
             this.body.setText(sensor.getMessage());
-            this.value.setText(SensorResponseAdapter.this.unitFormatter.getUnitPrinterForSensorAverageValue(sensor.getType()).print(sensor.getValue()));
+            if (sensor.getValue() == null) {
+                this.value.setText(R.string.missing_data_placeholder);
+            } else {
+                this.value.setText(SensorResponseAdapter.this.unitFormatter.getUnitPrinterForSensorAverageValue(sensor.getType()).print(sensor.getValue()));
+            }
             if (sensor.getType() == SensorType.TEMPERATURE || sensor.getType() == SensorType.HUMIDITY) {
                 this.descriptor.setText(null);
             } else {
