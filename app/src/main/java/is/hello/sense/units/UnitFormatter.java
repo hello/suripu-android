@@ -15,6 +15,7 @@ import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.interactors.Interactor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.util.Constants;
 import rx.Observable;
 
 public class UnitFormatter extends Interactor {
@@ -61,7 +62,6 @@ public class UnitFormatter extends Interactor {
     }
 
     //region Formatting
-
     @NonNull
     public CharSequence formatTemperature(final double value) {
         if (value == Sensor.NO_VALUE) {
@@ -203,13 +203,12 @@ public class UnitFormatter extends Interactor {
             case PRESSURE:
                 return UNIT_SUFFIX_PRESSURE;
             case UNKNOWN:
-                default:
+            default:
                 return "";
         }
     }
 
 
-    //todo expand to handle other types
     @NonNull
     public UnitPrinter getUnitPrinterForSensorAverageValue(@NonNull final SensorType type) {
         switch (type) {
@@ -219,19 +218,23 @@ public class UnitFormatter extends Interactor {
             case HUMIDITY:
                 return this::formatHumidity;
             default:
-                return UnitPrinter.SIMPLE;
+                return value -> {
+                    if (value == Sensor.NO_VALUE) {
+                        return placeHolder;
+                    }
+                    return UnitPrinter.SIMPLE.print(value);
+                };
         }
     }
 
     @NonNull
     public CharSequence getFormattedSensorValue(@NonNull final SensorType type, final float value) {
+        if (value == Sensor.NO_VALUE) {
+            return placeHolder;
+        }
         switch (type) {
             case TEMPERATURE:
-                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, false)) {
-                    return Styles.assembleReadingAndUnit(value, getSuffixForSensor(type));
-                } else {
-                    return Styles.assembleReadingAndUnit(UnitOperations.celsiusToFahrenheit(value), getSuffixForSensor(type));
-                }
+                return formatTemperature(value);
             case LIGHT:
                 return Styles.assembleReadingAndUnit(value, getSuffixForSensor(type), 1);
             default:
