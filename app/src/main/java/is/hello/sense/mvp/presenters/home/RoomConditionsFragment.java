@@ -35,8 +35,8 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 
 public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsView>
-        implements  ArrayRecyclerAdapter.OnItemClickedListener<Sensor>,
-                    SensorResponseAdapter.ErrorItemClickListener{
+        implements ArrayRecyclerAdapter.OnItemClickedListener<Sensor>,
+        SensorResponseAdapter.ErrorItemClickListener {
     private final static long WELCOME_CARD_TIMES_SHOWN_LIMIT = 2;
 
     @Inject
@@ -160,14 +160,14 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
             case OK:
                 showWelcomeCardIfNeeded();
                 final List<Sensor> sensors = currentConditions.getSensors();
-                bindAndSubscribe(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)),
-                                 sensorsDataResponse -> {
-                                     for (final Sensor sensor : sensors) {
-                                         sensor.setSensorValues(sensorsDataResponse);
-                                     }
-                                     this.adapter.replaceAll(sensors);
-                                 },
-                                 throwable -> Log.e("Sensor", "error: " + throwable));
+                bind(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)))
+                        .subscribe(
+                                sensorsDataResponse -> {
+                                    for (final Sensor sensor : sensors) {
+                                        sensor.setSensorValues(sensorsDataResponse);
+                                    }
+                                    this.adapter.replaceAll(sensors);
+                                });
                 break;
             case NO_SENSE:
                 adapter.showSenseMissingCard();
@@ -209,7 +209,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     }
 
     @Override
-    public void onErrorItemClicked(){
+    public void onErrorItemClicked() {
         final Intent intent = new Intent(getActivity(), OnboardingActivity.class);
         intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
         intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
