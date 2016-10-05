@@ -235,7 +235,15 @@ public class SensorGraphDrawable extends Drawable {
             return;
         }
 
-        final int position = (int) (scrubberLocation / xInc);
+        final int position = (int)  (scrubberLocation / xInc);
+        if(position < 0 || position > sensor.getSensorValues().length - 1){
+            return;
+        }
+        /*final int maxPosition = sensor.getSensorValues().length - 1;
+        if(position < 0) { position = ; }
+        else if (position > maxPosition) {
+            position = maxPosition;
+        }*/
         final float yLoc = getValueHeight(sensor.getSensorValues()[position]);
 
         drawingPath.reset();
