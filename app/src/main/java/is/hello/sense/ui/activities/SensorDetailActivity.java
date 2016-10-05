@@ -4,11 +4,13 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.Window;
 
 import java.util.Collections;
@@ -28,6 +30,7 @@ public class SensorDetailActivity extends ScopedInjectionActivity
         implements FragmentNavigation {
     private static final String EXTRA_SENSOR = SensorDetailActivity.class.getName() + ".EXTRA_SENSOR";
     private FragmentNavigationDelegate navigationDelegate;
+    private ActionBar actionBar;
 
     public static void startActivity(@NonNull final Context context,
                                      @NonNull final Sensor sensor) {
@@ -57,12 +60,11 @@ public class SensorDetailActivity extends ScopedInjectionActivity
             Windows.setStatusBarColor(window, Drawing.darkenColorBy(color, .2f));
         }
 
-        final ActionBar actionBar = getActionBar();
+        actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.setTitle(sensor.getName());
-            actionBar.setBackgroundDrawable(new ColorDrawableCompat(color));
+            setActionbarColor(sensor.getColor());
         }
-
         showSensorDetailFragment(sensor);
 
     }
@@ -94,7 +96,17 @@ public class SensorDetailActivity extends ScopedInjectionActivity
     }
 
 
+    public final void setActionbarColor(final int color) {
+        Log.e("Set Action", "Bar Color Start");
+        if (actionBar != null) {
+            actionBar.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this,color)));
+        }
+        Log.e("Set Action", "Bar Color End");
+
+    }
+
     private void showSensorDetailFragment(@NonNull final Sensor sensor) {
         navigationDelegate.pushFragment(SensorDetailFragment.createFragment(sensor), null, false);
     }
+
 }
