@@ -56,14 +56,10 @@ public class AirQualityCard extends LinearLayout {
             inflate(getContext(), R.layout.item_chevron_row, this);
             final View row = getChildAt(getChildCount() - 1);
             ((TextView) row.findViewById(R.id.item_chevron_view_name)).setText(sensor.getName());
-            if (sensor.getValue() == null) {
-                ((TextView) row.findViewById(R.id.item_chevron_view_value)).setText(R.string.missing_data_placeholder);
+            if (unitFormatter == null) {
+                ((TextView) row.findViewById(R.id.item_chevron_view_value)).setText(formatValue(sensor.getValue(), Constants.EMPTY_STRING));
             } else {
-                if (unitFormatter == null) {
-                    ((TextView) row.findViewById(R.id.item_chevron_view_value)).setText(formatValue(sensor.getValue(), Constants.EMPTY_STRING));
-                } else {
-                    ((TextView) row.findViewById(R.id.item_chevron_view_value)).setText(formatValue(sensor.getValue(), unitFormatter.getSuffixForSensor(sensor.getType())));
-                }
+                ((TextView) row.findViewById(R.id.item_chevron_view_value)).setText(formatValue(sensor.getValue(), unitFormatter.getSuffixForSensor(sensor.getType())));
             }
             ((TextView) row.findViewById(R.id.item_chevron_view_value)).setTextColor(ContextCompat.getColor(getContext(), sensor.getColor()));
             row.setOnClickListener(v -> {

@@ -158,11 +158,7 @@ public final class SensorDetailView extends PresenterView
                          @NonNull final String[] labels) {
         post(() -> {
             this.scrollView.setGraphView(sensorGraphView);
-            if (sensor.getValue() == null) {
-                this.valueTextView.setText(R.string.missing_data_placeholder);
-            } else {
-                this.valueTextView.setText(unitFormatter.getUnitPrinterForSensorAverageValue(sensor.getType()).print(sensor.getValue()));
-            }
+            this.valueTextView.setText(unitFormatter.getUnitPrinterForSensorAverageValue(sensor.getType()).print(sensor.getValue()));
             this.messageTextView.setText(sensor.getMessage());
             this.progressBar.setVisibility(GONE);
             this.sensorGraphView.setVisibility(VISIBLE);
