@@ -160,17 +160,15 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         this.stateSafeExecutor.execute(() -> {
             final ArrayList<Sensor> sensors = new ArrayList<>();
             sensors.add(this.sensor);
-            this.apiService.postSensors(new SensorDataRequest(queryScope, sensors))
-                           .subscribe(sensorsDataResponse -> {
-                                          this.stateSafeExecutor.execute(() -> {
-                                              changeActionBarColor(this.sensor.getColor());
-                                              this.timestampQuery.setTimestamps(sensorsDataResponse.getTimestamps());
-                                              this.sensor.setSensorValues(sensorsDataResponse);
-                                              this.presenterView.updateSensor(this.sensor);
-                                              this.presenterView.setGraph(this.sensor, SensorGraphView.StartDelay.SHORT, queryScope == QueryScope.DAY_5_MINUTE ? getDayLabels() : getWeekLabels());
-                                          });
-                                      },
-                                      this::handleError);
+            bind(this.apiService.postSensors(new SensorDataRequest(queryScope, sensors)))
+                    .subscribe(sensorsDataResponse -> {
+                                   changeActionBarColor(this.sensor.getColor());
+                                   this.timestampQuery.setTimestamps(sensorsDataResponse.getTimestamps());
+                                   this.sensor.setSensorValues(sensorsDataResponse);
+                                   this.presenterView.updateSensor(this.sensor);
+                                   this.presenterView.setGraph(this.sensor, SensorGraphView.StartDelay.SHORT, queryScope == QueryScope.DAY_5_MINUTE ? getDayLabels() : getWeekLabels());
+                               },
+                               this::handleError);
         });
     }
 
