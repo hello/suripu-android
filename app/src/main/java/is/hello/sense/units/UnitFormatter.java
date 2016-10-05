@@ -282,7 +282,7 @@ public class UnitFormatter extends Interactor {
             case TVOC:
                 return R.string.sensor_about_voc;
             case PRESSURE:
-                return R.string.sensor_about_voc;
+                return R.string.sensor_about_pressure;
             default:
                 logEvent("No string found for type: " + type);
                 return R.string.empty;
