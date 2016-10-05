@@ -33,7 +33,7 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
 
     public RoomCheckPresenter(@NonNull final SensorResponseInteractor interactor,
                               @NonNull final UnitFormatter unitFormatter,
-                              @NonNull final RoomCheckResMapper mapper){
+                              @NonNull final RoomCheckResMapper mapper) {
         this.interactor = interactor;
         this.unitFormatter = unitFormatter;
         this.mapper = mapper;
@@ -79,7 +79,7 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
         sensors.addAll(current.getSensors());
         final int sensorsSize = sensors.size();
         final @DrawableRes int[] types = new int[sensorsSize];
-        for(int i=0; i < sensorsSize; i++){
+        for (int i = 0; i < sensorsSize; i++) {
             types[i] = mapper.getInitialIconForSensor(sensors.get(i).getType());
         }
         view.createSensorConditionViews(types);
@@ -121,11 +121,11 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
                 TimeUnit.MILLISECONDS);
     }
 
-    public int getSensorConvertedValue(@NonNull final Sensor sensor){
+    public int getSensorConvertedValue(@NonNull final Sensor sensor) {
         final UnitConverter unitConverter = unitFormatter.getUnitConverterForSensor(sensor.getType());
         int convertedValue = 0;
-        if (sensor.getValue() != null) {
-            convertedValue = (int) unitConverter.convert(sensor.getValue().longValue());
+        if (sensor.getValue() != Sensor.NO_VALUE) {
+            convertedValue = (int) unitConverter.convert(sensor.getValue());
         }
         return convertedValue;
     }
@@ -133,9 +133,7 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
     public void jumpToEnd(final boolean animate) {
         this.canFinish = true;
         deferWorker.unsubscribe();
-        execute(() -> {
-            view.showCompletion(animate, bind(() -> view.finishFlow()));
-        });
+        execute(() -> view.showCompletion(animate, bind(view::finishFlow)));
 
     }
 

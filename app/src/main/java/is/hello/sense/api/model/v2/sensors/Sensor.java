@@ -72,8 +72,10 @@ public class Sensor extends ApiResponse {
         return message;
     }
 
-    @Nullable
-    public Double getValue() {
+    public double getValue() {
+        if (value == null) {
+            return NO_VALUE;
+        }
         return value;
     }
 
