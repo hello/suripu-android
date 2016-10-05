@@ -134,6 +134,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     public final void onUpdate() {
         checkRoomConditions = true;
         this.sensorResponseInteractor.update();
+        this.presenterView.showProgress();
     }
 
     //endregion
@@ -156,6 +157,8 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     }
 
     public final void bindConditions(@NonNull final SensorResponse currentConditions) {
+        presenterView.hideProgress();
+
         switch (currentConditions.getStatus()) {
             case OK:
                 showWelcomeCardIfNeeded();
@@ -182,6 +185,8 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     }
 
     public final void conditionsUnavailable(@NonNull final Throwable e) {
+        presenterView.hideProgress();
+
         Logger.error(RoomConditionsFragment.class.getSimpleName(), "Could not load conditions", e);
         if (ApiException.isNetworkError(e)) {
             this.adapter.displayMessage(false, 0, getString(R.string.error_room_conditions_unavailable),
