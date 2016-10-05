@@ -258,11 +258,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
 
     @Override
     public void onScrubberReleased() {
-        if (this.sensor.getValue() != null) {
-            this.presenterView.setValueAndMessage(this.unitFormatter.getUnitPrinterForSensorAverageValue(this.sensor.getType()).print(this.sensor.getValue()), this.sensor.getMessage());
-        } else {
-            this.presenterView.setValueAndMessage(getString(R.string.missing_data_placeholder), this.sensor.getMessage());
-        }
+        this.presenterView.setValueAndMessage(this.unitFormatter.getUnitPrinterForSensorAverageValue(this.sensor.getType()).print(this.sensor.getValue()), this.sensor.getMessage());
     }
 
     private class TimestampQuery {
