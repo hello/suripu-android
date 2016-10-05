@@ -65,12 +65,13 @@ public final class SensorDetailView extends PresenterView
         this.about = (TextView) findViewById(R.id.fragment_sensor_detail_about_body);
         this.scrollView.requestDisallowInterceptTouchEvent(true);
         this.scrollView.setGraphView(sensorGraphView);
-        this.subNavSelector.setToggleButtonColor(R.color.white);
         this.subNavSelector.addOption(R.string.sensor_detail_last_day, false);
         this.subNavSelector.addOption(R.string.sensor_detail_past_week, false);
         this.subNavSelector.setSelectedButton(subNavSelector.getButtonAt(0));
-        this.sensorGraphView.setScrubberCallback(scrubberCallback);
         this.subNavSelector.setOnSelectionChangedListener(this);
+        this.subNavSelector.setButtonSelectedColorRes(R.color.white);
+        this.subNavSelector.setButtonNotSelectedColorRes(R.color.white_60);
+        this.sensorGraphView.setScrubberCallback(scrubberCallback);
         this.selectionChangedListener = listener;
 
 
@@ -78,7 +79,6 @@ public final class SensorDetailView extends PresenterView
             @Override
             public void onGlobalLayout() {
                 /*
-
                     There isn't a way to position the graph at the bottom of the screen while it's in a
                     ScrollView via xml.
 
@@ -139,9 +139,8 @@ public final class SensorDetailView extends PresenterView
             this.about.setText(unitFormatter.getAboutStringRes(sensor.getType()));
 
             final int color = ContextCompat.getColor(context, sensor.getColor());
-            this.subNavSelector.setBackgroundColor(color);
             this.subNavSelector.setBackground(new TabsBackgroundDrawable(context.getResources(),
-                                                                         TabsBackgroundDrawable.Style.SENSOR_DETAIL,
+                                                                         TabsBackgroundDrawable.Style.SUBNAV,
                                                                          color));
             this.subNavSelector.getButtonAt(0).setBackgroundColor(color);
             this.subNavSelector.getButtonAt(1).setBackgroundColor(color);

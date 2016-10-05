@@ -243,9 +243,9 @@ public class UnitFormatter extends Interactor {
         switch (type) {
             case TEMPERATURE:
                 if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, false)) {
-                    measuredIn = ApiService.UNIT_TEMPERATURE_CELSIUS;
+                    measuredIn = ApiService.UNIT_TEMPERATURE_CELSIUS.toUpperCase();
                 } else {
-                    measuredIn = ApiService.UNIT_TEMPERATURE_US_CUSTOMARY;
+                    measuredIn = ApiService.UNIT_TEMPERATURE_US_CUSTOMARY.toUpperCase();
                 }
             default:
                 measuredIn += getSuffixForSensor(type);

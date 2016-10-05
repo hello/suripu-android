@@ -2,7 +2,6 @@ package is.hello.sense.api.model.v2.sensors;
 
 import android.content.Context;
 import android.support.annotation.ColorRes;
-import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
@@ -101,7 +100,6 @@ public class Sensor extends ApiResponse {
         // ide complains about simplifying. Basically if a sensor's condition is not available, treat the other sensor as better condition.
         return condition == null || sensor.condition != null && condition.value > sensor.getCondition().value;
     }
-
 
     @Override
     public String toString() {
