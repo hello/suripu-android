@@ -12,13 +12,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import org.joda.time.DateTime;
-
-import java.util.List;
-
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
-import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.SensorDetailScrollView;
 import is.hello.sense.ui.widget.SensorScaleList;
@@ -39,21 +34,23 @@ public final class SensorDetailView extends PresenterView
     private final SelectorView subNavSelector;
     private final TextView valueTextView;
     private final TextView messageTextView;
+    private final TextView about;
     private final SensorGraphView sensorGraphView;
     private final SensorDetailScrollView scrollView;
     private final SensorScaleList scaleList;
     private final ProgressBar progressBar;
-    private final TextView about;
     private final SelectorView.OnSelectionChangedListener selectionChangedListener;
     private final UnitFormatter unitFormatter;
     private int graphHeight = 0;
     private int lastSelectedIndex = -1;
+    private final int noDataColor;
 
     public SensorDetailView(@NonNull final Activity activity,
                             @NonNull final UnitFormatter unitFormatter,
                             @NonNull final SelectorView.OnSelectionChangedListener listener,
                             @NonNull final SensorGraphDrawable.ScrubberCallback scrubberCallback) {
         super(activity);
+        noDataColor = ContextCompat.getColor(getContext(), R.color.dim);
         this.unitFormatter = unitFormatter;
         this.subNavSelector = (SelectorView) findViewById(R.id.fragment_sensor_detail_selector);
         this.valueTextView = (TextView) findViewById(R.id.fragment_sensor_detail_value);
@@ -63,7 +60,6 @@ public final class SensorDetailView extends PresenterView
         this.progressBar = (ProgressBar) findViewById(R.id.fragment_sensor_detail_progress);
         this.scaleList = (SensorScaleList) findViewById(R.id.fragment_sensor_detail_scales);
         this.about = (TextView) findViewById(R.id.fragment_sensor_detail_about_body);
-        this.scrollView.requestDisallowInterceptTouchEvent(true);
         this.scrollView.setGraphView(sensorGraphView);
         this.subNavSelector.addOption(R.string.sensor_detail_last_day, false);
         this.subNavSelector.addOption(R.string.sensor_detail_past_week, false);
@@ -138,18 +134,20 @@ public final class SensorDetailView extends PresenterView
             this.scaleList.renderScales(sensor.getScales(), unitFormatter.getMeasuredInString(sensor.getType()));
             this.about.setText(unitFormatter.getAboutStringRes(sensor.getType()));
 
-            final int color = ContextCompat.getColor(context, sensor.getColor());
-            this.subNavSelector.setBackground(new TabsBackgroundDrawable(context.getResources(),
-                                                                         TabsBackgroundDrawable.Style.SUBNAV,
-                                                                         color));
-            this.subNavSelector.getButtonAt(0).setBackgroundColor(color);
-            this.subNavSelector.getButtonAt(1).setBackgroundColor(color);
-            this.valueTextView.setTextColor(color);
+            updateColorScheme(ContextCompat.getColor(getContext(), sensor.getColor()));
         });
     }
 
-    public final void bindError(@NonNull final Throwable throwable) {
-        //  refreshGraph(SensorGraphView.StartDelay.SHORT); // todo change
+    public final void bindError() {
+        post(() -> {
+            updateColorScheme(noDataColor);
+            this.scrollView.setGraphView(null);
+            this.messageTextView.setText(R.string.sensor_detail_no_data);
+            this.progressBar.setVisibility(GONE);
+            this.subNavSelector.setEnabled(true);
+            this.valueTextView.setTextColor(noDataColor);
+            this.valueTextView.setText(R.string.missing_data_placeholder);
+        });
 
     }
 
@@ -157,6 +155,7 @@ public final class SensorDetailView extends PresenterView
                          @NonNull final SensorGraphView.StartDelay delay,
                          @NonNull final String[] labels) {
         post(() -> {
+            this.scrollView.setGraphView(sensorGraphView);
             this.valueTextView.setText(unitFormatter.getUnitPrinterForSensorAverageValue(sensor.getType()).print(sensor.getValue()));
             this.messageTextView.setText(sensor.getMessage());
             this.progressBar.setVisibility(GONE);
@@ -180,9 +179,23 @@ public final class SensorDetailView extends PresenterView
     }
 
     public final void setValueAndMessage(@Nullable final CharSequence value, @Nullable final String message) {
-        this.valueTextView.setText(value);
-        this.messageTextView.setText(message);
+        post(() -> {
+            this.valueTextView.setText(value);
+            this.messageTextView.setText(message);
 
+        });
+
+    }
+
+    private void updateColorScheme(final int color) {
+        post(() -> {
+            this.subNavSelector.setBackground(new TabsBackgroundDrawable(context.getResources(),
+                                                                         TabsBackgroundDrawable.Style.SUBNAV,
+                                                                         color));
+            this.subNavSelector.getButtonAt(0).setBackgroundColor(color);
+            this.subNavSelector.getButtonAt(1).setBackgroundColor(color);
+            this.valueTextView.setTextColor(color);
+        });
     }
 
     @Override
