@@ -8,7 +8,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
 
 public enum Condition implements Enums.FromString {
-    UNKNOWN(R.color.sensor_unknown,0),
+    UNKNOWN(R.color.dim,0),
     ALERT(R.color.sensor_alert,1),
     WARNING(R.color.sensor_warning,2),
     IDEAL(R.color.sensor_ideal,3);
@@ -22,7 +22,7 @@ public enum Condition implements Enums.FromString {
         this.value = value;
     }
 
-    public static Condition fromString(@NonNull String value) {
+    public static Condition fromString(@NonNull final String value) {
         return Enums.fromString(value, values(), UNKNOWN);
     }
 }
