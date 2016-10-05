@@ -63,6 +63,14 @@ public class UnitFormatter extends Interactor {
 
     //region Formatting
     @NonNull
+    public CharSequence formatPlaceholder(final double value) {
+        if (value == Sensor.NO_VALUE) {
+            return placeHolder;
+        }
+        return UnitPrinter.SIMPLE.print(value);
+    }
+
+    @NonNull
     public CharSequence formatTemperature(final double value) {
         if (value == Sensor.NO_VALUE) {
             return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_TEMPERATURE);
@@ -218,12 +226,7 @@ public class UnitFormatter extends Interactor {
             case HUMIDITY:
                 return this::formatHumidity;
             default:
-                return value -> {
-                    if (value == Sensor.NO_VALUE) {
-                        return placeHolder;
-                    }
-                    return UnitPrinter.SIMPLE.print(value);
-                };
+                return this::formatPlaceholder;
         }
     }
 
