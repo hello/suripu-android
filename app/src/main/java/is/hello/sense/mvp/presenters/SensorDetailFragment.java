@@ -246,7 +246,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
                 message = null;
             }
         }
-        if (this.sensor.getSensorValues().length > position && this.sensor.getSensorValues()[position] != Sensor.NO_VALUE) {
+        if (this.sensor.getSensorValues().length > position) {
             value = this.unitFormatter.getFormattedSensorValue(this.sensor.getType(), this.sensor.getSensorValues()[position]).toString();
         } else {
             value = getString(R.string.missing_data_placeholder);
