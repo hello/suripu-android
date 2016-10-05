@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.Window;
 
 import java.util.Collections;
@@ -22,7 +21,6 @@ import is.hello.sense.mvp.modules.SensorDetailModule;
 import is.hello.sense.mvp.presenters.SensorDetailFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
-import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Windows;
 
@@ -97,12 +95,9 @@ public class SensorDetailActivity extends ScopedInjectionActivity
 
 
     public final void setActionbarColor(final int color) {
-        Log.e("Set Action", "Bar Color Start");
         if (actionBar != null) {
-            actionBar.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this,color)));
+            actionBar.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, color)));
         }
-        Log.e("Set Action", "Bar Color End");
-
     }
 
     private void showSensorDetailFragment(@NonNull final Sensor sensor) {
