@@ -1,8 +1,8 @@
 package is.hello.sense.api.model.v2.sensors;
 
-import android.content.Context;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -38,7 +38,7 @@ public class Sensor extends ApiResponse {
     private Condition condition;
 
     @SerializedName("value")
-    private Double value;
+    private Double value; // Will be null when status is "waiting for data"
 
     @SerializedName("scale")
     private List<Scale> scales;
@@ -72,7 +72,10 @@ public class Sensor extends ApiResponse {
         return message;
     }
 
-    public Double getValue() {
+    public double getValue() {
+        if (value == null) {
+            return NO_VALUE;
+        }
         return value;
     }
 
