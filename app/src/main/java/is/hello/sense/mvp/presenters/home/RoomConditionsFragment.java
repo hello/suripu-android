@@ -34,8 +34,9 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 
-public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsView> implements
-        ArrayRecyclerAdapter.OnItemClickedListener<Sensor> {
+public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsView>
+        implements  ArrayRecyclerAdapter.OnItemClickedListener<Sensor>,
+                    SensorResponseAdapter.ErrorItemClickListener{
     private final static long WELCOME_CARD_TIMES_SHOWN_LIMIT = 2;
 
     @Inject
@@ -57,6 +58,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
             if (this.adapter == null) {
                 this.adapter = new SensorResponseAdapter(getActivity().getLayoutInflater(), unitFormatter);
                 this.adapter.setOnItemClickedListener(this);
+                this.adapter.setErrorItemClickListener(this);
             }
             this.presenterView = new RoomConditionsView(getActivity(), this.adapter);
         }
@@ -116,6 +118,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         if (this.adapter != null) {
             this.adapter.release();
             this.adapter.setOnItemClickedListener(null);
+            this.adapter.setErrorItemClickListener(null);
             this.adapter.clear();
         }
 
@@ -185,16 +188,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
                                         R.string.action_retry,
                                         ignored -> this.sensorResponseInteractor.update());
         } else if (ApiException.statusEquals(e, 404)) {
-            this.adapter.displayMessage(true,
-                                        0,
-                                        getString(R.string.error_room_conditions_no_sense),
-                                        R.string.action_pair_new_sense,
-                                        ignored -> {
-                                            final Intent intent = new Intent(getActivity(), OnboardingActivity.class);
-                                            intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
-                                            intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
-                                            startActivity(intent);
-                                        });
+            this.adapter.showSenseMissingCard();
         } else {
             final StringRef messageRef = Errors.getDisplayMessage(e);
             final String message = messageRef != null
@@ -212,6 +206,14 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     @Override
     public final void onItemClicked(final int position, final Sensor sensor) {
         SensorDetailActivity.startActivity(getActivity(), sensor);
+    }
+
+    @Override
+    public void onErrorItemClicked(){
+        final Intent intent = new Intent(getActivity(), OnboardingActivity.class);
+        intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
+        intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
+        this.startActivity(intent);
     }
 
 }
