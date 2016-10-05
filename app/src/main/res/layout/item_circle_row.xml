@@ -41,7 +41,7 @@
             android:layout_height="@dimen/x1"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginStart="@dimen/x.5"/>
+            android:layout_marginStart="@dimen/x1"/>
     </RelativeLayout>
 
     <View

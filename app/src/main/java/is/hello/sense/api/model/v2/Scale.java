@@ -12,32 +12,43 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
 
 public class Scale implements Serializable {
-    @SerializedName("min")
-    private Double min;
-
-    @SerializedName("max")
-    private Double max;
 
     @SerializedName("name")
     private String name;
 
+    @SerializedName("min")
+    private Float min;
+
+    @SerializedName("max")
+    private Float max;
+
     @SerializedName("condition")
     private Condition condition;
 
-    public Condition getCondition() {
-        return condition;
+    public Scale(@NonNull final String name,
+                 @Nullable final Float min,
+                 @Nullable final Float max,
+                 @NonNull final Condition condition) {
+        this.name = name;
+        this.min = min;
+        this.max = max;
+        this.condition = condition;
     }
 
     public String getName() {
         return name;
     }
 
-    public Double getMax() {
+    public Float getMin() {
+        return min;
+    }
+
+    public Float getMax() {
         return max;
     }
 
-    public Double getMin() {
-        return min;
+    public Condition getCondition() {
+        return condition;
     }
 
     @NonNull
@@ -54,8 +65,8 @@ public class Scale implements Serializable {
         return "";
     }
 
-    private String format(final double value) {
-        return String.format("%.0f", value);
+    public static String format(final float value) {
+        return String.format("%.0f", Math.floor(value));
     }
 
     @Override
