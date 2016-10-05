@@ -2,6 +2,7 @@ package is.hello.sense.mvp.presenters;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.view.View;
 
@@ -22,10 +23,10 @@ import is.hello.sense.api.model.v2.sensors.QueryScope;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.X;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SensorResponseInteractor;
 import is.hello.sense.mvp.view.SensorDetailView;
+import is.hello.sense.ui.activities.SensorDetailActivity;
 import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
@@ -107,7 +108,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
                                  }
                              }
                          },
-                         Functions.LOG_ERROR);
+                         this::handleError);
         this.updateTimer.setOnUpdate(this.sensorResponseInteractor::update);
     }
 
@@ -161,12 +162,13 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
             sensors.add(sensor);
             this.apiService.postSensors(new SensorDataRequest(queryScope, sensors))
                            .subscribe(sensorsDataResponse -> {
+                                          changeActionBarColor(sensor.getColor());
                                           timestampQuery.setTimestamps(sensorsDataResponse.getTimestamps());
                                           sensor.setSensorValues(sensorsDataResponse);
                                           presenterView.updateSensor(sensor);
                                           presenterView.setGraph(sensor, SensorGraphView.StartDelay.SHORT, queryScope == QueryScope.DAY_5_MINUTE ? getDayLabels() : getWeekLabels());
                                       },
-                                      this.presenterView::bindError);
+                                      this::handleError);
         });
     }
 
@@ -208,6 +210,20 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
             calendar.add(Calendar.MINUTE, minuteDiff);
         }
         return labels;
+    }
+
+    private void handleError(@NonNull final Throwable throwable) {
+        changeActionBarColor(R.color.dim);
+        this.presenterView.bindError();
+    }
+
+    private void changeActionBarColor(@ColorRes final int colorRes) {
+        final Activity activity = getActivity();
+        if (activity instanceof SensorDetailActivity) {
+            // Some bug occurs when you try to change the actionbar from the main thread causing everything to freeze but never crash.
+            presenterView.post(() -> ((SensorDetailActivity) activity).setActionbarColor(colorRes));
+        }
+
     }
 
     @Override
