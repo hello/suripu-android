@@ -137,4 +137,5 @@
 
     <string name="error_factory_reset_original_sense_message">An error occurred while attempting to factory reset your original Sense. Make sure Sense is plugged in, nearby and try again.</string>
 
+    <string name="sensor_detail_no_data">Unable to load data.</string>
 </resources>

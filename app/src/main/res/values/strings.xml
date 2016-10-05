@@ -659,7 +659,6 @@
     <string name="sensor_detail_last_day">LAST DAY</string>
     <string name="sensor_detail_past_week">PAST WEEK</string>
     <string name="sensor_detail_about_title">About</string>
-    <string name="sensor_detail_no_data">Unable to load data.</string>
     <string name="sensor_scale_list_title">Scale</string>
     <string name="sensor_scale_list_measured_in">Measured in %1$s</string>
     <string name="sensor_scale_min_value">0 to %1$s</string>

@@ -66,10 +66,10 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     public final void initializePresenterView() {
         if (this.presenterView == null) {
             this.presenterView = new SensorDetailView(getActivity(),
-                                                      unitFormatter,
+                                                      this.unitFormatter,
                                                       this,
                                                       this);
-            this.presenterView.updateSensor(sensor);
+            this.presenterView.updateSensor(this.sensor);
         }
     }
 
@@ -78,7 +78,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         super.onCreate(savedInstanceState);
         addInteractor(this.preferences);
         addInteractor(this.sensorResponseInteractor);
-        dateFormatter = new DateFormatter(getActivity());
+        this.dateFormatter = new DateFormatter(getActivity());
         if (savedInstanceState != null && savedInstanceState.containsKey(ARG_SENSOR)) {
             this.sensor = (Sensor) savedInstanceState.getSerializable(ARG_SENSOR);
         } else {
@@ -104,7 +104,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
                              for (final Sensor sensor : sensorResponse.getSensors()) {
                                  if (sensor.getType() == this.sensor.getType()) {
                                      this.sensor = sensor;
-                                     updateSensors(timestampQuery.queryScope);
+                                     updateSensors(this.timestampQuery.queryScope);
                                  }
                              }
                          },
@@ -148,25 +148,27 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
-        if (sensor != null) {
-            outState.putSerializable(ARG_SENSOR, sensor);
+        if (this.sensor != null) {
+            outState.putSerializable(ARG_SENSOR, this.sensor);
         }
         super.onSaveInstanceState(outState);
     }
 
     // consider creating a hashmap/cache to hold these in. Limit requests to time.
     private synchronized void updateSensors(@NonNull final QueryScope queryScope) {
-        timestampQuery = new TimestampQuery(queryScope);
+        this.timestampQuery = new TimestampQuery(queryScope);
         this.stateSafeExecutor.execute(() -> {
             final ArrayList<Sensor> sensors = new ArrayList<>();
-            sensors.add(sensor);
+            sensors.add(this.sensor);
             this.apiService.postSensors(new SensorDataRequest(queryScope, sensors))
                            .subscribe(sensorsDataResponse -> {
-                                          changeActionBarColor(sensor.getColor());
-                                          timestampQuery.setTimestamps(sensorsDataResponse.getTimestamps());
-                                          sensor.setSensorValues(sensorsDataResponse);
-                                          presenterView.updateSensor(sensor);
-                                          presenterView.setGraph(sensor, SensorGraphView.StartDelay.SHORT, queryScope == QueryScope.DAY_5_MINUTE ? getDayLabels() : getWeekLabels());
+                                          this.stateSafeExecutor.execute(() -> {
+                                              changeActionBarColor(this.sensor.getColor());
+                                              this.timestampQuery.setTimestamps(sensorsDataResponse.getTimestamps());
+                                              this.sensor.setSensorValues(sensorsDataResponse);
+                                              this.presenterView.updateSensor(this.sensor);
+                                              this.presenterView.setGraph(this.sensor, SensorGraphView.StartDelay.SHORT, queryScope == QueryScope.DAY_5_MINUTE ? getDayLabels() : getWeekLabels());
+                                          });
                                       },
                                       this::handleError);
         });
@@ -221,7 +223,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         final Activity activity = getActivity();
         if (activity instanceof SensorDetailActivity) {
             // Some bug occurs when you try to change the actionbar from the main thread causing everything to freeze but never crash.
-            presenterView.post(() -> ((SensorDetailActivity) activity).setActionbarColor(colorRes));
+            this.presenterView.post(() -> ((SensorDetailActivity) activity).setActionbarColor(colorRes));
         }
 
     }
@@ -230,35 +232,36 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     public void onPositionScrubbed(final int position) {
         final String value;
         final String message;
-        if (timestampQuery.timestamps.size() < position) {
+        if (this.timestampQuery.timestamps.size() < position) {
             message = null;
         } else {
-            final long timestamp = timestampQuery.timestamps.get(position).getTimestamp();
+            final long timestamp = this.timestampQuery.timestamps.get(position).getTimestamp();
             if (timestamp != -1) {
-                if (timestampQuery.queryScope == QueryScope.DAY_5_MINUTE) {
-                    message = dateFormatter.formatAsTime(new DateTime(timestamp),
-                                                         preferences.getUse24Time());
+                if (this.timestampQuery.queryScope == QueryScope.DAY_5_MINUTE) {
+                    message = this.dateFormatter.formatAsTime(new DateTime(timestamp),
+                                                              this.preferences.getUse24Time());
                 } else {
-                    message = dateFormatter.formatAsDayAndTime(new DateTime(timestamp),
-                                                               preferences.getUse24Time());
+                    message = this.dateFormatter.formatAsDayAndTime(new DateTime(timestamp),
+                                                                    this.preferences.getUse24Time());
                 }
             } else {
                 message = null;
             }
         }
-        if (sensor.getSensorValues().length > position && sensor.getSensorValues()[position] != Sensor.NO_VALUE) {
-            value = unitFormatter.getFormattedSensorValue(sensor.getType(), sensor.getSensorValues()[position]).toString();
+        if (this.sensor.getSensorValues().length > position && this.sensor.getSensorValues()[position] != Sensor.NO_VALUE) {
+            value = this.unitFormatter.getFormattedSensorValue(this.sensor.getType(), this.sensor.getSensorValues()[position]).toString();
         } else {
             value = getString(R.string.missing_data_placeholder);
         }
-        presenterView.setValueAndMessage(value,
-                                         message);
+        this.presenterView.setValueAndMessage(value,
+                                              message);
 
     }
 
     @Override
     public void onScrubberReleased() {
-        presenterView.setValueAndMessage(unitFormatter.getUnitPrinterForSensorAverageValue(sensor.getType()).print(sensor.getValue()), sensor.getMessage());
+        this.presenterView.setValueAndMessage(this.unitFormatter.getUnitPrinterForSensorAverageValue(this.sensor.getType()).print(this.sensor.getValue()),
+                                              this.sensor.getMessage());
     }
 
     private class TimestampQuery {
