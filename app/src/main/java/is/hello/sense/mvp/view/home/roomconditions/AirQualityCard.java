@@ -59,7 +59,7 @@ public class AirQualityCard extends LinearLayout {
             if (unitFormatter == null) {
                 ((TextView) row.findViewById(R.id.item_chevron_view_value)).setText(formatValue(sensor.getValue(), Constants.EMPTY_STRING));
             } else {
-                ((TextView) row.findViewById(R.id.item_chevron_view_value)).setText(formatValue(sensor.getValue(), unitFormatter.getSuffixForSensor(sensor.getType())));
+                ((TextView) row.findViewById(R.id.item_chevron_view_value)).setText(unitFormatter.createUnitBuilder(sensor).useDefaultValue().useDefaultSuffix().buildNormal());
             }
             ((TextView) row.findViewById(R.id.item_chevron_view_value)).setTextColor(ContextCompat.getColor(getContext(), sensor.getColor()));
             row.setOnClickListener(v -> {

@@ -78,6 +78,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         super.onCreate(savedInstanceState);
         addInteractor(this.preferences);
         addInteractor(this.sensorResponseInteractor);
+        addInteractor(this.unitFormatter);
         this.dateFormatter = new DateFormatter(getActivity());
         if (savedInstanceState != null && savedInstanceState.containsKey(ARG_SENSOR)) {
             this.sensor = (Sensor) savedInstanceState.getSerializable(ARG_SENSOR);
@@ -228,7 +229,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
 
     @Override
     public void onPositionScrubbed(final int position) {
-        final String value;
+        final CharSequence value;
         final String message;
         if (this.timestampQuery.timestamps.size() < position) {
             message = null;
@@ -247,7 +248,10 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
             }
         }
         if (this.sensor.getSensorValues().length > position) {
-            value = this.unitFormatter.getFormattedSensorValue(this.sensor.getType(), this.sensor.getSensorValues()[position]).toString();
+            value = unitFormatter.createUnitBuilder(sensor)
+                                  .setValue(this.sensor.getSensorValues()[position])
+                                  .useDefaultSuffix()
+                                  .build();
         } else {
             value = getString(R.string.missing_data_placeholder);
         }
@@ -258,7 +262,12 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
 
     @Override
     public void onScrubberReleased() {
-        this.presenterView.setValueAndMessage(this.unitFormatter.getUnitPrinterForSensorAverageValue(this.sensor.getType()).print(this.sensor.getValue()), this.sensor.getMessage());
+
+        this.presenterView.setValueAndMessage(unitFormatter.createUnitBuilder(sensor)
+                                                            .useDefaultValue()
+                                                            .useDefaultSuffix()
+                                                            .build(),
+                                              this.sensor.getMessage());
     }
 
     private class TimestampQuery {

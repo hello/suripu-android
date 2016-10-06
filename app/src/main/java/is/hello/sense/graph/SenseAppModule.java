@@ -50,7 +50,6 @@ import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
 import is.hello.sense.ui.fragments.BacksideFragment;
 import is.hello.sense.ui.fragments.InsightsFragment;
 import is.hello.sense.ui.fragments.RoomConditionsFragment;
-import is.hello.sense.ui.fragments.SensorHistoryFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.TrendsFragment;
@@ -123,7 +122,6 @@ import is.hello.sense.zendesk.ZendeskModule;
                 InsightInfoFragment.class,
                 RoomConditionsFragment.class,
                 RoomConditionsInteractor.class,
-                SensorHistoryFragment.class,
                 SensorHistoryInteractor.class,
                 TrendsInteractor.class,
                 TrendsFragment.class,
