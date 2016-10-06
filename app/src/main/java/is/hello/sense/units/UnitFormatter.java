@@ -198,7 +198,7 @@ public class UnitFormatter extends Interactor {
     }
 
 
-    public synchronized UnitBuilder createUnitBuilder(@NonNull final Sensor sensor) {
+    public UnitBuilder createUnitBuilder(@NonNull final Sensor sensor) {
         return builder.updateFor(sensor);
     }
 
