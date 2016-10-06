@@ -250,8 +250,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         if (this.sensor.getSensorValues().length > position) {
             value = unitFormatter.createUnitBuilder(sensor)
                                   .setValue(this.sensor.getSensorValues()[position])
-                                  .useDefaultSuffix()
-                                  .build();
+                                  .buildWithStyle();
         } else {
             value = getString(R.string.missing_data_placeholder);
         }
@@ -264,9 +263,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     public void onScrubberReleased() {
 
         this.presenterView.setValueAndMessage(unitFormatter.createUnitBuilder(sensor)
-                                                            .useDefaultValue()
-                                                            .useDefaultSuffix()
-                                                            .build(),
+                                                            .buildWithStyle(),
                                               this.sensor.getMessage());
     }
 

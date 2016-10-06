@@ -302,11 +302,17 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             this.title.setText(sensor.getName());
             this.body.setText(sensor.getMessage());
             if (sensor.getType() == SensorType.TEMPERATURE || sensor.getType() == SensorType.HUMIDITY) {
-                this.value.setText(unitFormatter.createUnitBuilder(sensor).useDefaultValue().useDefaultSuffix().build());
+                this.value.setText(unitFormatter.createUnitBuilder(sensor)
+                                                .build());
                 this.descriptor.setText(null);
             } else {
-                this.value.setText(unitFormatter.createUnitBuilder(sensor).useDefaultValue().build());
-                this.descriptor.setText(SensorResponseAdapter.this.unitFormatter.createUnitBuilder(sensor).useEmptyValue().useDefaultSuffix().buildNormal());
+                this.value.setText(unitFormatter.createUnitBuilder(sensor)
+                                                .hideSuffix()
+                                                .build());
+                this.descriptor.setText(SensorResponseAdapter.this.unitFormatter
+                                                .createUnitBuilder(sensor)
+                                                .hideValue()
+                                                .build());
             }
             this.value.setTextColor(ContextCompat.getColor(inflater.getContext(), sensor.getColor()));
         }

@@ -21,11 +21,7 @@ public class UnitOperations {
         return Math.round(inches * 0.39370);
     }
 
-    public static double celsiusToFahrenheit(final double temperature) {
-        return Math.round((temperature * 1.8) + 32.0);
-    }
-
     public static float celsiusToFahrenheit(final float temperature) {
-        return (temperature * 1.8f) + 32.f;
+        return Math.round((temperature * 1.8) + 32.0);
     }
 }
