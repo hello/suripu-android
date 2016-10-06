@@ -74,7 +74,7 @@ public class SensorGraphDrawable extends Drawable {
     private final ValueLimits limits;
     private final String[] labels;
     private final String formattedMin;
-    private final String formmatedMax;
+    private final String formattedMax;
 
     private float scrubberLocation = NO_LOCATION;
     private float scaleFactor = 0; // Animation
@@ -99,7 +99,7 @@ public class SensorGraphDrawable extends Drawable {
                                          .setValue(this.limits.min)
                                          .buildWithStyle()
                                          .toString();
-        this.formmatedMax = unitFormatter.createUnitBuilder(sensor)
+        this.formattedMax = unitFormatter.createUnitBuilder(sensor)
                                          .setValue(this.limits.max)
                                          .buildWithStyle()
                                          .toString();
@@ -284,7 +284,7 @@ public class SensorGraphDrawable extends Drawable {
             return;
         }
         yPos = this.textPositionOffset;
-        canvas.drawText(formmatedMax,
+        canvas.drawText(formattedMax,
                         xPos,
                         yPos,
                         this.textLabelPaint);
