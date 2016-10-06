@@ -50,11 +50,7 @@ public final class RoomConditionsView extends PresenterView {
         recyclerView.setAdapter(null);
     }
 
-    public void showProgress() {
-        progressBar.setVisibility(VISIBLE);
-    }
-
-    public void hideProgress() {
-        progressBar.setVisibility(INVISIBLE);
+    public void showProgress(final boolean show) {
+        progressBar.setVisibility(show ? VISIBLE : INVISIBLE);
     }
 }
