@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
+
+import com.segment.analytics.Properties;
 
 import org.joda.time.DateTime;
 
@@ -32,6 +35,7 @@ import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
 import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 
 public final class SensorDetailFragment extends PresenterFragment<SensorDetailView>
@@ -93,6 +97,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
                 return;
             }
             this.sensor = (Sensor) args.getSerializable(ARG_SENSOR);
+            sendAnalyticsEvent(sensor);
         }
     }
 
@@ -153,6 +158,15 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
             outState.putSerializable(ARG_SENSOR, this.sensor);
         }
         super.onSaveInstanceState(outState);
+    }
+
+    private void sendAnalyticsEvent(@Nullable final Sensor sensor) {
+        if(sensor == null){
+            return;
+        }
+        final Properties properties =
+                Analytics.createProperties(Analytics.Backside.PROP_SENSOR_NAME, sensor.getType());
+        Analytics.trackEvent(Analytics.Backside.EVENT_SENSOR_HISTORY, properties);
     }
 
     // consider creating a hashmap/cache to hold these in. Limit requests to time.
