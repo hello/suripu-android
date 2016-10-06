@@ -332,11 +332,7 @@ public class HomeActivity extends ScopedInjectionActivity
                 }
                 case SENSOR: {
                     showBacksideWithItem(BacksideView.ITEM_ROOM_CONDITIONS, animate);
-
-                    final Intent sensorHistory = new Intent(this, SensorHistoryActivity.class);
-                    final String sensorName = Notification.getSensorName(notification);
-                    sensorHistory.putExtra(SensorHistoryActivity.EXTRA_SENSOR, sensorName);
-                    startActivity(sensorHistory);
+                    //todo support
 
                     break;
                 }

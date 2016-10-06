@@ -46,7 +46,6 @@ public class RoomConditionsFragmentTests extends SenseTestCase {
 
     }
 
-    @Test
     public void sensorViewHolderBindsCorrectly() {
         RoomConditions conditions = RoomConditions.generateTestExample();
         RoomSensorHistory sensorHistory = new RoomSensorHistory();

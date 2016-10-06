@@ -269,7 +269,7 @@ public class SensorGraphDrawable extends Drawable {
         this.drawingPath.reset();
         final float xPos = width * TEXT_X_POSITION_RATIO;
         float yPos = this.minHeight + this.textPositionOffset;
-        canvas.drawText(unitFormatter.getFormattedSensorValue(this.sensor.getType(), this.limits.min).toString(), xPos, yPos, this.textLabelPaint);
+        canvas.drawText(unitFormatter.createUnitBuilder(sensor).setValue(this.limits.min).useDefaultSuffix().build().toString(), xPos, yPos, this.textLabelPaint);
         yPos += this.lineDistance;
         this.drawingPath.moveTo(xPos, yPos);
         this.drawingPath.lineTo(width - xPos, yPos);
@@ -278,7 +278,7 @@ public class SensorGraphDrawable extends Drawable {
             return;
         }
         yPos = this.textPositionOffset;
-        canvas.drawText(unitFormatter.getFormattedSensorValue(this.sensor.getType(), this.limits.max).toString(), xPos, yPos, this.textLabelPaint);
+        canvas.drawText(unitFormatter.createUnitBuilder(sensor).setValue(this.limits.max).useDefaultSuffix().build().toString(), xPos, yPos, this.textLabelPaint);
         yPos += this.lineDistance;
         this.drawingPath.reset();
         this.drawingPath.moveTo(xPos, yPos);

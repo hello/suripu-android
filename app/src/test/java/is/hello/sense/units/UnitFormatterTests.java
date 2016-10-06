@@ -88,7 +88,7 @@ public class UnitFormatterTests extends InjectionTestCase {
         assertThat(unitFormatter.formatHeight(190).toString(),
                    is(equalTo("6' 3''")));
     }
-
+/*
     @Test
     public void formatTemperature() throws Exception {
         preferences.edit()
@@ -156,5 +156,5 @@ public class UnitFormatterTests extends InjectionTestCase {
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_KELVIN)));
         assertThat(unitFormatter.getSuffixForSensor(SensorType.LIGHT_TEMPERATURE),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_LIGHT_TEMPERATURE)));
-    }
+    }*/
 }
