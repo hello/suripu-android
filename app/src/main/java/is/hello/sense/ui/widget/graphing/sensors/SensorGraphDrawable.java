@@ -95,12 +95,10 @@ public class SensorGraphDrawable extends Drawable {
         this.sensor = sensor;
         this.limits = new ValueLimits(sensor.getSensorValues());
         this.labels = labels;
-        this.formattedMin = unitFormatter.createUnitBuilder(sensor)
-                                         .setValue(this.limits.min)
+        this.formattedMin = unitFormatter.createUnitBuilder(sensor.getType(), this.limits.min)
                                          .buildWithStyle()
                                          .toString();
-        this.formattedMax = unitFormatter.createUnitBuilder(sensor)
-                                         .setValue(this.limits.max)
+        this.formattedMax = unitFormatter.createUnitBuilder(sensor.getType(), this.limits.max)
                                          .buildWithStyle()
                                          .toString();
         // Sizes

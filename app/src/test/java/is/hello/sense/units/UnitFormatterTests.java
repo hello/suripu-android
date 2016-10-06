@@ -21,7 +21,8 @@ import static org.junit.Assert.assertThat;
 
 @SuppressLint("CommitPrefEdits")
 public class UnitFormatterTests extends InjectionTestCase {
-    @Inject UnitFormatter unitFormatter;
+    @Inject
+    UnitFormatter unitFormatter;
     @Inject
     PreferencesInteractor preferences;
 
@@ -88,53 +89,65 @@ public class UnitFormatterTests extends InjectionTestCase {
         assertThat(unitFormatter.formatHeight(190).toString(),
                    is(equalTo("6' 3''")));
     }
-/*
+
     @Test
     public void formatTemperature() throws Exception {
         preferences.edit()
                    .putBoolean(PreferencesInteractor.USE_CELSIUS, true)
                    .commit();
 
-        assertThat(unitFormatter.formatTemperature(4).toString(),
+        assertThat(unitFormatter.createUnitBuilder(SensorType.TEMPERATURE, 4)
+                                .buildWithStyle(),
                    is(equalTo("4 °")));
 
         preferences.edit()
                    .putBoolean(PreferencesInteractor.USE_CELSIUS, false)
                    .commit();
 
-        assertThat(unitFormatter.formatTemperature(4).toString(),
+        assertThat(unitFormatter.createUnitBuilder(SensorType.TEMPERATURE, 4)
+                                .buildWithStyle(),
                    is(equalTo("39 °")));
     }
 
+
     @Test
     public void formatLight() throws Exception {
-        assertThat(unitFormatter.formatLight(42.0).toString(),
+        assertThat(unitFormatter.createUnitBuilder(SensorType.LIGHT, 42.0f)
+                                .setValueDecimalPlaces(0)
+                                .buildWithStyle(),
                    is(equalTo("42 lx")));
-        assertThat(unitFormatter.formatLight(9.5).toString(),
+        assertThat(unitFormatter.createUnitBuilder(SensorType.LIGHT, 9.5f)
+                                .buildWithStyle(),
                    is(equalTo("9.5 lx")));
-        assertThat(unitFormatter.formatLight(1.3).toString(),
+        assertThat(unitFormatter.createUnitBuilder(SensorType.LIGHT, 1.3f)
+                                .buildWithStyle(),
                    is(equalTo("1.3 lx")));
-        assertThat(unitFormatter.formatLight(3.7).toString(),
+        assertThat(unitFormatter.createUnitBuilder(SensorType.LIGHT, 3.7f)
+                                .buildWithStyle(),
                    is(equalTo("3.7 lx")));
     }
 
     @Test
     public void formatHumidity() throws Exception {
-        assertThat(unitFormatter.formatHumidity(42).toString(),
+        assertThat(unitFormatter.createUnitBuilder(SensorType.HUMIDITY, 42)
+                                .buildWithStyle(),
                    is(equalTo("42 %")));
     }
 
     @Test
     public void formatAirQuality() throws Exception {
-        assertThat(unitFormatter.formatAirQuality(42).toString(),
+        assertThat(unitFormatter.createUnitBuilder(SensorType.TVOC, 42)
+                                .buildWithStyle(),
                    is(equalTo("42 µg/m³")));
     }
 
     @Test
     public void formatNoise() throws Exception {
-        assertThat(unitFormatter.formatNoise(42).toString(),
+        assertThat(unitFormatter.createUnitBuilder(SensorType.SOUND, 42)
+                                .buildWithStyle(),
                    is(equalTo("42 dB")));
     }
+
 
     @Test
     public void getUnitSuffixForSensor() throws Exception {
@@ -151,10 +164,10 @@ public class UnitFormatterTests extends InjectionTestCase {
         assertThat(unitFormatter.getSuffixForSensor(SensorType.CO2),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_GAS)));
         assertThat(unitFormatter.getSuffixForSensor(SensorType.TVOC),
-                   is(equalTo(UnitFormatter.UNIT_SUFFIX_GAS)));
+                   is(equalTo(UnitFormatter.UNIT_SUFFIX_AIR_QUALITY)));
         assertThat(unitFormatter.getSuffixForSensor(SensorType.UV),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_KELVIN)));
         assertThat(unitFormatter.getSuffixForSensor(SensorType.LIGHT_TEMPERATURE),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_LIGHT_TEMPERATURE)));
-    }*/
+    }
 }
