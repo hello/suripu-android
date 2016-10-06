@@ -164,7 +164,7 @@ public class SensorGraphDrawable extends Drawable {
     public void draw(final Canvas canvas) {
         this.drawingPath.reset();
         final float[] values = this.sensor.getSensorValues();
-        if (values == null || values.length == 0){
+        if (values == null || values.length == 0) {
             return;
         }
         // Cast once
@@ -238,8 +238,8 @@ public class SensorGraphDrawable extends Drawable {
             return;
         }
 
-        final int position = (int)  (scrubberLocation / xInc);
-        if(position < 0 || position > sensor.getSensorValues().length - 1){
+        final int position = (int) (scrubberLocation / xInc);
+        if (position < 0 || position > sensor.getSensorValues().length - 1) {
             return;
         }
         /*final int maxPosition = sensor.getSensorValues().length - 1;
@@ -269,7 +269,13 @@ public class SensorGraphDrawable extends Drawable {
         this.drawingPath.reset();
         final float xPos = width * TEXT_X_POSITION_RATIO;
         float yPos = this.minHeight + this.textPositionOffset;
-        canvas.drawText(unitFormatter.createUnitBuilder(sensor).setValue(this.limits.min).useDefaultSuffix().build().toString(), xPos, yPos, this.textLabelPaint);
+        canvas.drawText(unitFormatter.createUnitBuilder(sensor)
+                                     .setValue(this.limits.min)
+                                     .buildWithStyle()
+                                     .toString(),
+                        xPos,
+                        yPos,
+                        this.textLabelPaint);
         yPos += this.lineDistance;
         this.drawingPath.moveTo(xPos, yPos);
         this.drawingPath.lineTo(width - xPos, yPos);
@@ -278,7 +284,13 @@ public class SensorGraphDrawable extends Drawable {
             return;
         }
         yPos = this.textPositionOffset;
-        canvas.drawText(unitFormatter.createUnitBuilder(sensor).setValue(this.limits.max).useDefaultSuffix().build().toString(), xPos, yPos, this.textLabelPaint);
+        canvas.drawText(unitFormatter.createUnitBuilder(sensor)
+                                     .setValue(this.limits.max)
+                                     .buildWithStyle()
+                                     .toString(),
+                        xPos,
+                        yPos,
+                        this.textLabelPaint);
         yPos += this.lineDistance;
         this.drawingPath.reset();
         this.drawingPath.moveTo(xPos, yPos);

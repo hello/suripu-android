@@ -108,7 +108,7 @@ public class UnitFormatter extends Interactor {
     }
 
     @NonNull
-    public SuffixPrinter getSuffixPrintForSensor(@NonNull final SensorType sensorType) {
+    private SuffixPrinter getSuffixPrintForSensor(@NonNull final SensorType sensorType) {
         switch (sensorType) {
             case TEMPERATURE:
             case HUMIDITY:
@@ -203,11 +203,13 @@ public class UnitFormatter extends Interactor {
     }
 
     public class UnitBuilder {
-        private int valueDecimalPlaces = 0;
-        private CharSequence formattedValue = Constants.EMPTY_STRING;
-        private String suffix;
+        private float value = 0;
         private UnitConverter unitConverter;
         private SuffixPrinter suffixPrinter;
+        private int valueDecimalPlaces = 0;
+        private String suffix;
+        private boolean showValue = true;
+        private boolean showSuffix = true;
 
         private UnitBuilder() {
         }
@@ -218,8 +220,12 @@ public class UnitFormatter extends Interactor {
             this.suffix = getSuffixForSensor(sensor.getType());
             this.setValueDecimalPlaces(sensor.getType());
             this.setValue(sensor.getValue());
+            this.suffix = getSuffixForSensor(sensor.getType());
+            showValue = true;
+            showSuffix = true;
             return this;
         }
+
 
         private void setValueDecimalPlaces(@NonNull final SensorType sensorType) {
             switch (sensorType) {
@@ -232,66 +238,60 @@ public class UnitFormatter extends Interactor {
         }
 
         public UnitBuilder setValueDecimalPlaces(final int valueDecimalPlaces) {
-            this.valueDecimalPlaces = valueDecimalPlaces;
+            if (valueDecimalPlaces >= 0) {
+                this.valueDecimalPlaces = valueDecimalPlaces;
+            }
             return this;
         }
 
-        public ValueActions useDefaultValue() {
-            return new ValueActions(formattedValue);
+
+        public UnitBuilder setValue(final float value) {
+            this.value = value;
+            return this;
         }
 
-        public ValueActions useEmptyValue() {
-            return new ValueActions(Constants.EMPTY_STRING);
+        public UnitBuilder hideValue() {
+            this.showValue = false;
+            return this;
         }
 
-        public ValueActions setValue(final double value) {
+        public UnitBuilder hideSuffix() {
+            this.showSuffix = false;
+            return this;
+        }
+
+        public CharSequence build() {
+            return formattedValue() + formattedSuffix();
+        }
+
+        public CharSequence buildWithStyle() {
+            return Styles.assembleReadingAndUnit(formattedValue(), formattedSuffix(), suffixPrinter.getUnitStyle());
+        }
+
+        public CharSequence buildWithStyleSubscript() {
+            return Styles.assembleReadingAndUnit(formattedValue(), formattedSuffix(), Styles.UNIT_STYLE_SUBSCRIPT);
+        }
+
+        public CharSequence buildWithStyleSuperscript() {
+            return Styles.assembleReadingAndUnit(formattedValue(), formattedSuffix(), Styles.UNIT_STYLE_SUPERSCRIPT);
+        }
+
+        private String formattedSuffix() {
+            if (!showSuffix) {
+                return Constants.EMPTY_STRING;
+            }
+            return suffix;
+
+        }
+
+        private CharSequence formattedValue() {
+            if (!showValue) {
+                return Constants.EMPTY_STRING;
+            }
             if (value == Sensor.NO_VALUE) {
-                return new ValueActions(placeHolder);
+                return placeHolder;
             }
-            return new ValueActions(String.format("%." + valueDecimalPlaces + "f", unitConverter.convert(value)));
-        }
-
-        public ValueActions setValue(final float value) {
-            if (value == Sensor.NO_VALUE) {
-                return new ValueActions(placeHolder);
-            }
-            return new ValueActions(String.format("%." + valueDecimalPlaces + "f", unitConverter.convert(value)));
-        }
-
-        public class ValueActions {
-            private ValueActions(@NonNull final CharSequence formattedValue) {
-                UnitBuilder.this.formattedValue = formattedValue;
-            }
-
-            public SuffixActions setSuffix(@NonNull final String suffix) {
-                return new SuffixActions(suffix);
-            }
-
-            public SuffixActions useDefaultSuffix() {
-                return new SuffixActions(UnitBuilder.this.suffix);
-            }
-
-            public CharSequence build() {
-                return formattedValue;
-            }
-        }
-
-        public class SuffixActions {
-
-
-            private SuffixActions(@NonNull final String suffix) {
-                UnitBuilder.this.suffix = suffix;
-            }
-
-            public CharSequence buildNormal() {
-                return formattedValue + suffix;
-            }
-
-            public CharSequence build() {
-                return Styles.assembleReadingAndUnit(formattedValue, suffix, suffixPrinter.getUnitStyle());
-            }
-
-
+            return String.format("%." + valueDecimalPlaces + "f", unitConverter.convert(value));
         }
     }
 
@@ -299,5 +299,5 @@ public class UnitFormatter extends Interactor {
         @Styles.UnitStyle
         int getUnitStyle();
     }
-    //endregion
+//endregion
 }

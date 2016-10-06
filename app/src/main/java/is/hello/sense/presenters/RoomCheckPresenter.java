@@ -115,9 +115,7 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
                                          condition.colorRes,
                                          getSensorConvertedValue(currentPositionSensor),
                                          unitFormatter.createUnitBuilder(currentPositionSensor)
-                                                      .useDefaultValue()
-                                                      .useDefaultSuffix()
-                                                      .buildNormal()
+                                                      .build()
                                                       .toString(),
                                          () -> showConditionAt(position + 1));
                 },
