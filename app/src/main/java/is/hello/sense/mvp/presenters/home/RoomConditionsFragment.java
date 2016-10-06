@@ -156,6 +156,8 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     }
 
     public final void bindConditions(@NonNull final SensorResponse currentConditions) {
+        presenterView.showProgress(false);
+
         switch (currentConditions.getStatus()) {
             case OK:
             case WAITING_FOR_DATA:
@@ -180,6 +182,8 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     }
 
     public final void conditionsUnavailable(@NonNull final Throwable e) {
+        presenterView.showProgress(false);
+
         Logger.error(RoomConditionsFragment.class.getSimpleName(), "Could not load conditions", e);
         if (ApiException.isNetworkError(e)) {
             this.adapter.displayMessage(false, 0, getString(R.string.error_room_conditions_unavailable),
