@@ -260,18 +260,30 @@ public class UnitFormatter extends Interactor {
             return this;
         }
 
+        /**
+         * @return no styles
+         */
         public CharSequence build() {
             return formattedValue() + formattedSuffix();
         }
 
+        /**
+         * @return default styles
+         */
         public CharSequence buildWithStyle() {
             return Styles.assembleReadingAndUnit(formattedValue(), formattedSuffix(), suffixPrinter.getUnitStyle());
         }
 
+        /**
+         * @return suffix as subscript
+         */
         public CharSequence buildWithStyleSubscript() {
             return Styles.assembleReadingAndUnit(formattedValue(), formattedSuffix(), Styles.UNIT_STYLE_SUBSCRIPT);
         }
 
+        /**
+         * @return suffix as superscript
+         */
         public CharSequence buildWithStyleSuperscript() {
             return Styles.assembleReadingAndUnit(formattedValue(), formattedSuffix(), Styles.UNIT_STYLE_SUPERSCRIPT);
         }
