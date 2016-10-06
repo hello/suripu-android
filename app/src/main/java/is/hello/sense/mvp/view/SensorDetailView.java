@@ -158,7 +158,8 @@ public final class SensorDetailView extends PresenterView
                          @NonNull final String[] labels) {
         post(() -> {
             this.scrollView.setGraphView(sensorGraphView);
-            this.valueTextView.setText(unitFormatter.createUnitBuilder(sensor).useDefaultValue().useDefaultSuffix().build());
+            this.valueTextView.setText(unitFormatter.createUnitBuilder(sensor)
+                                                    .buildWithStyle());
             this.messageTextView.setText(sensor.getMessage());
             this.progressBar.setVisibility(GONE);
             this.sensorGraphView.setVisibility(VISIBLE);
@@ -210,4 +211,6 @@ public final class SensorDetailView extends PresenterView
         refreshWithProgress();
         selectionChangedListener.onSelectionChanged(newSelectionIndex);
     }
+
+
 }
