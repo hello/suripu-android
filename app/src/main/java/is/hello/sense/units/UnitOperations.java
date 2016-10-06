@@ -22,6 +22,6 @@ public class UnitOperations {
     }
 
     public static float celsiusToFahrenheit(final float temperature) {
-        return Math.round((temperature * 1.8) + 32.0);
+        return (temperature * 1.8f) + 32.f;
     }
 }

@@ -73,7 +73,8 @@ public class SensorGraphDrawable extends Drawable {
     private final Path drawingPath = new Path();
     private final ValueLimits limits;
     private final String[] labels;
-    private final UnitFormatter unitFormatter;
+    private final String formattedMin;
+    private final String formmatedMax;
 
     private float scrubberLocation = NO_LOCATION;
     private float scaleFactor = 0; // Animation
@@ -92,10 +93,16 @@ public class SensorGraphDrawable extends Drawable {
                                final int height,
                                @Nullable final String[] labels) {
         this.sensor = sensor;
-        this.unitFormatter = unitFormatter;
         this.limits = new ValueLimits(sensor.getSensorValues());
         this.labels = labels;
-
+        this.formattedMin = unitFormatter.createUnitBuilder(sensor)
+                                         .setValue(this.limits.min)
+                                         .buildWithStyle()
+                                         .toString();
+        this.formmatedMax = unitFormatter.createUnitBuilder(sensor)
+                                         .setValue(this.limits.max)
+                                         .buildWithStyle()
+                                         .toString();
         // Sizes
         this.height = height;
         this.lineDistance = context.getResources().getDimensionPixelSize(R.dimen.sensor_line_distance);
@@ -242,11 +249,7 @@ public class SensorGraphDrawable extends Drawable {
         if (position < 0 || position > sensor.getSensorValues().length - 1) {
             return;
         }
-        /*final int maxPosition = sensor.getSensorValues().length - 1;
-        if(position < 0) { position = ; }
-        else if (position > maxPosition) {
-            position = maxPosition;
-        }*/
+
         final float yLoc = getValueHeight(sensor.getSensorValues()[position]);
 
         drawingPath.reset();
@@ -269,10 +272,7 @@ public class SensorGraphDrawable extends Drawable {
         this.drawingPath.reset();
         final float xPos = width * TEXT_X_POSITION_RATIO;
         float yPos = this.minHeight + this.textPositionOffset;
-        canvas.drawText(unitFormatter.createUnitBuilder(sensor)
-                                     .setValue(this.limits.min)
-                                     .buildWithStyle()
-                                     .toString(),
+        canvas.drawText(formattedMin,
                         xPos,
                         yPos,
                         this.textLabelPaint);
@@ -284,10 +284,7 @@ public class SensorGraphDrawable extends Drawable {
             return;
         }
         yPos = this.textPositionOffset;
-        canvas.drawText(unitFormatter.createUnitBuilder(sensor)
-                                     .setValue(this.limits.max)
-                                     .buildWithStyle()
-                                     .toString(),
+        canvas.drawText(formmatedMax,
                         xPos,
                         yPos,
                         this.textLabelPaint);
