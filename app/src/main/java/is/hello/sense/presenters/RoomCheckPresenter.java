@@ -114,7 +114,11 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
                                          mapper.getFinalIconForSensor(type),
                                          condition.colorRes,
                                          getSensorConvertedValue(currentPositionSensor),
-                                         unitFormatter.getSuffixForSensor(currentPositionSensor.getType()),
+                                         unitFormatter.createUnitBuilder(currentPositionSensor)
+                                                      .useDefaultValue()
+                                                      .useDefaultSuffix()
+                                                      .buildNormal()
+                                                      .toString(),
                                          () -> showConditionAt(position + 1));
                 },
                 CONDITION_VISIBLE_MS,

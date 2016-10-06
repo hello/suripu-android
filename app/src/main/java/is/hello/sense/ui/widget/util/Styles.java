@@ -183,9 +183,9 @@ public final class Styles {
 
     public static
     @NonNull
-    CharSequence assembleReadingAndUnit(@NonNull CharSequence value,
-                                        @NonNull String suffix,
-                                        @UnitStyle int unitStyle) {
+    CharSequence assembleReadingAndUnit(@NonNull final CharSequence value,
+                                        @NonNull final String suffix,
+                                        @UnitStyle final int unitStyle) {
         final SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(value);
 
@@ -204,7 +204,7 @@ public final class Styles {
 
     public static
     @NonNull
-    CharSequence assembleReadingAndUnit(double value, @NonNull String suffix) {
+    CharSequence assembleReadingAndUnit(final double value, @NonNull final String suffix) {
         return assembleReadingAndUnit(String.format("%.0f", value), suffix, UNIT_STYLE_SUPERSCRIPT);
     }
 
