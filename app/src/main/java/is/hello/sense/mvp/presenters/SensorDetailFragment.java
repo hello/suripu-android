@@ -248,9 +248,8 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
             }
         }
         if (this.sensor.getSensorValues().length > position) {
-            value = unitFormatter.createUnitBuilder(sensor)
-                                  .setValue(this.sensor.getSensorValues()[position])
-                                  .buildWithStyle();
+            value = unitFormatter.createUnitBuilder(sensor.getType(), this.sensor.getSensorValues()[position])
+                                 .buildWithStyle();
         } else {
             value = getString(R.string.missing_data_placeholder);
         }
@@ -261,9 +260,8 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
 
     @Override
     public void onScrubberReleased() {
-
         this.presenterView.setValueAndMessage(unitFormatter.createUnitBuilder(sensor)
-                                                            .buildWithStyle(),
+                                                           .buildWithStyle(),
                                               this.sensor.getMessage());
     }
 

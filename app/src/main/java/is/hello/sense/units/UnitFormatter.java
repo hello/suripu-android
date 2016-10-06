@@ -198,6 +198,10 @@ public class UnitFormatter extends Interactor {
     }
 
 
+    public UnitBuilder createUnitBuilder(@NonNull final SensorType sensorType, final float value) {
+        return builder.updateFor(sensorType, value);
+    }
+
     public UnitBuilder createUnitBuilder(@NonNull final Sensor sensor) {
         return builder.updateFor(sensor);
     }
@@ -214,17 +218,27 @@ public class UnitFormatter extends Interactor {
         private UnitBuilder() {
         }
 
-        private UnitBuilder updateFor(@NonNull final Sensor sensor) {
-            this.unitConverter = getUnitConverterForSensor(sensor.getType());
-            this.suffixPrinter = getSuffixPrinterForSensor(sensor.getType());
-            this.setValueDecimalPlaces(sensor.getType());
-            this.setValue(sensor.getValue());
-            this.suffix = getSuffixForSensor(sensor.getType());
+        private UnitBuilder updateFor(@NonNull final SensorType sensorType, final float value) {
+            this.unitConverter = getUnitConverterForSensor(sensorType);
+            this.suffixPrinter = getSuffixPrinterForSensor(sensorType);
+            this.setValueDecimalPlaces(sensorType);
+            this.value = value;
+            this.suffix = getSuffixForSensor(sensorType);
             this.showValue = true;
             this.showSuffix = true;
             return this;
         }
 
+        private UnitBuilder updateFor(@NonNull final Sensor sensor) {
+            this.unitConverter = getUnitConverterForSensor(sensor.getType());
+            this.suffixPrinter = getSuffixPrinterForSensor(sensor.getType());
+            this.setValueDecimalPlaces(sensor.getType());
+            this.value = sensor.getValue();
+            this.suffix = getSuffixForSensor(sensor.getType());
+            this.showValue = true;
+            this.showSuffix = true;
+            return this;
+        }
 
         private void setValueDecimalPlaces(@NonNull final SensorType sensorType) {
             switch (sensorType) {
@@ -240,12 +254,6 @@ public class UnitFormatter extends Interactor {
             if (valueDecimalPlaces >= 0) {
                 this.valueDecimalPlaces = valueDecimalPlaces;
             }
-            return this;
-        }
-
-
-        public UnitBuilder setValue(final float value) {
-            this.value = value;
             return this;
         }
 
