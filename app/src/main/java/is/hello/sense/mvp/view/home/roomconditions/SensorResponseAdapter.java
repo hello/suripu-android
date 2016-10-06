@@ -301,11 +301,18 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             final Sensor sensor = getItem(position);
             this.title.setText(sensor.getName());
             this.body.setText(sensor.getMessage());
-            this.value.setText(SensorResponseAdapter.this.unitFormatter.getUnitPrinterForSensorAverageValue(sensor.getType()).print(sensor.getValue()));
             if (sensor.getType() == SensorType.TEMPERATURE || sensor.getType() == SensorType.HUMIDITY) {
+                this.value.setText(unitFormatter.createUnitBuilder(sensor)
+                                                .build());
                 this.descriptor.setText(null);
             } else {
-                this.descriptor.setText(SensorResponseAdapter.this.unitFormatter.getSuffixForSensor(sensor.getType()));
+                this.value.setText(unitFormatter.createUnitBuilder(sensor)
+                                                .hideSuffix()
+                                                .build());
+                this.descriptor.setText(SensorResponseAdapter.this.unitFormatter
+                                                .createUnitBuilder(sensor)
+                                                .hideValue()
+                                                .build());
             }
             this.value.setTextColor(ContextCompat.getColor(inflater.getContext(), sensor.getColor()));
         }

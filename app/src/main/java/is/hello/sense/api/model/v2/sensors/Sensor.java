@@ -38,7 +38,7 @@ public class Sensor extends ApiResponse {
     private Condition condition;
 
     @SerializedName("value")
-    private Double value; // Will be null when status is "waiting for data"
+    private Float value; // Will be null when status is "waiting for data"
 
     @SerializedName("scale")
     private List<Scale> scales;
@@ -72,7 +72,7 @@ public class Sensor extends ApiResponse {
         return message;
     }
 
-    public double getValue() {
+    public float getValue() {
         if (value == null) {
             return NO_VALUE;
         }

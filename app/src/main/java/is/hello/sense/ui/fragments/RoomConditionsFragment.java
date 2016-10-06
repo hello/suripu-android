@@ -40,7 +40,6 @@ import is.hello.sense.api.model.SensorState;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.RoomConditionsInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.activities.SensorHistoryActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.SensorHistoryAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
@@ -59,6 +58,7 @@ import is.hello.sense.util.Logger;
 
 import static is.hello.sense.ui.adapter.SensorHistoryAdapter.Update;
 
+@Deprecated
 public class RoomConditionsFragment extends BacksideTabFragment
         implements ArrayRecyclerAdapter.OnItemClickedListener<SensorState> {
     private final UpdateTimer updateTimer = new UpdateTimer(1, TimeUnit.MINUTES);
@@ -226,9 +226,9 @@ public class RoomConditionsFragment extends BacksideTabFragment
 
     @Override
     public void onItemClicked(int position, SensorState sensorState) {
-        final Intent intent = new Intent(getActivity(), SensorHistoryActivity.class);
-        intent.putExtra(SensorHistoryActivity.EXTRA_SENSOR, sensorState.getName());
-        startActivity(intent);
+        //final Intent intent = new Intent(getActivity(), SensorHistoryActivity.class);
+        //intent.putExtra(SensorHistoryActivity.EXTRA_SENSOR, sensorState.getName());
+        //startActivity(intent);
     }
 
 
@@ -367,12 +367,8 @@ public class RoomConditionsFragment extends BacksideTabFragment
                 final String sensorName = sensorState.getName();
                 final int sensorColor = ContextCompat.getColor(getActivity(), sensorState.getCondition().colorRes);
 
-                final UnitPrinter printer;
-                if (ApiService.SENSOR_NAME_PARTICULATES.equals(sensorName)) {
-                    printer = UnitPrinter.SIMPLE;
-                } else {
-                    printer = unitFormatter.getUnitPrinterForSensor(sensorName);
-                }
+                final UnitPrinter printer= UnitPrinter.SIMPLE;
+
                 final CharSequence readingText = sensorState.getFormattedValue(printer);
                 if (!TextUtils.isEmpty(readingText)) {
                     reading.setText(readingText);

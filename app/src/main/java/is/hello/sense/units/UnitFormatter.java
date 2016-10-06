@@ -40,6 +40,7 @@ public class UnitFormatter extends Interactor {
     private final PreferencesInteractor preferences;
     private final boolean defaultMetric;
     private final String placeHolder;
+    private final UnitBuilder builder = new UnitBuilder();
 
     public static boolean isDefaultLocaleMetric() {
         final String country = Locale.getDefault().getCountry();
@@ -62,27 +63,6 @@ public class UnitFormatter extends Interactor {
     }
 
     //region Formatting
-    @NonNull
-    public CharSequence formatPlaceholder(final double value) {
-        if (value == Sensor.NO_VALUE) {
-            return placeHolder;
-        }
-        return UnitPrinter.SIMPLE.print(value);
-    }
-
-    @NonNull
-    public CharSequence formatTemperature(final double value) {
-        if (value == Sensor.NO_VALUE) {
-            return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_TEMPERATURE);
-        }
-        double convertedValue = value;
-        if (!preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
-            convertedValue = UnitOperations.celsiusToFahrenheit(convertedValue);
-        }
-
-        return Styles.assembleReadingAndUnit(convertedValue, UNIT_SUFFIX_TEMPERATURE);
-    }
-
     @NonNull
     public CharSequence formatWeight(final long value) {
         if (preferences.getBoolean(PreferencesInteractor.USE_GRAMS, defaultMetric)) {
@@ -110,42 +90,6 @@ public class UnitFormatter extends Interactor {
         }
     }
 
-    @NonNull
-    public CharSequence formatLight(final double value) {
-        if (value == Sensor.NO_VALUE) {
-            return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_LIGHT);
-        } else if (value < 10.0) {
-            return Styles.assembleReadingAndUnit(String.format("%.1f", value),
-                                                 UNIT_SUFFIX_LIGHT,
-                                                 Styles.UNIT_STYLE_SUPERSCRIPT);
-        } else {
-            return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_LIGHT);
-        }
-    }
-
-    @NonNull
-    public CharSequence formatHumidity(final double value) {
-        if (value == Sensor.NO_VALUE) {
-            return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_HUMIDITY);
-        }
-        return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_HUMIDITY);
-    }
-
-    @NonNull
-    public CharSequence formatAirQuality(final double value) {
-        if (value == Sensor.NO_VALUE) {
-            return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_AIR_QUALITY);
-        }
-        return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_AIR_QUALITY);
-    }
-
-    @NonNull
-    public CharSequence formatNoise(final double value) {
-        if (value == Sensor.NO_VALUE) {
-            return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_NOISE);
-        }
-        return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_NOISE);
-    }
 
     @NonNull
     public UnitConverter getUnitConverterForSensor(@NonNull final SensorType type) {
@@ -163,27 +107,14 @@ public class UnitFormatter extends Interactor {
         }
     }
 
-    @Deprecated
     @NonNull
-    public UnitPrinter getUnitPrinterForSensor(@NonNull final String sensor) {
-        switch (sensor) {
-            case ApiService.SENSOR_NAME_TEMPERATURE:
-                return this::formatTemperature;
-
-            case ApiService.SENSOR_NAME_HUMIDITY:
-                return this::formatHumidity;
-
-            case ApiService.SENSOR_NAME_PARTICULATES:
-                return this::formatAirQuality;
-
-            case ApiService.SENSOR_NAME_LIGHT:
-                return this::formatLight;
-
-            case ApiService.SENSOR_NAME_SOUND:
-                return this::formatNoise;
-
+    private SuffixPrinter getSuffixPrinterForSensor(@NonNull final SensorType sensorType) {
+        switch (sensorType) {
+            case TEMPERATURE:
+            case HUMIDITY:
+                return () -> Styles.UNIT_STYLE_SUPERSCRIPT;
             default:
-                return UnitPrinter.SIMPLE;
+                return () -> Styles.UNIT_STYLE_SUBSCRIPT;
         }
     }
 
@@ -203,7 +134,7 @@ public class UnitFormatter extends Interactor {
             case CO2:
                 return UNIT_SUFFIX_GAS;
             case TVOC:
-                return UNIT_SUFFIX_GAS;
+                return UNIT_SUFFIX_AIR_QUALITY;
             case LIGHT_TEMPERATURE:
                 return UNIT_SUFFIX_LIGHT_TEMPERATURE;
             case UV:
@@ -212,43 +143,14 @@ public class UnitFormatter extends Interactor {
                 return UNIT_SUFFIX_PRESSURE;
             case UNKNOWN:
             default:
-                return "";
-        }
-    }
-
-
-    @NonNull
-    public UnitPrinter getUnitPrinterForSensorAverageValue(@NonNull final SensorType type) {
-        switch (type) {
-            case TEMPERATURE:
-                return this::formatTemperature;
-
-            case HUMIDITY:
-                return this::formatHumidity;
-            default:
-                return this::formatPlaceholder;
-        }
-    }
-
-    @NonNull
-    public CharSequence getFormattedSensorValue(@NonNull final SensorType type, final float value) {
-        if (value == Sensor.NO_VALUE) {
-            return placeHolder;
-        }
-        switch (type) {
-            case TEMPERATURE:
-                return formatTemperature(value);
-            case LIGHT:
-                return Styles.assembleReadingAndUnit(value, getSuffixForSensor(type), 1);
-            default:
-                return Styles.assembleReadingAndUnit(value, getSuffixForSensor(type));
+                return Constants.EMPTY_STRING;
         }
     }
 
     //region Sensor Detail specific
 
     public String getMeasuredInString(@NonNull final SensorType type) {
-        String measuredIn = "";
+        String measuredIn = Constants.EMPTY_STRING;
         switch (type) {
             case TEMPERATURE:
                 if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, false)) {
@@ -295,8 +197,126 @@ public class UnitFormatter extends Interactor {
         }
     }
 
-    //endregion
 
+    public UnitBuilder createUnitBuilder(@NonNull final SensorType sensorType, final float value) {
+        return builder.updateFor(sensorType, value);
+    }
 
-    //endregion
+    public UnitBuilder createUnitBuilder(@NonNull final Sensor sensor) {
+        return builder.updateFor(sensor);
+    }
+
+    public class UnitBuilder {
+        private float value = 0;
+        private UnitConverter unitConverter;
+        private SuffixPrinter suffixPrinter;
+        private int valueDecimalPlaces = 0;
+        private String suffix;
+        private boolean showValue = true;
+        private boolean showSuffix = true;
+
+        private UnitBuilder() {
+        }
+
+        private UnitBuilder updateFor(@NonNull final SensorType sensorType, final float value) {
+            this.unitConverter = getUnitConverterForSensor(sensorType);
+            this.suffixPrinter = getSuffixPrinterForSensor(sensorType);
+            this.setValueDecimalPlaces(sensorType);
+            this.value = value;
+            this.suffix = getSuffixForSensor(sensorType);
+            this.showValue = true;
+            this.showSuffix = true;
+            return this;
+        }
+
+        private UnitBuilder updateFor(@NonNull final Sensor sensor) {
+            this.unitConverter = getUnitConverterForSensor(sensor.getType());
+            this.suffixPrinter = getSuffixPrinterForSensor(sensor.getType());
+            this.setValueDecimalPlaces(sensor.getType());
+            this.value = sensor.getValue();
+            this.suffix = getSuffixForSensor(sensor.getType());
+            this.showValue = true;
+            this.showSuffix = true;
+            return this;
+        }
+
+        private void setValueDecimalPlaces(@NonNull final SensorType sensorType) {
+            switch (sensorType) {
+                case LIGHT:
+                    setValueDecimalPlaces(1);
+                    break;
+                default:
+                    setValueDecimalPlaces(0);
+            }
+        }
+
+        public UnitBuilder setValueDecimalPlaces(final int valueDecimalPlaces) {
+            if (valueDecimalPlaces >= 0) {
+                this.valueDecimalPlaces = valueDecimalPlaces;
+            }
+            return this;
+        }
+
+        public UnitBuilder hideValue() {
+            this.showValue = false;
+            return this;
+        }
+
+        public UnitBuilder hideSuffix() {
+            this.showSuffix = false;
+            return this;
+        }
+
+        /**
+         * @return no styles
+         */
+        public CharSequence build() {
+            return formattedValue() + formattedSuffix();
+        }
+
+        /**
+         * @return default styles
+         */
+        public CharSequence buildWithStyle() {
+            return Styles.assembleReadingAndUnit(formattedValue(), formattedSuffix(), suffixPrinter.getUnitStyle());
+        }
+
+        /**
+         * @return suffix as subscript
+         */
+        public CharSequence buildWithStyleSubscript() {
+            return Styles.assembleReadingAndUnit(formattedValue(), formattedSuffix(), Styles.UNIT_STYLE_SUBSCRIPT);
+        }
+
+        /**
+         * @return suffix as superscript
+         */
+        public CharSequence buildWithStyleSuperscript() {
+            return Styles.assembleReadingAndUnit(formattedValue(), formattedSuffix(), Styles.UNIT_STYLE_SUPERSCRIPT);
+        }
+
+        private String formattedSuffix() {
+            if (!showSuffix) {
+                return Constants.EMPTY_STRING;
+            }
+            return suffix;
+
+        }
+
+        private CharSequence formattedValue() {
+            if (!showValue) {
+                return Constants.EMPTY_STRING;
+            }
+            if (value == Sensor.NO_VALUE) {
+                return placeHolder;
+            }
+            return String.format("%." + valueDecimalPlaces + "f", unitConverter.convert(value));
+        }
+    }
+
+    interface SuffixPrinter {
+        @Styles.UnitStyle
+        int getUnitStyle();
+    }
+//endregion
 }

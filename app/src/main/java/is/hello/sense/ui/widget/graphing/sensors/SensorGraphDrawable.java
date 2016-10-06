@@ -73,7 +73,8 @@ public class SensorGraphDrawable extends Drawable {
     private final Path drawingPath = new Path();
     private final ValueLimits limits;
     private final String[] labels;
-    private final UnitFormatter unitFormatter;
+    private final String formattedMin;
+    private final String formattedMax;
 
     private float scrubberLocation = NO_LOCATION;
     private float scaleFactor = 0; // Animation
@@ -92,10 +93,14 @@ public class SensorGraphDrawable extends Drawable {
                                final int height,
                                @Nullable final String[] labels) {
         this.sensor = sensor;
-        this.unitFormatter = unitFormatter;
         this.limits = new ValueLimits(sensor.getSensorValues());
         this.labels = labels;
-
+        this.formattedMin = unitFormatter.createUnitBuilder(sensor.getType(), this.limits.min)
+                                         .buildWithStyle()
+                                         .toString();
+        this.formattedMax = unitFormatter.createUnitBuilder(sensor.getType(), this.limits.max)
+                                         .buildWithStyle()
+                                         .toString();
         // Sizes
         this.height = height;
         this.lineDistance = context.getResources().getDimensionPixelSize(R.dimen.sensor_line_distance);
@@ -164,7 +169,7 @@ public class SensorGraphDrawable extends Drawable {
     public void draw(final Canvas canvas) {
         this.drawingPath.reset();
         final float[] values = this.sensor.getSensorValues();
-        if (values == null || values.length == 0){
+        if (values == null || values.length == 0) {
             return;
         }
         // Cast once
@@ -238,15 +243,11 @@ public class SensorGraphDrawable extends Drawable {
             return;
         }
 
-        final int position = (int)  (scrubberLocation / xInc);
-        if(position < 0 || position > sensor.getSensorValues().length - 1){
+        final int position = (int) (scrubberLocation / xInc);
+        if (position < 0 || position > sensor.getSensorValues().length - 1) {
             return;
         }
-        /*final int maxPosition = sensor.getSensorValues().length - 1;
-        if(position < 0) { position = ; }
-        else if (position > maxPosition) {
-            position = maxPosition;
-        }*/
+
         final float yLoc = getValueHeight(sensor.getSensorValues()[position]);
 
         drawingPath.reset();
@@ -269,7 +270,10 @@ public class SensorGraphDrawable extends Drawable {
         this.drawingPath.reset();
         final float xPos = width * TEXT_X_POSITION_RATIO;
         float yPos = this.minHeight + this.textPositionOffset;
-        canvas.drawText(unitFormatter.getFormattedSensorValue(this.sensor.getType(), this.limits.min).toString(), xPos, yPos, this.textLabelPaint);
+        canvas.drawText(formattedMin,
+                        xPos,
+                        yPos,
+                        this.textLabelPaint);
         yPos += this.lineDistance;
         this.drawingPath.moveTo(xPos, yPos);
         this.drawingPath.lineTo(width - xPos, yPos);
@@ -278,7 +282,10 @@ public class SensorGraphDrawable extends Drawable {
             return;
         }
         yPos = this.textPositionOffset;
-        canvas.drawText(unitFormatter.getFormattedSensorValue(this.sensor.getType(), this.limits.max).toString(), xPos, yPos, this.textLabelPaint);
+        canvas.drawText(formattedMax,
+                        xPos,
+                        yPos,
+                        this.textLabelPaint);
         yPos += this.lineDistance;
         this.drawingPath.reset();
         this.drawingPath.moveTo(xPos, yPos);

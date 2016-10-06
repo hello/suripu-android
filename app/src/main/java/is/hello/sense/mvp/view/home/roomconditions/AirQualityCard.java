@@ -59,7 +59,8 @@ public class AirQualityCard extends LinearLayout {
             if (unitFormatter == null) {
                 ((TextView) row.findViewById(R.id.item_chevron_view_value)).setText(formatValue(sensor.getValue(), Constants.EMPTY_STRING));
             } else {
-                ((TextView) row.findViewById(R.id.item_chevron_view_value)).setText(formatValue(sensor.getValue(), unitFormatter.getSuffixForSensor(sensor.getType())));
+                ((TextView) row.findViewById(R.id.item_chevron_view_value)).setText(unitFormatter.createUnitBuilder(sensor)
+                                                                                                 .build());
             }
             ((TextView) row.findViewById(R.id.item_chevron_view_value)).setTextColor(ContextCompat.getColor(getContext(), sensor.getColor()));
             row.setOnClickListener(v -> {
@@ -74,7 +75,7 @@ public class AirQualityCard extends LinearLayout {
         }
     }
 
-    private String formatValue(@NonNull final Double value, @NonNull final String suffix) {
+    private String formatValue(final float value, @NonNull final String suffix) {
         return String.format("%.0f %s", value, suffix);
     }
 
