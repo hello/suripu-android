@@ -108,7 +108,7 @@ public class UnitFormatter extends Interactor {
     }
 
     @NonNull
-    private SuffixPrinter getSuffixPrintForSensor(@NonNull final SensorType sensorType) {
+    private SuffixPrinter getSuffixPrinterForSensor(@NonNull final SensorType sensorType) {
         switch (sensorType) {
             case TEMPERATURE:
             case HUMIDITY:
@@ -119,7 +119,7 @@ public class UnitFormatter extends Interactor {
     }
 
     @NonNull
-    private String getSuffixForSensor(@NonNull final SensorType type) {
+    public String getSuffixForSensor(@NonNull final SensorType type) {
         switch (type) {
             case TEMPERATURE:
                 return UNIT_SUFFIX_TEMPERATURE;
@@ -216,13 +216,12 @@ public class UnitFormatter extends Interactor {
 
         private UnitBuilder updateFor(@NonNull final Sensor sensor) {
             this.unitConverter = getUnitConverterForSensor(sensor.getType());
-            this.suffixPrinter = getSuffixPrintForSensor(sensor.getType());
-            this.suffix = getSuffixForSensor(sensor.getType());
+            this.suffixPrinter = getSuffixPrinterForSensor(sensor.getType());
             this.setValueDecimalPlaces(sensor.getType());
             this.setValue(sensor.getValue());
             this.suffix = getSuffixForSensor(sensor.getType());
-            showValue = true;
-            showSuffix = true;
+            this.showValue = true;
+            this.showSuffix = true;
             return this;
         }
 
