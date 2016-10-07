@@ -40,6 +40,9 @@ import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.Trends;
+import is.hello.sense.api.model.v2.expansions.Configuration;
+import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
@@ -334,8 +337,28 @@ public interface ApiService {
 
     //endregion
 
-    //region
-
     @GET("/v2/features")
     Observable<UserFeatures> getUserFeatures();
+
+
+    //region Expansions
+
+    @GET("/v2/expansions")
+    Observable<List<Expansion>> getExpansions();
+
+    @GET("/v2/expansions/{id}")
+    Observable<List<Expansion>> getExpansionDetail(@Path("id") long expansionId);
+
+    @PATCH("/v2/expansions/{id}")
+    Observable<Void> setExpansionState(@Path("id") long expansionId,
+                                       @Body @NonNull State state);
+
+    @GET("/v2/expansions/{id}/configurations")
+    Observable<List<Configuration>> getConfigurations(@Path("id") long expansionId);
+
+    @PATCH("/v2/expansions/{id}/configurations")
+    Observable<Configuration> setConfigurations(@Path("id") long expansionId,
+                                                @Body @NonNull Configuration configuration);
+
+    //endregion
 }
