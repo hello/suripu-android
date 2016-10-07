@@ -33,6 +33,41 @@ public class Expansion extends ApiResponse {
     @SerializedName("state")
     private State state;
 
+    public int getId() {
+        return id;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public MultiDensityImage getIcon() {
+        return icon;
+    }
+
+    public String getAuthUri() {
+        return authUri;
+    }
+
+    public String getCompletionUri() {
+        return completionUri;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public State getState() {
+        return state;
+    }
 
     @Override
     public String toString() {

@@ -15,6 +15,17 @@ public class Configuration extends ApiResponse {
     @SerializedName("selected")
     private boolean selected;
 
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
 
     @Override
     public String toString() {
