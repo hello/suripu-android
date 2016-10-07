@@ -69,6 +69,10 @@ public class Expansion extends ApiResponse {
         return state;
     }
 
+    public long getId() {
+        return id;
+    }
+
     @Override
     public String toString() {
         return "Expansion{" +
