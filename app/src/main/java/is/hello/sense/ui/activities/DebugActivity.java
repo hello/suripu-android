@@ -1,9 +1,7 @@
 package is.hello.sense.ui.activities;
 
 import android.app.ActionBar;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,9 +23,11 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter.DetailItem;
+import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.fragments.expansions.ExpansionsAuthFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
 import is.hello.sense.ui.widget.WhatsNewLayout;
@@ -87,6 +87,7 @@ public class DebugActivity extends InjectionActivity {
         adapter.add(new DetailItem("Show Sense OTA Update", this::showSenseOTA));
         adapter.add(new DetailItem("Show New Sense Update", this::showNewSenseUpdate));
         adapter.add(new DetailItem("Show Sense Voice", this::showSenseVoice));
+        adapter.add(new DetailItem("Show Expansion Auth Webview", this::showExpansionWebview));
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
 
         adapter.add(new DetailItem("Forget welcome dialogs", this::clearHandholdingSettings));
@@ -221,6 +222,14 @@ public class DebugActivity extends InjectionActivity {
     public void viewRoomConditionsWelcomeCard() {
         preferences.edit().putInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, 1).apply();
         Toast.makeText(getApplicationContext(), "Forgot Room Conditions Welcome Card", Toast.LENGTH_SHORT).show();
+    }
+
+    public void showExpansionWebview(){
+        final FragmentNavigationActivity.Builder builder =
+                new FragmentNavigationActivity.Builder(this, FragmentNavigationActivity.class);
+        builder.setDefaultTitle(R.string.expansions_connect_title);
+        builder.setFragmentClass(ExpansionsAuthFragment.class);
+        startActivity(builder.toIntent());
     }
 
     public void logOut() {
