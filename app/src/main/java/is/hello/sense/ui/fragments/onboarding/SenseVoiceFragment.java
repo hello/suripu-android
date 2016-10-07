@@ -81,12 +81,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     private Subscription requestDelayedSubscription;
 
     private Lazy<Runnable> runnableLazy =
-            () -> stateSafeExecutor.bind(() -> {
-                SenseVoiceFragment.this.animateToNormalState();
-                if(senseVoiceInteractor.voiceResponse.hasValue()) {
-                    SenseVoiceFragment.this.requestDelayed();
-                }
-            });
+            () -> stateSafeExecutor.bind(SenseVoiceFragment.this::animateToNormalState);
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -248,11 +243,11 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         voiceTipSubscription.unsubscribe();
         requestDelayedSubscription.unsubscribe();
         senseVoiceInteractor.reset();
+        senseVoiceInteractor.updateHasCompletedTutorial(success);
         toolbar.setWantsHelpButton(false);
         retryButton.setEnabled(false);
         skipButton.setEnabled(false);
         skipButton.setVisibility(View.INVISIBLE);
-        senseVoiceInteractor.updateHasCompletedTutorial(success);
         bindAndSubscribe(Observable.timer(success ? LoadingDialogFragment.DURATION_DEFAULT * 3 : 0, TimeUnit.MILLISECONDS),
                 ignored -> finishFlowWithResult(success ? Activity.RESULT_OK : Activity.RESULT_CANCELED),
                 this::presentError);
@@ -329,33 +324,30 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
 
     private void requestDelayed() {
         //request after a delay respecting fragment lifecycle
-        requestDelayedSubscription = bind(Observable.timer(SenseVoiceInteractor.UPDATE_DELAY_SECONDS, TimeUnit.SECONDS))
+        requestDelayedSubscription = bind(Observable.interval(SenseVoiceInteractor.UPDATE_DELAY_SECONDS, TimeUnit.SECONDS))
                                            .subscribe(ignored -> senseVoiceInteractor.update(),
                                                       this::presentError);
     }
 
-    private void handleVoiceResponse(@Nullable final VoiceResponse voiceResponse) {
+    private void handleVoiceResponse(@NonNull final VoiceResponse voiceResponse) {
         sendAnalyticsEvent(voiceResponse);
 
         getAnimatorContext().runWhenIdle(() -> {
             questionText.removeCallbacks(runnableLazy.get());
+
             if(SenseVoiceInteractor.hasSuccessful(voiceResponse)){
                 animateToWaitState();
                 updateState(R.string.sense_voice_question_temperature,
                             R.color.primary,
-                            View.GONE,
+                            View.INVISIBLE,
                             OK_STATE,
                             0,
                             Arrays.equals(senseImageView.getDrawableState(), FAIL_STATE));
                 onFinish(true);
             } else{
-                @StringRes final int errorText = voiceResponse == null ?
-                        R.string.error_sense_voice_problem :
-                        R.string.error_sense_voice_not_detected;
-
-                updateState(errorText,
+                updateState(R.string.error_sense_voice_not_detected,
                             R.color.text_dark,
-                            View.GONE,
+                            View.INVISIBLE,
                             FAIL_STATE,
                             0,
                             true);
