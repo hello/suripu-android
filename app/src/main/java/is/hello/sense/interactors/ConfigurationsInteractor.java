@@ -1,5 +1,7 @@
 package is.hello.sense.interactors;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -13,7 +15,7 @@ public class ConfigurationsInteractor extends ValueInteractor<ArrayList<Configur
     @Inject
     ApiService apiService;
 
-    private long expansionId = 0;
+    private long expansionId = -1;
 
     @Override
     protected boolean isDataDisposable() {
@@ -27,10 +29,13 @@ public class ConfigurationsInteractor extends ValueInteractor<ArrayList<Configur
 
     @Override
     protected Observable<ArrayList<Configuration>> provideUpdateObservable() {
+        if (expansionId == -1){
+            return Observable.just(new ArrayList<>());
+        }
         return apiService.getConfigurations(expansionId);
     }
 
-    public void setExpansion(final Expansion expansion) {
+    public void setExpansion(@NonNull final Expansion expansion) {
         this.expansionId = expansion.getId();
     }
 }
