@@ -87,12 +87,20 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
         sendOnCreateAnalytics();
     }
 
+    @Nullable
     private wifi_endpoint.sec_type getSecurityType() {
+        wifi_endpoint.sec_type type;
         if (network != null) {
-            return network.getSecurityType();
+            type = network.getSecurityType();
         } else {
-            return view.getNetworkSecurityType();
+            type = view.getNetworkSecurityType();
         }
+        //todo manual conversion until firmware supports all sec types after WPA
+        if(type.compareTo(wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_WPA) > 0){
+            type = wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_WPA;
+        }
+
+        return type;
     }
 
     private void sendOnCreateAnalytics() {
@@ -237,7 +245,7 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
     }
 
 
-    public interface Output extends BasePairSensePresenter.Output {
+    public interface Output extends BasePairSensePresenter.Output{
 
         void setNetworkPassword(int visibility,
                                 boolean requestFocus,
@@ -247,9 +255,9 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
 
         String getNetworkPassword();
 
-        void updateView(@Nullable final wifi_endpoint network);
-
         wifi_endpoint.sec_type getNetworkSecurityType();
+
+        void updateView(@Nullable final wifi_endpoint network);
 
     }
 }

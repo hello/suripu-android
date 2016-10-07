@@ -205,5 +205,7 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     public interface Output extends BaseOutput {
 
 
+        void finishActivity();
+
     }
 }

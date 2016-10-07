@@ -342,12 +342,14 @@ public class SenseAlertDialog extends Dialog {
     public static class Builder {
         private final static String ARG_TITLE = Builder.class.getSimpleName() + ".ARG_TITLE";
         private final static String ARG_MESSAGE = Builder.class.getSimpleName() + ".ARG_MESSAGE";
+        private static final String ARG_MESSAGE_STRING = Builder.class.getSimpleName() + ".ARG_MESSAGE_STRING";
         private final static String ARG_POSITIVE_CLICK_LISTENER = Builder.class.getSimpleName() + ".ARG_POSITIVE_CLICK_LISTENER";
         private final static String ARG_POSITIVE_CLICK_TEXT = Builder.class.getSimpleName() + ".ARG_POSITIVE_CLICK_TEXT";
         private final static String ARG_NEGATIVE_CLICK_LISTENER = Builder.class.getSimpleName() + ".ARG_NEGATIVE_CLICK_LISTENER";
         private final static String ARG_NEGATIVE_CLICK_TEXT = Builder.class.getSimpleName() + ".ARG_NEGATIVE_CLICK_TEXT";
         private final static String ARG_DESTRUCTIVE_BUTTON = Builder.class.getSimpleName() + ".ARG_DESTRUCTIVE_BUTTON";
         private final static String ARG_DESTRUCTIVE_FLAG = Builder.class.getSimpleName() + ".ARG_DESTRUCTIVE_FLAG";
+        private static final String ARG_CANCELABLE = Builder.class.getSimpleName() + ".ARG_CANCELABLE";
         private final Bundle bundle = new Bundle();
 
 
@@ -358,6 +360,11 @@ public class SenseAlertDialog extends Dialog {
 
         public Builder setMessage(@StringRes final int messageRes) {
             bundle.putInt(ARG_MESSAGE, messageRes);
+            return this;
+        }
+
+        public Builder setMessage(final String message) {
+            bundle.putString(ARG_MESSAGE_STRING, message);
             return this;
         }
 
@@ -386,6 +393,11 @@ public class SenseAlertDialog extends Dialog {
             return this;
         }
 
+        public Builder setCancelable(final boolean cancellable){
+            bundle.putBoolean(ARG_CANCELABLE, cancellable);
+            return this;
+        }
+
         public SenseAlertDialog build(@NonNull final Activity activity) {
             final SenseAlertDialog alertDialog = new SenseAlertDialog(activity);
             if (bundle.containsKey(ARG_TITLE)) {
@@ -393,6 +405,9 @@ public class SenseAlertDialog extends Dialog {
             }
             if (bundle.containsKey(ARG_MESSAGE)) {
                 alertDialog.setMessage(bundle.getInt(ARG_MESSAGE));
+            }
+            if (bundle.containsKey(ARG_MESSAGE_STRING)) {
+                alertDialog.setMessage(bundle.getString(ARG_MESSAGE_STRING));
             }
             if (bundle.containsKey(ARG_POSITIVE_CLICK_TEXT)) {
                 final SerializedRunnable runnable;
@@ -411,6 +426,9 @@ public class SenseAlertDialog extends Dialog {
                     runnable = null;
                 }
                 alertDialog.setNegativeRunnableButton(bundle.getInt(ARG_NEGATIVE_CLICK_TEXT), runnable);
+            }
+            if(bundle.containsKey(ARG_CANCELABLE)){
+                alertDialog.setCancelable(bundle.getBoolean(ARG_CANCELABLE));
             }
             return alertDialog;
         }

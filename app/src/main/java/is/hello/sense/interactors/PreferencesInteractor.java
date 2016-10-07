@@ -57,14 +57,17 @@ import rx.Observable;
     public static final String PILL_MISSING_ALERT_LAST_SHOWN = "pill_missing_alert_last_shown";
     public static final String PILL_FIRMWARE_UPDATE_ALERT_LAST_SHOWN = "pill_firmware_update_alert_last_shown";
 
+    public static final String ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN = "room_conditions_welcome_card_times_shown";
+
+
     public @Inject
-    PreferencesInteractor(@NonNull Context context,
-                          @NonNull @GlobalSharedPreferences SharedPreferences sharedPreferences) {
+    PreferencesInteractor(@NonNull final Context context,
+                          @NonNull @GlobalSharedPreferences final SharedPreferences sharedPreferences) {
         super(context, sharedPreferences);
 
         migrateIfNeeded();
 
-        Observable<Intent> logOut = Rx.fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
+        final Observable<Intent> logOut = Rx.fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         logOut.subscribe(ignored -> clear(), Functions.LOG_ERROR);
     }
 
@@ -72,13 +75,13 @@ import rx.Observable;
 
     @SuppressWarnings("deprecation")
     @VisibleForTesting boolean migrateIfNeeded() {
-        int schemaVersion = getInt(SCHEMA_VERSION, SCHEMA_VERSION_1_0);
+        final int schemaVersion = getInt(SCHEMA_VERSION, SCHEMA_VERSION_1_0);
         if (schemaVersion < SCHEMA_VERSION_1_1) {
             if (contains(UNIT_SYSTEM__LEGACY)) {
                 Logger.info(getClass().getSimpleName(), "Schema migration 1.0 -> 1.1");
 
-                String unitSystem = getString(UNIT_SYSTEM__LEGACY, UnitFormatter.LEGACY_UNIT_SYSTEM_US_CUSTOMARY);
-                boolean useMetric = !UnitFormatter.LEGACY_UNIT_SYSTEM_US_CUSTOMARY.equals(unitSystem);
+                final String unitSystem = getString(UNIT_SYSTEM__LEGACY, UnitFormatter.LEGACY_UNIT_SYSTEM_US_CUSTOMARY);
+                final boolean useMetric = !UnitFormatter.LEGACY_UNIT_SYSTEM_US_CUSTOMARY.equals(unitSystem);
                 edit().putBoolean(USE_CELSIUS, useMetric)
                       .putBoolean(USE_GRAMS, useMetric)
                       .putBoolean(USE_CENTIMETERS, useMetric)

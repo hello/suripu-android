@@ -46,7 +46,6 @@ public class RoomConditionsFragmentTests extends SenseTestCase {
 
     }
 
-    @Test
     public void sensorViewHolderBindsCorrectly() {
         RoomConditions conditions = RoomConditions.generateTestExample();
         RoomSensorHistory sensorHistory = new RoomSensorHistory();
@@ -62,7 +61,7 @@ public class RoomConditionsFragmentTests extends SenseTestCase {
         viewHolder.bind(1);
         assertEquals(viewHolder.reading.getText().toString(), "60 %");
         viewHolder.bind(2);
-        assertEquals(viewHolder.reading.getText().toString(), "-- lux");
+        assertEquals(viewHolder.reading.getText().toString(), "-- lx");
         viewHolder.bind(3);
         assertEquals(viewHolder.reading.getText().toString(), "--");
 

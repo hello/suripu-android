@@ -2,7 +2,7 @@ package is.hello.sense.units;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 import java.util.Locale;
 
@@ -10,16 +10,25 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.v2.sensors.Sensor;
+import is.hello.sense.api.model.v2.sensors.SensorType;
+import is.hello.sense.interactors.Interactor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.util.Constants;
 import rx.Observable;
 
-public class UnitFormatter {
+public class UnitFormatter extends Interactor {
     public static final String UNIT_SUFFIX_TEMPERATURE = "°";
-    public static final String UNIT_SUFFIX_LIGHT = "lux";
+    public static final String UNIT_SUFFIX_LIGHT = "lx";
     public static final String UNIT_SUFFIX_HUMIDITY = "%";
     public static final String UNIT_SUFFIX_AIR_QUALITY = "µg/m³";
     public static final String UNIT_SUFFIX_NOISE = "dB";
+    public static final String UNIT_SUFFIX_GAS = "ppm";
+    public static final String UNIT_SUFFIX_LIGHT_TEMPERATURE = "k"; //todo check validity
+    public static final String UNIT_SUFFIX_KELVIN = "k"; //todo check validity
+    public static final String UNIT_SUFFIX_PRESSURE = "kPa";
+
 
     // Used by PreferencesInteractor
     @Deprecated
@@ -31,15 +40,17 @@ public class UnitFormatter {
     private final PreferencesInteractor preferences;
     private final boolean defaultMetric;
     private final String placeHolder;
+    private final UnitBuilder builder = new UnitBuilder();
 
     public static boolean isDefaultLocaleMetric() {
-        String country = Locale.getDefault().getCountry();
+        final String country = Locale.getDefault().getCountry();
         return (!"US".equals(country) &&
                 !"LR".equals(country) &&
                 !"MM".equals(country));
     }
 
-    @Inject public UnitFormatter(@NonNull PreferencesInteractor preferences, @NonNull Context context) {
+    @Inject
+    public UnitFormatter(@NonNull final PreferencesInteractor preferences, @NonNull final Context context) {
         this.preferences = preferences;
         this.defaultMetric = isDefaultLocaleMetric();
         this.placeHolder = context.getString(R.string.missing_data_placeholder);
@@ -52,36 +63,25 @@ public class UnitFormatter {
     }
 
     //region Formatting
-
-    public @NonNull CharSequence formatTemperature(double value) {
-        if (value == -1){
-            return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_TEMPERATURE);
-        }
-        double convertedValue = value;
-        if (!preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
-            convertedValue = UnitOperations.celsiusToFahrenheit(convertedValue);
-        }
-
-        return Styles.assembleReadingAndUnit(convertedValue, UNIT_SUFFIX_TEMPERATURE);
-    }
-
-    public @NonNull CharSequence formatWeight(long value) {
+    @NonNull
+    public CharSequence formatWeight(final long value) {
         if (preferences.getBoolean(PreferencesInteractor.USE_GRAMS, defaultMetric)) {
-            long kilograms = UnitOperations.gramsToKilograms(value);
+            final long kilograms = UnitOperations.gramsToKilograms(value);
             return kilograms + " kg";
         } else {
-            long pounds = UnitOperations.gramsToPounds(value);
+            final long pounds = UnitOperations.gramsToPounds(value);
             return pounds + " lbs";
         }
     }
 
-    public @NonNull CharSequence formatHeight(long value) {
+    @NonNull
+    public CharSequence formatHeight(final long value) {
         if (preferences.getBoolean(PreferencesInteractor.USE_CENTIMETERS, defaultMetric)) {
             return value + " cm";
         } else {
-            long totalInches = UnitOperations.centimetersToInches(value);
-            long feet = totalInches / 12;
-            long inches = totalInches % 12;
+            final long totalInches = UnitOperations.centimetersToInches(value);
+            final long feet = totalInches / 12;
+            final long inches = totalInches % 12;
             if (inches > 0) {
                 return String.format("%d' %d''", feet, inches);
             } else {
@@ -90,42 +90,11 @@ public class UnitFormatter {
         }
     }
 
-    public @NonNull CharSequence formatLight(double value) {
-        if (value == -1){
-            return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_LIGHT);
-        }else if (value < 10.0) {
-            return Styles.assembleReadingAndUnit(String.format("%.1f", value),
-                                                 UNIT_SUFFIX_LIGHT,
-                                                 Styles.UNIT_STYLE_SUPERSCRIPT);
-        } else {
-            return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_LIGHT);
-        }
-    }
 
-    public @NonNull CharSequence formatHumidity(double value) {
-        if (value == -1){
-            return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_HUMIDITY);
-        }
-        return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_HUMIDITY);
-    }
-
-    public @NonNull CharSequence formatAirQuality(double value) {
-        if (value == -1){
-            return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_AIR_QUALITY);
-        }
-        return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_AIR_QUALITY);
-    }
-
-    public @NonNull CharSequence formatNoise(double value) {
-        if (value == -1){
-            return Styles.assembleReadingAndUnit(placeHolder, UNIT_SUFFIX_NOISE);
-        }
-        return Styles.assembleReadingAndUnit(value, UNIT_SUFFIX_NOISE);
-    }
-
-    public @NonNull UnitConverter getUnitConverterForSensor(@NonNull String sensor) {
-        switch (sensor) {
-            case ApiService.SENSOR_NAME_TEMPERATURE: {
+    @NonNull
+    public UnitConverter getUnitConverterForSensor(@NonNull final SensorType type) {
+        switch (type) {
+            case TEMPERATURE: {
                 if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
                     return UnitConverter.IDENTITY;
                 } else {
@@ -138,49 +107,216 @@ public class UnitFormatter {
         }
     }
 
-    public @NonNull UnitPrinter getUnitPrinterForSensor(@NonNull String sensor) {
-        switch (sensor) {
-            case ApiService.SENSOR_NAME_TEMPERATURE:
-                return this::formatTemperature;
-
-            case ApiService.SENSOR_NAME_HUMIDITY:
-                return this::formatHumidity;
-
-            case ApiService.SENSOR_NAME_PARTICULATES:
-                return this::formatAirQuality;
-
-            case ApiService.SENSOR_NAME_LIGHT:
-                return this::formatLight;
-
-            case ApiService.SENSOR_NAME_SOUND:
-                return this::formatNoise;
-
+    @NonNull
+    private SuffixPrinter getSuffixPrinterForSensor(@NonNull final SensorType sensorType) {
+        switch (sensorType) {
+            case TEMPERATURE:
+            case HUMIDITY:
+                return () -> Styles.UNIT_STYLE_SUPERSCRIPT;
             default:
-                return UnitPrinter.SIMPLE;
+                return () -> Styles.UNIT_STYLE_SUBSCRIPT;
         }
     }
 
-    public @Nullable String getUnitSuffixForSensor(@NonNull String sensor) {
-        switch (sensor) {
-            case ApiService.SENSOR_NAME_TEMPERATURE:
+    @NonNull
+    public String getSuffixForSensor(@NonNull final SensorType type) {
+        switch (type) {
+            case TEMPERATURE:
                 return UNIT_SUFFIX_TEMPERATURE;
-
-            case ApiService.SENSOR_NAME_HUMIDITY:
+            case HUMIDITY:
                 return UNIT_SUFFIX_HUMIDITY;
-
-            case ApiService.SENSOR_NAME_PARTICULATES:
+            case PARTICULATES:
                 return UNIT_SUFFIX_AIR_QUALITY;
-
-            case ApiService.SENSOR_NAME_LIGHT:
+            case LIGHT:
                 return UNIT_SUFFIX_LIGHT;
-
-            case ApiService.SENSOR_NAME_SOUND:
+            case SOUND:
                 return UNIT_SUFFIX_NOISE;
-
+            case CO2:
+                return UNIT_SUFFIX_GAS;
+            case TVOC:
+                return UNIT_SUFFIX_AIR_QUALITY;
+            case LIGHT_TEMPERATURE:
+                return UNIT_SUFFIX_LIGHT_TEMPERATURE;
+            case UV:
+                return UNIT_SUFFIX_KELVIN;
+            case PRESSURE:
+                return UNIT_SUFFIX_PRESSURE;
+            case UNKNOWN:
             default:
-                return null;
+                return Constants.EMPTY_STRING;
         }
     }
 
-    //endregion
+    //region Sensor Detail specific
+
+    public String getMeasuredInString(@NonNull final SensorType type) {
+        String measuredIn = Constants.EMPTY_STRING;
+        switch (type) {
+            case TEMPERATURE:
+                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, false)) {
+                    measuredIn = ApiService.UNIT_TEMPERATURE_CELSIUS.toUpperCase();
+                } else {
+                    measuredIn = ApiService.UNIT_TEMPERATURE_US_CUSTOMARY.toUpperCase();
+                }
+            default:
+                measuredIn += getSuffixForSensor(type);
+        }
+        return measuredIn;
+    }
+
+    @StringRes
+    public int getAboutStringRes(@NonNull final SensorType type) {
+        switch (type) {
+            case TEMPERATURE:
+                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, false)) {
+                    return R.string.sensor_about_temperature_celsius;
+                } else {
+                    return R.string.sensor_about_temperature_fahrenheit;
+                }
+            case HUMIDITY:
+                return R.string.sensor_about_humidity;
+            case LIGHT:
+                return R.string.sensor_about_light;
+            case CO2:
+                return R.string.sensor_about_co2;
+            case LIGHT_TEMPERATURE:
+                return R.string.sensor_about_light_temp;
+            case PARTICULATES:
+                return R.string.sensor_about_particulates;
+            case SOUND:
+                return R.string.sensor_about_noise;
+            case UV:
+                return R.string.sensor_about_uv_light;
+            case TVOC:
+                return R.string.sensor_about_voc;
+            case PRESSURE:
+                return R.string.sensor_about_pressure;
+            default:
+                logEvent("No string found for type: " + type);
+                return R.string.empty;
+        }
+    }
+
+
+    public UnitBuilder createUnitBuilder(@NonNull final SensorType sensorType, final float value) {
+        return builder.updateFor(sensorType, value);
+    }
+
+    public UnitBuilder createUnitBuilder(@NonNull final Sensor sensor) {
+        return builder.updateFor(sensor);
+    }
+
+    public class UnitBuilder {
+        private float value = 0;
+        private UnitConverter unitConverter;
+        private SuffixPrinter suffixPrinter;
+        private int valueDecimalPlaces = 0;
+        private String suffix;
+        private boolean showValue = true;
+        private boolean showSuffix = true;
+
+        private UnitBuilder() {
+        }
+
+        private UnitBuilder updateFor(@NonNull final SensorType sensorType, final float value) {
+            this.unitConverter = getUnitConverterForSensor(sensorType);
+            this.suffixPrinter = getSuffixPrinterForSensor(sensorType);
+            this.setValueDecimalPlaces(sensorType);
+            this.value = value;
+            this.suffix = getSuffixForSensor(sensorType);
+            this.showValue = true;
+            this.showSuffix = true;
+            return this;
+        }
+
+        private UnitBuilder updateFor(@NonNull final Sensor sensor) {
+            this.unitConverter = getUnitConverterForSensor(sensor.getType());
+            this.suffixPrinter = getSuffixPrinterForSensor(sensor.getType());
+            this.setValueDecimalPlaces(sensor.getType());
+            this.value = sensor.getValue();
+            this.suffix = getSuffixForSensor(sensor.getType());
+            this.showValue = true;
+            this.showSuffix = true;
+            return this;
+        }
+
+        private void setValueDecimalPlaces(@NonNull final SensorType sensorType) {
+            switch (sensorType) {
+                case LIGHT:
+                    setValueDecimalPlaces(1);
+                    break;
+                default:
+                    setValueDecimalPlaces(0);
+            }
+        }
+
+        public UnitBuilder setValueDecimalPlaces(final int valueDecimalPlaces) {
+            if (valueDecimalPlaces >= 0) {
+                this.valueDecimalPlaces = valueDecimalPlaces;
+            }
+            return this;
+        }
+
+        public UnitBuilder hideValue() {
+            this.showValue = false;
+            return this;
+        }
+
+        public UnitBuilder hideSuffix() {
+            this.showSuffix = false;
+            return this;
+        }
+
+        /**
+         * @return no styles
+         */
+        public CharSequence build() {
+            return formattedValue() + formattedSuffix();
+        }
+
+        /**
+         * @return default styles
+         */
+        public CharSequence buildWithStyle() {
+            return Styles.assembleReadingAndUnit(formattedValue(), formattedSuffix(), suffixPrinter.getUnitStyle());
+        }
+
+        /**
+         * @return suffix as subscript
+         */
+        public CharSequence buildWithStyleSubscript() {
+            return Styles.assembleReadingAndUnit(formattedValue(), formattedSuffix(), Styles.UNIT_STYLE_SUBSCRIPT);
+        }
+
+        /**
+         * @return suffix as superscript
+         */
+        public CharSequence buildWithStyleSuperscript() {
+            return Styles.assembleReadingAndUnit(formattedValue(), formattedSuffix(), Styles.UNIT_STYLE_SUPERSCRIPT);
+        }
+
+        private String formattedSuffix() {
+            if (!showSuffix) {
+                return Constants.EMPTY_STRING;
+            }
+            return suffix;
+
+        }
+
+        private CharSequence formattedValue() {
+            if (!showValue) {
+                return Constants.EMPTY_STRING;
+            }
+            if (value == Sensor.NO_VALUE) {
+                return placeHolder;
+            }
+            return String.format("%." + valueDecimalPlaces + "f", unitConverter.convert(value));
+        }
+    }
+
+    interface SuffixPrinter {
+        @Styles.UnitStyle
+        int getUnitStyle();
+    }
+//endregion
 }

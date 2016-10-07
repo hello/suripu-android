@@ -1,6 +1,22 @@
 package is.hello.sense.onboarding;
 
+import javax.inject.Singleton;
+
+import android.support.annotation.NonNull;
+
+
 import dagger.Module;
+import dagger.Provides;
+import is.hello.sense.api.ApiService;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.interactors.pairsense.PairSenseInteractor;
+import is.hello.sense.presenters.OnboardingPairSensePresenter;
+import is.hello.sense.presenters.PairSensePresenter;
+import is.hello.sense.presenters.pairpill.BasePairPillPresenter;
+import is.hello.sense.presenters.pairpill.UpgradePairPillPresenter;
+import is.hello.sense.interactors.SensorResponseInteractor;
+import is.hello.sense.presenters.RoomCheckPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
@@ -11,6 +27,8 @@ import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterWeightFragment;
 import is.hello.sense.ui.fragments.pill.PairPillFragment;
+import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.util.RoomCheckResMapper;
 
 @Module(complete = false,
         library = true,
@@ -33,4 +51,34 @@ import is.hello.sense.ui.fragments.pill.PairPillFragment;
 )
 public class OnboardingModule {
 
+        @Provides
+        @Singleton
+        public RoomCheckResMapper providesRoomCheckResMapper(){
+                return new RoomCheckResMapper();
+        }
+
+        @Singleton
+        @Provides
+        public RoomCheckPresenter providesRoomCheckPresenter(@NonNull final SensorResponseInteractor interactor,
+                                                             @NonNull final UnitFormatter unitFormatter,
+                                                             @NonNull final RoomCheckResMapper roomCheckResMapper){
+                return new RoomCheckPresenter(interactor,
+                                              unitFormatter,
+                                              roomCheckResMapper);
+        }
+
+    @Provides
+    @Singleton
+    PairSensePresenter providesOnboardingPairSensePresenter(final HardwareInteractor interactor,
+                                                            final UserFeaturesInteractor userFeaturesInteractor,
+                                                            final ApiService apiService,
+                                                            final PairSenseInteractor pairSenseInteractor) {
+        return new OnboardingPairSensePresenter(interactor, userFeaturesInteractor, apiService, pairSenseInteractor);
+    }
+
+    @Provides
+    @Singleton
+    BasePairPillPresenter providesOnboardingPairPillPresenter(final HardwareInteractor interactor) {
+        return new UpgradePairPillPresenter(interactor);
+    }
 }

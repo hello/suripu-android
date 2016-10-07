@@ -17,6 +17,7 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.commonsense.util.StringRef;
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.SleepPillDevice;
@@ -29,10 +30,13 @@ import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.DiagramVideoView;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.SenseCache;
+import rx.functions.Action0;
 
 public class ConnectPillFragment extends PillHardwareFragment implements OnBackPressedInterceptor {
+
     @Inject
     DevicesInteractor devicesPresenter;
     @Inject
@@ -41,6 +45,8 @@ public class ConnectPillFragment extends PillHardwareFragment implements OnBackP
     BluetoothStack bluetoothStack;
     @Inject
     SenseCache.FirmwareCache firmwareCache;
+
+    private static final String DEFAULT_DEBUG_URL = "https://s3.amazonaws.com/hello-firmware/kodobannin/mobile/pill.bin";
 
     private DiagramVideoView diagram;
     private ProgressBar activityIndicator;
@@ -85,7 +91,7 @@ public class ConnectPillFragment extends PillHardwareFragment implements OnBackP
                          this::bindDevices,
                          this::presentError);
         bindAndSubscribe(pillDfuPresenter.sleepPill,
-                         this::pillFound,
+                         this::shouldShowConfirmationDialog,
                          this::presentError);
         searchForPill();
     }
@@ -133,15 +139,19 @@ public class ConnectPillFragment extends PillHardwareFragment implements OnBackP
 
     private void bindDevices(@NonNull final Devices devices) {
         final SleepPillDevice sleepPillDevice = devices.getSleepPill();
-        if (sleepPillDevice == null || !sleepPillDevice.shouldUpdate()) {
+        //intend to allow any pill found nearby to be updated in debug mode
+        if(BuildConfig.DEBUG && (sleepPillDevice == null || !sleepPillDevice.shouldUpdate())){
+            Log.d(getClass().getName(), "using " + DEFAULT_DEBUG_URL + " for firmwareCache url");
+            firmwareCache.setUrlLocation(DEFAULT_DEBUG_URL);
+        } else if (sleepPillDevice == null) {
             cancel(false);
             return;
+        } else if (sleepPillDevice.shouldUpdate()){
+            assert sleepPillDevice.firmwareUpdateUrl != null;
+            firmwareCache.setUrlLocation(sleepPillDevice.firmwareUpdateUrl);
+            pillDfuPresenter.setDeviceId(sleepPillDevice.deviceId);
         }
-        assert sleepPillDevice.firmwareUpdateUrl != null;
-
-        firmwareCache.setUrlLocation(sleepPillDevice.firmwareUpdateUrl);
         pillDfuPresenter.update();
-        pillDfuPresenter.setDeviceId(sleepPillDevice.deviceId);
     }
 
     private void updateUI(final boolean onError){
@@ -185,12 +195,38 @@ public class ConnectPillFragment extends PillHardwareFragment implements OnBackP
         cancel(false);
     }
 
-    private void pillFound(@NonNull final PillPeripheral pillPeripheral) {
+    private void pillFound() {
         setStatus(R.string.message_sleep_pill_connected);
         diagram.suspendPlayback(true);
         activityStatus.post(() -> activityIndicator.setActivated(true));
         activityStatus.postDelayed(() -> getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null),
                                    LoadingDialogFragment.DURATION_DONE_MESSAGE);
+    }
+
+    public void shouldShowConfirmationDialog(@NonNull final PillPeripheral pillPeripheral){
+        if(BuildConfig.DEBUG){
+            showConfirmationDialog(pillPeripheral.getName(),
+                                   this::pillFound,
+                                   () -> {
+                                       updateUI(true);
+                                       pillDfuPresenter.reset();
+                                   });
+        } else {
+            pillFound();
+        }
+    }
+
+    public void showConfirmationDialog(final String deviceName,
+                               final Action0 positiveAction,
+                               final Action0 negativeAction){
+        final SenseAlertDialog.Builder dialog = new SenseAlertDialog.Builder()
+                .setTitle(R.string.debug_title_confirm_sense_pair)
+                .setMessage(getString(R.string.debug_message_confirm_pill_update_fmt, deviceName))
+                .setPositiveButton(android.R.string.ok, positiveAction::call)
+                .setNegativeButton(android.R.string.cancel, negativeAction::call)
+                .setCancelable(false);
+
+        dialog.build(getActivity()).show();
     }
 
     private void setStatus(@StringRes final int text) {

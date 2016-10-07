@@ -28,8 +28,7 @@
         android:layout_marginRight="@dimen/x3"
         android:layout_above="@id/view_onboarding_simple_step_primary"
         android:text="@string/action_skip"
-        android:textAllCaps="false"
-        style="@style/AppTheme.Button.Borderless.Accent.Bounded"/>
+        style="@style/AppTheme.Button.Borderless.Accent.Bounded.Lowercase"/>
 
     <ScrollView
         android:id="@+id/view_onboarding_simple_step_contents_scroll"

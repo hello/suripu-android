@@ -12,6 +12,8 @@ import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.SenseTestCase;
+import is.hello.sense.ui.widget.graphing.trends.TrendFeedView;
+import is.hello.sense.ui.widget.graphing.trends.TrendGraphView;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;

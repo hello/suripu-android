@@ -106,7 +106,7 @@ public class ExtendedViewPager extends ViewPager {
         }
     }
 
-    public class FadePageTransformer implements ViewPager.PageTransformer {
+    public static class FadePageTransformer implements ViewPager.PageTransformer {
 
         public FadePageTransformer() {
         }

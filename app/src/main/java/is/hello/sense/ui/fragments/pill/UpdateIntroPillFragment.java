@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.pill;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -119,10 +118,6 @@ public class UpdateIntroPillFragment extends PillHardwareFragment implements OnB
         phoneBatteryPresenter.refreshAndUpdate(getActivity());
     }
 
-    private void done() {
-        getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
-    }
-
     private void updateButtonUI(final boolean shouldEnable, final boolean allowRetry) {
         primaryButton.setEnabled(shouldEnable);
         primaryButton.setText(allowRetry ? R.string.action_retry : R.string.action_continue);
@@ -150,7 +145,7 @@ public class UpdateIntroPillFragment extends PillHardwareFragment implements OnB
 
     private void checkBluetooth() {
         if (bluetoothStack.isEnabled()) {
-            done();
+            finishFlow();
         } else {
             cancel(true);
         }

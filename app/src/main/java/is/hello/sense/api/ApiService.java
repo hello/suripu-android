@@ -40,6 +40,9 @@ import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.Trends;
+import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
+import is.hello.sense.api.model.v2.sensors.SensorResponse;
+import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import retrofit.http.Body;
@@ -64,13 +67,16 @@ public interface ApiService {
 
     String UNIT_TEMPERATURE_CELSIUS = "c";
     String UNIT_TEMPERATURE_US_CUSTOMARY = "f";
-
+    @Deprecated
     String SENSOR_NAME_TEMPERATURE = "temperature";
+    @Deprecated
     String SENSOR_NAME_HUMIDITY = "humidity";
+    @Deprecated
     String SENSOR_NAME_PARTICULATES = "particulates";
+    @Deprecated
     String SENSOR_NAME_LIGHT = "light";
+    @Deprecated
     String SENSOR_NAME_SOUND = "sound";
-
 
     /**
      * Sentinel value used by graphing APIs.
@@ -175,6 +181,12 @@ public interface ApiService {
     @GET("/v1/room/{sensor}/week")
     Observable<ArrayList<SensorGraphSample>> sensorHistoryForWeek(@Path("sensor") String sensor,
                                                                   @Query("from") long timestamp);
+
+    @GET("/v2/sensors")
+    Observable<SensorResponse> getSensors();
+
+    @POST("/v2/sensors")
+    Observable<SensorsDataResponse> postSensors(@NonNull @Body SensorDataRequest request);
 
     //endregion
 
