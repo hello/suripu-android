@@ -58,6 +58,9 @@ import is.hello.sense.api.model.v2.TimelineBuilder;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.TimelineEventBuilder;
 import is.hello.sense.api.model.v2.Trends;
+import is.hello.sense.api.model.v2.expansions.Configuration;
+import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
@@ -434,6 +437,31 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<UserFeatures> getUserFeatures() {
         return loadResponse("sense_features", new TypeToken<UserFeatures>(){}.getType());
+    }
+
+    @Override
+    public Observable<ArrayList<Expansion>> getExpansions() {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<ArrayList<Expansion>> getExpansionDetail(@Path("id") long expansionId) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<Void> setExpansionState(@Path("id") long expansionId, @Body @NonNull State state) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<ArrayList<Configuration>> getConfigurations(@Path("id") long expansionId) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<Configuration> setConfigurations(@Path("id") long expansionId, @Body @NonNull Configuration configuration) {
+        return unimplemented();
     }
 
     @Override

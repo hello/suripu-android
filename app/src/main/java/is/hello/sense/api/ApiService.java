@@ -344,17 +344,17 @@ public interface ApiService {
     //region Expansions
 
     @GET("/v2/expansions")
-    Observable<List<Expansion>> getExpansions();
+    Observable<ArrayList<Expansion>> getExpansions();
 
     @GET("/v2/expansions/{id}")
-    Observable<List<Expansion>> getExpansionDetail(@Path("id") long expansionId);
+    Observable<ArrayList<Expansion>> getExpansionDetail(@Path("id") long expansionId);
 
     @PATCH("/v2/expansions/{id}")
     Observable<Void> setExpansionState(@Path("id") long expansionId,
                                        @Body @NonNull State state);
 
     @GET("/v2/expansions/{id}/configurations")
-    Observable<List<Configuration>> getConfigurations(@Path("id") long expansionId);
+    Observable<ArrayList<Configuration>> getConfigurations(@Path("id") long expansionId);
 
     @PATCH("/v2/expansions/{id}/configurations")
     Observable<Configuration> setConfigurations(@Path("id") long expansionId,
