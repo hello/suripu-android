@@ -33,7 +33,7 @@ public class Expansion extends ApiResponse {
     @SerializedName("state")
     private State state;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
