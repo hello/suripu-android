@@ -7,7 +7,7 @@ import is.hello.sense.api.model.v2.MultiDensityImage;
 
 public class Expansion extends ApiResponse {
     @SerializedName("id")
-    private int id;
+    private long id;
 
     @SerializedName("category")
     private Category category;
