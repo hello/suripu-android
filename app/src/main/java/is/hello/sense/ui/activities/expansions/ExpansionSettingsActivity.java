@@ -43,7 +43,7 @@ implements FragmentNavigation{
     }
 
     private void showExpansionList() {
-        pushFragment(new ExpansionListFragment(), getString(R.string.expansion_list_title), false);
+        pushFragment(new ExpansionListFragment(), null, false);
     }
 
     @Override

@@ -7,7 +7,7 @@ import android.view.View;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -31,7 +31,7 @@ implements ArrayRecyclerAdapter.OnItemClickedListener<Expansion>{
     @Override
     public void initializePresenterView() {
         if(presenterView == null){
-            this.adapter = new ExpansionAdapter(Collections.emptyList(), picasso);
+            this.adapter = new ExpansionAdapter(new ArrayList<>(2), picasso);
             this.adapter.setOnItemClickedListener(this);
             presenterView = new ExpansionListView(getActivity(), adapter);
         }

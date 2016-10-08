@@ -56,7 +56,7 @@ public class ExpansionAdapter extends ArrayRecyclerAdapter<Expansion, ExpansionA
                 picasso.load(expansion.getIcon().getUrl(itemView.getResources()))
                        .into(iconImageView);
                 this.deviceNameTextView.setText(expansion.getDeviceName());
-                this.stateTextView.setText(expansion.getState().name());
+                this.stateTextView.setText(expansion.getState().displayValue);
             }
 
         }

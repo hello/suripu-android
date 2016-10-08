@@ -685,6 +685,12 @@
 
     <string name="action_expansions">Expansions</string>
     <string name="expansion_list_title">Expansions</string>
+    <string name="expansions_state_not_connected">Connect</string>
+    <string name="expansions_state_connected_on">Enabled</string>
+    <string name="expansions_state_connected_off">Disabled</string>
+    <string name="expansions_state_revoked">Revoked</string>
+    <string name="expansions_state_unknown">Unknown</string>
+    <string name="expansions_state_not_configured">Configure</string>
     <string name="expansions_connect_title">Connect</string>
 
     <!-- end region -->
