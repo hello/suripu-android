@@ -117,6 +117,9 @@
             android:name=".ui.activities.SettingsActivity"
             android:parentActivityName=".ui.activities.HomeActivity" />
 
+        <activity android:name=".ui.activities.expansions.ExpansionSettingsActivity"
+                  android:parentActivityName=".ui.activities.HomeActivity" />
+
         <activity
             xmlns:tools="http://schemas.android.com/tools"
             android:name="com.facebook.FacebookActivity"
