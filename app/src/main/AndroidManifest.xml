@@ -118,6 +118,7 @@
             android:parentActivityName=".ui.activities.HomeActivity" />
 
         <activity android:name=".ui.activities.expansions.ExpansionSettingsActivity"
+                  android:label="@string/expansion_list_title"
                   android:parentActivityName=".ui.activities.HomeActivity" />
 
         <activity
