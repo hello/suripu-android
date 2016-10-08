@@ -683,6 +683,7 @@
 
     <!-- region Expansions -->
 
+    <string name="action_expansions">Expansions</string>
     <string name="expansion_list_title">Expansions</string>
     <string name="expansions_connect_title">Connect</string>
 
