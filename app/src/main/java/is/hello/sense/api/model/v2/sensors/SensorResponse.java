@@ -1,9 +1,10 @@
 package is.hello.sense.api.model.v2.sensors;
 
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,6 +16,12 @@ public class SensorResponse extends ApiResponse {
 
     @SerializedName("sensors")
     private List<Sensor> sensors;
+
+    public SensorResponse(@NonNull final List<Sensor> sensors,
+                          @NonNull final SensorStatus sensorStatus){
+        this.sensors = sensors;
+        this.status = sensorStatus;
+    }
 
     @Override
     public String toString() {
