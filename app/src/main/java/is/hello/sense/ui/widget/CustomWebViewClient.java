@@ -50,8 +50,11 @@ public class CustomWebViewClient extends WebViewClient{
             if(url.contains(initialUrl)) {
                 listener.onInitialUrlLoaded();
             }
-            if(url.contains(completionUrl)){
+            else if(url.contains(completionUrl)){
                 listener.onCompletionUrlLoaded();
+            }
+            else {
+                listener.onOtherUrlLoaded();
             }
         }
     }
@@ -67,5 +70,6 @@ public class CustomWebViewClient extends WebViewClient{
     public interface Listener {
         void onInitialUrlLoaded();
         void onCompletionUrlLoaded();
+        void onOtherUrlLoaded();
     }
 }

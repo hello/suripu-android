@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+    style="@style/AppTheme.Card.Item">
+
+    <ImageView
+        android:id="@+id/item_icon_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/expansion_icon_min_size"
+        android:minWidth="@dimen/expansion_icon_min_size"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"/>
+
+    <TextView
+        android:id="@+id/item_device_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/item_icon_iv"
+        android:layout_marginLeft="@dimen/x2"
+        android:layout_centerVertical="true"
+        style="@style/AppTheme.Text.Body.Bold"/>
+
+    <TextView
+        android:id="@+id/item_state_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="@dimen/x.5"
+        android:layout_centerVertical="true"
+        android:drawableRight="@drawable/disclosure_chevron"
+        android:drawablePadding="@dimen/x.5"
+        style="@style/AppTheme.Text.Body.MidSized.New"/>
+
+</RelativeLayout>

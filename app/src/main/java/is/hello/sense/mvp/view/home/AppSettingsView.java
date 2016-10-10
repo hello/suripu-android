@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.view.View;
 import android.widget.ImageView;
@@ -29,11 +30,13 @@ public class AppSettingsView extends PresenterView {
     private final View supportItem;
     private final View tellAFriendItem;
     private final TextView version;
+    private final View expansionItem;
 
     public AppSettingsView(@NonNull final Activity activity,
                            @NonNull final ClickListenerGenerator generator,
                            @NonNull final View.OnClickListener devicesListener,
-                           @NonNull final View.OnClickListener tellAFriendListener) {
+                           @NonNull final View.OnClickListener tellAFriendListener,
+                           @Nullable final View.OnClickListener expansionsListener) {
         super(activity);
 
         this.breadcrumb = (ImageView) findViewById(R.id.fragment_app_settings_breadcrumb);
@@ -49,6 +52,15 @@ public class AppSettingsView extends PresenterView {
 
         this.unitsItem = findViewById(R.id.fragment_app_settings_units);
         Views.setSafeOnClickListener(this.unitsItem, generator.create(UnitSettingsFragment.class, R.string.label_units_and_time, false));
+
+        this.expansionItem = findViewById(R.id.fragment_app_settings_expansions);
+        if(expansionsListener != null) {
+            this.expansionItem.setVisibility(VISIBLE);
+            Views.setSafeOnClickListener(this.expansionItem, expansionsListener);
+        } else {
+            this.expansionItem.setVisibility(GONE);
+            this.expansionItem.setEnabled(false);
+        }
 
         this.supportItem = findViewById(R.id.fragment_app_settings_support);
         Views.setSafeOnClickListener(this.supportItem, generator.create(SupportFragment.class, R.string.action_support, false));
@@ -80,6 +92,7 @@ public class AppSettingsView extends PresenterView {
         devicesItem.setOnClickListener(null);
         notificationsItem.setOnClickListener(null);
         unitsItem.setOnClickListener(null);
+        expansionItem.setOnClickListener(null);
         supportItem.setOnClickListener(null);
         tellAFriendItem.setOnClickListener(null);
         version.setOnClickListener(null);

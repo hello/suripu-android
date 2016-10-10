@@ -170,6 +170,8 @@
     <dimen name="sense_voice_circles_x2_padding">21dp</dimen>
     <dimen name="sense_voice_translate_y">50dp</dimen>
     <dimen name="sense_voice_fixed_margin">36px</dimen>
+
+    <dimen name="expansion_icon_min_size">60dp</dimen>
     <!-- px not typo -->
 
     <!-- Graphs -->

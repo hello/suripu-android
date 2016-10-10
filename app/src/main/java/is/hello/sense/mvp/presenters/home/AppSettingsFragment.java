@@ -1,6 +1,7 @@
 package is.hello.sense.mvp.presenters.home;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,6 +13,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.mvp.view.home.AppSettingsView;
@@ -33,7 +35,11 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     @Override
     public final void initializePresenterView() {
         if (presenterView == null) {
-            presenterView = new AppSettingsView(getActivity(), this, showDeviceList(), tellAFriend());
+            presenterView = new AppSettingsView(getActivity(),
+                                                this,
+                                                showDeviceList(),
+                                                tellAFriend(),
+                                                showExpansions()); //todo if should not have expansions make null
         }
     }
 
@@ -112,6 +118,12 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
                  .withSubject(getString(R.string.tell_a_friend_subject))
                  .send(getActivity());
 
+        };
+    }
+
+    private View.OnClickListener showExpansions() {
+        return v -> {
+            startActivity(new Intent(getActivity(), ExpansionSettingsActivity.class));
         };
     }
 }
