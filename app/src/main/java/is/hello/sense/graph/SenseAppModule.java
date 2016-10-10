@@ -54,7 +54,6 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.TrendsFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
-import is.hello.sense.ui.fragments.expansions.ExpansionsAuthFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPill;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
@@ -138,8 +137,6 @@ import is.hello.sense.zendesk.ZendeskModule;
                 ListActivity.class,
                 SleepSoundsPlayerView.class,
                 BaseHardwarePresenter.class,
-
-                ExpansionsAuthFragment.class,
 
                 //todo remove when fragments use presenters
                 OnboardingSenseColorsFragment.class,

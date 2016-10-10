@@ -17,17 +17,16 @@ import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PersistentPreferencesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter.DetailItem;
-import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
-import is.hello.sense.ui.fragments.expansions.ExpansionsAuthFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
 import is.hello.sense.ui.widget.WhatsNewLayout;
@@ -87,7 +86,7 @@ public class DebugActivity extends InjectionActivity {
         adapter.add(new DetailItem("Show Sense OTA Update", this::showSenseOTA));
         adapter.add(new DetailItem("Show New Sense Update", this::showNewSenseUpdate));
         adapter.add(new DetailItem("Show Sense Voice", this::showSenseVoice));
-        adapter.add(new DetailItem("Show Expansion Auth Webview", this::showExpansionWebview));
+        adapter.add(new DetailItem("Show Expansions", this::showExpansion));
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
 
         adapter.add(new DetailItem("Forget welcome dialogs", this::clearHandholdingSettings));
@@ -224,12 +223,8 @@ public class DebugActivity extends InjectionActivity {
         Toast.makeText(getApplicationContext(), "Forgot Room Conditions Welcome Card", Toast.LENGTH_SHORT).show();
     }
 
-    public void showExpansionWebview(){
-        final FragmentNavigationActivity.Builder builder =
-                new FragmentNavigationActivity.Builder(this, FragmentNavigationActivity.class);
-        builder.setDefaultTitle(R.string.expansions_connect_title);
-        builder.setFragmentClass(ExpansionsAuthFragment.class);
-        startActivity(builder.toIntent());
+    public void showExpansion(){
+        startActivity(new Intent(this, ExpansionSettingsActivity.class));
     }
 
     public void logOut() {

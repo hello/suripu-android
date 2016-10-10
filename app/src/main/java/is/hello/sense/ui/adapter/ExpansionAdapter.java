@@ -45,6 +45,7 @@ public class ExpansionAdapter extends ArrayRecyclerAdapter<Expansion, ExpansionA
             this.iconImageView = (ImageView) itemView.findViewById(R.id.item_icon_iv);
             this.deviceNameTextView = (TextView) itemView.findViewById(R.id.item_device_name_tv);
             this.stateTextView = (TextView) itemView.findViewById(R.id.item_state_tv);
+            this.itemView.setOnClickListener(this);
         }
 
         @Override

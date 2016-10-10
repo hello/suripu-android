@@ -12,6 +12,7 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionListFragment;
+import is.hello.sense.flows.expansions.ui.fragments.ExpansionsAuthFragment;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -46,6 +47,11 @@ implements FragmentNavigation{
         pushFragment(new ExpansionListFragment(), null, false);
     }
 
+    private void showExpansionAuth(@NonNull final String initialUrl,
+                                   @NonNull final String completionUrl) {
+        pushFragment(ExpansionsAuthFragment.newInstance(initialUrl, completionUrl), null, true);
+    }
+
     @Override
     public final void pushFragment(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
         navigationDelegate.pushFragment(fragment, title, wantsBackStackEntry);
@@ -63,7 +69,16 @@ implements FragmentNavigation{
 
     @Override
     public final void flowFinished(@NonNull final Fragment fragment, final int responseCode, @Nullable final Intent result) {
-
+        if(fragment instanceof ExpansionListFragment && responseCode == RESULT_OK){
+            if(result != null) {
+                showExpansionAuth(result.getStringExtra(ExpansionsAuthFragment.EXTRA_INIT_URL),
+                                  result.getStringExtra(ExpansionsAuthFragment.EXTRA_COMPLETE_URL));
+            } else {
+                //todo show next fragment
+            }
+        } else if(fragment instanceof ExpansionsAuthFragment && responseCode == RESULT_OK){
+            showExpansionList(); //todo show configure Fragment instead
+        }
     }
 
     @Nullable
