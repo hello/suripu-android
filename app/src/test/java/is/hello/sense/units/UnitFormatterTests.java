@@ -9,7 +9,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.interactors.PreferencesInteractor;
 
@@ -21,7 +21,8 @@ import static org.junit.Assert.assertThat;
 
 @SuppressLint("CommitPrefEdits")
 public class UnitFormatterTests extends InjectionTestCase {
-    @Inject UnitFormatter unitFormatter;
+    @Inject
+    UnitFormatter unitFormatter;
     @Inject
     PreferencesInteractor preferences;
 
@@ -95,58 +96,153 @@ public class UnitFormatterTests extends InjectionTestCase {
                    .putBoolean(PreferencesInteractor.USE_CELSIUS, true)
                    .commit();
 
-        assertThat(unitFormatter.formatTemperature(4).toString(),
+        assertThat(unitFormatter.createUnitBuilder(SensorType.TEMPERATURE, 4)
+                                .buildWithStyle(),
                    is(equalTo("4 °")));
 
         preferences.edit()
                    .putBoolean(PreferencesInteractor.USE_CELSIUS, false)
                    .commit();
 
-        assertThat(unitFormatter.formatTemperature(4).toString(),
+        assertThat(unitFormatter.createUnitBuilder(SensorType.TEMPERATURE, 4)
+                                .buildWithStyle(),
                    is(equalTo("39 °")));
     }
 
+
     @Test
     public void formatLight() throws Exception {
-        assertThat(unitFormatter.formatLight(42.0).toString(),
-                   is(equalTo("42 lux")));
-        assertThat(unitFormatter.formatLight(9.5).toString(),
-                   is(equalTo("9.5 lux")));
-        assertThat(unitFormatter.formatLight(1.3).toString(),
-                   is(equalTo("1.3 lux")));
-        assertThat(unitFormatter.formatLight(3.7).toString(),
-                   is(equalTo("3.7 lux")));
+        assertThat(unitFormatter.createUnitBuilder(SensorType.LIGHT, 42.0f)
+                                .setValueDecimalPlaces(0)
+                                .buildWithStyle(),
+                   is(equalTo("42 lx")));
+        assertThat(unitFormatter.createUnitBuilder(SensorType.LIGHT, 9.5f)
+                                .buildWithStyle(),
+                   is(equalTo("9.5 lx")));
+        assertThat(unitFormatter.createUnitBuilder(SensorType.LIGHT, 1.3f)
+                                .buildWithStyle(),
+                   is(equalTo("1.3 lx")));
+        assertThat(unitFormatter.createUnitBuilder(SensorType.LIGHT, 3.7f)
+                                .buildWithStyle(),
+                   is(equalTo("3.7 lx")));
     }
 
     @Test
     public void formatHumidity() throws Exception {
-        assertThat(unitFormatter.formatHumidity(42).toString(),
+        assertThat(unitFormatter.createUnitBuilder(SensorType.HUMIDITY, 42)
+                                .buildWithStyle(),
                    is(equalTo("42 %")));
     }
 
     @Test
-    public void formatAirQuality() throws Exception {
-        assertThat(unitFormatter.formatAirQuality(42).toString(),
-                   is(equalTo("42 µg/m³")));
-    }
-
-    @Test
     public void formatNoise() throws Exception {
-        assertThat(unitFormatter.formatNoise(42).toString(),
+        assertThat(unitFormatter.createUnitBuilder(SensorType.SOUND, 42)
+                                .buildWithStyle(),
                    is(equalTo("42 dB")));
     }
 
     @Test
+    public void formatLightTemperature() throws Exception {
+        assertThat(unitFormatter.createUnitBuilder(SensorType.LIGHT_TEMPERATURE, 42)
+                                .buildWithStyle(),
+                   is(equalTo("42 k")));
+    }
+
+    @Test
+    public void formatUV() throws Exception {
+        assertThat(unitFormatter.createUnitBuilder(SensorType.UV, 42)
+                                .buildWithStyle(),
+                   is(equalTo("42 k")));
+    }
+
+    @Test
+    public void formatVOC() throws Exception {
+        assertThat(unitFormatter.createUnitBuilder(SensorType.TVOC, 42)
+                                .buildWithStyle(),
+                   is(equalTo("42 µg/m³")));
+    }
+
+    @Test
+    public void formatCO2() throws Exception {
+        assertThat(unitFormatter.createUnitBuilder(SensorType.CO2, 42)
+                                .buildWithStyle(),
+                   is(equalTo("42 ppm")));
+    }
+
+    @Test
+    public void formatPressure() throws Exception {
+        assertThat(unitFormatter.createUnitBuilder(SensorType.PRESSURE, 42)
+                                .buildWithStyle(),
+                   is(equalTo("42 kPa")));
+    }
+
+    @Test
+    public void formatUnknown() throws Exception {
+        assertThat(unitFormatter.createUnitBuilder(SensorType.UNKNOWN, 42)
+                                .buildWithStyle(),
+                   is(equalTo("42 ")));
+    }
+
+    @Test
+    public void hideValue() throws Exception {
+        assertThat(unitFormatter.createUnitBuilder(SensorType.HUMIDITY, 42)
+                                .hideValue()
+                                .buildWithStyle(),
+                   is(equalTo(" %")));
+    }
+
+    @Test
+    public void hideSuffix() throws Exception {
+        assertThat(unitFormatter.createUnitBuilder(SensorType.HUMIDITY, 42)
+                                .hideSuffix()
+                                .buildWithStyle(),
+                   is(equalTo("42 ")));
+    }
+
+    @Test
+    public void ignoreNegativeValueDecimalPlaces() throws Exception {
+        assertThat(unitFormatter.createUnitBuilder(SensorType.HUMIDITY, 42.12f)
+                                .setValueDecimalPlaces(-2)
+                                .buildWithStyle(),
+                   is(equalTo("42 %")));
+    }
+
+    @Test
+    public void respectPositiveValueDecimalPlaces() throws Exception {
+        assertThat(unitFormatter.createUnitBuilder(SensorType.HUMIDITY, 42.12f)
+                                .setValueDecimalPlaces(2)
+                                .buildWithStyle(),
+                   is(equalTo("42.12 %")));
+    }
+
+    @Test
+    public void defaultLightValueDecimalPlaceIsOne() throws Exception {
+        assertThat(unitFormatter.createUnitBuilder(SensorType.LIGHT, 42.12f)
+                                .buildWithStyle(),
+                   is(equalTo("42.1 lx")));
+    }
+
+    @Test
     public void getUnitSuffixForSensor() throws Exception {
-        assertThat(unitFormatter.getUnitSuffixForSensor(ApiService.SENSOR_NAME_TEMPERATURE),
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.TEMPERATURE),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_TEMPERATURE)));
-        assertThat(unitFormatter.getUnitSuffixForSensor(ApiService.SENSOR_NAME_LIGHT),
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.LIGHT),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_LIGHT)));
-        assertThat(unitFormatter.getUnitSuffixForSensor(ApiService.SENSOR_NAME_PARTICULATES),
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.PARTICULATES),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_AIR_QUALITY)));
-        assertThat(unitFormatter.getUnitSuffixForSensor(ApiService.SENSOR_NAME_SOUND),
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.SOUND),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_NOISE)));
-        assertThat(unitFormatter.getUnitSuffixForSensor(ApiService.SENSOR_NAME_HUMIDITY),
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.HUMIDITY),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_HUMIDITY)));
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.CO2),
+                   is(equalTo(UnitFormatter.UNIT_SUFFIX_GAS)));
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.TVOC),
+                   is(equalTo(UnitFormatter.UNIT_SUFFIX_AIR_QUALITY)));
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.UV),
+                   is(equalTo(UnitFormatter.UNIT_SUFFIX_KELVIN)));
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.LIGHT_TEMPERATURE),
+                   is(equalTo(UnitFormatter.UNIT_SUFFIX_LIGHT_TEMPERATURE)));
+        assertThat(unitFormatter.getSuffixForSensor(SensorType.PRESSURE),
+                   is(equalTo(UnitFormatter.UNIT_SUFFIX_PRESSURE)));
     }
 }

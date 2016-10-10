@@ -39,6 +39,6 @@
         android:drawablePadding="@dimen/gap_small"
         android:textColor="#8b8b8b"
         android:text="@string/action_watch_video"
-        style="@style/AppTheme.Button.Borderless.Accent.Bounded" />
+        style="@style/AppTheme.Button.Borderless.Accent.Bounded.Lowercase" />
 
 </LinearLayout>
