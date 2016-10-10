@@ -680,4 +680,10 @@
     <string name="room_conditions_welcome_message">Recent changes to room conditions may take a few moments to be reflected here. Tap a card for more detail.</string>
     <string name="temperature_celsius">C</string>
     <string name="temperature_fahrenheit">F</string>
+
+    <!-- region Expansions -->
+
+    <string name="expansions_connect_title">Connect</string>
+
+    <!-- end region -->
 </resources>
