@@ -1,10 +1,12 @@
 package is.hello.sense.ui.recycler;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -14,9 +16,15 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     private final Paint paint = new Paint();
     private final int height;
 
+    @Deprecated
     public DividerItemDecoration(@NonNull Resources resources) {
         this.height = resources.getDimensionPixelSize(R.dimen.divider_size);
         paint.setColor(resources.getColor(R.color.border));
+    }
+
+    public DividerItemDecoration(@NonNull final Context context) {
+        this.height = context.getResources().getDimensionPixelSize(R.dimen.divider_size);
+        paint.setColor(ContextCompat.getColor(context, R.color.border));
     }
 
 

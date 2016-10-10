@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import is.hello.sense.R;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
+import is.hello.sense.ui.recycler.DividerItemDecoration;
 
 public class ExpansionListView extends PresenterView {
 
@@ -17,6 +18,7 @@ public class ExpansionListView extends PresenterView {
         super(activity);
         this.recyclerView = (RecyclerView) findViewById(R.id.view_expansion_list_rv);
         this.recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL, false));
+        this.recyclerView.addItemDecoration(new DividerItemDecoration(getContext()));
         this.recyclerView.setAdapter(adapter);
     }
 
