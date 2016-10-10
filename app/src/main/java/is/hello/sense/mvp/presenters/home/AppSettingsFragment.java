@@ -13,11 +13,11 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.mvp.view.home.AppSettingsView;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
-import is.hello.sense.ui.activities.expansions.ExpansionSettingsActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.handholding.Tutorial;

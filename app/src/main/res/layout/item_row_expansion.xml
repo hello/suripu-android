@@ -21,8 +21,7 @@
         android:layout_toRightOf="@+id/item_icon_iv"
         android:layout_marginLeft="@dimen/x2"
         android:layout_centerVertical="true"
-        style="@style/AppTheme.Text.Body.Bold"
-        android:text="Nest Thermostat"/>
+        style="@style/AppTheme.Text.Body.Bold"/>
 
     <TextView
         android:id="@+id/item_state_tv"
@@ -33,7 +32,6 @@
         android:layout_centerVertical="true"
         android:drawableRight="@drawable/disclosure_chevron"
         android:drawablePadding="@dimen/x.5"
-        style="@style/AppTheme.Text.Body.MidSized.New"
-        android:text="Enabled"/>
+        style="@style/AppTheme.Text.Body.MidSized.New"/>
 
 </RelativeLayout>

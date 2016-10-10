@@ -16,7 +16,7 @@ import is.hello.sense.api.model.v2.expansions.Expansion;
 
 public class ExpansionAdapter extends ArrayRecyclerAdapter<Expansion, ExpansionAdapter.ExpansionViewHolder> {
 
-    private Picasso picasso;
+    private final Picasso picasso;
 
     public ExpansionAdapter(@NonNull final List<Expansion> storage,
                             @NonNull final Picasso picasso) {

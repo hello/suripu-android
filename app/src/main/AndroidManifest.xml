@@ -117,7 +117,7 @@
             android:name=".ui.activities.SettingsActivity"
             android:parentActivityName=".ui.activities.HomeActivity" />
 
-        <activity android:name=".ui.activities.expansions.ExpansionSettingsActivity"
+        <activity android:name=".flows.expansions.ui.activities.ExpansionSettingsActivity"
                   android:label="@string/expansion_list_title"
                   android:parentActivityName=".ui.activities.HomeActivity" />
 
