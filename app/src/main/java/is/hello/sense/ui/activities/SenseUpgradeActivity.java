@@ -17,6 +17,7 @@ import is.hello.sense.SenseUpgradeModule;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.CurrentSenseInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.PairSensePresenter;
@@ -50,11 +51,11 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
     @Inject
     SenseOTAStatusInteractor senseOTAStatusPresenter;
     @Inject
-    UserFeaturesInteractor userFeaturesPresenter;
-    @Inject
     CurrentSenseInteractor currentSenseInteractor;
     @Inject
     DevicesInteractor devicesInteractor;
+    @Inject
+    PreferencesInteractor preferencesInteractor;
 
     @Override
     protected List<Object> getModules() {
@@ -261,7 +262,7 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
     }
 
     private void checkHasVoiceFeature() {
-        if (userFeaturesPresenter.hasVoice()) {
+        if (preferencesInteractor.hasVoice()) {
             showSenseVoice();
         } else {
             showResetOriginalSense();

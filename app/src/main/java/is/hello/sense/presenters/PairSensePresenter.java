@@ -13,6 +13,7 @@ import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.interactors.pairsense.PairSenseInteractor;
@@ -37,8 +38,9 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
     public PairSensePresenter(final HardwareInteractor hardwareInteractor,
                               final UserFeaturesInteractor userFeaturesInteractor,
                               final ApiService apiService,
-                              final PairSenseInteractor pairSenseInteractor) {
-        super(hardwareInteractor, userFeaturesInteractor, apiService, pairSenseInteractor);
+                              final PairSenseInteractor pairSenseInteractor,
+                              final PreferencesInteractor preferencesInteractor) {
+        super(hardwareInteractor, userFeaturesInteractor, apiService, pairSenseInteractor,preferencesInteractor);
     }
 
     @StringRes
@@ -197,7 +199,7 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
             showHardwareActivity(() -> bindAndSubscribe(hardwareInteractor.unsafeFactoryReset(),
                                                         ignored -> hideBlockingActivity(true, () -> {
                                                             Analytics.setSenseId("unpaired");
-                                                            userFeaturesInteractor.reset();
+                                                            preferencesInteractor.setFeatures(null);
                                                             view.showMessageDialog(R.string.title_power_cycle_sense_factory_reset,
                                                                                    R.string.message_power_cycle_sense_factory_reset);
 

@@ -31,7 +31,6 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
-import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.onboarding.OnboardingModule;
 import is.hello.sense.onboarding.OnboardingPairSenseModule;
@@ -110,8 +109,6 @@ public class OnboardingActivity extends ScopedInjectionActivity
     PreferencesInteractor preferences;
     @Inject
     BluetoothStack bluetoothStack;
-    @Inject
-    UserFeaturesInteractor userFeaturesPresenter;
     @Inject
     SenseOTAStatusInteractor senseOTAStatusPresenter;
 
@@ -605,7 +602,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
     }
 
     private void checkHasVoiceFeature() {
-        if (userFeaturesPresenter.hasVoice()) {
+        if (preferences.hasVoice()) {
             showSenseVoice();
         } else {
             showDone();

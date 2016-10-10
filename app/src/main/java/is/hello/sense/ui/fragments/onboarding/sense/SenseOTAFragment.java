@@ -20,6 +20,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.DeviceOTAState;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -35,6 +36,9 @@ public class SenseOTAFragment extends BaseHardwareFragment {
 
     @Inject
     ApiService apiService;
+
+    @Inject
+    PreferencesInteractor preferencesInteractor;
 
     private static final int REQUEST_STATUS_CHECK_INTERVAL_SECONDS = 5;
     private static final long REQUEST_STATUS_TIMEOUT_SECONDS = 150;
@@ -159,7 +163,7 @@ public class SenseOTAFragment extends BaseHardwareFragment {
     private void done() {
         Analytics.trackEvent(Analytics.SenseOTA.EVENT_END, null);
         stateSafeExecutor.execute( () -> {
-            if(userFeaturesInteractor.hasVoice()){
+            if(preferencesInteractor.hasVoice()){
                 LoadingDialogFragment.show(getFragmentManager(),
                                            null, LoadingDialogFragment.OPAQUE_BACKGROUND);
                 getFragmentManager().executePendingTransactions();
