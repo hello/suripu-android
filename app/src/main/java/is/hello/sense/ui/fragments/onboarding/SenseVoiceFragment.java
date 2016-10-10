@@ -177,26 +177,33 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     public void onDestroyView() {
         super.onDestroyView();
         viewAnimator.onDestroyView();
-        toolbar.onDestroyView();
-        toolbar = null;
+        if(toolbar != null) {
+            toolbar.onDestroyView();
+            toolbar = null;
+        }
         title = null;
         subtitle = null;
         tryText = null;
         questionText = null;
-        retryButton.setOnClickListener(null);
-        retryButton = null;
-        skipButton.setOnClickListener(null);
-        skipButton = null;
-        senseCircleView = null;
-        senseImageView = null;
-        nightStandView = null;
-        voiceTipSubscription.unsubscribe();
-        voiceTipSubscription = null;
+        if(retryButton != null) {
+            retryButton.setOnClickListener(null);
+            retryButton = null;
+        }
+        if(skipButton != null) {
+            skipButton.setOnClickListener(null);
+        }
+        if(voiceTipSubscription != null) {
+            voiceTipSubscription.unsubscribe();
+            voiceTipSubscription = null;
+        }
         showVoiceTipDialog(false, null);
-        requestDelayedSubscription.unsubscribe();
-        requestDelayedSubscription = null;
+        if(requestDelayedSubscription != null) {
+            requestDelayedSubscription.unsubscribe();
+            requestDelayedSubscription = null;
+        }
         TRANSLATE_Y = null;
         runnableLazy = null;
+
     }
 
     private void onRetry(final View view){
@@ -410,6 +417,10 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
                                 LoadingDialogFragment.DURATION_DEFAULT);
     }
 
+    /**
+     * Important to wrap onCompletion lambda with stateSafeExecutor to prevent execution if fragment view is gone/destroyed
+     * Anytime an operation is delayed, it is not guaranteed to have access to same views when attempt to execute.
+     */
     private void setQuestionState(@StringRes final int stringRes,
                                   @ColorRes final int textColorRes,
                                   final int tryVisibility,
