@@ -17,7 +17,6 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.TestApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.TestApiSessionManager;
-import is.hello.sense.api.sessions.UserFeaturesManager;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.interactors.AccountInteractor;
@@ -92,7 +91,6 @@ import static org.mockito.Mockito.mock;
             PersistentPreferencesInteractor.class,
             PersistentPreferencesInteractorTests.class,
 
-            UserFeaturesManager.class,
             UserFeaturesInteractor.class,
             UserFeaturesInteractorTests.class,
 
@@ -206,13 +204,6 @@ public final class TestModule {
                 .when(batteryUtil)
                 .getBatteryPercentage();
         return batteryUtil;
-    }
-
-    @Provides
-    @Singleton
-    UserFeaturesManager provideUserFeaturesManager(
-            @NonNull final Context context, @NonNull final Gson gson){
-        return new UserFeaturesManager(context, gson);
     }
 
     @Provides

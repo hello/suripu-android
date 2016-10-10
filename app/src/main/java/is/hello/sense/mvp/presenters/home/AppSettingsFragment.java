@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 import android.view.View;
 
 import javax.inject.Inject;
@@ -16,6 +17,7 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.mvp.view.home.AppSettingsView;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
@@ -30,6 +32,8 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
 
     @Inject
     AccountInteractor accountInteractor;
+    @Inject
+    PreferencesInteractor preferencesInteractor;
 
 
     @Override
@@ -55,6 +59,7 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(accountInteractor);
+        addInteractor(preferencesInteractor);
     }
 
     @Override
@@ -62,6 +67,7 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
         super.onViewCreated(view, savedInstanceState);
         bindAndSubscribe(accountInteractor.account, this::bindAccount, Functions.LOG_ERROR);
         accountInteractor.update();
+        Log.e("Has Voice: ", "" + preferencesInteractor.hasVoice());
     }
 
     @Override

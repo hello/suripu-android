@@ -23,8 +23,6 @@ public abstract class BaseHardwareFragment extends InjectionFragment {
     public
     @Inject
     HardwareInteractor hardwareInteractor;
-    @Inject
-    protected UserFeaturesInteractor userFeaturesInteractor;
 
     private LoadingDialogFragment loadingDialogFragment;
 

@@ -204,12 +204,16 @@ public class SignInFragment extends InjectionFragment
         final OAuthCredentials credentials = new OAuthCredentials(apiEndpoint, email, password);
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             apiSessionManager.setSession(session);
-
+            userFeaturesPresenter.update();
             final Observable<Account> initializeLocalState =
                     Observable.combineLatest(accountPresenter.pullAccountPreferences(),
-                                             userFeaturesPresenter.storeFeaturesInPrefs(),
+                                             userFeaturesPresenter.featureSubject,
                                              accountPresenter.latest(),
-                                             (ignored, ignored2, account) -> account);
+                                             (ignored, userFeatures, account) -> {
+
+                                                 preferences.setFeatures(userFeatures);
+                                                 return account;
+                                             });
 
             bindAndSubscribe(initializeLocalState,
                              account -> {

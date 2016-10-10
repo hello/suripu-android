@@ -12,10 +12,13 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import is.hello.sense.api.model.UserFeatures;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Sync;
 
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -144,5 +147,18 @@ public class PreferencesInteractorTests extends InjectionTestCase {
         Robolectric.flushBackgroundThreadScheduler();
 
         assertThat(presenter.getLocalDate(TEST_KEY), is(equalTo(testDate)));
+    }
+
+    @Test //todo figure out how to mock local broadcast logout intent
+    public void clearPreferencesOnReset(){
+        presenter.setFeatures(new UserFeatures(true));
+
+        assertTrue(presenter.hasVoice());
+
+        presenter.setFeatures(null);
+
+        Robolectric.flushBackgroundThreadScheduler();
+
+        assertFalse(presenter.hasVoice());
     }
 }
