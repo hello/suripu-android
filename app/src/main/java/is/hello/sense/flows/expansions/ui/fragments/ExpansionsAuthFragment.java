@@ -1,6 +1,8 @@
-package is.hello.sense.ui.fragments.expansions;
+package is.hello.sense.flows.expansions.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 
@@ -24,6 +26,25 @@ implements CustomWebViewClient.Listener{
     public static final String EXTRA_COMPLETE_URL = ExpansionsAuthFragment.class.getName() + "EXTRA_COMPLETE_URL";
     private String initUrl;
     private String completeUrl;
+
+    public static ExpansionsAuthFragment newInstance(@NonNull final String initialUrl,
+                                                     @NonNull final String completionUrl) {
+
+        final Bundle args = new Bundle();
+        args.putString(ExpansionsAuthFragment.EXTRA_INIT_URL, initialUrl);
+        args.putString(ExpansionsAuthFragment.EXTRA_COMPLETE_URL, completionUrl);
+        final ExpansionsAuthFragment fragment = new ExpansionsAuthFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static Intent newIntent(@NonNull final String initialUrl,
+                                   @NonNull final String completionUrl){
+        final Intent intent = new Intent();
+        intent.putExtra(EXTRA_INIT_URL, initialUrl);
+        intent.putExtra(EXTRA_COMPLETE_URL, completionUrl);
+        return intent;
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -72,5 +93,10 @@ implements CustomWebViewClient.Listener{
     public void onCompletionUrlLoaded() {
         presenterView.showProgress(false);
         finishFlow();
+    }
+
+    @Override
+    public void onOtherUrlLoaded(){
+        presenterView.showProgress(false);
     }
 }

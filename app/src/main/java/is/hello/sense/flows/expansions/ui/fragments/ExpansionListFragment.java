@@ -1,5 +1,6 @@
 package is.hello.sense.flows.expansions.ui.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -62,8 +63,9 @@ implements ArrayRecyclerAdapter.OnItemClickedListener<Expansion>{
     }
 
     @Override
-    public void onItemClicked(final int position, final Expansion item) {
-        //todo
+    public void onItemClicked(final int position, @NonNull final Expansion item) {
+        finishFlowWithResult(Activity.RESULT_OK, ExpansionsAuthFragment.newIntent(item.getAuthUri(),
+                                                                                  item.getCompletionUri()));
     }
 
     public void bindExpansions(@Nullable final List<Expansion> expansions){
