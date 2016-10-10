@@ -69,14 +69,16 @@ implements FragmentNavigation{
 
     @Override
     public final void flowFinished(@NonNull final Fragment fragment, final int responseCode, @Nullable final Intent result) {
-        if(fragment instanceof ExpansionListFragment && responseCode == RESULT_OK){
+        if(responseCode != RESULT_OK){
+            //todo handle
+        } else if(fragment instanceof ExpansionListFragment){
             if(result != null) {
                 showExpansionAuth(result.getStringExtra(ExpansionsAuthFragment.EXTRA_INIT_URL),
                                   result.getStringExtra(ExpansionsAuthFragment.EXTRA_COMPLETE_URL));
             } else {
                 //todo show next fragment
             }
-        } else if(fragment instanceof ExpansionsAuthFragment && responseCode == RESULT_OK){
+        } else if(fragment instanceof ExpansionsAuthFragment){
             showExpansionList(); //todo show configure Fragment instead
         }
     }
