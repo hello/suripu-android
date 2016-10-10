@@ -17,8 +17,8 @@ public class ExpansionListView extends PresenterView {
     public ExpansionListView(@NonNull final Activity activity, @NonNull final ArrayRecyclerAdapter adapter) {
         super(activity);
         this.recyclerView = (RecyclerView) findViewById(R.id.view_expansion_list_rv);
-        this.recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL, false));
-        this.recyclerView.addItemDecoration(new DividerItemDecoration(getContext()));
+        this.recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        this.recyclerView.addItemDecoration(new DividerItemDecoration(context));
         this.recyclerView.setAdapter(adapter);
     }
 
