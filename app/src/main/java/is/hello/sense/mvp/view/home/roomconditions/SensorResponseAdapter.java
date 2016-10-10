@@ -306,7 +306,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             this.body.setText(sensor.getMessage());
             if (sensor.getType() == SensorType.TEMPERATURE || sensor.getType() == SensorType.HUMIDITY) {
                 this.value.setText(unitFormatter.createUnitBuilder(sensor)
-                                                .build());
+                                                .buildWithStyle());
                 this.descriptor.setText(null);
             } else {
                 this.value.setText(unitFormatter.createUnitBuilder(sensor)

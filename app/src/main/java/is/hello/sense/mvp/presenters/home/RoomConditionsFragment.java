@@ -34,6 +34,7 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
+import rx.Subscription;
 
 public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsView>
         implements ArrayRecyclerAdapter.OnItemClickedListener<Sensor>,
@@ -53,6 +54,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     public SensorResponseAdapter adapter;
     private UpdateTimer updateTimer;
     private boolean checkRoomConditions = false;
+    private Subscription postSensorSubscription;
 
     @Override
     public final void initializePresenterView() {
@@ -113,6 +115,11 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     @Override
     public void onRelease() {
         super.onRelease();
+        if(this.postSensorSubscription != null){
+            this.postSensorSubscription.unsubscribe();
+            this.postSensorSubscription = null;
+        }
+
         if (this.updateTimer != null) {
             this.updateTimer.unschedule();
         }
@@ -165,9 +172,9 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
             case WAITING_FOR_DATA:
                 showWelcomeCardIfNeeded();
                 final List<Sensor> sensors = currentConditions.getSensors();
-                bindAndSubscribe(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)),
-                                 sensorsDataResponse -> RoomConditionsFragment.this.bindDataResponse(sensorsDataResponse, sensors),
-                                 this::conditionsUnavailable);
+                postSensorSubscription = bind(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)))
+                        .subscribe(sensorsDataResponse -> RoomConditionsFragment.this.bindDataResponse(sensorsDataResponse, sensors),
+                                   this::conditionsUnavailable);
                 break;
             case NO_SENSE:
                 adapter.showSenseMissingCard();
