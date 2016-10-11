@@ -91,7 +91,7 @@ public class ConfigurationAdapter extends ArrayRecyclerAdapter<Configuration, Co
         private final TextView configNameTextView;
         private final CheckBox checkBox;
 
-        public ConfigurationViewHolder(final View itemView) {
+        public ConfigurationViewHolder(@NonNull final View itemView) {
             super(itemView);
             this.configNameTextView = (TextView) itemView.findViewById(R.id.item_row_configuration_name);
             this.checkBox = (CheckBox) itemView.findViewById(R.id.item_row_configuration_checkbox);
