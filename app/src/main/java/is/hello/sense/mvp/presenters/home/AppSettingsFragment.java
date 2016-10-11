@@ -79,7 +79,9 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
 
         // If this preference is missing we need to query the server.
         if (!preferencesInteractor.contains(PreferencesInteractor.HAS_VOICE)) {
-            bind(userFeaturesInteractor.featureSubject).subscribe(preferencesInteractor::setFeatures);
+            bind(userFeaturesInteractor.featureSubject)
+                    .subscribe(preferencesInteractor::setFeatures,
+                               Functions.LOG_ERROR);
             userFeaturesInteractor.update();
         }
 
