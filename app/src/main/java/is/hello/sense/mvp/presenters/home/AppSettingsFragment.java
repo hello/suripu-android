@@ -18,6 +18,7 @@ import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.mvp.view.home.AppSettingsView;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
@@ -34,6 +35,8 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     AccountInteractor accountInteractor;
     @Inject
     PreferencesInteractor preferencesInteractor;
+    @Inject
+    UserFeaturesInteractor userFeaturesInteractor;
 
 
     @Override
@@ -60,14 +63,27 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
         super.onCreate(savedInstanceState);
         addInteractor(accountInteractor);
         addInteractor(preferencesInteractor);
+        addInteractor(userFeaturesInteractor);
     }
 
     @Override
     public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bindAndSubscribe(accountInteractor.account, this::bindAccount, Functions.LOG_ERROR);
+        bindAndSubscribe(accountInteractor.account,
+                         this::bindAccount,
+                         Functions.LOG_ERROR);
+
+        bindAndSubscribe(preferencesInteractor.observableBoolean(PreferencesInteractor.HAS_VOICE, false),
+                         this.presenterView::showExpansion,
+                         Functions.LOG_ERROR);
+
+        // If this preference is missing we need to query the server.
+        if (!preferencesInteractor.contains(PreferencesInteractor.HAS_VOICE)) {
+            bind(userFeaturesInteractor.featureSubject).subscribe(preferencesInteractor::setFeatures);
+            userFeaturesInteractor.update();
+        }
+
         accountInteractor.update();
-        Log.e("Has Voice: ", "" + preferencesInteractor.hasVoice());
     }
 
     @Override
@@ -128,8 +144,6 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     }
 
     private View.OnClickListener showExpansions() {
-        return v -> {
-            startActivity(new Intent(getActivity(), ExpansionSettingsActivity.class));
-        };
+        return v -> startActivity(new Intent(getActivity(), ExpansionSettingsActivity.class));
     }
 }
