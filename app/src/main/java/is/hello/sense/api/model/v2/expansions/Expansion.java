@@ -98,7 +98,7 @@ public class Expansion extends ApiResponse {
                 ", category=" + category +
                 ", deviceName=" + deviceName +
                 ", serviceName=" + serviceName +
-                ", icon=" + icon +
+                ", iconRes=" + icon +
                 ", authUri=" + authUri +
                 ", completionUri=" + completionUri +
                 ", description=" + description +

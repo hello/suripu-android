@@ -28,6 +28,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     private static final String ARG_EXPANSION = ConfigSelectionFragment.class + "ARG_EXPANSION";
 
     private ConfigurationAdapter adapter;
+    private Expansion expansion;
 
     public static ConfigSelectionFragment newInstance(@NonNull final Expansion expansion){
         final ConfigSelectionFragment fragment = new ConfigSelectionFragment();
@@ -57,7 +58,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
 
     private void handleArgs(@Nullable final Bundle arguments) {
         if(arguments != null){
-            final Expansion expansion = (Expansion) arguments.getSerializable(ARG_EXPANSION);
+            this.expansion = (Expansion) arguments.getSerializable(ARG_EXPANSION);
             if(expansion != null) {
                 presenterView.setTitle(getString(R.string.expansions_configuration_selection_title_format, expansion.getServiceName()));
                 presenterView.setSubtitle(getString(R.string.expansions_configuration_selection_subtitle_format, expansion.getCategory().name()));
@@ -91,6 +92,16 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
         if(configurations == null) {
             this.adapter.clear();
         } else {
+            if(configurations.isEmpty()){
+                if(expansion != null) {
+                    //todo until server updates expansion with configuration name field just using category
+                    configurations.add(new Configuration.Empty(getString(R.string.expansions_configuration_selection_item_missing_title_format, expansion.getCategory()),
+                                                               getString(R.string.expansions_configuration_selection_item_missing_subtitle_format, expansion.getServiceName(), expansion.getCategory()),
+                                                               R.drawable.icon_warning));
+                } else {
+                    configurations.add(new Configuration.Empty());
+                }
+            }
             this.adapter.replaceAll(configurations);
         }
     }

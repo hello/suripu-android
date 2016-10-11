@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -12,20 +13,35 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 
-public class ConfigurationAdapter extends ArrayRecyclerAdapter<Configuration, ConfigurationAdapter.ConfigurationViewHolder> {
+public class ConfigurationAdapter extends ArrayRecyclerAdapter<Configuration, ArrayRecyclerAdapter.ViewHolder> {
+
+    public static final int TYPE_CONFIG = 0;
+    public static final int TYPE_NO_CONFIG = 1;
 
     public ConfigurationAdapter(@NonNull final List<Configuration> storage) {
         super(storage);
     }
 
     @Override
-    public ConfigurationViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_row_configuration, parent, false);
-        return new ConfigurationViewHolder(view);
+    public int getItemViewType(final int position) {
+        return getItem(position) instanceof Configuration.Empty ? TYPE_NO_CONFIG : TYPE_CONFIG;
     }
 
     @Override
-    public void onBindViewHolder(final ConfigurationViewHolder holder, final int position) {
+    public ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
+        switch (viewType) {
+            case TYPE_CONFIG:
+                final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_row_configuration, parent, false);
+                return new ConfigurationViewHolder(view);
+            case TYPE_NO_CONFIG:
+            default:
+                final View view2 = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_row_no_configuration, parent, false);
+                return new NoConfigurationViewHolder(view2);
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(final ArrayRecyclerAdapter.ViewHolder holder, final int position) {
         holder.bind(position);
     }
 
@@ -35,6 +51,32 @@ public class ConfigurationAdapter extends ArrayRecyclerAdapter<Configuration, Co
             getItem(i).setSelected(i == position);
         }
         notifyDataSetChanged();
+    }
+
+    public class NoConfigurationViewHolder extends ArrayRecyclerAdapter.ViewHolder {
+        private final TextView titleTextView;
+        private final TextView subtitleTextView;
+        private final ImageView alertIconImageView;
+
+        public NoConfigurationViewHolder(@NonNull final View itemView) {
+            super(itemView);
+
+            this.titleTextView = (TextView) itemView.findViewById(R.id.item_row_no_configuration_title);
+            this.subtitleTextView = (TextView) itemView.findViewById(R.id.item_row_no_configuration_subtitle);
+            this.alertIconImageView = (ImageView) itemView.findViewById(R.id.item_row_no_configuration_alert_icon);
+
+        }
+
+        @Override
+        public void bind(final int position) {
+            super.bind(position);
+            final Configuration.Empty empty = (Configuration.Empty) getItem(position);
+            if(empty != null) {
+                this.titleTextView.setText(empty.title);
+                this.subtitleTextView.setText(empty.subtitle);
+                this.alertIconImageView.setImageResource(empty.iconRes);
+            }
+        }
     }
 
     public class ConfigurationViewHolder extends ArrayRecyclerAdapter.ViewHolder {
