@@ -52,10 +52,11 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 public class SenseVoiceFragment extends BaseHardwareFragment {
 
     @Inject
-    SenseVoiceInteractor senseVoicePresenter;
+    SenseVoiceInteractor senseVoiceInteractor;
 
     private static final int MAX_ALPHA = 20;
     private static final int VOICE_FAIL_COUNT_THRESHOLD = 2;
+    private static final int[] WAKE_STATE = new int[]{android.R.attr.state_first};
     private static final int[] FAIL_STATE = new int[]{android.R.attr.state_middle};
     private static final int[] OK_STATE = new int[]{android.R.attr.state_last};
     private static final int[] WAIT_STATE = new int[]{};
@@ -72,16 +73,20 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     private View nightStandView;
     private Lazy<Integer> TRANSLATE_Y =
             () -> getResources().getDimensionPixelSize(R.dimen.sense_voice_translate_y);
+
     private final ViewAnimator viewAnimator = new ViewAnimator(LoadingDialogFragment.DURATION_DEFAULT,
                                                                new AccelerateDecelerateInterpolator());
 
     private Subscription voiceTipSubscription;
     private Subscription requestDelayedSubscription;
 
+    private Lazy<Runnable> runnableLazy =
+            () -> stateSafeExecutor.bind(SenseVoiceFragment.this::animateToNormalState);
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPresenter(senseVoicePresenter);
+        addPresenter(senseVoiceInteractor);
 
         if(savedInstanceState == null){
             Analytics.trackEvent(Analytics.Onboarding.EVENT_VOICE_TUTORIAL, null);
@@ -144,10 +149,12 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
 
         if(senseCircleView.getDrawable() != null) {
             viewAnimator.onViewCreated(
-                    createAnimatorSetFor((StateListDrawable) senseCircleView.getDrawable()));
+                    createAnimatorSetFor(
+                            (StateListDrawable) senseCircleView.getDrawable())
+                                      );
         }
 
-        bindAndSubscribe(senseVoicePresenter.voiceResponse,
+        bindAndSubscribe(senseVoiceInteractor.voiceResponse,
                          this::handleVoiceResponse,
                          this::presentError);
     }
@@ -156,7 +163,6 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     public void onPause() {
         super.onPause();
         viewAnimator.onPause();
-        //cancelAll(questionText);
     }
 
     @Override
@@ -171,25 +177,33 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     public void onDestroyView() {
         super.onDestroyView();
         viewAnimator.onDestroyView();
-        toolbar.onDestroyView();
-        toolbar = null;
+        if(toolbar != null) {
+            toolbar.onDestroyView();
+            toolbar = null;
+        }
         title = null;
         subtitle = null;
         tryText = null;
         questionText = null;
-        retryButton.setOnClickListener(null);
-        retryButton = null;
-        skipButton.setOnClickListener(null);
-        skipButton = null;
-        senseCircleView = null;
-        senseImageView = null;
-        nightStandView = null;
-        voiceTipSubscription.unsubscribe();
-        voiceTipSubscription = null;
+        if(retryButton != null) {
+            retryButton.setOnClickListener(null);
+            retryButton = null;
+        }
+        if(skipButton != null) {
+            skipButton.setOnClickListener(null);
+        }
+        if(voiceTipSubscription != null) {
+            voiceTipSubscription.unsubscribe();
+            voiceTipSubscription = null;
+        }
         showVoiceTipDialog(false, null);
-        requestDelayedSubscription.unsubscribe();
-        requestDelayedSubscription = null;
+        if(requestDelayedSubscription != null) {
+            requestDelayedSubscription.unsubscribe();
+            requestDelayedSubscription = null;
+        }
         TRANSLATE_Y = null;
+        runnableLazy = null;
+
     }
 
     private void onRetry(final View view){
@@ -201,13 +215,8 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
                     updateButtons(false, transaction);
                 }, complete -> {
                     if(complete) {
-                        poll(true);
-                        updateState(R.string.sense_voice_question_temperature,
-                                    R.color.text_dark,
-                                    View.VISIBLE,
-                                    WAIT_STATE,
-                                    AnimatorSetHandler.LOOP_ANIMATION,
-                                    true);
+                        animateToNormalState();
+                        getAnimatorContext().runWhenIdle(() -> poll(true));
                     }
                 });
     }
@@ -240,12 +249,12 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     private void onFinish(final boolean success){
         voiceTipSubscription.unsubscribe();
         requestDelayedSubscription.unsubscribe();
-        senseVoicePresenter.reset();
+        senseVoiceInteractor.reset();
+        senseVoiceInteractor.updateHasCompletedTutorial(success);
         toolbar.setWantsHelpButton(false);
         retryButton.setEnabled(false);
         skipButton.setEnabled(false);
         skipButton.setVisibility(View.INVISIBLE);
-        senseVoicePresenter.updateHasCompletedTutorial(success);
         bindAndSubscribe(Observable.timer(success ? LoadingDialogFragment.DURATION_DEFAULT * 3 : 0, TimeUnit.MILLISECONDS),
                 ignored -> finishFlowWithResult(success ? Activity.RESULT_OK : Activity.RESULT_CANCELED),
                 this::presentError);
@@ -316,54 +325,49 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
             requestDelayed();
         } else{
             requestDelayedSubscription.unsubscribe();
-            senseVoicePresenter.voiceResponse.forget();
+            senseVoiceInteractor.voiceResponse.forget();
         }
     }
 
     private void requestDelayed() {
-        //retry once again after a delay respecting fragment lifecycle
-        requestDelayedSubscription = bind(Observable.timer(SenseVoiceInteractor.UPDATE_DELAY_SECONDS, TimeUnit.SECONDS))
-                                           .subscribe(ignored -> senseVoicePresenter.update(),
+        //request after a delay respecting fragment lifecycle
+        requestDelayedSubscription = bind(Observable.interval(SenseVoiceInteractor.UPDATE_DELAY_SECONDS, TimeUnit.SECONDS))
+                                           .subscribe(ignored -> senseVoiceInteractor.update(),
                                                       this::presentError);
     }
 
-    private void handleVoiceResponse(@Nullable final VoiceResponse voiceResponse) {
+    private void handleVoiceResponse(@NonNull final VoiceResponse voiceResponse) {
         sendAnalyticsEvent(voiceResponse);
 
-        if(SenseVoiceInteractor.hasSuccessful(voiceResponse)){
-            updateState(R.string.sense_voice_question_temperature,
-                        R.color.primary,
-                        View.GONE,
-                        OK_STATE,
-                        0,
-                        Arrays.equals(senseImageView.getDrawableState(), FAIL_STATE));
-            onFinish(true);
-        } else{
-            @StringRes final int errorText = voiceResponse == null ?
-                    R.string.error_sense_voice_problem :
-                    R.string.error_sense_voice_not_detected;
+        getAnimatorContext().runWhenIdle(() -> {
+            questionText.removeCallbacks(runnableLazy.get());
 
-            updateState(errorText,
-                        R.color.text_dark,
-                        View.GONE,
-                        FAIL_STATE,
-                        0,
-                        true);
-            if(senseVoicePresenter.getFailCount() == VOICE_FAIL_COUNT_THRESHOLD){
-                showVoiceTipDialog(true, this::poll);
-            }
-            //return to normal wait state
-            questionText.postOnAnimationDelayed(stateSafeExecutor.bind(() ->
+            if(SenseVoiceInteractor.hasSuccessful(voiceResponse)){
+                animateToWaitState();
                 updateState(R.string.sense_voice_question_temperature,
+                            R.color.primary,
+                            View.INVISIBLE,
+                            OK_STATE,
+                            0,
+                            Arrays.equals(senseImageView.getDrawableState(), FAIL_STATE));
+                onFinish(true);
+            } else{
+                updateState(R.string.error_sense_voice_not_detected,
                             R.color.text_dark,
-                            View.VISIBLE,
-                            WAIT_STATE,
-                            AnimatorSetHandler.LOOP_ANIMATION,
-                            true)
-            ), LoadingDialogFragment.DURATION_DEFAULT * 3);
+                            View.INVISIBLE,
+                            FAIL_STATE,
+                            0,
+                            true);
+                if(senseVoiceInteractor.getFailCount() == VOICE_FAIL_COUNT_THRESHOLD){
+                    showVoiceTipDialog(true, this::poll);
+                }
+                //return to normal state
+                questionText.postOnAnimationDelayed(
+                        runnableLazy.get(),
+                        LoadingDialogFragment.DURATION_DEFAULT * 3);
+            }
+        });
 
-            requestDelayed();
-        }
     }
 
     private void updateState(@StringRes final int stringRes,
@@ -373,59 +377,114 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
                              final int repeatCount,
                              final boolean animateText){
 
-        if (animateText){
+        setQuestionState(stringRes,
+                         textColorRes,
+                         tryVisibility,
+                         animateText,
+                         LoadingDialogFragment.DURATION_DEFAULT);
 
-            animatorFor(questionText)
-                    .withStartDelay(LoadingDialogFragment.DURATION_DEFAULT)
+        setSenseImageViewState(imageState, LoadingDialogFragment.DURATION_DEFAULT);
+        setSenseCircleViewState(imageState, repeatCount, 0);
+    }
+
+    private void animateToNormalState(){
+        animateToWaitState();
+        animateToWakeState();
+    }
+
+    private void animateToWaitState(){
+        setSenseCircleViewState(WAIT_STATE, 0, 0);
+        setSenseImageViewState(WAIT_STATE, 0);
+    }
+
+    private void animateToWakeState(){
+        setQuestionState(R.string.sense_voice_wake_phrase,
+                         R.color.text_dark,
+                         View.VISIBLE,
+                         true,
+                         0);
+
+        setSenseImageViewState(WAKE_STATE, LoadingDialogFragment.DURATION_DEFAULT*2);
+
+        setQuestionState(R.string.sense_voice_question_temperature,
+                         R.color.text_dark,
+                         View.VISIBLE,
+                         false,
+                         LoadingDialogFragment.DURATION_DEFAULT*2);
+
+        setSenseCircleViewState(WAKE_STATE,
+                                AnimatorSetHandler.LOOP_ANIMATION,
+                                LoadingDialogFragment.DURATION_DEFAULT);
+    }
+
+    /**
+     * Important to wrap onCompletion lambda with stateSafeExecutor to prevent execution if fragment view is gone/destroyed
+     * Anytime an operation is delayed, it is not guaranteed to have access to same views when attempt to execute.
+     */
+    private void setQuestionState(@StringRes final int stringRes,
+                                  @ColorRes final int textColorRes,
+                                  final int tryVisibility,
+                                  final boolean animateText,
+                                  final long startDelay){
+        if (animateText){
+            animatorFor(questionText, animatorContext)
+                    .withStartDelay(startDelay)
                     .translationY(TRANSLATE_Y.get())
                     .fadeOut(View.INVISIBLE)
-                    .addOnAnimationWillStart(willStart -> {
-                        stateSafeExecutor.execute(() -> {
-                            senseImageView.setImageState(imageState, false);
-                        });
-                    })
                     .addOnAnimationCompleted(complete -> {
                         if (complete) {
                             stateSafeExecutor.execute(() -> {
                                 tryText.setVisibility(tryVisibility);
                                 questionText.setText(stringRes);
                                 questionText.setTextColor(ContextCompat.getColor(questionText.getContext(), textColorRes));
-                                animatorFor(questionText)
+                                animatorFor(questionText, animatorContext)
                                         .translationY(0)
                                         .fadeIn()
                                         .start();
                             });
                         }
                     }).start();
-
         } else {
-            senseImageView.postDelayed(stateSafeExecutor.bind( () -> {
-                senseImageView.setImageState(imageState, false);
+            tryText.postDelayed(stateSafeExecutor.bind( () -> {
                 tryText.setVisibility(tryVisibility);
                 questionText.setText(stringRes);
                 questionText.setTextColor(ContextCompat.getColor(questionText.getContext(), textColorRes));
-            }), LoadingDialogFragment.DURATION_DEFAULT);
+            }), startDelay);
         }
-
-        senseCircleView.setImageState(imageState, false);
-        viewAnimator.setRepeatCount(repeatCount);
-        viewAnimator.resetAnimation(
-                createAnimatorSetFor((StateListDrawable) senseCircleView.getDrawable()));
     }
 
-    private AnimatorSet createAnimatorSetFor(@NonNull final StateListDrawable stateListDrawable) {
-        final LayerDrawable layerDrawable = (LayerDrawable) stateListDrawable.getCurrent();
-        final Drawable outerCircle = layerDrawable.getDrawable(0);
-        final Drawable middleCircle = layerDrawable.getDrawable(1);
-        final Drawable innerCircle = layerDrawable.getDrawable(2);
-        final AnimatorSet animSet = new AnimatorSet();
-        animSet.playSequentially(
-                ObjectAnimator.ofInt(innerCircle, "alpha", 0, MAX_ALPHA).setDuration(200),
-                ObjectAnimator.ofInt(middleCircle, "alpha", 0, MAX_ALPHA).setDuration(200),
-                ObjectAnimator.ofInt(outerCircle, "alpha", 0, MAX_ALPHA).setDuration(200),
-                ObjectAnimator.ofInt(layerDrawable, "alpha", MAX_ALPHA, 0).setDuration(600));
+    private void setSenseImageViewState(final int[] state, final long delay){
+        senseImageView.postDelayed(stateSafeExecutor.bind( () -> {
+            senseImageView.setImageState(state, false);
+        }), delay);
+    }
 
+    private void setSenseCircleViewState(final int[] state, final int repeatCount, final long delay){
+        senseCircleView.postOnAnimationDelayed(
+                stateSafeExecutor.bind( () -> {
+                    senseCircleView.setImageState(state, false);
+                    viewAnimator.setRepeatCount(repeatCount);
+                    viewAnimator.resetAnimation(
+                            createAnimatorSetFor(senseCircleView.getDrawable()));
+                }), delay);
+    }
+
+    private AnimatorSet createAnimatorSetFor(@NonNull final Drawable drawable) {
+        final AnimatorSet animSet = new AnimatorSet();
         animSet.setStartDelay(200);
+
+        if(drawable.getCurrent() instanceof LayerDrawable) {
+            final LayerDrawable layerDrawable = (LayerDrawable) drawable.getCurrent();
+            final Drawable outerCircle = layerDrawable.getDrawable(0);
+            final Drawable middleCircle = layerDrawable.getDrawable(1);
+            final Drawable innerCircle = layerDrawable.getDrawable(2);
+
+            animSet.playSequentially(
+                    ObjectAnimator.ofInt(innerCircle, "alpha", 0, MAX_ALPHA).setDuration(200),
+                    ObjectAnimator.ofInt(middleCircle, "alpha", 0, MAX_ALPHA).setDuration(200),
+                    ObjectAnimator.ofInt(outerCircle, "alpha", 0, MAX_ALPHA).setDuration(200),
+                    ObjectAnimator.ofInt(layerDrawable, "alpha", MAX_ALPHA, 0).setDuration(600));
+        }
 
         return animSet;
     }

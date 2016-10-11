@@ -11,7 +11,6 @@ import javax.inject.Inject;
 
 import is.hello.sense.api.model.VoiceResponse;
 import is.hello.sense.graph.InjectionTestCase;
-import is.hello.sense.util.Sync;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -20,7 +19,7 @@ import static junit.framework.Assert.assertTrue;
 
 public class SenseVoiceInteractorTests extends InjectionTestCase{
     @Inject
-    SenseVoiceInteractor senseVoicePresenter;
+    SenseVoiceInteractor senseVoiceInteractor;
     @Inject
     AccountInteractor accountPresenter;
     @Inject
@@ -30,32 +29,48 @@ public class SenseVoiceInteractorTests extends InjectionTestCase{
 
     @After
     public void resetPresenter(){
-        senseVoicePresenter.reset();
-        accountPresenter.logOut();
+        senseVoiceInteractor.reset();
+        //accountPresenter.logOut();
         persistentPreferencesPresenter.clear();
     }
 
     @Test
-    public void withRejectResponse() {
-        final VoiceResponse voiceResponse = Sync.wrapAfter(senseVoicePresenter::update,
-                                                           senseVoicePresenter.voiceResponse)
-                                                .last();
-        assertTrue(VoiceResponse.Result.REJECTED.equals(voiceResponse.result));
+    public void withValidResponse() {
+        assertTrue(senseVoiceInteractor.isValidResponse(new VoiceResponse(DEFAULT_DATE_TIME.plusDays(1), null, null, null, VoiceResponse.Result.OK)));
+    }
+
+    @Test
+    public void withInValidResponse() {
+        assertFalse(senseVoiceInteractor.isValidResponse(new VoiceResponse(DEFAULT_DATE_TIME.minusDays(1), null, null, null, VoiceResponse.Result.OK)));
+    }
+
+    @Test
+    public void updateValidResponseTime() {
+        assertTrue(DEFAULT_DATE_TIME.minusDays(1).isBefore(senseVoiceInteractor.getLastValidResponseTime()));
+        senseVoiceInteractor.updateState(new VoiceResponse(DEFAULT_DATE_TIME, null, null, null, VoiceResponse.Result.OK));
+        assertEquals(senseVoiceInteractor.getLastValidResponseTime(), DEFAULT_DATE_TIME.getMillis());
     }
 
     @Test
     public void with3FailCount() {
-        Sync.last(senseVoicePresenter.provideUpdateObservable());
-        Sync.last(senseVoicePresenter.provideUpdateObservable());
-        Sync.last(senseVoicePresenter.provideUpdateObservable());
+        senseVoiceInteractor.updateState(new VoiceResponse(DEFAULT_DATE_TIME, null, null, null, VoiceResponse.Result.NONE));
+        senseVoiceInteractor.updateState(new VoiceResponse(DEFAULT_DATE_TIME, null, null, null, VoiceResponse.Result.NONE));
+        senseVoiceInteractor.updateState(new VoiceResponse(DEFAULT_DATE_TIME, null, null, null, VoiceResponse.Result.NONE));
+        assertEquals(3, senseVoiceInteractor.getFailCount());
+    }
 
-        assertEquals(3, senseVoicePresenter.getFailCount());
+    @Test
+    public void with0FailCount() {
+        senseVoiceInteractor.updateState(new VoiceResponse(DEFAULT_DATE_TIME, null, null, null, VoiceResponse.Result.OK));
+        senseVoiceInteractor.updateState(new VoiceResponse(DEFAULT_DATE_TIME, null, null, null, VoiceResponse.Result.OK));
+        senseVoiceInteractor.updateState(new VoiceResponse(DEFAULT_DATE_TIME, null, null, null, VoiceResponse.Result.OK));
+        assertEquals(0, senseVoiceInteractor.getFailCount());
     }
 
     @Test
     public void getMostRecent() {
-        final VoiceResponse newResponse = new VoiceResponse(DEFAULT_DATE_TIME, null, null, null, null);
-        final VoiceResponse oldResponse = new VoiceResponse(DEFAULT_DATE_TIME.minusDays(1), null, null, null, null);
+        final VoiceResponse newResponse = new VoiceResponse(DEFAULT_DATE_TIME, null, null, null, VoiceResponse.Result.OK);
+        final VoiceResponse oldResponse = new VoiceResponse(DEFAULT_DATE_TIME.minusDays(1), null, null, null, VoiceResponse.Result.OK);
 
         final VoiceResponse returnedResponse = SenseVoiceInteractor.getMostRecent(
                 new ArrayList<>(Arrays.asList(oldResponse, newResponse)));
@@ -90,7 +105,7 @@ public class SenseVoiceInteractorTests extends InjectionTestCase{
         fakeAccount.setId(FAKE_ID);
         Sync.last(accountPresenter.saveAccount(fakeAccount));
 
-        senseVoicePresenter.updateHasCompletedTutorial(true);
+        senseVoiceInteractor.updateHasCompletedTutorial(true);
         final boolean hasCompletedTutorial = persistentPreferencesPresenter.hasCompletedVoiceTutorial(FAKE_ID);
         assertTrue(hasCompletedTutorial);*/
     }

@@ -109,9 +109,9 @@ public class UserSupport {
     }
 
     public static void showForHelpStep(@NonNull final Activity from, @NonNull final HelpStep helpStep) {
-        final Properties properties = Analytics.createProperties(Analytics.Onboarding.PROP_HELP_STEP,
+        final Properties properties = Analytics.createProperties(Analytics.Global.PROP_HELP_STEP,
                                                                  helpStep.toProperty());
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_HELP, properties);
+        Analytics.trackEvent(Analytics.Global.EVENT_HELP, properties);
 
         openUri(from, helpStep.getUri());
     }

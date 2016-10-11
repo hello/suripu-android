@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="Heading" parent="AppTheme.Text.Header.H1">
+    </style>
+
+    <style name="Heading.Light" parent="AppTheme.Text.Header.H1.Light">
+    </style>
+
+    <style name="Title" parent="AppTheme.Text.Header.H6.Medium">
+        <item name="android:textColor">@color/gray6</item>
+    </style>
+
     <style name="Body" parent="AppTheme.Text.Body">
         <item name="android:background">@color/background_light</item>
     </style>
@@ -15,6 +25,25 @@
 
     <style name="Body.Link">
         <item name="android:textColor">@color/blue6</item>
+    </style>
+
+    <style name="Card" parent="AppTheme.Text.Body">
+
+    </style>
+
+    <style name="Card.Title">
+        <item name="android:textSize">@dimen/text_h7</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray6</item>
+    </style>
+
+    <style name="Card.Body">
+        <item name="android:textSize">@dimen/text_h8</item>
+        <item name="android:textColor">@color/gray5</item>
+    </style>
+
+    <style name="Card.Value">
+        <item name="android:textSize">@dimen/text_h4</item>
     </style>
 
 
@@ -160,6 +189,11 @@
     <style name="AppTheme.Text.Score.Tiny">
         <item name="android:textSize">@dimen/text_size_tiny_score</item>
         <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="AppTheme.Text.Score.Unit">
+        <item name="android:textSize">@dimen/text_h4</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
     </style>
 
     <style name="AppTheme.Text.Condition">

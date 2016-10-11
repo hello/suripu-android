@@ -138,11 +138,16 @@
     <string name="onboarding_voice_complete_title">You’re all set</string>
     <string name="onboarding_voice_complete_message">Sense is now ready to use. All you need to do now is sleep.</string>
 
-    <string name="checking_condition_temperature">Checking Temperature</string>
-    <string name="checking_condition_humidity">Checking Humidity</string>
-    <string name="checking_condition_airquality">Checking Air Quality</string>
-    <string name="checking_condition_sound">Checking Noise</string>
-    <string name="checking_condition_light">Checking Light</string>
+    <string name="checking_condition_temperature">Checking temperature</string>
+    <string name="checking_condition_humidity">Checking humidity</string>
+    <string name="checking_condition_airquality">Checking air quality</string>
+    <string name="checking_condition_sound">Checking noise level</string>
+    <string name="checking_condition_light">Checking light</string>
+    <string name="checking_condition_co2">Checking CO2 level</string>
+    <string name="checking_condition_voc">Checking VOC level</string>
+    <string name="checking_condition_light_temperature">Checking light temperature</string>
+    <string name="checking_condition_uv">Checking UV light</string>
+    <string name="checking_condition_pressure">Checking pressure</string>
 
     <string name="label_firmware_version">Firmware</string>
     <string name="action_enter_pairing_mode">Put Into Pairing Mode</string>
@@ -245,7 +250,7 @@
     <string name="condition_light">Light</string>
 
     <string name="onboarding_room_check_title_success">Success!</string>
-    <string name="onboarding_room_check_info_success">Everything looks great.\nNow let’s set your first Smart Alarm.</string>
+    <string name="onboarding_room_check_info_success">Everything looks great. Now let’s set up your first Smart Alarm.</string>
     <string name="onboarding_title_room_check">Room Check</string>
     <string name="onboarding_info_room_check">Sense will now check the conditions in your bedroom.</string>
 
@@ -345,8 +350,6 @@
     <string name="welcome_dialog_timeline_title_events">Sleep Timeline</string>
     <string name="welcome_dialog_timeline_events">Your Timeline shows you everything that happened during the night, from the moment you go to bed until the time you wake up.\n\nThe blue bars represent your time spent sleeping. The wider the bar, the deeper the sleep. Tap on any bar to view more details.\n\nYour Timeline will also show key events from your night, including time spent tossing and turning, noise disturbances, and more.</string>
     <string name="welcome_dialog_current_conditions_title">Current Conditions</string>
-    <string name="welcome_dialog_current_conditions">Here you‘ll see the current conditions in your bedroom: temperature, humidity, air quality, light, and noise.\n
-\nThese values update as Sense uploads new data. So as the conditions in your room change, it may take a few moments for them to be reflected here.\n\nTap a card to see more details.</string>
     <string name="welcome_dialog_alarm_title">Set An Alarm</string>
     <string name="welcome_dialog_alarm">Sense\'s Smart Alarm will wake you up at the lightest part of your natural sleep cycle - in a 30 minute window before the time you set. When it\'s time to wake up, Sense will glow and play your selected tone. Just wave your hand over Sense to dismiss the alarm.</string>
     <string name="welcome_dialog_sensor_temperature_title">Temperature</string>
@@ -394,12 +397,12 @@
     <string name="title_checking_pill_battery">Checking Sleep Pill battery</string>
     <string name="title_checking_bluetooth_connectivity">Checking Bluetooth connectivity</string>
     <string name="title_update_sleep_pill">Updating your Sleep Pill</string>
-    <string name="info_update_sleep_pill">You’ll need to keep the Sense app open for the duration of the update. This process should take less than two minutes.</string>
+    <string name="info_update_sleep_pill">You’ll need to keep the Sense app open for the duration of the update. This process should take less than one minute.</string>
     <string name="title_connect_sleep_pill">Connect your Sleep Pill</string>
     <string name="info_connect_sleep_pill">Hold your Sleep Pill near your mobile device, and then quickly shake it for three seconds to begin the update.</string>
     <string name="message_sleep_pill_connected">Sleep Pill Connected</string>
-    <string name="message_sleep_pill_updating">Sleep Pill Updating</string>
-    <string name="message_sleep_pill_updated">Sleep Pill Updated</string>
+    <string name="message_sleep_pill_updating">Sleep Pill updating</string>
+    <string name="message_sleep_pill_updated">Sleep Pill updated</string>
     <string name="timeline_info_label_total_sleep">Total sleep</string>
     <string name="timeline_info_label_times_awake">Times awake</string>
     <string name="timeline_info_label_sound_sleep">Deep sleep</string>
@@ -579,6 +582,8 @@
     <string name="connect_pill_fragment_preparing">Preparing update</string>
     <string name="connect_pill_fragment_operation">Connect Pill</string>
     <string name="update_ready_pill_fragment_operation">Update Pill</string>
+    <string name="debug_title_confirm_pill_update">Found Pill</string>
+    <string name="debug_message_confirm_pill_update_fmt">Are you sure you want to update ‘%1$s’?</string>
 
     <string name="share_text">See how I\'m improving my sleep with Insights from Sense. %1$s #MySense</string>
 
@@ -619,10 +624,10 @@
     <string name="title_sense_voice">Sense with Voice</string>
     <string name="info_sense_voice_intro">Speak to Sense to set alarms, check the conditions in your room, and more.</string>
     <string name="try_it_now">Try it now:</string>
-    <string name="sense_voice_question_temperature">\"Hey Sense…<br>what\'s the temperature?\"</br></string>
+    <string name="sense_voice_wake_phrase">\"Okay Sense…</string>
+    <string name="sense_voice_question_temperature">\"Okay Sense…\nwhat\'s the temperature?\"</string>
     <string name="title_voice_tip">Voice Tip</string>
-    <string name="info_voice_tip">Make sure your room is quiet, and that you’re speaking clearly to Sense and not your mobile device.</string>
-    <string name="info_voice_tip_with_support">Make sure your room is quiet, and that you’re speaking clearly to Sense and not your mobile device.\n\nIf you are still having trouble, please contact <a href="#voice-support">support</a>.</string>
+    <string name="info_voice_tip">Always say <bold>\"Okay Sense\"</bold> before each command to activate Voice.\n\nMake sure your room is quiet, and that you’re speaking clearly to Sense and not your mobile device.</string>
     <string name="title_update_later">Update later</string>
     <string name="title_sense_update">Update your Sense</string>
     <string name="subtitle_sense_update">Sense needs an update before use. This will take up to 3 minutes.</string>
@@ -650,4 +655,29 @@
     <string name="voice_result_rejected">rejected</string>
     <string name="voice_result_try_again">try again</string>
     <string name="voice_result_unknown">unknown</string>
+
+    <string name="sensor_detail_last_day">LAST DAY</string>
+    <string name="sensor_detail_past_week">PAST WEEK</string>
+    <string name="sensor_detail_about_title">About</string>
+    <string name="sensor_scale_list_title">Scale</string>
+    <string name="sensor_scale_list_measured_in">Measured in %1$s</string>
+    <string name="sensor_scale_min_value">0 to %1$s</string>
+    <string name="sensor_scale_mid_value">%1$s to %2$s</string>
+    <string name="sensor_scale_max_value">%1$s+</string>
+    <string name="sensor_about_temperature_celsius">At night, your body temperature cools to help induce sleep, and the right external temperature can make this easier. The ideal temperature for this is generally between 15 and 20 degrees Celsius. While cooler temperatures are generally better than warmer ones, be careful not to set your thermostat too low. A bedroom that’s uncomfortably hot or cold can disrupt your sleep cycle, which can negatively impact the quality of your sleep.</string>
+    <string name="sensor_about_temperature_fahrenheit">At night, your body temperature cools to help induce sleep, and the right external temperature can make this easier. The ideal temperature for this is generally between 59 and 68 degrees Fahrenheit. While cooler temperatures are generally better than warmer ones, be careful not to set your thermostat too low. A bedroom that’s uncomfortably hot or cold can disrupt your sleep cycle, which can negatively impact the quality of your sleep.</string>
+    <string name="sensor_about_humidity">The ideal humidity  for a good night’s sleep is around 50%. In addition to affecting the quality of your sleep, low humidity can cause your throat to become irritated and your skin to become dry, while high humidity can make it harder for moisture to evaporate off your body — making you hot, uncomfortable, and sweaty. Damp air can also encourage mold growth, which may affect your sleep if you suffer from mold allergies.</string>
+    <string name="sensor_about_light">Light is the primary signal for your circadian rhythm, which governs not only your sleep, but also your mood, appetite, and more. In the morning, light prompts your body to wake up, while in the evening, the decrease in light signals to your body that it’s time to wind down, relax, and prepare for sleep. Being exposed to too little light in the morning or too much at night can confuse this rhythm and make it much harder to maintain a healthy sleep schedule.</string>
+    <string name="sensor_about_particulates">Air quality is rated using the Air Quality Index (AQI). The AQI shows you how clean or polluted the air is in your area is, as well as potential corresponding effects the air might have on your health. The AQI is calculated using five major pollutants: ground-level ozone, particle pollution (or particulate matter), carbon monoxide, sulfur dioxide, and nitrogen dioxide. Poor air quality has been correlated with increased risk of poor sleep, and sustained levels of poor air quality can be detrimental to your overall health.</string>
+    <string name="sensor_about_noise">A noisy environment can make it difficult to fall asleep, but the impact of sound on your quality of sleep doesn’t end there. Even if you manage to doze off, your brain continues to register and process sounds, meaning nighttime noise can disrupt your sleep even if it doesn’t wake you up.</string>
+    <string name="sensor_about_co2"> Equivalent carbon dioxide (CO2e) is a measure of the equivalent amount or concentration of carbon dioxide (CO2). The greenhouse gas carbon dioxide (CO2) is naturally part of Earth’s atmosphere, and CO2 emissions come from a variety of natural sources. However, human activity such as fuel combustion for energy and transportation increases the amount of CO2 present in the atmosphere, and high concentrations can impair brain activity and make it difficult to breathe, which could affect sleep quality.</string>
+    <string name="sensor_about_voc">Volatile organic compounds (VOCs) can be essential ingredients in many household products, such as cleansers, disinfectants, mattresses, fresh paint, and more. Indoors, normal atmospheric conditions can cause these compounds to evaporate into the air, which in large concentrations can have a detrimental effect on overall air quality, and your health. VOCs may lead to irritated eyes, headaches, allergies, or asthma which may in turn impact the quality of your sleep.</string>
+    <string name="sensor_about_pressure">Barometric pressure, also known as atmospheric pressure, is a measure of the pressure exerted by the weight of air in the Earth’s atmosphere. Studies have shown some evidence that individuals diagnosed with sleep disordered breathing are susceptible to weather-related changes in barometric pressure.</string>
+    <string name="sensor_about_uv_light"> A sunny day can be enjoyable, but too much sunlight can be dangerous. The sun’s rays give off ultraviolet (UV) radiation, and it’s this radiation that makes overexposure to sunlight damaging to your skin, causing sunburns and putting you at higher risk for skin cancer. Seasonal weather conditions combined with ozone depletion can cause different amounts of UV radiation to reach different regions at different times. The UV Index exists to provide a daily forecast of the severity of UV radiation in your area.</string>
+    <string name="sensor_about_light_temp">Light temperatures over 4,500 K are described as cool colors (or blue light) and temperatures between 2,000–3,000 K described as warm colors (or red light). As daylight is a cool color (starting at around 2,000 K during sunrise and sunset and peaking at around 10,000 on a clear blue day), your body uses blue light as a primary signal for your circadian rhythm, suppressing melatonin and keeping you alert during the day. Personal electronics and televisions also generally give off blue light, which means that using these devices before bed can adversely affect your sleep schedule, keeping you awake when you’re trying to get to sleep.</string>
+    <string name="air_quality">Air Quality</string>
+    <string name="room_conditions_welcome_title">Your current conditions</string>
+    <string name="room_conditions_welcome_message">Recent changes to room conditions may take a few moments to be reflected here. Tap a card for more detail.</string>
+    <string name="temperature_celsius">C</string>
+    <string name="temperature_fahrenheit">F</string>
 </resources>

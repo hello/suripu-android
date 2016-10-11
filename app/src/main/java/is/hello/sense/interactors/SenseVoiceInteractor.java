@@ -3,6 +3,7 @@ package is.hello.sense.interactors;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,9 +29,10 @@ public class SenseVoiceInteractor extends ValueInteractor<VoiceResponse> {
     @Inject public SenseVoiceInteractor(){}
 
 
-    public final static long UPDATE_DELAY_SECONDS = 8; //todo test with real 1.5 senses to adjust
+    public final static long UPDATE_DELAY_SECONDS = 1;
     public final InteractorSubject<VoiceResponse> voiceResponse = this.subject;
     private int failCount = 0;
+    private long lastValidResponseTime = System.currentTimeMillis();
 
     @Nullable
     public static VoiceResponse getMostRecent(@NonNull final ArrayList<VoiceResponse> voiceResponses){
@@ -61,11 +63,27 @@ public class SenseVoiceInteractor extends ValueInteractor<VoiceResponse> {
     protected Observable<VoiceResponse> provideUpdateObservable() {
         return apiService.getOnboardingVoiceResponse()
                          .map(SenseVoiceInteractor::getMostRecent)
-                         .doOnNext(this::updateFailCount);
+                         .filter(this::isValidResponse)
+                         .doOnNext(this::updateState);
+    }
+
+    public void updateState(@NonNull final VoiceResponse voiceResponse) {
+        updateLastValidResponseTime(voiceResponse);
+        updateFailCount(voiceResponse);
+    }
+
+    /**
+     * @return true if response is not null and date time value is after last valid time
+     */
+    @VisibleForTesting
+    public Boolean isValidResponse(@Nullable final VoiceResponse voiceResponse) {
+        return voiceResponse != null &&
+                voiceResponse.dateTime.isAfter(lastValidResponseTime);
     }
 
     @MainThread
     public void reset(){
+        lastValidResponseTime = System.currentTimeMillis();
         failCount = 0;
         voiceResponse.forget();
     }
@@ -73,6 +91,11 @@ public class SenseVoiceInteractor extends ValueInteractor<VoiceResponse> {
     @MainThread
     public int getFailCount(){
         return failCount;
+    }
+
+    @MainThread
+    public long getLastValidResponseTime() {
+        return lastValidResponseTime;
     }
 
     public void updateHasCompletedTutorial(final boolean hasCompleted){
@@ -91,5 +114,10 @@ public class SenseVoiceInteractor extends ValueInteractor<VoiceResponse> {
             failCount++;
         }
         logEvent("failCount = " + failCount);
+    }
+
+    private void updateLastValidResponseTime(@NonNull final VoiceResponse voiceResponse) {
+        this.lastValidResponseTime = voiceResponse.dateTime.getMillis();
+        logEvent("lastValidResponseTime = " + lastValidResponseTime);
     }
 }

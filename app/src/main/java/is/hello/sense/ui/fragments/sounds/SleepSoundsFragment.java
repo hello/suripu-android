@@ -264,6 +264,14 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         }
 
         if (combinedState.getSounds() != null) {
+            //setState download sounds if combined state sounds is empty
+            if(combinedState.getSounds().getSounds().isEmpty()){
+                adapter.setState(AdapterState.SOUNDS_DOWNLOAD, null);
+                setButtonVisible(false);
+                return;
+            }
+
+
             SleepSounds.State currentState = combinedState.getSounds().getState();
             switch (currentState) {
                 case SENSE_UPDATE_REQUIRED:

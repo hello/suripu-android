@@ -14,9 +14,9 @@ import java.util.List;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.Condition;
-import is.hello.sense.ui.widget.graphing.BarTrendGraphView;
-import is.hello.sense.ui.widget.graphing.BubbleTrendGraphView;
-import is.hello.sense.ui.widget.graphing.GridTrendGraphView;
+import is.hello.sense.ui.widget.graphing.trends.BarTrendGraphView;
+import is.hello.sense.ui.widget.graphing.trends.BubbleTrendGraphView;
+import is.hello.sense.ui.widget.graphing.trends.GridTrendGraphView;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.DateFormatter;
 

@@ -56,8 +56,10 @@ import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractorTests;
 import is.hello.sense.interactors.questions.ApiQuestionProviderTests;
 import is.hello.sense.interactors.questions.ReviewQuestionProviderTests;
+import is.hello.sense.mvp.presenters.home.RoomConditionsFragment;
 import is.hello.sense.rating.LocalUsageTrackerTests;
 import is.hello.sense.ui.adapter.SmartAlarmAdapterTests;
+import is.hello.sense.ui.fragments.RoomConditionsFragmentTests;
 import is.hello.sense.units.UnitFormatterTests;
 import is.hello.sense.util.BatteryUtil;
 import is.hello.sense.util.DateFormatterTests;
@@ -126,7 +128,10 @@ import static org.mockito.Mockito.mock;
             SenseOTAStatusInteractorTests.class,
 
             SwapSenseInteractor.class,
-            SwapSenseInteractorTests.class
+            SwapSenseInteractorTests.class,
+
+            RoomConditionsFragment.class,
+            RoomConditionsFragmentTests.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")
