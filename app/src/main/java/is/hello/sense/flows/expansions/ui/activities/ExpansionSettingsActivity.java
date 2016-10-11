@@ -89,6 +89,12 @@ implements FragmentNavigation{
             }
         } else if(fragment instanceof ExpansionsAuthFragment){
             showConfigurationSelection();
+        } else if(fragment instanceof ConfigSelectionFragment){
+            if(result == null){
+                showExpansionList();
+            } else{
+                //todo show enabled configuration screen.
+            }
         }
     }
 

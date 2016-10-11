@@ -38,6 +38,10 @@ public class ConfigurationsInteractor extends ValueInteractor<ArrayList<Configur
         return apiService.getConfigurations(expansionId);
     }
 
+    public Observable<Configuration> setConfiguration(@NonNull final Configuration configuration){
+        return apiService.setConfigurations(expansionId, configuration);
+    }
+
     public void setExpansionId(final long id) {
         this.expansionId = id;
     }
