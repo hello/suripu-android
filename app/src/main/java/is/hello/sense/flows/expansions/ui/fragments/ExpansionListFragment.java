@@ -64,8 +64,21 @@ implements ArrayRecyclerAdapter.OnItemClickedListener<Expansion>{
 
     @Override
     public void onItemClicked(final int position, @NonNull final Expansion item) {
-        finishFlowWithResult(Activity.RESULT_OK, ExpansionsAuthFragment.newIntent(item.getAuthUri(),
-                                                                                  item.getCompletionUri()));
+        switch(item.getState()){
+            case NOT_CONFIGURED:
+                finishFlow();
+                break;
+            case NOT_CONNECTED:
+                finishFlowWithResult(Activity.RESULT_OK, ExpansionsAuthFragment.newIntent(item.getAuthUri(),
+                                                                                          item.getCompletionUri()));
+                break;
+            case REVOKED:
+                break; //todo
+            case CONNECTED_ON:
+            case CONNECTED_OFF:
+                break; //todo redirect to Configuration Detail fragment
+        }
+
     }
 
     public void bindExpansions(@Nullable final List<Expansion> expansions){

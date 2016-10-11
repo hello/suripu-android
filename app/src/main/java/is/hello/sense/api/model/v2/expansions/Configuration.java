@@ -2,7 +2,6 @@ package is.hello.sense.api.model.v2.expansions;
 
 import com.google.gson.annotations.SerializedName;
 
-
 import is.hello.sense.api.model.ApiResponse;
 
 public class Configuration extends ApiResponse {
@@ -25,6 +24,10 @@ public class Configuration extends ApiResponse {
 
     public boolean isSelected() {
         return selected;
+    }
+
+    public void setSelected(final boolean selected) {
+        this.selected = selected;
     }
 
     @Override

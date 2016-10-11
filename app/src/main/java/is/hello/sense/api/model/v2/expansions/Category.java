@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import is.hello.sense.api.gson.Enums;
 
 public enum Category implements Enums.FromString {
+    LIGHT,
+    THERMOSTAT,
     UNKNOWN;
 
     public static Category fromString(@Nullable final String string) {
