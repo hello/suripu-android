@@ -10,7 +10,10 @@ import java.util.Collections;
 import java.util.List;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
+import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionListFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionsAuthFragment;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
@@ -52,6 +55,11 @@ implements FragmentNavigation{
         pushFragment(ExpansionsAuthFragment.newInstance(initialUrl, completionUrl), null, true);
     }
 
+    private void showConfigurationSelection(){
+        //todo remove after testing
+        pushFragment(ConfigSelectionFragment.newInstance(Expansion.generateThermostatTestCase(State.NOT_CONFIGURED)), null, true);
+    }
+
     @Override
     public final void pushFragment(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
         navigationDelegate.pushFragment(fragment, title, wantsBackStackEntry);
@@ -77,9 +85,10 @@ implements FragmentNavigation{
                                   result.getStringExtra(ExpansionsAuthFragment.EXTRA_COMPLETE_URL));
             } else {
                 //todo show next fragment
+                showConfigurationSelection();
             }
         } else if(fragment instanceof ExpansionsAuthFragment){
-            showExpansionList(); //todo show configure Fragment instead
+            showConfigurationSelection();
         }
     }
 
