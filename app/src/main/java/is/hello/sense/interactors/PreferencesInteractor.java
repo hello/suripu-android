@@ -5,8 +5,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.text.format.DateFormat;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 
 import org.joda.time.LocalDate;
 
@@ -14,6 +19,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import is.hello.buruberi.util.Rx;
+import is.hello.sense.api.model.UserFeatures;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
@@ -22,7 +28,8 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-@Singleton public class PreferencesInteractor extends BasePreferencesInteractor {
+@Singleton
+public class PreferencesInteractor extends BasePreferencesInteractor {
     public static final String SCHEMA_VERSION = "_schema_version";
     public static final int SCHEMA_VERSION_1_0 = 0;
     public static final int SCHEMA_VERSION_1_1 = 1;
@@ -59,11 +66,19 @@ import rx.Observable;
 
     public static final String ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN = "room_conditions_welcome_card_times_shown";
 
+    public static final String USER_FEATURES = "user_features";
+    public static final String HAS_VOICE = "has_voice";
 
-    public @Inject
+    private final Gson gson;
+
+
+    public
+    @Inject
     PreferencesInteractor(@NonNull final Context context,
+                          @NonNull final Gson gson,
                           @NonNull @GlobalSharedPreferences final SharedPreferences sharedPreferences) {
         super(context, sharedPreferences);
+        this.gson = gson;
 
         migrateIfNeeded();
 
@@ -74,7 +89,8 @@ import rx.Observable;
     //region Schema Migration
 
     @SuppressWarnings("deprecation")
-    @VisibleForTesting boolean migrateIfNeeded() {
+    @VisibleForTesting
+    boolean migrateIfNeeded() {
         final int schemaVersion = getInt(SCHEMA_VERSION, SCHEMA_VERSION_1_0);
         if (schemaVersion < SCHEMA_VERSION_1_1) {
             if (contains(UNIT_SYSTEM__LEGACY)) {
@@ -116,7 +132,64 @@ import rx.Observable;
             return Constants.TIMELINE_EPOCH;
         }
     }
+    //endregion
 
+    //region userFeatures helper
+
+    /**
+     * Stored with the key {@link PreferencesInteractor#HAS_VOICE}. Should be updated via
+     * {@link PreferencesInteractor#setFeatures(UserFeatures)}.
+     *
+     * @return whether or not the account has a Sense with voice.
+     */
+    public boolean hasVoice() {
+        return getBoolean(HAS_VOICE, false);
+    }
+
+    /**
+     * If we ever need to get the {@link UserFeatures} associated with the Sense on this account.
+     * If this method is never used in the future we should probably stop storing the UserFeatures
+     * as well.
+     *
+     * @return {@link UserFeatures} or null
+     */
+    @SuppressWarnings("unused")
+    @Nullable
+    public UserFeatures getUseFeatures() {
+        UserFeatures userFeatures = null;
+        try {
+            userFeatures = gson.fromJson(getString(USER_FEATURES, null), UserFeatures.class);
+        } catch (final JsonParseException e) {
+            Logger.error(PreferencesInteractor.class.getName(), "could not deserialize user features", e);
+        }
+        return userFeatures;
+    }
+
+    /**
+     * Use this to update both the stored {@link UserFeatures} and boolean value for
+     * {@link PreferencesInteractor#HAS_VOICE}.
+     *
+     * @param features when null this will remove the values from prefs.
+     */
+    public void setFeatures(@Nullable final UserFeatures features) {
+        final SharedPreferences.Editor editor = edit();
+        if (features == null) {
+            editor.remove(HAS_VOICE)
+                  .remove(USER_FEATURES)
+                  .apply();
+            Logger.info(PreferencesInteractor.class.getName(), "cleared user features");
+            return;
+        }
+
+        try {
+            final String serializedFeatures = gson.toJson(features);
+            editor.putString(USER_FEATURES, serializedFeatures)
+                  .putBoolean(HAS_VOICE, features.voice)
+                  .apply();
+        } catch (final JsonSyntaxException e) {
+            Logger.error(PreferencesInteractor.class.getName(), "could not serialize user features", e);
+        }
+    }
     //endregion
 }
 

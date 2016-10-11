@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 import android.view.View;
 
 import javax.inject.Inject;
@@ -16,6 +17,8 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.mvp.view.home.AppSettingsView;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
@@ -24,12 +27,19 @@ import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Share;
+import rx.Subscription;
 
 public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> implements
         AppSettingsView.ClickListenerGenerator {
 
     @Inject
     AccountInteractor accountInteractor;
+    @Inject
+    PreferencesInteractor preferencesInteractor;
+    @Inject
+    UserFeaturesInteractor userFeaturesInteractor;
+
+    private Subscription userFeaturesSubscription;
 
 
     @Override
@@ -55,12 +65,29 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(accountInteractor);
+        addInteractor(preferencesInteractor);
+        addInteractor(userFeaturesInteractor);
     }
 
     @Override
     public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bindAndSubscribe(accountInteractor.account, this::bindAccount, Functions.LOG_ERROR);
+        bindAndSubscribe(accountInteractor.account,
+                         this::bindAccount,
+                         Functions.LOG_ERROR);
+
+        bindAndSubscribe(preferencesInteractor.observableBoolean(PreferencesInteractor.HAS_VOICE, false),
+                         this.presenterView::showExpansion,
+                         Functions.LOG_ERROR);
+
+        // If this preference is missing we need to query the server.
+        if (!preferencesInteractor.contains(PreferencesInteractor.HAS_VOICE)) {
+            userFeaturesSubscription = bind(userFeaturesInteractor.featureSubject)
+                    .subscribe(preferencesInteractor::setFeatures,
+                               Functions.LOG_ERROR);
+            userFeaturesInteractor.update();
+        }
+
         accountInteractor.update();
     }
 
@@ -76,6 +103,15 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     public final void onResume() {
         super.onResume();
         accountInteractor.update();
+    }
+
+    @Override
+    protected void onRelease() {
+        super.onRelease();
+        if (userFeaturesSubscription != null) {
+            userFeaturesSubscription.unsubscribe();
+            userFeaturesSubscription = null;
+        }
     }
 
     @Override
@@ -122,8 +158,6 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     }
 
     private View.OnClickListener showExpansions() {
-        return v -> {
-            startActivity(new Intent(getActivity(), ExpansionSettingsActivity.class));
-        };
+        return v -> startActivity(new Intent(getActivity(), ExpansionSettingsActivity.class));
     }
 }

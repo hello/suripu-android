@@ -1,8 +1,11 @@
 package is.hello.sense.presenters;
 
+import android.support.annotation.NonNull;
+
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.interactors.pairsense.PairSenseInteractor;
@@ -10,14 +13,16 @@ import is.hello.sense.util.Analytics;
 
 public class SettingsPairSensePresenter extends PairSensePresenter {
 
-    public SettingsPairSensePresenter(final HardwareInteractor hardwareInteractor,
-                                      final UserFeaturesInteractor userFeaturesInteractor,
-                                      final ApiService apiService,
-                                      final PairSenseInteractor pairSenseInteractor) {
+    public SettingsPairSensePresenter(@NonNull final HardwareInteractor hardwareInteractor,
+                                      @NonNull final UserFeaturesInteractor userFeaturesInteractor,
+                                      @NonNull final ApiService apiService,
+                                      final PairSenseInteractor pairSenseInteractor,
+                                      @NonNull final PreferencesInteractor preferencesInteractor) {
         super(hardwareInteractor,
               userFeaturesInteractor,
               apiService,
-              pairSenseInteractor);
+              pairSenseInteractor,
+              preferencesInteractor);
     }
 
     @Override

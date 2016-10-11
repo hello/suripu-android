@@ -12,6 +12,7 @@ import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.interactors.CurrentSenseInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SwapSenseInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
@@ -72,7 +73,7 @@ public class SenseUpgradeModule {
 
     @Provides
     @Singleton
-    CurrentSenseInteractor providesCurrentSenseInteractor(final DevicesInteractor devicesInteractor){
+    CurrentSenseInteractor providesCurrentSenseInteractor(final DevicesInteractor devicesInteractor) {
         return new CurrentSenseInteractor(devicesInteractor);
     }
 
@@ -80,14 +81,14 @@ public class SenseUpgradeModule {
     @Singleton
     UpgradePairSenseInteractor providesUpgradePairSenseInteractor(final HardwareInteractor hardwareInteractor,
                                                                   final SwapSenseInteractor swapSenseInteractor,
-                                                                  final CurrentSenseInteractor resetOriginalInteractor){
+                                                                  final CurrentSenseInteractor resetOriginalInteractor) {
         return new UpgradePairSenseInteractor(hardwareInteractor, swapSenseInteractor, resetOriginalInteractor);
     }
 
     @Provides
     @Singleton
     SenseResetOriginalInteractor providesSenseResetOriginalInteractor(final Context context,
-                                                                      final BluetoothStack bluetoothStack){
+                                                                      final BluetoothStack bluetoothStack) {
         return new SenseResetOriginalInteractor(context, bluetoothStack);
     }
 
@@ -97,17 +98,18 @@ public class SenseUpgradeModule {
         return new SenseUpgradeIntroPresenter();
     }
 
-   //endregion
+    //endregion
 
     //region Presenters
 
     @Provides
     @Singleton
-    PairSensePresenter providesUpgradePairSensePresenter(final HardwareInteractor interactor,
-                                                         final UserFeaturesInteractor userFeaturesInteractor,
-                                                         final ApiService apiService,
-                                                         final UpgradePairSenseInteractor upgradePairSenseInteractor){
-        return new UpgradePairSensePresenter(interactor, userFeaturesInteractor, apiService, upgradePairSenseInteractor);
+    PairSensePresenter providesUpgradePairSensePresenter(@NonNull final HardwareInteractor interactor,
+                                                         @NonNull final UserFeaturesInteractor userFeaturesInteractor,
+                                                         @NonNull final ApiService apiService,
+                                                         @NonNull final UpgradePairSenseInteractor upgradePairSenseInteractor,
+                                                         @NonNull final PreferencesInteractor preferencesInteractor) {
+        return new UpgradePairSensePresenter(interactor, userFeaturesInteractor, apiService, upgradePairSenseInteractor, preferencesInteractor);
     }
 
     @Provides
@@ -115,8 +117,9 @@ public class SenseUpgradeModule {
     BaseConnectWifiPresenter provideBaseConnectWifiPresenter(@NonNull final HardwareInteractor hardwareInteractor,
                                                              @NonNull final UserFeaturesInteractor userFeaturesInteractor,
                                                              @NonNull final ApiService apiService,
-                                                             @NonNull final UpgradePairSenseInteractor pairSenseInteractor) {
-        return new UpgradeConnectWifiPresenter(hardwareInteractor, userFeaturesInteractor, apiService, pairSenseInteractor);
+                                                             @NonNull final UpgradePairSenseInteractor pairSenseInteractor,
+                                                             @NonNull final PreferencesInteractor preferencesInteractor) {
+        return new UpgradeConnectWifiPresenter(hardwareInteractor, userFeaturesInteractor, apiService, pairSenseInteractor, preferencesInteractor);
     }
 
     @Provides

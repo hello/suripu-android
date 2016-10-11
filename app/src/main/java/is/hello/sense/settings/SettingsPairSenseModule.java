@@ -7,6 +7,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.interactors.pairsense.SettingsPairSenseInteractor;
@@ -37,7 +38,7 @@ public class SettingsPairSenseModule {
 
     @Provides
     @Singleton
-    SettingsPairSenseInteractor providesSettingsPairSenseInteractor(final HardwareInteractor hardwareInteractor){
+    SettingsPairSenseInteractor providesSettingsPairSenseInteractor(final HardwareInteractor hardwareInteractor) {
         return new SettingsPairSenseInteractor(hardwareInteractor);
     }
 
@@ -46,11 +47,13 @@ public class SettingsPairSenseModule {
     BaseConnectWifiPresenter provideBaseConnectWifiPresenter(@NonNull final HardwareInteractor hardwareInteractor,
                                                              @NonNull final UserFeaturesInteractor userFeaturesInteractor,
                                                              @NonNull final ApiService apiService,
-                                                             @NonNull final SettingsPairSenseInteractor pairSenseInteractor) {
+                                                             @NonNull final SettingsPairSenseInteractor pairSenseInteractor,
+                                                             @NonNull final PreferencesInteractor preferencesInteractor) {
         return new SettingsConnectWifiPresenter(hardwareInteractor,
                                                 userFeaturesInteractor,
                                                 apiService,
                                                 pairSenseInteractor,
+                                                preferencesInteractor,
                                                 shouldLinkAccount);
     }
 
@@ -62,13 +65,15 @@ public class SettingsPairSenseModule {
 
     @Provides
     @Singleton
-    PairSensePresenter providesSettingsPairSensePresenter(final HardwareInteractor hardwareInteractor,
-                                                          final UserFeaturesInteractor userFeaturesInteractor,
-                                                          final ApiService apiService,
-                                                          final SettingsPairSenseInteractor pairSenseInteractor) {
+    PairSensePresenter providesSettingsPairSensePresenter(@NonNull final HardwareInteractor hardwareInteractor,
+                                                          @NonNull final UserFeaturesInteractor userFeaturesInteractor,
+                                                          @NonNull final ApiService apiService,
+                                                          @NonNull final SettingsPairSenseInteractor pairSenseInteractor,
+                                                          @NonNull final PreferencesInteractor preferencesInteractor) {
         return new SettingsPairSensePresenter(hardwareInteractor,
                                               userFeaturesInteractor,
                                               apiService,
-                                              pairSenseInteractor);
+                                              pairSenseInteractor,
+                                              preferencesInteractor);
     }
 }
