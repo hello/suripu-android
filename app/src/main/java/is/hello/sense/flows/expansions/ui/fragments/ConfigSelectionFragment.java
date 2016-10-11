@@ -56,17 +56,6 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
                          this::presentError);
     }
 
-    private void handleArgs(@Nullable final Bundle arguments) {
-        if(arguments != null){
-            this.expansion = (Expansion) arguments.getSerializable(ARG_EXPANSION);
-            if(expansion != null) {
-                presenterView.setTitle(getString(R.string.expansions_configuration_selection_title_format, expansion.getServiceName()));
-                presenterView.setSubtitle(getString(R.string.expansions_configuration_selection_subtitle_format, expansion.getCategory().name()));
-                configurationsInteractor.setExpansionId(expansion.getId());
-            }
-        }
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -99,7 +88,9 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
                                                                getString(R.string.expansions_configuration_selection_item_missing_subtitle_format, expansion.getServiceName(), expansion.getCategory()),
                                                                R.drawable.icon_warning));
                 } else {
-                    configurations.add(new Configuration.Empty());
+                    configurations.add(new Configuration.Empty(getString(R.string.expansions_configuration_selection_empty_title_default),
+                                                               getString(R.string.expansions_configuration_selection_empty_subtitle_default),
+                                                               R.drawable.icon_warning));
                 }
             }
             this.adapter.replaceAll(configurations);
@@ -108,5 +99,16 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
 
     public void presentError(@NonNull final Throwable e){
         //todo
+    }
+
+    private void handleArgs(@Nullable final Bundle arguments) {
+        if(arguments != null){
+            this.expansion = (Expansion) arguments.getSerializable(ARG_EXPANSION);
+            if(expansion != null) {
+                presenterView.setTitle(getString(R.string.expansions_configuration_selection_title_format, expansion.getServiceName()));
+                presenterView.setSubtitle(getString(R.string.expansions_configuration_selection_subtitle_format, expansion.getCategory().name()));
+                configurationsInteractor.setExpansionId(expansion.getId());
+            }
+        }
     }
 }

@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/AppTheme.Text.Body.Dim"
-        android:layout_gravity="top|left"/>
+        android:layout_gravity="top|start"/>
 
     <View
         android:id="@+id/item_row_no_configuration_divider"
@@ -26,13 +26,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/AppTheme.Text.Body.Small.New"
-        android:layout_gravity="left|bottom"/>
+        android:layout_gravity="start|bottom"/>
 
     <ImageView
         android:id="@+id/item_row_no_configuration_alert_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|right"
+        android:layout_gravity="top|end"
         android:src="@drawable/icon_warning"/>
 
 </FrameLayout>
