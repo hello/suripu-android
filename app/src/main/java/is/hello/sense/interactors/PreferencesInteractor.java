@@ -67,6 +67,7 @@ public class PreferencesInteractor extends BasePreferencesInteractor {
     public static final String ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN = "room_conditions_welcome_card_times_shown";
 
     public static final String USER_FEATURES = "user_features";
+    public static final String HAS_VOICE = "has_voice";
 
     private final Gson gson;
 
@@ -134,24 +135,47 @@ public class PreferencesInteractor extends BasePreferencesInteractor {
     //endregion
 
     //region userFeatures helper
+
+    /**
+     * Stored with the key {@link PreferencesInteractor#HAS_VOICE}. Should be updated via
+     * {@link PreferencesInteractor#setFeatures(UserFeatures)}.
+     *
+     * @return whether or not the account has a Sense with voice.
+     */
     public boolean hasVoice() {
-        final UserFeatures userFeatures;
+        return getBoolean(HAS_VOICE, false);
+    }
+
+    /**
+     * If we ever need to get the {@link UserFeatures} associated with the Sense on this account.
+     * If this method is never used in the future we should probably stop storing the UserFeatures
+     * as well.
+     *
+     * @return {@link UserFeatures} or null
+     */
+    @SuppressWarnings("unused")
+    @Nullable
+    public UserFeatures getUseFeatures() {
+        UserFeatures userFeatures = null;
         try {
             userFeatures = gson.fromJson(getString(USER_FEATURES, null), UserFeatures.class);
         } catch (final JsonParseException e) {
             Logger.error(PreferencesInteractor.class.getName(), "could not deserialize user features", e);
-            return false;
-
         }
-        return contains(USER_FEATURES)
-                && userFeatures != null
-                && userFeatures.voice;
+        return userFeatures;
     }
 
+    /**
+     * Use this to update both the stored {@link UserFeatures} and boolean value for
+     * {@link PreferencesInteractor#HAS_VOICE}.
+     *
+     * @param features when null this will remove the values from prefs.
+     */
     public void setFeatures(@Nullable final UserFeatures features) {
         final SharedPreferences.Editor editor = edit();
         if (features == null) {
-            editor.remove(USER_FEATURES)
+            editor.remove(HAS_VOICE)
+                  .remove(USER_FEATURES)
                   .apply();
             Logger.info(PreferencesInteractor.class.getName(), "cleared user features");
             return;
@@ -160,6 +184,7 @@ public class PreferencesInteractor extends BasePreferencesInteractor {
         try {
             final String serializedFeatures = gson.toJson(features);
             editor.putString(USER_FEATURES, serializedFeatures)
+                  .putBoolean(HAS_VOICE, features.voice)
                   .apply();
         } catch (final JsonSyntaxException e) {
             Logger.error(PreferencesInteractor.class.getName(), "could not serialize user features", e);
