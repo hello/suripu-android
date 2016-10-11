@@ -1,7 +1,11 @@
 package is.hello.sense.api.model.v2.expansions;
 
+import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
+import is.hello.sense.R;
 import is.hello.sense.api.model.ApiResponse;
 
 public class Configuration extends ApiResponse {
@@ -13,6 +17,14 @@ public class Configuration extends ApiResponse {
 
     @SerializedName("selected")
     private boolean selected;
+
+    public Configuration(@NonNull final String id,
+                         @NonNull final String name,
+                         final boolean selected) {
+        this.id = id;
+        this.name = name;
+        this.selected = selected;
+    }
 
     public String getId() {
         return id;
@@ -38,5 +50,29 @@ public class Configuration extends ApiResponse {
                 ", selected=" + selected +
                 "}";
 
+    }
+
+    public static class Empty extends Configuration {
+
+        public final String title;
+        public final String subtitle;
+        @DrawableRes public final int iconRes;
+
+        public Empty(){
+            this("configurations", "Third party", R.drawable.icon_warning);
+        }
+
+        /**
+         * @param title to be used to replace Configuration name
+         * @param subtitle to be used to provide extra info
+         */
+        public Empty(@NonNull final String title,
+                     @NonNull final String subtitle,
+                     @DrawableRes final int iconRes){
+            super("empty id", "empty name", false);
+            this.title = title;
+            this.subtitle = subtitle;
+            this.iconRes = iconRes;
+        }
     }
 }
