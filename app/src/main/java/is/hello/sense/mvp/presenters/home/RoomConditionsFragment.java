@@ -3,7 +3,7 @@ package is.hello.sense.mvp.presenters.home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
+import android.support.annotation.VisibleForTesting;
 import android.view.View;
 
 import java.util.List;
@@ -20,6 +20,7 @@ import is.hello.sense.api.model.v2.sensors.QueryScope;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
+import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SensorResponseInteractor;
@@ -33,6 +34,7 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
+import rx.Subscription;
 
 public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsView>
         implements ArrayRecyclerAdapter.OnItemClickedListener<Sensor>,
@@ -48,9 +50,11 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     @Inject
     ApiService apiService;
 
-    private SensorResponseAdapter adapter;
+    @VisibleForTesting
+    public SensorResponseAdapter adapter;
     private UpdateTimer updateTimer;
     private boolean checkRoomConditions = false;
+    private Subscription postSensorSubscription;
 
     @Override
     public final void initializePresenterView() {
@@ -111,6 +115,11 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     @Override
     public void onRelease() {
         super.onRelease();
+        if(this.postSensorSubscription != null){
+            this.postSensorSubscription.unsubscribe();
+            this.postSensorSubscription = null;
+        }
+
         if (this.updateTimer != null) {
             this.updateTimer.unschedule();
         }
@@ -163,22 +172,23 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
             case WAITING_FOR_DATA:
                 showWelcomeCardIfNeeded();
                 final List<Sensor> sensors = currentConditions.getSensors();
-                bind(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)))
-                        .subscribe(
-                                sensorsDataResponse -> {
-                                    for (final Sensor sensor : sensors) {
-                                        sensor.setSensorValues(sensorsDataResponse);
-                                    }
-                                    this.adapter.replaceAll(sensors);
-                                });
+                postSensorSubscription = bind(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)))
+                        .subscribe(sensorsDataResponse -> RoomConditionsFragment.this.bindDataResponse(sensorsDataResponse, sensors),
+                                   this::conditionsUnavailable);
                 break;
             case NO_SENSE:
                 adapter.showSenseMissingCard();
                 break;
             default:
         }
+    }
 
-
+    public final void bindDataResponse(@NonNull final SensorsDataResponse sensorsDataResponse,
+                                       @NonNull final List<Sensor> sensors){
+        for (final Sensor sensor : sensors) {
+            sensor.setSensorValues(sensorsDataResponse);
+        }
+        this.adapter.replaceAll(sensors);
     }
 
     public final void conditionsUnavailable(@NonNull final Throwable e) {

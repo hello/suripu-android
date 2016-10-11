@@ -16,9 +16,10 @@ public enum SensorUnit implements Enums.FromString {
     PPM,
     RATIO,
     KELVIN,
-    KPA;
+    MILLIBAR,
+    UNKNOWN;
 
     public static SensorUnit fromString(@Nullable final String string) {
-        return Enums.fromString(string, values(), CELSIUS);
+        return Enums.fromString(string, values(), UNKNOWN);
     }
 }

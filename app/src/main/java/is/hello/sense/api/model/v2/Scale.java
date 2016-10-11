@@ -3,10 +3,13 @@ package is.hello.sense.api.model.v2;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Condition;
@@ -105,5 +108,12 @@ public class Scale implements Serializable {
                 "Min=" + min +
                 "Condition" + condition +
                 "}";
+    }
+
+    @VisibleForTesting
+    public static List<Scale> generateTestScale() {
+        return Arrays.asList(new Scale("perfect", 0f, 2f, Condition.IDEAL),
+                             new Scale("warning", 3f, 5f, Condition.WARNING),
+                             new Scale("yikes",6f,8f, Condition.ALERT));
     }
 }

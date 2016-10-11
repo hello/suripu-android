@@ -25,9 +25,9 @@ public class UnitFormatter extends Interactor {
     public static final String UNIT_SUFFIX_AIR_QUALITY = "µg/m³";
     public static final String UNIT_SUFFIX_NOISE = "dB";
     public static final String UNIT_SUFFIX_GAS = "ppm";
-    public static final String UNIT_SUFFIX_LIGHT_TEMPERATURE = "k"; //todo check validity
-    public static final String UNIT_SUFFIX_KELVIN = "k"; //todo check validity
-    public static final String UNIT_SUFFIX_PRESSURE = "kPa";
+    public static final String UNIT_SUFFIX_LIGHT_TEMPERATURE = "k";
+    public static final String UNIT_SUFFIX_KELVIN = "k";
+    public static final String UNIT_SUFFIX_PRESSURE = "mBar";
 
 
     // Used by PreferencesInteractor

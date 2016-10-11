@@ -471,11 +471,12 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<SensorResponse> getSensors() {
-        return unimplemented();
+        return loadResponse("get_sensors_v2", new TypeToken<SensorResponse>(){}.getType());
     }
 
     @Override
-    public Observable<SensorsDataResponse> postSensors(@NonNull @Body SensorDataRequest request) {
-        return unimplemented();
+    public Observable<SensorsDataResponse> postSensors(@NonNull @Body final SensorDataRequest request) {
+        //todo missing different queryScopes except LAST_3H_5_MINUTE
+        return loadResponse("post_sensors_v2_"+request.queryScope.name(), new TypeToken<SensorsDataResponse>(){}.getType());
     }
 }
