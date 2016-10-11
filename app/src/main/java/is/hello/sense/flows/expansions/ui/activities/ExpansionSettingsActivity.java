@@ -56,6 +56,7 @@ implements FragmentNavigation{
     }
 
     private void showConfigurationSelection(){
+        //todo remove after testing
         pushFragment(ConfigSelectionFragment.newInstance(Expansion.generateThermostatTestCase(State.NOT_CONFIGURED)), null, true);
     }
 

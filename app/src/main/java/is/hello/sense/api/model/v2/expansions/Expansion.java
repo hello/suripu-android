@@ -35,15 +35,15 @@ public class Expansion extends ApiResponse {
     @SerializedName("state")
     private State state;
 
-    public Expansion(final long id,
-                     @NonNull final Category category,
-                     @NonNull final  String deviceName,
-                     @NonNull final String serviceName,
-                     @NonNull final MultiDensityImage icon,
-                     @NonNull final String authUri,
-                     @NonNull final String completionUri,
-                     @NonNull final String description,
-                     @NonNull final State state) {
+    private Expansion(final long id,
+                      @NonNull final Category category,
+                      @NonNull final String deviceName,
+                      @NonNull final String serviceName,
+                      @NonNull final MultiDensityImage icon,
+                      @NonNull final String authUri,
+                      @NonNull final String completionUri,
+                      @NonNull final String description,
+                      @NonNull final State state) {
         this.id = id;
         this.category = category;
         this.deviceName = deviceName;
