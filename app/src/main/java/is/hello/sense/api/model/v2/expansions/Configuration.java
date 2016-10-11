@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
-import is.hello.sense.R;
 import is.hello.sense.api.model.ApiResponse;
 
 public class Configuration extends ApiResponse {
@@ -54,13 +53,11 @@ public class Configuration extends ApiResponse {
 
     public static class Empty extends Configuration {
 
+        static final String EMPTY_ID = "empty id";
+        static final String EMPTY_NAME = "empty name";
         public final String title;
         public final String subtitle;
         @DrawableRes public final int iconRes;
-
-        public Empty(){
-            this("configurations", "Third party", R.drawable.icon_warning);
-        }
 
         /**
          * @param title to be used to replace Configuration name
@@ -69,7 +66,7 @@ public class Configuration extends ApiResponse {
         public Empty(@NonNull final String title,
                      @NonNull final String subtitle,
                      @DrawableRes final int iconRes){
-            super("empty id", "empty name", false);
+            super(EMPTY_ID, EMPTY_NAME, false);
             this.title = title;
             this.subtitle = subtitle;
             this.iconRes = iconRes;
