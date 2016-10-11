@@ -25,14 +25,14 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     @Inject
     ConfigurationsInteractor configurationsInteractor;
 
-    private static final String EXTRA_EXPANSION = ConfigSelectionFragment.class + "EXTRA_EXPANSION";
+    private static final String ARG_EXPANSION = ConfigSelectionFragment.class + "ARG_EXPANSION";
 
     private ConfigurationAdapter adapter;
 
     public static ConfigSelectionFragment newInstance(@NonNull final Expansion expansion){
         final ConfigSelectionFragment fragment = new ConfigSelectionFragment();
         final Bundle args = new Bundle();
-        args.putSerializable(EXTRA_EXPANSION, expansion);
+        args.putSerializable(ARG_EXPANSION, expansion);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,7 +57,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
 
     private void handleArgs(@Nullable final Bundle arguments) {
         if(arguments != null){
-            final Expansion expansion = (Expansion) arguments.getSerializable(EXTRA_EXPANSION);
+            final Expansion expansion = (Expansion) arguments.getSerializable(ARG_EXPANSION);
             if(expansion != null) {
                 presenterView.setTitle(getString(R.string.expansions_configuration_selection_title_format, expansion.getServiceName()));
                 presenterView.setSubtitle(getString(R.string.expansions_configuration_selection_subtitle_format, expansion.getCategory().name()));
