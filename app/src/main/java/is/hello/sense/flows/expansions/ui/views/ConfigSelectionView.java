@@ -12,6 +12,7 @@ import is.hello.sense.R;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.adapter.ConfigurationAdapter;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
+import is.hello.sense.ui.widget.util.Views;
 
 public class ConfigSelectionView extends PresenterView{
 
@@ -51,7 +52,7 @@ public class ConfigSelectionView extends PresenterView{
         this.subtitleTextView.setText(subtitle);
     }
 
-    public void setButtonClickListener(@Nullable final OnClickListener listener){
-        this.button.setOnClickListener(listener);
+    public void setDoneButtonClickListener(@NonNull final OnClickListener listener) {
+        Views.setSafeOnClickListener(this.button, listener);
     }
 }

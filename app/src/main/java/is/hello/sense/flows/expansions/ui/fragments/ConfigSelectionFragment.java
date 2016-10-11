@@ -47,7 +47,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
             this.adapter = new ConfigurationAdapter(new ArrayList<>(2));
             this.adapter.setOnItemClickedListener(this);
             presenterView = new ConfigSelectionView(getActivity(), adapter);
-            presenterView.setButtonClickListener(this::onDoneButtonClicked);
+            presenterView.setDoneButtonClickListener(this::onDoneButtonClicked);
         }
     }
 
@@ -131,8 +131,8 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
             } else {
                 showBlockingActivity(R.string.expansions_configuration_selection_setting_progress_default);
             }
-            bind(configurationsInteractor.setConfiguration(selectedConfig))
-                    .subscribe(this::bindConfigurationPostResponse,
+            bindAndSubscribe(configurationsInteractor.setConfiguration(selectedConfig),
+                               this::bindConfigurationPostResponse,
                                this::presentError);
         } else {
             finishFlow();
