@@ -14,7 +14,9 @@ import org.joda.time.DateTimeZone;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -282,6 +284,18 @@ public class HardwareInteractor extends BaseHardwareInteractor {
         }
     }
 
+    @VisibleForTesting
+    void removeDuplicateNetworks(@NonNull final List<SenseCommandProtos.wifi_endpoint> networks) {
+        final HashMap<String, SenseCommandProtos.wifi_endpoint> map = new HashMap<>();
+        for (final SenseCommandProtos.wifi_endpoint network : networks) {
+            map.put(network.getSsid(), network);
+        }
+        networks.clear();
+        for (final Map.Entry<String, SenseCommandProtos.wifi_endpoint> entry : map.entrySet()) {
+            networks.add(entry.getValue());
+        }
+    }
+
     public Observable<List<SenseCommandProtos.wifi_endpoint>> scanForWifiNetworks(final boolean sendCountryCode) {
         if (peripheral == null) {
             return noDeviceError();
@@ -302,6 +316,7 @@ public class HardwareInteractor extends BaseHardwareInteractor {
                          .subscribeOn(Rx.mainThreadScheduler())
                          .doOnError(this.respondToError)
                          .map(networks -> {
+                             removeDuplicateNetworks(networks);
                              sortWifiNetworks(networks);
 
                              return networks;
