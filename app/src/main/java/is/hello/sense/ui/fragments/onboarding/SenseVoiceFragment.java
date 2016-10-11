@@ -81,12 +81,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     private Subscription requestDelayedSubscription;
 
     private Lazy<Runnable> runnableLazy =
-            () -> stateSafeExecutor.bind(() -> {
-                SenseVoiceFragment.this.animateToNormalState();
-                if(senseVoiceInteractor.voiceResponse.hasValue()) {
-                    SenseVoiceFragment.this.requestDelayed();
-                }
-            });
+            () -> stateSafeExecutor.bind(SenseVoiceFragment.this::animateToNormalState);
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -182,26 +177,33 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     public void onDestroyView() {
         super.onDestroyView();
         viewAnimator.onDestroyView();
-        toolbar.onDestroyView();
-        toolbar = null;
+        if(toolbar != null) {
+            toolbar.onDestroyView();
+            toolbar = null;
+        }
         title = null;
         subtitle = null;
         tryText = null;
         questionText = null;
-        retryButton.setOnClickListener(null);
-        retryButton = null;
-        skipButton.setOnClickListener(null);
-        skipButton = null;
-        senseCircleView = null;
-        senseImageView = null;
-        nightStandView = null;
-        voiceTipSubscription.unsubscribe();
-        voiceTipSubscription = null;
+        if(retryButton != null) {
+            retryButton.setOnClickListener(null);
+            retryButton = null;
+        }
+        if(skipButton != null) {
+            skipButton.setOnClickListener(null);
+        }
+        if(voiceTipSubscription != null) {
+            voiceTipSubscription.unsubscribe();
+            voiceTipSubscription = null;
+        }
         showVoiceTipDialog(false, null);
-        requestDelayedSubscription.unsubscribe();
-        requestDelayedSubscription = null;
+        if(requestDelayedSubscription != null) {
+            requestDelayedSubscription.unsubscribe();
+            requestDelayedSubscription = null;
+        }
         TRANSLATE_Y = null;
         runnableLazy = null;
+
     }
 
     private void onRetry(final View view){
@@ -248,11 +250,11 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         voiceTipSubscription.unsubscribe();
         requestDelayedSubscription.unsubscribe();
         senseVoiceInteractor.reset();
+        senseVoiceInteractor.updateHasCompletedTutorial(success);
         toolbar.setWantsHelpButton(false);
         retryButton.setEnabled(false);
         skipButton.setEnabled(false);
         skipButton.setVisibility(View.INVISIBLE);
-        senseVoiceInteractor.updateHasCompletedTutorial(success);
         bindAndSubscribe(Observable.timer(success ? LoadingDialogFragment.DURATION_DEFAULT * 3 : 0, TimeUnit.MILLISECONDS),
                 ignored -> finishFlowWithResult(success ? Activity.RESULT_OK : Activity.RESULT_CANCELED),
                 this::presentError);
@@ -329,33 +331,30 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
 
     private void requestDelayed() {
         //request after a delay respecting fragment lifecycle
-        requestDelayedSubscription = bind(Observable.timer(SenseVoiceInteractor.UPDATE_DELAY_SECONDS, TimeUnit.SECONDS))
+        requestDelayedSubscription = bind(Observable.interval(SenseVoiceInteractor.UPDATE_DELAY_SECONDS, TimeUnit.SECONDS))
                                            .subscribe(ignored -> senseVoiceInteractor.update(),
                                                       this::presentError);
     }
 
-    private void handleVoiceResponse(@Nullable final VoiceResponse voiceResponse) {
+    private void handleVoiceResponse(@NonNull final VoiceResponse voiceResponse) {
         sendAnalyticsEvent(voiceResponse);
 
         getAnimatorContext().runWhenIdle(() -> {
             questionText.removeCallbacks(runnableLazy.get());
+
             if(SenseVoiceInteractor.hasSuccessful(voiceResponse)){
                 animateToWaitState();
                 updateState(R.string.sense_voice_question_temperature,
                             R.color.primary,
-                            View.GONE,
+                            View.INVISIBLE,
                             OK_STATE,
                             0,
                             Arrays.equals(senseImageView.getDrawableState(), FAIL_STATE));
                 onFinish(true);
             } else{
-                @StringRes final int errorText = voiceResponse == null ?
-                        R.string.error_sense_voice_problem :
-                        R.string.error_sense_voice_not_detected;
-
-                updateState(errorText,
+                updateState(R.string.error_sense_voice_not_detected,
                             R.color.text_dark,
-                            View.GONE,
+                            View.INVISIBLE,
                             FAIL_STATE,
                             0,
                             true);
@@ -418,6 +417,10 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
                                 LoadingDialogFragment.DURATION_DEFAULT);
     }
 
+    /**
+     * Important to wrap onCompletion lambda with stateSafeExecutor to prevent execution if fragment view is gone/destroyed
+     * Anytime an operation is delayed, it is not guaranteed to have access to same views when attempt to execute.
+     */
     private void setQuestionState(@StringRes final int stringRes,
                                   @ColorRes final int textColorRes,
                                   final int tryVisibility,

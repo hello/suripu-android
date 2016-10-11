@@ -41,7 +41,7 @@ public class VoiceResponse extends ApiResponse{
                          final String text,
                          final String responseText,
                          final String command,
-                         final Result result) {
+                         @NonNull final Result result) {
         this.dateTime = dateTime;
         this.text = text;
         this.responseText = responseText;

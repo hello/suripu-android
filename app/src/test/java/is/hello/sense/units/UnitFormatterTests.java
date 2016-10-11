@@ -173,7 +173,7 @@ public class UnitFormatterTests extends InjectionTestCase {
     public void formatPressure() throws Exception {
         assertThat(unitFormatter.createUnitBuilder(SensorType.PRESSURE, 42)
                                 .buildWithStyle(),
-                   is(equalTo("42 kPa")));
+                   is(equalTo("42 mBar")));
     }
 
     @Test

@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,11 +27,11 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitFormatter;
 
 public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorResponseAdapter.BaseViewHolder> {
-    private static final int VIEW_SENSOR = 0;
-    private static final int VIEW_ID_MESSAGE = 1;
-    private static final int VIEW_AIR_QUALITY = 2;
-    private static final int VIEW_WELCOME_CARD = 3;
-    private static final int VIEW_SENSE_MISSING = 4;
+    public static final int VIEW_SENSOR = 0;
+    public static final int VIEW_ID_MESSAGE = 1;
+    public static final int VIEW_AIR_QUALITY = 2;
+    public static final int VIEW_WELCOME_CARD = 3;
+    public static final int VIEW_SENSE_MISSING = 4;
 
 
     private final LayoutInflater inflater;
@@ -280,8 +281,10 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
         protected final TextView title;
         protected final TextView body;
-        protected final TextView value;
-        protected final TextView descriptor;
+        @VisibleForTesting
+        public final TextView value;
+        @VisibleForTesting
+        public final TextView descriptor;
         protected final View view;
         protected final SensorGraphView graphView;
 
@@ -303,7 +306,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             this.body.setText(sensor.getMessage());
             if (sensor.getType() == SensorType.TEMPERATURE || sensor.getType() == SensorType.HUMIDITY) {
                 this.value.setText(unitFormatter.createUnitBuilder(sensor)
-                                                .build());
+                                                .buildWithStyle());
                 this.descriptor.setText(null);
             } else {
                 this.value.setText(unitFormatter.createUnitBuilder(sensor)
@@ -318,7 +321,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         }
     }
 
-    private class AirQualityViewHolder extends SensorBaseViewHolder {
+    public class AirQualityViewHolder extends SensorBaseViewHolder {
         private final LinearLayout root;
         final AirQualityCard airQualityCard = new AirQualityCard(view.getContext());
 
@@ -362,7 +365,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         }
     }
 
-    private class SensorViewHolder extends SensorBaseViewHolder implements Drawable.Callback {
+    public class SensorViewHolder extends SensorBaseViewHolder implements Drawable.Callback {
 
         public SensorViewHolder(@NonNull final View itemView) {
             super(itemView);

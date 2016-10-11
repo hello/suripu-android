@@ -14,7 +14,7 @@ import is.hello.sense.api.model.ApiResponse;
 public class SensorDataRequest extends ApiResponse {
 
     @SerializedName("scope")
-    private final QueryScope queryScope;
+    public final QueryScope queryScope;
 
     @SerializedName("sensors")
     private final List<SensorType> queries;

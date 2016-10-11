@@ -3,6 +3,7 @@ package is.hello.sense.api.model.v2.sensors;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -47,6 +48,22 @@ public class Sensor extends ApiResponse {
      * Individual values over length of time, used for graphing. To be set after POST /v2/sensors
      */
     private float[] sensorValues = new float[0];
+
+    public Sensor(@NonNull final String name,
+                  @NonNull final SensorType type,
+                  @NonNull final SensorUnit unit,
+                  @NonNull final String message,
+                  @NonNull final Condition condition,
+                  @Nullable final Float value,
+                  @NonNull final List<Scale> scales){
+        this.name = name;
+        this.type = type;
+        this.unit = unit;
+        this.message = message;
+        this.condition = condition;
+        this.value = value;
+        this.scales = scales;
+    }
 
     /**
      * Updates {@link Sensor#sensorValues}. Use {@link SensorsDataResponse} returned from POST /v2/sensors.
@@ -119,4 +136,139 @@ public class Sensor extends ApiResponse {
 
     }
 
+    @VisibleForTesting
+    public static Sensor newTemperatureTestCase(final Float value) {
+        return new Sensor("temperature",
+                          SensorType.TEMPERATURE,
+                          SensorUnit.CELCIUS,
+                          "message",
+                          Condition.IDEAL,
+                          value,
+                          Scale.generateTestScale());
+    }
+
+    @VisibleForTesting
+    public static Sensor newHumidityTestCase(final Float value) {
+        return new Sensor("humidity",
+                          SensorType.HUMIDITY,
+                          SensorUnit.PERCENT,
+                          "message",
+                          Condition.IDEAL,
+                          value,
+                          Scale.generateTestScale());
+    }
+
+    @VisibleForTesting
+    public static Sensor newLightTestCase(final Float value) {
+        return new Sensor("light",
+                          SensorType.LIGHT,
+                          SensorUnit.LUX,
+                          "message",
+                          Condition.IDEAL,
+                          value,
+                          Scale.generateTestScale());
+    }
+
+    @VisibleForTesting
+    public static Sensor newParticulatesTestCase(final Float value) {
+        return new Sensor("particulates",
+                          SensorType.PARTICULATES,
+                          SensorUnit.PPM,
+                          "message",
+                          Condition.IDEAL,
+                          value,
+                          Scale.generateTestScale());
+    }
+
+    @VisibleForTesting
+    public static Sensor newSoundTestCase(final Float value) {
+        return new Sensor("sound",
+                          SensorType.SOUND,
+                          SensorUnit.DB,
+                          "message",
+                          Condition.IDEAL,
+                          value,
+                          Scale.generateTestScale());
+    }
+
+    @VisibleForTesting
+    public static Sensor newCO2TestCase(final Float value) {
+        return new Sensor("co2",
+                          SensorType.CO2,
+                          SensorUnit.PPM,
+                          "message",
+                          Condition.IDEAL,
+                          value,
+                          Scale.generateTestScale());
+    }
+
+    @VisibleForTesting
+    public static Sensor newVOCTestCase(final Float value) {
+        return new Sensor("voc",
+                          SensorType.TVOC,
+                          SensorUnit.VOC,
+                          "message",
+                          Condition.IDEAL,
+                          value,
+                          Scale.generateTestScale());
+    }
+
+    @VisibleForTesting
+    public static Sensor newLightTemperatureTestCase(final Float value) {
+        return new Sensor("light temperature",
+                          SensorType.LIGHT_TEMPERATURE,
+                          SensorUnit.KELVIN,
+                          "message",
+                          Condition.IDEAL,
+                          value,
+                          Scale.generateTestScale());
+    }
+
+    @VisibleForTesting
+    public static Sensor newUVTestCase(final Float value) {
+        return new Sensor("uv",
+                          SensorType.UV,
+                          SensorUnit.KELVIN,
+                          "message",
+                          Condition.IDEAL,
+                          value,
+                          Scale.generateTestScale());
+    }
+
+    @VisibleForTesting
+    public static Sensor newPressureTestCase(final Float value) {
+        return new Sensor("pressure",
+                          SensorType.PRESSURE,
+                          SensorUnit.MILLIBAR,
+                          "message",
+                          Condition.IDEAL,
+                          value,
+                          Scale.generateTestScale());
+    }
+
+    @VisibleForTesting
+    public static Sensor newUnknownTestCase(final Float value) {
+        return new Sensor("unknown",
+                          SensorType.UNKNOWN,
+                          SensorUnit.UNKNOWN,
+                          "message",
+                          Condition.IDEAL,
+                          value,
+                          Scale.generateTestScale());
+    }
+
+    @VisibleForTesting
+    public static List<Sensor> generateTestCaseList() {
+        return Arrays.asList(Sensor.newTemperatureTestCase(0f),
+                             Sensor.newHumidityTestCase(1f),
+                             Sensor.newLightTestCase(2f),
+                             Sensor.newParticulatesTestCase(3f),
+                             Sensor.newSoundTestCase(4f),
+                             Sensor.newCO2TestCase(5f),
+                             Sensor.newVOCTestCase(6f),
+                             Sensor.newLightTemperatureTestCase(7f),
+                             Sensor.newUVTestCase(8f),
+                             Sensor.newPressureTestCase(9f),
+                             Sensor.newUnknownTestCase(10f));
+    }
 }

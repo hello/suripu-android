@@ -1,0 +1,286 @@
+{
+	"status": "OK",
+	"sensors": [{
+		"name": "Temperature",
+		"type": "TEMPERATURE",
+		"unit": "CELSIUS",
+		"message": "It’s far too hot.",
+		"scale": [{
+			"name": "Cold",
+			"min": null,
+			"max": 9.99,
+			"condition": "ALERT"
+		}, {
+			"name": "Cool",
+			"min": 10.0,
+			"max": 14.99,
+			"condition": "WARNING"
+		}, {
+			"name": "Ideal",
+			"min": 15.0,
+			"max": 19.99,
+			"condition": "IDEAL"
+		}, {
+			"name": "Warm",
+			"min": 20.0,
+			"max": 25.99,
+			"condition": "WARNING"
+		}, {
+			"name": "Hot",
+			"min": 26.0,
+			"max": null,
+			"condition": "ALERT"
+		}],
+		"condition": "ALERT",
+		"value": 27.48
+	}, {
+		"name": "Humidity",
+		"type": "HUMIDITY",
+		"unit": "PERCENT",
+		"message": "The humidity is just right.",
+		"scale": [{
+			"name": "Dry",
+			"min": 0.0,
+			"max": 20.99,
+			"condition": "ALERT"
+		}, {
+			"name": "Somewhat dry",
+			"min": 21.0,
+			"max": 30.99,
+			"condition": "WARNING"
+		}, {
+			"name": "Ideal",
+			"min": 31.0,
+			"max": 60.99,
+			"condition": "IDEAL"
+		}, {
+			"name": "Somewhat humid",
+			"min": 61.0,
+			"max": 80.99,
+			"condition": "WARNING"
+		}, {
+			"name": "Humid",
+			"min": 81.0,
+			"max": 100.0,
+			"condition": "ALERT"
+		}],
+		"condition": "IDEAL",
+		"value": 44.977436
+	}, {
+		"name": "Light",
+		"type": "LIGHT",
+		"unit": "LUX",
+		"message": "The light level is just right.",
+		"scale": [{
+			"name": "Ideal",
+			"min": 0.0,
+			"max": 1.99,
+			"condition": "IDEAL"
+		}, {
+			"name": "Somewhat bright",
+			"min": 2.0,
+			"max": 7.99,
+			"condition": "WARNING"
+		}, {
+			"name": "Bright",
+			"min": 8.0,
+			"max": 14.99,
+			"condition": "ALERT"
+		}, {
+			"name": "Very bright",
+			"min": 15.0,
+			"max": 49.99,
+			"condition": "ALERT"
+		}, {
+			"name": "Extremely bright",
+			"min": 50.0,
+			"max": null,
+			"condition": "ALERT"
+		}],
+		"condition": "IDEAL",
+		"value": 1.3237
+	}, {
+		"name": "Particulates",
+		"type": "PARTICULATES",
+		"unit": "MG_CM",
+		"message": "The air quality is moderate.",
+		"scale": [{
+			"name": "Ideal",
+			"min": 0.0,
+			"max": 49.9,
+			"condition": "IDEAL"
+		}, {
+			"name": "Moderate",
+			"min": 50.0,
+			"max": 99.9,
+			"condition": "IDEAL"
+		}, {
+			"name": "Unhealthy for sensitive groups",
+			"min": 100.0,
+			"max": 149.9,
+			"condition": "WARNING"
+		}, {
+			"name": "Unhealthy",
+			"min": 150.0,
+			"max": 199.9,
+			"condition": "WARNING"
+		}, {
+			"name": "Very unhealthy",
+			"min": 200.0,
+			"max": 299.9,
+			"condition": "ALERT"
+		}, {
+			"name": "Hazardous",
+			"min": 300.0,
+			"max": 399.9,
+			"condition": "ALERT"
+		}],
+		"condition": "IDEAL",
+		"value": 53.785675
+	}, {
+		"name": "Noise",
+		"type": "SOUND",
+		"unit": "DB",
+		"message": "The noise level is just right.",
+		"scale": [{
+			"name": "Quiet",
+			"min": 0.0,
+			"max": 64.99,
+			"condition": "IDEAL"
+		}, {
+			"name": "Somewhat noisy",
+			"min": 65.0,
+			"max": 69.99,
+			"condition": "WARNING"
+		}, {
+			"name": "Noisy",
+			"min": 70.0,
+			"max": 89.99,
+			"condition": "WARNING"
+		}, {
+			"name": "Very noisy",
+			"min": 90.0,
+			"max": 129.99,
+			"condition": "ALERT"
+		}, {
+			"name": "Extremely noisy",
+			"min": 130.0,
+			"max": null,
+			"condition": "ALERT"
+		}],
+		"condition": "IDEAL",
+		"value": 44.868
+	}, {
+		"name": "CO2",
+		"type": "CO2",
+		"unit": "PPM",
+		"message": "The CO2 level is just right.",
+		"scale": [{
+			"name": "Ideal",
+			"min": 0.0,
+			"max": 599.9,
+			"condition": "IDEAL"
+		}, {
+			"name": "Elevated",
+			"min": 600.0,
+			"max": 1199.9,
+			"condition": "WARNING"
+		}, {
+			"name": "Unhealthy",
+			"min": 1200.0,
+			"max": null,
+			"condition": "ALERT"
+		}],
+		"condition": "IDEAL",
+		"value": 566.0
+	}, {
+		"name": "VOC",
+		"type": "TVOC",
+		"unit": "MG_CM",
+		"message": "The VOC level is just right.",
+		"scale": [{
+			"name": "Ideal",
+			"min": 0.0,
+			"max": 499.99,
+			"condition": "IDEAL"
+		}, {
+			"name": "Elevated",
+			"min": 500.0,
+			"max": 3999.99,
+			"condition": "WARNING"
+		}, {
+			"name": "Unhealthy",
+			"min": 4000.0,
+			"max": null,
+			"condition": "ALERT"
+		}],
+		"condition": "IDEAL",
+		"value": 25.0
+	}, {
+		"name": "UV Light",
+		"type": "UV",
+		"unit": "COUNT",
+		"message": "The UV level is just right.",
+		"scale": [{
+			"name": "Low",
+			"min": 0.0,
+			"max": 2.99,
+			"condition": "IDEAL"
+		}, {
+			"name": "Moderate",
+			"min": 3.0,
+			"max": 5.99,
+			"condition": "WARNING"
+		}, {
+			"name": "High",
+			"min": 6.0,
+			"max": 7.99,
+			"condition": "ALERT"
+		}, {
+			"name": "Very High",
+			"min": 8.0,
+			"max": 10.99,
+			"condition": "ALERT"
+		}, {
+			"name": "Extreme",
+			"min": 11.0,
+			"max": null,
+			"condition": "ALERT"
+		}],
+		"condition": "IDEAL",
+		"value": 0.0
+	}, {
+		"name": "Barometric Pressure",
+		"type": "PRESSURE",
+		"unit": "MILLIBAR",
+		"message": "The barometric pressure is increasing.",
+		"scale": [{
+			"name": "Decreasing",
+			"min": null,
+			"max": -40.1,
+			"condition": "ALERT"
+		}, {
+			"name": "Decreasing slightly",
+			"min": -40.0,
+			"max": -20.1,
+			"condition": "WARNING"
+		}, {
+			"name": "Stable ",
+			"min": -20.0,
+			"max": 20.0,
+			"condition": "IDEAL"
+		}, {
+			"name": "Increasing slightly",
+			"min": 20.1,
+			"max": 40.0,
+			"condition": "WARNING"
+		}, {
+			"name": "Increasing",
+			"min": 40.1,
+			"max": null,
+			"condition": "ALERT"
+		}],
+		"condition": "ALERT",
+		"value": 1008.83966
+	}]
+}
