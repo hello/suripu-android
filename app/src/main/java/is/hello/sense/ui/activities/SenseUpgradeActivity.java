@@ -127,15 +127,19 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
     @Override
     public void flowFinished(@NonNull final Fragment fragment, final int responseCode, @Nullable final Intent result) {
         if (responseCode == RESULT_CANCELED) {
+            if (fragment instanceof SenseUpgradeIntroFragment) {
+                finish();
+                return;
+            }
             if (result != null && result.getBooleanExtra(ARG_NEEDS_BLUETOOTH, false)) {
                 showBluetoothFragment();
-            } else if ( fragment instanceof PairSenseFragment){
+            } else if (fragment instanceof PairSenseFragment) {
                 showSenseUpdateIntro();
-            } else if (fragment instanceof UnpairPillFragment || fragment instanceof PairPillFragment){
+            } else if (fragment instanceof UnpairPillFragment || fragment instanceof PairPillFragment) {
                 checkForSenseOTA();
-            } else if ( fragment instanceof SenseOTAFragment) {
+            } else if (fragment instanceof SenseOTAFragment) {
                 checkHasVoiceFeature();
-            } else if (fragment instanceof SenseVoiceFragment){
+            } else if (fragment instanceof SenseVoiceFragment) {
                 showVoiceDone();
             } else {
                 setResult(RESULT_CANCELED, null);
