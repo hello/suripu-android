@@ -44,4 +44,14 @@ public class SleepSoundsInteractor extends ScopedValueInteractor<SleepSoundsStat
         // todo validate action stop
         return latest().flatMap(a -> apiService.stopSleepSound(actionStop));
     }
+
+    public Observable<Boolean> showSleepSoundsTab() {
+
+        return apiService.registeredDevices().flatMap(devices -> {
+            if (devices.getSense().isMissing()) {
+                return Observable.just(false);
+            }
+            return apiService.getSounds().map(sleepSounds -> !sleepSounds.getListItems().isEmpty());
+        });
+    }
 }

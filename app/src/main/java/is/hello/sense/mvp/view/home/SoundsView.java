@@ -62,7 +62,6 @@ public class SoundsView extends PresenterView {
                                                  new StaticFragmentAdapter.Item(SleepSoundsFragment.class, getString(R.string.alarm_subnavbar_sounds_list)));
         pager.setAdapter(adapter);
         pager.setFadePageTransformer(true);
-        refreshView(false);
     }
 
     @Override
