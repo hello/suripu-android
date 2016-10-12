@@ -2,6 +2,7 @@ package is.hello.sense.presenters;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -20,6 +21,7 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
+import rx.Subscription;
 
 public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Output> extends BaseHardwarePresenter<T> {
 
@@ -32,6 +34,8 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     protected final UserFeaturesInteractor userFeaturesInteractor;
     private final PairSenseInteractor pairSenseInteractor;
     protected final PreferencesInteractor preferencesInteractor;
+
+    private Subscription userFeaturesSubScription;
 
     public BasePairSensePresenter(@NonNull final HardwareInteractor hardwareInteractor,
                                   @NonNull final UserFeaturesInteractor userFeaturesInteractor,
@@ -184,7 +188,8 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
 
     private void getDeviceFeatures() {
         showBlockingActivity(R.string.title_pushing_data);
-        bind(userFeaturesInteractor.featureSubject)
+        releaseSubscription();
+        userFeaturesSubScription = bind(userFeaturesInteractor.featureSubject)
                 .subscribe(features -> {
                                preferencesInteractor.setFeatures(features);
                                onFinished();
@@ -209,6 +214,26 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
                                   });
     }
 
+    @CallSuper
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        releaseSubscription();
+    }
+
+    @CallSuper
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        releaseSubscription();
+    }
+
+    private void releaseSubscription() {
+        if (userFeaturesSubScription != null) {
+            userFeaturesSubScription.unsubscribe();
+            userFeaturesSubScription = null;
+        }
+    }
 
     public interface Output extends BaseOutput {
 
