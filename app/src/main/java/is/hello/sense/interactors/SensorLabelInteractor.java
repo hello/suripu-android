@@ -12,7 +12,7 @@ import javax.inject.Singleton;
 
 @Singleton
 public class SensorLabelInteractor extends Interactor {
-    private final static int ELAPSED_TIME_FOR_UPDATE_MS = 50000;
+    private static final int ELAPSED_TIME_FOR_UPDATE_MS = 300000; // 5 minute
 
     private final Helper weekHelper = new Helper();
     private final Helper dayHelper = new Helper();
