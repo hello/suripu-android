@@ -1,6 +1,7 @@
 package is.hello.sense.flows.expansions.interactors;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.expansions.Expansion;
@@ -29,12 +30,19 @@ public class ExpansionDetailsInteractor extends ValueInteractor<Expansion> {
         return true;
     }
 
+    @Nullable
     @Override
     protected Observable<Expansion> provideUpdateObservable() {
         if(this.id == -1){
             return Observable.error(new IllegalStateException("invalid expansion id"));
         }
-        return apiService.getExpansionDetail(id);
+        return apiService.getExpansionDetail(id).map( expansions -> {
+            if(expansions.isEmpty()){
+                return null;
+            } else {
+                return expansions.get(0);
+            }
+        });
     }
 
     public Observable<Void> setState(@NonNull final State state) {

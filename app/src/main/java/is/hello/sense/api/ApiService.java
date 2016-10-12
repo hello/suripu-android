@@ -347,7 +347,7 @@ public interface ApiService {
     Observable<ArrayList<Expansion>> getExpansions();
 
     @GET("/v2/expansions/{id}")
-    Observable<Expansion> getExpansionDetail(@Path("id") long expansionId);
+    Observable<List<Expansion>> getExpansionDetail(@Path("id") long expansionId);
 
     @PATCH("/v2/expansions/{id}")
     Observable<Void> setExpansionState(@Path("id") long expansionId,

@@ -92,14 +92,17 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         //todo
     }
 
-    public void bindExpansion(final Expansion expansion) {
+    public void bindExpansion(@Nullable final Expansion expansion) {
+        if(expansion == null){
+            return; //todo handle better
+        }
         //todo update expansion enabled switch based on state
         presenterView.setTitle(expansion.getDeviceName());
         presenterView.setSubtitle(expansion.getServiceName());
         presenterView.loadExpansionIcon(picasso, expansion.getIcon()
                                                           .getUrl(getResources()));
         presenterView.setDescription(expansion.getDescription());
-        presenterView.setConfigurationType(expansion.getCategory().name()); //todo replace with configuration type
+        presenterView.setConfigurationType(expansion.getConfigurationType());
         presenterView.setActionButtonClickListener(this::handleActionButtonClicked);
     }
 

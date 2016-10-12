@@ -87,9 +87,8 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
         } else {
             if(configurations.isEmpty()){
                 if(expansion != null) {
-                    //todo until server updates expansion with configuration name field just using category
-                    configurations.add(new Configuration.Empty(getString(R.string.expansions_configuration_selection_item_missing_title_format, expansion.getCategory()),
-                                                               getString(R.string.expansions_configuration_selection_item_missing_subtitle_format, expansion.getServiceName(), expansion.getCategory()),
+                    configurations.add(new Configuration.Empty(getString(R.string.expansions_configuration_selection_item_missing_title_format, expansion.getConfigurationType()),
+                                                               getString(R.string.expansions_configuration_selection_item_missing_subtitle_format, expansion.getServiceName(), expansion.getConfigurationType()),
                                                                R.drawable.icon_warning));
                 } else {
                     configurations.add(new Configuration.Empty(getString(R.string.expansions_configuration_selection_empty_title_default),
@@ -112,7 +111,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
             this.expansion = (Expansion) arguments.getSerializable(ARG_EXPANSION);
             if(expansion != null) {
                 presenterView.setTitle(getString(R.string.expansions_configuration_selection_title_format, expansion.getServiceName()));
-                presenterView.setSubtitle(getString(R.string.expansions_configuration_selection_subtitle_format, expansion.getCategory().name()));
+                presenterView.setSubtitle(getString(R.string.expansions_configuration_selection_subtitle_format, expansion.getConfigurationType()));
                 configurationsInteractor.setExpansionId(expansion.getId());
             }
         }

@@ -445,7 +445,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<Expansion> getExpansionDetail(@Path("id") final long expansionId) {
+    public Observable<List<Expansion>> getExpansionDetail(@Path("id") final long expansionId) {
         return unimplemented();
     }
 

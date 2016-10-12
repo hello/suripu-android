@@ -91,6 +91,13 @@ public class Expansion extends ApiResponse {
         return state;
     }
 
+    /**
+     * Replace with real field once server is ready
+     */
+    public String getConfigurationType(){
+        return category.name();
+    }
+
     public void setState(@NonNull final State state) {
         this.state = state;
     }
