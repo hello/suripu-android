@@ -1,5 +1,6 @@
 package is.hello.sense.flows.expansions.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +19,8 @@ import is.hello.sense.interactors.ConfigurationsInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.ConfigurationAdapter;
+
+import static android.app.Activity.RESULT_OK;
 
 public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionView>
         implements ArrayRecyclerAdapter.OnItemClickedListener<Configuration> {
@@ -44,6 +47,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
             this.adapter = new ConfigurationAdapter(new ArrayList<>(2));
             this.adapter.setOnItemClickedListener(this);
             presenterView = new ConfigSelectionView(getActivity(), adapter);
+            presenterView.setDoneButtonClickListener(this::onDoneButtonClicked);
         }
     }
 
@@ -93,11 +97,13 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
                                                                R.drawable.icon_warning));
                 }
             }
+            this.adapter.setSelectedItemFromList(configurations);
             this.adapter.replaceAll(configurations);
         }
     }
 
     public void presentError(@NonNull final Throwable e){
+        hideBlockingActivity(false, null);
         //todo
     }
 
@@ -109,6 +115,27 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
                 presenterView.setSubtitle(getString(R.string.expansions_configuration_selection_subtitle_format, expansion.getCategory().name()));
                 configurationsInteractor.setExpansionId(expansion.getId());
             }
+        }
+    }
+
+    public void bindConfigurationPostResponse(@NonNull final Configuration configuration){
+        hideBlockingActivity(R.string.expansions_configuration_selection_configured,
+                             stateSafeExecutor.bind(() -> this.finishFlowWithResult(RESULT_OK, new Intent())));
+    }
+
+    private void onDoneButtonClicked(final View ignored) {
+        final Configuration selectedConfig = adapter.getSelectedItem();
+        if(selectedConfig != null){
+            if(expansion != null) {
+                showBlockingActivity(getString(R.string.expansions_configuration_selection_setting_progress_format, expansion.getCategory()));
+            } else {
+                showBlockingActivity(R.string.expansions_configuration_selection_setting_progress_default);
+            }
+            bindAndSubscribe(configurationsInteractor.setConfiguration(selectedConfig),
+                               this::bindConfigurationPostResponse,
+                               this::presentError);
+        } else {
+            finishFlow();
         }
     }
 }

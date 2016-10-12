@@ -1,6 +1,7 @@
 package is.hello.sense.ui.adapter;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +14,13 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 
+import static android.support.v7.widget.RecyclerView.NO_POSITION;
+
 public class ConfigurationAdapter extends ArrayRecyclerAdapter<Configuration, ConfigurationAdapter.BaseViewHolder> {
 
     public static final int TYPE_CONFIG = 0;
     public static final int TYPE_EMPTY_CONFIG = 1;
+    private int selectedItemPosition = NO_POSITION;
 
     public ConfigurationAdapter(@NonNull final List<Configuration> storage) {
         super(storage);
@@ -46,12 +50,36 @@ public class ConfigurationAdapter extends ArrayRecyclerAdapter<Configuration, Co
         holder.bind(position);
     }
 
-    public void setSelectedItem(final int position) {
-        final int size = getItemCount();
-        for(int i=0; i< size; i++) {
-            getItem(i).setSelected(i == position);
+    /**
+     * @return true if there was a configuration in list which was selected.
+     */
+    public boolean setSelectedItemFromList(@NonNull final List<? extends Configuration> list) {
+        for (int i = 0; i < list.size(); i++) {
+            if(list.get(i).isSelected()){
+                this.selectedItemPosition = i;
+                return true;
+            }
         }
-        notifyDataSetChanged();
+        return false;
+    }
+
+    public void setSelectedItem(final int position) {
+        if (position < 0 || position >= getItemCount()) {
+            return;
+        }
+        final int oldPosition = this.selectedItemPosition;
+        if(oldPosition != NO_POSITION) {
+            getItem(oldPosition).setSelected(false);
+            notifyItemChanged(oldPosition);
+        }
+        getItem(position).setSelected(true);
+        notifyItemChanged(position);
+        this.selectedItemPosition = position;
+    }
+
+    @Nullable
+    public Configuration getSelectedItem() {
+        return selectedItemPosition == NO_POSITION ? null : getItem(selectedItemPosition);
     }
 
     public abstract class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder {

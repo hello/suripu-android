@@ -169,12 +169,16 @@ public abstract class PresenterFragment<T extends PresenterView>
     }
 
     public void showBlockingActivity(@StringRes final int titleRes) {
+        showBlockingActivity(getString(titleRes));
+    }
+
+    public void showBlockingActivity(final String title) {
         if (loadingDialogFragment == null) {
             this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(),
-                                                                    getString(titleRes),
+                                                                    title,
                                                                     LoadingDialogFragment.OPAQUE_BACKGROUND);
         } else {
-            loadingDialogFragment.setTitle(getString(titleRes));
+            loadingDialogFragment.setTitle(title);
         }
     }
 
