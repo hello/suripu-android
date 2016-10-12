@@ -43,16 +43,6 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
         this.apiService = apiService;
         this.pairSenseInteractor = pairSenseInteractor;
         this.preferencesInteractor = preferencesInteractor;
-        bindAndSubscribe(userFeaturesInteractor.featureSubject,
-                         features -> {
-                             preferencesInteractor.setFeatures(features);
-                             onFinished();
-                         },
-                         error -> {
-                             Logger.error(getClass().getSimpleName(), "Could not get features from Sense, ignoring.", error);
-                             onFinished();
-                         }
-                        );
     }
 
     @Nullable
@@ -194,6 +184,16 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
 
     private void getDeviceFeatures() {
         showBlockingActivity(R.string.title_pushing_data);
+        bind(userFeaturesInteractor.featureSubject)
+                .subscribe(features -> {
+                               preferencesInteractor.setFeatures(features);
+                               onFinished();
+                           },
+                           error -> {
+                               Logger.error(getClass().getSimpleName(), "Could not get features from Sense, ignoring.", error);
+                               onFinished();
+                           }
+                          );
         userFeaturesInteractor.update();
 
     }
