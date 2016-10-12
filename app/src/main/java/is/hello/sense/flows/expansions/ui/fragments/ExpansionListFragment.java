@@ -66,7 +66,7 @@ implements ArrayRecyclerAdapter.OnItemClickedListener<Expansion>{
     public void onItemClicked(final int position, @NonNull final Expansion item) {
         switch(item.getState()){
             case NOT_CONFIGURED:
-                finishFlow();
+                finishFlowWithResult(Activity.RESULT_OK, ConfigSelectionFragment.newIntent(item));
                 break;
             case NOT_CONNECTED:
             case CONNECTED_ON:

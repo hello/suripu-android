@@ -60,9 +60,9 @@ implements FragmentNavigation{
         pushFragment(ExpansionsAuthFragment.newInstance(initialUrl, completionUrl), null, true);
     }
 
-    private void showConfigurationSelection(){
-        //todo remove after testing
-        pushFragment(ConfigSelectionFragment.newInstance(Expansion.generateTemperatureTestCase(State.NOT_CONFIGURED)), null, true);
+    private void showConfigurationSelection(@NonNull final Intent intent){
+        final Expansion expansion = (Expansion) intent.getSerializableExtra(ConfigSelectionFragment.EXTRA_EXPANSION);
+        pushFragment(ConfigSelectionFragment.newInstance(expansion), null, true);
     }
 
     @Override
@@ -86,14 +86,16 @@ implements FragmentNavigation{
             //todo handle
         } else if(fragment instanceof ExpansionListFragment){
             if(result != null) {
-                showExpansionDetail((Expansion) result.getSerializableExtra(ExpansionDetailFragment.EXTRA_EXPANSION));
-            } else {
-                showConfigurationSelection();
+                if(result.hasExtra(ConfigSelectionFragment.EXTRA_EXPANSION)){
+                    showConfigurationSelection(result);
+                } else {
+                    showExpansionDetail((Expansion) result.getSerializableExtra(ExpansionDetailFragment.EXTRA_EXPANSION));
+                }
             }
         } else if (fragment instanceof ExpansionDetailFragment) {
             if(result != null) {
-                if(result.hasExtra(ConfigSelectionFragment.EXTRA_REQUEST)){
-                    showConfigurationSelection();
+                if(result.hasExtra(ConfigSelectionFragment.EXTRA_EXPANSION)){
+                    showConfigurationSelection(result);
                 } else {
                     showExpansionAuth(result.getStringExtra(ExpansionsAuthFragment.EXTRA_INIT_URL),
                                       result.getStringExtra(ExpansionsAuthFragment.EXTRA_COMPLETE_URL));
@@ -102,12 +104,14 @@ implements FragmentNavigation{
                 showExpansionList();
             }
         }else if(fragment instanceof ExpansionsAuthFragment){
-            showConfigurationSelection();
+            //todo pass expansion along
+            showConfigurationSelection(ConfigSelectionFragment.newIntent(Expansion.generateTemperatureTestCase(State.NOT_CONFIGURED)));
         } else if(fragment instanceof ConfigSelectionFragment){
             if(result == null){
                 showExpansionList();
             } else{
                 //todo show enabled configuration screen.
+                showExpansionDetail(Expansion.generateTemperatureTestCase(State.CONNECTED_OFF));
             }
         }
     }

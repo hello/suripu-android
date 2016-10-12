@@ -106,6 +106,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/AppTheme.Text.Body.Dim"
+                android:drawableEnd="@drawable/disclosure_chevron_small"
+                android:drawablePadding="@dimen/x1"
                 android:layout_gravity="end|center_vertical"/>
         </FrameLayout>
 
