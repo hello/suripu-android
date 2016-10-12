@@ -286,14 +286,12 @@ public class HardwareInteractor extends BaseHardwareInteractor {
 
     @VisibleForTesting
     void removeDuplicateNetworks(@NonNull final List<SenseCommandProtos.wifi_endpoint> networks) {
-        final HashMap<String, SenseCommandProtos.wifi_endpoint> map = new HashMap<>();
+        final HashMap<String, SenseCommandProtos.wifi_endpoint> map = new HashMap<>(networks.size()/2);
         for (final SenseCommandProtos.wifi_endpoint network : networks) {
             map.put(network.getSsid(), network);
         }
         networks.clear();
-        for (final Map.Entry<String, SenseCommandProtos.wifi_endpoint> entry : map.entrySet()) {
-            networks.add(entry.getValue());
-        }
+        networks.addAll(map.values());
     }
 
     public Observable<List<SenseCommandProtos.wifi_endpoint>> scanForWifiNetworks(final boolean sendCountryCode) {
