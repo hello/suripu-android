@@ -91,6 +91,10 @@ public class Expansion extends ApiResponse {
         return state;
     }
 
+    public void setState(@NonNull final State state) {
+        this.state = state;
+    }
+
     @Override
     public String toString() {
         return "Expansion{" +
@@ -130,6 +134,5 @@ public class Expansion extends ApiResponse {
                              "description",
                              state);
     }
-
 
 }

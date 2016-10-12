@@ -49,6 +49,84 @@
             android:text="@string/action_connect"
             style="@style/AppTheme.Button.Rounded"/>
 
+        <LinearLayout
+            android:id="@+id/view_expansion_detail_connected_container"
+            android:orientation="vertical"
+            android:divider="@drawable/divider_horizontal_inset"
+            android:showDividers="middle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/view_expansion_detail_action_button">
+
+            <FrameLayout
+                android:id="@+id/view_expansion_detail_enabled_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/x2"
+                android:background="@drawable/selectable_dark_bounded">
+
+                <TextView
+                    android:id="@+id/view_expansion_detail_enabled_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/AppTheme.Text.Body.New"
+                    android:layout_gravity="start|center_vertical"
+                    android:drawableEnd="@drawable/info_button_icon_small"
+                    android:drawablePadding="@dimen/x1"
+                    android:gravity="center"
+                    android:text="@string/title_enabled"/>
+
+                <Switch
+                    android:id="@+id/view_expansion_detail_configuration_selection_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/view_expansion_detail_configuration_selection_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/x2"
+                android:background="@drawable/selectable_dark_bounded">
+
+                <TextView
+                    android:id="@+id/view_expansion_detail_configuration_type_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/AppTheme.Text.Body.New"
+                    android:layout_gravity="start|center_vertical"/>
+
+                <TextView
+                    android:id="@+id/view_expansion_detail_configuration_selection_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/AppTheme.Text.Body.Dim"
+                    android:layout_gravity="end|center_vertical"/>
+            </FrameLayout>
+
+            <LinearLayout
+                android:id="@+id/view_expansion_detail_remove_access_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/x2"
+                android:background="@drawable/selectable_dark_bounded">
+
+                <TextView
+                    android:id="@+id/view_expansion_detail_remove_access_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/AppTheme.Text.Body.New"
+                    android:textColor="@color/destructive_accent"
+                    android:text="@string/expansion_detail_remove_access"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+
+
     </RelativeLayout>
 
 </LinearLayout>

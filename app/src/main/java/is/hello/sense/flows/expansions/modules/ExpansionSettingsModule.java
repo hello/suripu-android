@@ -7,6 +7,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
@@ -28,6 +29,12 @@ public class ExpansionSettingsModule {
     @Singleton
     public ExpansionsInteractor providesExpansionListInteractor(@NonNull final ApiService apiService){
         return new ExpansionsInteractor(apiService);
+    }
+
+    @Provides
+    @Singleton
+    public ExpansionDetailsInteractor providesExpansionDetailsInteractor(@NonNull final ApiService apiService){
+        return new ExpansionDetailsInteractor(apiService);
     }
 
     @Provides

@@ -14,6 +14,7 @@ import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
 import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
+import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionListFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionsAuthFragment;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
@@ -50,6 +51,10 @@ implements FragmentNavigation{
         pushFragment(new ExpansionListFragment(), null, false);
     }
 
+    private void showExpansionDetail(@NonNull final Expansion expansion){
+        pushFragment(ExpansionDetailFragment.newInstance(expansion), null, true);
+    }
+
     private void showExpansionAuth(@NonNull final String initialUrl,
                                    @NonNull final String completionUrl) {
         pushFragment(ExpansionsAuthFragment.newInstance(initialUrl, completionUrl), null, true);
@@ -81,13 +86,18 @@ implements FragmentNavigation{
             //todo handle
         } else if(fragment instanceof ExpansionListFragment){
             if(result != null) {
+                showExpansionDetail((Expansion) result.getSerializableExtra(ExpansionDetailFragment.EXTRA_EXPANSION));
+            } else {
+                showConfigurationSelection();
+            }
+        } else if (fragment instanceof ExpansionDetailFragment) {
+            if(result != null) {
                 showExpansionAuth(result.getStringExtra(ExpansionsAuthFragment.EXTRA_INIT_URL),
                                   result.getStringExtra(ExpansionsAuthFragment.EXTRA_COMPLETE_URL));
             } else {
-                //todo show next fragment
-                showConfigurationSelection();
+                showExpansionList();
             }
-        } else if(fragment instanceof ExpansionsAuthFragment){
+        }else if(fragment instanceof ExpansionsAuthFragment){
             showConfigurationSelection();
         } else if(fragment instanceof ConfigSelectionFragment){
             if(result == null){
