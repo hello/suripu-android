@@ -40,6 +40,7 @@ import is.hello.sense.interactors.SenseOTAStatusInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractorTests;
 import is.hello.sense.interactors.SenseVoiceInteractor;
 import is.hello.sense.interactors.SenseVoiceInteractorTests;
+import is.hello.sense.interactors.SensorLabelInteractorTest;
 import is.hello.sense.interactors.SmartAlarmInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractorTests;
 import is.hello.sense.interactors.SwapSenseInteractor;
@@ -130,6 +131,8 @@ import static org.mockito.Mockito.mock;
 
             RoomConditionsFragment.class,
             RoomConditionsFragmentTests.class,
+
+            SensorLabelInteractorTest.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")

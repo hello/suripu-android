@@ -11,11 +11,8 @@ import com.segment.analytics.Properties;
 
 import org.joda.time.DateTime;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -27,6 +24,7 @@ import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.X;
 import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.interactors.SensorLabelInteractor;
 import is.hello.sense.interactors.SensorResponseInteractor;
 import is.hello.sense.mvp.view.SensorDetailView;
 import is.hello.sense.ui.activities.SensorDetailActivity;
@@ -59,6 +57,8 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     SensorResponseInteractor sensorResponseInteractor;
     @Inject
     UnitFormatter unitFormatter;
+    @Inject
+    SensorLabelInteractor sensorLabelInteractor;
 
     private Sensor sensor;
     private UpdateTimer updateTimer;
@@ -83,6 +83,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         addInteractor(this.preferences);
         addInteractor(this.sensorResponseInteractor);
         addInteractor(this.unitFormatter);
+        addInteractor(this.sensorLabelInteractor);
         this.dateFormatter = new DateFormatter(getActivity());
         if (savedInstanceState != null && savedInstanceState.containsKey(ARG_SENSOR)) {
             this.sensor = (Sensor) savedInstanceState.getSerializable(ARG_SENSOR);
@@ -161,7 +162,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     }
 
     private void sendAnalyticsEvent(@Nullable final Sensor sensor) {
-        if(sensor == null){
+        if (sensor == null) {
             return;
         }
         final Properties properties =
@@ -181,50 +182,12 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
                                    this.timestampQuery.setTimestamps(sensorsDataResponse.getTimestamps());
                                    this.sensor.setSensorValues(sensorsDataResponse);
                                    this.presenterView.updateSensor(this.sensor);
-                                   this.presenterView.setGraph(this.sensor, SensorGraphView.StartDelay.SHORT, queryScope == QueryScope.DAY_5_MINUTE ? getDayLabels() : getWeekLabels());
+                                   this.presenterView.setGraph(this.sensor,
+                                                               SensorGraphView.StartDelay.SHORT,
+                                                               queryScope == QueryScope.DAY_5_MINUTE ? sensorLabelInteractor.getDayLabels() : sensorLabelInteractor.getWeekLabels());
                                },
                                this::handleError);
         });
-    }
-
-    private String[] getWeekLabels() {
-        final String[] labels = new String[7];
-        final Calendar calendar = Calendar.getInstance();
-        final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE", Locale.getDefault());
-        for (int i = 0; i < labels.length; i++) {
-            calendar.add(Calendar.DATE, 1);
-            final String day = dateFormat.format(calendar.getTime());
-            labels[i] = day;
-        }
-        return labels;
-    }
-
-    private String[] getDayLabels() {
-        final String[] labels = new String[7];
-        final Calendar calendar = Calendar.getInstance();
-        final SimpleDateFormat dateFormat;
-        final int minuteDiff;
-        if (this.preferences.getUse24Time()) {
-            dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-            final int unRoundedMins = calendar.get(Calendar.MINUTE) % 15;
-            calendar.add(Calendar.MINUTE, unRoundedMins < 8 ? -unRoundedMins : (15 - unRoundedMins));
-            calendar.add(Calendar.MINUTE, 15);
-            minuteDiff = -25;
-        } else {
-            dateFormat = new SimpleDateFormat("ha", Locale.getDefault());
-            final int unRoundedMins = calendar.get(Calendar.MINUTE) % 30;
-            calendar.add(Calendar.MINUTE, 30 - unRoundedMins);
-            minuteDiff = -30;
-        }
-        calendar.add(Calendar.HOUR, -2);
-
-        for (int i = 6; i >= 0; i--) {
-            final String day = dateFormat.format(calendar.getTime());
-            labels[i] = day;
-            calendar.add(Calendar.HOUR, -3);
-            calendar.add(Calendar.MINUTE, minuteDiff);
-        }
-        return labels;
     }
 
     private void handleError(@NonNull final Throwable throwable) {
