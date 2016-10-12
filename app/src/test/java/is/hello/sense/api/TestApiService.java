@@ -451,7 +451,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<Void> setExpansionState(@Path("id") final long expansionId,
-                                              @Body @NonNull State state) {
+                                              @Body @NonNull State.Request stateRequest) {
         return unimplemented();
     }
 

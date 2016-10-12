@@ -28,6 +28,8 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     @Inject
     ConfigurationsInteractor configurationsInteractor;
 
+    public static final String EXTRA_REQUEST = ConfigSelectionFragment.class + "EXTRA_REQUEST";
+
     private static final String ARG_EXPANSION = ConfigSelectionFragment.class + "ARG_EXPANSION";
 
     private ConfigurationAdapter adapter;
@@ -39,6 +41,13 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
         args.putSerializable(ARG_EXPANSION, expansion);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public static Intent newIntent(@NonNull final Expansion expansion) {
+        final Intent intent = new Intent();
+        intent.putExtra(EXTRA_REQUEST,true);
+        intent.putExtra(ARG_EXPANSION, expansion);
+        return intent;
     }
 
     @Override

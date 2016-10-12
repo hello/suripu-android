@@ -351,7 +351,7 @@ public interface ApiService {
 
     @PATCH("/v2/expansions/{id}")
     Observable<Void> setExpansionState(@Path("id") long expansionId,
-                                       @Body @NonNull State state);
+                                       @Body @NonNull State.Request stateRequest);
 
     @GET("/v2/expansions/{id}/configurations")
     Observable<ArrayList<Configuration>> getConfigurations(@Path("id") long expansionId);

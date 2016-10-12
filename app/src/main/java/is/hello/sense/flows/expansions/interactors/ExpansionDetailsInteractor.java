@@ -46,7 +46,7 @@ public class ExpansionDetailsInteractor extends ValueInteractor<Expansion> {
     }
 
     public Observable<Void> setState(@NonNull final State state) {
-        return apiService.setExpansionState(id, state);
+        return apiService.setExpansionState(id, State.Request.with(state));
     }
 
     public void setId(final long id){

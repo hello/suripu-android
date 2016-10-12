@@ -14,13 +14,16 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.flows.expansions.ui.views.ExpansionDetailView;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.ConfigurationsInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
@@ -75,9 +78,6 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         configurationsInteractor.update();
 
         presenterView.setRemoveAccessClickListener(ignore -> this.updateState(State.REVOKED));
-        presenterView.setConfigurationSelectionClickListener(ignore -> this.onConfigurationSelectionClicked());
-        presenterView.setEnabledIconClickListener(ignore -> this.onEnabledIconClicked());
-        presenterView.setEnabledSwitchClickListener(this::onEnableSwitchChanged);
     }
 
     @Override
@@ -88,8 +88,24 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         }
     }
 
-    public void bindConfigurations(@NonNull final List<Configuration> configurations) {
-        //todo
+    public void bindConfigurations(@Nullable final List<Configuration> configurations) {
+        if(configurations == null){
+            return;
+        }
+        Configuration selectedConfig = null;
+        for (int i = 0; i < configurations.size(); i++) {
+            final Configuration config = configurations.get(i);
+            if(config.isSelected()){
+                presenterView.setConnectedContainerVisibility(true);
+                selectedConfig = config;
+                break;
+            }
+        }
+        //todo pass along selected config and list to move work to interactor
+        if(selectedConfig != null) {
+            presenterView.setConfigurationSelectionText(selectedConfig.getName());
+            presenterView.setConfigurationSelectionClickListener(ignore -> this.onConfigurationSelectionClicked());
+        }
     }
 
     public void bindExpansion(@Nullable final Expansion expansion) {
@@ -102,12 +118,29 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         presenterView.loadExpansionIcon(picasso, expansion.getIcon()
                                                           .getUrl(getResources()));
         presenterView.setDescription(expansion.getDescription());
+
+
         presenterView.setConfigurationType(expansion.getConfigurationType());
-        presenterView.setActionButtonClickListener(this::handleActionButtonClicked);
+        if(expansion.requiresAuthentication()){
+            presenterView.setConnectButtonClickListener(this::handleActionButtonClicked);
+            presenterView.setConnectButtonVisibility(true);
+        } else {
+            if(expansion.requiresConfiguration()){
+                presenterView.setConfigurationSelectionText(getString(R.string.action_connect));
+                presenterView.setConfigurationSelectionClickListener(ignore -> this.redirectToConfigSelection());
+            }
+            presenterView.setEnabledContainerVisibility(true);
+            presenterView.setEnabledSwitchOn(expansion.isConnected());
+            presenterView.setEnabledSwitchClickListener(this::onEnableSwitchChanged);
+            presenterView.setEnabledIconClickListener(ignore -> this.onEnabledIconClicked());
+        }
+
+
     }
 
     private void presentError(final Throwable throwable) {
-        //todo
+        //todo show more generic error dialog
+        showErrorDialog(ErrorDialogFragment.newInstance(throwable));
     }
 
     private void onEnableSwitchChanged(final CompoundButton ignore, final boolean isEnabled) {
@@ -115,17 +148,24 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     }
 
     private void onEnabledIconClicked() {
-        //todo
+        //todo show info dialog
+    }
+
+    private void redirectToConfigSelection() {
+        //todo check nullable
+        finishFlowWithResult(Activity.RESULT_OK,
+                             ConfigSelectionFragment.newIntent(expansionDetailsInteractor.expansionSubject.getValue()));
     }
 
     private void onConfigurationSelectionClicked() {
-        //todo
+        //todo redirect to config select frag if nothing selected else open bottom sheet to select config
     }
 
     public void updateState(@NonNull final State state){
         this.updateStateSubscription.unsubscribe();
         this.updateStateSubscription = bind(expansionDetailsInteractor.setState(state))
-                .subscribe();
+                .subscribe(Functions.NO_OP,
+                           Functions.LOG_ERROR);
     }
 
     private void handleActionButtonClicked(final View ignored) {

@@ -91,6 +91,18 @@ public class Expansion extends ApiResponse {
         return state;
     }
 
+    public boolean isConnected(){
+        return State.CONNECTED_ON.equals(state);
+    }
+
+    public boolean requiresConfiguration() {
+        return State.NOT_CONFIGURED.equals(state);
+    }
+
+    public boolean requiresAuthentication() {
+        return State.REVOKED.equals(state);
+    }
+
     /**
      * Replace with real field once server is ready
      */
@@ -118,9 +130,9 @@ public class Expansion extends ApiResponse {
 
     }
 
-    public static Expansion generateThermostatTestCase(@NonNull final State state){
+    public static Expansion generateTemperatureTestCase(@NonNull final State state){
         return new Expansion(1,
-                             Category.THERMOSTAT,
+                             Category.TEMPERATURE,
                              "Nest Thermostat",
                              "Nest",
                              new MultiDensityImage(),
@@ -141,5 +153,4 @@ public class Expansion extends ApiResponse {
                              "description",
                              state);
     }
-
 }

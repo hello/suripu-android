@@ -22,14 +22,16 @@ public class ExpansionDetailView extends PresenterView {
     final TextView serviceNameTextView;
     final ImageView expansionIconImageView;
     final TextView expansionDescriptionTextView;
-    final Button actionButton;
+    final Button connectButton;
 
     final TextView enabledTextView;
     final Switch enabledSwitch;
 
     final TextView configurationTypeTextView;
     final TextView configurationSelectedTextView;
-    final ViewGroup removeAccessViewGroup;
+    final TextView removeAccessTextView;
+    final ViewGroup connectedContainer;
+    final ViewGroup enabledContainer;
 
     public ExpansionDetailView(@NonNull final Activity activity) {
         super(activity);
@@ -37,17 +39,18 @@ public class ExpansionDetailView extends PresenterView {
         this.serviceNameTextView = (TextView) findViewById(R.id.view_expansion_detail_device_service_name);
         this.expansionIconImageView = (ImageView) findViewById(R.id.view_expansion_detail_icon);
         this.expansionDescriptionTextView = (TextView) findViewById(R.id.view_expansion_detail_description);
-        //todo hide based on expansion state
+        //todo show based on expansion state
         // not connected
-        this.actionButton = (Button) findViewById(R.id.view_expansion_detail_action_button);
+        this.connectButton = (Button) findViewById(R.id.view_expansion_detail_connect_button);
         // connected
-        this.enabledTextView = (TextView) findViewById(R.id.view_expansion_detail_enabled_tv);
-        this.enabledSwitch = (Switch) findViewById(R.id.view_expansion_detail_configuration_selection_switch);
+        this.connectedContainer = (ViewGroup) findViewById(R.id.view_expansion_detail_connected_container);
+        this.enabledContainer = (ViewGroup) connectedContainer.findViewById(R.id.view_expansion_detail_enabled_container);
+        this.enabledTextView = (TextView) enabledContainer.findViewById(R.id.view_expansion_detail_enabled_tv);
+        this.enabledSwitch = (Switch) enabledContainer.findViewById(R.id.view_expansion_detail_configuration_selection_switch);
         // connected and configurations found
-        this.configurationTypeTextView = (TextView) findViewById(R.id.view_expansion_detail_configuration_type_tv);
-        this.configurationSelectedTextView = (TextView) findViewById(R.id.view_expansion_detail_configuration_selection_tv);
-        this.removeAccessViewGroup = (ViewGroup) findViewById(R.id.view_expansion_detail_remove_access_container);
-
+        this.configurationTypeTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_type_tv);
+        this.configurationSelectedTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_selection_tv);
+        this.removeAccessTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_remove_access_tv);
     }
 
     @Override
@@ -57,8 +60,8 @@ public class ExpansionDetailView extends PresenterView {
 
     @Override
     public void releaseViews() {
-        this.actionButton.setOnClickListener(null);
-        this.removeAccessViewGroup.setOnClickListener(null);
+        this.connectButton.setOnClickListener(null);
+        this.removeAccessTextView.setOnClickListener(null);
         this.configurationSelectedTextView.setOnClickListener(null);
         this.enabledSwitch.setOnClickListener(null);
         this.enabledTextView.setOnClickListener(null);
@@ -70,12 +73,12 @@ public class ExpansionDetailView extends PresenterView {
                .into(expansionIconImageView);
     }
 
-    public void setActionButtonClickListener(@NonNull final OnClickListener listener){
-        Views.setSafeOnClickListener(this.actionButton, listener);
+    public void setConnectButtonClickListener(@NonNull final OnClickListener listener){
+        Views.setSafeOnClickListener(this.connectButton, listener);
     }
 
     public void setRemoveAccessClickListener(@NonNull final OnClickListener listener){
-        Views.setSafeOnClickListener(this.removeAccessViewGroup, listener);
+        Views.setSafeOnClickListener(this.removeAccessTextView, listener);
     }
 
     public void setConfigurationSelectionClickListener(@NonNull final OnClickListener listener){
@@ -104,5 +107,25 @@ public class ExpansionDetailView extends PresenterView {
 
     public void setConfigurationType(@Nullable final String type) {
         this.configurationTypeTextView.setText(type);
+    }
+
+    public void setEnabledSwitchOn(final boolean checked) {
+        this.enabledSwitch.setChecked(checked);
+    }
+
+    public void setEnabledContainerVisibility(final boolean visible) {
+        this.enabledContainer.setVisibility(visible ? VISIBLE : GONE);
+    }
+
+    public void setConnectButtonVisibility(final boolean visible) {
+        this.connectButton.setVisibility(visible ? VISIBLE : GONE);
+    }
+
+    public void setConfigurationSelectionText(@Nullable final String text) {
+        this.configurationSelectedTextView.setText(text);
+    }
+
+    public void setConnectedContainerVisibility(final boolean visible) {
+        this.connectedContainer.setVisibility(visible ? VISIBLE : GONE);
     }
 }

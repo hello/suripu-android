@@ -62,7 +62,7 @@ implements FragmentNavigation{
 
     private void showConfigurationSelection(){
         //todo remove after testing
-        pushFragment(ConfigSelectionFragment.newInstance(Expansion.generateThermostatTestCase(State.NOT_CONFIGURED)), null, true);
+        pushFragment(ConfigSelectionFragment.newInstance(Expansion.generateTemperatureTestCase(State.NOT_CONFIGURED)), null, true);
     }
 
     @Override
@@ -92,8 +92,12 @@ implements FragmentNavigation{
             }
         } else if (fragment instanceof ExpansionDetailFragment) {
             if(result != null) {
-                showExpansionAuth(result.getStringExtra(ExpansionsAuthFragment.EXTRA_INIT_URL),
-                                  result.getStringExtra(ExpansionsAuthFragment.EXTRA_COMPLETE_URL));
+                if(result.hasExtra(ConfigSelectionFragment.EXTRA_REQUEST)){
+                    showConfigurationSelection();
+                } else {
+                    showExpansionAuth(result.getStringExtra(ExpansionsAuthFragment.EXTRA_INIT_URL),
+                                      result.getStringExtra(ExpansionsAuthFragment.EXTRA_COMPLETE_URL));
+                }
             } else {
                 showExpansionList();
             }

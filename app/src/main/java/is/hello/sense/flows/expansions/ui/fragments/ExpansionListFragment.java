@@ -69,12 +69,9 @@ implements ArrayRecyclerAdapter.OnItemClickedListener<Expansion>{
                 finishFlow();
                 break;
             case NOT_CONNECTED:
-                finishFlowWithResult(Activity.RESULT_OK, ExpansionDetailFragment.newIntent(item));
-                break;
-            case REVOKED:
-                break; //todo
             case CONNECTED_ON:
             case CONNECTED_OFF:
+            case REVOKED:
                 finishFlowWithResult(Activity.RESULT_OK, ExpansionDetailFragment.newIntent(item));
                 break;
         }
