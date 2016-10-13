@@ -95,7 +95,6 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         for (int i = 0; i < configurations.size(); i++) {
             final Configuration config = configurations.get(i);
             if(config.isSelected()){
-                presenterView.setConnectedContainerVisibility(true);
                 selectedConfig = config;
                 break;
             }
@@ -123,15 +122,16 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         if(expansion.requiresAuthentication()){
             presenterView.setConnectButtonClickListener(this::handleActionButtonClicked);
             presenterView.setConnectButtonVisibility(true);
+        } else if(expansion.requiresConfiguration()){
+            presenterView.setConfigurationSelectionText(getString(R.string.action_connect));
+            presenterView.setConfigurationSelectionClickListener(ignore -> this.redirectToConfigSelection());
+            presenterView.setConnectedContainerVisibility(true);
         } else {
-            if(expansion.requiresConfiguration()){
-                presenterView.setConfigurationSelectionText(getString(R.string.action_connect));
-                presenterView.setConfigurationSelectionClickListener(ignore -> this.redirectToConfigSelection());
-            }
             presenterView.setEnabledContainerVisibility(true);
             presenterView.setEnabledSwitchOn(expansion.isConnected());
             presenterView.setEnabledSwitchClickListener(this::onEnableSwitchChanged);
             presenterView.setEnabledIconClickListener(ignore -> this.onEnabledIconClicked());
+            presenterView.setConnectedContainerVisibility(true);
         }
 
 

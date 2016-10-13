@@ -64,18 +64,7 @@ implements ArrayRecyclerAdapter.OnItemClickedListener<Expansion>{
 
     @Override
     public void onItemClicked(final int position, @NonNull final Expansion item) {
-        switch(item.getState()){
-            case NOT_CONFIGURED:
-                ((ExpansionSettingsRouter) getActivity()).showConfigurationSelection(item);
-                break;
-            case NOT_CONNECTED:
-            case CONNECTED_ON:
-            case CONNECTED_OFF:
-            case REVOKED:
-                ((ExpansionSettingsRouter) getActivity()).showExpansionDetail(item.getId());
-                break;
-        }
-
+        ((ExpansionSettingsRouter) getActivity()).showExpansionDetail(item.getId());
     }
 
     public void bindExpansions(@Nullable final List<Expansion> expansions){
