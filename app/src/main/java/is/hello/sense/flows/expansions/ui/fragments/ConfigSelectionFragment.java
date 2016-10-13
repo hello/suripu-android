@@ -79,6 +79,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     @Override
     public void onResume() {
         super.onResume();
+        hideBlockingActivity(false, null);
         configurationsInteractor.update();
     }
 
