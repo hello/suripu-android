@@ -5,14 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.MenuItem;
 
 import java.util.Collections;
 import java.util.List;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
-import is.hello.sense.flows.expansions.routers.ExpansionSettingsRouter;
 import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionListFragment;
@@ -23,7 +22,7 @@ import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 
 public class ExpansionSettingsActivity extends ScopedInjectionActivity
-        implements FragmentNavigation, ExpansionSettingsRouter{
+        implements FragmentNavigation {
     private FragmentNavigationDelegate navigationDelegate;
 
     @Override
@@ -39,42 +38,31 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
                                                                  R.id.activity_navigation_container,
                                                                  stateSafeExecutor);
 
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
-        }
-        else if(navigationDelegate.getTopFragment() == null){
+        } else if (navigationDelegate.getTopFragment() == null) {
             showExpansionList();
         }
+
 
     }
 
     //region Router
 
-    @Override
-    public void showExpansionList() {
+    private void showExpansionList() {
         pushFragment(new ExpansionListFragment(), null, false);
     }
 
-    @Override
-    public void showExpansionDetail(final long expansionId){
+    private void showExpansionDetail(final long expansionId) {
         pushFragment(ExpansionDetailFragment.newInstance(expansionId), null, true);
     }
 
-    @Override
-    public void showExpansionAuth(final long expansionId,
-                                  @NonNull final String initialUrl,
-                                  @NonNull final String completionUrl) {
-        pushFragment(ExpansionsAuthFragment.newInstance(expansionId, initialUrl, completionUrl), null, true);
+    private void showExpansionAuth() {
+        pushFragment(new ExpansionsAuthFragment(), null, true);
     }
 
-    @Override
-    public void showConfigurationSelection(@NonNull final Expansion expansion){
-        pushFragment(ConfigSelectionFragment.newInstance(expansion), null, true);
-    }
-
-    @Override
-    public void showConfigurationSelection(final long expansionId) {
-        pushFragment(ConfigSelectionFragment.newInstance(expansionId), null, true);
+    public void showConfigurationSelection() {
+        pushFragment(new ConfigSelectionFragment(), null, true);
     }
 
     // end region
@@ -96,9 +84,39 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
 
     @Override
     public final void flowFinished(@NonNull final Fragment fragment, final int responseCode, @Nullable final Intent result) {
-        if(responseCode != RESULT_OK){
+        if (responseCode == RESULT_CANCELED) {
             //todo handle
         }
+        if (fragment instanceof ExpansionListFragment
+                && result != null
+                && result.hasExtra(ExpansionListFragment.EXPANSION_ID_KEY)) {
+            showExpansionDetail(result.getLongExtra(ExpansionListFragment.EXPANSION_ID_KEY, -1));
+        } else if (fragment instanceof ExpansionDetailFragment) {
+            if (responseCode == ExpansionDetailFragment.RESULT_ACTION_PRESSED) {
+                showExpansionAuth();
+            } else if (responseCode == ExpansionDetailFragment.RESULT_CONFIGURE_PRESSED) {
+                showConfigurationSelection();
+            } else {
+                showExpansionList();
+            }
+        } else if (fragment instanceof ExpansionsAuthFragment) {
+            showConfigurationSelection();
+        } else if (fragment instanceof ConfigSelectionFragment) {
+            if (result == null || !result.hasExtra(ConfigSelectionFragment.EXPANSION_ID_KEY)) {
+                showExpansionList();
+            } else {
+                showExpansionDetail(result.getLongExtra(ConfigSelectionFragment.EXPANSION_ID_KEY, -1));
+            }
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return false;
     }
 
     @Nullable
@@ -110,9 +128,9 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
     @Override
     public void onBackPressed() {
         final Fragment fragment = getTopFragment();
-        if(fragment instanceof OnBackPressedInterceptor){
+        if (fragment instanceof OnBackPressedInterceptor) {
             ((OnBackPressedInterceptor) fragment).onInterceptBackPressed(stateSafeExecutor.bind(super::onBackPressed));
-        } else{
+        } else {
             super.onBackPressed();
         }
 
