@@ -2,6 +2,8 @@ package is.hello.sense.flows.expansions.ui.fragments;
 
 import android.app.ActionBar;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,12 +20,11 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.mvp.view.expansions.ExpansionsAuthView;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.widget.CustomWebViewClient;
 
-able;
-
 public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView>
-        implements CustomWebViewClient.Listener {
+        implements CustomWebViewClient.Listener, OnBackPressedInterceptor{
 
     @Inject
     ApiSessionManager sessionManager;
@@ -42,10 +43,7 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
         }
 
         this.setHasOptionsMenu(true);
-        final ActionBar actionBar = this.getActivity().getActionBar();
-        if(actionBar != null) {
-            this.getActivity().getActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
-        }
+        setActionBarHomeAsUpIndicator(R.drawable.ic_close_white);
     }
 
     @Override
@@ -89,6 +87,14 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
     }
 
     @Override
+    protected void onRelease() {
+        super.onRelease();
+        setActionBarHomeAsUpIndicator(R.drawable.app_style_ab_up);
+    }
+
+    //region CustomWebViewClient Listener
+
+    @Override
     public void onInitialUrlLoaded() {
         presenterView.showProgress(false);
     }
@@ -102,5 +108,24 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
     @Override
     public void onOtherUrlLoaded() {
         presenterView.showProgress(false);
+    }
+
+    //end region
+
+    @Override
+    public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
+        if(presenterView != null && presenterView.loadPreviousUrl()){
+            return true;
+        } else {
+            defaultBehavior.run();
+            return true;
+        }
+    }
+
+    public void setActionBarHomeAsUpIndicator(@DrawableRes final int drawableRes) {
+        final ActionBar actionBar = this.getActivity().getActionBar();
+        if(actionBar != null) {
+            this.getActivity().getActionBar().setHomeAsUpIndicator(drawableRes);
+        }
     }
 }

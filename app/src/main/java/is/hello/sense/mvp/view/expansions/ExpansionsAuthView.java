@@ -59,4 +59,13 @@ public class ExpansionsAuthView extends PresenterView {
     public void showProgress(final boolean show) {
         progressBar.setVisibility(show ? VISIBLE : INVISIBLE);
     }
+
+    public boolean loadPreviousUrl() {
+        if(webView.canGoBack()){
+            webView.goBack();
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
