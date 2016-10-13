@@ -445,22 +445,24 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ArrayList<Expansion>> getExpansionDetail(@Path("id") long expansionId) {
+    public Observable<List<Expansion>> getExpansionDetail(@Path("id") final long expansionId) {
         return unimplemented();
     }
 
     @Override
-    public Observable<Void> setExpansionState(@Path("id") long expansionId, @Body @NonNull State state) {
+    public Observable<Void> setExpansionState(@Path("id") final long expansionId,
+                                              @Body @NonNull State.Request stateRequest) {
         return unimplemented();
     }
 
     @Override
-    public Observable<ArrayList<Configuration>> getConfigurations(@Path("id") long expansionId) {
+    public Observable<ArrayList<Configuration>> getConfigurations(@Path("id") final long expansionId) {
         return unimplemented();
     }
 
     @Override
-    public Observable<Configuration> setConfigurations(@Path("id") long expansionId, @Body @NonNull Configuration configuration) {
+    public Observable<Configuration> setConfigurations(@Path("id") final long expansionId,
+                                                       @Body @NonNull final Configuration configuration) {
         return unimplemented();
     }
 

@@ -16,4 +16,6 @@
     <string name="title_connecting_network_dns_resolved">DNS Resolved</string>
     <string name="title_connecting_network_socket_connected">Socket Connected</string>
     <string name="title_connecting_network_request_sent">Request Sent</string>
+
+    <string name="lorem_ipsum">Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</string>
 </resources>

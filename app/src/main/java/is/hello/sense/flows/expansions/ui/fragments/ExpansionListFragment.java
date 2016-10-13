@@ -1,6 +1,5 @@
 package is.hello.sense.flows.expansions.ui.fragments;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,8 +13,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.flows.expansions.interactors.ExpansionsInteractor;
+import is.hello.sense.flows.expansions.routers.ExpansionSettingsRouter;
 import is.hello.sense.flows.expansions.ui.views.ExpansionListView;
-import is.hello.sense.interactors.ExpansionsInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.ExpansionAdapter;
@@ -64,21 +64,7 @@ implements ArrayRecyclerAdapter.OnItemClickedListener<Expansion>{
 
     @Override
     public void onItemClicked(final int position, @NonNull final Expansion item) {
-        switch(item.getState()){
-            case NOT_CONFIGURED:
-                finishFlow();
-                break;
-            case NOT_CONNECTED:
-                finishFlowWithResult(Activity.RESULT_OK, ExpansionsAuthFragment.newIntent(item.getAuthUri(),
-                                                                                          item.getCompletionUri()));
-                break;
-            case REVOKED:
-                break; //todo
-            case CONNECTED_ON:
-            case CONNECTED_OFF:
-                break; //todo redirect to Configuration Detail fragment
-        }
-
+        ((ExpansionSettingsRouter) getActivity()).showExpansionDetail(item.getId());
     }
 
     public void bindExpansions(@Nullable final List<Expansion> expansions){

@@ -6,7 +6,7 @@ import is.hello.sense.api.gson.Enums;
 
 public enum Category implements Enums.FromString {
     LIGHT,
-    THERMOSTAT,
+    TEMPERATURE,
     UNKNOWN;
 
     public static Category fromString(@Nullable final String string) {

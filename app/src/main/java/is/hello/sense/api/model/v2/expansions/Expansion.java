@@ -8,6 +8,9 @@ import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.v2.MultiDensityImage;
 
 public class Expansion extends ApiResponse {
+
+    public static final long NO_ID = -1;
+
     @SerializedName("id")
     private long id;
 
@@ -91,6 +94,29 @@ public class Expansion extends ApiResponse {
         return state;
     }
 
+    public boolean isConnected(){
+        return State.CONNECTED_ON.equals(state);
+    }
+
+    public boolean requiresConfiguration() {
+        return State.NOT_CONFIGURED.equals(state);
+    }
+
+    public boolean requiresAuthentication() {
+        return State.REVOKED.equals(state);
+    }
+
+    /**
+     * Replace with real field once server is ready
+     */
+    public String getConfigurationType(){
+        return category.name();
+    }
+
+    public void setState(@NonNull final State state) {
+        this.state = state;
+    }
+
     @Override
     public String toString() {
         return "Expansion{" +
@@ -107,9 +133,9 @@ public class Expansion extends ApiResponse {
 
     }
 
-    public static Expansion generateThermostatTestCase(@NonNull final State state){
+    public static Expansion generateTemperatureTestCase(@NonNull final State state){
         return new Expansion(1,
-                             Category.THERMOSTAT,
+                             Category.TEMPERATURE,
                              "Nest Thermostat",
                              "Nest",
                              new MultiDensityImage(),
@@ -130,6 +156,4 @@ public class Expansion extends ApiResponse {
                              "description",
                              state);
     }
-
-
 }
