@@ -705,6 +705,8 @@
     <string name="expansions_configuration_selection_setting_progress_format">Setting %1$s</string>
     <string name="expansions_configuration_selection_setting_progress_default">Setting configuration</string>
     <string name="expansion_detail_remove_access">Remove Access</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="expansion_detail_remove_access_dialog_message">Are you sure you want to remove this expansion? Previously set alarms will still sound, but will no longer activate this expansion.</string>
     <!-- end region -->
 
 

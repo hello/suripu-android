@@ -11,8 +11,8 @@ import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Expansion;
-import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
+import is.hello.sense.flows.expansions.routers.ExpansionSettingsRouter;
 import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionListFragment;
@@ -20,9 +20,10 @@ import is.hello.sense.flows.expansions.ui.fragments.ExpansionsAuthFragment;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 
 public class ExpansionSettingsActivity extends ScopedInjectionActivity
-implements FragmentNavigation{
+        implements FragmentNavigation, ExpansionSettingsRouter{
     private FragmentNavigationDelegate navigationDelegate;
 
     @Override
@@ -47,23 +48,36 @@ implements FragmentNavigation{
 
     }
 
-    private void showExpansionList() {
+    //region Router
+
+    @Override
+    public void showExpansionList() {
         pushFragment(new ExpansionListFragment(), null, false);
     }
 
-    private void showExpansionDetail(@NonNull final Expansion expansion){
-        pushFragment(ExpansionDetailFragment.newInstance(expansion), null, true);
+    @Override
+    public void showExpansionDetail(final long expansionId){
+        pushFragment(ExpansionDetailFragment.newInstance(expansionId), null, true);
     }
 
-    private void showExpansionAuth(@NonNull final String initialUrl,
-                                   @NonNull final String completionUrl) {
-        pushFragment(ExpansionsAuthFragment.newInstance(initialUrl, completionUrl), null, true);
+    @Override
+    public void showExpansionAuth(final long expansionId,
+                                  @NonNull final String initialUrl,
+                                  @NonNull final String completionUrl) {
+        pushFragment(ExpansionsAuthFragment.newInstance(expansionId, initialUrl, completionUrl), null, true);
     }
 
-    private void showConfigurationSelection(@NonNull final Intent intent){
-        final Expansion expansion = (Expansion) intent.getSerializableExtra(ConfigSelectionFragment.EXTRA_EXPANSION);
+    @Override
+    public void showConfigurationSelection(@NonNull final Expansion expansion){
         pushFragment(ConfigSelectionFragment.newInstance(expansion), null, true);
     }
+
+    @Override
+    public void showConfigurationSelection(final long expansionId) {
+        pushFragment(ConfigSelectionFragment.newInstance(expansionId), null, true);
+    }
+
+    // end region
 
     @Override
     public final void pushFragment(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
@@ -84,35 +98,6 @@ implements FragmentNavigation{
     public final void flowFinished(@NonNull final Fragment fragment, final int responseCode, @Nullable final Intent result) {
         if(responseCode != RESULT_OK){
             //todo handle
-        } else if(fragment instanceof ExpansionListFragment){
-            if(result != null) {
-                if(result.hasExtra(ConfigSelectionFragment.EXTRA_EXPANSION)){
-                    showConfigurationSelection(result);
-                } else {
-                    showExpansionDetail((Expansion) result.getSerializableExtra(ExpansionDetailFragment.EXTRA_EXPANSION));
-                }
-            }
-        } else if (fragment instanceof ExpansionDetailFragment) {
-            if(result != null) {
-                if(result.hasExtra(ConfigSelectionFragment.EXTRA_EXPANSION)){
-                    showConfigurationSelection(result);
-                } else {
-                    showExpansionAuth(result.getStringExtra(ExpansionsAuthFragment.EXTRA_INIT_URL),
-                                      result.getStringExtra(ExpansionsAuthFragment.EXTRA_COMPLETE_URL));
-                }
-            } else {
-                showExpansionList();
-            }
-        }else if(fragment instanceof ExpansionsAuthFragment){
-            //todo pass expansion along
-            showConfigurationSelection(ConfigSelectionFragment.newIntent(Expansion.generateTemperatureTestCase(State.NOT_CONFIGURED)));
-        } else if(fragment instanceof ConfigSelectionFragment){
-            if(result == null){
-                showExpansionList();
-            } else{
-                //todo show enabled configuration screen.
-                showExpansionDetail(Expansion.generateTemperatureTestCase(State.CONNECTED_OFF));
-            }
         }
     }
 
@@ -122,4 +107,14 @@ implements FragmentNavigation{
         return navigationDelegate.getTopFragment();
     }
 
+    @Override
+    public void onBackPressed() {
+        final Fragment fragment = getTopFragment();
+        if(fragment instanceof OnBackPressedInterceptor){
+            ((OnBackPressedInterceptor) fragment).onInterceptBackPressed(stateSafeExecutor.bind(super::onBackPressed));
+        } else{
+            super.onBackPressed();
+        }
+
+    }
 }

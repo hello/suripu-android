@@ -1,6 +1,5 @@
 package is.hello.sense.flows.expansions.ui.fragments;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +13,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.flows.expansions.routers.ExpansionSettingsRouter;
 import is.hello.sense.flows.expansions.ui.views.ExpansionListView;
 import is.hello.sense.interactors.ExpansionsInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
@@ -66,13 +66,13 @@ implements ArrayRecyclerAdapter.OnItemClickedListener<Expansion>{
     public void onItemClicked(final int position, @NonNull final Expansion item) {
         switch(item.getState()){
             case NOT_CONFIGURED:
-                finishFlowWithResult(Activity.RESULT_OK, ConfigSelectionFragment.newIntent(item));
+                ((ExpansionSettingsRouter) getActivity()).showConfigurationSelection(item);
                 break;
             case NOT_CONNECTED:
             case CONNECTED_ON:
             case CONNECTED_OFF:
             case REVOKED:
-                finishFlowWithResult(Activity.RESULT_OK, ExpansionDetailFragment.newIntent(item));
+                ((ExpansionSettingsRouter) getActivity()).showExpansionDetail(item.getId());
                 break;
         }
 

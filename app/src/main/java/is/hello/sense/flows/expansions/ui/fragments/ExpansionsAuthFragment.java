@@ -1,6 +1,5 @@
 package is.hello.sense.flows.expansions.ui.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +11,8 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
+import is.hello.sense.flows.expansions.routers.ExpansionSettingsRouter;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.mvp.view.expansions.ExpansionsAuthView;
 import is.hello.sense.ui.widget.CustomWebViewClient;
@@ -22,28 +23,24 @@ implements CustomWebViewClient.Listener{
     @Inject
     ApiSessionManager sessionManager;
 
-    public static final String EXTRA_INIT_URL = ExpansionsAuthFragment.class.getName() + "EXTRA_INIT_URL";
-    public static final String EXTRA_COMPLETE_URL = ExpansionsAuthFragment.class.getName() + "EXTRA_COMPLETE_URL";
+    public static final String ARG_EXPANSION_ID = ExpansionsAuthFragment.class.getName() + "ARG_EXPANSION_ID";
+    public static final String ARG_INIT_URL = ExpansionsAuthFragment.class.getName() + "ARG_INIT_URL";
+    public static final String ARG_COMPLETE_URL = ExpansionsAuthFragment.class.getName() + "ARG_COMPLETE_URL";
+    private long expansionId;
     private String initUrl;
     private String completeUrl;
 
-    public static ExpansionsAuthFragment newInstance(@NonNull final String initialUrl,
+    public static ExpansionsAuthFragment newInstance(final long expansionId,
+                                                     @NonNull final String initialUrl,
                                                      @NonNull final String completionUrl) {
 
         final Bundle args = new Bundle();
-        args.putString(ExpansionsAuthFragment.EXTRA_INIT_URL, initialUrl);
-        args.putString(ExpansionsAuthFragment.EXTRA_COMPLETE_URL, completionUrl);
+        args.putLong(ARG_EXPANSION_ID, expansionId);
+        args.putString(ARG_INIT_URL, initialUrl);
+        args.putString(ARG_COMPLETE_URL, completionUrl);
         final ExpansionsAuthFragment fragment = new ExpansionsAuthFragment();
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public static Intent newIntent(@NonNull final String initialUrl,
-                                   @NonNull final String completionUrl){
-        final Intent intent = new Intent();
-        intent.putExtra(EXTRA_INIT_URL, initialUrl);
-        intent.putExtra(EXTRA_COMPLETE_URL, completionUrl);
-        return intent;
     }
 
     @Override
@@ -51,12 +48,9 @@ implements CustomWebViewClient.Listener{
         super.onCreate(savedInstanceState);
         final Bundle arguments = getArguments();
         if(arguments != null){
-            this.initUrl = arguments.getString(EXTRA_INIT_URL);
-            this.completeUrl = arguments.getString(EXTRA_COMPLETE_URL);
-        } else {
-            //todo remove when done testing
-            this.initUrl = "https://home.nest.com/login/oauth2?client_id=a023a014-65eb-447e-92cc-3e693dbf4a94&state=STATE";
-            this.completeUrl = "https://www.hello.is";
+            this.expansionId = arguments.getLong(ARG_EXPANSION_ID, ExpansionDetailsInteractor.NO_ID);
+            this.initUrl = arguments.getString(ARG_INIT_URL); //todo what should default urls be?
+            this.completeUrl = arguments.getString(ARG_COMPLETE_URL);
         }
     }
 
@@ -92,7 +86,7 @@ implements CustomWebViewClient.Listener{
     @Override
     public void onCompletionUrlLoaded() {
         presenterView.showProgress(false);
-        finishFlow();
+        ((ExpansionSettingsRouter) getActivity()).showConfigurationSelection(this.expansionId);
     }
 
     @Override

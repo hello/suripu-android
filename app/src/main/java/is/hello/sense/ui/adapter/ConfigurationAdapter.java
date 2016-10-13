@@ -60,6 +60,7 @@ public class ConfigurationAdapter extends ArrayRecyclerAdapter<Configuration, Co
                 return true;
             }
         }
+        this.selectedItemPosition = NO_POSITION;
         return false;
     }
 

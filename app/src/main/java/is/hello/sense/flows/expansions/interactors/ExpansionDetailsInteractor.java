@@ -13,7 +13,8 @@ import rx.Observable;
 public class ExpansionDetailsInteractor extends ValueInteractor<Expansion> {
 
     private final ApiService apiService;
-    private long id = -1;
+    public static final long NO_ID = -1;
+    private long id = NO_ID;
     public InteractorSubject<Expansion> expansionSubject = this.subject;
 
     public ExpansionDetailsInteractor(@NonNull final ApiService apiService){
@@ -33,7 +34,7 @@ public class ExpansionDetailsInteractor extends ValueInteractor<Expansion> {
     @Nullable
     @Override
     protected Observable<Expansion> provideUpdateObservable() {
-        if(this.id == -1){
+        if(this.id == NO_ID){
             return Observable.error(new IllegalStateException("invalid expansion id"));
         }
         return apiService.getExpansionDetail(id).map( expansions -> {

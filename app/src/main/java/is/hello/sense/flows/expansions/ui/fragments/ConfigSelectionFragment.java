@@ -1,6 +1,5 @@
 package is.hello.sense.flows.expansions.ui.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,13 +13,13 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
+import is.hello.sense.flows.expansions.routers.ExpansionSettingsRouter;
 import is.hello.sense.flows.expansions.ui.views.ConfigSelectionView;
 import is.hello.sense.interactors.ConfigurationsInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.ConfigurationAdapter;
-
-import static android.app.Activity.RESULT_OK;
 
 public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionView>
         implements ArrayRecyclerAdapter.OnItemClickedListener<Configuration> {
@@ -28,9 +27,11 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     @Inject
     ConfigurationsInteractor configurationsInteractor;
 
-    public static final String EXTRA_EXPANSION = ConfigSelectionFragment.class + "EXTRA_EXPANSION";
+    @Inject
+    ExpansionDetailsInteractor expansionDetailsInteractor;
 
     private static final String ARG_EXPANSION = ConfigSelectionFragment.class + "ARG_EXPANSION";
+    private static final String ARG_EXPANSION_ID = ConfigSelectionFragment.class + "ARG_EXPANSION_ID";
 
     private ConfigurationAdapter adapter;
     private Expansion expansion;
@@ -43,10 +44,12 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
         return fragment;
     }
 
-    public static Intent newIntent(@NonNull final Expansion expansion) {
-        final Intent intent = new Intent();
-        intent.putExtra(EXTRA_EXPANSION, expansion);
-        return intent;
+    public static ConfigSelectionFragment newInstance(final long expansionId) {
+        final ConfigSelectionFragment fragment = new ConfigSelectionFragment();
+        final Bundle args = new Bundle();
+        args.putLong(ARG_EXPANSION_ID, expansionId);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -63,8 +66,13 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         handleArgs(getArguments());
+        configurationsInteractor.configSubject.forget();
         bindAndSubscribe(configurationsInteractor.configSubject,
                          this::bindConfigurations,
+                         this::presentError);
+        expansionDetailsInteractor.expansionSubject.forget();
+        bindAndSubscribe(expansionDetailsInteractor.expansionSubject,
+                         this::bindExpansion,
                          this::presentError);
     }
 
@@ -109,6 +117,12 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
         }
     }
 
+    private void bindExpansion(@NonNull final Expansion expansion) {
+        this.expansion = expansion;
+        presenterView.setTitle(getString(R.string.expansions_configuration_selection_title_format, expansion.getServiceName()));
+        presenterView.setSubtitle(getString(R.string.expansions_configuration_selection_subtitle_format, expansion.getConfigurationType()));
+    }
+
     public void presentError(@NonNull final Throwable e){
         hideBlockingActivity(false, null);
         //todo
@@ -121,13 +135,18 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
                 presenterView.setTitle(getString(R.string.expansions_configuration_selection_title_format, expansion.getServiceName()));
                 presenterView.setSubtitle(getString(R.string.expansions_configuration_selection_subtitle_format, expansion.getConfigurationType()));
                 configurationsInteractor.setExpansionId(expansion.getId());
+            } else {
+                final long id = arguments.getLong(ARG_EXPANSION_ID, ConfigurationsInteractor.NO_ID);
+                configurationsInteractor.setExpansionId(id);
+                expansionDetailsInteractor.setId(id);
+                expansionDetailsInteractor.update();
             }
         }
     }
 
     public void bindConfigurationPostResponse(@NonNull final Configuration configuration){
         hideBlockingActivity(R.string.expansions_configuration_selection_configured,
-                             stateSafeExecutor.bind(() -> this.finishFlowWithResult(RESULT_OK, new Intent())));
+                             stateSafeExecutor.bind(() -> ((ExpansionSettingsRouter) getActivity()).showExpansionDetail(expansion.getId())));
     }
 
     private void onDoneButtonClicked(final View ignored) {
@@ -142,7 +161,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
                                this::bindConfigurationPostResponse,
                                this::presentError);
         } else {
-            finishFlow();
+            ((ExpansionSettingsRouter) getActivity()).showExpansionList();
         }
     }
 }
