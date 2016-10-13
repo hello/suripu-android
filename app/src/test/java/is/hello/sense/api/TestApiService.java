@@ -58,6 +58,7 @@ import is.hello.sense.api.model.v2.TimelineBuilder;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.TimelineEventBuilder;
 import is.hello.sense.api.model.v2.Trends;
+import is.hello.sense.api.model.v2.alarms.AlarmGroups;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.State;
@@ -311,8 +312,8 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ArrayList<Alarm>> smartAlarms() {
-        return loadResponse("smart_alarms", new TypeToken<ArrayList<Alarm>>() {
+    public Observable<AlarmGroups> smartAlarms() {
+        return loadResponse("smart_alarms", new TypeToken<AlarmGroups>() {
         }.getType());
     }
 
