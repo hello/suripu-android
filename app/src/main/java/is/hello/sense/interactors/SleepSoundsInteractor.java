@@ -8,6 +8,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.SleepSoundActionPlay;
 import is.hello.sense.api.model.v2.SleepSoundActionStop;
+import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.SleepSoundsStateDevice;
 import is.hello.sense.graph.InteractorSubject;
 import rx.Observable;
@@ -43,5 +44,15 @@ public class SleepSoundsInteractor extends ScopedValueInteractor<SleepSoundsStat
     public Observable<VoidResponse> stop(final @NonNull SleepSoundActionStop actionStop) {
         // todo validate action stop
         return latest().flatMap(a -> apiService.stopSleepSound(actionStop));
+    }
+
+    public Observable<Boolean> showSleepSoundsTab() {
+
+        return apiService.registeredDevices().flatMap(devices -> {
+            if (devices.getSense().isMissing()) {
+                return Observable.just(false);
+            }
+            return apiService.getSounds().map(sleepSounds -> !SleepSounds.State.FEATURE_DISABLED.equals(sleepSounds.getState()));
+        });
     }
 }

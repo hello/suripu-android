@@ -69,6 +69,8 @@ public class PreferencesInteractor extends BasePreferencesInteractor {
     public static final String USER_FEATURES = "user_features";
     public static final String HAS_VOICE = "has_voice";
 
+    public static final String HAS_SOUNDS = "has_sounds";
+
     private final Gson gson;
 
 
@@ -191,5 +193,13 @@ public class PreferencesInteractor extends BasePreferencesInteractor {
         }
     }
     //endregion
+
+    /**
+     * Responsible for releasing anything dependent on Sense being paired.
+     */
+    public void resetSenseDependentPrefs() {
+        setFeatures(null);
+        edit().remove(HAS_SOUNDS);
+    }
 }
 

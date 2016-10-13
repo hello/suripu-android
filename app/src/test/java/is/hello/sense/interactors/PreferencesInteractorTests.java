@@ -150,12 +150,12 @@ public class PreferencesInteractorTests extends InjectionTestCase {
     }
 
     @Test //todo figure out how to mock local broadcast logout intent
-    public void clearPreferencesOnReset(){
+    public void clearPreferencesOnReset() {
         presenter.setFeatures(new UserFeatures(true));
 
         assertTrue(presenter.hasVoice());
 
-        presenter.setFeatures(null);
+        presenter.resetSenseDependentPrefs();
 
         Robolectric.flushBackgroundThreadScheduler();
 
