@@ -1,5 +1,6 @@
 package is.hello.sense.mvp.view.home;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.support.annotation.NonNull;
@@ -24,6 +25,7 @@ import is.hello.sense.util.StateSafeExecutor;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
+@SuppressLint("ViewConstructor")
 public class SoundsView extends PresenterView {
 
     private final ProgressBar initialActivityIndicator;
@@ -88,7 +90,7 @@ public class SoundsView extends PresenterView {
         if (subNavSelector != null) {
             this.subNavSelector.setOnSelectionChangedListener(null);
         }
-        if(swipeRefreshLayout != null){
+        if (swipeRefreshLayout != null) {
             this.swipeRefreshLayout.setOnRefreshListener(null);
         }
     }
@@ -107,10 +109,6 @@ public class SoundsView extends PresenterView {
 
     public final SubFragment getCurrentSubFragment(@NonNull final FragmentManager fragmentManager) {
         return getSubFragment(fragmentManager, pager.getCurrentItem());
-    }
-
-    public final boolean isSubNavBarVisible() {
-        return subNavSelector != null && subNavSelector.getVisibility() == View.VISIBLE;
     }
 
     public final void refreshView(final boolean show) {
@@ -157,13 +155,11 @@ public class SoundsView extends PresenterView {
         }
         subNavSelector.setVisibility(View.INVISIBLE);
         Views.runWhenLaidOut(subNavSelector, stateSafeExecutor.bind(() -> {
-            if (subNavSelector != null) {
-                subNavSelector.setTranslationY(-subNavSelector.getMeasuredHeight());
-                subNavSelector.setVisibility(View.VISIBLE);
-                animatorFor(subNavSelector, animatorContext)
-                        .translationY(0f)
-                        .start();
-            }
+            subNavSelector.setTranslationY(-subNavSelector.getMeasuredHeight());
+            subNavSelector.setVisibility(View.VISIBLE);
+            animatorFor(subNavSelector, animatorContext)
+                    .translationY(0f)
+                    .start();
         }));
     }
 
@@ -174,7 +170,7 @@ public class SoundsView extends PresenterView {
         animatorFor(subNavSelector, animatorContext)
                 .translationY(-subNavSelector.getMeasuredHeight())
                 .addOnAnimationCompleted(finished -> {
-                    if (finished && subNavSelector != null) {
+                    if (finished) {
                         subNavSelector.setVisibility(View.GONE);
                     }
                 })

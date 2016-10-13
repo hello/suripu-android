@@ -94,7 +94,7 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
 
     public final void bind(final boolean show) {
         preferencesInteractor.edit().putBoolean(PreferencesInteractor.HAS_SOUNDS, true).apply();
-        presenterView.refreshView(false);
+        presenterView.refreshView(true);
 
     }
 
