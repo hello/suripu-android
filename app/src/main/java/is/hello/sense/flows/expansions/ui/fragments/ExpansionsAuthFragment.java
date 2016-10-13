@@ -44,7 +44,7 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
         this.setHasOptionsMenu(true);
         final ActionBar actionBar = this.getActivity().getActionBar();
         if(actionBar != null) {
-            this.getActivity().getActionBar().setHomeAsUpIndicator(R.drawable.ic_action_remove);
+            this.getActivity().getActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
         }
     }
 
