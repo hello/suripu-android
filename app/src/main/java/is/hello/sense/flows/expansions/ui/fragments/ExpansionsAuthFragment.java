@@ -10,8 +10,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.flows.expansions.routers.ExpansionSettingsRouter;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.mvp.view.expansions.ExpansionsAuthView;
@@ -48,7 +48,7 @@ implements CustomWebViewClient.Listener{
         super.onCreate(savedInstanceState);
         final Bundle arguments = getArguments();
         if(arguments != null){
-            this.expansionId = arguments.getLong(ARG_EXPANSION_ID, ExpansionDetailsInteractor.NO_ID);
+            this.expansionId = arguments.getLong(ARG_EXPANSION_ID, Expansion.NO_ID);
             this.initUrl = arguments.getString(ARG_INIT_URL); //todo what should default urls be?
             this.completeUrl = arguments.getString(ARG_COMPLETE_URL);
         }

@@ -137,7 +137,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
                 presenterView.setSubtitle(getString(R.string.expansions_configuration_selection_subtitle_format, expansion.getConfigurationType()));
                 configurationsInteractor.setExpansionId(expansion.getId());
             } else {
-                final long id = arguments.getLong(ARG_EXPANSION_ID, ConfigurationsInteractor.NO_ID);
+                final long id = arguments.getLong(ARG_EXPANSION_ID, Expansion.NO_ID);
                 configurationsInteractor.setExpansionId(id);
                 expansionDetailsInteractor.setId(id);
                 expansionDetailsInteractor.update();

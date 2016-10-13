@@ -8,6 +8,9 @@ import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.v2.MultiDensityImage;
 
 public class Expansion extends ApiResponse {
+
+    public static final long NO_ID = -1;
+
     @SerializedName("id")
     private long id;
 

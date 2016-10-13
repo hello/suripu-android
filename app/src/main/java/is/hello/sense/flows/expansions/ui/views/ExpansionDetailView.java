@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.widget.util.Views;
 
@@ -93,39 +94,35 @@ public class ExpansionDetailView extends PresenterView {
         Views.setSafeOnClickListener(this.enabledTextView, listener);
     }
 
-    public void setTitle(@Nullable final String deviceName) {
-        this.deviceNameTextView.setText(deviceName);
+    public void enableConfigurations(@Nullable final String configurationName,
+                                     @NonNull final OnClickListener configSelectionListener){
+        this.configurationSelectedTextView.setText(configurationName);
+        setConfigurationSelectionClickListener(configSelectionListener);
+        this.connectedContainer.setVisibility(VISIBLE);
     }
 
-    public void setSubtitle(@Nullable final String serviceName) {
-        this.serviceNameTextView.setText(serviceName);
+    public void enableSwitch(final boolean isOn,
+                             @NonNull final CompoundButton.OnCheckedChangeListener onEnableSwitchChanged,
+                             @NonNull final OnClickListener onEnableIconClicked) {
+        this.enabledContainer.setVisibility(VISIBLE);
+        this.enabledSwitch.setChecked(isOn);
+        setEnabledSwitchClickListener(onEnableSwitchChanged);
+        setEnabledIconClickListener(onEnableIconClicked);
+        this.connectedContainer.setVisibility(VISIBLE);
     }
 
-    public void setDescription(@Nullable final String description) {
-        this.expansionDescriptionTextView.setText(description);
+    public void setExpansionInfo(@NonNull final Expansion expansion,
+                                 @NonNull final Picasso picasso) {
+        this.deviceNameTextView.setText(expansion.getDeviceName());
+        this.serviceNameTextView.setText(expansion.getServiceName());
+        loadExpansionIcon(picasso, expansion.getIcon()
+                                            .getUrl(getResources()));
+        this.expansionDescriptionTextView.setText(expansion.getDescription());
+        this.configurationTypeTextView.setText(expansion.getConfigurationType());
     }
 
-    public void setConfigurationType(@Nullable final String type) {
-        this.configurationTypeTextView.setText(type);
-    }
-
-    public void setEnabledSwitchOn(final boolean checked) {
-        this.enabledSwitch.setChecked(checked);
-    }
-
-    public void setEnabledContainerVisibility(final boolean visible) {
-        this.enabledContainer.setVisibility(visible ? VISIBLE : GONE);
-    }
-
-    public void setConnectButtonVisibility(final boolean visible) {
-        this.connectButton.setVisibility(visible ? VISIBLE : GONE);
-    }
-
-    public void setConfigurationSelectionText(@Nullable final String text) {
-        this.configurationSelectedTextView.setText(text);
-    }
-
-    public void setConnectedContainerVisibility(final boolean visible) {
-        this.connectedContainer.setVisibility(visible ? VISIBLE : GONE);
+    public void enableConnectButton(@NonNull final OnClickListener onButtonClicked) {
+        setConnectButtonClickListener(onButtonClicked);
+        this.connectButton.setVisibility(VISIBLE);
     }
 }

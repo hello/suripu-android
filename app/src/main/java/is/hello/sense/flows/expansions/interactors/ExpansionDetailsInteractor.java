@@ -10,10 +10,11 @@ import is.hello.sense.graph.InteractorSubject;
 import is.hello.sense.interactors.ValueInteractor;
 import rx.Observable;
 
+import static is.hello.sense.api.model.v2.expansions.Expansion.NO_ID;
+
 public class ExpansionDetailsInteractor extends ValueInteractor<Expansion> {
 
     private final ApiService apiService;
-    public static final long NO_ID = -1;
     private long id = NO_ID;
     public InteractorSubject<Expansion> expansionSubject = this.subject;
 

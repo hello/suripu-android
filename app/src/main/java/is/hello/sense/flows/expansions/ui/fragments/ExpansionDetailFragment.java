@@ -28,6 +28,8 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.subscriptions.Subscriptions;
 
+import static is.hello.sense.api.model.v2.expansions.Expansion.NO_ID;
+
 public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailView> {
 
     @Inject
@@ -101,8 +103,8 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         }
         //todo pass along selected config and list to move work to interactor
         if(selectedConfig != null) {
-            presenterView.setConfigurationSelectionText(selectedConfig.getName());
-            presenterView.setConfigurationSelectionClickListener(ignore -> this.onConfigurationSelectionClicked());
+            presenterView.enableConfigurations(selectedConfig.getName(),
+                                               ignore -> this.onConfigurationSelectionClicked());
         }
     }
 
@@ -111,27 +113,16 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             return; //todo handle better
         }
         //todo update expansion enabled switch based on state
-        presenterView.setTitle(expansion.getDeviceName());
-        presenterView.setSubtitle(expansion.getServiceName());
-        presenterView.loadExpansionIcon(picasso, expansion.getIcon()
-                                                          .getUrl(getResources()));
-        presenterView.setDescription(expansion.getDescription());
-
-
-        presenterView.setConfigurationType(expansion.getConfigurationType());
+        presenterView.setExpansionInfo(expansion, picasso);
         if(expansion.requiresAuthentication()){
-            presenterView.setConnectButtonClickListener(this::handleActionButtonClicked);
-            presenterView.setConnectButtonVisibility(true);
+            presenterView.enableConnectButton(this::handleActionButtonClicked);
         } else if(expansion.requiresConfiguration()){
-            presenterView.setConfigurationSelectionText(getString(R.string.action_connect));
-            presenterView.setConfigurationSelectionClickListener(ignore -> this.redirectToConfigSelection());
-            presenterView.setConnectedContainerVisibility(true);
+            presenterView.enableConfigurations(getString(R.string.action_connect),
+                                               ignore -> this.redirectToConfigSelection());
         } else {
-            presenterView.setEnabledContainerVisibility(true);
-            presenterView.setEnabledSwitchOn(expansion.isConnected());
-            presenterView.setEnabledSwitchClickListener(this::onEnableSwitchChanged);
-            presenterView.setEnabledIconClickListener(ignore -> this.onEnabledIconClicked());
-            presenterView.setConnectedContainerVisibility(true);
+            presenterView.enableSwitch(expansion.isConnected(),
+                                       this::onEnableSwitchChanged,
+                                       ignore -> this.onEnabledIconClicked());
         }
 
 
@@ -187,11 +178,9 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
     private void handleArgs(@Nullable final Bundle arguments) {
         if(arguments != null){
-            final long id = arguments.getLong(ARG_EXPANSION_ID, -1);
-            if(id != -1) {
-                expansionDetailsInteractor.setId(id);
-                configurationsInteractor.setExpansionId(id);
-            }
+            final long id = arguments.getLong(ARG_EXPANSION_ID, NO_ID);
+            expansionDetailsInteractor.setId(id);
+            configurationsInteractor.setExpansionId(id);
         }
     }
 }
