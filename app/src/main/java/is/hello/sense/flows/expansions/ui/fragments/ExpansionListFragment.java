@@ -68,6 +68,7 @@ public class ExpansionListFragment extends PresenterFragment<ExpansionListView>
         final Intent intent = new Intent();
         intent.putExtra(EXPANSION_ID_KEY, item.getId());
         finishFlowWithResult(Activity.RESULT_OK, intent);
+
     }
 
     public void bindExpansions(@Nullable final List<Expansion> expansions) {
@@ -81,4 +82,5 @@ public class ExpansionListFragment extends PresenterFragment<ExpansionListView>
     public void presentError(@NonNull final Throwable e) {
         //todo
     }
+
 }

@@ -57,14 +57,13 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
             presenterView.setTitle(getString(R.string.expansions_configuration_selection_title_format, expansion.getServiceName()));
             presenterView.setSubtitle(getString(R.string.expansions_configuration_selection_subtitle_format, expansion.getConfigurationType()));
             configurationsInteractor.setExpansionId(expansion.getId());
+        }else {
+            cancelFlow();
+            return;
         }
         configurationsInteractor.configSubject.forget();
         bindAndSubscribe(configurationsInteractor.configSubject,
                          this::bindConfigurations,
-                         this::presentError);
-        expansionDetailsInteractor.expansionSubject.forget();
-        bindAndSubscribe(expansionDetailsInteractor.expansionSubject,
-                         this::bindExpansion,
                          this::presentError);
     }
 

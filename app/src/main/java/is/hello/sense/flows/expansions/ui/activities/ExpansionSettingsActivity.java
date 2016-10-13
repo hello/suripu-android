@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
 import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
@@ -85,12 +86,11 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
     @Override
     public final void flowFinished(@NonNull final Fragment fragment, final int responseCode, @Nullable final Intent result) {
         if (responseCode == RESULT_CANCELED) {
-            //todo handle
-        }
-        if (fragment instanceof ExpansionListFragment
+            popFragment(fragment, false);
+        } else if (fragment instanceof ExpansionListFragment
                 && result != null
                 && result.hasExtra(ExpansionListFragment.EXPANSION_ID_KEY)) {
-            showExpansionDetail(result.getLongExtra(ExpansionListFragment.EXPANSION_ID_KEY, -1));
+            showExpansionDetail(result.getLongExtra(ExpansionListFragment.EXPANSION_ID_KEY, Expansion.NO_ID));
         } else if (fragment instanceof ExpansionDetailFragment) {
             if (responseCode == ExpansionDetailFragment.RESULT_ACTION_PRESSED) {
                 showExpansionAuth();
@@ -102,10 +102,10 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
         } else if (fragment instanceof ExpansionsAuthFragment) {
             showConfigurationSelection();
         } else if (fragment instanceof ConfigSelectionFragment) {
-            if (result == null || !result.hasExtra(ConfigSelectionFragment.EXPANSION_ID_KEY)) {
-                showExpansionList();
+            if (result != null && result.hasExtra(ConfigSelectionFragment.EXPANSION_ID_KEY)) {
+                showExpansionDetail(result.getLongExtra(ConfigSelectionFragment.EXPANSION_ID_KEY, Expansion.NO_ID));
             } else {
-                showExpansionDetail(result.getLongExtra(ConfigSelectionFragment.EXPANSION_ID_KEY, -1));
+                showExpansionList();
             }
         }
     }
@@ -116,7 +116,7 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
             onBackPressed();
             return true;
         }
-        return false;
+        return super.onOptionsItemSelected(item);
     }
 
     @Nullable
@@ -135,4 +135,6 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
         }
 
     }
+
+
 }

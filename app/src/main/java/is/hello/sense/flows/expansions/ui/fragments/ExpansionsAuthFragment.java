@@ -31,7 +31,7 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
         if (expansionDetailsInteractor.expansionSubject.hasValue()) {
             this.expansion = expansionDetailsInteractor.expansionSubject.getValue();
         } else {
-            finishFlowWithResult(Activity.RESULT_CANCELED);
+            cancelFlow();
         }
     }
 

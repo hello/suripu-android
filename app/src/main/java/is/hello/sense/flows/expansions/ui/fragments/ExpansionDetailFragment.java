@@ -63,7 +63,19 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         updateStateSubscription = Subscriptions.empty();
-        handleArgs(getArguments());
+        final Bundle arguments = getArguments();
+        if (arguments != null) {
+            final long id = arguments.getLong(ARG_EXPANSION_ID, NO_ID);
+            if (id == NO_ID) {
+                cancelFlow();
+                return;
+            }
+            expansionDetailsInteractor.setId(id);
+            configurationsInteractor.setExpansionId(id);
+        } else {
+            cancelFlow();
+            return;
+        }
         expansionDetailsInteractor.expansionSubject.forget();
         configurationsInteractor.configSubject.forget();
         expansionDetailsInteractor.update();
@@ -118,7 +130,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             presenterView.enableConnectButton(this::handleActionButtonClicked);
         } else if (expansion.requiresConfiguration()) {
             presenterView.enableConfigurations(getString(R.string.action_connect),
-                                               ignore -> this.redirectToConfigSelection());
+                                               ignore -> finishFlowWithResult(RESULT_CONFIGURE_PRESSED));
         } else {
             presenterView.enableSwitch(expansion.isConnected(),
                                        this::onEnableSwitchChanged,
@@ -139,12 +151,6 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
     private void onEnabledIconClicked() {
         //todo show info dialog
-    }
-
-    private void redirectToConfigSelection() {
-        //todo check nullable
-        finishFlowWithResult(RESULT_CONFIGURE_PRESSED);
-        //((ExpansionSettingsRouter) getActivity()).showConfigurationSelection(expansionDetailsInteractor.expansionSubject.getValue());
     }
 
     private void onConfigurationSelectionClicked() {
@@ -171,16 +177,5 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     private void handleActionButtonClicked(final View ignored) {
         //todo test when value is lost
         finishFlowWithResult(RESULT_ACTION_PRESSED);
-    }
-
-    private void handleArgs(@Nullable final Bundle arguments) {
-        if (arguments != null) {
-            final long id = arguments.getLong(ARG_EXPANSION_ID, NO_ID);
-            if (id == -1) {
-                throw new Error("Invalid id provided for ExpansionDetailFragment");
-            }
-            expansionDetailsInteractor.setId(id);
-            configurationsInteractor.setExpansionId(id);
-        }
     }
 }
