@@ -1,4 +1,4 @@
-package is.hello.sense.interactors;
+package is.hello.sense.flows.expansions.interactors;
 
 import android.support.annotation.NonNull;
 
@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.graph.InteractorSubject;
+import is.hello.sense.interactors.ValueInteractor;
 import rx.Observable;
 
 public class ConfigurationsInteractor extends ValueInteractor<ArrayList<Configuration>> {
