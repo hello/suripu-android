@@ -52,6 +52,10 @@ public class ExpansionsAuthView extends PresenterView {
         webView.loadUrl(customWebViewClient.getInitialUrl(), headers);
     }
 
+    public void reloadCurrentUrl() {
+        webView.reload();
+    }
+
     public void showProgress(final boolean show) {
         progressBar.setVisibility(show ? VISIBLE : INVISIBLE);
     }
