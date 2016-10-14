@@ -213,7 +213,7 @@ public class SensorGraphDrawable extends Drawable {
 
     private float getValueHeight(final float value) {
         if (value == 0) {
-            return this.minHeight;
+            return this.minHeight + this.textPositionOffset + this.lineDistance; // location for bottom line
         } else if (value != Sensor.NO_VALUE) {
             return this.minHeight
                     - (this.minHeight * ((value - this.limits.min) / this.limits.valueDifference))
@@ -346,6 +346,9 @@ public class SensorGraphDrawable extends Drawable {
                 }
             }
 
+            if (Math.round(max) == Math.round(min)) {
+                max += 1;
+            }
             this.valueDifference = max - min;
 
         }
