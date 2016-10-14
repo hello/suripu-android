@@ -22,6 +22,7 @@ import is.hello.sense.flows.expansions.ui.views.ExpansionDetailView;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -150,7 +151,9 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     }
 
     private void onEnabledIconClicked() {
-        //todo show info dialog
+        WelcomeDialogFragment.show(getActivity(),
+                                   R.xml.welcome_dialog_expansions,
+                                   true);
     }
 
     private void onConfigurationSelectionClicked() {
