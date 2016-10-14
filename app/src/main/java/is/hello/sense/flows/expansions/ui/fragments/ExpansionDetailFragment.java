@@ -30,8 +30,8 @@ import rx.subscriptions.Subscriptions;
 import static is.hello.sense.api.model.v2.expansions.Expansion.NO_ID;
 
 public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailView> {
-    public static final int RESULT_CONFIGURE_PRESSED = 0;
-    public static final int RESULT_ACTION_PRESSED = 1;
+    public static final int RESULT_CONFIGURE_PRESSED = 100;
+    public static final int RESULT_ACTION_PRESSED = 101;
     @Inject
     Picasso picasso;
 
