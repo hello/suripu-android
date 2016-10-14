@@ -346,7 +346,7 @@ public class SensorGraphDrawable extends Drawable {
                 }
             }
 
-            if (Math.round(max) == Math.round(min)) {
+            if (max == min) {
                 max += 1;
             }
             this.valueDifference = max - min;
