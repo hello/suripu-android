@@ -24,7 +24,8 @@ import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.widget.CustomWebViewClient;
 
 public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView>
-        implements CustomWebViewClient.Listener, OnBackPressedInterceptor{
+        implements CustomWebViewClient.Listener,
+        OnBackPressedInterceptor {
 
     @Inject
     ApiSessionManager sessionManager;
@@ -54,11 +55,17 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        if(R.id.expansions_auth_menu_item_refresh == item.getItemId() && presenterView != null){
-            presenterView.reloadCurrentUrl();
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
+        switch (item.getItemId()){
+            case android.R.id.home:
+                cancelFlow();
+                return true;
+            case R.id.expansions_auth_menu_item_refresh:
+                if(presenterView != null){
+                    presenterView.reloadCurrentUrl();
+                    return true;
+                }
+                default:
+                    return super.onOptionsItemSelected(item);
         }
     }
 
