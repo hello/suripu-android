@@ -156,4 +156,16 @@ public class Expansion extends ApiResponse {
                              "description",
                              state);
     }
+
+    public static Expansion generateInvalidTestCase(){
+        return new Expansion(NO_ID,
+                             Category.UNKNOWN,
+                             "Invalid name",
+                             "Invalid service name",
+                             new MultiDensityImage(),
+                             "invalid uri",
+                             "invalid uri",
+                             "description",
+                             State.UNKNOWN);
+    }
 }
