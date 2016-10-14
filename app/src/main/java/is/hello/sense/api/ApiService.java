@@ -40,6 +40,7 @@ import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.Trends;
+import is.hello.sense.api.model.v2.alarms.AlarmGroups;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.State;
@@ -251,8 +252,8 @@ public interface ApiService {
 
     //region Smart Alarms
 
-    @GET("/v1/alarms")
-    Observable<ArrayList<Alarm>> smartAlarms();
+    @GET("/v2/alarms")
+    Observable<AlarmGroups> smartAlarms();
 
     @POST("/v1/alarms/{client_time_utc}")
     Observable<VoidResponse> saveSmartAlarms(@Path("client_time_utc") long timestamp,
@@ -260,6 +261,7 @@ public interface ApiService {
 
     @GET("/v1/alarms/sounds")
     Observable<ArrayList<Alarm.Sound>> availableSmartAlarmSounds();
+
 
     //endregion
 
