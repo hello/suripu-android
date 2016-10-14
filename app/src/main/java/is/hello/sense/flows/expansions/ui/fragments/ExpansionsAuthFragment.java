@@ -121,12 +121,7 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
 
     @Override
     public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
-        if(presenterView != null && presenterView.loadPreviousUrl()){
-            return true;
-        } else {
-            defaultBehavior.run();
-            return true;
-        }
+        return presenterView != null && presenterView.loadPreviousUrl();
     }
 
     public void setActionBarHomeAsUpIndicator(@DrawableRes final int drawableRes) {

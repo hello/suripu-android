@@ -131,12 +131,10 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
     @Override
     public void onBackPressed() {
         final Fragment fragment = getTopFragment();
-        if (fragment instanceof OnBackPressedInterceptor) {
-            ((OnBackPressedInterceptor) fragment).onInterceptBackPressed(stateSafeExecutor.bind(super::onBackPressed));
-        } else {
-            super.onBackPressed();
-        }
-
+        if (!(fragment instanceof OnBackPressedInterceptor) ||
+                !((OnBackPressedInterceptor) fragment).onInterceptBackPressed(stateSafeExecutor.bind(super::onBackPressed))) {
+                    stateSafeExecutor.execute(super::onBackPressed);
+                }
     }
 
 
