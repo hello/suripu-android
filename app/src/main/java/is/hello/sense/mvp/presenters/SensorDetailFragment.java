@@ -22,6 +22,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.sensors.QueryScope;
 import is.hello.sense.api.model.v2.sensors.Sensor;
+import is.hello.sense.api.model.v2.sensors.SensorCacheItem;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
 import is.hello.sense.api.model.v2.sensors.X;
@@ -38,12 +39,12 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
 public final class SensorDetailFragment extends PresenterFragment<SensorDetailView>
         implements SelectorView.OnSelectionChangedListener,
         SensorGraphDrawable.ScrubberCallback {
     private static final String ARG_SENSOR = SensorDetailFragment.class.getName() + ".ARG_SENSOR";
-    private static final int ELAPSED_TIME_FOR_UPDATE_MS = 60000; // 1 minute
 
     public static SensorDetailFragment createFragment(@NonNull final Sensor sensor) {
         final SensorDetailFragment sensorDetailFragment = new SensorDetailFragment();
@@ -69,7 +70,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     private UpdateTimer updateTimer;
     private DateFormatter dateFormatter;
     private TimestampQuery timestampQuery = new TimestampQuery(QueryScope.DAY_5_MINUTE);
-    private Subscription sensorSubscription;
+    private Subscription sensorSubscription = Subscriptions.empty();
 
     @Override
     public final void initializePresenterView() {
@@ -183,8 +184,8 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         this.timestampQuery = new TimestampQuery(queryScope);
         if (useCache) {
             final SensorCacheItem cacheItem = sensorCache.get(queryScope);
-            if (cacheItem != null && System.currentTimeMillis() - cacheItem.lastUpdated < ELAPSED_TIME_FOR_UPDATE_MS) {
-                bindSensorsDataResponse(queryScope, cacheItem.sensorsDataResponse);
+            if (cacheItem != null && !cacheItem.isExpired()) {
+                bindSensorsDataResponse(queryScope, cacheItem.getSensorsDataResponse());
                 return;
             }
         }
@@ -192,9 +193,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         this.stateSafeExecutor.execute(() -> {
             final ArrayList<Sensor> sensors = new ArrayList<>();
             sensors.add(this.sensor);
-            if (sensorSubscription != null) {
-                sensorSubscription.unsubscribe();
-            }
+            sensorSubscription.unsubscribe();
             sensorSubscription = bind(this.apiService.postSensors(new SensorDataRequest(queryScope, sensors)))
                     .subscribe(sensorsDataResponse -> {
                                    sensorCache.put(queryScope, new SensorCacheItem(sensorsDataResponse));
@@ -279,16 +278,6 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
 
         public void setTimestamps(@NonNull final List<X> timestamps) {
             this.timestamps = timestamps;
-        }
-    }
-
-    private class SensorCacheItem {
-        private final SensorsDataResponse sensorsDataResponse;
-        private final long lastUpdated;
-
-        public SensorCacheItem(@NonNull final SensorsDataResponse sensorsDataResponse) {
-            this.sensorsDataResponse = sensorsDataResponse;
-            this.lastUpdated = System.currentTimeMillis();
         }
     }
 
