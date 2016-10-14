@@ -44,10 +44,6 @@ public class ExpansionsAuthView extends PresenterView {
         webView.destroy();
     }
 
-    public void setInitialUrl(@NonNull final String url){
-        customWebViewClient.setInitialUrl(url);
-    }
-
     public void loadlInitialUrl(@NonNull final Map<String, String> headers){
         webView.loadUrl(customWebViewClient.getInitialUrl(), headers);
     }

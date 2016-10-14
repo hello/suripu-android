@@ -107,7 +107,7 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
     }
 
     @Override
-    public void onCompletionUrlLoaded() {
+    public void onCompletionUrlStarted() {
         presenterView.showProgress(false);
         finishFlow();
     }
