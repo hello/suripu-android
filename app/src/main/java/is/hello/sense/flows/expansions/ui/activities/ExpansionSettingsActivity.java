@@ -112,7 +112,10 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
+        final Fragment fragment = getTopFragment();
+        if (fragment instanceof ExpansionsAuthFragment && fragment.onOptionsItemSelected(item)) {
+            return true;
+        } else if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
         }
@@ -128,12 +131,10 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
     @Override
     public void onBackPressed() {
         final Fragment fragment = getTopFragment();
-        if (fragment instanceof OnBackPressedInterceptor) {
-            ((OnBackPressedInterceptor) fragment).onInterceptBackPressed(stateSafeExecutor.bind(super::onBackPressed));
-        } else {
-            super.onBackPressed();
-        }
-
+        if (!(fragment instanceof OnBackPressedInterceptor) ||
+                !((OnBackPressedInterceptor) fragment).onInterceptBackPressed(stateSafeExecutor.bind(super::onBackPressed))) {
+                    stateSafeExecutor.execute(super::onBackPressed);
+                }
     }
 
 
