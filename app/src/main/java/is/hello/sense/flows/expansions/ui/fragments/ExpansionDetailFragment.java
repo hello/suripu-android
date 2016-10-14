@@ -18,7 +18,6 @@ import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
-import is.hello.sense.flows.expansions.routers.ExpansionSettingsRouter;
 import is.hello.sense.flows.expansions.ui.views.ExpansionDetailView;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.mvp.presenters.PresenterFragment;
@@ -31,7 +30,8 @@ import rx.subscriptions.Subscriptions;
 import static is.hello.sense.api.model.v2.expansions.Expansion.NO_ID;
 
 public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailView> {
-
+    public static final int RESULT_CONFIGURE_PRESSED = 100;
+    public static final int RESULT_ACTION_PRESSED = 101;
     @Inject
     Picasso picasso;
 
@@ -54,7 +54,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
     @Override
     public void initializePresenterView() {
-        if(presenterView == null){
+        if (presenterView == null) {
             presenterView = new ExpansionDetailView(getActivity());
         }
     }
@@ -63,7 +63,19 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         updateStateSubscription = Subscriptions.empty();
-        handleArgs(getArguments());
+        final Bundle arguments = getArguments();
+        if (arguments != null) {
+            final long id = arguments.getLong(ARG_EXPANSION_ID, NO_ID);
+            if (id == NO_ID) {
+                cancelFlow();
+                return;
+            }
+            expansionDetailsInteractor.setId(id);
+            configurationsInteractor.setExpansionId(id);
+        } else {
+            cancelFlow();
+            return;
+        }
         expansionDetailsInteractor.expansionSubject.forget();
         configurationsInteractor.configSubject.forget();
         expansionDetailsInteractor.update();
@@ -84,41 +96,41 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     @Override
     public void onRelease() {
         super.onRelease();
-        if(updateStateSubscription != null){
+        if (updateStateSubscription != null) {
             updateStateSubscription.unsubscribe();
         }
     }
 
     public void bindConfigurations(@Nullable final List<Configuration> configurations) {
-        if(configurations == null){
+        if (configurations == null) {
             return;
         }
         Configuration selectedConfig = null;
         for (int i = 0; i < configurations.size(); i++) {
             final Configuration config = configurations.get(i);
-            if(config.isSelected()){
+            if (config.isSelected()) {
                 selectedConfig = config;
                 break;
             }
         }
         //todo pass along selected config and list to move work to interactor
-        if(selectedConfig != null) {
+        if (selectedConfig != null) {
             presenterView.enableConfigurations(selectedConfig.getName(),
                                                ignore -> this.onConfigurationSelectionClicked());
         }
     }
 
     public void bindExpansion(@Nullable final Expansion expansion) {
-        if(expansion == null){
+        if (expansion == null) {
             return; //todo handle better
         }
         //todo update expansion enabled switch based on state
         presenterView.setExpansionInfo(expansion, picasso);
-        if(expansion.requiresAuthentication()){
+        if (expansion.requiresAuthentication()) {
             presenterView.enableConnectButton(this::handleActionButtonClicked);
-        } else if(expansion.requiresConfiguration()){
+        } else if (expansion.requiresConfiguration()) {
             presenterView.enableConfigurations(getString(R.string.action_connect),
-                                               ignore -> this.redirectToConfigSelection());
+                                               ignore -> finishFlowWithResult(RESULT_CONFIGURE_PRESSED));
         } else {
             presenterView.enableSwitch(expansion.isConnected(),
                                        this::onEnableSwitchChanged,
@@ -141,18 +153,13 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         //todo show info dialog
     }
 
-    private void redirectToConfigSelection() {
-        //todo check nullable
-        ((ExpansionSettingsRouter) getActivity()).showConfigurationSelection(expansionDetailsInteractor.expansionSubject.getValue());
-    }
-
     private void onConfigurationSelectionClicked() {
         //todo redirect to config select frag if nothing selected else open bottom sheet to select config
     }
 
     private void onRemoveAccessClicked() {
         final SenseAlertDialog.SerializedRunnable finishRunnable = () ->
-            this.updateState(State.REVOKED, ignore -> ((ExpansionSettingsRouter) getActivity()).showExpansionList());
+                this.updateState(State.REVOKED, ignore -> finishFlow());
         showAlertDialog(new SenseAlertDialog.Builder().setTitle(R.string.are_you_sure)
                                                       .setMessage(R.string.expansion_detail_remove_access_dialog_message)
                                                       .setNegativeButton(R.string.action_cancel, null)
@@ -160,7 +167,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
                                                       .setPositiveButton(R.string.action_delete, finishRunnable));
     }
 
-    public void updateState(@NonNull final State state, @NonNull final Action1<Object> onNext){
+    public void updateState(@NonNull final State state, @NonNull final Action1<Object> onNext) {
         this.updateStateSubscription.unsubscribe();
         this.updateStateSubscription = bind(expansionDetailsInteractor.setState(state))
                 .subscribe(onNext,
@@ -169,18 +176,6 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
     private void handleActionButtonClicked(final View ignored) {
         //todo test when value is lost
-        final Expansion expansion = expansionDetailsInteractor.expansionSubject.getValue();
-        ((ExpansionSettingsRouter) getActivity()).showExpansionAuth(expansion.getId(),
-                                                                    expansion.getAuthUri(),
-                                                                    expansion.getCompletionUri()
-                                                                    );
-    }
-
-    private void handleArgs(@Nullable final Bundle arguments) {
-        if(arguments != null){
-            final long id = arguments.getLong(ARG_EXPANSION_ID, NO_ID);
-            expansionDetailsInteractor.setId(id);
-            configurationsInteractor.setExpansionId(id);
-        }
+        finishFlowWithResult(RESULT_ACTION_PRESSED);
     }
 }

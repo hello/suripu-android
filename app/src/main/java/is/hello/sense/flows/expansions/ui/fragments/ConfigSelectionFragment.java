@@ -1,5 +1,7 @@
 package is.hello.sense.flows.expansions.ui.fragments;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,7 +17,6 @@ import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
-import is.hello.sense.flows.expansions.routers.ExpansionSettingsRouter;
 import is.hello.sense.flows.expansions.ui.views.ConfigSelectionView;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
@@ -23,6 +24,7 @@ import is.hello.sense.ui.adapter.ConfigurationAdapter;
 
 public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionView>
         implements ArrayRecyclerAdapter.OnItemClickedListener<Configuration> {
+    public static final String EXPANSION_ID_KEY = ConfigSelectionFragment.class.getSimpleName() + ".expansion_id_key";
 
     @Inject
     ConfigurationsInteractor configurationsInteractor;
@@ -30,31 +32,12 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     @Inject
     ExpansionDetailsInteractor expansionDetailsInteractor;
 
-    private static final String ARG_EXPANSION = ConfigSelectionFragment.class + "ARG_EXPANSION";
-    private static final String ARG_EXPANSION_ID = ConfigSelectionFragment.class + "ARG_EXPANSION_ID";
-
     private ConfigurationAdapter adapter;
     private Expansion expansion;
 
-    public static ConfigSelectionFragment newInstance(@NonNull final Expansion expansion){
-        final ConfigSelectionFragment fragment = new ConfigSelectionFragment();
-        final Bundle args = new Bundle();
-        args.putSerializable(ARG_EXPANSION, expansion);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public static ConfigSelectionFragment newInstance(final long expansionId) {
-        final ConfigSelectionFragment fragment = new ConfigSelectionFragment();
-        final Bundle args = new Bundle();
-        args.putLong(ARG_EXPANSION_ID, expansionId);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void initializePresenterView() {
-        if(presenterView == null){
+        if (presenterView == null) {
             this.adapter = new ConfigurationAdapter(new ArrayList<>(2));
             this.adapter.setOnItemClickedListener(this);
             presenterView = new ConfigSelectionView(getActivity(), adapter);
@@ -65,14 +48,22 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        handleArgs(getArguments());
+        if (!expansionDetailsInteractor.expansionSubject.hasValue()) {
+            finishFlowWithResult(Activity.RESULT_CANCELED);
+            return;
+        }
+        this.expansion = expansionDetailsInteractor.expansionSubject.getValue();
+        if (expansion != null) {
+            presenterView.setTitle(getString(R.string.expansions_configuration_selection_title_format, expansion.getServiceName()));
+            presenterView.setSubtitle(getString(R.string.expansions_configuration_selection_subtitle_format, expansion.getConfigurationType()));
+            configurationsInteractor.setExpansionId(expansion.getId());
+        }else {
+            cancelFlow();
+            return;
+        }
         configurationsInteractor.configSubject.forget();
         bindAndSubscribe(configurationsInteractor.configSubject,
                          this::bindConfigurations,
-                         this::presentError);
-        expansionDetailsInteractor.expansionSubject.forget();
-        bindAndSubscribe(expansionDetailsInteractor.expansionSubject,
-                         this::bindExpansion,
                          this::presentError);
     }
 
@@ -86,7 +77,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     @Override
     protected void onRelease() {
         super.onRelease();
-        if(this.adapter != null){
+        if (this.adapter != null) {
             adapter.setOnItemClickedListener(null);
             adapter.clear();
             adapter = null;
@@ -98,12 +89,12 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
         adapter.setSelectedItem(position);
     }
 
-    public void bindConfigurations(@Nullable final List<Configuration> configurations){
-        if(configurations == null) {
+    public void bindConfigurations(@Nullable final List<Configuration> configurations) {
+        if (configurations == null) {
             this.adapter.clear();
         } else {
-            if(configurations.isEmpty()){
-                if(expansion != null) {
+            if (configurations.isEmpty()) {
+                if (expansion != null) {
                     configurations.add(new Configuration.Empty(getString(R.string.expansions_configuration_selection_item_missing_title_format, expansion.getConfigurationType()),
                                                                getString(R.string.expansions_configuration_selection_item_missing_subtitle_format, expansion.getServiceName(), expansion.getConfigurationType()),
                                                                R.drawable.icon_warning));
@@ -124,45 +115,33 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
         presenterView.setSubtitle(getString(R.string.expansions_configuration_selection_subtitle_format, expansion.getConfigurationType()));
     }
 
-    public void presentError(@NonNull final Throwable e){
+    public void presentError(@NonNull final Throwable e) {
         hideBlockingActivity(false, null);
         //todo
     }
 
-    private void handleArgs(@Nullable final Bundle arguments) {
-        if(arguments != null){
-            this.expansion = (Expansion) arguments.getSerializable(ARG_EXPANSION);
-            if(expansion != null) {
-                presenterView.setTitle(getString(R.string.expansions_configuration_selection_title_format, expansion.getServiceName()));
-                presenterView.setSubtitle(getString(R.string.expansions_configuration_selection_subtitle_format, expansion.getConfigurationType()));
-                configurationsInteractor.setExpansionId(expansion.getId());
-            } else {
-                final long id = arguments.getLong(ARG_EXPANSION_ID, Expansion.NO_ID);
-                configurationsInteractor.setExpansionId(id);
-                expansionDetailsInteractor.setId(id);
-                expansionDetailsInteractor.update();
-            }
-        }
-    }
 
-    public void bindConfigurationPostResponse(@NonNull final Configuration configuration){
+    private void bindConfigurationPostResponse(@NonNull final Configuration configuration) {
+        final Intent intent = new Intent();
+        intent.putExtra(EXPANSION_ID_KEY, expansion.getId());
         hideBlockingActivity(R.string.expansions_configuration_selection_configured,
-                             stateSafeExecutor.bind(() -> ((ExpansionSettingsRouter) getActivity()).showExpansionDetail(expansion.getId())));
+                             stateSafeExecutor.bind(() -> finishFlowWithResult(Activity.RESULT_OK, intent)));
+
     }
 
     private void onDoneButtonClicked(final View ignored) {
         final Configuration selectedConfig = adapter.getSelectedItem();
-        if(selectedConfig != null){
-            if(expansion != null) {
+        if (selectedConfig != null) {
+            if (expansion != null) {
                 showBlockingActivity(getString(R.string.expansions_configuration_selection_setting_progress_format, expansion.getCategory()));
             } else {
                 showBlockingActivity(R.string.expansions_configuration_selection_setting_progress_default);
             }
             bindAndSubscribe(configurationsInteractor.setConfiguration(selectedConfig),
-                               this::bindConfigurationPostResponse,
-                               this::presentError);
+                             this::bindConfigurationPostResponse,
+                             this::presentError);
         } else {
-            ((ExpansionSettingsRouter) getActivity()).showExpansionList();
+            finishFlow();
         }
     }
 }

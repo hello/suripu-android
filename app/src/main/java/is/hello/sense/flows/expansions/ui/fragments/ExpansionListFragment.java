@@ -1,5 +1,7 @@
 package is.hello.sense.flows.expansions.ui.fragments;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,15 +16,14 @@ import javax.inject.Inject;
 
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.flows.expansions.interactors.ExpansionsInteractor;
-import is.hello.sense.flows.expansions.routers.ExpansionSettingsRouter;
 import is.hello.sense.flows.expansions.ui.views.ExpansionListView;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.ExpansionAdapter;
 
 public class ExpansionListFragment extends PresenterFragment<ExpansionListView>
-implements ArrayRecyclerAdapter.OnItemClickedListener<Expansion>{
-
+        implements ArrayRecyclerAdapter.OnItemClickedListener<Expansion> {
+    public static final String EXPANSION_ID_KEY = ExpansionListFragment.class.getSimpleName() + ".expansion_id_key";
     @Inject
     ExpansionsInteractor expansionsInteractor;
     @Inject
@@ -31,7 +32,7 @@ implements ArrayRecyclerAdapter.OnItemClickedListener<Expansion>{
 
     @Override
     public void initializePresenterView() {
-        if(presenterView == null){
+        if (presenterView == null) {
             this.adapter = new ExpansionAdapter(new ArrayList<>(2), picasso);
             this.adapter.setOnItemClickedListener(this);
             presenterView = new ExpansionListView(getActivity(), adapter);
@@ -39,7 +40,7 @@ implements ArrayRecyclerAdapter.OnItemClickedListener<Expansion>{
     }
 
     @Override
-    public void onViewCreated( final View view, final Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bindAndSubscribe(expansionsInteractor.expansions,
                          this::bindExpansions,
@@ -55,7 +56,7 @@ implements ArrayRecyclerAdapter.OnItemClickedListener<Expansion>{
     @Override
     protected void onRelease() {
         super.onRelease();
-        if(this.adapter != null){
+        if (this.adapter != null) {
             adapter.setOnItemClickedListener(null);
             adapter.clear();
             adapter = null;
@@ -64,18 +65,22 @@ implements ArrayRecyclerAdapter.OnItemClickedListener<Expansion>{
 
     @Override
     public void onItemClicked(final int position, @NonNull final Expansion item) {
-        ((ExpansionSettingsRouter) getActivity()).showExpansionDetail(item.getId());
+        final Intent intent = new Intent();
+        intent.putExtra(EXPANSION_ID_KEY, item.getId());
+        finishFlowWithResult(Activity.RESULT_OK, intent);
+
     }
 
-    public void bindExpansions(@Nullable final List<Expansion> expansions){
-        if(expansions == null) {
+    public void bindExpansions(@Nullable final List<Expansion> expansions) {
+        if (expansions == null) {
             this.adapter.clear();
         } else {
             this.adapter.replaceAll(expansions);
         }
     }
 
-    public void presentError(@NonNull final Throwable e){
+    public void presentError(@NonNull final Throwable e) {
         //todo
     }
+
 }

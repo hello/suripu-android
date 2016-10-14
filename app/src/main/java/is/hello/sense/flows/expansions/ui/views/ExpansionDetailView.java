@@ -1,5 +1,6 @@
 package is.hello.sense.flows.expansions.ui.views;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +18,7 @@ import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.widget.util.Views;
 
+@SuppressLint("ViewConstructor")
 public class ExpansionDetailView extends PresenterView {
 
     final TextView deviceNameTextView;
