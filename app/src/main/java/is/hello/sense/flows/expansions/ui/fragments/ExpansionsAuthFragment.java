@@ -4,6 +4,8 @@ import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +23,7 @@ import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.mvp.view.expansions.ExpansionsAuthView;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.CustomWebViewClient;
 
 public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView>
@@ -31,20 +34,14 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
     ApiSessionManager sessionManager;
     @Inject
     ExpansionDetailsInteractor expansionDetailsInteractor;
-    private Expansion expansion;
+    private CustomWebViewClient client;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (expansionDetailsInteractor.expansionSubject.hasValue()) {
-            this.expansion = expansionDetailsInteractor.expansionSubject.getValue();
-        } else {
-            cancelFlow();
-            return;
-        }
-
         this.setHasOptionsMenu(true);
         setActionBarHomeAsUpIndicator(R.drawable.ic_close_white);
+        addInteractor(expansionDetailsInteractor);
     }
 
     @Override
@@ -62,6 +59,7 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
             case R.id.expansions_auth_menu_item_refresh:
                 if(presenterView != null){
                     presenterView.reloadCurrentUrl();
+                    presenterView.showProgress(true);
                     return true;
                 }
                 default:
@@ -72,8 +70,8 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
     @Override
     public void initializePresenterView() {
         if (presenterView == null) {
-            final CustomWebViewClient client = new CustomWebViewClient(expansion.getAuthUri(),
-                                                                       expansion.getCompletionUri());
+            this.client = new CustomWebViewClient(Expansion.INVALID_URL,
+                                                  Expansion.INVALID_URL);
             client.setListener(this);
             presenterView = new ExpansionsAuthView(
                     getActivity(),
@@ -85,11 +83,9 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final Map<String, String> headers = new HashMap<>(1);
-        if (sessionManager.hasSession()) {
-            headers.put("Authorization", "Bearer " + sessionManager.getAccessToken());
-        }
-        presenterView.loadlInitialUrl(headers);
+        bindAndSubscribe(expansionDetailsInteractor.expansionSubject,
+                         this::bindLatestExpansion,
+                         this::presentError);
         presenterView.showProgress(true);
     }
 
@@ -97,6 +93,10 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
     protected void onRelease() {
         super.onRelease();
         setActionBarHomeAsUpIndicator(R.drawable.app_style_ab_up);
+        if(client != null){
+            client.setListener(null);
+            client = null;
+        }
     }
 
     //region CustomWebViewClient Listener
@@ -129,5 +129,26 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
         if(actionBar != null) {
             this.getActivity().getActionBar().setHomeAsUpIndicator(drawableRes);
         }
+    }
+
+    @VisibleForTesting
+    public void bindLatestExpansion(@Nullable final Expansion expansion) {
+        if(expansion == null){
+            cancelFlow();
+            return;
+        }
+        client.setInitialUrl(expansion.getAuthUri());
+        client.setCompletionUrl(expansion.getCompletionUri());
+        final Map<String, String> headers = new HashMap<>(1);
+        if (sessionManager.hasSession()) {
+            headers.put("Authorization", "Bearer " + sessionManager.getAccessToken());
+        }
+        presenterView.loadlInitialUrl(headers);
+    }
+
+    public void presentError(final Throwable e) {
+        //todo handle better
+        presenterView.showProgress(false);
+        showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e));
     }
 }

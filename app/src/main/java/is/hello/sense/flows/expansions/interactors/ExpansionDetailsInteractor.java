@@ -1,5 +1,6 @@
 package is.hello.sense.flows.expansions.interactors;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -14,6 +15,7 @@ import static is.hello.sense.api.model.v2.expansions.Expansion.NO_ID;
 
 public class ExpansionDetailsInteractor extends ValueInteractor<Expansion> {
 
+    private static final String KEY_EXPANSION_ID = ExpansionDetailsInteractor.class.getName() + "KEY_EXPANSION_ID";
     private final ApiService apiService;
     private long id = NO_ID;
     public InteractorSubject<Expansion> expansionSubject = this.subject;
@@ -45,6 +47,23 @@ public class ExpansionDetailsInteractor extends ValueInteractor<Expansion> {
                 return expansions.get(0);
             }
         });
+    }
+
+    @Override
+    public void onRestoreState(@NonNull final Bundle savedState) {
+        super.onRestoreState(savedState);
+        this.id = savedState.getLong(KEY_EXPANSION_ID, NO_ID);
+    }
+
+    @Nullable
+    @Override
+    public Bundle onSaveState() {
+        Bundle bundle = super.onSaveState();
+        if(bundle == null){
+            bundle = new Bundle();
+        }
+        bundle.putLong(KEY_EXPANSION_ID, id);
+        return bundle;
     }
 
     public Observable<Void> setState(@NonNull final State state) {

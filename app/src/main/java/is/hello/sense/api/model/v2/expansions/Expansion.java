@@ -10,6 +10,7 @@ import is.hello.sense.api.model.v2.MultiDensityImage;
 public class Expansion extends ApiResponse {
 
     public static final long NO_ID = -1;
+    public static final String INVALID_URL = Expansion.class.getName() + "invalid_expansion_url";
 
     @SerializedName("id")
     private long id;

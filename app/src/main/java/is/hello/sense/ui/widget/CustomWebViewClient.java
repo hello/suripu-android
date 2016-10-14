@@ -67,6 +67,10 @@ public class CustomWebViewClient extends WebViewClient{
         return initialUrl;
     }
 
+    public void setCompletionUrl(@NonNull final String completionUrl) {
+        this.completionUrl = completionUrl;
+    }
+
     public interface Listener {
         void onInitialUrlLoaded();
         void onCompletionUrlLoaded();
