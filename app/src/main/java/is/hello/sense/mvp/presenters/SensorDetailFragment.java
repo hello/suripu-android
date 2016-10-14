@@ -12,6 +12,7 @@ import com.segment.analytics.Properties;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -21,7 +22,9 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.sensors.QueryScope;
 import is.hello.sense.api.model.v2.sensors.Sensor;
+import is.hello.sense.api.model.v2.sensors.SensorCacheItem;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
+import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
 import is.hello.sense.api.model.v2.sensors.X;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SensorLabelInteractor;
@@ -35,6 +38,8 @@ import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
+import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
 public final class SensorDetailFragment extends PresenterFragment<SensorDetailView>
         implements SelectorView.OnSelectionChangedListener,
@@ -60,11 +65,12 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     @Inject
     SensorLabelInteractor sensorLabelInteractor;
 
+    private final HashMap<QueryScope, SensorCacheItem> sensorCache = new HashMap<>();
     private Sensor sensor;
     private UpdateTimer updateTimer;
     private DateFormatter dateFormatter;
     private TimestampQuery timestampQuery = new TimestampQuery(QueryScope.DAY_5_MINUTE);
-
+    private Subscription sensorSubscription = Subscriptions.empty();
 
     @Override
     public final void initializePresenterView() {
@@ -111,7 +117,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
                              for (final Sensor sensor : sensorResponse.getSensors()) {
                                  if (sensor.getType() == this.sensor.getType()) {
                                      this.sensor = sensor;
-                                     updateSensors(this.timestampQuery.queryScope);
+                                     updateSensors(this.timestampQuery.queryScope, false);
                                  }
                              }
                          },
@@ -137,16 +143,20 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     protected final void onRelease() {
         super.onRelease();
         this.updateTimer = null;
+        if (sensorSubscription != null) {
+            sensorSubscription.unsubscribe();
+            sensorSubscription = null;
+        }
     }
 
     @Override
     public synchronized void onSelectionChanged(final int newSelectionIndex) {
         switch (newSelectionIndex) {
             case 0:
-                updateSensors(QueryScope.DAY_5_MINUTE);
+                updateSensors(QueryScope.DAY_5_MINUTE, true);
                 break;
             case 1:
-                updateSensors(QueryScope.WEEK_1_HOUR);
+                updateSensors(QueryScope.WEEK_1_HOUR, true);
                 break;
             default:
                 throw new IllegalArgumentException(newSelectionIndex + " is not an option");
@@ -170,24 +180,40 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         Analytics.trackEvent(Analytics.Backside.EVENT_SENSOR_HISTORY, properties);
     }
 
-    // consider creating a hashmap/cache to hold these in. Limit requests to time.
-    private synchronized void updateSensors(@NonNull final QueryScope queryScope) {
+    private synchronized void updateSensors(@NonNull final QueryScope queryScope, final boolean useCache) {
         this.timestampQuery = new TimestampQuery(queryScope);
+        if (useCache) {
+            final SensorCacheItem cacheItem = sensorCache.get(queryScope);
+            if (cacheItem != null && !cacheItem.isExpired()) {
+                bindSensorsDataResponse(queryScope, cacheItem.getSensorsDataResponse());
+                return;
+            }
+        }
+
         this.stateSafeExecutor.execute(() -> {
             final ArrayList<Sensor> sensors = new ArrayList<>();
             sensors.add(this.sensor);
-            bind(this.apiService.postSensors(new SensorDataRequest(queryScope, sensors)))
+            sensorSubscription.unsubscribe();
+            sensorSubscription = bind(this.apiService.postSensors(new SensorDataRequest(queryScope, sensors)))
                     .subscribe(sensorsDataResponse -> {
-                                   changeActionBarColor(this.sensor.getColor());
-                                   this.timestampQuery.setTimestamps(sensorsDataResponse.getTimestamps());
-                                   this.sensor.setSensorValues(sensorsDataResponse);
-                                   this.presenterView.updateSensor(this.sensor);
-                                   this.presenterView.setGraph(this.sensor,
-                                                               SensorGraphView.StartDelay.SHORT,
-                                                               queryScope == QueryScope.DAY_5_MINUTE ? sensorLabelInteractor.getDayLabels() : sensorLabelInteractor.getWeekLabels());
+                                   sensorCache.put(queryScope, new SensorCacheItem(sensorsDataResponse));
+                                   bindSensorsDataResponse(queryScope,
+                                                           sensorsDataResponse);
                                },
                                this::handleError);
         });
+    }
+
+    private void bindSensorsDataResponse(@NonNull final QueryScope queryScope,
+                                         @NonNull final SensorsDataResponse response) {
+        changeActionBarColor(this.sensor.getColor());
+        this.timestampQuery.setTimestamps(response.getTimestamps());
+        this.sensor.setSensorValues(response);
+        this.presenterView.updateSensor(this.sensor);
+        this.presenterView.setGraph(this.sensor,
+                                    SensorGraphView.StartDelay.SHORT,
+                                    queryScope == QueryScope.DAY_5_MINUTE ? sensorLabelInteractor.getDayLabels() : sensorLabelInteractor.getWeekLabels());
+
     }
 
     private void handleError(@NonNull final Throwable throwable) {
@@ -254,4 +280,5 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
             this.timestamps = timestamps;
         }
     }
+
 }

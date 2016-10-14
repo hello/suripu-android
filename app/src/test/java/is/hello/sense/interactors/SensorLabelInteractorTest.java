@@ -26,6 +26,7 @@ public class SensorLabelInteractorTest extends InjectionTestCase {
         calendar.set(Calendar.MONTH, 0);
         calendar.set(Calendar.HOUR, 0);
         calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.AM_PM,Calendar.PM);
         return calendar;
 
     }
