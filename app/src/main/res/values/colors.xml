@@ -28,6 +28,7 @@
     <color name="background_dark_overlay">@color/black_50</color>
     <color name="background_timeline">@color/white</color>
     <color name="background_onboarding">@color/white</color>
+    <color name="background_expansions">@color/white</color>
     <color name="background_insight_illustration">@color/gray3</color>
 
     <color name="background_dark_item_clicked">@color/blue2</color>
