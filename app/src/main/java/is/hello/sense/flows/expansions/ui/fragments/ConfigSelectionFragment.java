@@ -57,10 +57,11 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        showBlockingActivity(R.string.expansions_configuration_selection_loading);
         bindAndSubscribe(expansionDetailsInteractor.expansionSubject,
                          this::bindExpansion,
                          this::presentError);
-
+        configurationsInteractor.configSubject.forget();
         bindAndSubscribe(configurationsInteractor.configSubject,
                          this::bindConfigurations,
                          this::presentError);
@@ -69,7 +70,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     @Override
     public void onResume() {
         super.onResume();
-        hideBlockingActivity(false, null);
+        //hideBlockingActivity(false, null); todo need to hide progress on orientation switch
     }
 
     @Override
@@ -111,6 +112,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
             this.adapter.setSelectedItemFromList(configurations);
             this.adapter.replaceAll(configurations);
         }
+        hideBlockingActivity(false, null);
     }
 
     private Configuration.Empty getEmptyConfiguration(@Nullable final Expansion expansion) {
