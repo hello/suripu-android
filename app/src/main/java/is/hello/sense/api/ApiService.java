@@ -40,6 +40,10 @@ import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.Trends;
+import is.hello.sense.api.model.v2.alarms.AlarmGroups;
+import is.hello.sense.api.model.v2.expansions.Configuration;
+import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
@@ -248,8 +252,8 @@ public interface ApiService {
 
     //region Smart Alarms
 
-    @GET("/v1/alarms")
-    Observable<ArrayList<Alarm>> smartAlarms();
+    @GET("/v2/alarms")
+    Observable<AlarmGroups> smartAlarms();
 
     @POST("/v1/alarms/{client_time_utc}")
     Observable<VoidResponse> saveSmartAlarms(@Path("client_time_utc") long timestamp,
@@ -257,6 +261,7 @@ public interface ApiService {
 
     @GET("/v1/alarms/sounds")
     Observable<ArrayList<Alarm.Sound>> availableSmartAlarmSounds();
+
 
     //endregion
 
@@ -334,8 +339,28 @@ public interface ApiService {
 
     //endregion
 
-    //region
-
     @GET("/v2/features")
     Observable<UserFeatures> getUserFeatures();
+
+
+    //region Expansions
+
+    @GET("/v2/expansions")
+    Observable<ArrayList<Expansion>> getExpansions();
+
+    @GET("/v2/expansions/{id}")
+    Observable<List<Expansion>> getExpansionDetail(@Path("id") long expansionId);
+
+    @PATCH("/v2/expansions/{id}")
+    Observable<Void> setExpansionState(@Path("id") long expansionId,
+                                       @Body @NonNull State.Request stateRequest);
+
+    @GET("/v2/expansions/{id}/configurations")
+    Observable<ArrayList<Configuration>> getConfigurations(@Path("id") long expansionId);
+
+    @PATCH("/v2/expansions/{id}/configurations")
+    Observable<Configuration> setConfigurations(@Path("id") long expansionId,
+                                                @Body @NonNull Configuration configuration);
+
+    //endregion
 }

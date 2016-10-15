@@ -7,6 +7,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.interactors.pairsense.OnboardingPairSenseInteractor;
@@ -41,8 +42,9 @@ public class OnboardingPairSenseModule {
     BaseConnectWifiPresenter provideBaseConnectWifiPresenter(@NonNull final HardwareInteractor hardwareInteractor,
                                                              @NonNull final UserFeaturesInteractor userFeaturesInteractor,
                                                              @NonNull final ApiService apiService,
-                                                             @NonNull final OnboardingPairSenseInteractor pairSenseInteractor) {
-        return new OnboardingConnectWifiPresenter(hardwareInteractor, userFeaturesInteractor, apiService, pairSenseInteractor);
+                                                             @NonNull final OnboardingPairSenseInteractor pairSenseInteractor,
+                                                             @NonNull final PreferencesInteractor preferencesInteractor) {
+        return new OnboardingConnectWifiPresenter(hardwareInteractor, userFeaturesInteractor, apiService, pairSenseInteractor,preferencesInteractor);
     }
 
     @Provides
@@ -53,10 +55,11 @@ public class OnboardingPairSenseModule {
 
     @Provides
     @Singleton
-    PairSensePresenter providesOnboardingPairSensePresenter(final HardwareInteractor interactor,
-                                                            final UserFeaturesInteractor userFeaturesInteractor,
-                                                            final ApiService apiService,
-                                                            final OnboardingPairSenseInteractor pairSenseInteractor) {
-        return new OnboardingPairSensePresenter(interactor, userFeaturesInteractor, apiService, pairSenseInteractor);
+    PairSensePresenter providesOnboardingPairSensePresenter(@NonNull final HardwareInteractor interactor,
+                                                            @NonNull final UserFeaturesInteractor userFeaturesInteractor,
+                                                            @NonNull final ApiService apiService,
+                                                            @NonNull final OnboardingPairSenseInteractor pairSenseInteractor,
+                                                            @NonNull final PreferencesInteractor preferencesInteractor) {
+        return new OnboardingPairSensePresenter(interactor, userFeaturesInteractor, apiService, pairSenseInteractor,preferencesInteractor);
     }
 }

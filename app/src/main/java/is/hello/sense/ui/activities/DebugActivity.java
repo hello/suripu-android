@@ -1,9 +1,7 @@
 package is.hello.sense.ui.activities;
 
 import android.app.ActionBar;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +17,7 @@ import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PersistentPreferencesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
@@ -87,6 +86,7 @@ public class DebugActivity extends InjectionActivity {
         adapter.add(new DetailItem("Show Sense OTA Update", this::showSenseOTA));
         adapter.add(new DetailItem("Show New Sense Update", this::showNewSenseUpdate));
         adapter.add(new DetailItem("Show Sense Voice", this::showSenseVoice));
+        adapter.add(new DetailItem("Show Expansions", this::showExpansion));
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
 
         adapter.add(new DetailItem("Forget welcome dialogs", this::clearHandholdingSettings));
@@ -221,6 +221,10 @@ public class DebugActivity extends InjectionActivity {
     public void viewRoomConditionsWelcomeCard() {
         preferences.edit().putInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, 1).apply();
         Toast.makeText(getApplicationContext(), "Forgot Room Conditions Welcome Card", Toast.LENGTH_SHORT).show();
+    }
+
+    public void showExpansion(){
+        startActivity(new Intent(this, ExpansionSettingsActivity.class));
     }
 
     public void logOut() {

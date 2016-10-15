@@ -19,12 +19,14 @@ import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.VoidResponse;
+import is.hello.sense.api.model.v2.alarms.AlarmGroups;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InteractorSubject;
 import rx.Observable;
 import rx.subjects.ReplaySubject;
 
-@Singleton public class SmartAlarmInteractor extends ValueInteractor<ArrayList<Alarm>> {
+@Singleton
+public class SmartAlarmInteractor extends ValueInteractor<ArrayList<Alarm>> {
     // Interval is an exclusive range, so we have to add on to
     // the actual too soon minutes to get the correct result.
     private static final Minutes TOO_SOON = Minutes.minutes(Alarm.TOO_SOON_MINUTES + 1);
@@ -58,7 +60,8 @@ import rx.subjects.ReplaySubject;
 
     @Override
     protected Observable<ArrayList<Alarm>> provideUpdateObservable() {
-        return apiService.smartAlarms();
+        return apiService.smartAlarms()
+                         .map(AlarmGroups::getClassic);
     }
 
 

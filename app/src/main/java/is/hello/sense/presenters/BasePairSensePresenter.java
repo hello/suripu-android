@@ -2,6 +2,7 @@ package is.hello.sense.presenters;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -11,6 +12,7 @@ import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.interactors.pairsense.PairSenseInteractor;
@@ -19,6 +21,7 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
+import rx.Subscription;
 
 public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Output> extends BaseHardwarePresenter<T> {
 
@@ -30,15 +33,20 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     private final ApiService apiService;
     protected final UserFeaturesInteractor userFeaturesInteractor;
     private final PairSenseInteractor pairSenseInteractor;
+    protected final PreferencesInteractor preferencesInteractor;
 
-    public BasePairSensePresenter(final HardwareInteractor hardwareInteractor,
-                                  final UserFeaturesInteractor userFeaturesInteractor,
-                                  final ApiService apiService,
-                                  final PairSenseInteractor pairSenseInteractor) {
+    private Subscription userFeaturesSubScription;
+
+    public BasePairSensePresenter(@NonNull final HardwareInteractor hardwareInteractor,
+                                  @NonNull final UserFeaturesInteractor userFeaturesInteractor,
+                                  @NonNull final ApiService apiService,
+                                  @NonNull final PairSenseInteractor pairSenseInteractor,
+                                  @NonNull final PreferencesInteractor preferencesInteractor) {
         super(hardwareInteractor);
         this.userFeaturesInteractor = userFeaturesInteractor;
         this.apiService = apiService;
         this.pairSenseInteractor = pairSenseInteractor;
+        this.preferencesInteractor = preferencesInteractor;
     }
 
     @Nullable
@@ -60,20 +68,20 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     protected abstract void presentError(Throwable e, String operation);
 
     @StringRes
-    public int getPairingRes(){
+    public int getPairingRes() {
         return pairSenseInteractor.getPairingRes();
     }
 
     @StringRes
-    public int getFinishedRes(){
+    public int getFinishedRes() {
         return pairSenseInteractor.getFinishedRes();
     }
 
-    protected boolean shouldContinueFlow(){
+    protected boolean shouldContinueFlow() {
         return pairSenseInteractor.shouldContinueFlow();
     }
 
-    protected boolean shouldResetOnPairSuccess(){
+    protected boolean shouldResetOnPairSuccess() {
         return pairSenseInteractor.shouldClearPeripheral();
     }
 
@@ -81,7 +89,7 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
         return pairSenseInteractor.closestPeripheral();
     }
 
-    protected String getOnFinishAnalyticsEvent(){
+    protected String getOnFinishAnalyticsEvent() {
         return pairSenseInteractor.getOnFinishedAnalyticsEvent();
     }
 
@@ -90,7 +98,7 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     }
 
     @StringRes
-    public int getLinkedAccountErrorTitleRes(){
+    public int getLinkedAccountErrorTitleRes() {
         return pairSenseInteractor.getLinkedAccountErrorTitleRes();
     }
 
@@ -180,13 +188,19 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
 
     private void getDeviceFeatures() {
         showBlockingActivity(R.string.title_pushing_data);
+        releaseSubscription();
+        userFeaturesSubScription = bind(userFeaturesInteractor.featureSubject)
+                .subscribe(features -> {
+                               preferencesInteractor.setFeatures(features);
+                               onFinished();
+                           },
+                           error -> {
+                               Logger.error(getClass().getSimpleName(), "Could not get features from Sense, ignoring.", error);
+                               onFinished();
+                           }
+                          );
+        userFeaturesInteractor.update();
 
-        bindAndSubscribe(userFeaturesInteractor.storeFeaturesInPrefs(),
-                         ignored -> onFinished(),
-                         error -> {
-                             Logger.error(getClass().getSimpleName(), "Could not get features from Sense, ignoring.", error);
-                             onFinished();
-                         });
     }
 
     private void onFinished() {
@@ -200,7 +214,26 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
                                   });
     }
 
+    @CallSuper
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        releaseSubscription();
+    }
 
+    @CallSuper
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        releaseSubscription();
+    }
+
+    private void releaseSubscription() {
+        if (userFeaturesSubScription != null) {
+            userFeaturesSubScription.unsubscribe();
+            userFeaturesSubScription = null;
+        }
+    }
 
     public interface Output extends BaseOutput {
 

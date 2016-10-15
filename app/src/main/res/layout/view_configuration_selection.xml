@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/background_light"
+                android:orientation="vertical"
+                android:padding="@dimen/x2">
+
+    <TextView
+        android:id="@+id/view_configuration_title"
+        style="@style/AppTheme.Text.ScreenTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/x1"/>
+
+    <TextView
+        android:id="@+id/view_configuration_subtitle"
+        style="@style/AppTheme.Text.Subheading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/view_configuration_title"
+        android:layout_marginBottom="@dimen/x2"/>
+
+    <Button
+        android:id="@+id/view_configuration_button"
+        style="@style/AppTheme.Button.Rounded"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="@dimen/x2"
+        android:text="@string/action_done"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/view_configuration_rv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/view_configuration_button"
+        android:layout_below="@+id/view_configuration_subtitle"/>
+
+</RelativeLayout>

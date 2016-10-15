@@ -17,6 +17,7 @@ import is.hello.sense.SenseUpgradeModule;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.CurrentSenseInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.presenters.PairSensePresenter;
@@ -50,11 +51,11 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
     @Inject
     SenseOTAStatusInteractor senseOTAStatusPresenter;
     @Inject
-    UserFeaturesInteractor userFeaturesPresenter;
-    @Inject
     CurrentSenseInteractor currentSenseInteractor;
     @Inject
     DevicesInteractor devicesInteractor;
+    @Inject
+    PreferencesInteractor preferencesInteractor;
 
     @Override
     protected List<Object> getModules() {
@@ -126,15 +127,19 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
     @Override
     public void flowFinished(@NonNull final Fragment fragment, final int responseCode, @Nullable final Intent result) {
         if (responseCode == RESULT_CANCELED) {
+            if (fragment instanceof SenseUpgradeIntroFragment) {
+                finish();
+                return;
+            }
             if (result != null && result.getBooleanExtra(ARG_NEEDS_BLUETOOTH, false)) {
                 showBluetoothFragment();
-            } else if ( fragment instanceof PairSenseFragment){
+            } else if (fragment instanceof PairSenseFragment) {
                 showSenseUpdateIntro();
-            } else if (fragment instanceof UnpairPillFragment || fragment instanceof PairPillFragment){
+            } else if (fragment instanceof UnpairPillFragment || fragment instanceof PairPillFragment) {
                 checkForSenseOTA();
-            } else if ( fragment instanceof SenseOTAFragment) {
+            } else if (fragment instanceof SenseOTAFragment) {
                 checkHasVoiceFeature();
-            } else if (fragment instanceof SenseVoiceFragment){
+            } else if (fragment instanceof SenseVoiceFragment) {
                 showVoiceDone();
             } else {
                 setResult(RESULT_CANCELED, null);
@@ -261,7 +266,7 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
     }
 
     private void checkHasVoiceFeature() {
-        if (userFeaturesPresenter.hasVoice()) {
+        if (preferencesInteractor.hasVoice()) {
             showSenseVoice();
         } else {
             showResetOriginalSense();

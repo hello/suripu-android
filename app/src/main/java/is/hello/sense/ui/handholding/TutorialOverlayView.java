@@ -172,7 +172,7 @@ public class TutorialOverlayView extends RelativeLayout {
     }
 
     public void show(@IdRes final int containerRes) {
-        tutorial.markShown(getContext());
+        tutorial.markShown(getContext(), true);
         this.container = (ViewGroup) activity.findViewById(containerRes);
         if (container == null) {
             final String idName = getResources().getResourceName(containerRes);

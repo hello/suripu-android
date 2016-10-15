@@ -29,11 +29,13 @@ public class AppSettingsView extends PresenterView {
     private final View supportItem;
     private final View tellAFriendItem;
     private final TextView version;
+    private final View expansionItem;
 
     public AppSettingsView(@NonNull final Activity activity,
                            @NonNull final ClickListenerGenerator generator,
                            @NonNull final View.OnClickListener devicesListener,
-                           @NonNull final View.OnClickListener tellAFriendListener) {
+                           @NonNull final View.OnClickListener tellAFriendListener,
+                           @NonNull final View.OnClickListener expansionsListener) {
         super(activity);
 
         this.breadcrumb = (ImageView) findViewById(R.id.fragment_app_settings_breadcrumb);
@@ -49,6 +51,11 @@ public class AppSettingsView extends PresenterView {
 
         this.unitsItem = findViewById(R.id.fragment_app_settings_units);
         Views.setSafeOnClickListener(this.unitsItem, generator.create(UnitSettingsFragment.class, R.string.label_units_and_time, false));
+
+        this.expansionItem = findViewById(R.id.fragment_app_settings_expansions);
+
+        Views.setSafeOnClickListener(this.expansionItem, expansionsListener);
+        showExpansion(false);
 
         this.supportItem = findViewById(R.id.fragment_app_settings_support);
         Views.setSafeOnClickListener(this.supportItem, generator.create(SupportFragment.class, R.string.action_support, false));
@@ -80,6 +87,7 @@ public class AppSettingsView extends PresenterView {
         devicesItem.setOnClickListener(null);
         notificationsItem.setOnClickListener(null);
         unitsItem.setOnClickListener(null);
+        expansionItem.setOnClickListener(null);
         supportItem.setOnClickListener(null);
         tellAFriendItem.setOnClickListener(null);
         version.setOnClickListener(null);
@@ -89,6 +97,9 @@ public class AppSettingsView extends PresenterView {
         this.breadcrumb.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
+    public final void showExpansion(final boolean show) {
+        ((View) this.expansionItem.getParent()).setVisibility(show ? VISIBLE : GONE);
+    }
 
     public interface ClickListenerGenerator {
         View.OnClickListener create(@NonNull final Class<? extends Fragment> fragmentClass,
