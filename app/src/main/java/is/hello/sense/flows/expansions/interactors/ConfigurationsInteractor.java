@@ -3,8 +3,11 @@ package is.hello.sense.flows.expansions.interactors;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.expansions.Configuration;
@@ -17,6 +20,10 @@ import static is.hello.sense.api.model.v2.expansions.Expansion.NO_ID;
 public class ConfigurationsInteractor extends ValueInteractor<ArrayList<Configuration>> {
 
     private static final String KEY_EXPANSION_ID = ConfigurationsInteractor.class.getName() + "KEY_EXPANSION_ID";
+    @VisibleForTesting
+    public static final long FILTER_NULL_EMPTY_CONFIG_LIST_DURATION_MILLIS = 8000;
+
+    private static final int RESUBSCRIBE_DELAY_SECONDS = 2;
     private final ApiService apiService;
 
     private long expansionId = NO_ID;
@@ -41,7 +48,15 @@ public class ConfigurationsInteractor extends ValueInteractor<ArrayList<Configur
         if (expansionId == NO_ID){
             return Observable.just(new ArrayList<>());
         }
-        return apiService.getConfigurations(expansionId);
+        final long initialRequestTime = System.currentTimeMillis();
+        return apiService.getConfigurations(expansionId)
+                         .flatMap( list -> {
+                             if(shouldResubscribe(list, initialRequestTime)){
+                                 return Observable.error(new InvalidConfigurationException());
+                             } else {
+                                 return Observable.just(list);
+                             }
+                         }).retryWhen( errorObservable -> errorObservable.flatMap(this::provideErrorNotificationHandler));
     }
 
     @Override
@@ -67,5 +82,26 @@ public class ConfigurationsInteractor extends ValueInteractor<ArrayList<Configur
 
     public void setExpansionId(final long id) {
         this.expansionId = id;
+    }
+
+    @VisibleForTesting
+    public boolean shouldResubscribe(@Nullable final List<Configuration> configurations,
+                                     final long initialRequestTime){
+        return (configurations == null || configurations.isEmpty())
+                && System.currentTimeMillis() - initialRequestTime <  FILTER_NULL_EMPTY_CONFIG_LIST_DURATION_MILLIS;
+    }
+
+    private Observable provideErrorNotificationHandler(@NonNull final Throwable error){
+        if (error instanceof InvalidConfigurationException) {
+            return Observable.just(null).delay(RESUBSCRIBE_DELAY_SECONDS, TimeUnit.SECONDS);
+        } else {
+            return Observable.error(error); //do not resubscribe
+        }
+    }
+
+    private static class InvalidConfigurationException extends RuntimeException {
+        InvalidConfigurationException(){
+            super("should not see this exception except for in logs");
+        }
     }
 }

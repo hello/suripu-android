@@ -17,6 +17,8 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.TestApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.TestApiSessionManager;
+import is.hello.sense.flow.expansions.interactors.ConfigurationsInteractorTests;
+import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.interactors.AccountInteractor;
@@ -133,6 +135,8 @@ import static org.mockito.Mockito.mock;
             RoomConditionsFragmentTests.class,
 
             SensorLabelInteractorTest.class,
+
+            ConfigurationsInteractorTests.class
     }
 )
 @SuppressWarnings("UnusedDeclaration")
@@ -224,5 +228,11 @@ public final class TestModule {
     @Singleton
     DevicesInteractor provideDevicesInteractor(final ApiService service){
         return new DevicesInteractor(service);
+    }
+
+    @Provides
+    @Singleton
+    ConfigurationsInteractor providesConfigurationInteractor(final ApiService service){
+        return new ConfigurationsInteractor(service);
     }
 }
