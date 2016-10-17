@@ -119,6 +119,7 @@
 
         <activity android:name=".flows.expansions.ui.activities.ExpansionSettingsActivity"
                   android:label="@string/expansion_list_title"
+                  android:theme="@style/AppTheme.Expansions"
                   android:parentActivityName=".ui.activities.HomeActivity"/>
 
         <activity
