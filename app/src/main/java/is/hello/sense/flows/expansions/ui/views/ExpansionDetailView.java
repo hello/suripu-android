@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -32,11 +33,20 @@ public class ExpansionDetailView extends PresenterView {
 
     final TextView configurationTypeTextView;
     final TextView configurationSelectedTextView;
+    final ImageView configurationErrorImageView;
     final TextView removeAccessTextView;
     final ViewGroup connectedContainer;
     final ViewGroup enabledContainer;
 
-    public ExpansionDetailView(@NonNull final Activity activity) {
+    final ProgressBar configurationLoading;
+
+    public ExpansionDetailView(@NonNull final Activity activity,
+                               @NonNull final OnClickListener connectButtonClickListener,
+                               @NonNull final OnClickListener enabledTextViewClickListener,
+                               @NonNull final OnClickListener removeAccessTextViewClickListener,
+                               @NonNull final OnClickListener configurationSelectedTextViewClickListener,
+                               @NonNull final OnClickListener configurationErrorImageViewClickListener,
+                               @NonNull final CompoundButton.OnCheckedChangeListener enabledSwitchClickListener) {
         super(activity);
         this.deviceNameTextView = (TextView) findViewById(R.id.view_expansion_detail_device_name);
         this.serviceNameTextView = (TextView) findViewById(R.id.view_expansion_detail_device_service_name);
@@ -51,9 +61,20 @@ public class ExpansionDetailView extends PresenterView {
         this.enabledTextView = (TextView) enabledContainer.findViewById(R.id.view_expansion_detail_enabled_tv);
         this.enabledSwitch = (Switch) enabledContainer.findViewById(R.id.view_expansion_detail_configuration_selection_switch);
         // connected and configurations found
+        this.configurationErrorImageView = (ImageView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_error);
         this.configurationTypeTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_type_tv);
         this.configurationSelectedTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_selection_tv);
         this.removeAccessTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_remove_access_tv);
+        this.configurationLoading = (ProgressBar) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_loading);
+
+
+        //hook up listeners
+        Views.setSafeOnClickListener(this.connectButton, connectButtonClickListener);
+        Views.setSafeOnClickListener(this.enabledTextView, enabledTextViewClickListener);
+        Views.setSafeOnClickListener(this.removeAccessTextView, removeAccessTextViewClickListener);
+        Views.setSafeOnClickListener(this.configurationSelectedTextView, configurationSelectedTextViewClickListener);
+        Views.setSafeOnClickListener(this.configurationErrorImageView, configurationErrorImageViewClickListener);
+        this.enabledSwitch.setOnCheckedChangeListener(enabledSwitchClickListener); //todo make safe listener
     }
 
     @Override
@@ -71,46 +92,38 @@ public class ExpansionDetailView extends PresenterView {
     }
 
     public void loadExpansionIcon(@NonNull final Picasso picasso,
-                                  @NonNull final String url){
+                                  @NonNull final String url) {
         picasso.load(url)
                .into(expansionIconImageView);
     }
 
-    public void setConnectButtonClickListener(@NonNull final OnClickListener listener){
-        Views.setSafeOnClickListener(this.connectButton, listener);
-    }
-
-    public void setRemoveAccessClickListener(@NonNull final OnClickListener listener){
-        Views.setSafeOnClickListener(this.removeAccessTextView, listener);
-    }
-
-    public void setConfigurationSelectionClickListener(@NonNull final OnClickListener listener){
-        Views.setSafeOnClickListener(this.configurationSelectedTextView, listener);
-    }
-
-    public void setEnabledSwitchClickListener(@NonNull final CompoundButton.OnCheckedChangeListener listener){
-        this.enabledSwitch.setOnCheckedChangeListener(listener); //todo make safe listener
-    }
-
-    public void setEnabledIconClickListener(@NonNull final OnClickListener listener){
-        Views.setSafeOnClickListener(this.enabledTextView, listener);
-    }
-
-    public void enableConfigurations(@Nullable final String configurationName,
-                                     @NonNull final OnClickListener configSelectionListener){
+    public void showConfigurationSuccess(@Nullable final String configurationName) {
+        this.configurationLoading.setVisibility(GONE);
         this.configurationSelectedTextView.setText(configurationName);
-        setConfigurationSelectionClickListener(configSelectionListener);
+        this.configurationSelectedTextView.setVisibility(VISIBLE);
         this.connectedContainer.setVisibility(VISIBLE);
+        this.removeAccessTextView.setEnabled(true);
     }
 
-    public void enableSwitch(final boolean isOn,
-                             @NonNull final CompoundButton.OnCheckedChangeListener onEnableSwitchChanged,
-                             @NonNull final OnClickListener onEnableIconClicked) {
+    public void showConfigurationsError() {
+        this.configurationErrorImageView.setVisibility(VISIBLE);
+        this.configurationLoading.setVisibility(GONE);
+        this.configurationSelectedTextView.setVisibility(GONE);
+        this.connectedContainer.setVisibility(VISIBLE);
+        this.removeAccessTextView.setEnabled(true);
+    }
+
+    public void showEnabledSwitch(final boolean isOn) {
         this.enabledContainer.setVisibility(VISIBLE);
         this.enabledSwitch.setChecked(isOn);
-        setEnabledSwitchClickListener(onEnableSwitchChanged);
-        setEnabledIconClickListener(onEnableIconClicked);
         this.connectedContainer.setVisibility(VISIBLE);
+        this.removeAccessTextView.setEnabled(true);
+    }
+
+    public void showConfigurationSpinner() {
+        configurationSelectedTextView.setVisibility(GONE);
+        configurationErrorImageView.setVisibility(GONE);
+        configurationLoading.setVisibility(VISIBLE);
     }
 
     public void setExpansionInfo(@NonNull final Expansion expansion,
@@ -123,8 +136,8 @@ public class ExpansionDetailView extends PresenterView {
         this.configurationTypeTextView.setText(expansion.getConfigurationType());
     }
 
-    public void enableConnectButton(@NonNull final OnClickListener onButtonClicked) {
-        setConnectButtonClickListener(onButtonClicked);
+    public void showConnectButton() {
         this.connectButton.setVisibility(VISIBLE);
     }
+
 }
