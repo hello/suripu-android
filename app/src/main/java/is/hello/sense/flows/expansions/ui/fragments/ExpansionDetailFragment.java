@@ -21,6 +21,7 @@ import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.flows.expansions.ui.views.ExpansionDetailView;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -30,9 +31,11 @@ import rx.subscriptions.Subscriptions;
 
 import static is.hello.sense.api.model.v2.expansions.Expansion.NO_ID;
 
-public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailView> {
+public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailView>
+implements OnBackPressedInterceptor{
     public static final int RESULT_CONFIGURE_PRESSED = 100;
     public static final int RESULT_ACTION_PRESSED = 101;
+
     @Inject
     Picasso picasso;
 
@@ -100,6 +103,12 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         if (updateStateSubscription != null) {
             updateStateSubscription.unsubscribe();
         }
+    }
+
+    @Override
+    public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
+        finishFlow();
+        return true;
     }
 
     public void bindConfigurations(@Nullable final List<Configuration> configurations) {
@@ -181,4 +190,5 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         //todo test when value is lost
         finishFlowWithResult(RESULT_ACTION_PRESSED);
     }
+
 }
