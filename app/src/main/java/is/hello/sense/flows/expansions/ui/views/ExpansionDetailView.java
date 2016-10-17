@@ -91,12 +91,6 @@ public class ExpansionDetailView extends PresenterView {
         this.enabledTextView.setOnClickListener(null);
     }
 
-    public void loadExpansionIcon(@NonNull final Picasso picasso,
-                                  @NonNull final String url) {
-        picasso.load(url)
-               .into(expansionIconImageView);
-    }
-
     public void showConfigurationSuccess(@Nullable final String configurationName) {
         this.configurationLoading.setVisibility(GONE);
         this.configurationSelectedTextView.setText(configurationName);
@@ -130,8 +124,8 @@ public class ExpansionDetailView extends PresenterView {
                                  @NonNull final Picasso picasso) {
         this.deviceNameTextView.setText(expansion.getDeviceName());
         this.serviceNameTextView.setText(expansion.getServiceName());
-        loadExpansionIcon(picasso, expansion.getIcon()
-                                            .getUrl(getResources()));
+        picasso.load(expansion.getIcon().getUrl(getResources()))
+               .into(expansionIconImageView);
         this.expansionDescriptionTextView.setText(expansion.getDescription());
         this.configurationTypeTextView.setText(expansion.getConfigurationType());
     }
