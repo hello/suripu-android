@@ -186,6 +186,13 @@ public abstract class PresenterFragment<T extends PresenterView>
         builder.build().showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
+    public void showErrorDialog(@NonNull final ErrorDialogFragment.PresenterBuilder builder,
+                                 final int requestCode) {
+        final ErrorDialogFragment fragment = builder.build();
+        fragment.setTargetFragment(this, requestCode);
+        fragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+    }
+
     public void showAlertDialog(@NonNull final SenseAlertDialog.Builder builder) {
         builder.build(getActivity()).show();
     }

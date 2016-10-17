@@ -1,5 +1,6 @@
 package is.hello.sense.flows.expansions.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,7 +13,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.State;
@@ -21,6 +24,7 @@ import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.flows.expansions.ui.views.ExpansionDetailView;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -33,6 +37,8 @@ import static is.hello.sense.api.model.v2.expansions.Expansion.NO_ID;
 public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailView> {
     public static final int RESULT_CONFIGURE_PRESSED = 100;
     public static final int RESULT_ACTION_PRESSED = 101;
+    private static final int REQUEST_CODE_UPDATE_STATE_ERROR = 102;
+    private static final int RESULT_HELP_PRESSED = 103;
     @Inject
     Picasso picasso;
 
@@ -90,7 +96,6 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
                          this::bindConfigurations,
                          this::presentError);
 
-
         presenterView.setRemoveAccessClickListener(ignore -> this.onRemoveAccessClicked());
     }
 
@@ -99,6 +104,14 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         super.onRelease();
         if (updateStateSubscription != null) {
             updateStateSubscription.unsubscribe();
+        }
+    }
+
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQUEST_CODE_UPDATE_STATE_ERROR && resultCode == RESULT_HELP_PRESSED){
+            UserSupport.showUserGuide(getActivity());
         }
     }
 
@@ -123,15 +136,16 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
     public void bindExpansion(@Nullable final Expansion expansion) {
         if (expansion == null) {
-            return; //todo handle better
+            cancelFlow();
+            return;
         }
-        //todo update expansion enabled switch based on state
+
         presenterView.setExpansionInfo(expansion, picasso);
         if (expansion.requiresAuthentication()) {
             presenterView.enableConnectButton(this::handleActionButtonClicked);
         } else if (expansion.requiresConfiguration()) {
             presenterView.enableConfigurations(getString(R.string.action_connect),
-                                               ignore -> finishFlowWithResult(RESULT_CONFIGURE_PRESSED));
+                                               ignore -> this.onConfigurationSelectionClicked());
         } else {
             presenterView.enableSwitch(expansion.isConnected(),
                                        this::onEnableSwitchChanged,
@@ -141,9 +155,20 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
     }
 
-    private void presentError(final Throwable throwable) {
-        //todo show more generic error dialog
-        showErrorDialog(ErrorDialogFragment.newInstance(throwable));
+    private void presentError(final Throwable e){
+        //todo handle
+        if(ApiException.isNetworkError(e)){
+            showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e));
+        }
+    }
+
+    private void presentUpdateStateError(final Throwable throwable) {
+        final ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(throwable);
+        builder.withTitle(R.string.expansion_detail_error_dialog_title)
+                .withMessage(StringRef.from(R.string.expansion_detail_error_dialog_message))
+                .withAction(RESULT_HELP_PRESSED, R.string.label_having_trouble);
+
+        showErrorDialog(builder, REQUEST_CODE_UPDATE_STATE_ERROR);
     }
 
     private void onEnableSwitchChanged(final CompoundButton ignore, final boolean isEnabled) {
@@ -157,7 +182,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     }
 
     private void onConfigurationSelectionClicked() {
-        //todo redirect to config select frag if nothing selected else open bottom sheet to select config
+        finishFlowWithResult(RESULT_CONFIGURE_PRESSED);
     }
 
     private void onRemoveAccessClicked() {
@@ -174,7 +199,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         this.updateStateSubscription.unsubscribe();
         this.updateStateSubscription = bind(expansionDetailsInteractor.setState(state))
                 .subscribe(onNext,
-                           this::presentError);
+                           this::presentUpdateStateError);
     }
 
     private void handleActionButtonClicked(final View ignored) {
