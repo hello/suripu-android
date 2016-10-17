@@ -61,8 +61,8 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
                                                     this::onConnectClicked,
                                                     this::onEnabledIconClicked,
                                                     this::onRemoveAccessClicked,
-                                                    this::onConfigurePressed,
-                                                    this::onConfigurationErrorImageViewPress,
+                                                    this::onConfigureClicked,
+                                                    this::onConfigurationErrorImageViewClicked,
                                                     this::onEnableSwitchChanged);
         }
     }
@@ -173,16 +173,9 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         updateState(isEnabled ? State.CONNECTED_ON : State.CONNECTED_OFF, Functions.NO_OP);
     }
 
-    private void onEnabledIconClicked(final View ignored) {
-        WelcomeDialogFragment.show(getActivity(),
-                                   R.xml.welcome_dialog_expansions,
-                                   true);
-    }
-
     private void onRemoveAccessClicked(final View ignored) {
         final SenseAlertDialog.SerializedRunnable finishRunnable = () ->
                 ExpansionDetailFragment.this.updateState(State.REVOKED, ignore -> finishFlow());
-
         showAlertDialog(new SenseAlertDialog.Builder().setTitle(R.string.are_you_sure)
                                                       .setMessage(R.string.expansion_detail_remove_access_dialog_message)
                                                       .setNegativeButton(R.string.action_cancel, null)
@@ -195,14 +188,20 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         finishFlowWithResult(RESULT_ACTION_PRESSED);
     }
 
-    private void onConfigurePressed(final View ignored) {
+    private void onConfigureClicked(final View ignored) {
         finishFlowWithResult(RESULT_CONFIGURE_PRESSED);
     }
 
-    private void onConfigurationErrorImageViewPress(final View ignored) {
+    private void onConfigurationErrorImageViewClicked(final View ignored) {
         presenterView.showConfigurationSpinner();
         configurationsInteractor.update();
 
+    }
+
+    private void onEnabledIconClicked(final View ignored) {
+        WelcomeDialogFragment.show(getActivity(),
+                                   R.xml.welcome_dialog_expansions,
+                                   true);
     }
     //endregion
 }
