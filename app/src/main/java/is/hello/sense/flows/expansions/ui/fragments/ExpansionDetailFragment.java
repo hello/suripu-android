@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.api.model.v2.expansions.Expansion;
@@ -56,7 +57,13 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     @Override
     public void initializePresenterView() {
         if (presenterView == null) {
-            presenterView = new ExpansionDetailView(getActivity());
+            presenterView = new ExpansionDetailView(getActivity(),
+                                                    this::onConnectClicked,
+                                                    this::onEnabledIconClicked,
+                                                    this::onRemoveAccessClicked,
+                                                    this::onConfigureClicked,
+                                                    this::onConfigurationErrorImageViewClicked,
+                                                    this::onEnableSwitchChanged);
         }
     }
 
@@ -80,7 +87,6 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         expansionDetailsInteractor.expansionSubject.forget();
         configurationsInteractor.configSubject.forget();
         expansionDetailsInteractor.update();
-        configurationsInteractor.update();
 
         bindAndSubscribe(expansionDetailsInteractor.expansionSubject,
                          this::bindExpansion,
@@ -88,10 +94,9 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
         bindAndSubscribe(configurationsInteractor.configSubject,
                          this::bindConfigurations,
-                         this::presentError);
+                         this::presentConfigurationError);
 
 
-        presenterView.setRemoveAccessClickListener(ignore -> this.onRemoveAccessClicked());
     }
 
     @Override
@@ -116,8 +121,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         }
         //todo pass along selected config and list to move work to interactor
         if (selectedConfig != null) {
-            presenterView.enableConfigurations(selectedConfig.getName(),
-                                               ignore -> this.onConfigurationSelectionClicked());
+            presenterView.showConfigurationSuccess(selectedConfig.getName());
         }
     }
 
@@ -128,16 +132,25 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         //todo update expansion enabled switch based on state
         presenterView.setExpansionInfo(expansion, picasso);
         if (expansion.requiresAuthentication()) {
-            presenterView.enableConnectButton(this::handleActionButtonClicked);
+            presenterView.showConnectButton();
+            configurationsInteractor.update();//todo remove after selected config end point is ready
         } else if (expansion.requiresConfiguration()) {
-            presenterView.enableConfigurations(getString(R.string.action_connect),
-                                               ignore -> finishFlowWithResult(RESULT_CONFIGURE_PRESSED));
+            presenterView.showConfigurationSuccess(getString(R.string.action_connect));
         } else {
-            presenterView.enableSwitch(expansion.isConnected(),
-                                       this::onEnableSwitchChanged,
-                                       ignore -> this.onEnabledIconClicked());
+            configurationsInteractor.update(); //todo remove after selected config end point is ready
+            presenterView.showEnabledSwitch(expansion.isConnected());
         }
 
+
+    }
+
+    private void presentConfigurationError(final Throwable throwable) {
+        presenterView.showConfigurationsError();
+        ErrorDialogFragment.PresenterBuilder builder = new ErrorDialogFragment.PresenterBuilder(null);
+        builder.withMessage(StringRef.from("Todo replace with mapped value"));
+        //todo map configuration to error and set title
+        //todo show im having trouble option.
+        showErrorDialog(builder);
 
     }
 
@@ -146,29 +159,6 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         showErrorDialog(ErrorDialogFragment.newInstance(throwable));
     }
 
-    private void onEnableSwitchChanged(final CompoundButton ignore, final boolean isEnabled) {
-        updateState(isEnabled ? State.CONNECTED_ON : State.CONNECTED_OFF, Functions.NO_OP);
-    }
-
-    private void onEnabledIconClicked() {
-        WelcomeDialogFragment.show(getActivity(),
-                                   R.xml.welcome_dialog_expansions,
-                                   true);
-    }
-
-    private void onConfigurationSelectionClicked() {
-        //todo redirect to config select frag if nothing selected else open bottom sheet to select config
-    }
-
-    private void onRemoveAccessClicked() {
-        final SenseAlertDialog.SerializedRunnable finishRunnable = () ->
-                this.updateState(State.REVOKED, ignore -> finishFlow());
-        showAlertDialog(new SenseAlertDialog.Builder().setTitle(R.string.are_you_sure)
-                                                      .setMessage(R.string.expansion_detail_remove_access_dialog_message)
-                                                      .setNegativeButton(R.string.action_cancel, null)
-                                                      .setButtonDestructive(SenseAlertDialog.BUTTON_POSITIVE, true)
-                                                      .setPositiveButton(R.string.action_delete, finishRunnable));
-    }
 
     public void updateState(@NonNull final State state, @NonNull final Action1<Object> onNext) {
         this.updateStateSubscription.unsubscribe();
@@ -177,8 +167,41 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
                            this::presentError);
     }
 
-    private void handleActionButtonClicked(final View ignored) {
+
+    // region listeners
+    private void onEnableSwitchChanged(final CompoundButton ignore, final boolean isEnabled) {
+        updateState(isEnabled ? State.CONNECTED_ON : State.CONNECTED_OFF, Functions.NO_OP);
+    }
+
+    private void onRemoveAccessClicked(final View ignored) {
+        final SenseAlertDialog.SerializedRunnable finishRunnable = () ->
+                ExpansionDetailFragment.this.updateState(State.REVOKED, ignore -> finishFlow());
+        showAlertDialog(new SenseAlertDialog.Builder().setTitle(R.string.are_you_sure)
+                                                      .setMessage(R.string.expansion_detail_remove_access_dialog_message)
+                                                      .setNegativeButton(R.string.action_cancel, null)
+                                                      .setButtonDestructive(SenseAlertDialog.BUTTON_POSITIVE, true)
+                                                      .setPositiveButton(R.string.action_delete, finishRunnable));
+    }
+
+    private void onConnectClicked(final View ignored) {
         //todo test when value is lost
         finishFlowWithResult(RESULT_ACTION_PRESSED);
     }
+
+    private void onConfigureClicked(final View ignored) {
+        finishFlowWithResult(RESULT_CONFIGURE_PRESSED);
+    }
+
+    private void onConfigurationErrorImageViewClicked(final View ignored) {
+        presenterView.showConfigurationSpinner();
+        configurationsInteractor.update();
+
+    }
+
+    private void onEnabledIconClicked(final View ignored) {
+        WelcomeDialogFragment.show(getActivity(),
+                                   R.xml.welcome_dialog_expansions,
+                                   true);
+    }
+    //endregion
 }

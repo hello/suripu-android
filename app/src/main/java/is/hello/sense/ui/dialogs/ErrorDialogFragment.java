@@ -270,7 +270,7 @@ public class ErrorDialogFragment extends SenseDialogFragment {
     }
 
     public static class PresenterBuilder extends Builder {
-        public PresenterBuilder(@NonNull final Throwable e) {
+        public PresenterBuilder(@Nullable final Throwable e) {
             withMessage(Errors.getDisplayMessage(e));
             withErrorType(Errors.getType(e));
             withContextInfo(Errors.getContextInfo(e));
