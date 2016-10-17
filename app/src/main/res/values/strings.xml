@@ -711,6 +711,8 @@
 
     <string name="welcome_dialog_expansions_title">Expansions</string>
     <string name="welcome_dialog_expansions_message">Enabling access to compatible smart devices allows Sense to activate them at relevant moments, like turning on your lights when Sense’s alarm sounds.</string>
+    <string name="expansion_detail_error_dialog_title">Changes not saved</string>
+    <string name="expansion_detail_error_dialog_message">Sense couldn’t save your changes. Please try again later.</string>
     <!-- end region -->
 
 

@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.api.model.v2.expansions.Expansion;
@@ -90,7 +91,6 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
                          this::bindConfigurations,
                          this::presentError);
 
-
         presenterView.setRemoveAccessClickListener(ignore -> this.onRemoveAccessClicked());
     }
 
@@ -131,7 +131,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             presenterView.enableConnectButton(this::handleActionButtonClicked);
         } else if (expansion.requiresConfiguration()) {
             presenterView.enableConfigurations(getString(R.string.action_connect),
-                                               ignore -> finishFlowWithResult(RESULT_CONFIGURE_PRESSED));
+                                               ignore -> this.onConfigurationSelectionClicked());
         } else {
             presenterView.enableSwitch(expansion.isConnected(),
                                        this::onEnableSwitchChanged,
@@ -141,9 +141,17 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
     }
 
-    private void presentError(final Throwable throwable) {
-        //todo show more generic error dialog
-        showErrorDialog(ErrorDialogFragment.newInstance(throwable));
+    private void presentError(final Throwable throwable){
+        //todo handle
+    }
+
+    private void presentUpdateStateError(final Throwable throwable) {
+        final ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(throwable);
+        builder.withTitle(R.string.expansion_detail_error_dialog_title)
+                .withMessage(StringRef.from(R.string.expansion_detail_error_dialog_message))
+                .withAction("", R.string.label_having_trouble);
+
+        showErrorDialog(builder);
     }
 
     private void onEnableSwitchChanged(final CompoundButton ignore, final boolean isEnabled) {
@@ -157,7 +165,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     }
 
     private void onConfigurationSelectionClicked() {
-        //todo redirect to config select frag if nothing selected else open bottom sheet to select config
+        finishFlowWithResult(RESULT_CONFIGURE_PRESSED);
     }
 
     private void onRemoveAccessClicked() {
@@ -174,7 +182,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         this.updateStateSubscription.unsubscribe();
         this.updateStateSubscription = bind(expansionDetailsInteractor.setState(state))
                 .subscribe(onNext,
-                           this::presentError);
+                           this::presentUpdateStateError);
     }
 
     private void handleActionButtonClicked(final View ignored) {
