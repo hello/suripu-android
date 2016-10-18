@@ -428,7 +428,7 @@
     <string name="device_color_black">Charcoal</string>
     <string name="device_color_white">Cotton</string>
     <string name="device_hardware_version_sense">Sense</string>
-    <string name="device_hardware_version_sense_with_voice">Sense with voice</string>
+    <string name="device_hardware_version_sense_with_voice">Sense with Voice</string>
     <string name="device_hardware_version_unknown">Unknown</string>
     <string name="action_upgrade_sense">Upgrade to Sense with voice</string>
 
