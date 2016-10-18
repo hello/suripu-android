@@ -125,7 +125,7 @@ public class RoomCheckPresenter extends BasePresenter<RoomCheckPresenter.Output>
         final UnitConverter unitConverter = unitFormatter.getUnitConverterForSensor(sensor.getType());
         int convertedValue = 0;
         if (sensor.getValue() != Sensor.NO_VALUE) {
-            convertedValue = (int) unitConverter.convert(sensor.getValue());
+            convertedValue = unitConverter.convert(sensor.getValue()).intValue();
         }
         return convertedValue;
     }

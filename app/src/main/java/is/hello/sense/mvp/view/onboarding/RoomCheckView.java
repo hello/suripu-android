@@ -73,6 +73,7 @@ public class RoomCheckView extends PresenterView {
         this.startColor = ContextCompat.getColor(context, Condition.ALERT.colorRes);
 
         this.sensorViewContainer.setClickable(false);
+        this.sensorViewContainer.setFocusable(false);
     }
 
     @Override

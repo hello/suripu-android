@@ -112,17 +112,19 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.updateTimer = new UpdateTimer(2, TimeUnit.MINUTES);
+
         bindAndSubscribe(this.sensorResponseInteractor.sensors,
                          sensorResponse -> {
                              for (final Sensor sensor : sensorResponse.getSensors()) {
                                  if (sensor.getType() == this.sensor.getType()) {
                                      this.sensor = sensor;
-                                     updateSensors(this.timestampQuery.queryScope, false);
+
                                  }
                              }
                          },
                          this::handleError);
         this.updateTimer.setOnUpdate(this.sensorResponseInteractor::update);
+        updateSensors(this.timestampQuery.queryScope, false);
     }
 
     @Override

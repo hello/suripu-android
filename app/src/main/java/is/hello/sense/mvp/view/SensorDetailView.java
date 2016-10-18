@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
+import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.SensorDetailScrollView;
 import is.hello.sense.ui.widget.SensorScaleList;
@@ -131,8 +132,10 @@ public final class SensorDetailView extends PresenterView
 
     public final void updateSensor(@NonNull final Sensor sensor) {
         post(() -> {
-            this.scaleList.renderScales(sensor.getScales(), unitFormatter.getMeasuredInString(sensor.getType()));
-            this.about.setText(unitFormatter.getAboutStringRes(sensor.getType()));
+            final SensorType type = sensor.getType();
+            this.scaleList.renderScales(unitFormatter.getConvertedScales(sensor.getScales(), type),
+                                        unitFormatter.getMeasuredInString(type));
+            this.about.setText(unitFormatter.getAboutStringRes(type));
 
             updateColorScheme(ContextCompat.getColor(getContext(), sensor.getColor()));
         });

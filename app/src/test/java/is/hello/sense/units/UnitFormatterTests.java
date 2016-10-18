@@ -4,19 +4,25 @@ import android.annotation.SuppressLint;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
 
+import is.hello.sense.api.model.Condition;
+import is.hello.sense.api.model.v2.Scale;
 import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.interactors.PreferencesInteractor;
 
+import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 
 @SuppressLint("CommitPrefEdits")
@@ -244,5 +250,32 @@ public class UnitFormatterTests extends InjectionTestCase {
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_LIGHT_TEMPERATURE)));
         assertThat(unitFormatter.getSuffixForSensor(SensorType.PRESSURE),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_PRESSURE)));
+    }
+
+    @Test
+    public void getConvertedScalesReturnsSameScaleIfNoConversionNeeded() {
+        final List<Scale> testScales = new ArrayList<>();
+        testScales.add(new Scale("test", null, null, Condition.UNKNOWN));
+        testScales.add(new Scale("non empty test", 0f, 20f, Condition.UNKNOWN));
+        assertEquals(unitFormatter.getConvertedScales(testScales, SensorType.UNKNOWN), testScales);
+    }
+
+    @Test
+    public void getConvertedTemperatureScaleReturnsExpected() {
+        preferences.edit()
+                   .putBoolean(PreferencesInteractor.USE_CELSIUS, false)
+                   .commit();
+
+        final List<Scale> testScales = new ArrayList<>();
+        testScales.add(new Scale("test", null, null, Condition.UNKNOWN));
+        testScales.add(new Scale("non empty test", 0f, 20f, Condition.UNKNOWN));
+        final List<Scale> convertedScales = unitFormatter.getConvertedScales(testScales, SensorType.TEMPERATURE);
+        final Scale convertedNonEmptyScale = convertedScales.get(1);
+        final Scale originalNonEmptyScale = testScales.get(1);
+
+        assertNotEquals(convertedScales, testScales);
+        assertEquals(convertedScales.get(0), testScales.get(0));
+        assertEquals(convertedNonEmptyScale.getMax(),
+                     UnitOperations.celsiusToFahrenheit(originalNonEmptyScale.getMax()));
     }
 }
