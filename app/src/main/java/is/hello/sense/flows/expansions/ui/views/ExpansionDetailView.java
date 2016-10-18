@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.Switch;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -28,15 +28,20 @@ public class ExpansionDetailView extends PresenterView {
     final Button connectButton;
 
     final TextView enabledTextView;
-    final Switch enabledSwitch;
+    final CompoundButton enabledSwitch;
 
     final TextView configurationTypeTextView;
     final TextView configurationSelectedTextView;
+    final ImageView configurationErrorImageView;
     final TextView removeAccessTextView;
     final ViewGroup connectedContainer;
     final ViewGroup enabledContainer;
 
-    public ExpansionDetailView(@NonNull final Activity activity) {
+    final ProgressBar configurationLoading;
+
+    public ExpansionDetailView(@NonNull final Activity activity,
+                               @NonNull final OnClickListener enabledTextViewClickListener,
+                               @NonNull final OnClickListener removeAccessTextViewClickListener) {
         super(activity);
         this.deviceNameTextView = (TextView) findViewById(R.id.view_expansion_detail_device_name);
         this.serviceNameTextView = (TextView) findViewById(R.id.view_expansion_detail_device_service_name);
@@ -49,11 +54,18 @@ public class ExpansionDetailView extends PresenterView {
         this.connectedContainer = (ViewGroup) findViewById(R.id.view_expansion_detail_connected_container);
         this.enabledContainer = (ViewGroup) connectedContainer.findViewById(R.id.view_expansion_detail_enabled_container);
         this.enabledTextView = (TextView) enabledContainer.findViewById(R.id.view_expansion_detail_enabled_tv);
-        this.enabledSwitch = (Switch) enabledContainer.findViewById(R.id.view_expansion_detail_configuration_selection_switch);
+        this.enabledSwitch = (CompoundButton) enabledContainer.findViewById(R.id.view_expansion_detail_configuration_selection_switch);
         // connected and configurations found
+        this.configurationErrorImageView = (ImageView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_error);
         this.configurationTypeTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_type_tv);
         this.configurationSelectedTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_selection_tv);
         this.removeAccessTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_remove_access_tv);
+        this.configurationLoading = (ProgressBar) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_loading);
+
+
+        //hook up listeners
+        Views.setSafeOnClickListener(this.enabledTextView, enabledTextViewClickListener);
+        Views.setSafeOnClickListener(this.removeAccessTextView, removeAccessTextViewClickListener);
     }
 
     @Override
@@ -70,61 +82,93 @@ public class ExpansionDetailView extends PresenterView {
         this.enabledTextView.setOnClickListener(null);
     }
 
-    public void loadExpansionIcon(@NonNull final Picasso picasso,
-                                  @NonNull final String url){
-        picasso.load(url)
-               .into(expansionIconImageView);
-    }
-
-    public void setConnectButtonClickListener(@NonNull final OnClickListener listener){
-        Views.setSafeOnClickListener(this.connectButton, listener);
-    }
-
-    public void setRemoveAccessClickListener(@NonNull final OnClickListener listener){
-        Views.setSafeOnClickListener(this.removeAccessTextView, listener);
-    }
-
-    public void setConfigurationSelectionClickListener(@NonNull final OnClickListener listener){
-        Views.setSafeOnClickListener(this.configurationSelectedTextView, listener);
-    }
-
-    public void setEnabledSwitchClickListener(@NonNull final CompoundButton.OnCheckedChangeListener listener){
-        this.enabledSwitch.setOnCheckedChangeListener(listener); //todo make safe listener
-    }
-
-    public void setEnabledIconClickListener(@NonNull final OnClickListener listener){
-        Views.setSafeOnClickListener(this.enabledTextView, listener);
-    }
-
-    public void enableConfigurations(@Nullable final String configurationName,
-                                     @NonNull final OnClickListener configSelectionListener){
+    public void showConfigurationSuccess(@Nullable final String configurationName,
+                                         @NonNull final OnClickListener configurationSelectedTextViewClickListener) {
+        Views.setSafeOnClickListener(this.configurationSelectedTextView, configurationSelectedTextViewClickListener);
+        this.configurationLoading.setVisibility(GONE);
         this.configurationSelectedTextView.setText(configurationName);
-        setConfigurationSelectionClickListener(configSelectionListener);
+        this.configurationSelectedTextView.setVisibility(VISIBLE);
         this.connectedContainer.setVisibility(VISIBLE);
+        this.removeAccessTextView.setEnabled(true);
     }
 
-    public void enableSwitch(final boolean isOn,
-                             @NonNull final CompoundButton.OnCheckedChangeListener onEnableSwitchChanged,
-                             @NonNull final OnClickListener onEnableIconClicked) {
-        this.enabledContainer.setVisibility(VISIBLE);
-        this.enabledSwitch.setChecked(isOn);
-        setEnabledSwitchClickListener(onEnableSwitchChanged);
-        setEnabledIconClickListener(onEnableIconClicked);
+    public void showConfigurationsError(@NonNull final OnClickListener configurationErrorImageViewClickListener) {
+        Views.setSafeOnClickListener(this.configurationErrorImageView, configurationErrorImageViewClickListener);
+        this.configurationLoading.setVisibility(GONE);
+        this.configurationSelectedTextView.setVisibility(GONE);
+        this.configurationErrorImageView.setVisibility(VISIBLE);
         this.connectedContainer.setVisibility(VISIBLE);
+        this.removeAccessTextView.setEnabled(true);
     }
+
+    public void showConfigurationSpinner() {
+        this.configurationSelectedTextView.setVisibility(GONE);
+        this.configurationErrorImageView.setVisibility(GONE);
+        this.configurationLoading.setVisibility(VISIBLE);
+    }
+
+    public void showConnectButton(@NonNull final OnClickListener connectButtonClickListener) {
+        this.connectButton.setVisibility(VISIBLE);
+        Views.setSafeOnClickListener(this.connectButton, connectButtonClickListener);
+    }
+
 
     public void setExpansionInfo(@NonNull final Expansion expansion,
                                  @NonNull final Picasso picasso) {
         this.deviceNameTextView.setText(expansion.getDeviceName());
         this.serviceNameTextView.setText(expansion.getServiceName());
-        loadExpansionIcon(picasso, expansion.getIcon()
-                                            .getUrl(getResources()));
+        picasso.load(expansion.getIcon().getUrl(getResources()))
+               .into(expansionIconImageView);
         this.expansionDescriptionTextView.setText(expansion.getDescription());
         this.configurationTypeTextView.setText(expansion.getConfigurationType());
     }
 
-    public void enableConnectButton(@NonNull final OnClickListener onButtonClicked) {
-        setConnectButtonClickListener(onButtonClicked);
-        this.connectButton.setVisibility(VISIBLE);
+
+    //region switch
+
+    /**
+     * Call to revert the switch after failing to update its state on the server.
+     *
+     * @param enabledSwitchClickListener we need to remove its callback while changing its checked
+     *                                   value and then add it back.
+     */
+    public void showUpdateSwitchError(@NonNull final CompoundButton.OnCheckedChangeListener enabledSwitchClickListener) {
+        setEnableSwitch(!enabledSwitch.isChecked(), enabledSwitchClickListener);
     }
+
+    /**
+     * Call to re-enable the switch after successfully updating its state on the server.
+     */
+    public void showUpdateSwitchSuccess() {
+        this.enabledSwitch.setEnabled(true);
+    }
+
+    /**
+     * Call once for expansions that need to display an on/off switch.
+     *
+     * @param isOn                       starting value of switch.
+     * @param enabledSwitchClickListener callback when switch is pressed.
+     */
+    public void showEnableSwitch(final boolean isOn,
+                                 @NonNull final CompoundButton.OnCheckedChangeListener enabledSwitchClickListener) {
+        this.connectedContainer.setVisibility(VISIBLE);
+        this.enabledContainer.setVisibility(VISIBLE);
+        this.removeAccessTextView.setEnabled(true);
+        this.setEnableSwitch(isOn, enabledSwitchClickListener);
+    }
+
+    private void setEnableSwitch(final boolean isOn,
+                                 @NonNull final CompoundButton.OnCheckedChangeListener enabledSwitchClickListener) {
+        this.enabledSwitch.setOnCheckedChangeListener(null);
+        this.enabledSwitch.setChecked(isOn);
+        this.enabledSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            buttonView.setEnabled(false);
+            enabledSwitchClickListener.onCheckedChanged(buttonView, isChecked);
+        });
+        this.enabledSwitch.setEnabled(true);
+    }
+
+    //endregion
+
+
 }
