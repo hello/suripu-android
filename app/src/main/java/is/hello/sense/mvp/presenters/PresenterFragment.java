@@ -155,14 +155,14 @@ public abstract class PresenterFragment<T extends PresenterView>
         if (success) {
             LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
                 this.loadingDialogFragment = null;
-                if(onCompletion != null) {
+                if (onCompletion != null) {
                     onCompletion.run();
                 }
             });
         } else {
             LoadingDialogFragment.close(getFragmentManager());
             this.loadingDialogFragment = null;
-            if(onCompletion != null) {
+            if (onCompletion != null) {
                 onCompletion.run();
             }
         }
@@ -180,6 +180,13 @@ public abstract class PresenterFragment<T extends PresenterView>
         } else {
             loadingDialogFragment.setTitle(title);
         }
+    }
+
+    public void showErrorDialog(@NonNull final ErrorDialogFragment.PresenterBuilder builder,
+                                final int requestCode) {
+        final ErrorDialogFragment fragment = builder.build();
+        fragment.setTargetFragment(this, requestCode);
+        fragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
     public void showErrorDialog(@NonNull final ErrorDialogFragment.PresenterBuilder builder) {

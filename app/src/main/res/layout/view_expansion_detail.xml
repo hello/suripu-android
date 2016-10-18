@@ -81,11 +81,17 @@
                 android:gravity="center"
                 android:text="@string/title_enabled"/>
 
-            <Switch
-                android:id="@+id/view_expansion_detail_configuration_selection_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|center_vertical"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="end|center_vertical">
+
+                <include
+                    android:id="@+id/view_expansion_detail_configuration_selection_switch"
+                    layout="@layout/widget_switch"/>
+
+            </RelativeLayout>
+
         </FrameLayout>
 
         <FrameLayout

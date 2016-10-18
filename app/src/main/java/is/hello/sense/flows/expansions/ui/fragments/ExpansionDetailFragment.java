@@ -1,5 +1,6 @@
 package is.hello.sense.flows.expansions.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +15,7 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.api.model.v2.expansions.Expansion;
@@ -21,8 +23,8 @@ import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.flows.expansions.ui.views.ExpansionDetailView;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -32,9 +34,13 @@ import rx.subscriptions.Subscriptions;
 
 import static is.hello.sense.api.model.v2.expansions.Expansion.NO_ID;
 
-public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailView> {
+public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailView>
+        implements CompoundButton.OnCheckedChangeListener {
     public static final int RESULT_CONFIGURE_PRESSED = 100;
     public static final int RESULT_ACTION_PRESSED = 101;
+    private static final int REQUEST_CODE_UPDATE_STATE_ERROR = 102;
+    private static final int RESULT_HELP_PRESSED = 103;
+
     @Inject
     Picasso picasso;
 
@@ -46,6 +52,10 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
     private static final String ARG_EXPANSION_ID = ExpansionDetailFragment.class + "ARG_EXPANSION_ID";
     private Subscription updateStateSubscription;
+    /**
+     * Tracks when fetching configurations fails to show the dialog at the right time.
+     */
+    private boolean lastConfigurationsFetchFailed = false;
 
     public static ExpansionDetailFragment newInstance(final long expansionId) {
         final ExpansionDetailFragment fragment = new ExpansionDetailFragment();
@@ -59,12 +69,8 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     public void initializePresenterView() {
         if (presenterView == null) {
             presenterView = new ExpansionDetailView(getActivity(),
-                                                    this::onConnectClicked,
                                                     this::onEnabledIconClicked,
-                                                    this::onRemoveAccessClicked,
-                                                    this::onConfigureClicked,
-                                                    this::onConfigurationErrorImageViewClicked,
-                                                    this::onEnableSwitchChanged);
+                                                    this::onRemoveAccessClicked);
         }
     }
 
@@ -96,8 +102,14 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         bindAndSubscribe(configurationsInteractor.configSubject,
                          this::bindConfigurations,
                          this::presentConfigurationError);
+    }
 
-
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_UPDATE_STATE_ERROR && resultCode == RESULT_HELP_PRESSED) {
+            UserSupport.showUserGuide(getActivity());
+        }
     }
 
     @Override
@@ -108,7 +120,15 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         }
     }
 
+    public void updateState(@NonNull final State state, @NonNull final Action1<Object> onNext) {
+        this.updateStateSubscription.unsubscribe();
+        this.updateStateSubscription = bind(expansionDetailsInteractor.setState(state))
+                .subscribe(onNext,
+                           this::presentUpdateStateError);
+    }
+
     public void bindConfigurations(@Nullable final List<Configuration> configurations) {
+        lastConfigurationsFetchFailed = false;
         if (configurations == null) {
             return;
         }
@@ -122,66 +142,95 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         }
         //todo pass along selected config and list to move work to interactor
         if (selectedConfig != null) {
-            presenterView.showConfigurationSuccess(selectedConfig.getName());
+            presenterView.showConfigurationSuccess(selectedConfig.getName(), this::onConnectClicked);
         }
     }
 
     public void bindExpansion(@Nullable final Expansion expansion) {
         if (expansion == null) {
-            return; //todo handle better
+            cancelFlow();
+            return;
         }
-        //todo update expansion enabled switch based on state
         presenterView.setExpansionInfo(expansion, picasso);
         if (expansion.requiresAuthentication()) {
-            presenterView.showConnectButton();
+            presenterView.showConnectButton(this::onConnectClicked);
             configurationsInteractor.update();//todo remove after selected config end point is ready
         } else if (expansion.requiresConfiguration()) {
-            presenterView.showConfigurationSuccess(getString(R.string.action_connect));
+            presenterView.showConfigurationSuccess(getString(R.string.action_connect), this::onConfigureClicked);
         } else {
             configurationsInteractor.update(); //todo remove after selected config end point is ready
-            presenterView.showEnabledSwitch(expansion.isConnected());
+            presenterView.showEnableSwitch(expansion.isConnected(), this);
         }
 
     }
 
-    private void presentConfigurationError(final Throwable throwable) {
-        presenterView.showConfigurationsError();
-        final ErrorDialogFragment.PresenterBuilder builder = new ErrorDialogFragment.PresenterBuilder(null);
-        if (expansionDetailsInteractor.expansionSubject.hasValue()) {
-            final Expansion expansion = expansionDetailsInteractor.expansionSubject.getValue();
-            builder.withTitle(StringRef.from(getString(R.string.error_configurations_unavailable_title, expansion.getCategory().displayString)));
-            builder.withMessage(StringRef.from(getString(R.string.error_configurations_unavailable_message, expansion.getCategory().displayString, expansion.getServiceName())));
-        } else {
-            builder.withTitle(R.string.error_configurations_unavailable_title_no_expansion);
-            builder.withMessage(StringRef.from(getString(R.string.error_configurations_unavailable_message, Category.fromString(null).displayString, null)));
-        }
-        builder.withAction(200,R.string.label_having_trouble); //todo change result code and handle
-        showErrorDialog(builder);
+    //region errors
 
-    }
-
+    /**
+     * Error shown when fetching expansions fails. Will close fragment since there is nothing to
+     * show and we don't have a retry option.
+     *
+     * @param throwable -
+     */
     private void presentError(final Throwable throwable) {
-        //todo show more generic error dialog
-        showErrorDialog(ErrorDialogFragment.newInstance(throwable));
+        if (ApiException.isNetworkError(throwable)) {
+            showErrorDialog(new ErrorDialogFragment.PresenterBuilder(throwable));
+        } else {
+            showErrorDialog(ErrorDialogFragment.newInstance(throwable));
+        }
+        cancelFlow();
     }
 
-
-    public void updateState(@NonNull final State state, @NonNull final Action1<Object> onNext) {
-        this.updateStateSubscription.unsubscribe();
-        this.updateStateSubscription = bind(expansionDetailsInteractor.setState(state))
-                .subscribe(onNext,
-                           this::presentError);
+    /**
+     * Error shown when fetching selected configuration. Will tell the view to display the error
+     * image which on press will allow retry.
+     *
+     * @param throwable -
+     */
+    private void presentConfigurationError(final Throwable throwable) {
+        presenterView.showConfigurationsError(this::onConfigurationErrorImageViewClicked);
+        if (ApiException.isNetworkError(throwable)) {
+            showErrorDialog(new ErrorDialogFragment.PresenterBuilder(throwable));
+        } else {
+            if (lastConfigurationsFetchFailed) {
+                final ErrorDialogFragment.PresenterBuilder builder = new ErrorDialogFragment.PresenterBuilder(null);
+                if (expansionDetailsInteractor.expansionSubject.hasValue()) {
+                    final Expansion expansion = expansionDetailsInteractor.expansionSubject.getValue();
+                    builder.withTitle(StringRef.from(getString(R.string.error_configurations_unavailable_title, expansion.getCategory().displayString)));
+                    builder.withMessage(StringRef.from(getString(R.string.error_configurations_unavailable_message, expansion.getCategory().displayString, expansion.getServiceName())));
+                } else {
+                    builder.withTitle(R.string.error_configurations_unavailable_title_no_expansion);
+                    builder.withMessage(StringRef.from(getString(R.string.error_configurations_unavailable_message, Category.fromString(null).displayString, null)));
+                }
+                builder.withAction(200, R.string.label_having_trouble); //todo change result code and handle
+                showErrorDialog(builder);
+            }
+        }
+        lastConfigurationsFetchFailed = true;
     }
 
+    /**
+     * Error shown when turning the expansion on/off. Just show a dialog and revert selection.
+     *
+     * @param throwable -
+     */
+    private void presentUpdateStateError(final Throwable throwable) {
+        hideBlockingActivity(false, () -> {
+            this.presenterView.showUpdateSwitchError(this);
+            final ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(throwable);
+            builder.withTitle(R.string.expansion_detail_error_dialog_title)
+                   .withMessage(StringRef.from(R.string.expansion_detail_error_dialog_message))
+                   .withAction(RESULT_HELP_PRESSED, R.string.label_having_trouble);
+            showErrorDialog(builder, REQUEST_CODE_UPDATE_STATE_ERROR);
+        });
+
+    }
+    //endregion
 
     // region listeners
-    private void onEnableSwitchChanged(final CompoundButton ignore, final boolean isEnabled) {
-        updateState(isEnabled ? State.CONNECTED_ON : State.CONNECTED_OFF, Functions.NO_OP);
-    }
-
     private void onRemoveAccessClicked(final View ignored) {
         final SenseAlertDialog.SerializedRunnable finishRunnable = () ->
-                ExpansionDetailFragment.this.updateState(State.REVOKED, ignore -> finishFlow());
+                ExpansionDetailFragment.this.updateState(State.REVOKED, (ignored2) -> finishFlow());
         showAlertDialog(new SenseAlertDialog.Builder().setTitle(R.string.are_you_sure)
                                                       .setMessage(R.string.expansion_detail_remove_access_dialog_message)
                                                       .setNegativeButton(R.string.action_cancel, null)
@@ -208,6 +257,14 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         WelcomeDialogFragment.show(getActivity(),
                                    R.xml.welcome_dialog_expansions,
                                    true);
+    }
+
+    @Override
+    public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
+        showBlockingActivity(isChecked ? R.string.enabling_expansion : R.string.disabling_expansion);
+        updateState(isChecked ? State.CONNECTED_ON : State.CONNECTED_OFF, (ignored) ->
+                hideBlockingActivity(true, ExpansionDetailFragment.this.presenterView::showUpdateSwitchSuccess));
+
     }
     //endregion
 }

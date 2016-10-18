@@ -140,4 +140,6 @@
     <string name="error_configurations_unavailable_title_no_expansion">Not available</string>
     <string name="error_configurations_unavailable_title">No %1$s available</string>
     <string name="error_configurations_unavailable_message">You will need to set up a %1$s in the %2$s app.</string>
+    <string name="expansion_detail_error_dialog_title">Changes not saved</string>
+    <string name="expansion_detail_error_dialog_message">Sense couldn’t save your changes. Please try again later.</string>
 </resources>
