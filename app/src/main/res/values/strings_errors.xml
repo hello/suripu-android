@@ -142,4 +142,7 @@
     <string name="error_configurations_unavailable_message">You will need to set up a %1$s in the %2$s app.</string>
     <string name="expansion_detail_error_dialog_title">Changes not saved</string>
     <string name="expansion_detail_error_dialog_message">Sense couldn’t save your changes. Please try again later.</string>
+
+    <string name="expansion_not_loaded_title">Expansion not loaded</string>
+    <string name="expansion_not_loaded_message">Sense could not load expansions at this time. Please try again later.</string>
 </resources>

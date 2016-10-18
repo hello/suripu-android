@@ -15,6 +15,7 @@ import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
+import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
 import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
@@ -82,7 +83,8 @@ import is.hello.sense.zendesk.ZendeskModule;
                 UtilityModule.class,
                 FacebookApiModule.class,
                 PillModule.class,
-                SenseOTAModule.class //todo remove after converting fragments to use presenters
+                SenseOTAModule.class, //todo remove after converting fragments to use presenters,
+                ExpansionSettingsModule.class //todo remove after HomeActivity uses ScopedInjection
         },
         injects = {
                 SenseApplication.class,

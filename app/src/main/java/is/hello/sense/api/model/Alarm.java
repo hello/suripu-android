@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
@@ -71,6 +72,9 @@ public class Alarm extends ApiResponse {
 
     @SerializedName("expansions")
     private ArrayList<Expansion> expansions;
+
+    @SerializedName("Category")
+    private Category category;
 
     private transient AlarmTones alarmTones;
 
@@ -178,6 +182,18 @@ public class Alarm extends ApiResponse {
 
     public void setExpansions(@NonNull final ArrayList<Expansion> expansions) {
         this.expansions = expansions;
+    }
+
+    public Category getCategory() {
+        if(category == null){
+            return Category.UNKNOWN;
+        } else {
+            return category;
+        }
+    }
+
+    public void setCategory(@NonNull final Category category) {
+        this.category = category;
     }
 
     /**

@@ -712,6 +712,7 @@
 
     <string name="welcome_dialog_expansions_title">Expansions</string>
     <string name="welcome_dialog_expansions_message">Enabling access to compatible smart devices allows Sense to activate them at relevant moments, like turning on your lights when Sense’s alarm sounds.</string>
+
     <string name="enabling_expansion">Enabling expansion</string>
     <string name="disabling_expansion">Disabling expansion</string>
 
@@ -730,6 +731,8 @@
     <string name="voice_settings_primary_user_dialog_message">Once you set yourself as the primary user of this Sense, you won’t be able to undo it unless another person using this Sense sets themselves as the primary user.</string>
     <string name="voice_settings_primary_user_dialog_positive_button">Become Primary</string>
     <string name="voice_settings_progress_updating">Updating</string>
+
+    <string name="title_lights">Lights</string>
     <!-- end region -->
 
     <string name="label_voice">Voice</string>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_smart_alarm_detail_lights"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/smart_alarm_details_row_height"
+    android:gravity="center_vertical"
+    android:paddingLeft="@dimen/x3"
+    android:paddingRight="@dimen/x3"
+    android:orientation="horizontal"
+    android:background="@drawable/selectable_dark_bounded"
+    tools:showIn="@layout/fragment_smart_alarm_detail">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/x1"
+        android:text="@string/title_lights"
+        android:textAppearance="@style/AppTheme.Text.Body"
+        android:gravity="start|center_vertical"
+        android:drawableStart="@drawable/icon_alarm_light"
+        android:drawablePadding="@dimen/x3"/>
+
+    <ImageButton
+        android:id="@+id/fragment_smart_alarm_detail_lights_help"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/info_button_icon_small"
+        android:contentDescription="@string/action_help"
+        android:background="@color/transparent"
+        style="@style/AppTheme.Button.Borderless"/>
+
+    <FrameLayout
+        android:gravity="center_vertical|end"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/fragment_smart_alarm_detail_lights_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:visibility="gone"
+            android:fontFamily="sans-serif"
+            android:textColor="@color/light_accent"
+            style="@style/AppTheme.Text.Body.MidSized"/>
+
+        <include
+            android:id="@+id/fragment_smart_alarm_detail_lights_switch"
+            layout="@layout/widget_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"/>
+
+        <ImageView
+            android:id="@+id/fragment_smart_alarm_detail_lights_error"
+            android:src="@drawable/icon_warning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:visibility="gone"/>
+
+    </FrameLayout>
+
+</LinearLayout>
