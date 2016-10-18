@@ -474,12 +474,15 @@
         <item name="android:background">@drawable/raised_item_selector</item>
     </style>
 
-    <style name="AppTheme.Card.Item" parent="AppTheme.Text.Body.New">
-        <item name="android:paddingLeft">@dimen/gap_medium</item>
-        <item name="android:paddingRight">@dimen/gap_medium</item>
-        <item name="android:paddingTop">@dimen/gap_medium</item>
-        <item name="android:paddingBottom">@dimen/gap_medium</item>
+    <style name="AppTheme.Card.VerticalPaddingItem" parent="AppTheme.Text.Body.New">
         <item name="android:background">@drawable/selectable_dark_bounded</item>
+        <item name="android:paddingTop">@dimen/x2</item>
+        <item name="android:paddingBottom">@dimen/x2</item>
+    </style>
+
+    <style name="AppTheme.Card.Item" parent="AppTheme.Card.VerticalPaddingItem">
+        <item name="android:paddingLeft">@dimen/x2</item>
+        <item name="android:paddingRight">@dimen/x2</item>
     </style>
 
     <style name="AppTheme.FadingScrollView">

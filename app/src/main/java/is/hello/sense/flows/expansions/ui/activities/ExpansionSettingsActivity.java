@@ -55,7 +55,8 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
     }
 
     private void showExpansionDetail(final long expansionId) {
-        pushFragment(ExpansionDetailFragment.newInstance(expansionId), null, true);
+        //todo setting to false here because it will overriding onBackPressed to return to ExpansionList in different PR
+        pushFragment(ExpansionDetailFragment.newInstance(expansionId), null, false);
     }
 
     private void showExpansionAuth() {
@@ -63,7 +64,7 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
     }
 
     public void showConfigurationSelection() {
-        pushFragment(new ConfigSelectionFragment(), null, true);
+        pushFragment(new ConfigSelectionFragment(), null, false);
     }
 
     // end region
