@@ -48,7 +48,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     ExpansionDetailsInteractor expansionDetailsInteractor;
 
     @Inject
-    ConfigurationsInteractor configurationsInteractor;
+    ConfigurationsInteractor configurationsInteractor; // todo remove when selected config end point is ready.
 
     private static final String ARG_EXPANSION_ID = ExpansionDetailFragment.class + "ARG_EXPANSION_ID";
     private Subscription updateStateSubscription;
@@ -202,8 +202,8 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
                     builder.withTitle(R.string.error_configurations_unavailable_title_no_expansion);
                     builder.withMessage(StringRef.from(getString(R.string.error_configurations_unavailable_message, Category.fromString(null).displayString, null)));
                 }
-                builder.withAction(200, R.string.label_having_trouble); //todo change result code and handle
-                showErrorDialog(builder);
+                builder.withAction(RESULT_HELP_PRESSED, R.string.label_having_trouble);
+                showErrorDialog(builder, REQUEST_CODE_UPDATE_STATE_ERROR);
             }
         }
         lastConfigurationsFetchFailed = true;
