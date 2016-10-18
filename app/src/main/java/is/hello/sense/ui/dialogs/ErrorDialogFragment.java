@@ -40,6 +40,7 @@ public class ErrorDialogFragment extends SenseDialogFragment {
     private static final String ARG_ACTION_RESULT_CODE = ErrorDialogFragment.class.getName() + ".ARG_ACTION_RESULT_CODE";
     private static final String ARG_ACTION_TITLE_RES = ErrorDialogFragment.class.getName() + ".ARG_ACTION_TITLE_RES";
     private static final String ARG_TITLE_RES = ErrorDialogFragment.class.getName() + ".ARG_TITLE_RES";
+    private static final String ARG_TITLE_REF = ErrorDialogFragment.class.getName() + ".ARG_TITLE_REF";
     private static final String ARG_ACTION_URI_STRING = ErrorDialogFragment.class.getName() + ".ARG_ACTION_URI_STRING";
 
 
@@ -81,6 +82,12 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
         final int titleResId = arguments.getInt(ARG_TITLE_RES, R.string.dialog_error_title);
         dialog.setTitle(titleResId);
+        if (arguments.containsKey(ARG_TITLE_REF)){
+            final StringRef title = arguments.getParcelable(ARG_TITLE_REF);
+            if (title != null) {
+                dialog.setTitle(title.resolve(getActivity()));
+            }
+        }
 
 
         final String errorType = arguments.getString(ARG_ERROR_TYPE);
@@ -196,6 +203,12 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
         public Builder withTitle(@StringRes final int titleRes) {
             arguments.putInt(ARG_TITLE_RES, titleRes);
+            return this;
+        }
+
+
+        public Builder withTitle(@StringRes final StringRef titleRef) {
+            arguments.putParcelable(ARG_TITLE_REF, titleRef);
             return this;
         }
 

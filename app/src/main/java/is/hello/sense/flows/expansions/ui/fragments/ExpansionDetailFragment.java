@@ -14,6 +14,7 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.State;
@@ -141,15 +142,20 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             presenterView.showEnabledSwitch(expansion.isConnected());
         }
 
-
     }
 
     private void presentConfigurationError(final Throwable throwable) {
         presenterView.showConfigurationsError();
-        ErrorDialogFragment.PresenterBuilder builder = new ErrorDialogFragment.PresenterBuilder(null);
-        builder.withMessage(StringRef.from("Todo replace with mapped value"));
-        //todo map configuration to error and set title
-        //todo show im having trouble option.
+        final ErrorDialogFragment.PresenterBuilder builder = new ErrorDialogFragment.PresenterBuilder(null);
+        if (expansionDetailsInteractor.expansionSubject.hasValue()) {
+            final Expansion expansion = expansionDetailsInteractor.expansionSubject.getValue();
+            builder.withTitle(StringRef.from(getString(R.string.error_configurations_unavailable_title, expansion.getCategory().displayString)));
+            builder.withMessage(StringRef.from(getString(R.string.error_configurations_unavailable_message, expansion.getCategory().displayString, expansion.getServiceName())));
+        } else {
+            builder.withTitle(R.string.error_configurations_unavailable_title_no_expansion);
+            builder.withMessage(StringRef.from(getString(R.string.error_configurations_unavailable_message, Category.fromString(null).displayString, null)));
+        }
+        builder.withAction(200,R.string.label_having_trouble); //todo change result code and handle
         showErrorDialog(builder);
 
     }
