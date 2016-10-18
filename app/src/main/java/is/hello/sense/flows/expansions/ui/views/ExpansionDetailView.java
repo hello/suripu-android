@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -28,7 +27,7 @@ public class ExpansionDetailView extends PresenterView {
     final Button connectButton;
 
     final TextView enabledTextView;
-    final Switch enabledSwitch;
+    final CompoundButton enabledSwitch;
 
     final TextView configurationTypeTextView;
     final TextView configurationSelectedTextView;
@@ -49,7 +48,7 @@ public class ExpansionDetailView extends PresenterView {
         this.connectedContainer = (ViewGroup) findViewById(R.id.view_expansion_detail_connected_container);
         this.enabledContainer = (ViewGroup) connectedContainer.findViewById(R.id.view_expansion_detail_enabled_container);
         this.enabledTextView = (TextView) enabledContainer.findViewById(R.id.view_expansion_detail_enabled_tv);
-        this.enabledSwitch = (Switch) enabledContainer.findViewById(R.id.view_expansion_detail_configuration_selection_switch);
+        this.enabledSwitch = (CompoundButton) enabledContainer.findViewById(R.id.view_expansion_detail_configuration_selection_switch);
         // connected and configurations found
         this.configurationTypeTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_type_tv);
         this.configurationSelectedTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_selection_tv);
