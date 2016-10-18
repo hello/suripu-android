@@ -23,9 +23,11 @@ import is.hello.sense.flows.expansions.ui.views.ConfigSelectionView;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.ConfigurationAdapter;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 
 public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionView>
-        implements ArrayRecyclerAdapter.OnItemClickedListener<Configuration> {
+        implements ArrayRecyclerAdapter.OnItemClickedListener<Configuration>,
+        OnBackPressedInterceptor{
     public static final String EXPANSION_ID_KEY = ConfigSelectionFragment.class.getSimpleName() + ".expansion_id_key";
 
     @Inject
@@ -83,10 +85,24 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
         }
     }
 
+    //region OnItemClickedListener
+
     @Override
     public void onItemClicked(final int position, @NonNull final Configuration item) {
         adapter.setSelectedItem(position);
     }
+
+    //endregion
+
+    //region OnBackPressedInterceptor
+
+    @Override
+    public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
+        finishFlowWithExpansionDetailIntent();
+        return true;
+    }
+
+    //endregion
 
     @VisibleForTesting
     public void bindExpansion(@Nullable final Expansion expansion) {
@@ -129,10 +145,8 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
 
     @VisibleForTesting
     public void bindConfigurationPostResponse(@NonNull final Configuration configuration) {
-        final Intent intent = new Intent();
-        intent.putExtra(EXPANSION_ID_KEY, expansion.getId());
         hideBlockingActivity(R.string.expansions_configuration_selection_configured,
-                             stateSafeExecutor.bind(() -> finishFlowWithResult(Activity.RESULT_OK, intent)));
+                             stateSafeExecutor.bind(this::finishFlowWithExpansionDetailIntent));
 
     }
 
@@ -153,6 +167,16 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
             bindAndSubscribe(configurationsInteractor.setConfiguration(selectedConfig),
                              this::bindConfigurationPostResponse,
                              this::presentError);
+        } else {
+            finishFlowWithExpansionDetailIntent();
+        }
+    }
+
+    private void finishFlowWithExpansionDetailIntent(){
+        if(expansion != null) {
+            finishFlowWithResult(Activity.RESULT_OK,
+                                 new Intent().putExtra(EXPANSION_ID_KEY, expansion.getId())
+                                );
         } else {
             finishFlow();
         }
