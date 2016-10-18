@@ -97,7 +97,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
         bindAndSubscribe(expansionDetailsInteractor.expansionSubject,
                          this::bindExpansion,
-                         this::presentError);
+                         this::presentExpansionError);
 
         bindAndSubscribe(configurationsInteractor.configSubject,
                          this::bindConfigurations,
@@ -142,7 +142,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         }
         //todo pass along selected config and list to move work to interactor
         if (selectedConfig != null) {
-            presenterView.showConfigurationSuccess(selectedConfig.getName(), this::onConnectClicked);
+            presenterView.showConfigurationSuccess(selectedConfig.getName(), this::onConfigureClicked);
         }
     }
 
@@ -154,7 +154,6 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         presenterView.setExpansionInfo(expansion, picasso);
         if (expansion.requiresAuthentication()) {
             presenterView.showConnectButton(this::onConnectClicked);
-            configurationsInteractor.update();//todo remove after selected config end point is ready
         } else if (expansion.requiresConfiguration()) {
             presenterView.showConfigurationSuccess(getString(R.string.action_connect), this::onConfigureClicked);
         } else {
@@ -172,7 +171,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
      *
      * @param throwable -
      */
-    private void presentError(final Throwable throwable) {
+    private void presentExpansionError(final Throwable throwable) {
         if (ApiException.isNetworkError(throwable)) {
             showErrorDialog(new ErrorDialogFragment.PresenterBuilder(throwable));
         } else {
@@ -230,7 +229,8 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     // region listeners
     private void onRemoveAccessClicked(final View ignored) {
         final SenseAlertDialog.SerializedRunnable finishRunnable = () ->
-                ExpansionDetailFragment.this.updateState(State.REVOKED, (ignored2) -> finishFlow());
+                ExpansionDetailFragment.this.updateState(State.REVOKED, (ignored2) ->
+                        hideBlockingActivity(true, this::finishFlow));
         showAlertDialog(new SenseAlertDialog.Builder().setTitle(R.string.are_you_sure)
                                                       .setMessage(R.string.expansion_detail_remove_access_dialog_message)
                                                       .setNegativeButton(R.string.action_cancel, null)
