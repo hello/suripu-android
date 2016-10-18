@@ -38,14 +38,11 @@
         android:layout_marginBottom="@dimen/x3"
         android:orientation="vertical">
 
-        <HorizontalScrollView
+        <is.hello.sense.ui.widget.DisabledHorizontalScrollView
             android:id="@+id/fragment_onboarding_room_check_sensors_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="none"
-            android:focusable="false"
-            android:clickable="false"
-            android:focusableInTouchMode="false"
             android:fillViewport="false">
 
             <LinearLayout
@@ -60,7 +57,7 @@
                 android:clipToPadding="false"
                 android:gravity="center"
                 tools:ignore="ScrollViewSize"/>
-        </HorizontalScrollView>
+        </is.hello.sense.ui.widget.DisabledHorizontalScrollView>
 
         <Space
             android:layout_width="match_parent"
