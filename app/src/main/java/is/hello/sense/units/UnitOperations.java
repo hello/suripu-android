@@ -1,5 +1,7 @@
 package is.hello.sense.units;
 
+import android.support.annotation.Nullable;
+
 public class UnitOperations {
     public static long poundsToGrams(final long pounds) {
         return Math.round(pounds / 0.00220462);
@@ -21,7 +23,11 @@ public class UnitOperations {
         return Math.round(inches * 0.39370);
     }
 
-    public static float celsiusToFahrenheit(final float temperature) {
-        return (temperature * 1.8f) + 32.f;
+    public static Float celsiusToFahrenheit(@Nullable final Float temperature) {
+        if (temperature == null) {
+            return null;
+        } else {
+            return (temperature * 1.8f) + 32.f;
+        }
     }
 }

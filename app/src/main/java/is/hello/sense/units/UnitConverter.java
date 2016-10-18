@@ -9,5 +9,5 @@ public interface UnitConverter {
      */
     UnitConverter IDENTITY = v -> v;
 
-    double convert(float value);
+    Float convert(Float value);
 }

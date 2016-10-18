@@ -37,5 +37,8 @@ public class ScaleTests extends SenseTestCase{
                 .getScaleViewValueText(resources));
         assertEquals("1 to -1", new Scale("nonzero min negative max", 1.0f, -1.0f, Condition.UNKNOWN)
                 .getScaleViewValueText(resources));
+
+        assertEquals("-1<", new Scale("empty min negative max", null, -1.0f, Condition.UNKNOWN)
+                .getScaleViewValueText(resources));
     }
 }
