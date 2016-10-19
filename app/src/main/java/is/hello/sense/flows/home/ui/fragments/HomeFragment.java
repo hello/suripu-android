@@ -11,10 +11,12 @@ import is.hello.sense.flows.home.ui.views.HomeView;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
+import is.hello.sense.ui.widget.SelectorView;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-public class HomeFragment extends BacksideTabFragment<HomeView> {
+public class HomeFragment extends BacksideTabFragment<HomeView>
+        implements SelectorView.OnSelectionChangedListener {
 
     @Inject
     PreferencesInteractor preferencesInteractor;
@@ -29,7 +31,8 @@ public class HomeFragment extends BacksideTabFragment<HomeView> {
             presenterView = new HomeView(getActivity(),
                                          getChildFragmentManager(),
                                          getAnimatorContext(),
-                                         stateSafeExecutor);
+                                         stateSafeExecutor,
+                                         this);
         }
     }
 
@@ -85,5 +88,11 @@ public class HomeFragment extends BacksideTabFragment<HomeView> {
             userFeaturesSubscription.unsubscribe();
             userFeaturesSubscription = null;
         }
+    }
+
+    @Override
+    public void onSelectionChanged(final int newSelectionIndex) {
+        this.presenterView.setPagerItem(newSelectionIndex);
+
     }
 }
