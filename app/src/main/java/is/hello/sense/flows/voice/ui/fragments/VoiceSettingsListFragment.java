@@ -98,8 +98,8 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     private void showPrimaryUserDialog(final View ignored) {
         showAlertDialog(new SenseAlertDialog.Builder()
                                 .setTitle(R.string.voice_settings_primary_user_dialog_title)
-                       .setMessage(R.string.voice_settings_primary_user_dialog_message)
-                       .setPositiveButton(R.string.voice_settings_primary_user_dialog_positive_button, this::makePrimaryUser));
+                                .setMessage(R.string.voice_settings_primary_user_dialog_message)
+                                .setPositiveButton(R.string.voice_settings_primary_user_dialog_positive_button, this::makePrimaryUser));
     }
 
     private void updateSettings(@NonNull final SenseVoiceSettings newSettings) {
