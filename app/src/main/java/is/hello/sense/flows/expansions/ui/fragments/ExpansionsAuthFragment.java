@@ -40,7 +40,7 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setHasOptionsMenu(true);
-        setActionBarHomeAsUpIndicator(R.drawable.ic_close_white);
+        setActionBarHomeAsUpIndicator(R.drawable.app_style_ab_cancel);
         addInteractor(expansionDetailsInteractor);
     }
 
@@ -143,7 +143,7 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
         if (sessionManager.hasSession()) {
             headers.put("Authorization", "Bearer " + sessionManager.getAccessToken());
         }
-        presenterView.loadlInitialUrl(headers);
+        presenterView.loadInitialUrl(headers);
     }
 
     public void presentError(final Throwable e) {
