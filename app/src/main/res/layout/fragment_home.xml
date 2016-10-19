@@ -16,6 +16,7 @@
         android:layout_height="match_parent"
         android:fillViewport="true"
         android:scrollbars="none"
+        android:layout_below="@id/fragment_home_sub_nav"
         app:senseFadingEdgeStyle="rounded"/>
 
 

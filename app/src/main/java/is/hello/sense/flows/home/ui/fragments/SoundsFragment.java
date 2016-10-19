@@ -66,11 +66,6 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
     }
 
     @Override
-    public final void onResume() {
-        super.onResume();
-    }
-
-    @Override
     protected final void onSwipeInteractionDidFinish() {
 
     }
