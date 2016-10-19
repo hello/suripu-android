@@ -31,6 +31,7 @@ public class HomeFragment extends BacksideTabFragment<HomeView>
             presenterView = new HomeView(getActivity(),
                                          getChildFragmentManager(),
                                          getAnimatorContext(),
+                                         stateSafeExecutor,
                                          this);
         }
     }
