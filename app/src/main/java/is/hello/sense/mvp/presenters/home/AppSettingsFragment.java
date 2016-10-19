@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
-import android.util.Log;
 import android.view.View;
 
 import javax.inject.Inject;
@@ -47,9 +46,10 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
         if (presenterView == null) {
             presenterView = new AppSettingsView(getActivity(),
                                                 this,
-                                                showDeviceList(),
-                                                tellAFriend(),
-                                                showExpansions()); //todo if should not have expansions make null
+                                                this::onDeviceListClick,
+                                                this::onTellAFriendClick,
+                                                this::onExpansionsClick,
+                                                this::onVoiceClick); //todo if should not have expansions make null
         }
     }
 
@@ -77,7 +77,7 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
                          Functions.LOG_ERROR);
 
         bindAndSubscribe(preferencesInteractor.observableBoolean(PreferencesInteractor.HAS_VOICE, false),
-                         this.presenterView::showExpansion,
+                         this.presenterView::showVoiceEnabledRows,
                          Functions.LOG_ERROR);
 
         // If this preference is missing we need to query the server.
@@ -137,27 +137,27 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     }
 
 
-    private View.OnClickListener showDeviceList() {
-        return v -> {
-            final FragmentNavigationActivity.Builder builder =
-                    new FragmentNavigationActivity.Builder(getActivity(), HardwareFragmentActivity.class);
-            builder.setDefaultTitle(R.string.label_devices);
-            builder.setFragmentClass(DeviceListFragment.class);
-            startActivity(builder.toIntent());
-        };
+    private void onDeviceListClick(final View ignored) {
+        final FragmentNavigationActivity.Builder builder =
+                new FragmentNavigationActivity.Builder(getActivity(), HardwareFragmentActivity.class);
+        builder.setDefaultTitle(R.string.label_devices);
+        builder.setFragmentClass(DeviceListFragment.class);
+        startActivity(builder.toIntent());
     }
 
-    private View.OnClickListener tellAFriend() {
-        return v -> {
-            Analytics.trackEvent(Analytics.Backside.EVENT_TELL_A_FRIEND_TAPPED, null);
-            Share.text(getString(R.string.tell_a_friend_body))
-                 .withSubject(getString(R.string.tell_a_friend_subject))
-                 .send(getActivity());
+    private void onTellAFriendClick(final View ignored) {
+        Analytics.trackEvent(Analytics.Backside.EVENT_TELL_A_FRIEND_TAPPED, null);
+        Share.text(getString(R.string.tell_a_friend_body))
+             .withSubject(getString(R.string.tell_a_friend_subject))
+             .send(getActivity());
 
-        };
     }
 
-    private View.OnClickListener showExpansions() {
-        return v -> startActivity(new Intent(getActivity(), ExpansionSettingsActivity.class));
+    private void onExpansionsClick(final View ignored) {
+        startActivity(new Intent(getActivity(), ExpansionSettingsActivity.class));
+    }
+
+    private void onVoiceClick(final View ignored) {
+        //todo show voice activity
     }
 }
