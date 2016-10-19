@@ -35,7 +35,6 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.QuestionsInteractor;
 import is.hello.sense.interactors.questions.ReviewQuestionProvider;
 import is.hello.sense.flows.home.ui.views.InsightsView;
-import is.hello.sense.flows.home.ui.views.InsightsView;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;

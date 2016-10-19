@@ -10,10 +10,6 @@ import is.hello.sense.R;
 import is.hello.sense.graph.Scope;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.mvp.view.PresenterView;
-import is.hello.sense.flows.home.ui.activities.HomeActivity;
-import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.fragments.BacksideFragment;
-import is.hello.sense.ui.recycler.PaddingItemDecoration;
 
 public abstract class BacksideTabFragment<T extends PresenterView> extends PresenterFragment<T> {
 
