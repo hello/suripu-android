@@ -122,6 +122,11 @@
                   android:theme="@style/AppTheme.Expansions"
                   android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
 
+        <activity android:name=".flows.voice.ui.activities.VoiceSettingsActivity"
+                  android:label="@string/voice_settings_title"
+                  android:theme="@style/AppTheme.Expansions"
+                  android:parentActivityName=".ui.activities.HomeActivity"/>
+
         <activity
             xmlns:tools="http://schemas.android.com/tools"
             android:name="com.facebook.FacebookActivity"
