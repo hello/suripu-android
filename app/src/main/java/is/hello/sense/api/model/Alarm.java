@@ -21,8 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.v2.expansions.Category;
-import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.util.DateFormatter;
@@ -71,10 +70,7 @@ public class Alarm extends ApiResponse {
     private boolean smart;
 
     @SerializedName("expansions")
-    private List<Expansion> expansions;
-
-    @SerializedName("category")
-    private Category category;
+    private List<ExpansionAlarm> expansions;
 
     private transient AlarmTones alarmTones;
 
@@ -173,27 +169,15 @@ public class Alarm extends ApiResponse {
         return editable;
     }
 
-    public List<Expansion> getExpansions() {
+    public List<ExpansionAlarm> getExpansions() {
         if (expansions == null) {
             expansions = new ArrayList<>();
         }
         return expansions;
     }
 
-    public void setExpansions(@NonNull final List<Expansion> expansions) {
+    public void setExpansions(@NonNull final List<ExpansionAlarm> expansions) {
         this.expansions = expansions;
-    }
-
-    public Category getCategory() {
-        if(category == null){
-            return Category.UNKNOWN;
-        } else {
-            return category;
-        }
-    }
-
-    public void setCategory(@NonNull final Category category) {
-        this.category = category;
     }
 
     /**
@@ -343,7 +327,6 @@ public class Alarm extends ApiResponse {
                 ", sound=" + sound +
                 ", smart=" + smart +
                 ", expansions=" + expansions +
-                ", category=" + category +
                 '}';
     }
 

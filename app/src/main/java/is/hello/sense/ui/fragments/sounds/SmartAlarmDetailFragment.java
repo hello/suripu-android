@@ -36,6 +36,7 @@ import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.flows.expansions.interactors.ExpansionsInteractor;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.functional.Functions;
@@ -431,17 +432,15 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
     private void updateAlarmBasedOnEnabledExpansions() {
         if(this.expansionLightsToggle.isChecked() && this.expansionLightsToggle.isEnabled()) {
-            final List<Expansion> enabledExpansions = new ArrayList<>(1);
+            final List<ExpansionAlarm> enabledExpansionAlarms = new ArrayList<>(1);
             bind(expansionsInteractor.findByCategory(Category.LIGHT))
-                    .subscribe(enabledExpansions::add,
+                    .subscribe(expansion -> enabledExpansionAlarms.add(new ExpansionAlarm(expansion)),
                                this::presentError,
                                () -> { //onComplete
-                                   this.alarm.setCategory(Category.LIGHT);
-                                   this.alarm.setExpansions(enabledExpansions);
+                                   this.alarm.setExpansions(enabledExpansionAlarms);
                                    finishSaveAlarmOperation();
                             });
         } else {
-            this.alarm.setCategory(Category.UNKNOWN);
             this.alarm.setExpansions(new ArrayList<>(0));
             finishSaveAlarmOperation();
         }
