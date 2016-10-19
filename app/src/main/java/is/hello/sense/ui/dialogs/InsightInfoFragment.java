@@ -39,7 +39,7 @@ import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.api.model.v2.ShareUrl;
 import is.hello.sense.interactors.InsightInfoInteractor;
-import is.hello.sense.ui.activities.HomeActivity;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.ui.common.AnimatedInjectionFragment;
 import is.hello.sense.ui.widget.ExtendedScrollView;
 import is.hello.sense.ui.widget.ParallaxImageView;

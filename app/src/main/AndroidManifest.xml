@@ -43,7 +43,7 @@
         </activity>
 
         <activity
-            android:name=".ui.activities.HomeActivity"
+            android:name=".flows.home.ui.activities.HomeActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
@@ -62,22 +62,22 @@
             android:screenOrientation="portrait" />
 
         <activity android:name=".ui.activities.PillUpdateActivity"
-                  android:parentActivityName=".ui.activities.HomeActivity"
+                  android:parentActivityName=".flows.home.ui.activities.HomeActivity"
                   android:launchMode="singleTop"
                   android:windowSoftInputMode="adjustResize"
                   android:theme="@style/AppTheme.Onboarding"
                   android:screenOrientation="portrait"/>
 
         <activity android:name=".ui.activities.SenseUpgradeActivity"
-                  android:parentActivityName=".ui.activities.HomeActivity"
+                  android:parentActivityName=".flows.home.ui.activities.HomeActivity"
                   android:launchMode="singleTop"
                   android:windowSoftInputMode="adjustResize"
                   android:theme="@style/AppTheme.Onboarding"
                   android:screenOrientation="portrait"/>
 
         <activity
-            android:name=".ui.activities.SensorDetailActivity"
-            android:parentActivityName=".ui.activities.HomeActivity" />
+            android:name=".flows.sensordetails.ui.activities.SensorDetailActivity"
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity" />
 
         <activity
             android:name=".ui.activities.SmartAlarmDetailActivity"
@@ -94,7 +94,7 @@
         <activity
             android:name=".ui.activities.SessionLogViewerActivity"
             android:label="Session Log"
-            android:parentActivityName=".ui.activities.HomeActivity" />
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity" />
 
         <activity
             android:name=".ui.fragments.VideoPlayerActivity"
@@ -103,24 +103,24 @@
 
         <activity
             android:name=".ui.common.FragmentNavigationActivity"
-            android:parentActivityName=".ui.activities.HomeActivity" />
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity" />
 
         <activity
             android:name=".ui.activities.HardwareFragmentActivity"
-            android:parentActivityName=".ui.activities.HomeActivity" />
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity" />
 
         <activity
             android:name=".ui.activities.ListActivity"
-            android:parentActivityName=".ui.activities.HomeActivity" />
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity" />
 
         <activity
             android:name=".ui.activities.SettingsActivity"
-            android:parentActivityName=".ui.activities.HomeActivity" />
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity" />
 
         <activity android:name=".flows.expansions.ui.activities.ExpansionSettingsActivity"
                   android:label="@string/expansion_list_title"
                   android:theme="@style/AppTheme.Expansions"
-                  android:parentActivityName=".ui.activities.HomeActivity"/>
+                  android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
 
         <activity
             xmlns:tools="http://schemas.android.com/tools"

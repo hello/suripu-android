@@ -1,27 +1,18 @@
-package is.hello.sense.ui.fragments;
+package is.hello.sense.flows.home.ui.fragments;
 
-import android.animation.Animator;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 
 import com.squareup.picasso.Picasso;
 
@@ -42,11 +33,11 @@ import is.hello.sense.interactors.InsightsInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.QuestionsInteractor;
 import is.hello.sense.interactors.questions.ReviewQuestionProvider;
+import is.hello.sense.flows.home.ui.views.InsightsView;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
-import is.hello.sense.ui.adapter.ParallaxRecyclerScrollListener;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
@@ -54,8 +45,6 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
-import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -63,37 +52,30 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.Share;
 import rx.Observable;
 
-import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class InsightsFragment extends BacksideTabFragment
-        implements SwipeRefreshLayout.OnRefreshListener, InsightsAdapter.InteractionListener,
-        InsightInfoFragment.Parent, InsightsAdapter.OnRetry {
-    private static final float UNFOCUSED_CONTENT_SCALE = 0.90f;
-    private static final float FOCUSED_CONTENT_SCALE = 1f;
-    private static final float UNFOCUSED_CONTENT_ALPHA = 0.95f;
-    private static final float FOCUSED_CONTENT_ALPHA = 1f;
+public class InsightsFragment extends BacksideTabFragment<InsightsView> implements
+        SwipeRefreshLayout.OnRefreshListener,
+        InsightsAdapter.InteractionListener,
+        InsightInfoFragment.Parent,
+        InsightsAdapter.OnRetry {
 
     @Inject
-    InsightsInteractor insightsPresenter;
+    InsightsInteractor insightsInteractor;
     @Inject
     DateFormatter dateFormatter;
     @Inject
     LocalUsageTracker localUsageTracker;
     @Inject
-    DeviceIssuesInteractor deviceIssuesPresenter;
+    DeviceIssuesInteractor deviceIssuesInteractor;
     @Inject
     PreferencesInteractor preferences;
     @Inject
-    QuestionsInteractor questionsPresenter;
+    QuestionsInteractor questionsInteractor;
     @Inject
     Picasso picasso;
     @Inject
     ApiService apiService;
 
-    private InsightsAdapter insightsAdapter;
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private RecyclerView recyclerView;
-    private ProgressBar progressBar;
 
     @Nullable
     private TutorialOverlayView tutorialOverlayView;
@@ -112,25 +94,33 @@ public class InsightsFragment extends BacksideTabFragment
     private HomeActivity activity;
 
     @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
+    public final void initializePresenterView() {
+        if (presenterView == null) {
+            presenterView = new InsightsView(getActivity(), dateFormatter, picasso, this);
+        }
+    }
+
+    @Override
+    public final void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             Analytics.trackEvent(Analytics.Backside.EVENT_MAIN_VIEW, null);
-            if (insightsAdapter != null) {
-                insightsAdapter.updateWhatsNewState();
+            if (presenterView != null) {
+                presenterView.updateWhatsNewState();
             }
         }
     }
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
+    public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        deviceIssuesPresenter.bindScope(getScope());
-        addPresenter(deviceIssuesPresenter);
-        addPresenter(insightsPresenter);
-        addPresenter(questionsPresenter);
-
+        addInteractor(insightsInteractor);
+        addInteractor(dateFormatter);
+        addInteractor(localUsageTracker);
+        addInteractor(deviceIssuesInteractor);
+        addInteractor(preferences);
+        addInteractor(questionsInteractor);
+        deviceIssuesInteractor.bindScope(getScope());
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
@@ -140,53 +130,26 @@ public class InsightsFragment extends BacksideTabFragment
 
     }
 
-    @Nullable
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_insights, container, false);
-
-        this.swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_insights_refresh_container);
-        swipeRefreshLayout.setOnRefreshListener(this);
-        Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
-
-        this.progressBar = (ProgressBar) view.findViewById(R.id.fragment_insights_progress);
-
-        final Resources resources = getResources();
-        this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_insights_recycler);
-        recyclerView.setHasFixedSize(false);
-        recyclerView.addOnScrollListener(new ParallaxRecyclerScrollListener());
-        recyclerView.setItemAnimator(null);
-        recyclerView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
-        recyclerView.addItemDecoration(new BottomInsetDecoration(resources));
-        this.insightsAdapter = new InsightsAdapter(getActivity(), dateFormatter, this, picasso);
-        recyclerView.setAdapter(insightsAdapter);
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+    public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        presenterView.setSwipeRefreshLayoutRefreshListener(this);
 
         // Combining these into a single Observable results in error
         // handling more or less breaking. Keep them separate until
         // we actually merge the endpoints on the backend.
 
-        bindAndSubscribe(insightsPresenter.insights,
+        bindAndSubscribe(insightsInteractor.insights,
                          this::bindInsights,
                          this::insightsUnavailable);
 
-        bindAndSubscribe(questionsPresenter.question,
+        bindAndSubscribe(questionsInteractor.question,
                          this::bindQuestion,
                          this::questionUnavailable);
     }
 
     @Override
-    public void onDestroyView() {
+    public final void onDestroyView() {
         super.onDestroyView();
 
         if (tutorialOverlayView != null) {
@@ -194,16 +157,11 @@ public class InsightsFragment extends BacksideTabFragment
             this.tutorialOverlayView = null;
         }
 
-        insightsPresenter.unbindScope();
-
-        this.insightsAdapter = null;
-        this.recyclerView = null;
-        this.swipeRefreshLayout = null;
-        this.progressBar = null;
+        insightsInteractor.unbindScope();
     }
 
     @Override
-    public void onDestroy() {
+    public final void onDestroy() {
         super.onDestroy();
 
         LocalBroadcastManager.getInstance(getActivity())
@@ -211,16 +169,16 @@ public class InsightsFragment extends BacksideTabFragment
     }
 
     @Override
-    public void onSwipeInteractionDidFinish() {
+    public final void onSwipeInteractionDidFinish() {
     }
 
     @Override
-    public void onUpdate() {
-        if (insightsPresenter.updateIfEmpty()) {
-            swipeRefreshLayout.setRefreshing(true);
+    public final void onUpdate() {
+        if (insightsInteractor.updateIfEmpty()) {
+            presenterView.setRefreshing(true);
         }
 
-        if (!questionsPresenter.hasQuestion()) {
+        if (!questionsInteractor.hasQuestion()) {
             updateQuestion();
         }
     }
@@ -229,7 +187,7 @@ public class InsightsFragment extends BacksideTabFragment
     //region Data Binding
 
     @Override
-    public void onRefresh() {
+    public final void onRefresh() {
         fetchInsights();
     }
 
@@ -244,11 +202,7 @@ public class InsightsFragment extends BacksideTabFragment
         if (!questionLoaded || !insightsLoaded) {
             return;
         }
-
-        progressBar.setVisibility(View.GONE);
-
-        insightsAdapter.bindQuestion(currentQuestion);
-        insightsAdapter.bindInsights(insights);
+        presenterView.showCards(currentQuestion, insights);
 
         final Activity activity = getActivity();
         if (getOnboardingFlow() == OnboardingActivity.FLOW_NONE &&
@@ -272,8 +226,7 @@ public class InsightsFragment extends BacksideTabFragment
     }
 
     private void insightsUnavailable(@Nullable final Throwable e) {
-        progressBar.setVisibility(View.GONE);
-        insightsAdapter.insightsUnavailable(e, this);
+        presenterView.insightsUnavailable(e, this);
     }
 
     private void bindQuestion(@Nullable final Question question) {
@@ -288,8 +241,7 @@ public class InsightsFragment extends BacksideTabFragment
     }
 
     private void questionUnavailable(@Nullable final Throwable e) {
-        progressBar.setVisibility(View.GONE);
-        insightsAdapter.questionUnavailable(e);
+        presenterView.questionsUnavailable(e);
     }
 
     //endregion
@@ -297,50 +249,16 @@ public class InsightsFragment extends BacksideTabFragment
 
     //region Insights
 
-    private Animator createRecyclerEnter() {
-        return animatorFor(recyclerView)
-                .scale(UNFOCUSED_CONTENT_SCALE)
-                .alpha(UNFOCUSED_CONTENT_ALPHA)
-                .addOnAnimationCompleted(finished -> {
-                    // If we don't reset this now, Views#getFrameInWindow(View, Rect) will
-                    // return a subtly broken value, and the exit transition will be broken.
-                    if (recyclerView != null) {
-                        recyclerView.setScaleX(FOCUSED_CONTENT_SCALE);
-                        recyclerView.setScaleY(FOCUSED_CONTENT_SCALE);
-                        recyclerView.setAlpha(FOCUSED_CONTENT_ALPHA);
-                    }
-                });
-    }
-
-    private Animator createRecyclerExit() {
-        return animatorFor(recyclerView)
-                .addOnAnimationWillStart(animator -> {
-                    // Ensure visual consistency.
-                    if (recyclerView != null) {
-                        recyclerView.setScaleX(UNFOCUSED_CONTENT_SCALE);
-                        recyclerView.setScaleY(UNFOCUSED_CONTENT_SCALE);
-                        recyclerView.setAlpha(UNFOCUSED_CONTENT_ALPHA);
-                    }
-                })
-                .scale(FOCUSED_CONTENT_SCALE)
-                .alpha(FOCUSED_CONTENT_ALPHA);
-    }
 
     @Override
     @Nullable
-    public InsightInfoFragment.SharedState provideSharedState(final boolean isEnter) {
+    public final InsightInfoFragment.SharedState provideSharedState(final boolean isEnter) {
         if (selectedInsightHolder != null && getActivity() != null) {
             final InsightInfoFragment.SharedState state = new InsightInfoFragment.SharedState();
             Views.getFrameInWindow(selectedInsightHolder.itemView, state.cardRectInWindow);
             Views.getFrameInWindow(selectedInsightHolder.image, state.imageRectInWindow);
             state.imageParallaxPercent = selectedInsightHolder.image.getParallaxPercent();
-            if (recyclerView != null) {
-                if (isEnter) {
-                    state.parentAnimator = createRecyclerEnter();
-                } else {
-                    state.parentAnimator = createRecyclerExit();
-                }
-            }
+            state.parentAnimator = presenterView.getAnimator();
             return state;
         } else {
             return null;
@@ -349,7 +267,7 @@ public class InsightsFragment extends BacksideTabFragment
 
     @Nullable
     @Override
-    public Drawable getInsightImage() {
+    public final Drawable getInsightImage() {
         if (selectedInsightHolder != null) {
             return selectedInsightHolder.image.getDrawable();
         } else {
@@ -358,7 +276,7 @@ public class InsightsFragment extends BacksideTabFragment
     }
 
     @Override
-    public void onInsightClicked(@NonNull final InsightsAdapter.InsightViewHolder viewHolder) {
+    public final void onInsightClicked(@NonNull final InsightsAdapter.InsightViewHolder viewHolder) {
         final Insight insight = viewHolder.getInsight();
         if (insight.isError()) {
             return;
@@ -380,7 +298,7 @@ public class InsightsFragment extends BacksideTabFragment
     }
 
     @Override
-    public void shareInsight(@NonNull final Insight insight) {
+    public final void shareInsight(@NonNull final Insight insight) {
         showProgress(true);
         apiService.shareInsight(new InsightType(insight.getId()))
                   .doOnTerminate(() -> showProgress(false))
@@ -409,8 +327,8 @@ public class InsightsFragment extends BacksideTabFragment
 
     //region Questions
 
-    public void updateQuestion() {
-        final Observable<Boolean> stageOne = deviceIssuesPresenter.latest().map(issue -> (issue == DeviceIssuesInteractor.Issue.NONE &&
+    public final void updateQuestion() {
+        final Observable<Boolean> stageOne = deviceIssuesInteractor.latest().map(issue -> (issue == DeviceIssuesInteractor.Issue.NONE &&
                 localUsageTracker.isUsageAcceptableForRatingPrompt() &&
                 !preferences.getBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, false)));
         stageOne.subscribe(showReview -> {
@@ -418,34 +336,34 @@ public class InsightsFragment extends BacksideTabFragment
                                    if (!preferences.getBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, false)) {
                                        final String country = Locale.getDefault().getCountry();
                                        if (country.equalsIgnoreCase(Locale.US.getCountry())) {
-                                           questionsPresenter.setSource(QuestionsInteractor.Source.REVIEW_AMAZON);
+                                           questionsInteractor.setSource(QuestionsInteractor.Source.REVIEW_AMAZON);
                                        } else if (country.equalsIgnoreCase(Locale.UK.getCountry())) {
-                                           questionsPresenter.setSource(QuestionsInteractor.Source.REVIEW_AMAZON_UK);
+                                           questionsInteractor.setSource(QuestionsInteractor.Source.REVIEW_AMAZON_UK);
                                        }
                                    } else {
-                                       questionsPresenter.setSource(QuestionsInteractor.Source.REVIEW);
+                                       questionsInteractor.setSource(QuestionsInteractor.Source.REVIEW);
                                    }
                                } else {
-                                   questionsPresenter.setSource(QuestionsInteractor.Source.API);
+                                   questionsInteractor.setSource(QuestionsInteractor.Source.API);
                                }
-                               questionsPresenter.update();
+                               questionsInteractor.update();
                            },
                            e -> {
                                Logger.warn(getClass().getSimpleName(),
                                            "Could not determine device status", e);
-                               questionsPresenter.update();
+                               questionsInteractor.update();
                            });
     }
 
     @Override
-    public void onDismissLoadingIndicator() {
-        swipeRefreshLayout.setRefreshing(false);
+    public final void onDismissLoadingIndicator() {
+        presenterView.setRefreshing(false);
     }
 
     @Override
-    public void onSkipQuestion() {
+    public final void onSkipQuestion() {
         LoadingDialogFragment.show(getFragmentManager());
-        bindAndSubscribe(questionsPresenter.skipQuestion(false),
+        bindAndSubscribe(questionsInteractor.skipQuestion(false),
                          ignored -> LoadingDialogFragment.close(getFragmentManager()),
                          e -> {
                              LoadingDialogFragment.close(getFragmentManager());
@@ -455,23 +373,23 @@ public class InsightsFragment extends BacksideTabFragment
     }
 
     @Override
-    public void onAnswerQuestion() {
+    public final void onAnswerQuestion() {
         final QuestionsDialogFragment dialogFragment = new QuestionsDialogFragment();
         dialogFragment.showAllowingStateLoss(getActivity().getFragmentManager(), QuestionsDialogFragment.TAG);
-        insightsAdapter.clearCurrentQuestion();
+        presenterView.clearCurrentQuestion();
     }
 
     //endregion
 
     @Override
-    public void fetchInsights() {
+    public final void fetchInsights() {
         this.insights = Collections.emptyList();
         this.insightsLoaded = false;
         this.currentQuestion = null;
         this.questionLoaded = false;
 
-        swipeRefreshLayout.setRefreshing(true);
-        insightsPresenter.update();
+        presenterView.setRefreshing(true);
+        insightsInteractor.update();
         updateQuestion();
     }
 
@@ -527,20 +445,4 @@ public class InsightsFragment extends BacksideTabFragment
             }
         }
     };
-
-    static class BottomInsetDecoration extends RecyclerView.ItemDecoration {
-        private final int bottomPadding;
-
-        public BottomInsetDecoration(@NonNull final Resources resources) {
-            this.bottomPadding = resources.getDimensionPixelSize(R.dimen.x1);
-        }
-
-        @Override
-        public void getItemOffsets(final Rect outRect, final View view, final RecyclerView parent, final RecyclerView.State state) {
-            final int position = parent.getChildAdapterPosition(view);
-            if (position == parent.getAdapter().getItemCount() - 1) {
-                outRect.bottom = bottomPadding;
-            }
-        }
-    }
 }

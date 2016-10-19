@@ -21,7 +21,7 @@ import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
-import is.hello.sense.mvp.view.expansions.ExpansionsAuthView;
+import is.hello.sense.flows.expansions.ui.views.ExpansionsAuthView;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.CustomWebViewClient;

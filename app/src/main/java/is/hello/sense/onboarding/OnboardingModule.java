@@ -6,7 +6,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import is.hello.sense.interactors.SensorResponseInteractor;
+import is.hello.sense.flows.home.interactors.SensorResponseInteractor;
 import is.hello.sense.presenters.RoomCheckPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
