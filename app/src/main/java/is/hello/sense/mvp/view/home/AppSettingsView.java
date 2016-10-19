@@ -29,13 +29,16 @@ public class AppSettingsView extends PresenterView {
     private final View supportItem;
     private final View tellAFriendItem;
     private final TextView version;
+    //todo when we have time optimize how these rows are created. Maybe use a recycler view
     private final View expansionItem;
+    private final View voiceItem;
 
     public AppSettingsView(@NonNull final Activity activity,
                            @NonNull final ClickListenerGenerator generator,
                            @NonNull final View.OnClickListener devicesListener,
                            @NonNull final View.OnClickListener tellAFriendListener,
-                           @NonNull final View.OnClickListener expansionsListener) {
+                           @NonNull final View.OnClickListener expansionsListener,
+                           @NonNull final View.OnClickListener voiceListener) {
         super(activity);
 
         this.breadcrumb = (ImageView) findViewById(R.id.fragment_app_settings_breadcrumb);
@@ -55,7 +58,11 @@ public class AppSettingsView extends PresenterView {
         this.expansionItem = findViewById(R.id.fragment_app_settings_expansions);
 
         Views.setSafeOnClickListener(this.expansionItem, expansionsListener);
-        showExpansion(false);
+
+        this.voiceItem = findViewById(R.id.fragment_app_settings_voice);
+
+        Views.setSafeOnClickListener(this.expansionItem, voiceListener);
+        showVoiceEnabledRows(false);
 
         this.supportItem = findViewById(R.id.fragment_app_settings_support);
         Views.setSafeOnClickListener(this.supportItem, generator.create(SupportFragment.class, R.string.action_support, false));
@@ -91,14 +98,21 @@ public class AppSettingsView extends PresenterView {
         supportItem.setOnClickListener(null);
         tellAFriendItem.setOnClickListener(null);
         version.setOnClickListener(null);
+        voiceItem.setOnClickListener(null);
     }
 
     public void setBreadcrumbVisible(final boolean visible) {
         this.breadcrumb.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    public final void showExpansion(final boolean show) {
-        ((View) this.expansionItem.getParent()).setVisibility(show ? VISIBLE : GONE);
+    public final void showVoiceEnabledRows(final boolean show) {
+        if (show) {
+            this.expansionItem.setVisibility(VISIBLE);
+            this.voiceItem.setVisibility(VISIBLE);
+        } else {
+            this.expansionItem.setVisibility(GONE);
+            this.voiceItem.setVisibility(GONE);
+        }
     }
 
     public interface ClickListenerGenerator {
