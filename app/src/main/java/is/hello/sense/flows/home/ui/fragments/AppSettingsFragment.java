@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
+import is.hello.sense.flows.voice.ui.activities.VoiceSettingsActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
@@ -49,7 +50,7 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
                                                 this::onDeviceListClick,
                                                 this::onTellAFriendClick,
                                                 this::onExpansionsClick,
-                                                this::onVoiceClick); //todo if should not have expansions make null
+                                                this::onVoiceClick);
         }
     }
 
@@ -158,6 +159,6 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     }
 
     private void onVoiceClick(final View ignored) {
-        //todo show voice activity
+        startActivity(new Intent(getActivity(), VoiceSettingsActivity.class));
     }
 }

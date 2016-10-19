@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:divider="@drawable/divider_horizontal_inset"
+              android:showDividers="middle|end">
+
+    <FrameLayout
+        android:id="@+id/view_voice_settings_list_volume_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/smart_alarm_details_row_height"
+        android:background="@drawable/selectable_dark_bounded"
+        android:padding="@dimen/x2">
+
+        <TextView
+            android:id="@+id/view_voice_settings_list_volume_tv"
+            style="@style/AppTheme.Text.Body.New"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
+            android:text="@string/voice_settings_volume"/>
+
+        <TextView
+            android:id="@+id/view_voice_settings_list_volume_value_tv"
+            style="@style/AppTheme.Text.Body.Dim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:drawableEnd="@drawable/disclosure_chevron_small"
+            android:drawablePadding="@dimen/x1"
+            android:visibility="gone"/>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/view_voice_settings_list_mute_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/smart_alarm_details_row_height"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/x2"
+        android:paddingRight="@dimen/x2"
+        android:orientation="horizontal"
+        android:background="@drawable/selectable_dark_bounded">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/voice_settings_list_mute"
+            android:textAppearance="@style/AppTheme.Text.Body.New"/>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <include
+            android:id="@+id/view_voice_settings_mute_switch"
+            layout="@layout/widget_switch" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/view_voice_settings_list_primary_user_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/smart_alarm_details_row_height"
+        android:background="@drawable/selectable_dark_bounded"
+        android:padding="@dimen/x2">
+
+        <TextView
+            android:id="@+id/view_voice_settings_list_primary_user_tv"
+            style="@style/AppTheme.Text.Body.New"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
+            android:text="@string/voice_settings_primary_user"/>
+
+        <TextView
+            android:id="@+id/view_voice_settings_list_primary_user_value_tv"
+            style="@style/AppTheme.Text.Body.Dim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:drawableEnd="@drawable/disclosure_chevron_small"
+            android:drawablePadding="@dimen/x1"
+            android:visibility="gone"/>
+
+    </FrameLayout>
+
+</LinearLayout>
