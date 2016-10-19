@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.fragments.InsightsFragment;
+import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.widget.ExtendedViewPager;
@@ -32,7 +33,8 @@ public class HomeView extends PresenterView {
     public HomeView(@NonNull final Activity activity,
                     @NonNull final FragmentManager fragmentManager,
                     @NonNull final AnimatorContext animatorContext,
-                    @NonNull final StateSafeExecutor stateSafeExecutor) {
+                    @NonNull final StateSafeExecutor stateSafeExecutor,
+                    @NonNull final SelectorView.OnSelectionChangedListener listener) {
         super(activity);
         this.animatorContext = animatorContext;
         this.stateSafeExecutor = stateSafeExecutor;
@@ -41,7 +43,7 @@ public class HomeView extends PresenterView {
         this.pager.setScrollingEnabled(false);
         this.adapter = new StaticFragmentAdapter(fragmentManager,
                                                  new StaticFragmentAdapter.Item(InsightsFragment.class, getString(R.string.action_insights)),
-                                                 new StaticFragmentAdapter.Item(InsightsFragment.class, getString(R.string.label_voice)));
+                                                 new StaticFragmentAdapter.Item(VoiceFragment.class, getString(R.string.label_voice)));
         this.pager.setAdapter(adapter);
         this.pager.setFadePageTransformer(true);
         this.subNavSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
@@ -50,11 +52,12 @@ public class HomeView extends PresenterView {
         this.subNavSelector.addOption(R.string.home_subnav_insights, false);
         this.subNavSelector.addOption(R.string.home_subnav_voice, false);
         this.subNavSelector.setTranslationY(0);
+        this.subNavSelector.setOnSelectionChangedListener(listener);
     }
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.fragment_home;
+        return R.layout.view_home;
     }
 
     @Override
@@ -65,6 +68,7 @@ public class HomeView extends PresenterView {
 
     @Override
     public void releaseViews() {
+        this.subNavSelector.setOnSelectionChangedListener(null);
     }
 
     public final boolean isShowingViews() {
@@ -73,6 +77,10 @@ public class HomeView extends PresenterView {
 
     public Fragment getCurrentFragment() {
         return adapter.getItem(pager.getCurrentItem());
+    }
+
+    public void setPagerItem(final int newSelectionIndex) {
+        this.pager.setCurrentItem(newSelectionIndex);
     }
 
     public void showVoiceFragment(final boolean show) {
