@@ -61,7 +61,7 @@ public class AppSettingsView extends PresenterView {
 
         this.voiceItem = findViewById(R.id.fragment_app_settings_voice);
 
-        Views.setSafeOnClickListener(this.expansionItem, voiceListener);
+        Views.setSafeOnClickListener(this.voiceItem, voiceListener);
         showVoiceEnabledRows(false);
 
         this.supportItem = findViewById(R.id.fragment_app_settings_support);

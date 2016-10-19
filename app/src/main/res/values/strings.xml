@@ -716,6 +716,10 @@
     <string name="disabling_expansion">Disabling expansion</string>
 
     <string name="label_voice">Voice</string>
+    <string name="voice_settings_list_mute">Mute</string>
+    <string name="voice_settings_volume">Volume</string>
+    <string name="voice_settings_primary_user">Primary User</string>
+    <string name="voice_settings_title">Voice</string>
     <!-- end region -->
 
 
