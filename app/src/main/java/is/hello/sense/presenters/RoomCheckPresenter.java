@@ -15,7 +15,7 @@ import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.model.v2.sensors.SensorType;
-import is.hello.sense.interactors.SensorResponseInteractor;
+import is.hello.sense.flows.home.interactors.SensorResponseInteractor;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.units.UnitConverter;
 import is.hello.sense.units.UnitFormatter;

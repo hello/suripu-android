@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.common.InjectionActivity;
