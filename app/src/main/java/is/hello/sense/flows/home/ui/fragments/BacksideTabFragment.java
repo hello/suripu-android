@@ -1,4 +1,4 @@
-package is.hello.sense.ui.fragments;
+package is.hello.sense.flows.home.ui.fragments;
 
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -11,12 +11,14 @@ import android.view.View;
 
 import is.hello.sense.R;
 import is.hello.sense.graph.Scope;
+import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.fragments.BacksideFragment;
 import is.hello.sense.ui.recycler.PaddingItemDecoration;
 
-public abstract class BacksideTabFragment extends InjectionFragment {
+public abstract class BacksideTabFragment<T extends PresenterView> extends PresenterFragment<T> {
     /**
      * Taken from {@code SwipeRefreshLayout} private constant. The default amount of space
      * a {@code SwipeRefreshLayout} places before the refresh indicator when indicator comes
@@ -24,7 +26,8 @@ public abstract class BacksideTabFragment extends InjectionFragment {
      */
     private static final int DEFAULT_REFRESH_CIRCLE_TARGET = 64;
 
-    private @Nullable Rect contentInsets;
+    @Nullable
+    private Rect contentInsets;
 
     /**
      * Returns the scope associated with the backside tab.
@@ -33,7 +36,8 @@ public abstract class BacksideTabFragment extends InjectionFragment {
         return (Scope) getActivity();
     }
 
-    protected @OnboardingActivity.Flow int getOnboardingFlow() {
+    @OnboardingActivity.Flow
+    protected int getOnboardingFlow() {
         final HomeActivity activity = (HomeActivity) getActivity();
         return activity != null
                 ? activity.getOnboardingFlow()
@@ -41,7 +45,7 @@ public abstract class BacksideTabFragment extends InjectionFragment {
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
         final boolean wasVisibleToUser = getUserVisibleHint();
         super.setUserVisibleHint(isVisibleToUser);
         if (!wasVisibleToUser && isVisibleToUser) {
@@ -53,10 +57,11 @@ public abstract class BacksideTabFragment extends InjectionFragment {
     }
 
     /**
-     * Retrieves the {@link BacksideFragment} this tab fragment is contained in.
-     * @return  The fragment if the tab is attached; null otherwise.
+     * Retrieves the {@link is.hello.sense.ui.fragments.BacksideFragment} this tab fragment is contained in.
+     *
+     * @return The fragment if the tab is attached; null otherwise.
      */
-    protected BacksideFragment getBacksideFragment() {
+    protected is.hello.sense.ui.fragments.BacksideFragment getBacksideFragment() {
         return (BacksideFragment) getParentFragment();
     }
 
@@ -78,7 +83,8 @@ public abstract class BacksideTabFragment extends InjectionFragment {
     /**
      * Calculates the insets that should be applied to fragment's
      * content views to appear visually correct.
-     * @return  A {@code Rect} containing the insets.
+     *
+     * @return A {@code Rect} containing the insets.
      */
     protected Rect getContentInsets() {
         if (contentInsets == null) {
@@ -96,6 +102,7 @@ public abstract class BacksideTabFragment extends InjectionFragment {
      * Indicates whether or not the tab wants to have its content automatically inset.
      * <p>
      * The insets will be applied after the fragment creates its view.
+     *
      * @return true if the tab wants to have its content inset automatically; false otherwise.
      */
     protected boolean automaticallyApplyContentInsets() {
@@ -104,7 +111,8 @@ public abstract class BacksideTabFragment extends InjectionFragment {
 
     /**
      * Applies content insets to a recycler view that is in a non-inset container.
-     * @param recyclerView  The recycler view to inset. Uses {@link PaddingItemDecoration}.
+     *
+     * @param recyclerView The recycler view to inset. Uses {@link PaddingItemDecoration}.
      * @throws IllegalStateException if {@link #automaticallyApplyContentInsets()} returns true.
      */
     protected void insetRecyclerView(@NonNull RecyclerView recyclerView) {

@@ -14,9 +14,10 @@ import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.model.v2.sensors.SensorStatus;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
+import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.mvp.view.home.roomconditions.SensorResponseAdapter;
+import is.hello.sense.flows.home.ui.adapters.SensorResponseAdapter;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -27,14 +28,14 @@ public class RoomConditionsFragmentTests extends InjectionTestCase {
     @Inject
     PreferencesInteractor preferencesInteractor;
 
-    private is.hello.sense.mvp.presenters.home.RoomConditionsFragment fragment;
+    private is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment fragment;
 
     @Before
     public void setUp() throws Exception {
         /*preferencesInteractor.edit()
                              .clear()
                              .commit();*/
-        fragment = new is.hello.sense.mvp.presenters.home.RoomConditionsFragment();
+        fragment = new RoomConditionsFragment();
         startFragment(fragment);
     }
 

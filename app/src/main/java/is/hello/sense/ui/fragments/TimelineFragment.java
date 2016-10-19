@@ -46,7 +46,7 @@ import is.hello.sense.interactors.TimelineInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.rating.LocalUsageTracker;
-import is.hello.sense.ui.activities.HomeActivity;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.UserSupport;

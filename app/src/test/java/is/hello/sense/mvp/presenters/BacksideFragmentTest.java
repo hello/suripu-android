@@ -5,11 +5,10 @@ import static org.robolectric.util.FragmentTestUtil.startFragment;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import is.hello.sense.graph.SenseTestCase;
-import is.hello.sense.mvp.presenters.home.BacksideFragment;
+import is.hello.sense.flows.home.ui.fragments.BacksideFragment;
 
 public class BacksideFragmentTest extends SenseTestCase {
     BacksideFragment fragment;
