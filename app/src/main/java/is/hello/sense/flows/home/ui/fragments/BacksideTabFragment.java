@@ -3,28 +3,15 @@ package is.hello.sense.flows.home.ui.fragments;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import is.hello.sense.R;
 import is.hello.sense.graph.Scope;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.mvp.view.PresenterView;
-import is.hello.sense.flows.home.ui.activities.HomeActivity;
-import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.fragments.BacksideFragment;
-import is.hello.sense.ui.recycler.PaddingItemDecoration;
 
 public abstract class BacksideTabFragment<T extends PresenterView> extends PresenterFragment<T> {
-    /**
-     * Taken from {@code SwipeRefreshLayout} private constant. The default amount of space
-     * a {@code SwipeRefreshLayout} places before the refresh indicator when indicator comes
-     * to rest after the user finishes swiping.
-     */
-    private static final int DEFAULT_REFRESH_CIRCLE_TARGET = 64;
 
     @Nullable
     private Rect contentInsets;
@@ -34,14 +21,6 @@ public abstract class BacksideTabFragment<T extends PresenterView> extends Prese
      */
     protected Scope getScope() {
         return (Scope) getActivity();
-    }
-
-    @OnboardingActivity.Flow
-    protected int getOnboardingFlow() {
-        final HomeActivity activity = (HomeActivity) getActivity();
-        return activity != null
-                ? activity.getOnboardingFlow()
-                : OnboardingActivity.FLOW_NONE;
     }
 
     @Override
@@ -54,15 +33,6 @@ public abstract class BacksideTabFragment<T extends PresenterView> extends Prese
                 onSwipeInteractionDidFinish();
             });
         }
-    }
-
-    /**
-     * Retrieves the {@link is.hello.sense.ui.fragments.BacksideFragment} this tab fragment is contained in.
-     *
-     * @return The fragment if the tab is attached; null otherwise.
-     */
-    protected is.hello.sense.ui.fragments.BacksideFragment getBacksideFragment() {
-        return (BacksideFragment) getParentFragment();
     }
 
     /**
@@ -109,38 +79,9 @@ public abstract class BacksideTabFragment<T extends PresenterView> extends Prese
         return true;
     }
 
-    /**
-     * Applies content insets to a recycler view that is in a non-inset container.
-     *
-     * @param recyclerView The recycler view to inset. Uses {@link PaddingItemDecoration}.
-     * @throws IllegalStateException if {@link #automaticallyApplyContentInsets()} returns true.
-     */
-    protected void insetRecyclerView(@NonNull RecyclerView recyclerView) {
-        if (automaticallyApplyContentInsets()) {
-            throw new IllegalStateException("insetRecyclerView not allowed with" +
-                                                    "automaticallyApplyContentInsets returning true");
-        }
-
-        final Rect insets = getContentInsets();
-        recyclerView.addItemDecoration(new PaddingItemDecoration(insets), 0);
-    }
-
-    protected void insetSwipeRefreshLayout(@NonNull SwipeRefreshLayout swipeRefreshLayout) {
-        if (automaticallyApplyContentInsets()) {
-            throw new IllegalStateException("insetSwipeRefreshLayout not allowed with" +
-                                                    "automaticallyApplyContentInsets returning true");
-        }
-
-        final Rect contentInsets = getContentInsets();
-        swipeRefreshLayout.setDistanceToTriggerSync(contentInsets.top);
-
-        final float density = getResources().getDisplayMetrics().density;
-        final int defaultEnd = Math.round(DEFAULT_REFRESH_CIRCLE_TARGET * density);
-        swipeRefreshLayout.setProgressViewEndTarget(false, defaultEnd + contentInsets.top);
-    }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         if (automaticallyApplyContentInsets()) {
