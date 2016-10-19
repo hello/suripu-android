@@ -149,6 +149,7 @@ import is.hello.sense.zendesk.ZendeskModule;
                 is.hello.sense.flows.home.ui.fragments.InsightsFragment.class,
                 is.hello.sense.flows.home.ui.fragments.SoundsFragment.class,
                 is.hello.sense.flows.home.ui.fragments.HomeFragment.class,
+                is.hello.sense.flows.home.ui.fragments.VoiceFragment.class,
                 AppSettingsFragment.class,
 
 
