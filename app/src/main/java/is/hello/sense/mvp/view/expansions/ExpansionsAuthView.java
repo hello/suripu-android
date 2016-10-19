@@ -1,5 +1,6 @@
 package is.hello.sense.mvp.view.expansions;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.webkit.WebView;
@@ -11,11 +12,13 @@ import is.hello.sense.R;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.widget.CustomWebViewClient;
 
+@SuppressLint("ViewConstructor")
 public class ExpansionsAuthView extends PresenterView {
     private final WebView webView;
     private final CustomWebViewClient customWebViewClient;
     private final ProgressBar progressBar;
 
+    @SuppressLint("SetJavaScriptEnabled")
     public ExpansionsAuthView(@NonNull final Activity activity,
                               @NonNull final CustomWebViewClient customWebViewClient) {
         super(activity);
@@ -44,7 +47,7 @@ public class ExpansionsAuthView extends PresenterView {
         webView.destroy();
     }
 
-    public void loadlInitialUrl(@NonNull final Map<String, String> headers){
+    public void loadInitialUrl(@NonNull final Map<String, String> headers){
         webView.loadUrl(customWebViewClient.getInitialUrl(), headers);
     }
 

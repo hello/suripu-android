@@ -1,6 +1,7 @@
 package is.hello.sense.flows.expansions.ui.fragments;
 
 import android.app.ActionBar;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -40,7 +41,7 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setHasOptionsMenu(true);
-        setActionBarHomeAsUpIndicator(R.drawable.ic_close_white);
+        setActionBarHomeAsUpIndicator(R.drawable.app_style_ab_cancel);
         addInteractor(expansionDetailsInteractor);
     }
 
@@ -143,7 +144,7 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
         if (sessionManager.hasSession()) {
             headers.put("Authorization", "Bearer " + sessionManager.getAccessToken());
         }
-        presenterView.loadlInitialUrl(headers);
+        presenterView.loadInitialUrl(headers);
     }
 
     public void presentError(final Throwable e) {
