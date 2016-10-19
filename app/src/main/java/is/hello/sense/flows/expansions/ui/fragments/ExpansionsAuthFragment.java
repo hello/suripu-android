@@ -1,7 +1,6 @@
 package is.hello.sense.flows.expansions.ui.fragments;
 
 import android.app.ActionBar;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
