@@ -714,6 +714,8 @@
     <string name="welcome_dialog_expansions_message">Enabling access to compatible smart devices allows Sense to activate them at relevant moments, like turning on your lights when Sense’s alarm sounds.</string>
     <string name="enabling_expansion">Enabling expansion</string>
     <string name="disabling_expansion">Disabling expansion</string>
+
+    <string name="label_voice">Voice</string>
     <!-- end region -->
 
 
