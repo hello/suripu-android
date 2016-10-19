@@ -87,12 +87,8 @@ public class SoundsView extends PresenterView {
 
     @Override
     public final void releaseViews() {
-        if (subNavSelector != null) {
             this.subNavSelector.setOnSelectionChangedListener(null);
-        }
-        if (swipeRefreshLayout != null) {
             this.swipeRefreshLayout.setOnRefreshListener(null);
-        }
     }
 
     public final void setSwipeRefreshLayoutOnRefreshListener(@NonNull final SwipeRefreshLayout.OnRefreshListener listener) {
