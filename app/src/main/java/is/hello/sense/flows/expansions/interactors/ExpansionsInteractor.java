@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.graph.InteractorSubject;
 import is.hello.sense.interactors.ValueInteractor;
@@ -32,5 +33,14 @@ public class ExpansionsInteractor extends ValueInteractor<ArrayList<Expansion>> 
     @Override
     protected Observable<ArrayList<Expansion>> provideUpdateObservable() {
         return apiService.getExpansions();
+    }
+
+    public Observable<Expansion> findByCategory(@NonNull final Category category){
+        if(! expansions.hasValue()){
+            return Observable.error(new NullPointerException("no values for expansion subject"));
+        }
+
+        return Observable.from(expansions.getValue())
+                         .filter( expansion -> expansion.getCategory() == category);
     }
 }

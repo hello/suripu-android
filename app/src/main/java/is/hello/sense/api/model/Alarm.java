@@ -71,9 +71,9 @@ public class Alarm extends ApiResponse {
     private boolean smart;
 
     @SerializedName("expansions")
-    private ArrayList<Expansion> expansions;
+    private List<Expansion> expansions;
 
-    @SerializedName("Category")
+    @SerializedName("category")
     private Category category;
 
     private transient AlarmTones alarmTones;
@@ -173,14 +173,14 @@ public class Alarm extends ApiResponse {
         return editable;
     }
 
-    public ArrayList<Expansion> getExpansions() {
+    public List<Expansion> getExpansions() {
         if (expansions == null) {
             expansions = new ArrayList<>();
         }
         return expansions;
     }
 
-    public void setExpansions(@NonNull final ArrayList<Expansion> expansions) {
+    public void setExpansions(@NonNull final List<Expansion> expansions) {
         this.expansions = expansions;
     }
 
@@ -342,6 +342,8 @@ public class Alarm extends ApiResponse {
                 ", daysOfWeek=" + daysOfWeek +
                 ", sound=" + sound +
                 ", smart=" + smart +
+                ", expansions=" + expansions +
+                ", category=" + category +
                 '}';
     }
 

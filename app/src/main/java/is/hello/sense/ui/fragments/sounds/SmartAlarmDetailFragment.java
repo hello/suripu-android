@@ -37,6 +37,7 @@ import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.flows.expansions.interactors.ExpansionsInteractor;
+import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
@@ -184,6 +185,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        expansionsInteractor.expansions.forget();
         bindAndSubscribe(expansionsInteractor.expansions,
                          this::bindExpansions,
                          this::bindExpansionsThrowable);
@@ -279,6 +281,14 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(expansionLightsToggle != null){
+            expansionLightsToggle.setOnCheckedChangeListener(null);
+        }
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
 
@@ -288,35 +298,6 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
     private SmartAlarmDetailActivity getDetailActivity() {
         return (SmartAlarmDetailActivity) getActivity();
-    }
-
-    private void bindExpansions(@NonNull final List<Expansion> expansions) {
-        expansionLightsErrorView.setVisibility(View.GONE);
-        for (final Expansion expansion : expansions) {
-            if (Category.LIGHT == expansion.getCategory()) {
-                switch (expansion.getState()) {
-                    case CONNECTED_OFF:
-                        showLightToggleButton(false);
-                        break;
-                    case CONNECTED_ON:
-                        showLightToggleButton(true);
-                        break;
-                    default:
-                        hideLightToggleButton(expansion.getState().displayValue);
-                }
-                return;
-            }
-        }
-    }
-
-    private void bindExpansionsThrowable(@NonNull final Throwable throwable) {
-        expansionLightsToggle.setVisibility(View.GONE);
-        expansionLightsValue.setVisibility(View.GONE);
-        if (expansionLightsErrorView.getVisibility() == View.VISIBLE) {
-            this.showExpansionError();
-        }
-        expansionLightsErrorView.setVisibility(View.VISIBLE);
-
     }
 
     public void updateTime() {
@@ -382,7 +363,38 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         confirmDelete.show();
     }
 
-    //region Expansion Light Row
+    //region Expansion
+
+    private void bindExpansions(@NonNull final List<Expansion> expansions) {
+        expansionLightsErrorView.setVisibility(View.GONE);
+        for (final Expansion expansion : expansions) {
+            if (Category.LIGHT == expansion.getCategory()) {
+                switch (expansion.getState()) {
+                    case CONNECTED_ON:
+                        showLightToggleButton(false);
+                        break;
+                    default:
+                        hideLightToggleButton(expansion.getState().displayValue,
+                                              ignored -> this.redirectToExpansionDetail(expansion.getId()));
+                }
+                return;
+            }
+        }
+    }
+
+    private void redirectToExpansionDetail(final long id) {
+        startActivity(ExpansionSettingsActivity.getExpansionDetailIntent(getActivity(), id));
+    }
+
+    private void bindExpansionsThrowable(@NonNull final Throwable throwable) {
+        expansionLightsToggle.setVisibility(View.GONE);
+        expansionLightsValue.setVisibility(View.GONE);
+        if (expansionLightsErrorView.getVisibility() == View.VISIBLE) {
+            this.showExpansionError();
+        }
+        expansionLightsErrorView.setVisibility(View.VISIBLE);
+
+    }
 
     public void onLightHelpIconPress(@NonNull final View view) {
         WelcomeDialogFragment.show(getActivity(),
@@ -414,25 +426,33 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         this.expansionLightsValue.setVisibility(View.GONE);
         this.expansionLightsToggle.setVisibility(View.VISIBLE);
         this.expansionLightsToggle.setChecked(checked);
+        markDirty();
     }
 
-    private void updateAlarmBasedOnLightToggleButton() {
+    private void updateAlarmBasedOnEnabledExpansions() {
         if(this.expansionLightsToggle.isChecked() && this.expansionLightsToggle.isEnabled()) {
-            this.alarm.setCategory(Category.LIGHT);
-            if(expansionsInteractor.expansions.hasValue()) {
-                //todo if there are multiple light expansions integrated how to pick?
-                //this.alarm.setExpansions();
-            }
+            final List<Expansion> enabledExpansions = new ArrayList<>(1);
+            bind(expansionsInteractor.findByCategory(Category.LIGHT))
+                    .subscribe(enabledExpansions::add,
+                               this::presentError,
+                               () -> { //onComplete
+                                   this.alarm.setCategory(Category.LIGHT);
+                                   this.alarm.setExpansions(enabledExpansions);
+                                   finishSaveAlarmOperation();
+                            });
         } else {
             this.alarm.setCategory(Category.UNKNOWN);
             this.alarm.setExpansions(new ArrayList<>(0));
+            finishSaveAlarmOperation();
         }
     }
 
-    public void hideLightToggleButton(@StringRes final int state) {
+    public void hideLightToggleButton(@StringRes final int state,
+                                      @NonNull final View.OnClickListener listener) {
         this.expansionLightsValue.setVisibility(View.VISIBLE);
         this.expansionLightsToggle.setVisibility(View.GONE);
         this.expansionLightsValue.setText(state);
+        this.expansionLightsValue.setOnClickListener(listener);
     }
 
     //end region
@@ -465,19 +485,22 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                 if (alarm.getDaysOfWeek().isEmpty()) {
                     alarm.setRingOnce();
                 }
-
-                final Observable<VoidResponse> saveOperation;
-                if (index == SmartAlarmDetailActivity.INDEX_NEW) {
-                    saveOperation = smartAlarmPresenter.addSmartAlarm(alarm);
-                } else {
-                    saveOperation = smartAlarmPresenter.saveSmartAlarm(index, alarm);
-                }
-
-                LoadingDialogFragment.show(getFragmentManager(),
-                                           null, LoadingDialogFragment.DEFAULTS);
-                bindAndSubscribe(saveOperation, ignored -> finish(), this::presentError);
+                updateAlarmBasedOnEnabledExpansions();
             }
         });
+    }
+
+    private void finishSaveAlarmOperation(){
+        final Observable<VoidResponse> saveOperation;
+        if (index == SmartAlarmDetailActivity.INDEX_NEW) {
+            saveOperation = smartAlarmPresenter.addSmartAlarm(alarm);
+        } else {
+            saveOperation = smartAlarmPresenter.saveSmartAlarm(index, alarm);
+        }
+
+        LoadingDialogFragment.show(getFragmentManager(),
+                                   null, LoadingDialogFragment.DEFAULTS);
+        bindAndSubscribe(saveOperation, ignored -> finish(), this::presentError);
     }
 
     private void markDirty() {

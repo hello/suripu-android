@@ -1,6 +1,7 @@
 package is.hello.sense.flows.expansions.ui.activities;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,6 +25,9 @@ import is.hello.sense.ui.common.OnBackPressedInterceptor;
 
 public class ExpansionSettingsActivity extends ScopedInjectionActivity
         implements FragmentNavigation {
+
+    private static final String EXTRA_EXPANSION_DETAIL_ID = ExpansionSettingsActivity.class.getName() + "EXTRA_EXPANSION_DETAIL_ID";
+
     private FragmentNavigationDelegate navigationDelegate;
 
     @Override
@@ -42,10 +46,20 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
         if (savedInstanceState != null) {
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         } else if (navigationDelegate.getTopFragment() == null) {
-            showExpansionList();
+
+            if(getIntent().hasExtra(EXTRA_EXPANSION_DETAIL_ID)){
+                showExpansionDetail(getIntent().getLongExtra(EXTRA_EXPANSION_DETAIL_ID, Expansion.NO_ID));
+            } else {
+                showExpansionList();
+            }
         }
 
 
+    }
+
+    public static Intent getExpansionDetailIntent(@NonNull final Context context, final long expansionId){
+        return new Intent(context, ExpansionSettingsActivity.class)
+                .putExtra(EXTRA_EXPANSION_DETAIL_ID, expansionId);
     }
 
     //region Router
