@@ -18,7 +18,6 @@ import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 
 
 public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdapter.VoiceCommand, VoiceCommandsAdapter.BaseViewHolder> {
-    private static final int VIEW_TITLE = 0;
     private static final int VIEW_ITEM = 1;
     private static final int VIEW_WELCOME = 2;
     private final LayoutInflater inflater;
@@ -36,35 +35,25 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdap
 
     @Override
     public int getItemCount() {
-        return super.getItemCount() + 1 + (welcomeCardListener == null ? 0 : 1);
+        return super.getItemCount() + (welcomeCardListener == null ? 0 : 1);
     }
 
     @Override
     public int getItemViewType(final int position) {
-        if (welcomeCardListener != null) {
-            if (position == 0) {
-                return VIEW_WELCOME;
-            }
-            if (position == 1) {
-                return VIEW_TITLE;
-            }
+        if (welcomeCardListener != null && position == 0) {
+            return VIEW_WELCOME;
         }
-        if (position == 0) {
-            return VIEW_TITLE;
-        }
+
         return VIEW_ITEM;
     }
 
     @Override
     public VoiceCommand getItem(final int position) {
-        if (position == 0) {
-            return null;
-        }
-        if (welcomeCardListener != null && position == 1) {
+        if (welcomeCardListener != null && position == 0) {
             return null;
         }
 
-        return super.getItem(position - 1 - (welcomeCardListener == null ? 0 : 1));
+        return super.getItem(position - (welcomeCardListener == null ? 0 : 1));
     }
 
     @Override
@@ -72,8 +61,6 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdap
         switch (viewType) {
             case VIEW_WELCOME:
                 return new WelcomeCardViewHolder(VoiceCommandsAdapter.this.inflater.inflate(R.layout.item_welcome_card_close, parent, false));
-            case VIEW_TITLE:
-                return new TitleViewHolder(VoiceCommandsAdapter.this.inflater.inflate(R.layout.item_textview_title, parent, false));
             case VIEW_ITEM:
                 return new ItemViewHolder(VoiceCommandsAdapter.this.inflater.inflate(R.layout.item_voice_command, parent, false));
             default:
@@ -98,15 +85,6 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdap
             super(itemView);
         }
     }
-
-    public class TitleViewHolder extends BaseViewHolder {
-
-        public TitleViewHolder(@NonNull final View itemView) {
-            super(itemView);
-            ((TextView) itemView.findViewById(R.id.item_textview_title)).setText(R.string.label_voice_commands);
-        }
-    }
-
 
     public class ItemViewHolder extends BaseViewHolder {
         private final ImageView imageView;
