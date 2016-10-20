@@ -11,6 +11,7 @@ import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.flows.voice.ui.activities.VoiceSettingsActivity;
 import is.hello.sense.flows.voice.ui.fragments.VoiceSettingsListFragment;
 import is.hello.sense.flows.voice.ui.fragments.VoiceVolumeFragment;
+import is.hello.sense.flows.voice.ui.fragments.VoiceVolumeFragment;
 import is.hello.sense.interactors.CurrentSenseInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
 
