@@ -738,5 +738,5 @@
     <string name="home_subnav_voice">VOICE</string>
     <string name="welcome_to_voice_title">Welcome To Voice</string>
     <string name="welcome_to_voice_body">Always say “Okay Sense” before each command to activate Voice. Ask about your Sleep Score, room conditions, and more.</string>
-
+    <string name="label_voice_commands">Voice Commands</string>
 </resources>
