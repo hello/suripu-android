@@ -88,13 +88,15 @@ public class HomeView extends PresenterView {
             transitionInSubNavBar();
             adapter.setOverrideCount(-1);
             adapter.notifyDataSetChanged();
-        } else if (!show && subNavSelector.getVisibility() == View.VISIBLE) {
-            transitionOutSubNavBar();
-            adapter.setOverrideCount(1);
-            adapter.notifyDataSetChanged();
-            subNavSelector.setSelectedIndex(0);
+        } else if (!show) {
+            if (subNavSelector.getVisibility() == View.VISIBLE) {
+                transitionOutSubNavBar();
+                adapter.setOverrideCount(1);
+                adapter.notifyDataSetChanged();
+                subNavSelector.setSelectedIndex(0);
+                adapter.notifyDataSetChanged();
+            }
             pager.setCurrentItem(0);
-            adapter.notifyDataSetChanged();
         }
     }
 
