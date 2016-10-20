@@ -31,8 +31,7 @@
         android:id="@+id/view_voice_volume_picker_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/x4"
-        android:layout_marginEnd="@dimen/x4"
+        android:paddingEnd="@dimen/x4"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -41,6 +40,8 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/scale_view_size"
             android:layout_weight="0.8"
+            android:paddingStart="@dimen/x4"
+            android:paddingEnd="@dimen/x4"
             android:orientation="horizontal"
             app:minValue="1"
             app:maxValue="11"
@@ -52,8 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.2"
             android:layout_gravity="center_horizontal|center_vertical"
-            android:layout_marginStart="@dimen/x4"
-            android:layout_marginEnd="@dimen/x4"
+            android:paddingEnd="@dimen/x4"
             android:gravity="center"
             style="@style/AppTheme.Text.Header.H1.Thin"
             android:textColor="@color/voice_volume_emphasized_color"/>
