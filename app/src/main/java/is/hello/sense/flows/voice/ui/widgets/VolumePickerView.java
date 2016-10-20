@@ -14,8 +14,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import is.hello.sense.R;
 
@@ -38,6 +42,7 @@ public class VolumePickerView extends LinearLayout {
     private int maxValue = DEFAULT_MAX;
     private int selectedValue = DEFAULT_INITIAL;
     private @Nullable OnValueChangedListener onValueChangedListener;
+    private final List<Tick> ticks = new ArrayList<>(maxValue);
 
     //endregion
 
@@ -64,7 +69,33 @@ public class VolumePickerView extends LinearLayout {
 
         setValue(initialValue, false);
         addTicks();
-
+        setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_DOWN:
+                        final float x = event.getX();
+                        float t_x;
+                        for (int i = 0; i < ticks.size(); i++) {
+                            final Tick t = ticks.get(i);
+                            t_x = t.getX();
+                            if(x >= t_x){
+                                if(x < t_x + t.getWidth()){
+                                   setValue(minValue + i, false);
+                                }
+                                t.setEmphasized(true);
+                            } else {
+                                t.setEmphasized(false);
+                            }
+                        }
+                        notifyValueChangedListener();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        //todo handle drags
+                }
+                return false;
+            }
+        });
     }
 
 
@@ -116,6 +147,8 @@ public class VolumePickerView extends LinearLayout {
         if(onValueChangedListener != null){
             onValueChangedListener = null;
         }
+        //doesn't seem to prevent child views being restored
+        removeAllViews();
     }
 
     //endregion
@@ -140,6 +173,7 @@ public class VolumePickerView extends LinearLayout {
                 tick.setLayoutParams(new LinearLayout.LayoutParams(parentWidth / itemCount,
                                                                    parentHeight,
                                                                    Gravity.CENTER_HORIZONTAL));
+                ticks.add(tick);
                 VolumePickerView.this.addView(tick);
             }
 
