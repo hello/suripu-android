@@ -33,7 +33,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/x4"
         android:layout_gravity="center_horizontal"
-        style="@style/AppTheme.Text.Header.H1.Thin"/>
+        style="@style/AppTheme.Text.Header.H1.Thin"
+        android:textColor="@color/voice_volume_emphasized_color"/>
 
     <is.hello.sense.flows.voice.ui.widgets.VolumePickerView
         android:id="@+id/view_voice_volume_scale"
@@ -42,9 +43,9 @@
         android:layout_gravity="center_horizontal"
         android:paddingStart="@dimen/x7"
         android:paddingEnd="@dimen/x7"
-        app:scaleOrientation="horizontal"
+        android:orientation="horizontal"
         app:scaleMinValue="1"
-        app:scaleMaxValue="12"
+        app:scaleMaxValue="11"
         app:scaleValue="8"/>
 
     <Space
@@ -57,7 +58,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/AppTheme.Button.Rounded"
-        android:layout_marginBottom="@dimen/x2"
         android:text="@string/action_done"/>
 
 </LinearLayout>

@@ -115,4 +115,6 @@
     <color name="timeline_share_background_gradient_bottom">@color/white</color>
 
     <color name="facebook_official_color">#3B5998</color>
+    <color name="voice_volume_emphasized_color">@color/blue6</color>
+    <color name="voice_volume_normal_color">@color/gray3</color>
 </resources>

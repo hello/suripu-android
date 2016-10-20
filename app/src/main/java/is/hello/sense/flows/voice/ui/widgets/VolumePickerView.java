@@ -12,11 +12,9 @@ import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
+import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import is.hello.sense.R;
@@ -24,25 +22,18 @@ import is.hello.sense.R;
 public class VolumePickerView extends LinearLayout {
     //region Constants
 
-    public static final int VERTICAL = 0;
-    public static final int HORIZONTAL = 1;
-
     private static final int DEFAULT_MIN = 1;
     private static final int DEFAULT_MAX = 11;
     private static final int DEFAULT_INITIAL = 8;
+    private static final float MIN_SCALE_FACTOR = 0.4f;
 
     //endregion
 
     private final int segmentSize;
 
-    private final TickAdapter adapter;
-
     private boolean animating = false;
 
-
     //region Properties
-
-    private int orientation;
     private int minValue = DEFAULT_MIN;
     private int maxValue = DEFAULT_MAX;
     private int selectedValue = DEFAULT_INITIAL;
@@ -63,6 +54,7 @@ public class VolumePickerView extends LinearLayout {
 
     public VolumePickerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        setWillNotDraw(false);
 
         int initialValue = 0;
         this.segmentSize = context.getResources().getDimensionPixelSize(R.dimen.volume_picker_min_size);
@@ -70,19 +62,17 @@ public class VolumePickerView extends LinearLayout {
             initialValue = takeStateFromAttributes(attrs, defStyleAttr);
         }
 
-        setOrientation(orientation);
-
-        this.adapter = new TickAdapter();
-
         setValue(initialValue, false);
         addTicks();
 
     }
 
+
+
     private int takeStateFromAttributes(@NonNull final AttributeSet attrs, final int defStyleAttr) {
+        //todo make unique style attributes
         final TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.ScaleView, defStyleAttr, 0);
 
-        this.orientation = styles.getInteger(R.styleable.ScaleView_scaleOrientation, HORIZONTAL);
         this.minValue = styles.getInteger(R.styleable.ScaleView_scaleMinValue, DEFAULT_MIN);
         this.maxValue = styles.getInteger(R.styleable.ScaleView_scaleMaxValue, DEFAULT_MAX);
         final int initialValue = styles.getInteger(R.styleable.ScaleView_scaleValue, DEFAULT_INITIAL);
@@ -112,7 +102,7 @@ public class VolumePickerView extends LinearLayout {
         savedState.putParcelable("savedState", super.onSaveInstanceState());
         savedState.putInt("minValue", minValue);
         savedState.putInt("maxValue", maxValue);
-        savedState.putInt("value", getValue());
+        savedState.putInt("value", selectedValue);
         return savedState;
     }
 
@@ -135,19 +125,27 @@ public class VolumePickerView extends LinearLayout {
 
     protected void addTicks() {
         final int itemCount = maxValue - minValue;
-
-            for (int i = 0; i < itemCount; i++) {
-                final int position = i;
-                post( () -> {
-                    final float scale = 0.6f * (((float) itemCount - position) / itemCount);
-                    final Tick tick = new Tick(getContext(), scale);
-                    tick.setMinimumHeight(segmentSize);
-                    addView(tick,
-                        new LinearLayout.LayoutParams(getMeasuredWidth() / itemCount,
-                                                      getMeasuredHeight()));
-                });
+        post( () -> {
+            final int parentWidth = getMeasuredWidth();
+            final int parentHeight = getMeasuredHeight();
+            //todo need to fix restore state
+            if(getChildCount() > itemCount){
+                return;
+            }
+            for (int i = 0; i <= itemCount; i++) {
+                final float scale = MIN_SCALE_FACTOR + (1 - MIN_SCALE_FACTOR) * (((float) i) / itemCount);
+                final Tick tick = new Tick(getContext(), scale);
+                tick.setMinimumWidth(segmentSize);
+                tick.setEmphasized(i + minValue <= selectedValue);
+                tick.setLayoutParams(new LinearLayout.LayoutParams(parentWidth / itemCount,
+                                                                   parentHeight,
+                                                                   Gravity.CENTER_HORIZONTAL));
+                VolumePickerView.this.addView(tick);
             }
 
+        invalidate();
+
+        });
     }
 
     protected void notifyValueChangedListener() {
@@ -176,6 +174,7 @@ public class VolumePickerView extends LinearLayout {
     }
 
     public void setValue(final int newValue, final boolean notifyListener) {
+        this.selectedValue = newValue;
         final int newPosition = (newValue - minValue - 1);
         if (notifyListener) {
             post(this::notifyValueChangedListener);
@@ -196,63 +195,6 @@ public class VolumePickerView extends LinearLayout {
 
     //endregion
 
-
-    private class TickAdapter extends RecyclerView.Adapter<TickAdapter.TickViewHolder> {
-        private int itemCount = 0;
-
-        void setItemCount(final int itemCount) {
-            this.itemCount = itemCount;
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public int getItemCount() {
-            return itemCount;
-        }
-
-        @Override
-        public TickAdapter.TickViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-            final Tick tick = new Tick(getContext(), 1f);
-            tick.setLayoutParams(new RecyclerView.LayoutParams(parent.getMeasuredWidth() / getItemCount(),
-                                                               parent.getMeasuredHeight()));
-            final TickViewHolder viewHolder = new TickViewHolder(tick);
-            viewHolder.itemView.setOnTouchListener(new OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if(MotionEvent.ACTION_DOWN == event.getAction()){
-                        viewHolder.tick.setEmphasized(true);
-                        selectedValue = viewHolder.getAdapterPosition();
-                    }
-                    return false;
-                }
-            });
-
-            return viewHolder;
-        }
-
-        @Override
-        public void onBindViewHolder(final TickAdapter.TickViewHolder holder, final int position) {
-            final int itemCount = getItemCount();
-            final float scale = 0.4f + 0.6f * (((float) itemCount - position) / itemCount);
-            holder.tick.setExtentScale(scale);
-            if (orientation == VERTICAL) {
-                holder.tick.setMinimumHeight(segmentSize);
-            } else {
-                holder.tick.setMinimumWidth(segmentSize);
-            }
-        }
-
-        class TickViewHolder extends RecyclerView.ViewHolder {
-            final Tick tick;
-
-            TickViewHolder(@NonNull Tick itemView) {
-                super(itemView);
-
-                this.tick = itemView;
-            }
-        }
-    }
-
     private class Tick extends View {
         private final Paint linePaint = new Paint();
         private final int lineSize;
@@ -264,8 +206,8 @@ public class VolumePickerView extends LinearLayout {
         private Tick(@NonNull final Context context, final float scale) {
             this(context,
                  R.dimen.scale_view_tick,
-                 R.color.gray3,
-                 R.color.blue6,
+                 R.color.voice_volume_normal_color,
+                 R.color.voice_volume_emphasized_color,
                  scale);
         }
 
@@ -281,6 +223,7 @@ public class VolumePickerView extends LinearLayout {
             this.normalColor = ContextCompat.getColor(context, normalColorRes);
             this.emphasizedColor = ContextCompat.getColor(context, emphasizedColorRes);
             this.extentScale = scale;
+            setSaveEnabled(false);
         }
 
         public void setExtentScale(final float extentScale){
@@ -299,16 +242,10 @@ public class VolumePickerView extends LinearLayout {
 
         @Override
         protected void onDraw(final Canvas canvas) {
-            final float maxX = canvas.getWidth(),
-                  maxY = canvas.getHeight();
+            final float maxY = canvas.getHeight();
 
-            if (orientation == VERTICAL) {
-                final float minX = maxX * extentScale;
-                canvas.drawRect(minX, 0, maxX, lineSize, linePaint);
-            } else {
-                final float minY = maxY * extentScale;
+                final float minY = maxY * (1 - extentScale);
                 canvas.drawRect(0, minY, lineSize, maxY, linePaint);
-            }
         }
     }
 
