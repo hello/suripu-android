@@ -730,7 +730,6 @@
     <!-- end region -->
 
     <string name="label_voice">Voice</string>
-    <string name="label_voice_commands">Voice Commands</string>
     <string name="home_subnav_insights">INSIGHTS</string>
     <string name="home_subnav_voice">VOICE</string>
     <string name="welcome_to_voice_title">Welcome To Voice</string>
