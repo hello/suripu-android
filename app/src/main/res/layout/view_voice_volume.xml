@@ -41,6 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/scale_view_size"
         android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
         app:minValue="1"
         app:maxValue="11"
         app:initialValue="8"

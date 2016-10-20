@@ -11,6 +11,7 @@ import android.support.annotation.Dimension;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.R;
+import is.hello.sense.util.Logger;
 
 public class VolumePickerView extends LinearLayout {
     //region Constants
@@ -44,6 +46,8 @@ public class VolumePickerView extends LinearLayout {
     private int selectedValue = DEFAULT_INITIAL;
     private @Nullable OnValueChangedListener onValueChangedListener;
     private final List<Tick> ticks = new ArrayList<>(maxValue);
+    private int activePointerId = -1;
+
     private final int normalTickColor;
     private final int emphasizedTickColor;
     private final int defaultTickSize;
@@ -75,15 +79,6 @@ public class VolumePickerView extends LinearLayout {
 
         setValue(initialValue, false);
         addTicks();
-        setOnTouchListener((ignored, event) -> {
-            switch (event.getAction()){
-                case MotionEvent.ACTION_DOWN:
-                case MotionEvent.ACTION_MOVE:
-                    updateTicksOnTouch(event.getX());
-                    break;
-            }
-            return false;
-        });
     }
 
     private int takeStateFromAttributes(@NonNull final AttributeSet attrs, final int defStyleAttr) {
@@ -96,6 +91,55 @@ public class VolumePickerView extends LinearLayout {
         styles.recycle();
 
         return initialValue;
+    }
+
+    @Override
+    public boolean onTouchEvent(final MotionEvent event) {
+        final int action = MotionEventCompat.getActionMasked(event);
+        switch (action) {
+            case MotionEvent.ACTION_DOWN: {
+                this.activePointerId = MotionEventCompat.getPointerId(event, 0);
+                updateTicksOnTouch(MotionEventCompat.getX(event, 0));
+                return true;
+            }
+
+            case MotionEvent.ACTION_POINTER_DOWN: {
+                return false; //don't allow multiple pointers
+            }
+
+            case MotionEvent.ACTION_MOVE: {
+                final int pointerIndex = MotionEventCompat.getActionIndex(event);
+                final int pointerId = MotionEventCompat.getPointerId(event, pointerIndex);
+                if(pointerId == this.activePointerId) {
+                    updateTicksOnTouch(MotionEventCompat.getX(event, pointerIndex));
+                }
+                break;
+            }
+
+            case MotionEvent.ACTION_POINTER_UP: {
+                final int pointerIndex = MotionEventCompat.getActionIndex(event);
+                final int pointerId = MotionEventCompat.getPointerId(event, pointerIndex);
+                if (pointerId == activePointerId) {
+                    // This was our active pointer going up. Choose a new
+                    // active pointer and adjust accordingly.
+                    final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+                    this.activePointerId = MotionEventCompat.getPointerId(event, newPointerIndex);
+                }
+                break;
+            }
+
+            case MotionEvent.ACTION_CANCEL: {
+                // add the missing redundant check
+                final int pointerIndex = MotionEventCompat.findPointerIndex(event, activePointerId);
+                if (pointerIndex < 0) {
+                    Logger.warn(getClass().getSimpleName(), "Reached edge-case that causes out of bounds pointer id exception");
+                    return false;
+                }
+
+                break;
+            }
+        }
+        return super.onTouchEvent(event);
     }
 
     @Override
@@ -129,7 +173,6 @@ public class VolumePickerView extends LinearLayout {
         onValueChangedListener = null;
 
 
-        setOnTouchListener(null);
         ticks.clear();
         removeAllViews();
     }
@@ -168,12 +211,13 @@ public class VolumePickerView extends LinearLayout {
     }
 
     protected void updateTicksOnTouch(final float touchedXPos){
-        float t_x;
+        if(!isTouchInBounds(touchedXPos)){
+            return;
+        }
         for (int i = 0; i < ticks.size(); i++) {
             final Tick t = ticks.get(i);
-            t_x = t.getX();
-            if(touchedXPos >= t_x){
-                if(touchedXPos < t_x + t.getWidth()){
+            if(touchedXPos >= t.getLeft()){
+                if(touchedXPos <= t.getRight()){
                     selectedValue = getValueFromPosition(i);
                 }
                 t.setEmphasized(true);
@@ -182,6 +226,11 @@ public class VolumePickerView extends LinearLayout {
             }
         }
         post(this::notifyValueChangedListener);
+    }
+
+    private boolean isTouchInBounds(final float touchedXPos) {
+        return !ticks.isEmpty() && touchedXPos >= ticks.get(0).getLeft() //first tick
+                && touchedXPos <= ticks.get(ticks.size() - 1).getRight(); //last tick
     }
 
     protected void updateTicksOnSelectedValue(){
