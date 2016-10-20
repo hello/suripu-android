@@ -28,6 +28,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightType;
+import is.hello.sense.graph.Scope;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
@@ -122,7 +123,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
         addInteractor(deviceIssuesInteractor);
         addInteractor(preferences);
         addInteractor(questionsInteractor);
-        //  deviceIssuesInteractor.bindScope(getScope()); todo fix this
+        deviceIssuesInteractor.bindScope((Scope)getActivity());
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
