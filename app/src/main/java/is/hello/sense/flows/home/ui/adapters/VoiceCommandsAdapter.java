@@ -105,6 +105,7 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdap
             this.imageView.setImageResource(voiceCommand.imageRes);
             this.titleTextView.setText(voiceCommand.titleRes);
             this.bodyTextView.setText(voiceCommand.bodyRes);
+            this.itemView.setOnClickListener(v -> dispatchItemClicked(position, voiceCommand));
         }
     }
 
