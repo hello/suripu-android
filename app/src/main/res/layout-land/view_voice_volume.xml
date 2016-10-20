@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/x2">
+
+    <TextView
+        android:id="@+id/view_voice_volume_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/AppTheme.Text.Header.H5"
+        android:text="@string/voice_select_volume"/>
+
+    <TextView
+        android:id="@+id/view_voice_volume_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/x2"
+        style="@style/AppTheme.Text.Body.New"
+        android:text="@string/voice_volume_description"/>
+
+    <android.support.v4.widget.Space
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.6"/>
+
+    <LinearLayout
+        android:id="@+id/view_voice_volume_picker_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/x4"
+        android:layout_marginEnd="@dimen/x4"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <is.hello.sense.flows.voice.ui.widgets.VolumePickerView
+            android:id="@+id/view_voice_volume_scale"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/scale_view_size"
+            android:layout_weight="0.8"
+            android:orientation="horizontal"
+            app:minValue="1"
+            app:maxValue="11"
+            app:initialValue="8"/>
+
+        <TextView
+            android:id="@+id/view_voice_volume_selected_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:layout_marginStart="@dimen/x4"
+            android:layout_marginEnd="@dimen/x4"
+            android:gravity="center"
+            style="@style/AppTheme.Text.Header.H1.Thin"
+            android:textColor="@color/voice_volume_emphasized_color"/>
+    </LinearLayout>
+
+    <android.support.v4.widget.Space
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.8"/>
+
+    <Button
+        android:id="@+id/view_voice_volume_done_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/AppTheme.Button.Rounded"
+        android:text="@string/action_done"/>
+
+</LinearLayout>
