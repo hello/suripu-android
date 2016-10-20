@@ -260,5 +260,6 @@
     <dimen name="dialog_max_height">700dp</dimen>
 
     <dimen name="dialog_bottom_max_height">400dp</dimen>
+    <dimen name="volume_picker_min_size">40dp</dimen>
 
 </resources>
