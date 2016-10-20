@@ -13,26 +13,25 @@ import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
+import is.hello.sense.ui.recycler.LastItemInsetDecoration;
 
 @SuppressLint("ViewConstructor")
 public class VoiceView extends PresenterView {
     private final RecyclerView recyclerView;
+    final InsetItemDecoration insetItemDecorationForWelcome = new InsetItemDecoration();
 
     public VoiceView(@NonNull final Activity activity,
                      @NonNull final VoiceCommandsAdapter adapter) {
         super(activity);
         final Resources resources = context.getResources();
         final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        final int inset = resources.getDimensionPixelSize(R.dimen.x1);
-        final InsetItemDecoration insetItemDecoration = new InsetItemDecoration();
-        insetItemDecoration.addTopInset(0, inset);
-        insetItemDecoration.addBottomInset(adapter.getItemCount()-1, inset);
+        this.insetItemDecorationForWelcome.addBottomInset(0, resources.getDimensionPixelSize(R.dimen.x1));
         this.recyclerView = (RecyclerView) findViewById(R.id.view_voice_home_recycler);
         this.recyclerView.setHasFixedSize(true);
         this.recyclerView.setItemAnimator(null);
         this.recyclerView.setLayoutManager(layoutManager);
         this.recyclerView.addItemDecoration(new DividerItemDecoration(activity));
-        this.recyclerView.addItemDecoration(insetItemDecoration);
+        this.recyclerView.addItemDecoration(new LastItemInsetDecoration(activity.getResources()));
         this.recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager,
                                                                           resources,
                                                                           FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
@@ -50,4 +49,13 @@ public class VoiceView extends PresenterView {
         this.recyclerView.setAdapter(null);
 
     }
+
+    public void setInsetForWelcomeCard(final boolean add) {
+        if (add) {
+            this.recyclerView.addItemDecoration(insetItemDecorationForWelcome);
+        } else {
+            this.recyclerView.removeItemDecoration(insetItemDecorationForWelcome);
+        }
+    }
+
 }

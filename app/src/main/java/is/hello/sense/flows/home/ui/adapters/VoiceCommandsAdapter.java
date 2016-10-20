@@ -20,7 +20,10 @@ import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdapter.VoiceCommand, VoiceCommandsAdapter.BaseViewHolder> {
     private static final int VIEW_TITLE = 0;
     private static final int VIEW_ITEM = 1;
+    private static final int VIEW_WELCOME = 2;
     private final LayoutInflater inflater;
+
+    private View.OnClickListener welcomeCardListener = null;
 
     public VoiceCommandsAdapter(@NonNull final LayoutInflater inflater) {
         super(new ArrayList<>());
@@ -33,11 +36,19 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdap
 
     @Override
     public int getItemCount() {
-        return super.getItemCount() + 1;
+        return super.getItemCount() + 1 + (welcomeCardListener == null ? 0 : 1);
     }
 
     @Override
     public int getItemViewType(final int position) {
+        if (welcomeCardListener != null) {
+            if (position == 0) {
+                return VIEW_WELCOME;
+            }
+            if (position == 1) {
+                return VIEW_TITLE;
+            }
+        }
         if (position == 0) {
             return VIEW_TITLE;
         }
@@ -49,12 +60,18 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdap
         if (position == 0) {
             return null;
         }
-        return super.getItem(position - 1);
+        if (welcomeCardListener != null && position == 1) {
+            return null;
+        }
+
+        return super.getItem(position - 1 - (welcomeCardListener == null ? 0 : 1));
     }
 
     @Override
     public BaseViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         switch (viewType) {
+            case VIEW_WELCOME:
+                return new WelcomeCardViewHolder(VoiceCommandsAdapter.this.inflater.inflate(R.layout.item_welcome_card_close, parent, false));
             case VIEW_TITLE:
                 return new TitleViewHolder(VoiceCommandsAdapter.this.inflater.inflate(R.layout.item_textview_title, parent, false));
             case VIEW_ITEM:
@@ -67,7 +84,12 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdap
     @Override
     public void onBindViewHolder(final BaseViewHolder holder, final int position) {
         holder.bind(position);
+    }
 
+
+    public void showWelcomeCard(@Nullable final View.OnClickListener welcomeCardListener) {
+        this.welcomeCardListener = welcomeCardListener;
+        this.notifyDataSetChanged();
     }
 
     public abstract class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder {
@@ -84,6 +106,7 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdap
             ((TextView) itemView.findViewById(R.id.item_textview_title)).setText(R.string.label_voice_commands);
         }
     }
+
 
     public class ItemViewHolder extends BaseViewHolder {
         private final ImageView imageView;
@@ -104,6 +127,17 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdap
             this.imageView.setImageResource(voiceCommand.imageRes);
             this.titleTextView.setText(voiceCommand.titleRes);
             this.bodyTextView.setText(voiceCommand.bodyRes);
+        }
+    }
+
+    private class WelcomeCardViewHolder extends BaseViewHolder {
+
+        public WelcomeCardViewHolder(@NonNull final View itemView) {
+            super(itemView);
+            ((ImageView) itemView.findViewById(R.id.item_welcome_image)).setImageResource(R.drawable.sense_with_voice);
+            ((TextView) itemView.findViewById(R.id.item_welcome_title)).setText(R.string.welcome_to_voice_title);
+            ((TextView) itemView.findViewById(R.id.item_welcome_message)).setText(R.string.welcome_to_voice_body);
+            itemView.findViewById(R.id.item_welcome_close).setOnClickListener(welcomeCardListener);
         }
     }
 
