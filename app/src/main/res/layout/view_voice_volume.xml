@@ -41,12 +41,12 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/scale_view_size"
         android:layout_gravity="center_horizontal"
-        android:paddingStart="@dimen/x7"
-        android:paddingEnd="@dimen/x7"
+        android:layout_marginStart="@dimen/x7"
+        android:layout_marginEnd="@dimen/x7"
         android:orientation="horizontal"
-        app:scaleMinValue="1"
-        app:scaleMaxValue="11"
-        app:scaleValue="8"/>
+        app:minValue="1"
+        app:maxValue="11"
+        app:initialValue="8"/>
 
     <Space
         android:layout_width="match_parent"

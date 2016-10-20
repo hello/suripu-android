@@ -33,9 +33,7 @@ public class VolumePickerView extends LinearLayout {
 
     //endregion
 
-    private final int segmentSize;
-
-    private boolean animating = false;
+    private final int minSegmentSize;
 
     //region Properties
     private int minValue = DEFAULT_MIN;
@@ -62,51 +60,30 @@ public class VolumePickerView extends LinearLayout {
         setWillNotDraw(false);
 
         int initialValue = 0;
-        this.segmentSize = context.getResources().getDimensionPixelSize(R.dimen.volume_picker_min_size);
+        this.minSegmentSize = context.getResources().getDimensionPixelSize(R.dimen.volume_picker_min_size);
         if (attrs != null) {
             initialValue = takeStateFromAttributes(attrs, defStyleAttr);
         }
 
         setValue(initialValue, false);
         addTicks();
-        setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()){
-                    case MotionEvent.ACTION_DOWN:
-                        final float x = event.getX();
-                        float t_x;
-                        for (int i = 0; i < ticks.size(); i++) {
-                            final Tick t = ticks.get(i);
-                            t_x = t.getX();
-                            if(x >= t_x){
-                                if(x < t_x + t.getWidth()){
-                                   setValue(minValue + i, false);
-                                }
-                                t.setEmphasized(true);
-                            } else {
-                                t.setEmphasized(false);
-                            }
-                        }
-                        notifyValueChangedListener();
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        //todo handle drags
-                }
-                return false;
+        setOnTouchListener((ignored, event) -> {
+            switch (event.getAction()){
+                case MotionEvent.ACTION_DOWN:
+                case MotionEvent.ACTION_MOVE:
+                    updateTicksOnTouch(event.getX());
+                    break;
             }
+            return false;
         });
     }
 
-
-
     private int takeStateFromAttributes(@NonNull final AttributeSet attrs, final int defStyleAttr) {
-        //todo make unique style attributes
-        final TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.ScaleView, defStyleAttr, 0);
+        final TypedArray styles = getContext().obtainStyledAttributes(attrs, R.styleable.VolumePickerView, defStyleAttr, 0);
 
-        this.minValue = styles.getInteger(R.styleable.ScaleView_scaleMinValue, DEFAULT_MIN);
-        this.maxValue = styles.getInteger(R.styleable.ScaleView_scaleMaxValue, DEFAULT_MAX);
-        final int initialValue = styles.getInteger(R.styleable.ScaleView_scaleValue, DEFAULT_INITIAL);
+        this.minValue = styles.getInteger(R.styleable.VolumePickerView_minValue, DEFAULT_MIN);
+        this.maxValue = styles.getInteger(R.styleable.VolumePickerView_maxValue, DEFAULT_MAX);
+        final int initialValue = styles.getInteger(R.styleable.VolumePickerView_initialValue, DEFAULT_INITIAL);
 
         styles.recycle();
 
@@ -129,7 +106,7 @@ public class VolumePickerView extends LinearLayout {
 
     @Override
     protected Parcelable onSaveInstanceState() {
-        Bundle savedState = new Bundle();
+        final Bundle savedState = new Bundle();
         savedState.putParcelable("savedState", super.onSaveInstanceState());
         savedState.putInt("minValue", minValue);
         savedState.putInt("maxValue", maxValue);
@@ -140,51 +117,80 @@ public class VolumePickerView extends LinearLayout {
 
     //endregion
 
-
-    //region Drawing
-
     public void onDestroyView() {
         if(onValueChangedListener != null){
             onValueChangedListener = null;
         }
-        //doesn't seem to prevent child views being restored
+
+        setOnTouchListener(null);
+        ticks.clear();
         removeAllViews();
     }
-
-    //endregion
-
 
     //region Internal
 
     protected void addTicks() {
-        final int itemCount = maxValue - minValue;
+        final int itemCount = getItemCount();
         post( () -> {
             final int parentWidth = getMeasuredWidth();
             final int parentHeight = getMeasuredHeight();
-            //todo need to fix restore state
-            if(getChildCount() > itemCount){
-                return;
-            }
-            for (int i = 0; i <= itemCount; i++) {
-                final float scale = MIN_SCALE_FACTOR + (1 - MIN_SCALE_FACTOR) * (((float) i) / itemCount);
+
+            for (int i = 0; i < itemCount; i++) {
+                final float scale = VolumePickerView.getScaleFactorFromPosition(i, itemCount);
                 final Tick tick = new Tick(getContext(), scale);
-                tick.setMinimumWidth(segmentSize);
-                tick.setEmphasized(i + minValue <= selectedValue);
+                tick.setMinimumWidth(minSegmentSize);
+                tick.setEmphasized(shouldEmphasizeTick(i));
                 tick.setLayoutParams(new LinearLayout.LayoutParams(parentWidth / itemCount,
                                                                    parentHeight,
                                                                    Gravity.CENTER_HORIZONTAL));
                 ticks.add(tick);
-                VolumePickerView.this.addView(tick);
+                VolumePickerView.this.addView(tick, i);
             }
 
-        invalidate();
-
+            invalidate();
+            post(this::notifyValueChangedListener);
         });
+    }
+
+    protected void updateTicksOnTouch(final float touchedXPos){
+        float t_x;
+        for (int i = 0; i < ticks.size(); i++) {
+            final Tick t = ticks.get(i);
+            t_x = t.getX();
+            if(touchedXPos >= t_x){
+                if(touchedXPos < t_x + t.getWidth()){
+                    selectedValue = getValueFromPosition(i);
+                }
+                t.setEmphasized(true);
+            } else {
+                t.setEmphasized(false);
+            }
+        }
+        post(this::notifyValueChangedListener);
+    }
+
+    protected void updateTicksOnSelectedValue(){
+        for (int i = 0; i < ticks.size(); i++) {
+            final Tick tick = ticks.get(i);
+            tick.setEmphasized(shouldEmphasizeTick(i));
+        }
+    }
+
+    protected boolean shouldEmphasizeTick(final int position) {
+        return selectedValue >= getValueFromPosition(position);
+    }
+
+    protected static float getScaleFactorFromPosition(final int position, final int itemCount){
+        return MIN_SCALE_FACTOR + (1 - MIN_SCALE_FACTOR) * (((float) position) / itemCount);
+    }
+
+    protected int getValueFromPosition(final int position){
+        return minValue + position;
     }
 
     protected void notifyValueChangedListener() {
         if (onValueChangedListener != null) {
-            onValueChangedListener.onValueChanged(getValue());
+            onValueChangedListener.onValueChanged(selectedValue);
         }
     }
 
@@ -193,49 +199,67 @@ public class VolumePickerView extends LinearLayout {
 
     //region Properties
 
+    //todo need to be able to update ticks if dynamically change min max values
     public void setMinValue(final int minValue) {
         this.minValue = minValue;
-        addTicks();
+    }
+
+    public void setMaxValue(final int maxValue) {
+        this.maxValue = maxValue;
     }
 
     public int getMinValue() {
         return minValue;
     }
 
-    public void setMaxValue(final int maxValue) {
-        this.maxValue = maxValue;
-        addTicks();
+    public int getMaxValue(){
+        return maxValue;
     }
 
     public void setValue(final int newValue, final boolean notifyListener) {
         this.selectedValue = newValue;
-        final int newPosition = (newValue - minValue - 1);
         if (notifyListener) {
             post(this::notifyValueChangedListener);
         }
+        post(this::updateTicksOnSelectedValue);
     }
 
     public int getValue() {
         return selectedValue;
     }
 
-    public boolean isAnimating() {
-        return animating;
+    public int getItemCount(){
+        return maxValue - minValue + 1;
     }
 
     public void setOnValueChangedListener(@Nullable final OnValueChangedListener onValueChangedListener) {
         this.onValueChangedListener = onValueChangedListener;
     }
 
+    /**
+     * @param pValue must be between 0 - 100 %
+     * @return converted value between {@link this#minValue} and {@link this#maxValue}
+     */
+    public int convertFromPercentageValue(final int pValue){
+        return (int) Math.floor((pValue / 100f) * getItemCount());
+    }
+
+    /**
+     * @return converted value between 0 and 100
+     */
+    public int convertSelectedValueToPercentageValue(){
+        return (int) Math.ceil((selectedValue * 100f) / getItemCount());
+    }
+
     //endregion
 
-    private class Tick extends View {
+    private static class Tick extends View {
         private final Paint linePaint = new Paint();
         private final int lineSize;
         private final int normalColor;
         private final int emphasizedColor;
 
-        private float extentScale;
+        private final float extentScale;
 
         private Tick(@NonNull final Context context, final float scale) {
             this(context,
@@ -258,11 +282,6 @@ public class VolumePickerView extends LinearLayout {
             this.emphasizedColor = ContextCompat.getColor(context, emphasizedColorRes);
             this.extentScale = scale;
             setSaveEnabled(false);
-        }
-
-        public void setExtentScale(final float extentScale){
-            this.extentScale = extentScale;
-            invalidate();
         }
 
         protected void setEmphasized(final boolean emphasized) {

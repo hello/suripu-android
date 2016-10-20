@@ -26,6 +26,12 @@
         <attr name="scaleValue" format="integer"/>
     </declare-styleable>
 
+    <declare-styleable name="VolumePickerView">
+        <attr name="minValue" format="integer"/>
+        <attr name="maxValue" format="integer"/>
+        <attr name="initialValue" format="integer"/>
+    </declare-styleable>
+
     <declare-styleable name="PageDots">
         <attr name="dotStyle" format="enum">
             <enum name="white" value="0"/>
