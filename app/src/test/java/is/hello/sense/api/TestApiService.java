@@ -58,6 +58,10 @@ import is.hello.sense.api.model.v2.TimelineBuilder;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.TimelineEventBuilder;
 import is.hello.sense.api.model.v2.Trends;
+import is.hello.sense.api.model.v2.alarms.AlarmGroups;
+import is.hello.sense.api.model.v2.expansions.Configuration;
+import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
@@ -308,8 +312,8 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ArrayList<Alarm>> smartAlarms() {
-        return loadResponse("smart_alarms", new TypeToken<ArrayList<Alarm>>() {
+    public Observable<AlarmGroups> smartAlarms() {
+        return loadResponse("smart_alarms", new TypeToken<AlarmGroups>() {
         }.getType());
     }
 
@@ -434,6 +438,33 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<UserFeatures> getUserFeatures() {
         return loadResponse("sense_features", new TypeToken<UserFeatures>(){}.getType());
+    }
+
+    @Override
+    public Observable<ArrayList<Expansion>> getExpansions() {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<List<Expansion>> getExpansionDetail(@Path("id") final long expansionId) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<Void> setExpansionState(@Path("id") final long expansionId,
+                                              @Body @NonNull State.Request stateRequest) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<ArrayList<Configuration>> getConfigurations(@Path("id") final long expansionId) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<Configuration> setConfigurations(@Path("id") final long expansionId,
+                                                       @Body @NonNull final Configuration configuration) {
+        return unimplemented();
     }
 
     @Override

@@ -430,6 +430,11 @@ public class SenseAlertDialog extends Dialog {
             if(bundle.containsKey(ARG_CANCELABLE)){
                 alertDialog.setCancelable(bundle.getBoolean(ARG_CANCELABLE));
             }
+
+            if(bundle.containsKey(ARG_DESTRUCTIVE_BUTTON) && bundle.containsKey(ARG_DESTRUCTIVE_FLAG)){
+                alertDialog.setButtonDestructive(bundle.getInt(ARG_DESTRUCTIVE_BUTTON),
+                                                 bundle.getBoolean(ARG_DESTRUCTIVE_FLAG));
+            }
             return alertDialog;
         }
     }

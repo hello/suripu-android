@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.util.DateFormatter;
@@ -67,6 +68,9 @@ public class Alarm extends ApiResponse {
 
     @SerializedName("smart")
     private boolean smart;
+
+    @SerializedName("expansions")
+    private ArrayList<Expansion> expansions;
 
     private transient AlarmTones alarmTones;
 
@@ -163,6 +167,17 @@ public class Alarm extends ApiResponse {
 
     public boolean isEditable() {
         return editable;
+    }
+
+    public ArrayList<Expansion> getExpansions() {
+        if (expansions == null) {
+            expansions = new ArrayList<>();
+        }
+        return expansions;
+    }
+
+    public void setExpansions(@NonNull final ArrayList<Expansion> expansions) {
+        this.expansions = expansions;
     }
 
     /**

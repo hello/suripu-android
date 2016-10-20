@@ -4,12 +4,15 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.v2.Scale;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.interactors.Interactor;
@@ -195,6 +198,24 @@ public class UnitFormatter extends Interactor {
                 logEvent("No string found for type: " + type);
                 return R.string.empty;
         }
+    }
+
+    public List<Scale> getConvertedScales(@NonNull final List<Scale> scales,
+                                          @NonNull final SensorType type) {
+
+        final UnitConverter converter = getUnitConverterForSensor(type);
+        if(UnitConverter.IDENTITY.equals(converter)){
+            return scales;
+        }
+        final List<Scale> converted = new ArrayList<>(scales.size());
+
+        for(final Scale scale : scales){
+            converted.add(new Scale(scale.getName(),
+                                    converter.convert(scale.getMin()),
+                                    converter.convert(scale.getMax()),
+                                    scale.getCondition()));
+        }
+        return converted;
     }
 
 

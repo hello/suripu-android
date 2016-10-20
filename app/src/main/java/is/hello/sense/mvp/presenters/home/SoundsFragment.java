@@ -7,20 +7,22 @@ import android.view.View;
 
 import javax.inject.Inject;
 
-import is.hello.sense.api.model.Devices;
-import is.hello.sense.api.model.v2.SleepSoundsState;
-import is.hello.sense.api.model.v2.SleepSoundsStateDevice;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SleepSoundsInteractor;
 import is.hello.sense.mvp.view.home.SoundsView;
 import is.hello.sense.ui.common.SubFragment;
 import is.hello.sense.ui.widget.SelectorView.OnSelectionChangedListener;
+import rx.Subscription;
 
 
 public class SoundsFragment extends BacksideTabFragment<SoundsView> implements OnSelectionChangedListener, SwipeRefreshLayout.OnRefreshListener {
 
-    private static final String ARG_HAS_NAVBAR = SoundsView.class.getName() + ".ARG_HAS_NAVBAR";
+    @Inject
+    PreferencesInteractor preferencesInteractor;
     @Inject
     SleepSoundsInteractor sleepSoundsInteractor;
+
+    private Subscription sleepSoundsSubscription;
 
     @Override
     public final void initializePresenterView() {
@@ -35,12 +37,7 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
     @Override
     public final void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            sleepSoundsInteractor.update();
-            bindAndSubscribe(sleepSoundsInteractor.sub, this::bind, this::presentError);
-        }
         if (presenterView != null && presenterView.isShowingViews()) {
-
             final SubFragment fragment = presenterView.getCurrentSubFragment(getChildFragmentManager());
             if (fragment != null) {
                 // This is what stops SleepSoundsFragment from polling when the fragment changes.
@@ -57,32 +54,20 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
     }
 
     @Override
-    public final void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (presenterView != null) {
-            outState.putBoolean(ARG_HAS_NAVBAR, presenterView.isSubNavBarVisible());
-        }
-    }
-
-    @Override
     public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        boolean showNavbar = false;
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(ARG_HAS_NAVBAR)) {
-                showNavbar = (savedInstanceState.getBoolean(ARG_HAS_NAVBAR));
-            }
-        }
+
+        bindAndSubscribe(preferencesInteractor.observableBoolean(PreferencesInteractor.HAS_SOUNDS, false),
+                         presenterView::refreshView,
+                         this::presentError);
         presenterView.setSubNavSelectorOnSelectionChangedListener(this);
         presenterView.setSwipeRefreshLayoutOnRefreshListener(this);
-        presenterView.refreshView(showNavbar);
         onUpdate();
     }
 
     @Override
     public final void onResume() {
         super.onResume();
-        sleepSoundsInteractor.update();
     }
 
     @Override
@@ -93,6 +78,13 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
     @Override
     public final void onUpdate() {
         presenterView.updated();
+
+        if (sleepSoundsSubscription != null) {
+            sleepSoundsSubscription.unsubscribe();
+        }
+        sleepSoundsSubscription =
+                bind(sleepSoundsInteractor.showSleepSoundsTab()).subscribe(this::bind,
+                                                                           this::presentError);
     }
 
     @Override
@@ -100,27 +92,30 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
         presenterView.setPagerItem(newSelectionIndex);
     }
 
-    public final void bind(@NonNull final SleepSoundsStateDevice stateDevice) {
-        final Devices devices = stateDevice.getDevices();
-        final SleepSoundsState state = stateDevice.getSleepSoundsState();
-        boolean show = false;
-        if (devices != null && state != null) {
-            if (devices.getSense() != null && state.getSounds() != null) {
-                show = true;
-            }
-        }
-        presenterView.refreshView(show);
+    public final void bind(final boolean show) {
+        preferencesInteractor.edit().putBoolean(PreferencesInteractor.HAS_SOUNDS, true).apply();
+        presenterView.refreshView(true);
+
     }
 
     public final void presentError(@NonNull final Throwable error) {
+        preferencesInteractor.edit().putBoolean(PreferencesInteractor.HAS_SOUNDS, false).apply();
         presenterView.refreshView(false);
     }
 
+    @Override
+    protected void onRelease() {
+        super.onRelease();
+        if (sleepSoundsSubscription != null) {
+            sleepSoundsSubscription.unsubscribe();
+            sleepSoundsSubscription = null;
+        }
+    }
 
     @Override
     public final void onRefresh() {
-        sleepSoundsInteractor.update();
         presenterView.refreshed(getChildFragmentManager());
+        presenterView.refreshView(preferencesInteractor.getBoolean(PreferencesInteractor.HAS_SOUNDS, false));
     }
 
 }

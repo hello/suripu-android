@@ -112,7 +112,7 @@ public enum Tutorial {
                     .apply();
 
             // Mark shown for this user and don't show the breadcrumb.
-            markShown(activity);
+            markShown(activity, false);
             return false;
         }
 
@@ -124,11 +124,13 @@ public enum Tutorial {
     }
 
     public void wasDismissed(@NonNull final Context context) {
-        markShown(context);
-        Analytics.trackEvent(EVENT_NAME, properties);
+        markShown(context, true);
     }
 
-    public void markShown(@NonNull final Context context) {
+    public void markShown(@NonNull final Context context, final boolean track) {
+       if (track){
+           Analytics.trackEvent(EVENT_NAME, properties);
+       }
         final SharedPreferences preferences =
                 context.getSharedPreferences(getPrefName(context), 0);
         preferences.edit()

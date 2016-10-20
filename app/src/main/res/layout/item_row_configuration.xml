@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             style="@style/AppTheme.Card.VerticalPaddingItem"
+             android:layout_gravity="center_vertical">
+
+    <TextView
+        android:id="@+id/item_row_configuration_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/AppTheme.Text.Body.New"
+        android:layout_gravity="center_vertical|left"/>
+
+    <CheckBox
+        android:id="@+id/item_row_configuration_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/x2"
+        android:layout_gravity="center_vertical|right"/>
+
+</FrameLayout>

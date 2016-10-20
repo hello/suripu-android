@@ -29,6 +29,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.atLeastOnce;
@@ -122,6 +123,48 @@ public class HardwareInteractorTests extends InjectionTestCase {
         presenter.sortWifiNetworks(endpoints);
         final List<String> endpointNames = Lists.map(endpoints, wifi_endpoint::getSsid);
         assertThat(endpointNames, hasItems("Test 2", "Test 1", "Test 3"));
+
+        assertNoThrow(() -> presenter.sortWifiNetworks(Lists.newArrayList()));
+    }
+
+    @Test
+    public void duplicateNetworksAreRemoved() throws Exception {
+        final List<wifi_endpoint> endpoints = new ArrayList<>();
+        endpoints.add(wifi_endpoint.newBuilder()
+                                   .setSecurityType(sec_type.SL_SCAN_SEC_TYPE_OPEN)
+                                   .setSsid("Test 1")
+                                   .setRssi(-1000).build());
+        endpoints.add(wifi_endpoint.newBuilder()
+                                   .setSecurityType(sec_type.SL_SCAN_SEC_TYPE_OPEN)
+                                   .setSsid("Test 1")
+                                   .setRssi(-50)
+                                   .build());
+        endpoints.add(wifi_endpoint.newBuilder()
+                                   .setSecurityType(sec_type.SL_SCAN_SEC_TYPE_OPEN)
+                                   .setSsid("Test 3")
+                                   .setRssi(-4000)
+                                   .build());
+        endpoints.add(wifi_endpoint.newBuilder()
+                                   .setSecurityType(sec_type.SL_SCAN_SEC_TYPE_OPEN)
+                                   .setSsid("Test 4")
+                                   .setRssi(-350)
+                                   .build());
+        endpoints.add(wifi_endpoint.newBuilder()
+                                   .setSecurityType(sec_type.SL_SCAN_SEC_TYPE_OPEN)
+                                   .setSsid("Test 4")
+                                   .setRssi(-400)
+                                   .build());
+        endpoints.add(wifi_endpoint.newBuilder()
+                                   .setSecurityType(sec_type.SL_SCAN_SEC_TYPE_OPEN)
+                                   .setSsid("Test 4")
+                                   .setRssi(-400)
+                                   .build());
+
+
+        presenter.removeDuplicateNetworks(endpoints);
+        final List<String> endpointNames = Lists.map(endpoints, wifi_endpoint::getSsid);
+        assertThat(endpointNames, hasItems("Test 1", "Test 3", "Test 4"));
+        assertEquals(endpointNames.size(), 3);
 
         assertNoThrow(() -> presenter.sortWifiNetworks(Lists.newArrayList()));
     }

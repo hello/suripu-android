@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -44,6 +45,7 @@ implements RoomCheckPresenter.Output{
     RoomCheckPresenter presenter;
 
     private ImageView sense;
+    private HorizontalScrollView sensorScrollView;
     private LinearLayout sensorViewContainer;
     private LinearLayout dynamicContent;
     private TextView status;
@@ -80,7 +82,8 @@ implements RoomCheckPresenter.Output{
         final View view = inflater.inflate(R.layout.fragment_onboarding_room_check, container, false);
 
         this.sense = (ImageView) view.findViewById(R.id.fragment_onboarding_room_check_sense);
-        this.sensorViewContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_room_check_sensors);
+        this.sensorScrollView = (HorizontalScrollView) view.findViewById(R.id.fragment_onboarding_room_check_sensors_scroll_view);
+        this.sensorViewContainer = (LinearLayout) sensorScrollView.findViewById(R.id.fragment_onboarding_room_check_sensors);
         this.dynamicContent = (LinearLayout) view.findViewById(R.id.fragment_onboarding_room_check_content);
         this.status = (TextView) dynamicContent.findViewById(R.id.fragment_onboarding_room_check_status);
         this.scoreTicker = (TextView) dynamicContent.findViewById(R.id.fragment_onboarding_room_check_score_tv);
@@ -89,8 +92,9 @@ implements RoomCheckPresenter.Output{
 
         this.graySense = ResourcesCompat.getDrawable(getResources(), R.drawable.onboarding_sense_grey, null);
         this.startColor = ContextCompat.getColor(getActivity(), R.color.sensor_empty);
-
+        this.sensorScrollView.setOnTouchListener( (event, ignore) -> true); //prevent scrolling
         this.sensorViewContainer.setClickable(false);
+
 
         return view;
     }
@@ -188,6 +192,10 @@ implements RoomCheckPresenter.Output{
 
         if(continueButton != null){
             continueButton.setOnClickListener(null);
+        }
+
+        if(sensorScrollView != null){
+            sensorScrollView.setOnClickListener(null);
         }
     }
 

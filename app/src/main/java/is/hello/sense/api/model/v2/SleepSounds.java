@@ -74,13 +74,10 @@ public class SleepSounds extends ApiResponse implements IListObject, SleepSounds
     }
 
     public enum State implements Enums.FromString {
-        OK(),
-        SOUNDS_NOT_DOWNLOADED(),    // Sounds have not *yet* been downloaded to Sense, but should be.
-        SENSE_UPDATE_REQUIRED(),    // Sense cannot play sounds because it has old firmware
-        FEATURE_DISABLED();         // User doesn't have this feature flipped.
-
-        State() {
-        }
+        OK,
+        SOUNDS_NOT_DOWNLOADED,    // Sounds have not *yet* been downloaded to Sense, but should be.
+        SENSE_UPDATE_REQUIRED,    // Sense cannot play sounds because it has old firmware
+        FEATURE_DISABLED;         // User doesn't have this feature flipped.
 
         public static State fromString(final @NonNull String string) {
             return Enums.fromString(string, values(), OK);

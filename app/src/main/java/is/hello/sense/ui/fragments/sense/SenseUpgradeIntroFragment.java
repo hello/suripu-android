@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments.sense;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,11 +12,13 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.presenters.SenseUpgradeIntroPresenter;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
 
 public class SenseUpgradeIntroFragment extends BasePresenterFragment
-        implements SenseUpgradeIntroPresenter.Output {
+        implements SenseUpgradeIntroPresenter.Output,
+        OnBackPressedInterceptor {
 
     @Inject
     SenseUpgradeIntroPresenter presenter;
@@ -49,5 +52,11 @@ public class SenseUpgradeIntroFragment extends BasePresenterFragment
         view.destroy();
         view = null;
 
+    }
+
+    @Override
+    public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
+        cancelFlow();
+        return true;
     }
 }

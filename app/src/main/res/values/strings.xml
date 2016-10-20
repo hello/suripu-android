@@ -82,9 +82,9 @@
     <string name="title_setup_sense">Setting up Sense</string>
     <string name="info_setup_sense">Make sure Sense is plugged into a wall outlet next to your bed.</string>
     <string name="title_pair_sense">Pairing with Sense</string>
-    <string name="info_pair_sense">Now we’ll pair your phone with Sense. Make sure Sense is plugged in, nearby, and glowing purple. Tap Continue when ready.</string>
+    <string name="info_pair_sense">Sense should be plugged in, nearby, and glowing either blue or purple.</string>
     <string name="title_pair_new_sense">Pairing your new Sense</string>
-    <string name="info_pair_new_sense">Confirm that your new Sense is plugged in nearby and glowing purple.</string>
+    <string name="info_pair_new_sense">Sense should be plugged in, nearby, and glowing blue or purple.</string>
     <string name="title_pairing">Pairing</string>
     <string name="title_connecting_network">Connecting to WiFi</string>
     <string name="title_connecting_network_wlan_connected">@string/title_connecting_network</string>
@@ -292,7 +292,7 @@
     <string name="info_connecting_to_sense">Connecting with Sense over Bluetooth…</string>
 
     <string name="devices_support_footer">Setting up a <a href="#second-pill">second Sleep Pill</a> for your partner?</string>
-    <string name="action_sense_pairing_mode_help">Sense isn\'t glowing purple?</string>
+    <string name="action_sense_pairing_mode_help">Sense isn\'t glowing blue or purple</string>
     <string name="label_wifi_network_name">"Wi-Fi network: "</string>
     <string name="onboarding_info_enhanced_audio">With Enhanced Audio enabled, Sense can pick up snoring, sleep talking, and noise disturbances.\n\nWithout Enhanced Audio enabled, Sense only looks at background noise.</string>
     <string name="onboarding_title_enhanced_audio">Enable Enhanced Audio</string>
@@ -428,7 +428,7 @@
     <string name="device_color_black">Charcoal</string>
     <string name="device_color_white">Cotton</string>
     <string name="device_hardware_version_sense">Sense</string>
-    <string name="device_hardware_version_sense_with_voice">Sense with voice</string>
+    <string name="device_hardware_version_sense_with_voice">Sense with Voice</string>
     <string name="device_hardware_version_unknown">Unknown</string>
     <string name="action_upgrade_sense">Upgrade to Sense with voice</string>
 
@@ -664,6 +664,7 @@
     <string name="sensor_scale_min_value">0 to %1$s</string>
     <string name="sensor_scale_mid_value">%1$s to %2$s</string>
     <string name="sensor_scale_max_value">%1$s+</string>
+    <string name="sensor_scale_negative_max_value">%1$s&lt;</string>
     <string name="sensor_about_temperature_celsius">At night, your body temperature cools to help induce sleep, and the right external temperature can make this easier. The ideal temperature for this is generally between 15 and 20 degrees Celsius. While cooler temperatures are generally better than warmer ones, be careful not to set your thermostat too low. A bedroom that’s uncomfortably hot or cold can disrupt your sleep cycle, which can negatively impact the quality of your sleep.</string>
     <string name="sensor_about_temperature_fahrenheit">At night, your body temperature cools to help induce sleep, and the right external temperature can make this easier. The ideal temperature for this is generally between 59 and 68 degrees Fahrenheit. While cooler temperatures are generally better than warmer ones, be careful not to set your thermostat too low. A bedroom that’s uncomfortably hot or cold can disrupt your sleep cycle, which can negatively impact the quality of your sleep.</string>
     <string name="sensor_about_humidity">The ideal humidity  for a good night’s sleep is around 50%. In addition to affecting the quality of your sleep, low humidity can cause your throat to become irritated and your skin to become dry, while high humidity can make it harder for moisture to evaporate off your body — making you hot, uncomfortable, and sweaty. Damp air can also encourage mold growth, which may affect your sleep if you suffer from mold allergies.</string>
@@ -680,4 +681,40 @@
     <string name="room_conditions_welcome_message">Recent changes to room conditions may take a few moments to be reflected here. Tap a card for more detail.</string>
     <string name="temperature_celsius">C</string>
     <string name="temperature_fahrenheit">F</string>
+
+    <!-- region Expansions -->
+
+    <string name="action_expansions">Expansions</string>
+    <string name="expansion_list_title">Expansions</string>
+    <string name="expansions_state_not_connected">Connect</string>
+    <string name="expansions_state_connected_on">Enabled</string>
+    <string name="expansions_state_connected_off">Disabled</string>
+    <string name="expansions_state_revoked">Disconnected</string>
+    <string name="expansions_state_unknown">Unknown</string>
+    <string name="expansions_state_not_configured">Configure</string>
+    <string name="expansions_connect_title">Connect</string>
+
+    <string name="expansions_configuration_selection_title_format">Connected to %1$s</string>
+    <string name="expansions_configuration_selection_subtitle_format">Select the %1$s that Sense will control.</string>
+    <string name="action_connect">Connect</string>
+
+    <string name="expansions_configuration_selection_item_missing_title_format">No %1$s found</string>
+    <string name="expansions_configuration_selection_item_missing_subtitle_format">Use the %1$s app to configure %2$ss.</string>
+    <string name="expansions_configuration_selection_empty_title_default">No configurations found</string>
+    <string name="expansions_configuration_selection_empty_subtitle_default">Use the Third party app to set configurations.</string>
+    <string name="expansions_configuration_selection_configured">Configured</string>
+    <string name="expansions_configuration_selection_setting_progress_format">Setting %1$s</string>
+    <string name="expansions_configuration_selection_setting_progress_default">Setting configuration</string>
+    <string name="expansion_detail_remove_access">Remove Access</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="expansion_detail_remove_access_dialog_message">Are you sure you want to remove this expansion? Previously set alarms will still sound, but will no longer activate this expansion.</string>
+    <string name="expansions_configuration_selection_loading">Loading\nconfiguration</string>
+
+    <string name="welcome_dialog_expansions_title">Expansions</string>
+    <string name="welcome_dialog_expansions_message">Enabling access to compatible smart devices allows Sense to activate them at relevant moments, like turning on your lights when Sense’s alarm sounds.</string>
+    <string name="enabling_expansion">Enabling expansion</string>
+    <string name="disabling_expansion">Disabling expansion</string>
+    <!-- end region -->
+
+
 </resources>

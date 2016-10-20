@@ -24,8 +24,6 @@
     <string name="error_sense_pairing_failed">Pairing failed</string>
 
 
-
-
     <string name="error_pill_already_paired">Your Sleep Pill is already paired to an account.</string>
     <string name="error_title_sleep_pill_scan_timeout">Pill Pairing failed</string>
     <string name="error_message_sleep_pill_scan_timeout">Sense couldn\'t register your Sleep Pill. Please try pairing again. Try moving your Sleep Pill closer to Sense, and shaking it harder.</string>
@@ -138,4 +136,10 @@
     <string name="error_factory_reset_original_sense_message">An error occurred while attempting to factory reset your original Sense. Make sure Sense is plugged in, nearby and try again.</string>
 
     <string name="sensor_detail_no_data">Unable to load data.</string>
+
+    <string name="error_configurations_unavailable_title_no_expansion">Not available</string>
+    <string name="error_configurations_unavailable_title">No %1$s available</string>
+    <string name="error_configurations_unavailable_message">You will need to set up a %1$s in the %2$s app.</string>
+    <string name="expansion_detail_error_dialog_title">Changes not saved</string>
+    <string name="expansion_detail_error_dialog_message">Sense couldn’t save your changes. Please try again later.</string>
 </resources>

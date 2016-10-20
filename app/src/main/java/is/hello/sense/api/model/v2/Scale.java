@@ -42,10 +42,12 @@ public class Scale implements Serializable {
         return name;
     }
 
+    @Nullable
     public Float getMin() {
         return min;
     }
 
+    @Nullable
     public Float getMax() {
         return max;
     }
@@ -56,19 +58,22 @@ public class Scale implements Serializable {
 
     @NonNull
     public final String getScaleViewValueText(@NonNull final Resources resources) {
-        if (min == null || min <= 0) {
+        if (min == null) {
             if (max != null) {
+                if (max < 0) {
+                    return resources.getString(R.string.sensor_scale_negative_max_value, format(max));
+                }
                 return resources.getString(R.string.sensor_scale_min_value, format(max));
             }
         } else if (max != null) {
             return resources.getString(R.string.sensor_scale_mid_value, format(min), format(max));
-        } else {
+        } else if (min > 0) {
             return resources.getString(R.string.sensor_scale_max_value, format(min));
         }
         return "";
     }
 
-    public static String format(final float value) {
+    public static String format(final Float value) {
         return String.format("%.0f", Math.floor(value));
     }
 

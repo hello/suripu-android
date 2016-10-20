@@ -155,27 +155,38 @@ public abstract class PresenterFragment<T extends PresenterView>
         if (success) {
             LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
                 this.loadingDialogFragment = null;
-                if(onCompletion != null) {
+                if (onCompletion != null) {
                     onCompletion.run();
                 }
             });
         } else {
             LoadingDialogFragment.close(getFragmentManager());
             this.loadingDialogFragment = null;
-            if(onCompletion != null) {
+            if (onCompletion != null) {
                 onCompletion.run();
             }
         }
     }
 
     public void showBlockingActivity(@StringRes final int titleRes) {
+        showBlockingActivity(getString(titleRes));
+    }
+
+    public void showBlockingActivity(final String title) {
         if (loadingDialogFragment == null) {
             this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(),
-                                                                    getString(titleRes),
+                                                                    title,
                                                                     LoadingDialogFragment.OPAQUE_BACKGROUND);
         } else {
-            loadingDialogFragment.setTitle(getString(titleRes));
+            loadingDialogFragment.setTitle(title);
         }
+    }
+
+    public void showErrorDialog(@NonNull final ErrorDialogFragment.PresenterBuilder builder,
+                                final int requestCode) {
+        final ErrorDialogFragment fragment = builder.build();
+        fragment.setTargetFragment(this, requestCode);
+        fragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
     public void showErrorDialog(@NonNull final ErrorDialogFragment.PresenterBuilder builder) {

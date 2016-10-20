@@ -44,6 +44,7 @@ import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.permissions.LocationPermission;
@@ -83,7 +84,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     @Inject
     BluetoothStack bluetoothStack;
     @Inject
-    UserFeaturesInteractor userFeaturesPresenter;
+    PreferencesInteractor preferencesInteractor;
 
     private TextView pairingMode;
     private TextView changeWiFi;
@@ -595,7 +596,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                                  powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
 
                                  hardwarePresenter.reset();
-                                 userFeaturesPresenter.reset();
+                                 preferencesInteractor.resetSenseDependentPrefs();
                                  finishWithResult(RESULT_REPLACED_DEVICE, null);
 
                              },
@@ -622,7 +623,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                              ignored -> {
                                  Analytics.setSenseId("unpaired");
                                  hardwarePresenter.reset();
-                                 userFeaturesPresenter.reset();
+                                 preferencesInteractor.resetSenseDependentPrefs();
                                  finishDeviceReplaced();
                              },
                              this::presentError);
