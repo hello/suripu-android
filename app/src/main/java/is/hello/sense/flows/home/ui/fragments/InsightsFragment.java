@@ -28,12 +28,14 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightType;
+import is.hello.sense.graph.Scope;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.QuestionsInteractor;
 import is.hello.sense.interactors.questions.ReviewQuestionProvider;
 import is.hello.sense.flows.home.ui.views.InsightsView;
+import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -53,7 +55,7 @@ import is.hello.sense.util.Share;
 import rx.Observable;
 
 
-public class InsightsFragment extends BacksideTabFragment<InsightsView> implements
+public class InsightsFragment extends PresenterFragment<InsightsView> implements
         SwipeRefreshLayout.OnRefreshListener,
         InsightsAdapter.InteractionListener,
         InsightInfoFragment.Parent,
@@ -97,6 +99,7 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
     public final void initializePresenterView() {
         if (presenterView == null) {
             presenterView = new InsightsView(getActivity(), dateFormatter, picasso, this);
+            update();
         }
     }
 
@@ -120,7 +123,7 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
         addInteractor(deviceIssuesInteractor);
         addInteractor(preferences);
         addInteractor(questionsInteractor);
-        deviceIssuesInteractor.bindScope(getScope());
+        deviceIssuesInteractor.bindScope((Scope)getActivity());
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
@@ -161,6 +164,12 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        update();
+    }
+
+    @Override
     public final void onDestroy() {
         super.onDestroy();
 
@@ -168,12 +177,8 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
                              .unregisterReceiver(REVIEW_ACTION_RECEIVER);
     }
 
-    @Override
-    public final void onSwipeInteractionDidFinish() {
-    }
 
-    @Override
-    public final void onUpdate() {
+    public final void update() {
         if (insightsInteractor.updateIfEmpty()) {
             presenterView.setRefreshing(true);
         }
@@ -185,6 +190,14 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
 
 
     //region Data Binding
+
+    @OnboardingActivity.Flow
+    protected int getOnboardingFlow() {
+        final HomeActivity activity = (HomeActivity) getActivity();
+        return activity != null
+                ? activity.getOnboardingFlow()
+                : OnboardingActivity.FLOW_NONE;
+    }
 
     @Override
     public final void onRefresh() {
@@ -445,4 +458,5 @@ public class InsightsFragment extends BacksideTabFragment<InsightsView> implemen
             }
         }
     };
+
 }
