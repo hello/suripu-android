@@ -14,6 +14,8 @@ import rx.Observable;
 public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings> {
 
     public static final String EMPTY_ID = "";
+    private static final int REPEAT_MAX_COUNT = 15;
+    private static final int RESUBSCRIBE_DELAY_MILLIS = 1000;
     private final ApiService apiService;
     private String senseId = EMPTY_ID;
 
@@ -50,15 +52,15 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
                                         settingsSubject.onNext(responseSettings); //updateVolumeTextView subject with new settings
                                     }
                                  })
-                                 .repeatWhen( onComplete -> onComplete.zipWith(Observable.range(1, 15)
-                                                                                         .delay(1000, TimeUnit.MILLISECONDS),
-                                                                               (ignore2, integer) -> {
-                                    if(settingsSubject.hasValue() && settingsSubject.getValue().equals(newSettings)){
-                                        return Observable.just(null); //do not resubscribe
-                                  } else{
-                                      return integer; //continue polling
-                                  }
-                              })));
+                                 .repeatWhen( onComplete -> onComplete.zipWith(
+                                         Observable.range(1, REPEAT_MAX_COUNT)
+                                                   .takeUntil( integer -> hasUpdatedTo(newSettings))
+                                                   .delay(RESUBSCRIBE_DELAY_MILLIS, TimeUnit.MILLISECONDS)
+                                         , (ignore2, integer) -> integer)));
+    }
+
+    public Boolean hasUpdatedTo(@NonNull final SenseVoiceSettings newSettings) {
+        return settingsSubject.hasValue() && settingsSubject.getValue().equals(newSettings);
     }
 
     public void setSenseId(@NonNull final String id){

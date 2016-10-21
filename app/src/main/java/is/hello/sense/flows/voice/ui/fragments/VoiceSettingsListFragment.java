@@ -102,19 +102,27 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
                        .setPositiveButton(R.string.voice_settings_primary_user_dialog_positive_button, this::makePrimaryUser));
     }
 
-    private void updateSettings(SenseVoiceSettings voiceSettings) {
+    private void updateSettings(@NonNull final SenseVoiceSettings newSettings) {
         if(settingsInteractor.settingsSubject.hasValue()) {
             showBlockingActivity(R.string.voice_settings_progress_updating); //todo use real copy
             updateSettingsSubscription.unsubscribe();
-            updateSettingsSubscription = bind(settingsInteractor.setAndPoll(voiceSettings))
+            updateSettingsSubscription = bind(settingsInteractor.setAndPoll(newSettings))
                     .subscribe(Functions.NO_OP,
                                this::presentError,
-                               () -> hideBlockingActivity(true, null));
+                               () -> {
+                                   if(settingsInteractor.hasUpdatedTo(newSettings)){
+                                       hideBlockingActivity(true, null);
+                                   } else {
+                                       presentError(new Exception("changes were not saved. this is temporary copy."));
+                                       //todo reset ui by calling update again or allow onNext on final retry
+                                   }
+                               });
         }
     }
 
     private void presentError(@NonNull final Throwable e) {
         //todo show proper dialog
+        hideBlockingActivity(false, null);
         showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e));
     }
 
