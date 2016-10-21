@@ -44,19 +44,21 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
     public Observable<SenseVoiceSettings> setAndPoll(@NonNull final SenseVoiceSettings newSettings){
 
         return apiService.setVoiceSettings(senseId, newSettings)
-                         .flatMap( ignore -> provideUpdateObservable())
-                         .doOnNext( responseSettings -> {
-                             if(newSettings.equals(responseSettings)){
-                                 settingsSubject.onNext(responseSettings); //update subject with new settings
-                             }
-                         })
-                        .repeatWhen( onComplete -> onComplete.zipWith(Observable.range(1, 15).delay(1000, TimeUnit.MILLISECONDS), (ignore, integer) -> {
-                            if(settingsSubject.hasValue() && settingsSubject.getValue().equals(newSettings)){
-                                return Observable.just(null); //do not resubscribe
-                            } else{
-                                return integer; //continue polling
-                            }
-                        }));
+                         .flatMap( ignore -> provideUpdateObservable()
+                                 .doOnNext( responseSettings -> {
+                                    if(newSettings.equals(responseSettings)){
+                                        settingsSubject.onNext(responseSettings); //updateVolumeTextView subject with new settings
+                                    }
+                                 })
+                                 .repeatWhen( onComplete -> onComplete.zipWith(Observable.range(1, 15)
+                                                                                         .delay(1000, TimeUnit.MILLISECONDS),
+                                                                               (ignore2, integer) -> {
+                                    if(settingsSubject.hasValue() && settingsSubject.getValue().equals(newSettings)){
+                                        return Observable.just(null); //do not resubscribe
+                                  } else{
+                                      return integer; //continue polling
+                                  }
+                              })));
     }
 
     public void setSenseId(@NonNull final String id){

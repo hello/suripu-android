@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.widget.CompoundButton;
 
 import javax.inject.Inject;
 
@@ -40,6 +41,13 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     }
 
     @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        addInteractor(currentSenseInteractor);
+        addInteractor(settingsInteractor);
+    }
+
+    @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bindAndSubscribe(currentSenseInteractor.senseDevice,
@@ -65,28 +73,40 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     }
 
     public void bindSettings(@NonNull final SenseVoiceSettings settings) {
-        presenterView.update(settings);
+        presenterView.updateVolumeTextView(settings);
+
+        presenterView.updateMuteSwitch(settings.isMuted(), this::onMuteSwitchChanged);
 
         if(settings.isPrimaryUser()){
             presenterView.makePrimaryUser();
         } else {
-            presenterView.makeSecondaryUser(this::showUserDialog);
+            presenterView.makeSecondaryUser(this::showPrimaryUserDialog);
         }
     }
 
-    private void showUserDialog(final View ignored) {
+    private void onMuteSwitchChanged(final CompoundButton ignored,
+                                     final boolean isMuted) {
+        //todo without fake settings
+        updateSettings(new SenseVoiceSettings(100, isMuted, true));
+    }
+
+    private void makePrimaryUser() {
+        //todo without fake settings
+        updateSettings(new SenseVoiceSettings(100, false, true));
+    }
+
+    private void showPrimaryUserDialog(final View ignored) {
         showAlertDialog(new SenseAlertDialog.Builder()
                                 .setTitle(R.string.voice_settings_primary_user_dialog_title)
                        .setMessage(R.string.voice_settings_primary_user_dialog_message)
                        .setPositiveButton(R.string.voice_settings_primary_user_dialog_positive_button, this::makePrimaryUser));
     }
 
-    private void makePrimaryUser() {
-        //todo without fake settings
+    private void updateSettings(SenseVoiceSettings voiceSettings) {
         if(settingsInteractor.settingsSubject.hasValue()) {
             showBlockingActivity(R.string.voice_settings_progress_updating); //todo use real copy
             updateSettingsSubscription.unsubscribe();
-            updateSettingsSubscription = bind(settingsInteractor.setAndPoll(new SenseVoiceSettings(100, false, true)))
+            updateSettingsSubscription = bind(settingsInteractor.setAndPoll(voiceSettings))
                     .subscribe(Functions.NO_OP,
                                this::presentError,
                                () -> hideBlockingActivity(true, null));
