@@ -1,13 +1,35 @@
 package is.hello.sense.flows.voice.ui.fragments;
 
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 
+import javax.inject.Inject;
+
+import is.hello.sense.R;
+import is.hello.sense.api.model.SenseDevice;
+import is.hello.sense.api.model.v2.voice.SenseVoiceSettings;
+import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.flows.voice.ui.views.VoiceSettingsListView;
+import is.hello.sense.functional.Functions;
+import is.hello.sense.interactors.CurrentSenseInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
+import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
 public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsListView> {
 
+    @Inject
+    VoiceSettingsInteractor settingsInteractor;
+
+    @Inject
+    CurrentSenseInteractor currentSenseInteractor;
+
     public static final int RESULT_VOLUME_SELECTED = 99;
+    private Subscription updateSettingsSubscription = Subscriptions.empty();
 
     @Override
     public void initializePresenterView() {
@@ -15,6 +37,65 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
             presenterView = new VoiceSettingsListView(getActivity());
             presenterView.setVolumeValueClickListener(this::redirectToVolumeSelection);
         }
+    }
+
+    @Override
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        bindAndSubscribe(currentSenseInteractor.senseDevice,
+                         this::bindSenseDevice,
+                         this::presentError);
+
+        bindAndSubscribe(settingsInteractor.settingsSubject,
+                         this::bindSettings,
+                         this::presentError);
+
+        currentSenseInteractor.update();
+    }
+
+    @Override
+    protected void onRelease() {
+        super.onRelease();
+        updateSettingsSubscription.unsubscribe();
+    }
+
+    public void bindSenseDevice(@Nullable final SenseDevice device) {
+        settingsInteractor.setSenseId(device == null ? VoiceSettingsInteractor.EMPTY_ID : device.deviceId);
+        settingsInteractor.update();
+    }
+
+    public void bindSettings(@NonNull final SenseVoiceSettings settings) {
+        presenterView.update(settings);
+
+        if(settings.isPrimaryUser()){
+            presenterView.makePrimaryUser();
+        } else {
+            presenterView.makeSecondaryUser(this::showUserDialog);
+        }
+    }
+
+    private void showUserDialog(final View ignored) {
+        showAlertDialog(new SenseAlertDialog.Builder()
+                                .setTitle(R.string.voice_settings_primary_user_dialog_title)
+                       .setMessage(R.string.voice_settings_primary_user_dialog_message)
+                       .setPositiveButton(R.string.voice_settings_primary_user_dialog_positive_button, this::makePrimaryUser));
+    }
+
+    private void makePrimaryUser() {
+        //todo without fake settings
+        if(settingsInteractor.settingsSubject.hasValue()) {
+            showBlockingActivity(R.string.voice_settings_progress_updating); //todo use real copy
+            updateSettingsSubscription.unsubscribe();
+            updateSettingsSubscription = bind(settingsInteractor.setAndPoll(new SenseVoiceSettings(100, false, true)))
+                    .subscribe(Functions.NO_OP,
+                               this::presentError,
+                               () -> hideBlockingActivity(true, null));
+        }
+    }
+
+    private void presentError(@NonNull final Throwable e) {
+        //todo show proper dialog
+        showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e));
     }
 
     private void redirectToVolumeSelection(final View ignore) {

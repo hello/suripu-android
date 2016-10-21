@@ -479,7 +479,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<SenseVoiceSettings> setVoiceSettings(@Path("id") @NonNull final String senseId,
+    public Observable<VoidResponse> setVoiceSettings(@Path("id") @NonNull final String senseId,
                                                            @Body final SenseVoiceSettings settings) {
         return unimplemented();
     }

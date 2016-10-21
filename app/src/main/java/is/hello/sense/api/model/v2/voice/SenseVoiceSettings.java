@@ -8,7 +8,7 @@ public class SenseVoiceSettings extends ApiResponse {
     @SerializedName("volume")
     private int volume;
 
-    @SerializedName("mute")
+    @SerializedName("muted")
     private boolean isMuted;
 
     @SerializedName("is_primary_user")

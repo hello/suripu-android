@@ -252,7 +252,7 @@ public interface ApiService {
     Observable<SenseVoiceSettings> getVoiceSettings(@Path("id") @NonNull String senseId);
 
     @PATCH("/v2/devices/sense/{id}/voice")
-    Observable<SenseVoiceSettings> setVoiceSettings(@Path("id") @NonNull String senseId, @Body SenseVoiceSettings settings);
+    Observable<VoidResponse> setVoiceSettings(@Path("id") @NonNull String senseId, @Body SenseVoiceSettings settings);
 
     //endregion
 
