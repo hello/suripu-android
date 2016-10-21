@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
+import android.util.Log;
 
 import org.joda.time.DateTimeZone;
 
@@ -169,8 +170,8 @@ public class HardwareInteractor extends BaseHardwareInteractor {
 
     public Observable<SensePeripheral> closestPeripheral() {
         logEvent("closestPeripheral()");
-
         if (peripheral != null) {
+            Log.e(getClass().getSimpleName(),"closestPeripheral | showMacAddress: "+ peripheral.showMacAddress());
             logEvent("peripheral already rediscovered " + peripheral);
 
             return Observable.just(peripheral);
@@ -190,6 +191,7 @@ public class HardwareInteractor extends BaseHardwareInteractor {
                                       if (!peripherals.isEmpty()) {
                                           final SensePeripheral closestPeripheral = getClosestPeripheral(peripherals);
                                           this.peripheral = closestPeripheral;
+                                          Log.e(getClass().getSimpleName(),"closestPeripheral | showMacAddress: "+ closestPeripheral.showMacAddress());
                                           return Observable.just(closestPeripheral);
                                       } else {
                                           this.peripheral = null;
