@@ -38,6 +38,7 @@ allprojects {
                 secretKey helloAwsSecretKey
             }
         }
+        mavenLocal()
     }
 }
 
