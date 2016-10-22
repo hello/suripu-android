@@ -11,7 +11,7 @@
         android:id="@+id/view_voice_volume_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/AppTheme.Text.Header.H5"
+        style="@style/AppTheme.Text.VolumePicker"
         android:text="@string/voice_select_volume"/>
 
     <TextView

@@ -493,6 +493,9 @@
         <item name="android:background">@color/shadow_end</item>
     </style>
 
+    <style name="AppTheme.Text.VolumePicker" parent="AppTheme.Text.Header.H5">
+    </style>
+
     <!-- Progress Bars -->
 
     <style name="AppTheme.ProgressBar" parent="android:Widget.Holo.ProgressBar">

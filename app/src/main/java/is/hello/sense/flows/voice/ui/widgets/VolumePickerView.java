@@ -1,14 +1,13 @@
 package is.hello.sense.flows.voice.ui.widgets;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DimenRes;
+import android.support.annotation.ColorInt;
+import android.support.annotation.Dimension;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -26,6 +25,10 @@ import is.hello.sense.R;
 public class VolumePickerView extends LinearLayout {
     //region Constants
 
+    private static final String BUNDLE_MIN_VALUE = VolumePickerView.class.getName() + "MIN_VALUE";
+    private static final String BUNDLE_MAX_VALUE = VolumePickerView.class.getName() + "MAX_VALUE";
+    private static final String BUNDLE_SELECTED_VALUE = VolumePickerView.class.getName() + "SELECTED_VALUE";
+    private static final String BUNDLE_SAVED_STATE = VolumePickerView.class.getName() + "SAVED_STATE";
     private static final int DEFAULT_MIN = 1;
     private static final int DEFAULT_MAX = 11;
     private static final int DEFAULT_INITIAL = 8;
@@ -41,26 +44,31 @@ public class VolumePickerView extends LinearLayout {
     private int selectedValue = DEFAULT_INITIAL;
     private @Nullable OnValueChangedListener onValueChangedListener;
     private final List<Tick> ticks = new ArrayList<>(maxValue);
-
+    private final int normalTickColor;
+    private final int emphasizedTickColor;
+    private final int defaultTickSize;
     //endregion
 
 
     //region Lifecycle
 
-    public VolumePickerView(Context context) {
+    public VolumePickerView(final Context context) {
         this(context, null);
     }
 
-    public VolumePickerView(Context context, AttributeSet attrs) {
+    public VolumePickerView(final Context context, final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public VolumePickerView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public VolumePickerView(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setWillNotDraw(false);
 
         int initialValue = 0;
         this.minSegmentSize = context.getResources().getDimensionPixelSize(R.dimen.volume_picker_min_size);
+        this.normalTickColor = ContextCompat.getColor(context, R.color.voice_volume_normal_color);
+        this.emphasizedTickColor = ContextCompat.getColor(context, R.color.voice_volume_emphasized_color);
+        this.defaultTickSize = getResources().getDimensionPixelSize(R.dimen.scale_view_tick);
         if (attrs != null) {
             initialValue = takeStateFromAttributes(attrs, defStyleAttr);
         }
@@ -95,11 +103,11 @@ public class VolumePickerView extends LinearLayout {
         if (state instanceof Bundle) {
             final Bundle savedState = (Bundle) state;
 
-            setMinValue(savedState.getInt("minValue"));
-            setMaxValue(savedState.getInt("maxValue"));
-            setValue(savedState.getInt("value"), true);
+            setMinValue(savedState.getInt(BUNDLE_MIN_VALUE, DEFAULT_MIN));
+            setMaxValue(savedState.getInt(BUNDLE_MAX_VALUE, DEFAULT_MAX));
+            setValue(savedState.getInt(BUNDLE_SELECTED_VALUE, DEFAULT_INITIAL), true);
 
-            state = savedState.getParcelable("savedState");
+            state = savedState.getParcelable(BUNDLE_SAVED_STATE);
         }
         super.onRestoreInstanceState(state);
     }
@@ -107,10 +115,10 @@ public class VolumePickerView extends LinearLayout {
     @Override
     protected Parcelable onSaveInstanceState() {
         final Bundle savedState = new Bundle();
-        savedState.putParcelable("savedState", super.onSaveInstanceState());
-        savedState.putInt("minValue", minValue);
-        savedState.putInt("maxValue", maxValue);
-        savedState.putInt("value", selectedValue);
+        savedState.putParcelable(BUNDLE_SAVED_STATE, super.onSaveInstanceState());
+        savedState.putInt(BUNDLE_MIN_VALUE, minValue);
+        savedState.putInt(BUNDLE_MAX_VALUE, maxValue);
+        savedState.putInt(BUNDLE_SELECTED_VALUE, selectedValue);
         return savedState;
     }
 
@@ -118,9 +126,8 @@ public class VolumePickerView extends LinearLayout {
     //endregion
 
     public void onDestroyView() {
-        if(onValueChangedListener != null){
-            onValueChangedListener = null;
-        }
+        onValueChangedListener = null;
+
 
         setOnTouchListener(null);
         ticks.clear();
@@ -137,7 +144,7 @@ public class VolumePickerView extends LinearLayout {
 
             for (int i = 0; i < itemCount; i++) {
                 final float scale = VolumePickerView.getScaleFactorFromPosition(i, itemCount);
-                final Tick tick = new Tick(getContext(), scale);
+                final Tick tick = newTickInstance(scale);
                 tick.setMinimumWidth(minSegmentSize);
                 tick.setEmphasized(shouldEmphasizeTick(i));
                 tick.setLayoutParams(new LinearLayout.LayoutParams(parentWidth / itemCount,
@@ -150,6 +157,14 @@ public class VolumePickerView extends LinearLayout {
             invalidate();
             post(this::notifyValueChangedListener);
         });
+    }
+
+    private Tick newTickInstance(final float scale) {
+        return new Tick(getContext(),
+                        defaultTickSize,
+                        normalTickColor,
+                        emphasizedTickColor,
+                        scale);
     }
 
     protected void updateTicksOnTouch(final float touchedXPos){
@@ -255,31 +270,22 @@ public class VolumePickerView extends LinearLayout {
 
     private static class Tick extends View {
         private final Paint linePaint = new Paint();
-        private final int lineSize;
-        private final int normalColor;
-        private final int emphasizedColor;
+        @Dimension private final int lineSize;
+        @ColorInt private final int normalColor;
+        @ColorInt private final int emphasizedColor;
 
         private final float extentScale;
 
-        private Tick(@NonNull final Context context, final float scale) {
-            this(context,
-                 R.dimen.scale_view_tick,
-                 R.color.voice_volume_normal_color,
-                 R.color.voice_volume_emphasized_color,
-                 scale);
-        }
-
         private Tick(@NonNull final Context context,
-                     @DimenRes final int lineSizeRes,
-                     @ColorRes final int normalColorRes,
-                     @ColorRes final int emphasizedColorRes,
+                     @Dimension final int lineSize,
+                     @ColorInt final int normalColor,
+                     @ColorInt final int emphasizedColor,
                      final float scale){
             super(context);
 
-            final Resources resources = context.getResources();
-            this.lineSize = resources.getDimensionPixelSize(lineSizeRes);
-            this.normalColor = ContextCompat.getColor(context, normalColorRes);
-            this.emphasizedColor = ContextCompat.getColor(context, emphasizedColorRes);
+            this.lineSize = lineSize;
+            this.normalColor = normalColor;
+            this.emphasizedColor = emphasizedColor;
             this.extentScale = scale;
             setSaveEnabled(false);
         }
