@@ -95,4 +95,10 @@ public class HomeFragment extends BacksideTabFragment<HomeView>
         this.presenterView.setPagerItem(newSelectionIndex);
 
     }
+
+    public Fragment getCurrentFragment() {
+        return getChildFragmentManager().findFragmentByTag("android:switcher:" + presenterView.getPagerId()
+                                                                   + ":" + presenterView.currentPagerItem());
+    }
+
 }
