@@ -33,6 +33,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.flows.home.ui.fragments.HomeFragment;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.InteractorContainer;
@@ -486,6 +487,12 @@ public class HomeActivity extends ScopedInjectionActivity
         final BacksideFragment backsideFragment = getBacksideFragment();
         if (backsideFragment != null) {
             final BacksideTabFragment currentTabFragment = backsideFragment.getCurrentTabFragment();
+            if (currentTabFragment instanceof HomeFragment) { //todo clean this up in app restructure
+                final Fragment fragment = ((HomeFragment) currentTabFragment).getCurrentFragment();
+                if (fragment instanceof InsightInfoFragment.Parent) {
+                    return (InsightInfoFragment.Parent) fragment;
+                }
+            }
             if (currentTabFragment instanceof InsightInfoFragment.Parent) {
                 return (InsightInfoFragment.Parent) currentTabFragment;
             }
