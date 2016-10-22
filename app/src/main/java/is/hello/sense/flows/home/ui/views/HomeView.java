@@ -79,6 +79,15 @@ public class HomeView extends PresenterView {
         return adapter.getItem(pager.getCurrentItem());
     }
 
+
+    public int currentPagerItem(){
+        return pager.getCurrentItem();
+    }
+
+    public int getPagerId(){
+        return pager.getId();
+    }
+
     public void setPagerItem(final int newSelectionIndex) {
         this.pager.setCurrentItem(newSelectionIndex);
     }
