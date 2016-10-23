@@ -197,7 +197,6 @@ public class VolumePickerView extends LinearLayout {
                 VolumePickerView.this.addView(tick, i);
             }
 
-            invalidate();
             post(this::notifyValueChangedListener);
         });
     }
