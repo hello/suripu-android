@@ -1,6 +1,7 @@
 package is.hello.sense.api.model;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -22,6 +23,7 @@ public class Devices extends ApiResponse {
         this.sleepPills = sleepPills;
     }
 
+    @Nullable
     public SenseDevice getSense() {
         if (!Lists.isEmpty(senses)) {
             return senses.get(0);
@@ -30,6 +32,7 @@ public class Devices extends ApiResponse {
         }
     }
 
+    @Nullable
     public SleepPillDevice getSleepPill() {
         if (!Lists.isEmpty(sleepPills)) {
             return sleepPills.get(0);
