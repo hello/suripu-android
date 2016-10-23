@@ -493,7 +493,11 @@
         <item name="android:background">@color/shadow_end</item>
     </style>
 
-    <style name="AppTheme.Text.VolumePicker" parent="AppTheme.Text.Header.H5">
+    <style name="AppTheme.Text.VolumePicker.Title" parent="AppTheme.Text.Header.H5">
+    </style>
+
+    <style name="AppTheme.Text.VolumePicker.SelectedValue" parent="AppTheme.Text.Header.H1.Thin">
+
     </style>
 
     <!-- Progress Bars -->

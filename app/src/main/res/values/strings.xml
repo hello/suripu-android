@@ -724,9 +724,6 @@
     <string name="voice_select_volume">Select volume</string>
     <string name="voice_volume_description">Drag your finger across the volume bars to adjust the volume for Voice.</string>
 
-    <string name="voice_select_volume">Select volume</string>
-    <string name="voice_volume_description">Drag your finger across the volume bars to adjust the volume for Voice.</string>
-
     <string name="voice_settings_primary_user_true">You</string>
     <string name="voice_settings_primary_user_false">Change</string>
     <string name="voice_settings_primary_user_dialog_title">Are you sure?</string>
