@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="voice_alarm_title">Alarms and Sleep Sounds</string>
+    <string name="voice_alarm_message">\"Wake me up at 10am\"</string>
+    <string name="voice_sleep_title">Sleep</string>
+    <string name="voice_sleep_message">\"How was my sleep last night?\"</string>
+    <string name="voice_rc_title">Room Conditions</string>
+    <string name="voice_rc_message">\"What is the temperature?\"</string>
+    <string name="voice_expansion_title">Expansions</string>
+    <string name="voice_expansion_message">\"Turn the light on\"</string>
+</resources>

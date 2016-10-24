@@ -17,6 +17,7 @@ import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.home.ui.fragments.BacksideTabFragment;
+import is.hello.sense.flows.home.ui.fragments.HomeFragment;
 import is.hello.sense.flows.home.ui.fragments.InsightsFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
@@ -55,7 +56,7 @@ public class BacksideView extends PresenterView {
         this.adapter = new StaticFragmentAdapter(fragmentManager,
                                                  new StaticFragmentAdapter.Item(RoomConditionsFragment.class, getString(R.string.title_current_conditions)),
                                                  new StaticFragmentAdapter.Item(TrendsFragment.class, getString(R.string.title_trends)),
-                                                 new StaticFragmentAdapter.Item(InsightsFragment.class, getString(R.string.action_insights)),
+                                                 new StaticFragmentAdapter.Item(HomeFragment.class, getString(R.string.action_insights)),
                                                  new StaticFragmentAdapter.Item(SoundsFragment.class, getString(R.string.action_alarm)),
                                                  new StaticFragmentAdapter.Item(AppSettingsFragment.class, getString(R.string.action_settings)));
         pager.setAdapter(adapter);

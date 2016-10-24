@@ -154,7 +154,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             case VIEW_AIR_QUALITY:
                 return new AirQualityViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_sensor_response, parent, false));
             case VIEW_WELCOME_CARD:
-                return new BaseViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_room_conditions_welcome, parent, false));
+                return new WelcomeCardViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_welcome_card, parent, false));
             default:
                 throw new IllegalStateException();
         }
@@ -221,6 +221,16 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
         public BaseViewHolder(@NonNull final View itemView) {
             super(itemView);
+        }
+    }
+
+    private class WelcomeCardViewHolder extends BaseViewHolder {
+
+        public WelcomeCardViewHolder(@NonNull final View itemView) {
+            super(itemView);
+            ((ImageView) itemView.findViewById(R.id.item_welcome_image)).setImageResource(R.drawable.conditions_welcome);
+            ((TextView) itemView.findViewById(R.id.item_welcome_title)).setText(R.string.room_conditions_welcome_title);
+            ((TextView) itemView.findViewById(R.id.item_welcome_message)).setText(R.string.room_conditions_welcome_message);
         }
     }
 

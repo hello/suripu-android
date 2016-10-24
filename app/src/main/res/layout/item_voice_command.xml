@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/background_light"
+                android:padding="@dimen/x1">
+
+    <ImageView
+        android:id="@+id/item_voice_command_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:padding="@dimen/x1"
+        android:src="@drawable/icon_conditions_large"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_toEndOf="@id/item_voice_command_image"
+        android:layout_toStartOf="@+id/item_voice_command_chevron"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/item_voice_command_title"
+            style="@style/Card.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/voice_rc_title"/>
+
+        <TextView
+            android:id="@+id/item_voice_command_body"
+            style="@style/Label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/voice_rc_message"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/item_voice_command_chevron"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:padding="@dimen/x1"
+        android:src="@drawable/disclosure_chevron_small"/>
+
+</RelativeLayout>
