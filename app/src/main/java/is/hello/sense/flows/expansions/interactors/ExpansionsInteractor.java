@@ -3,6 +3,7 @@ package is.hello.sense.flows.expansions.interactors;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.expansions.Category;
@@ -35,12 +36,8 @@ public class ExpansionsInteractor extends ValueInteractor<ArrayList<Expansion>> 
         return apiService.getExpansions();
     }
 
-    public Observable<Expansion> findByCategory(@NonNull final Category category){
-        if(! expansions.hasValue()){
-            return Observable.error(new NullPointerException("no values for expansion subject"));
-        }
-
-        return Observable.from(expansions.getValue())
-                         .filter( expansion -> expansion.getCategory() == category);
+    public Observable<Expansion> findByCategories(@NonNull final List<Category> category){
+        return latest().flatMap(Observable::from)
+                       .filter( expansion -> category.contains(expansion.getCategory()));
     }
 }

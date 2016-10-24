@@ -431,18 +431,24 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     private void updateAlarmBasedOnEnabledExpansions() {
+        final List<Category> enabledCategories = new ArrayList<>(2);
+        //todo add temperature row check
+
         if(this.expansionLightsToggle.isChecked() && this.expansionLightsToggle.isEnabled()) {
-            final List<ExpansionAlarm> enabledExpansionAlarms = new ArrayList<>(1);
-            bind(expansionsInteractor.findByCategory(Category.LIGHT))
-                    .subscribe(expansion -> enabledExpansionAlarms.add(new ExpansionAlarm(expansion)),
-                               this::presentError,
-                               () -> { //onComplete
-                                   this.alarm.setExpansions(enabledExpansionAlarms);
-                                   finishSaveAlarmOperation();
-                            });
-        } else {
+            enabledCategories.add(Category.LIGHT);
+        }
+
+        if(enabledCategories.isEmpty()){
             this.alarm.setExpansions(new ArrayList<>(0));
             finishSaveAlarmOperation();
+        } else {
+            bind(expansionsInteractor.findByCategories(enabledCategories)
+                                     .map(ExpansionAlarm::new)
+                                     .toList())
+                    .subscribe(expansionAlarms -> {
+                                   this.alarm.setExpansions(expansionAlarms);
+                                   finishSaveAlarmOperation();
+                    }, this::presentError);
         }
     }
 
