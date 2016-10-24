@@ -51,6 +51,7 @@ public class VoiceSettingsListView extends PresenterView {
     }
 
     public void updateVolumeTextView(@NonNull final SenseVoiceSettings settings) {
+        // todo convert percentage volume to level
         this.volumeValueTextView.setText(String.valueOf(settings.getVolume()));
         this.volumeValueTextView.setVisibility(VISIBLE);
 

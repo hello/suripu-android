@@ -41,10 +41,15 @@ public class VoiceVolumeView extends PresenterView{
     }
 
     public int getVolume(){
-        return scale.getValue();
+        return scale.convertSelectedValueToPercentageValue();
     }
 
     private void updateDisplayValue(final int value) {
         this.scaleValue.setText(String.valueOf(value));
+    }
+
+    public void setVolume(final int volume) {
+        final int converted = this.scale.convertFromPercentageValue(volume);
+        this.scale.setValue(converted, true);
     }
 }

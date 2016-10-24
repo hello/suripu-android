@@ -43,13 +43,42 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
         return apiService.getVoiceSettings(senseId);
     }
 
-    public Observable<SenseVoiceSettings> setAndPoll(@NonNull final SenseVoiceSettings newSettings){
+    public Observable<SenseVoiceSettings> setMuted(final boolean muted){
+        return latest().flatMap( latestSettings -> {
+            final SenseVoiceSettings newSettings = SenseVoiceSettings.newCopyOf(latestSettings);
+            newSettings.setMuted(muted);
+            return setAndPoll(newSettings);
+        });
+    }
 
+    public Observable<SenseVoiceSettings> setPrimaryUser(final boolean isPrimaryUser){
+        return latest().flatMap( latestSettings -> {
+            final SenseVoiceSettings newSettings = SenseVoiceSettings.newCopyOf(latestSettings);
+            newSettings.setPrimaryUser(isPrimaryUser);
+            return setAndPoll(newSettings);
+        });
+    }
+
+    public Observable<SenseVoiceSettings> setVolume(final int volume){
+        return latest().flatMap( latestSettings -> {
+            final SenseVoiceSettings newSettings = SenseVoiceSettings.newCopyOf(latestSettings);
+            newSettings.setVolume(volume);
+            return setAndPoll(newSettings);
+        });
+    }
+
+    /**
+     * Attempts to patch newSettings and retry polling for current settings until updated or failed
+     * @return Observable Boolean true if new settings has updated {@link this#settingsSubject}
+     */
+    private Observable<SenseVoiceSettings> setAndPoll(@NonNull final SenseVoiceSettings newSettings){
+        //todo handle error if update fails after repeat count max
         return apiService.setVoiceSettings(senseId, newSettings)
                          .flatMap( ignore -> provideUpdateObservable()
                                  .doOnNext( responseSettings -> {
+                                     //updateVolumeTextView subject with new settings
                                     if(newSettings.equals(responseSettings)){
-                                        settingsSubject.onNext(responseSettings); //updateVolumeTextView subject with new settings
+                                        settingsSubject.onNext(responseSettings);
                                     }
                                  })
                                  .repeatWhen( onComplete -> onComplete.zipWith(
@@ -61,7 +90,7 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
                                  );
     }
 
-    public Boolean hasUpdatedTo(@NonNull final SenseVoiceSettings newSettings) {
+    private Boolean hasUpdatedTo(@NonNull final SenseVoiceSettings newSettings) {
         return settingsSubject.hasValue() && settingsSubject.getValue().equals(newSettings);
     }
 
