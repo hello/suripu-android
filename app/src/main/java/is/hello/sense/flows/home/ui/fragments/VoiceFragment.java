@@ -1,19 +1,23 @@
 package is.hello.sense.flows.home.ui.fragments;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 
 
 import is.hello.sense.flows.home.ui.adapters.VoiceCommandsAdapter;
 import is.hello.sense.flows.home.ui.views.VoiceView;
+import is.hello.sense.flows.voicecommands.ui.activities.VoiceCommandActivity;
 import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.util.InternalPrefManager;
 
-public class VoiceFragment extends PresenterFragment<VoiceView> {
-
+public class VoiceFragment extends PresenterFragment<VoiceView> implements ArrayRecyclerAdapter.OnItemClickedListener<VoiceCommandsAdapter.VoiceCommand> {
     //todo redesign how shared preferences work.
     private static final String PREF_NAME = "ACCOUNT_SHARED_PREF";
     private static final String PREF_KEY = "VOICE_WELCOME_CARD";
@@ -25,6 +29,7 @@ public class VoiceFragment extends PresenterFragment<VoiceView> {
     public void initializePresenterView() {
         if (this.presenterView == null) {
             this.adapter = new VoiceCommandsAdapter(getActivity().getLayoutInflater());
+            this.adapter.setOnItemClickedListener(this);
             this.presenterView = new VoiceView(getActivity(),
                                                this.adapter);
         }
@@ -62,4 +67,11 @@ public class VoiceFragment extends PresenterFragment<VoiceView> {
         return InternalPrefManager.getAccountId(getActivity()) + PREF_KEY;
     }
 
+    @Override
+    public void onItemClicked(final int position,
+                              @NonNull final VoiceCommandsAdapter.VoiceCommand item) {
+       final Intent intent = new Intent(getActivity(), VoiceCommandActivity.class);
+        intent.putExtra(VoiceCommandActivity.ITEM_KEY, item.name());
+        startActivity(intent); //todo undo this one day
+    }
 }

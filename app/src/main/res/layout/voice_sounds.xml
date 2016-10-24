@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/background_light"
+            android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="@dimen/x3">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/x1"
+            android:src="@drawable/icon_sounds_large"/>
+
+        <TextView
+            style="@style/AppTheme.Text.Header.H6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x1"
+            android:gravity="center_horizontal"
+            android:text="Alarm and Sleep Sounds"/>
+
+        <TextView
+            style="@style/Body.Dim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x2"
+            android:gravity="center_horizontal"
+            android:text="Before each command, say &quot;Okay Sense&quot; to set an alarm or begin playing Sleep Sounds."/>
+
+        <TextView
+            style="@style/Body.Dark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x6"
+            android:gravity="center_horizontal"
+            android:text="Alarms"/>
+
+
+        <TextView
+            style="@style/Body.Dim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x1"
+            android:gravity="center_horizontal"
+            android:text="Wake me up at 10am."/>
+
+        <TextView
+            style="@style/Body.Dim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x1"
+            android:gravity="center_horizontal"
+            android:text="Set alarm for tomorrow morning at 8."/>
+
+        <TextView
+            style="@style/Body.Dark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x6"
+            android:gravity="center_horizontal"
+            android:text="Sleep Sounds"/>
+
+
+        <TextView
+            style="@style/Body.Dim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x1"
+            android:gravity="center_horizontal"
+            android:text="Play a Sleep Sound."/>
+
+        <TextView
+            style="@style/Body.Dim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x1"
+            android:gravity="center_horizontal"
+            android:text="Play White Noise."/>
+    </LinearLayout>
+
+
+</ScrollView>
