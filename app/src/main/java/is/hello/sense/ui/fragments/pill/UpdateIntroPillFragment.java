@@ -80,12 +80,16 @@ public class UpdateIntroPillFragment extends PillHardwareFragment implements OnB
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        primaryButton.setOnClickListener(null);
-        primaryButton = null;
+        if(primaryButton != null) {
+            primaryButton.setOnClickListener(null);
+            primaryButton = null;
+        }
         viewAnimator.onDestroyView();
         phoneBatteryPresenter.enoughBattery.forget();
-        view.destroy();
-        view = null;
+        if(this.view != null) {
+            this.view.destroy();
+            this.view = null;
+        }
     }
 
     @Override
