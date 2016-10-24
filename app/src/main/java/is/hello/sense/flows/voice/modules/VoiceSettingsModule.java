@@ -5,6 +5,9 @@ import android.support.annotation.NonNull;
 import javax.inject.Singleton;
 
 import dagger.Module;
+import dagger.Provides;
+import is.hello.sense.api.ApiService;
+import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.flows.voice.ui.activities.VoiceSettingsActivity;
 import is.hello.sense.flows.voice.ui.fragments.VoiceSettingsListFragment;
 import is.hello.sense.interactors.CurrentSenseInteractor;
