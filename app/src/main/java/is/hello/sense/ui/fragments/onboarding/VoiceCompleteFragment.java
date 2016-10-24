@@ -46,8 +46,10 @@ public class VoiceCompleteFragment extends SenseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        this.view.destroy();
-        this.view = null;
+        if(this.view != null) {
+            this.view.destroy();
+            this.view = null;
+        }
     }
 
     public void complete(final View ignored) {
