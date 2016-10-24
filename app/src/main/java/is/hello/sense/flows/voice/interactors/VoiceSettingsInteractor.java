@@ -54,9 +54,11 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
                                  })
                                  .repeatWhen( onComplete -> onComplete.zipWith(
                                          Observable.range(1, REPEAT_MAX_COUNT)
-                                                   .takeUntil( integer -> hasUpdatedTo(newSettings))
-                                                   .delay(RESUBSCRIBE_DELAY_MILLIS, TimeUnit.MILLISECONDS)
-                                         , (ignore2, integer) -> integer)));
+                                         , (ignore2, integer) -> integer)
+                                            .takeUntil( integer -> hasUpdatedTo(newSettings))
+                                            .flatMap( repeatCount -> Observable.timer(RESUBSCRIBE_DELAY_MILLIS, TimeUnit.MILLISECONDS))
+                                            )
+                                 );
     }
 
     public Boolean hasUpdatedTo(@NonNull final SenseVoiceSettings newSettings) {
