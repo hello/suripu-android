@@ -53,7 +53,6 @@ public class BacksideFragment extends PresenterFragment<BacksideView>
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
         this.internalPreferences = InternalPrefManager.getInternalPrefs(getActivity());
         addInteractor(accountInteractor);
         addInteractor(unreadStateInteractor);
