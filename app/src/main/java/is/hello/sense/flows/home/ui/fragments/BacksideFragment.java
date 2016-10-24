@@ -2,6 +2,7 @@ package is.hello.sense.flows.home.ui.fragments;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -160,7 +161,11 @@ public class BacksideFragment extends PresenterFragment<BacksideView>
         presenterView.setCurrentItem(item, animateOptions);
     }
 
+    @Nullable
     public final BacksideTabFragment getCurrentTabFragment() {
+        if (presenterView == null){
+            return null;
+        }
         return presenterView.getCurrentTabFragment(getChildFragmentManager());
     }
 
