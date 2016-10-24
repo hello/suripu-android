@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:scrollbars="none"
             android:background="@color/background_light">
 
     <LinearLayout
@@ -48,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x1"
             android:gravity="center_horizontal"
-            android:text="Wake me up at 10 AM"/>
+            android:text="Wake me up at 10am."/>
 
         <TextView
             style="@style/Body.Dim"
@@ -56,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x1"
             android:gravity="center_horizontal"
-            android:text="Set alarm for tomorrow morning at 8"/>
+            android:text="Set alarm for tomorrow morning at 8."/>
 
         <TextView
             style="@style/Body.Dark"
@@ -73,7 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x1"
             android:gravity="center_horizontal"
-            android:text="Play a Sleep Sound"/>
+            android:text="Play a Sleep Sound."/>
 
         <TextView
             style="@style/Body.Dim"
@@ -81,7 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x1"
             android:gravity="center_horizontal"
-            android:text="Play White Noise"/>
+            android:text="Play White Noise."/>
     </LinearLayout>
 
 

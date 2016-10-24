@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/x1"
-            android:src="@drawable/icon_sounds_large"/>
+            android:src="@drawable/icon_expansions_large"/>
 
         <TextView
             style="@style/AppTheme.Text.Header.H6"
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x2"
             android:gravity="center_horizontal"
-            android:text="Before each command, say &quot;Okay Sense&quot; to set an alarm or begin playing Sleep Sounds."/>
+            android:text="Before each command, say &quot;Okay Sense&quot; to control your lights or thermostat."/>
 
         <TextView
             style="@style/Body.Dark"
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x1"
             android:gravity="center_horizontal"
-            android:text="Turn the lights on."/>
+            android:text="Turn the light on."/>
 
 
         <TextView
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x1"
             android:gravity="center_horizontal"
-            android:text="Turn the lights off."/>
+            android:text="Turn the light off."/>
 
 
         <TextView

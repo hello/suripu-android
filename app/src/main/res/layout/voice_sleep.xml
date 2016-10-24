@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:scrollbars="none"
             android:background="@color/background_light">
 
     <LinearLayout
@@ -15,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/x1"
-            android:src="@drawable/icon_sounds_large"/>
+            android:src="@drawable/icon_sleep_large"/>
 
         <TextView
             style="@style/AppTheme.Text.Header.H6"
@@ -31,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x2"
             android:gravity="center_horizontal"
-            android:text="Before each command, say &quot;Okay Sense&quot; to set an alarm or begin playing Sleep Sounds."/>
+            android:text="Before each command, say &quot;Okay Sense&quot; to ask about your Sleep Score, Sleep Timeline, and Sleep Trends."/>
 
         <TextView
             style="@style/Body.Dark"
@@ -39,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x6"
             android:gravity="center_horizontal"
-            android:text="Sleep Timeline"/>
+            android:text="Sleep Timeline."/>
 
 
         <TextView
