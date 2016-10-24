@@ -12,6 +12,7 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.flows.voice.modules.VoiceSettingsModule;
 import is.hello.sense.flows.voice.ui.fragments.VoiceSettingsListFragment;
+import is.hello.sense.flows.voice.ui.fragments.VoiceVolumeFragment;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -68,6 +69,8 @@ public class VoiceSettingsActivity extends ScopedInjectionActivity
                 if(RESULT_VOLUME_SELECTED == responseCode){
                     showVolumeSelection();
                 }
+            } else if(fragment instanceof VoiceVolumeFragment){
+                showSettingsList();
             }
         }
     }
@@ -85,7 +88,7 @@ public class VoiceSettingsActivity extends ScopedInjectionActivity
     }
 
     private void showVolumeSelection(){
-        //todo
+        pushFragment(new VoiceVolumeFragment(), null, true);
     }
 
     //endregion

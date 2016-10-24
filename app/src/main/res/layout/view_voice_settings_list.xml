@@ -29,7 +29,8 @@
             android:layout_gravity="end|center_vertical"
             android:drawableEnd="@drawable/disclosure_chevron_small"
             android:drawablePadding="@dimen/x1"
-            android:visibility="gone"/>
+            android:visibility="visible"
+            android:text="Testing Volume"/>
 
     </FrameLayout>
 
@@ -83,7 +84,8 @@
             android:layout_gravity="end|center_vertical"
             android:drawableEnd="@drawable/disclosure_chevron_small"
             android:drawablePadding="@dimen/x1"
-            android:visibility="gone"/>
+            android:visibility="visible"
+            android:text="Testing Name"/>
 
     </FrameLayout>
 

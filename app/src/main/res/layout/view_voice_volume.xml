@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/x2">
+
+    <TextView
+        android:id="@+id/view_voice_volume_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/AppTheme.Text.VolumePicker"
+        android:text="@string/voice_select_volume"/>
+
+    <TextView
+        android:id="@+id/view_voice_volume_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/x2"
+        style="@style/AppTheme.Text.Body.New"
+        android:text="@string/voice_volume_description"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.6" />
+
+    <TextView
+        android:id="@+id/view_voice_volume_selected_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/x4"
+        android:layout_gravity="center_horizontal"
+        style="@style/AppTheme.Text.Header.H1.Thin"
+        android:textColor="@color/voice_volume_emphasized_color"/>
+
+    <is.hello.sense.flows.voice.ui.widgets.VolumePickerView
+        android:id="@+id/view_voice_volume_scale"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/scale_view_size"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="@dimen/x7"
+        android:layout_marginEnd="@dimen/x7"
+        android:orientation="horizontal"
+        app:minValue="1"
+        app:maxValue="11"
+        app:initialValue="8"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/view_voice_volume_done_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/AppTheme.Button.Rounded"
+        android:text="@string/action_done"/>
+
+</LinearLayout>
