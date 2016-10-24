@@ -35,15 +35,22 @@
         <item name="android:textSize">@dimen/text_h7</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/gray6</item>
+        <item name="android:textAllCaps">true</item>
+
     </style>
 
     <style name="Card.Body">
-        <item name="android:textSize">@dimen/text_h8</item>
+        <item name="android:textSize">@dimen/text_body</item>
         <item name="android:textColor">@color/gray5</item>
     </style>
 
     <style name="Card.Value">
         <item name="android:textSize">@dimen/text_h4</item>
+    </style>
+
+    <style name="Card.Unit">
+        <item name="android:textSize">@dimen/text_h8</item>
+        <item name="android:textColor">@color/gray5</item>
     </style>
 
 
