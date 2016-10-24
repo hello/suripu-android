@@ -11,7 +11,7 @@
         android:id="@+id/view_voice_volume_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/AppTheme.Text.VolumePicker"
+        style="@style/AppTheme.Text.VolumePicker.Title"
         android:text="@string/voice_select_volume"/>
 
     <TextView
@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/x4"
         android:layout_gravity="center_horizontal"
-        style="@style/AppTheme.Text.Header.H1.Thin"
+        style="@style/AppTheme.Text.VolumePicker.SelectedValue"
         android:textColor="@color/voice_volume_emphasized_color"/>
 
     <is.hello.sense.flows.voice.ui.widgets.VolumePickerView
