@@ -71,6 +71,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     private UpdateTimer updateTimer;
     private DateFormatter dateFormatter;
     private TimestampQuery timestampQuery = new TimestampQuery(QueryScope.DAY_5_MINUTE);
+    @NonNull
     private Subscription sensorSubscription = Subscriptions.empty();
 
     @Override
@@ -146,10 +147,8 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     protected final void onRelease() {
         super.onRelease();
         this.updateTimer = null;
-        if (sensorSubscription != null) {
-            sensorSubscription.unsubscribe();
-            sensorSubscription = null;
-        }
+        sensorSubscription.unsubscribe();
+        sensorSubscription = Subscriptions.empty();
     }
 
     @Override

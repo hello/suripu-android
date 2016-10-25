@@ -35,6 +35,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
 public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsView>
         implements ArrayRecyclerAdapter.OnItemClickedListener<Sensor>,
@@ -54,7 +55,8 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     public SensorResponseAdapter adapter;
     private UpdateTimer updateTimer;
     private boolean checkRoomConditions = false;
-    private Subscription postSensorSubscription;
+    @NonNull
+    private Subscription postSensorSubscription = Subscriptions.empty();;
 
     @Override
     public final void initializePresenterView() {
@@ -115,10 +117,8 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     @Override
     public void onRelease() {
         super.onRelease();
-        if(this.postSensorSubscription != null){
-            this.postSensorSubscription.unsubscribe();
-            this.postSensorSubscription = null;
-        }
+        this.postSensorSubscription.unsubscribe();
+        this.postSensorSubscription = Subscriptions.empty();
 
         if (this.updateTimer != null) {
             this.updateTimer.unschedule();
@@ -172,6 +172,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
             case WAITING_FOR_DATA:
                 showWelcomeCardIfNeeded();
                 final List<Sensor> sensors = currentConditions.getSensors();
+                postSensorSubscription.unsubscribe();
                 postSensorSubscription = bind(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)))
                         .subscribe(sensorsDataResponse -> RoomConditionsFragment.this.bindDataResponse(sensorsDataResponse, sensors),
                                    this::conditionsUnavailable);
@@ -184,7 +185,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     }
 
     public final void bindDataResponse(@NonNull final SensorsDataResponse sensorsDataResponse,
-                                       @NonNull final List<Sensor> sensors){
+                                       @NonNull final List<Sensor> sensors) {
         for (final Sensor sensor : sensors) {
             sensor.setSensorValues(sensorsDataResponse);
         }

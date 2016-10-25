@@ -76,9 +76,10 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
 
     private final ViewAnimator viewAnimator = new ViewAnimator(LoadingDialogFragment.DURATION_DEFAULT,
                                                                new AccelerateDecelerateInterpolator());
-
-    private Subscription voiceTipSubscription;
-    private Subscription requestDelayedSubscription;
+    @NonNull
+    private Subscription voiceTipSubscription = Subscriptions.empty();
+    @NonNull
+    private Subscription requestDelayedSubscription= Subscriptions.empty();
 
     private Lazy<Runnable> runnableLazy =
             () -> stateSafeExecutor.bind(SenseVoiceFragment.this::animateToNormalState);
@@ -96,8 +97,6 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        voiceTipSubscription = Subscriptions.empty();
-        requestDelayedSubscription = Subscriptions.empty();
 
         final View view = inflater.inflate(R.layout.fragment_sense_voice, container, false);
         title = (TextView) view.findViewById(R.id.fragment_sense_voice_title);
@@ -192,15 +191,11 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         if(skipButton != null) {
             skipButton.setOnClickListener(null);
         }
-        if(voiceTipSubscription != null) {
-            voiceTipSubscription.unsubscribe();
-            voiceTipSubscription = null;
-        }
+        voiceTipSubscription.unsubscribe();
+        voiceTipSubscription = Subscriptions.empty();
         showVoiceTipDialog(false, null);
-        if(requestDelayedSubscription != null) {
-            requestDelayedSubscription.unsubscribe();
-            requestDelayedSubscription = null;
-        }
+        requestDelayedSubscription.unsubscribe();
+        requestDelayedSubscription = Subscriptions.empty();
         TRANSLATE_Y = null;
         runnableLazy = null;
 
@@ -229,7 +224,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
 
         transaction.animatorFor(senseImageView)
                 .scale(1)
-                .translationY(TRANSLATE_Y.get()*0.60f);
+                .translationY(TRANSLATE_Y.get() * 0.60f);
 
         transaction.animatorFor(title)
                 .fadeOut(View.INVISIBLE);
@@ -310,6 +305,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
             bottomSheet = VoiceHelpDialogFragment.newInstance();
 
             if(isShownAction != null) {
+                voiceTipSubscription.unsubscribe();
                 voiceTipSubscription = bottomSheet.subject
                         .subscribe(isShownAction,
                                    this::presentError);
@@ -331,6 +327,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
 
     private void requestDelayed() {
         //request after a delay respecting fragment lifecycle
+        requestDelayedSubscription.unsubscribe();
         requestDelayedSubscription = bind(Observable.interval(SenseVoiceInteractor.UPDATE_DELAY_SECONDS, TimeUnit.SECONDS))
                                            .subscribe(ignored -> senseVoiceInteractor.update(),
                                                       this::presentError);

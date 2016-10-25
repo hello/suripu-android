@@ -22,6 +22,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
 public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Output> extends BaseHardwarePresenter<T> {
 
@@ -35,7 +36,8 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     private final PairSenseInteractor pairSenseInteractor;
     protected final PreferencesInteractor preferencesInteractor;
 
-    private Subscription userFeaturesSubScription;
+    @NonNull
+    private Subscription userFeaturesSubscription = Subscriptions.empty();;
 
     public BasePairSensePresenter(@NonNull final HardwareInteractor hardwareInteractor,
                                   @NonNull final UserFeaturesInteractor userFeaturesInteractor,
@@ -188,8 +190,8 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
 
     private void getDeviceFeatures() {
         showBlockingActivity(R.string.title_pushing_data);
-        releaseSubscription();
-        userFeaturesSubScription = bind(userFeaturesInteractor.featureSubject)
+        userFeaturesSubscription.unsubscribe();
+        userFeaturesSubscription = bind(userFeaturesInteractor.featureSubject)
                 .subscribe(features -> {
                                preferencesInteractor.setFeatures(features);
                                onFinished();
@@ -229,10 +231,8 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     }
 
     private void releaseSubscription() {
-        if (userFeaturesSubScription != null) {
-            userFeaturesSubScription.unsubscribe();
-            userFeaturesSubScription = null;
-        }
+        userFeaturesSubscription.unsubscribe();
+        userFeaturesSubscription = Subscriptions.empty();
     }
 
     public interface Output extends BaseOutput {
