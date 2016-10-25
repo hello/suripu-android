@@ -51,22 +51,6 @@
             android:gravity="center_horizontal"
             android:text="What is the temperature?"/>
 
-        <TextView
-            style="@style/Body.Dark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/x6"
-            android:gravity="center_horizontal"
-            android:text="Bedroom Conditions"/>
-
-
-        <TextView
-            style="@style/Body.Dim"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/x1"
-            android:gravity="center_horizontal"
-            android:text="What are my bedroom conditions?"/>
 
         <TextView
             style="@style/Body.Dark"
@@ -100,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x1"
             android:gravity="center_horizontal"
-            android:text="How is the noise?"/>
+            android:text="How noisy is it?"/>
 
         <TextView
             style="@style/Body.Dim"

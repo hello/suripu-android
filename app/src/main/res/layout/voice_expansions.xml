@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x1"
             android:gravity="center_horizontal"
-            android:text="Turn the light on."/>
+            android:text="Turn the lights on."/>
 
 
         <TextView
@@ -58,7 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x1"
             android:gravity="center_horizontal"
-            android:text="Turn the light off."/>
+            android:text="Turn the lights off."/>
 
 
         <TextView
@@ -67,7 +67,15 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x1"
             android:gravity="center_horizontal"
-            android:text="Decrease the light."/>
+            android:text="Decrease the lights."/>
+
+        <TextView
+            style="@style/Body.Dim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x1"
+            android:gravity="center_horizontal"
+            android:text="Dim the lights."/>
 
         <TextView
             style="@style/Body.Dark"
