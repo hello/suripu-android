@@ -27,12 +27,14 @@ import org.joda.time.LocalDate;
 
 import javax.inject.Inject;
 
+import is.hello.buruberi.util.Rx;
 import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.home.ui.fragments.HomeFragment;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
@@ -45,6 +47,7 @@ import is.hello.sense.flows.home.ui.views.BacksideView;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.rating.LocalUsageTracker;
+import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
 import is.hello.sense.ui.common.ScopedInjectionActivity;
@@ -64,6 +67,7 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Distribution;
 import is.hello.sense.util.InternalPrefManager;
 import is.hello.sense.util.Logger;
+import rx.Observable;
 
 import static is.hello.go99.Anime.isAnimating;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
@@ -236,6 +240,14 @@ public class HomeActivity extends ScopedInjectionActivity
     protected void onPostCreate(final Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
+        final IntentFilter loggedOutIntent = new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT);
+        final Observable<Intent> onLogOut = Rx.fromLocalBroadcast(getApplicationContext(), loggedOutIntent);
+        bindAndSubscribe(onLogOut,
+                         ignored -> {
+                             startActivity(new Intent(this, LaunchActivity.class));
+                             finish();
+                         },
+                         Functions.LOG_ERROR);
         if (isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE) {
             bindAndSubscribe(deviceIssuesPresenter.latest(),
                              this::bindDeviceIssue,
