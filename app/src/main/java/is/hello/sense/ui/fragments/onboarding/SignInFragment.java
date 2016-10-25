@@ -32,8 +32,8 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountInteractor;
+import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -64,7 +64,7 @@ public class SignInFragment extends InjectionFragment
     @Inject
     PreferencesInteractor preferences;
     @Inject
-    UserFeaturesInteractor userFeaturesPresenter;
+    DevicesInteractor devicesInteractor;
 
     private LabelEditText emailTextLET;
     private LabelEditText passwordTextLET;
@@ -204,14 +204,14 @@ public class SignInFragment extends InjectionFragment
         final OAuthCredentials credentials = new OAuthCredentials(apiEndpoint, email, password);
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             apiSessionManager.setSession(session);
-            userFeaturesPresenter.update();
+            devicesInteractor.update();
             final Observable<Account> initializeLocalState =
                     Observable.combineLatest(accountPresenter.pullAccountPreferences(),
-                                             userFeaturesPresenter.featureSubject,
+                                             devicesInteractor.devices,
                                              accountPresenter.latest(),
-                                             (ignored, userFeatures, account) -> {
+                                             (ignored, devices, account) -> {
 
-                                                 preferences.setFeatures(userFeatures);
+                                                 preferences.setDevice(devices.getSense());
                                                  return account;
                                              });
 

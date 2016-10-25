@@ -50,7 +50,6 @@ import is.hello.sense.interactors.SwapSenseInteractorTests;
 import is.hello.sense.interactors.TimelineInteractor;
 import is.hello.sense.interactors.TimelineInteractorTests;
 import is.hello.sense.interactors.UnreadStateInteractorTests;
-import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.interactors.UserFeaturesInteractorTests;
 import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
 import is.hello.sense.interactors.ZoomedOutTimelineInteractorTests;
@@ -96,7 +95,6 @@ import static org.mockito.Mockito.mock;
             PersistentPreferencesInteractor.class,
             PersistentPreferencesInteractorTests.class,
 
-            UserFeaturesInteractor.class,
             UserFeaturesInteractorTests.class,
 
             AccountInteractor.class,

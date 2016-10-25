@@ -1,7 +1,9 @@
 package is.hello.sense.interactors;
 
 import android.annotation.SuppressLint;
+import android.net.wifi.WifiInfo;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +14,8 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import is.hello.sense.api.model.UserFeatures;
+import is.hello.sense.api.model.BaseDevice;
+import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Sync;
@@ -151,7 +154,17 @@ public class PreferencesInteractorTests extends InjectionTestCase {
 
     @Test //todo figure out how to mock local broadcast logout intent
     public void clearPreferencesOnReset() {
-        presenter.setFeatures(new UserFeatures(true));
+       final SenseDevice test = new SenseDevice(BaseDevice.State.NORMAL,
+                                           SenseDevice.Color.BLACK,
+                                           "w/e",
+                                           "w/e",
+                                           DateTime.now(),
+                                           new SenseDevice.WiFiInfo("w/e",
+                                                                    100,
+                                                                    DateTime.now(),
+                                                                    "w/e"),
+                                           SenseDevice.HardwareVersion.SENSE_WITH_VOICE);
+        presenter.setDevice(test);
 
         assertTrue(presenter.hasVoice());
 

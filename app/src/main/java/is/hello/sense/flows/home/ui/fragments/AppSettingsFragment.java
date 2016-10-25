@@ -17,8 +17,8 @@ import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.flows.voice.ui.activities.VoiceSettingsActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountInteractor;
+import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.flows.home.ui.views.AppSettingsView;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
@@ -38,10 +38,10 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     @Inject
     PreferencesInteractor preferencesInteractor;
     @Inject
-    UserFeaturesInteractor userFeaturesInteractor;
+    DevicesInteractor devicesInteractor;
 
     @NonNull
-    private Subscription userFeaturesSubscription = Subscriptions.empty();
+    private Subscription devicesSubscription = Subscriptions.empty();
 
 
     @Override
@@ -69,7 +69,7 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
         super.onCreate(savedInstanceState);
         addInteractor(accountInteractor);
         addInteractor(preferencesInteractor);
-        addInteractor(userFeaturesInteractor);
+        addInteractor(devicesInteractor);
     }
 
     @Override
@@ -85,11 +85,11 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
 
         // If this preference is missing we need to query the server.
         if (!preferencesInteractor.contains(PreferencesInteractor.HAS_VOICE)) {
-            userFeaturesSubscription.unsubscribe();
-            userFeaturesSubscription = bind(userFeaturesInteractor.featureSubject)
-                    .subscribe(preferencesInteractor::setFeatures,
+            devicesSubscription.unsubscribe();
+            devicesSubscription = bind(devicesInteractor.devices)
+                    .subscribe((devices -> preferencesInteractor.setDevice(devices.getSense())),
                                Functions.LOG_ERROR);
-            userFeaturesInteractor.update();
+            devicesInteractor.update();
         }
 
         accountInteractor.update();
@@ -112,8 +112,8 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     @Override
     protected void onRelease() {
         super.onRelease();
-        userFeaturesSubscription.unsubscribe();
-        userFeaturesSubscription = Subscriptions.empty();
+        devicesSubscription.unsubscribe();
+        devicesSubscription = Subscriptions.empty();
     }
 
     @Override
