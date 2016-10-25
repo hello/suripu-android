@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -62,6 +61,7 @@ public class HardwareInteractor extends BaseHardwareInteractor {
     private int peripheralNotFoundCount = 0;
 
     private final Action1<Throwable> respondToError;
+    private String lastMacAddress = null; // this is a bit hacky but will let us get the task done until we have time to clean it up.
 
     @Inject
     public HardwareInteractor(@NonNull final Context context,
@@ -171,7 +171,6 @@ public class HardwareInteractor extends BaseHardwareInteractor {
     public Observable<SensePeripheral> closestPeripheral() {
         logEvent("closestPeripheral()");
         if (peripheral != null) {
-            Log.e(getClass().getSimpleName(),"closestPeripheral | showMacAddress: "+ peripheral.showMacAddress());
             logEvent("peripheral already rediscovered " + peripheral);
 
             return Observable.just(peripheral);
@@ -191,9 +190,12 @@ public class HardwareInteractor extends BaseHardwareInteractor {
                                       if (!peripherals.isEmpty()) {
                                           final SensePeripheral closestPeripheral = getClosestPeripheral(peripherals);
                                           this.peripheral = closestPeripheral;
-                                          Log.e(getClass().getSimpleName(),"closestPeripheral | showMacAddress: "+ closestPeripheral.showMacAddress());
+                                          if (peripheral != null) {
+                                              this.lastMacAddress = this.peripheral.getMacAddress();
+                                          }
                                           return Observable.just(closestPeripheral);
                                       } else {
+                                          this.lastMacAddress = null;
                                           this.peripheral = null;
                                           return Observable.error(new SenseNotFoundError());
                                       }
@@ -221,6 +223,7 @@ public class HardwareInteractor extends BaseHardwareInteractor {
                                       .flatMap(peripherals -> {
                                           if (!peripherals.isEmpty()) {
                                               this.peripheral = peripherals.get(0);
+                                              this.lastMacAddress = this.peripheral.getMacAddress();
                                               logEvent("rediscoveredDevice(" + peripheral + ")");
 
                                               return Observable.just(peripheral);
@@ -250,6 +253,7 @@ public class HardwareInteractor extends BaseHardwareInteractor {
                                   .flatMap(peripheral -> {
                                       logEvent("rediscoveredPeripheralForDevice(" + peripheral + ")");
                                       this.peripheral = peripheral;
+                                      this.lastMacAddress = this.peripheral.getMacAddress();
                                       return Observable.just(this.peripheral);
                                   });
         });
@@ -288,7 +292,7 @@ public class HardwareInteractor extends BaseHardwareInteractor {
 
     @VisibleForTesting
     void removeDuplicateNetworks(@NonNull final List<SenseCommandProtos.wifi_endpoint> networks) {
-        final HashMap<String, SenseCommandProtos.wifi_endpoint> map = new HashMap<>(networks.size()/2);
+        final HashMap<String, SenseCommandProtos.wifi_endpoint> map = new HashMap<>(networks.size() / 2);
         for (final SenseCommandProtos.wifi_endpoint network : networks) {
             map.put(network.getSsid(), network);
         }
@@ -411,6 +415,10 @@ public class HardwareInteractor extends BaseHardwareInteractor {
             return resetBackEnd.flatMap(ignored -> resetSense)
                                .doOnError(this.respondToError);
         });
+    }
+
+    public String showMacAddress() {
+        return lastMacAddress;
     }
 
     @Override

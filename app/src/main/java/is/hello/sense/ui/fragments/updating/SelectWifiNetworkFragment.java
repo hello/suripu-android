@@ -1,5 +1,8 @@
 package is.hello.sense.ui.fragments.updating;
 
+import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +17,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Collection;
 
@@ -42,6 +46,9 @@ public class SelectWifiNetworkFragment extends BasePresenterFragment
     private Button rescanButton;
     private OnboardingToolbar toolbar;
     private View otherNetworkView;
+    private View macAddressContainer;
+    private TextView macAddress;
+    private TextView copyMacAddress;
 
     @Inject
     BaseSelectWifiNetworkPresenter presenter;
@@ -75,6 +82,9 @@ public class SelectWifiNetworkFragment extends BasePresenterFragment
 
         this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
+        this.macAddressContainer = view.findViewById(R.id.fragment_select_wifi_mac_address_container);
+        this.macAddress = (TextView) view.findViewById(R.id.fragment_select_wifi_mac_address);
+        this.copyMacAddress = (TextView) view.findViewById(R.id.fragment_select_wifi_mac_address_copy);
 
         this.otherNetworkView = inflater.inflate(R.layout.item_wifi_network, listView, false);
         final WifiNetworkAdapter.ViewHolder holder = new WifiNetworkAdapter.ViewHolder(otherNetworkView);
@@ -172,6 +182,24 @@ public class SelectWifiNetworkFragment extends BasePresenterFragment
         arguments.putSerializable(ConnectToWiFiFragment.ARG_SCAN_RESULT, network);
         nextFragment.setArguments(arguments);
         getFragmentNavigation().pushFragment(nextFragment, getString(R.string.title_edit_wifi), true);
+    }
+
+    @Override
+    public void showMacAddress(@Nullable final String macAddress) {
+        if (macAddress == null) {
+            this.macAddressContainer.setVisibility(View.GONE);
+        } else {
+            this.macAddressContainer.setVisibility(View.VISIBLE);
+            this.copyMacAddress.setOnClickListener(v -> {
+                final String copied = getString(R.string.copied);
+                ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Activity.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText(copied,macAddress);
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(getActivity(), copied, Toast.LENGTH_SHORT).show();
+            });
+        }
+
+        this.macAddress.setText(macAddress);
     }
 
     @Override
