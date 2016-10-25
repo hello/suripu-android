@@ -36,6 +36,12 @@ public class VoiceVolumeFragment extends PresenterFragment<VoiceVolumeView> {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(voiceSettingsInteractor);
+    }
+
+    @Override
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        hideBlockingActivity(false, null);
         bindAndSubscribe(voiceSettingsInteractor.settingsSubject,
                          this::bindSettings,
                          this::presentError);
@@ -58,20 +64,29 @@ public class VoiceVolumeFragment extends PresenterFragment<VoiceVolumeView> {
 
     private void updateSettings(@NonNull final Observable<SenseVoiceSettings> updateObservable) {
         showBlockingActivity(R.string.voice_settings_progress_updating); //todo use real copy
-        this.presenterView.setVisibility(View.INVISIBLE);
+        this.presenterView.setVisibility(View.GONE);
         updateSettingsSubscription.unsubscribe();
         updateSettingsSubscription = bind(updateObservable)
                 .subscribe(Functions.NO_OP,
                            this::presentError,
-                           () -> hideBlockingActivity(true, this::finishFlow)
+                           () -> hideBlockingActivity(true, stateSafeExecutor.bind(this::finishFlow))
                           );
 
     }
 
     private void presentError(@NonNull final Throwable e) {
-        this.presenterView.setVisibility(View.VISIBLE);
-        hideBlockingActivity(false, null);
+        showProgress(false);
         showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e));
+    }
+
+    private void showProgress(final boolean show) {
+        if(show){
+            presenterView.setVisibility(View.INVISIBLE);
+            showBlockingActivity(null);
+        } else {
+            hideBlockingActivity(false, null);
+            presenterView.setVisibility(View.VISIBLE);
+        }
     }
 
 }

@@ -727,7 +727,7 @@
     <string name="voice_settings_primary_user_true">You</string>
     <string name="voice_settings_primary_user_false">Change</string>
     <string name="voice_settings_primary_user_dialog_title">Are you sure?</string>
-    <string name="voice_settings_primary_user_dialog_message">Once you set yourself as primary user you will not be able to change back. Your partner will need to login to their Sense to become primary user again.</string>
+    <string name="voice_settings_primary_user_dialog_message">Once you set yourself as the primary user of this Sense, you won’t be able to undo it unless another person using this Sense sets themselves as the primary user.</string>
     <string name="voice_settings_primary_user_dialog_positive_button">Become Primary</string>
     <string name="voice_settings_progress_updating">Updating</string>
     <!-- end region -->

@@ -1,6 +1,8 @@
 package is.hello.sense.flows.voice.interactors;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.concurrent.TimeUnit;
 
@@ -16,6 +18,7 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
     public static final String EMPTY_ID = "";
     private static final int REPEAT_MAX_COUNT = 15;
     private static final int RESUBSCRIBE_DELAY_MILLIS = 1000;
+    private static final String BUNDLE_SENSE_ID = VoiceSettingsInteractor.class.getName() + "SENSE_ID";
     private final ApiService apiService;
     private String senseId = EMPTY_ID;
 
@@ -41,6 +44,23 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
             return Observable.error(new SenseNotFoundError()); //todo handle better
         }
         return apiService.getVoiceSettings(senseId);
+    }
+
+    @Override
+    public void onRestoreState(@NonNull final Bundle savedState) {
+        super.onRestoreState(savedState);
+        this.senseId = savedState.getString(BUNDLE_SENSE_ID, EMPTY_ID);
+    }
+
+    @Nullable
+    @Override
+    public Bundle onSaveState() {
+        Bundle bundle = super.onSaveState();
+        if(bundle == null){
+            bundle = new Bundle();
+        }
+        bundle.putString(BUNDLE_SENSE_ID, senseId);
+        return bundle;
     }
 
     public Observable<SenseVoiceSettings> setMuted(final boolean muted){
