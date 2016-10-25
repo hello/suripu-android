@@ -146,6 +146,7 @@ public class SelectWifiNetworkFragment extends BasePresenterFragment
             listView.setAdapter(null);
             listView = null;
         }
+        this.copyMacAddress.setOnClickListener(null);
         otherNetworkView = null;
     }
 
@@ -190,10 +191,10 @@ public class SelectWifiNetworkFragment extends BasePresenterFragment
             this.macAddressContainer.setVisibility(View.GONE);
         } else {
             this.macAddressContainer.setVisibility(View.VISIBLE);
-            this.copyMacAddress.setOnClickListener(v -> {
+            Views.setSafeOnClickListener(this.copyMacAddress, v -> {
                 final String copied = getString(R.string.copied);
-                ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Activity.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText(copied,macAddress);
+                final ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Activity.CLIPBOARD_SERVICE);
+                final ClipData clip = ClipData.newPlainText(copied, macAddress);
                 clipboard.setPrimaryClip(clip);
                 Toast.makeText(getActivity(), copied, Toast.LENGTH_SHORT).show();
             });
