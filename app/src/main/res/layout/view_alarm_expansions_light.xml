@@ -22,15 +22,6 @@
         android:drawableStart="@drawable/icon_alarm_light"
         android:drawablePadding="@dimen/x3"/>
 
-    <ImageButton
-        android:id="@+id/fragment_smart_alarm_detail_lights_help"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/info_button_icon_small"
-        android:contentDescription="@string/action_help"
-        android:background="@color/transparent"
-        style="@style/AppTheme.Button.Borderless"/>
-
     <FrameLayout
         android:gravity="center_vertical|end"
         android:layout_width="match_parent"
@@ -42,16 +33,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
             android:visibility="gone"
+            android:drawableEnd="@drawable/disclosure_chevron_small"
+            android:drawablePadding="@dimen/x1"
             android:fontFamily="sans-serif"
             android:textColor="@color/light_accent"
             style="@style/AppTheme.Text.Body.MidSized"/>
-
-        <include
-            android:id="@+id/fragment_smart_alarm_detail_lights_switch"
-            layout="@layout/widget_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"/>
 
         <ImageView
             android:id="@+id/fragment_smart_alarm_detail_lights_error"

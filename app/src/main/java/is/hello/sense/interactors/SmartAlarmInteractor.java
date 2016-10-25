@@ -211,7 +211,6 @@ public class SmartAlarmInteractor extends ValueInteractor<ArrayList<Alarm>> {
 
     //endregion
 
-
     public static class DayOverlapError extends Exception {
         public DayOverlapError() {
             super("Cannot have more than one smart alarm set per day");

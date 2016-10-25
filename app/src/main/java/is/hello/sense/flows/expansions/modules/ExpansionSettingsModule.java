@@ -11,6 +11,7 @@ import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.flows.expansions.interactors.ExpansionsInteractor;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
+import is.hello.sense.flows.expansions.ui.activities.ExpansionValuePickerActivity;
 import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionListFragment;
@@ -25,7 +26,8 @@ import is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment;
         ExpansionDetailFragment.class,
         ConfigSelectionFragment.class,
         SmartAlarmDetailActivity.class,
-        SmartAlarmDetailFragment.class
+        SmartAlarmDetailFragment.class,
+        ExpansionValuePickerActivity.class
 })
 public class ExpansionSettingsModule {
 
