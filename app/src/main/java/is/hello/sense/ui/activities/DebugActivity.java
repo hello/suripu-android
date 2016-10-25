@@ -19,6 +19,7 @@ import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.interactors.AccountPreferencesInteractor;
 import is.hello.sense.interactors.PersistentPreferencesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.rating.LocalUsageTracker;
@@ -177,6 +178,7 @@ public class DebugActivity extends InjectionActivity {
 
     public void clearHandholdingSettings() {
         WelcomeDialogFragment.clearShownStates(this);
+        AccountPreferencesInteractor.newInstance(this).reset();
         Toast.makeText(getApplicationContext(), "Forgot welcome dialogs", Toast.LENGTH_SHORT).show();
     }
 
@@ -223,7 +225,7 @@ public class DebugActivity extends InjectionActivity {
         Toast.makeText(getApplicationContext(), "Forgot Room Conditions Welcome Card", Toast.LENGTH_SHORT).show();
     }
 
-    public void showExpansion(){
+    public void showExpansion() {
         startActivity(new Intent(this, ExpansionSettingsActivity.class));
     }
 
