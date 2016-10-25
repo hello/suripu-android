@@ -37,7 +37,6 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     public void initializePresenterView() {
         if(presenterView == null){
             presenterView = new VoiceSettingsListView(getActivity());
-            showProgress(true);
             presenterView.setVolumeValueClickListener(this::redirectToVolumeSelection);
         }
     }
@@ -52,6 +51,7 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        showProgress(true);
         bindAndSubscribe(currentSenseInteractor.senseDevice,
                          this::bindSenseDevice,
                          this::presentError);

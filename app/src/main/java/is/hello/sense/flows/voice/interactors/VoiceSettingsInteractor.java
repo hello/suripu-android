@@ -11,14 +11,15 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.voice.SenseVoiceSettings;
 import is.hello.sense.graph.InteractorSubject;
 import is.hello.sense.interactors.ValueInteractor;
+import is.hello.sense.util.Constants;
 import rx.Observable;
 
 public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings> {
 
-    public static final String EMPTY_ID = "";
+    public static final String EMPTY_ID = Constants.EMPTY_STRING;
     private static final int REPEAT_MAX_COUNT = 15;
     private static final int RESUBSCRIBE_DELAY_MILLIS = 1000;
-    private static final String BUNDLE_SENSE_ID = VoiceSettingsInteractor.class.getName() + "SENSE_ID";
+    private static final String KEY_SENSE_ID = VoiceSettingsInteractor.class.getName() + "KEY_SENSE_ID";
     private final ApiService apiService;
     private String senseId = EMPTY_ID;
 
@@ -49,7 +50,7 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
     @Override
     public void onRestoreState(@NonNull final Bundle savedState) {
         super.onRestoreState(savedState);
-        this.senseId = savedState.getString(BUNDLE_SENSE_ID, EMPTY_ID);
+        this.senseId = savedState.getString(KEY_SENSE_ID, EMPTY_ID);
     }
 
     @Nullable
@@ -59,32 +60,36 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
         if(bundle == null){
             bundle = new Bundle();
         }
-        bundle.putString(BUNDLE_SENSE_ID, senseId);
+        bundle.putString(KEY_SENSE_ID, senseId);
         return bundle;
     }
 
     public Observable<SenseVoiceSettings> setMuted(final boolean muted){
-        return latest().flatMap( latestSettings -> {
-            final SenseVoiceSettings newSettings = SenseVoiceSettings.newCopyOf(latestSettings);
-            newSettings.setMuted(muted);
-            return setAndPoll(newSettings);
-        });
+        return getNewInstanceOfLatestSettings()
+                .flatMap( newSettings -> {
+                    newSettings.setMuted(muted);
+                    return setAndPoll(newSettings);
+                });
     }
 
     public Observable<SenseVoiceSettings> setPrimaryUser(final boolean isPrimaryUser){
-        return latest().flatMap( latestSettings -> {
-            final SenseVoiceSettings newSettings = SenseVoiceSettings.newCopyOf(latestSettings);
-            newSettings.setPrimaryUser(isPrimaryUser);
-            return setAndPoll(newSettings);
-        });
+        return getNewInstanceOfLatestSettings()
+                .flatMap( newSettings -> {
+                    newSettings.setPrimaryUser(isPrimaryUser);
+                    return setAndPoll(newSettings);
+                });
     }
 
     public Observable<SenseVoiceSettings> setVolume(final int volume){
-        return latest().flatMap( latestSettings -> {
-            final SenseVoiceSettings newSettings = SenseVoiceSettings.newCopyOf(latestSettings);
-            newSettings.setVolume(volume);
-            return setAndPoll(newSettings);
-        });
+        return getNewInstanceOfLatestSettings()
+                .flatMap(newSettings -> {
+                    newSettings.setVolume(volume);
+                    return setAndPoll(newSettings);
+                });
+    }
+
+    private Observable<SenseVoiceSettings> getNewInstanceOfLatestSettings() {
+        return latest().map(SenseVoiceSettings::newInstance);
     }
 
     /**

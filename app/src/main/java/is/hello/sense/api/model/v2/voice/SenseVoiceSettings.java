@@ -1,6 +1,7 @@
 package is.hello.sense.api.model.v2.voice;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -11,7 +12,8 @@ public class SenseVoiceSettings extends ApiResponse {
     /**
      * Difference tolerance in volume to be considered equal
      */
-    private static final int VOLUME_EQUALS_THRESHOLD = 5;
+    @VisibleForTesting
+    public static final int VOLUME_EQUALS_THRESHOLD = 5;
 
     public static final int TOTAL_VOLUME_LEVELS = 11;
 
@@ -24,7 +26,7 @@ public class SenseVoiceSettings extends ApiResponse {
     @SerializedName("is_primary_user")
     private boolean isPrimaryUser;
 
-    public static SenseVoiceSettings newCopyOf(@NonNull final SenseVoiceSettings latestSettings) {
+    public static SenseVoiceSettings newInstance(@NonNull final SenseVoiceSettings latestSettings) {
         return new SenseVoiceSettings(latestSettings.volume,
                                       latestSettings.isMuted,
                                       latestSettings.isPrimaryUser);
