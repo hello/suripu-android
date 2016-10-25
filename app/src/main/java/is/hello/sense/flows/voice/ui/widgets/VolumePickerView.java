@@ -299,21 +299,6 @@ public class VolumePickerView extends LinearLayout {
         this.onValueChangedListener = onValueChangedListener;
     }
 
-    /**
-     * @param pValue must be between 0 - 100 %
-     * @return converted value between {@link this#minValue} and {@link this#maxValue}
-     */
-    public int convertFromPercentageValue(final int pValue){
-        return (int) Math.floor((pValue / 100f) * getItemCount());
-    }
-
-    /**
-     * @return converted value between 0 and 100
-     */
-    public int convertSelectedValueToPercentageValue(){
-        return (int) Math.ceil((selectedValue * 100f) / getItemCount());
-    }
-
     //endregion
 
     private static class Tick extends View {

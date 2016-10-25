@@ -10,6 +10,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.voice.SenseVoiceSettings;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.units.UnitOperations;
 
 @SuppressLint("ViewConstructor")
 public class VoiceSettingsListView extends PresenterView {
@@ -51,8 +52,9 @@ public class VoiceSettingsListView extends PresenterView {
     }
 
     public void updateVolumeTextView(@NonNull final SenseVoiceSettings settings) {
-        // todo convert percentage volume to level
-        this.volumeValueTextView.setText(String.valueOf(settings.getVolume()));
+        this.volumeValueTextView.setText(String.valueOf(
+                UnitOperations.percentageToLevel(settings.getVolume(),
+                                                 SenseVoiceSettings.TOTAL_VOLUME_LEVELS)));
         this.volumeValueTextView.setVisibility(VISIBLE);
 
     }

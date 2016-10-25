@@ -13,6 +13,8 @@ public class SenseVoiceSettings extends ApiResponse {
      */
     private static final int VOLUME_EQUALS_THRESHOLD = 5;
 
+    public static final int TOTAL_VOLUME_LEVELS = 11;
+
     @SerializedName("volume")
     private int volume;
 

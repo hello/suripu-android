@@ -58,21 +58,18 @@ public class VoiceVolumeFragment extends PresenterFragment<VoiceVolumeView> {
 
     private void updateSettings(@NonNull final Observable<SenseVoiceSettings> updateObservable) {
         showBlockingActivity(R.string.voice_settings_progress_updating); //todo use real copy
+        this.presenterView.setVisibility(View.INVISIBLE);
         updateSettingsSubscription.unsubscribe();
         updateSettingsSubscription = bind(updateObservable)
                 .subscribe(Functions.NO_OP,
                            this::presentError,
-                           () ->  {
-                               stateSafeExecutor.execute( () -> {
-                                   this.presenterView.setVisibility(View.INVISIBLE);
-                                   hideBlockingActivity(true, this::finishFlow);
-                               });
-                           }
+                           () -> hideBlockingActivity(true, this::finishFlow)
                           );
 
     }
 
     private void presentError(@NonNull final Throwable e) {
+        this.presenterView.setVisibility(View.VISIBLE);
         hideBlockingActivity(false, null);
         showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e));
     }

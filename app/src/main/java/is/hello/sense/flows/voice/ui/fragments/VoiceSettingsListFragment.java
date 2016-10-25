@@ -37,8 +37,8 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     public void initializePresenterView() {
         if(presenterView == null){
             presenterView = new VoiceSettingsListView(getActivity());
+            showProgress(true);
             presenterView.setVolumeValueClickListener(this::redirectToVolumeSelection);
-            showBlockingActivity(null);
         }
     }
 
@@ -84,7 +84,7 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
         } else {
             presenterView.makeSecondaryUser(this::showPrimaryUserDialog);
         }
-        hideBlockingActivity(false, null);
+        showProgress(false);
     }
 
     private void onMuteSwitchChanged(final CompoundButton ignored,
@@ -116,11 +116,21 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
 
     private void presentError(@NonNull final Throwable e) {
         //todo show proper dialog
-        hideBlockingActivity(false, null);
+        showProgress(false);
         showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e));
     }
 
     private void redirectToVolumeSelection(final View ignore) {
         finishFlowWithResult(RESULT_VOLUME_SELECTED);
+    }
+
+    private void showProgress(final boolean show) {
+        if(show){
+            presenterView.setVisibility(View.INVISIBLE);
+            showBlockingActivity(null);
+        } else {
+            hideBlockingActivity(false, null);
+            presenterView.setVisibility(View.VISIBLE);
+        }
     }
 }
