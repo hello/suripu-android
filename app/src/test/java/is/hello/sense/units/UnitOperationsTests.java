@@ -9,7 +9,7 @@ public class UnitOperationsTests {
     @Test
     public void convertFromPercentageValue() throws Exception {
         final int levels = 11;
-        assertEquals(UnitOperations.percentageToLevel(10, levels), 11);
+        assertEquals(UnitOperations.percentageToLevel(100, levels), 11);
         assertEquals(UnitOperations.percentageToLevel(91, levels), 10);
         assertEquals(UnitOperations.percentageToLevel(82, levels), 9);
         assertEquals(UnitOperations.percentageToLevel(73, levels), 8);
