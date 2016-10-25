@@ -84,10 +84,8 @@ public class HomeFragment extends BacksideTabFragment<HomeView>
     @Override
     protected void onRelease() {
         super.onRelease();
-        if (userFeaturesSubscription != null) {
-            userFeaturesSubscription.unsubscribe();
-            userFeaturesSubscription = null;
-        }
+        userFeaturesSubscription.unsubscribe();
+        userFeaturesSubscription = Subscriptions.empty();
     }
 
     @Override

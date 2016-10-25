@@ -31,6 +31,7 @@ import is.hello.sense.interactors.Interactor;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
 public class TicketsInteractor extends Interactor {
     /**
@@ -41,14 +42,19 @@ public class TicketsInteractor extends Interactor {
     private static final String TAG_BETA = "android_beta";
     private static final long CUSTOM_FIELD_ID_TOPIC = 24321669L;
 
-    @Inject Context context;
-    @Inject ApiService apiService;
-    @Inject ApiSessionManager sessionManager;
+    @Inject
+    Context context;
+    @Inject
+    ApiService apiService;
+    @Inject
+    ApiSessionManager sessionManager;
 
     // Request doesn't implement Serializable,
     // so we can't use ValueInteractor<T>. Yay.
     public final InteractorSubject<List<Request>> tickets = InteractorSubject.create();
-    private @Nullable Subscription updateSubscription;
+    private
+    @NonNull
+    Subscription updateSubscription = Subscriptions.empty();
 
     //region Lifecycle
 
@@ -70,12 +76,8 @@ public class TicketsInteractor extends Interactor {
     //region Updating
 
     public void update() {
-        if (updateSubscription != null) {
-            updateSubscription.unsubscribe();
-            this.updateSubscription = null;
-        }
-
-        Observable<List<Request>> updateObservable = ZendeskHelper.doAction(context, apiService.getAccount(false), callback -> {
+        this.updateSubscription.unsubscribe();
+        final Observable<List<Request>> updateObservable = ZendeskHelper.doAction(context, apiService.getAccount(false), callback -> {
             ZendeskRequestProvider provider = new ZendeskRequestProvider();
             provider.getRequests("new,open,pending,hold,solved", callback);
         });
@@ -91,9 +93,9 @@ public class TicketsInteractor extends Interactor {
         return ZendeskHelper.initializeIfNeeded(context, apiService.getAccount(false));
     }
 
-    public Observable<CreateRequest> createTicket(@NonNull SupportTopic onTopic,
-                                                  @NonNull String text,
-                                                  @NonNull List<String> attachmentTokens) {
+    public Observable<CreateRequest> createTicket(@NonNull final SupportTopic onTopic,
+                                                  @NonNull final String text,
+                                                  @NonNull final List<String> attachmentTokens) {
         logEvent("createTicket()");
 
         return ZendeskHelper.doAction(context, apiService.getAccount(false), callback -> {

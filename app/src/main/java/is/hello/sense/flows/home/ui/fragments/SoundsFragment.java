@@ -13,6 +13,7 @@ import is.hello.sense.flows.home.ui.views.SoundsView;
 import is.hello.sense.ui.common.SubFragment;
 import is.hello.sense.ui.widget.SelectorView.OnSelectionChangedListener;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
 
 public class SoundsFragment extends BacksideTabFragment<SoundsView> implements OnSelectionChangedListener, SwipeRefreshLayout.OnRefreshListener {
@@ -22,6 +23,7 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
     @Inject
     SleepSoundsInteractor sleepSoundsInteractor;
 
+    @NonNull
     private Subscription sleepSoundsSubscription;
 
     @Override
@@ -74,9 +76,7 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
     public final void onUpdate() {
         presenterView.updated();
 
-        if (sleepSoundsSubscription != null) {
-            sleepSoundsSubscription.unsubscribe();
-        }
+        sleepSoundsSubscription.unsubscribe();
         sleepSoundsSubscription =
                 bind(sleepSoundsInteractor.showSleepSoundsTab()).subscribe(this::bind,
                                                                            this::presentError);
@@ -101,10 +101,9 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
     @Override
     protected void onRelease() {
         super.onRelease();
-        if (sleepSoundsSubscription != null) {
-            sleepSoundsSubscription.unsubscribe();
-            sleepSoundsSubscription = null;
-        }
+        sleepSoundsSubscription.unsubscribe();
+        sleepSoundsSubscription = Subscriptions.empty();
+
     }
 
     @Override

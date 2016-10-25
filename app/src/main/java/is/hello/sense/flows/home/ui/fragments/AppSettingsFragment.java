@@ -28,6 +28,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Share;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
 public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> implements
         AppSettingsView.ClickListenerGenerator {
@@ -39,7 +40,8 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     @Inject
     UserFeaturesInteractor userFeaturesInteractor;
 
-    private Subscription userFeaturesSubscription;
+    @NonNull
+    private Subscription userFeaturesSubscription = Subscriptions.empty();
 
 
     @Override
@@ -83,6 +85,7 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
 
         // If this preference is missing we need to query the server.
         if (!preferencesInteractor.contains(PreferencesInteractor.HAS_VOICE)) {
+            userFeaturesSubscription.unsubscribe();
             userFeaturesSubscription = bind(userFeaturesInteractor.featureSubject)
                     .subscribe(preferencesInteractor::setFeatures,
                                Functions.LOG_ERROR);
@@ -109,10 +112,8 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     @Override
     protected void onRelease() {
         super.onRelease();
-        if (userFeaturesSubscription != null) {
-            userFeaturesSubscription.unsubscribe();
-            userFeaturesSubscription = null;
-        }
+        userFeaturesSubscription.unsubscribe();
+        userFeaturesSubscription = Subscriptions.empty();
     }
 
     @Override
