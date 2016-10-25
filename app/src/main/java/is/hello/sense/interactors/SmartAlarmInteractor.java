@@ -61,7 +61,7 @@ public class SmartAlarmInteractor extends ValueInteractor<ArrayList<Alarm>> {
     @Override
     protected Observable<ArrayList<Alarm>> provideUpdateObservable() {
         return apiService.smartAlarms()
-                         .map(AlarmGroups::getClassic);
+                         .map(AlarmGroups::getAll); //todo check if expansions and voice enabled
     }
 
 
