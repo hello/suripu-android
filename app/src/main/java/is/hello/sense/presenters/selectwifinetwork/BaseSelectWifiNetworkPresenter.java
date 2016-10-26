@@ -79,6 +79,7 @@ public abstract class BaseSelectWifiNetworkPresenter
 
             return;
         }
+        view.showMacAddress(hardwareInteractor.showMacAddress());
 
         showHardwareActivity(() -> {
             logEvent("inside onComplete showHardwareActivity");
