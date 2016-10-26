@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_smart_alarm_detail_lights"
+    android:id="@+id/item_row_alarm_detail_expansion_container"
     android:layout_width="match_parent"
     android:layout_height="@dimen/smart_alarm_details_row_height"
     android:gravity="center_vertical"
     android:paddingLeft="@dimen/x3"
     android:paddingRight="@dimen/x3"
     android:orientation="horizontal"
-    android:background="@drawable/selectable_dark_bounded"
-    tools:showIn="@layout/fragment_smart_alarm_detail">
+    android:background="@drawable/selectable_dark_bounded">
 
     <TextView
+        android:id="@+id/item_row_alarm_detail_expansion_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/x1"
-        android:text="@string/title_lights"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:gravity="start|center_vertical"
         android:drawableStart="@drawable/icon_alarm_light"
@@ -28,7 +26,7 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/fragment_smart_alarm_detail_lights_value"
+            android:id="@+id/item_row_alarm_detail_expansion_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
@@ -40,7 +38,7 @@
             style="@style/AppTheme.Text.Body.MidSized"/>
 
         <ImageView
-            android:id="@+id/fragment_smart_alarm_detail_lights_error"
+            android:id="@+id/item_row_alarm_detail_expansion_error"
             android:src="@drawable/icon_warning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
