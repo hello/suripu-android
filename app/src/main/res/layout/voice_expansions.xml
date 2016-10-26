@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x1"
             android:gravity="center_horizontal"
-            android:text="Decrease the lights."/>
+            android:text="Brighten the lights."/>
 
         <TextView
             style="@style/Body.Dim"
