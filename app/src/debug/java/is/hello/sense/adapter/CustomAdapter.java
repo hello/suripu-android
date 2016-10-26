@@ -20,14 +20,20 @@ import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
  * todo rename this file
  */
 public class CustomAdapter extends ArrayRecyclerAdapter<Integer, CustomAdapter.BaseViewHolder> {
+    private static final long UPDATE_DURATION = 100; //ms
+
     private final LayoutInflater inflater;
-    final int min;
-    final int max;
-    int centerItemPosition = 0;
-    final int textSizeNormal;
-    final int textSizeLarge;
-    boolean animateAbove = false;
+    private final int min;
+    private final int max;
+
+    private final int textSizeNormal;
+    private final int textSizeLarge;
+
+    private int centerItemPosition = 0;
+    private boolean animateAbove = false;
     private TextView currentCenter;
+    private long lastUpdate = 0;
+
 
     public CustomAdapter(@NonNull final LayoutInflater inflater,
                          final int min,
@@ -65,6 +71,7 @@ public class CustomAdapter extends ArrayRecyclerAdapter<Integer, CustomAdapter.B
 
     public void setCenterItemPosition(final int position) {
         if (this.centerItemPosition == position) {
+            Log.e("Both", "Are: " + position);
             return;
         }
         Log.e("SetCenter", "Position: " + position);
@@ -73,7 +80,7 @@ public class CustomAdapter extends ArrayRecyclerAdapter<Integer, CustomAdapter.B
         }
         animateAbove = centerItemPosition > position;
         this.centerItemPosition = position;
-        notifyDataSetChanged();
+        notifyItemChanged(centerItemPosition);
     }
 
 
@@ -90,7 +97,7 @@ public class CustomAdapter extends ArrayRecyclerAdapter<Integer, CustomAdapter.B
         public void bind(final int position) {
             super.bind(position);
             if (position == centerItemPosition) {
-                Log.e("Animating", "Position: " + position);
+                //Log.e("Animating", "Position: " + position);
                 currentCenter = textView;
                 textView.setTextColor(Color.BLUE);
                 animateTextSize(textView, true);

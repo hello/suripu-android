@@ -3,6 +3,7 @@ package is.hello.sense.debug;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import is.hello.sense.R;
 import is.hello.sense.adapter.CustomAdapter;
