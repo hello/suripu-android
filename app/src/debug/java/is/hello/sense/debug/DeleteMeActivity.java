@@ -8,6 +8,8 @@ import android.util.Log;
 import is.hello.sense.R;
 import is.hello.sense.adapter.CustomAdapter;
 import is.hello.sense.ui.activities.SenseActivity;
+import is.hello.sense.ui.recycler.InsetItemDecoration;
+import is.hello.sense.ui.recycler.LastItemInsetDecoration;
 
 /**
  * Temporary activity to test the view.
@@ -17,7 +19,7 @@ import is.hello.sense.ui.activities.SenseActivity;
 public class DeleteMeActivity extends SenseActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_me);
 
@@ -26,22 +28,28 @@ public class DeleteMeActivity extends SenseActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
-        final CustomAdapter adapter = new CustomAdapter(getLayoutInflater(), 0, 100);
+        final CustomAdapter adapter = new CustomAdapter(getLayoutInflater(),
+                                                        9,
+                                                        34,
+                                                        "%");
         recyclerView.setAdapter(adapter);
-        layoutManager.scrollToPosition(Integer.MAX_VALUE / 2);
+        //layoutManager.scrollToPosition(Integer.MAX_VALUE / 2);
+        recyclerView.addItemDecoration(adapter.getDecorationWithInset());
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            public void onScrollStateChanged(final RecyclerView recyclerView, final int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
             }
 
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            public void onScrolled(final RecyclerView recyclerView,
+                                   final int dx,
+                                   final int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 final int firstPosition = layoutManager.findFirstVisibleItemPosition();
                 final int lastPosition = layoutManager.findLastVisibleItemPosition();
                 final int center = firstPosition + (lastPosition - firstPosition) / 2;
-                adapter.setCenterItemPosition(center);
+            //    adapter.setCenterItemPosition(center);
             }
         });
     }
