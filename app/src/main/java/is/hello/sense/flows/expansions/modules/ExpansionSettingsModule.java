@@ -16,6 +16,7 @@ import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionListFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionsAuthFragment;
+import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment;
 
@@ -47,6 +48,12 @@ public class ExpansionSettingsModule {
     @Singleton
     public ConfigurationsInteractor providesConfigurationsInteractor(@NonNull final ApiService apiService){
         return new ConfigurationsInteractor(apiService);
+    }
+
+    @Provides
+    @Singleton
+    public ExpansionCategoryFormatter providesExpansionCategoryFormatter(){
+        return new ExpansionCategoryFormatter();
     }
 
 }

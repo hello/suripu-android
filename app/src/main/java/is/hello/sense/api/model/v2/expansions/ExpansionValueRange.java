@@ -21,4 +21,15 @@ public class ExpansionValueRange extends ApiResponse {
         this.max = max;
     }
 
+    @Override
+    public String toString() {
+        return "ExpansionValueRange{" +
+                "min=" + min +
+                ", max=" + max +
+                '}';
+    }
+
+    public boolean hasSameValues() {
+        return min == max;
+    }
 }

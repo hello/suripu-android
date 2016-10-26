@@ -239,7 +239,7 @@ public class UnitFormatterTests extends InjectionTestCase {
         assertThat(unitFormatter.getSuffixForSensor(SensorType.SOUND),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_NOISE)));
         assertThat(unitFormatter.getSuffixForSensor(SensorType.HUMIDITY),
-                   is(equalTo(UnitFormatter.UNIT_SUFFIX_HUMIDITY)));
+                   is(equalTo(UnitFormatter.UNIT_SUFFIX_PERCENT)));
         assertThat(unitFormatter.getSuffixForSensor(SensorType.CO2),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_GAS)));
         assertThat(unitFormatter.getSuffixForSensor(SensorType.TVOC),

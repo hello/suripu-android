@@ -169,6 +169,7 @@ public class Alarm extends ApiResponse {
         return editable;
     }
 
+    @NonNull
     public List<ExpansionAlarm> getExpansions() {
         if (expansions == null) {
             expansions = new ArrayList<>();

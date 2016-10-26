@@ -40,6 +40,7 @@ import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.flows.expansions.interactors.ExpansionsInteractor;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionValuePickerActivity;
+import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
@@ -73,6 +74,8 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     SmartAlarmInteractor smartAlarmInteractor;
     @Inject
     ExpansionsInteractor expansionsInteractor;
+    @Inject
+    ExpansionCategoryFormatter expansionCategoryFormatter;
 
     private boolean dirty = false;
     private boolean wantsTone = false;
@@ -190,7 +193,11 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                          enabled -> {
                              if (enabled) {
                                  expansionLightsRow.setVisibility(View.VISIBLE);
-                                 expansionsInteractor.update();
+                                 if(alarm.getExpansions().isEmpty()) {
+                                     expansionsInteractor.update();
+                                 } else {
+                                     bindExpansionAlarms(alarm.getExpansions());
+                                 }
                              } else {
                                  expansionLightsRow.setVisibility(View.GONE);
                              }
@@ -224,10 +231,28 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                          Functions.LOG_ERROR);
     }
 
+    private void bindExpansionAlarms(@NonNull final List<ExpansionAlarm> expansionAlarms) {
+        for(final ExpansionAlarm expansionAlarm : expansionAlarms){
+            final String formattedExpansionValueRange = expansionCategoryFormatter.getFormattedValueRange(expansionAlarm.getCategory(),
+                                                                                                          expansionAlarm.expansionRange);
+            switch (expansionAlarm.getCategory()){
+                case LIGHT:
+                    showExpansionValue(formattedExpansionValueRange,
+                                       ignore -> redirectToExpansionPicker(expansionAlarm.getId(),
+                                                                           getString(expansionAlarm.getCategory().categoryDisplayString)));
+                    break;
+                case TEMPERATURE:
+                    //todo
+                    break;
+                default:
+                    showExpansionError();
+            }
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-        expansionsInteractor.update();
 
         if (getDetailActivity().skipUI()) {
             LoadingDialogFragment.show(getFragmentManager(),
@@ -370,7 +395,6 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                 switch (expansion.getState()) {
                     //todo handle case where selected value is returned
                     case CONNECTED_ON:
-
                         showExpansionValue(getString(R.string.smart_alarm_expansion_state_connected_on),
                                               ignored -> this.redirectToExpansionPicker(expansion.getId(),
                                                                                         getString(expansion.getCategory().categoryDisplayString))
