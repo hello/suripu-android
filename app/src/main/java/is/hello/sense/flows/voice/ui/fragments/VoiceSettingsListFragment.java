@@ -18,6 +18,7 @@ import is.hello.sense.interactors.CurrentSenseInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import rx.Observable;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
@@ -50,6 +51,7 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        showProgress(true);
         bindAndSubscribe(currentSenseInteractor.senseDevice,
                          this::bindSenseDevice,
                          this::presentError);
@@ -82,51 +84,53 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
         } else {
             presenterView.makeSecondaryUser(this::showPrimaryUserDialog);
         }
+        showProgress(false);
     }
 
     private void onMuteSwitchChanged(final CompoundButton ignored,
                                      final boolean isMuted) {
-        //todo without fake settings
-        updateSettings(new SenseVoiceSettings(100, isMuted, true));
+        updateSettings(settingsInteractor.setMuted(isMuted));
     }
 
     private void makePrimaryUser() {
-        //todo without fake settings
-        updateSettings(new SenseVoiceSettings(100, false, true));
+        updateSettings(settingsInteractor.setPrimaryUser(true));
     }
 
     private void showPrimaryUserDialog(final View ignored) {
         showAlertDialog(new SenseAlertDialog.Builder()
                                 .setTitle(R.string.voice_settings_primary_user_dialog_title)
                        .setMessage(R.string.voice_settings_primary_user_dialog_message)
-                       .setPositiveButton(R.string.voice_settings_primary_user_dialog_positive_button, this::makePrimaryUser));
+                       .setPositiveButton(R.string.voice_settings_primary_user_dialog_positive_button,
+                                          this::makePrimaryUser));
     }
 
-    private void updateSettings(@NonNull final SenseVoiceSettings newSettings) {
-        if(settingsInteractor.settingsSubject.hasValue()) {
-            showBlockingActivity(R.string.voice_settings_progress_updating); //todo use real copy
-            updateSettingsSubscription.unsubscribe();
-            updateSettingsSubscription = bind(settingsInteractor.setAndPoll(newSettings))
-                    .subscribe(Functions.NO_OP,
-                               this::presentError,
-                               () -> {
-                                   if(settingsInteractor.hasUpdatedTo(newSettings)){
-                                       hideBlockingActivity(true, null);
-                                   } else {
-                                       presentError(new Exception("changes were not saved. this is temporary copy."));
-                                       //todo reset ui by calling update again or allow onNext on final retry
-                                   }
-                               });
-        }
+    private void updateSettings(@NonNull final Observable<SenseVoiceSettings> updateObservable) {
+        showBlockingActivity(R.string.voice_settings_progress_updating); //todo use real copy
+        updateSettingsSubscription.unsubscribe();
+        updateSettingsSubscription = bind(updateObservable)
+                .subscribe(Functions.NO_OP,
+                           this::presentError,
+                           () -> hideBlockingActivity(true, null));
+
     }
 
     private void presentError(@NonNull final Throwable e) {
         //todo show proper dialog
-        hideBlockingActivity(false, null);
+        showProgress(false);
         showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e));
     }
 
     private void redirectToVolumeSelection(final View ignore) {
         finishFlowWithResult(RESULT_VOLUME_SELECTED);
+    }
+
+    private void showProgress(final boolean show) {
+        if(show){
+            presenterView.setVisibility(View.INVISIBLE);
+            showBlockingActivity(null);
+        } else {
+            hideBlockingActivity(false, null);
+            presenterView.setVisibility(View.VISIBLE);
+        }
     }
 }

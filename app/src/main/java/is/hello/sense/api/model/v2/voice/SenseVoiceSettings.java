@@ -1,10 +1,22 @@
 package is.hello.sense.api.model.v2.voice;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
+
 import com.google.gson.annotations.SerializedName;
 
 import is.hello.sense.api.model.ApiResponse;
 
 public class SenseVoiceSettings extends ApiResponse {
+
+    /**
+     * Difference tolerance in volume to be considered equal
+     */
+    @VisibleForTesting
+    public static final int VOLUME_EQUALS_THRESHOLD = 5;
+
+    public static final int TOTAL_VOLUME_LEVELS = 11;
+
     @SerializedName("volume")
     private int volume;
 
@@ -13,6 +25,12 @@ public class SenseVoiceSettings extends ApiResponse {
 
     @SerializedName("is_primary_user")
     private boolean isPrimaryUser;
+
+    public static SenseVoiceSettings newInstance(@NonNull final SenseVoiceSettings latestSettings) {
+        return new SenseVoiceSettings(latestSettings.volume,
+                                      latestSettings.isMuted,
+                                      latestSettings.isPrimaryUser);
+    }
 
     public SenseVoiceSettings(final int volume,
                               final boolean isMuted,
@@ -46,6 +64,10 @@ public class SenseVoiceSettings extends ApiResponse {
         isPrimaryUser = primaryUser;
     }
 
+    public boolean isWithinVolumeThreshold(final int otherVolume){
+        return Math.abs(volume - otherVolume) <= VOLUME_EQUALS_THRESHOLD;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
@@ -53,7 +75,7 @@ public class SenseVoiceSettings extends ApiResponse {
 
         final SenseVoiceSettings that = (SenseVoiceSettings) o;
 
-        if (volume != that.volume) return false;
+        if (!this.isWithinVolumeThreshold(that.volume)) return false;
         if (isMuted != that.isMuted) return false;
         return isPrimaryUser == that.isPrimaryUser;
 
