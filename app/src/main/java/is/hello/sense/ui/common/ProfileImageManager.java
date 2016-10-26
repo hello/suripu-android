@@ -7,10 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -110,10 +112,10 @@ public class ProfileImageManager {
         options.showAllowingStateLoss(fragment.getFragmentManager(), BottomSheetDialogFragment.TAG);
     }
 
-    public void hidePictureOptions(){
+    public void hidePictureOptions() {
         final BottomSheetDialogFragment options = (BottomSheetDialogFragment) fragment.getFragmentManager()
-                                                    .findFragmentByTag(BottomSheetDialogFragment.TAG);
-        if(options != null){
+                                                                                      .findFragmentByTag(BottomSheetDialogFragment.TAG);
+        if (options != null) {
             options.dismissSafely();
         }
     }
@@ -238,12 +240,21 @@ public class ProfileImageManager {
 
     private void handleCameraOption() {
         final File imageFile = imageUtil.createFile(false);
-        if (imageFile != null) {
-            saveSource(CAMERA);
-            final Uri takePhotoUri = Uri.fromFile(imageFile);
-            saveUri(takePhotoUri);
-            Fetch.imageFromCamera().to(fragment, takePhotoUri);
+        if (imageFile == null) {
+            return;
         }
+        saveSource(CAMERA);
+        final Uri takePhotoUri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // https://inthecheesefactory.com/blog/how-to-share-access-to-file-with-fileprovider-on-android-nougat/en
+            takePhotoUri = FileProvider.getUriForFile(fragment.getActivity(),
+                                                      fragment.getActivity().getApplicationContext().getPackageName() + ".provider",
+                                                      imageFile);
+        } else {
+            takePhotoUri = Uri.fromFile(imageFile);
+        }
+        saveUri(takePhotoUri);
+        Fetch.imageFromCamera().to(fragment, takePhotoUri);
     }
 
     private void handleGalleryOption() {
@@ -262,24 +273,26 @@ public class ProfileImageManager {
 
     //endregion
 
-    private void saveUri(@NonNull final Uri uri){
+    private void saveUri(@NonNull final Uri uri) {
         preferences.edit()
                    .putString(PHOTO_URI_KEY, uri.toString())
                    .apply();
     }
 
-    @NonNull private Uri getUri() {
+    @NonNull
+    private Uri getUri() {
         final String photoUriString = preferences.getString(PHOTO_URI_KEY, "");
         return photoUriString.isEmpty() ? Uri.EMPTY : Uri.parse(photoUriString);
     }
 
-    public void saveSource(@NonNull final Source source){
+    public void saveSource(@NonNull final Source source) {
         preferences.edit()
                    .putString(PHOTO_SOURCE_KEY, source.name())
                    .apply();
     }
 
-    @NonNull private Source getSource(){
+    @NonNull
+    private Source getSource() {
         final String value = preferences.getString(PHOTO_SOURCE_KEY, "");
         return Source.fromString(value);
     }
@@ -297,7 +310,7 @@ public class ProfileImageManager {
 
     private void compressImageError(@NonNull final Throwable e) {
         setShowOptions(true);
-        getListener().onImageCompressedError(e, R.string.error_account_upload_photo_title,  R.string.error_account_upload_photo_message);
+        getListener().onImageCompressedError(e, R.string.error_account_upload_photo_title, R.string.error_account_upload_photo_message);
     }
 
     private Listener getListener() {

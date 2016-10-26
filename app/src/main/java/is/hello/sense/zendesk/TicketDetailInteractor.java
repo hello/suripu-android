@@ -20,17 +20,24 @@ import is.hello.sense.graph.SafeObserverWrapper;
 import is.hello.sense.interactors.Interactor;
 import rx.Observable;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
 public class TicketDetailInteractor extends Interactor {
     // CommentsResponse doesn't implement Serializable,
     // so we can't use ValueInteractor<T>. Yay.
     public final InteractorSubject<CommentsResponse> comments = InteractorSubject.create();
 
-    @Inject Context context;
-    @Inject ApiService apiService;
+    @Inject
+    Context context;
+    @Inject
+    ApiService apiService;
 
-    private @Nullable RequestProvider requestProvider; // Cannot be initialized ahead of time.
-    private @Nullable Subscription updateSubscription;
+    private
+    @Nullable
+    RequestProvider requestProvider; // Cannot be initialized ahead of time.
+    private
+    @NonNull
+    Subscription updateSubscription = Subscriptions.empty();
     private String ticketId;
 
     //region Lifecycle
@@ -53,10 +60,8 @@ public class TicketDetailInteractor extends Interactor {
     //region Updating
 
     public void update() {
-        if (updateSubscription != null) {
-            updateSubscription.unsubscribe();
-            this.updateSubscription = null;
-        }
+        this.updateSubscription.unsubscribe();
+        this.updateSubscription = Subscriptions.empty();
 
         if (ticketId != null) {
             final Observable<CommentsResponse> updateObservable =
@@ -66,11 +71,12 @@ public class TicketDetailInteractor extends Interactor {
                         }
                         requestProvider.getComments(ticketId, callback);
                     });
+            this.updateSubscription.unsubscribe();
             this.updateSubscription = updateObservable.subscribe(new SafeObserverWrapper<>(comments));
         }
     }
 
-    public void setTicketId(@NonNull String ticketId) {
+    public void setTicketId(@NonNull final String ticketId) {
         this.ticketId = ticketId;
         update();
     }
@@ -80,7 +86,7 @@ public class TicketDetailInteractor extends Interactor {
 
     //region Submitting
 
-    public Observable<Comment> submitComment(@NonNull String text, @NonNull List<String> attachmentTokens) {
+    public Observable<Comment> submitComment(@NonNull final String text, @NonNull final List<String> attachmentTokens) {
         logEvent("submitComment()");
 
         return ZendeskHelper.doAction(context, apiService.getAccount(false), callback -> {

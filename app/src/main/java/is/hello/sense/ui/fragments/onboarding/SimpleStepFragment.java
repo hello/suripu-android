@@ -108,8 +108,10 @@ public final class SimpleStepFragment extends SenseFragment {
     public void onDestroyView() {
         super.onDestroyView();
 
-        stepView.destroy();
-        this.stepView = null;
+        if(this.stepView != null) {
+            this.stepView.destroy();
+            this.stepView = null;
+        }
     }
 
 

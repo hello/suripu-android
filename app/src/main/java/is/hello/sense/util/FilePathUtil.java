@@ -33,21 +33,22 @@ public class FilePathUtil {
     private static final Uri EMPTY_URI_STATE = Uri.EMPTY;
     private static final String EMPTY_URI_STATE_STRING = EMPTY_URI_STATE.toString();
 
-    public FilePathUtil(@NonNull final Context context){
+    public FilePathUtil(@NonNull final Context context) {
         this.context = context;
     }
 
-    public Uri getRealUriPath(@NonNull final Uri uri){
+    public Uri getRealUriPath(@NonNull final Uri uri) {
         return Uri.parse(getLocalPath(uri));
     }
 
-    public String getLocalPath(@NonNull final Uri uri){
-        if(uri.equals(EMPTY_URI_STATE)){
+    public String getLocalPath(@NonNull final Uri uri) {
+        if (uri.equals(EMPTY_URI_STATE)) {
             return uri.toString();
-        }
-        else if(apiLevel >= Build.VERSION_CODES.KITKAT){
+        } else if (apiLevel >= Build.VERSION_CODES.N) {
+            return getLocalPathApi24AndUp(uri);
+        } else if (apiLevel >= Build.VERSION_CODES.KITKAT) {
             return getLocalPathApi19AndUp(uri);
-        } else if(apiLevel >= Build.VERSION_CODES.HONEYCOMB){
+        } else if (apiLevel >= Build.VERSION_CODES.HONEYCOMB) {
             return getLocalPathApi18To11(uri);
         } else {
             throw new RuntimeException("unsupported api level" + apiLevel);
@@ -58,39 +59,41 @@ public class FilePathUtil {
      * This method is successful at fetching absolute paths of uri's that do not match
      * {@link DocumentsContract#isDocumentUri(Context, Uri)} format that API >= 19 expects
      * from {@link android.content.Intent#ACTION_OPEN_DOCUMENT}
+     *
      * @param uri
      * @return
      */
     private String getLocalPathApi18To11(@NonNull final Uri uri) {
         final String result;
-        final String[] proj = { MediaStore.Images.Media.DATA };
+        final String[] proj = {MediaStore.Images.Media.DATA};
 
         final CursorLoader cursorLoader = new CursorLoader(
                 context, uri, proj, null, null, null);
         final Cursor cursor = cursorLoader.loadInBackground();
 
-        if(cursor != null){
+        if (cursor != null) {
             final int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             cursor.moveToFirst();
             result = cursor.getString(column_index);
-        } else if(uri.isHierarchical()){
+        } else if (uri.isHierarchical()) {
             result = uri.getPath();
-        } else{
+        } else {
             result = uri.toString();
         }
         return result;
     }
 
     /**
-     *  Do not remove this method despite supporting only devices api 19+
-     *  Many times the uri is not {@link DocumentsContract#isDocumentUri(Context, Uri)}
-     *  and so {@link this#getLocalPathApi18To11(Uri)} will handle it.
+     * Do not remove this method despite supporting only devices api 19+
+     * Many times the uri is not {@link DocumentsContract#isDocumentUri(Context, Uri)}
+     * and so {@link this#getLocalPathApi18To11(Uri)} will handle it.
+     *
      * @param uri
      * @return
      */
-    private String getLocalPathApi19AndUp(@NonNull final Uri uri){
+    private String getLocalPathApi19AndUp(@NonNull final Uri uri) {
         String filePath = EMPTY_URI_STATE_STRING;
-        if(!DocumentsContract.isDocumentUri(context, uri)){
+        if (!DocumentsContract.isDocumentUri(context, uri)) {
             return getLocalPathApi18To11(uri);
         }
         final String wholeID = DocumentsContract.getDocumentId(uri);
@@ -99,14 +102,14 @@ public class FilePathUtil {
         // Ex "image:1999" => "1999" is what we want
         final String[] ids = {wholeID.split(":")[1]};
 
-        final String[] column = { MediaStore.Images.Media.DATA };
+        final String[] column = {MediaStore.Images.Media.DATA};
 
         // where id is equal to
         final String sel = MediaStore.Images.Media._ID + "=?";
 
         final Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                                                           column, sel, ids, null);
-        if(cursor == null) {
+                                                                 column, sel, ids, null);
+        if (cursor == null) {
             return uri.getPath();
         }
 
@@ -117,6 +120,10 @@ public class FilePathUtil {
         }
         cursor.close();
         return filePath;
+    }
+
+    private String getLocalPathApi24AndUp(@NonNull final Uri uri) {
+        return new File(uri.getPath()).getPath();
     }
 
     public boolean isFoundOnDevice(@Nullable final String filePath) {
@@ -137,7 +144,7 @@ public class FilePathUtil {
     public static String getPath(final Context context, final Uri uri) {
 
         if (BuildConfig.DEBUG)
-            Log.d( " File -",
+            Log.d(" File -",
                   "Authority: " + uri.getAuthority() +
                           ", Fragment: " + uri.getFragment() +
                           ", Port: " + uri.getPort() +
@@ -224,6 +231,7 @@ public class FilePathUtil {
     public static boolean isDownloadsDocument(Uri uri) {
         return "com.android.providers.downloads.documents".equals(uri.getAuthority());
     }
+
     /**
      * @param uri The Uri to check.
      * @return Whether the Uri authority is MediaProvider.

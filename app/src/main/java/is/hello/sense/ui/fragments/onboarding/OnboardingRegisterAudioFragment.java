@@ -54,8 +54,10 @@ public class OnboardingRegisterAudioFragment extends BaseHardwareFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        this.view.destroy();
-        this.view = null;
+        if(this.view != null) {
+            this.view.destroy();
+            this.view = null;
+        }
     }
 
     public void optIn(@NonNull View sender) {

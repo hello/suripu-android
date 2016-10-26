@@ -17,7 +17,7 @@ import javax.inject.Inject;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.interactors.SensorResponseInteractor;
+import is.hello.sense.flows.home.interactors.SensorResponseInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.common.InjectionFragment;

@@ -43,7 +43,7 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.QuestionsInteractor;
 import is.hello.sense.interactors.questions.ReviewQuestionProvider;
 import is.hello.sense.rating.LocalUsageTracker;
-import is.hello.sense.ui.activities.HomeActivity;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.adapter.ParallaxRecyclerScrollListener;

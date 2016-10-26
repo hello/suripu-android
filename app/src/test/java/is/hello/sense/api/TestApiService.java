@@ -65,6 +65,7 @@ import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
+import is.hello.sense.api.model.v2.voice.SenseVoiceSettings;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.util.Logger;
@@ -470,6 +471,17 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<SenseDevice.SwapResponse> swapDevices(@NonNull @Body final SenseDevice.SwapRequest oldSenseId) {
         return loadResponse("swap_sense_"+oldSenseId.senseId, new TypeToken<SenseDevice.SwapResponse>(){}.getType());
+    }
+
+    @Override
+    public Observable<SenseVoiceSettings> getVoiceSettings(@Path("id") @NonNull final String senseId) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<VoidResponse> setVoiceSettings(@Path("id") @NonNull final String senseId,
+                                                           @Body final SenseVoiceSettings settings) {
+        return unimplemented();
     }
 
     @Override
