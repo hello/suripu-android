@@ -77,11 +77,10 @@
 
         <TextView
             android:id="@+id/view_voice_settings_list_primary_user_value_tv"
-            style="@style/AppTheme.Text.Body.Dim"
+            style="@style/AppTheme.Text.Body.Link"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            android:drawableEnd="@drawable/disclosure_chevron_small"
             android:drawablePadding="@dimen/x1"
             android:visibility="visible"/>
 

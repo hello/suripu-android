@@ -20,8 +20,6 @@ public class VoiceSettingsListView extends PresenterView {
     private final TextView volumeValueTextView;
     private final CompoundButton muteSwitch;
     private final TextView primaryUserValueTextView;
-    private final Drawable chevronDrawable;
-    private final int chevronPadding;
 
     public VoiceSettingsListView(@NonNull final Activity activity) {
         super(activity);
@@ -29,8 +27,6 @@ public class VoiceSettingsListView extends PresenterView {
         this.volumeValueTextView = (TextView) findViewById(R.id.view_voice_settings_list_volume_value_tv);
         this.muteSwitch = (CompoundButton) findViewById(R.id.view_voice_settings_mute_switch);
         this.primaryUserValueTextView = (TextView) findViewById(R.id.view_voice_settings_list_primary_user_value_tv);
-        this.chevronDrawable = ContextCompat.getDrawable(context, R.drawable.disclosure_chevron_small);
-        this.chevronPadding = getResources().getDimensionPixelSize(R.dimen.x1);
     }
 
     @Override
@@ -68,7 +64,7 @@ public class VoiceSettingsListView extends PresenterView {
     public void makePrimaryUser() {
         primaryUserValueTextView.setOnClickListener(null);
         primaryUserValueTextView.setText(R.string.voice_settings_primary_user_true);
-        primaryUserValueTextView.setCompoundDrawables(null, null, null, null);
+        primaryUserValueTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
         primaryUserValueTextView.setEnabled(false);
         this.primaryUserValueTextView.setVisibility(VISIBLE);
     }
@@ -77,8 +73,7 @@ public class VoiceSettingsListView extends PresenterView {
         primaryUserValueTextView.setOnClickListener(listener);
         primaryUserValueTextView.setText(R.string.voice_settings_primary_user_false);
         primaryUserValueTextView.setEnabled(true);
-        primaryUserValueTextView.setCompoundDrawables(null, null, chevronDrawable, null);
-        primaryUserValueTextView.setCompoundDrawablePadding(chevronPadding);
+        primaryUserValueTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.disclosure_chevron_small, 0);
         this.primaryUserValueTextView.setVisibility(VISIBLE);
     }
 }
