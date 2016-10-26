@@ -7,9 +7,9 @@ import android.view.View;
 
 import javax.inject.Inject;
 
+import is.hello.sense.flows.home.ui.views.SoundsView;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SleepSoundsInteractor;
-import is.hello.sense.flows.home.ui.views.SoundsView;
 import is.hello.sense.ui.common.SubFragment;
 import is.hello.sense.ui.widget.SelectorView.OnSelectionChangedListener;
 import rx.Subscription;
@@ -24,7 +24,7 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
     SleepSoundsInteractor sleepSoundsInteractor;
 
     @NonNull
-    private Subscription sleepSoundsSubscription;
+    private Subscription sleepSoundsSubscription = Subscriptions.empty();
 
     @Override
     public final void initializePresenterView() {
