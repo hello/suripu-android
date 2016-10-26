@@ -1,11 +1,10 @@
 package is.hello.sense.adapter;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
-import is.hello.sense.ui.widget.util.Styles;
 
 
 /**
@@ -27,16 +25,17 @@ public class CustomAdapter extends ArrayRecyclerAdapter<Integer, CustomAdapter.B
     private static final float MIN_SCALE = 0.7f;
     private static final float MAX_SCALE = 1.5f;
 
-    private static final float MIN_ALPHA = 0.4f;
+    private static final float MIN_ALPHA = 0.2f;
     private static final float MAX_ALPHA = 1f;
 
     private final LayoutInflater inflater;
     private final int min;
     private final int difference;
     private final String symbol;
+    private final int selectedColor;
+    private final int normalColor;
 
-    private final int textSizeNormal;
-    private final int textSizeLarge;
+
     private int currentCenter;
 
     public CustomAdapter(@NonNull final LayoutInflater inflater,
@@ -46,10 +45,10 @@ public class CustomAdapter extends ArrayRecyclerAdapter<Integer, CustomAdapter.B
         super(new ArrayList<>());
         this.inflater = inflater;
         this.min = min;
-        this.textSizeNormal = Styles.pxToDp(inflater.getContext().getResources().getDimensionPixelSize(R.dimen.text_h3));
-        this.textSizeLarge = Styles.pxToDp(inflater.getContext().getResources().getDimensionPixelSize(R.dimen.text_h1));
         this.difference = max - min + 1;
         this.symbol = symbol;
+        this.selectedColor = ContextCompat.getColor(this.inflater.getContext(), R.color.primary);
+        this.normalColor = ContextCompat.getColor(this.inflater.getContext(), R.color.standard);
         notifyDataSetChanged();
     }
 
@@ -84,16 +83,15 @@ public class CustomAdapter extends ArrayRecyclerAdapter<Integer, CustomAdapter.B
         public BaseViewHolder(@NonNull final View itemView) {
             super(itemView);
             this.textView = (TextView) itemView.findViewById(R.id.custom_item_text);
-            textView.setTextSize(textSizeNormal);
         }
 
         @Override
         public void bind(final int position) {
             super.bind(position);
             if (currentCenter == position) {
-                textView.setTextColor(Color.BLUE);
+                textView.setTextColor(selectedColor);
             } else {
-                textView.setTextColor(Color.BLACK);
+                textView.setTextColor(normalColor);
             }
             textView.setText(inflater.getContext()
                                      .getResources()
@@ -104,11 +102,13 @@ public class CustomAdapter extends ArrayRecyclerAdapter<Integer, CustomAdapter.B
 
 
     /**
-     * This is unique to this adapter. Up to you if you want to move it to the decoration
-     * folder.
+     * This is unique to this adapter. The decoration is currently responsible for deciding what
+     * the selected value is since it's measuring the distance of each item relative to the center
+     * of the parent.
+     * <p>
+     * todo Rename this with CustomAdapter
      */
     public class CustomInsetDecoration extends RecyclerView.ItemDecoration {
-
 
         @Override
         public void getItemOffsets(final Rect outRect,
@@ -129,30 +129,27 @@ public class CustomAdapter extends ArrayRecyclerAdapter<Integer, CustomAdapter.B
                            final RecyclerView parent,
                            final RecyclerView.State state) {
             super.onDraw(c, parent, state);
-            final float recyclerCenter = parent.getHeight() / 2f;
+            final float recyclerCenter = parent.getHeight() / 2;
             float greatestDistance = 0;
             int tempCenter = 0;
             for (int i = 0, size = parent.getChildCount(); i < size; i++) {
                 final View child = parent.getChildAt(i);
-
-                final float childCenter = (child.getTop() + child.getBottom()) / 2f;
+                final float childCenter = (child.getTop() + child.getBottom()) / 2;
                 final float distanceAmount = 1f - Math.abs((childCenter - recyclerCenter) / recyclerCenter);
                 final float childScale = Anime.interpolateFloats(distanceAmount, MIN_SCALE, MAX_SCALE);
+                final float childAlpha = Anime.interpolateFloats(distanceAmount, MIN_ALPHA, MAX_ALPHA);
                 child.setScaleX(childScale);
                 child.setScaleY(childScale);
-                final float childAlpha = Anime.interpolateFloats(distanceAmount, MIN_ALPHA, MAX_ALPHA);
                 child.setAlpha(childAlpha);
-
                 if (distanceAmount > greatestDistance) {
                     greatestDistance = distanceAmount;
                     tempCenter = parent.getChildAdapterPosition(child);
                 }
             }
-            int oldCenter = currentCenter;
+            final int oldCenter = currentCenter;
             currentCenter = tempCenter;
             notifyItemChanged(oldCenter);
             notifyItemChanged(currentCenter);
-            Log.e("Current Center", currentCenter + ". Value: " + getItem(currentCenter));
         }
     }
 }
