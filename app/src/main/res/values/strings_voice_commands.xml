@@ -7,5 +7,5 @@
     <string name="voice_rc_title">Room Conditions</string>
     <string name="voice_rc_message">\"What is the temperature?\"</string>
     <string name="voice_expansion_title">Expansions</string>
-    <string name="voice_expansion_message">\"Turn the light on.\"</string>
+    <string name="voice_expansion_message">\"Turn the lights on.\"</string>
 </resources>
