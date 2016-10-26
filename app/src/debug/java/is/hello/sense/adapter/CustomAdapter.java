@@ -1,7 +1,6 @@
 package is.hello.sense.adapter;
 
-import android.graphics.Canvas;
-import android.graphics.Rect;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -12,38 +11,35 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 
 
 /**
- * todo rename this file
+ * todo rename this file and move to correct flow package
  */
 public class CustomAdapter extends ArrayRecyclerAdapter<Integer, CustomAdapter.BaseViewHolder> {
-
-    private static final float MIN_SCALE = 0.7f;
-    private static final float MAX_SCALE = 1.5f;
-
-    private static final float MIN_ALPHA = 0.2f;
-    private static final float MAX_ALPHA = 1f;
-
     private final LayoutInflater inflater;
+    private final String symbol;
     private final int min;
     private final int difference;
-    private final String symbol;
     private final int selectedColor;
     private final int normalColor;
 
+    private int selectedPosition = RecyclerView.NO_POSITION;
 
-    private int currentCenter;
-
-    public CustomAdapter(@NonNull final LayoutInflater inflater,
+    /**
+     * @param context
+     * @param min     min value to display
+     * @param max     max value to display
+     * @param symbol  symbol to display next to each value.
+     */
+    public CustomAdapter(@NonNull final Context context,
                          final int min,
                          final int max,
                          final String symbol) {
         super(new ArrayList<>());
-        this.inflater = inflater;
+        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.min = min;
         this.difference = max - min + 1;
         this.symbol = symbol;
@@ -72,10 +68,20 @@ public class CustomAdapter extends ArrayRecyclerAdapter<Integer, CustomAdapter.B
         holder.bind(position);
     }
 
-    public CustomInsetDecoration getDecorationWithInset() {
-        return new CustomInsetDecoration();
+    public void setSelectedPosition(final int selectedPosition) {
+        final int oldPosition = this.selectedPosition;
+        this.selectedPosition = selectedPosition;
+        notifyItemChanged(oldPosition);
+        notifyItemChanged(this.selectedPosition);
     }
 
+    /**
+     * This is not the index position. This is the value the user see's
+     * @return the value the user see's.
+     */
+    public int getSelectedValue() {
+        return getItem(this.selectedPosition);
+    }
 
     public class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder {
         private final TextView textView;
@@ -88,7 +94,7 @@ public class CustomAdapter extends ArrayRecyclerAdapter<Integer, CustomAdapter.B
         @Override
         public void bind(final int position) {
             super.bind(position);
-            if (currentCenter == position) {
+            if (selectedPosition == position) {
                 textView.setTextColor(selectedColor);
             } else {
                 textView.setTextColor(normalColor);
@@ -97,59 +103,6 @@ public class CustomAdapter extends ArrayRecyclerAdapter<Integer, CustomAdapter.B
                                      .getResources()
                                      .getString(R.string.custom_adapter_item,
                                                 getItem(position), symbol));
-        }
-    }
-
-
-    /**
-     * This is unique to this adapter. The decoration is currently responsible for deciding what
-     * the selected value is since it's measuring the distance of each item relative to the center
-     * of the parent.
-     * <p>
-     * todo Rename this with CustomAdapter
-     */
-    public class CustomInsetDecoration extends RecyclerView.ItemDecoration {
-
-        @Override
-        public void getItemOffsets(final Rect outRect,
-                                   final View view,
-                                   final RecyclerView parent,
-                                   final RecyclerView.State state) {
-            final int padding = parent.getMeasuredHeight() / 2;
-            final int position = parent.getChildAdapterPosition(view);
-            if (position == 0) {
-                outRect.top += padding;
-            } else if (position == getItemCount() - 1) {
-                outRect.bottom += padding;
-            }
-        }
-
-        @Override
-        public void onDraw(final Canvas c,
-                           final RecyclerView parent,
-                           final RecyclerView.State state) {
-            super.onDraw(c, parent, state);
-            final float recyclerCenter = parent.getHeight() / 2;
-            float greatestDistance = 0;
-            int tempCenter = 0;
-            for (int i = 0, size = parent.getChildCount(); i < size; i++) {
-                final View child = parent.getChildAt(i);
-                final float childCenter = (child.getTop() + child.getBottom()) / 2;
-                final float distanceAmount = 1f - Math.abs((childCenter - recyclerCenter) / recyclerCenter);
-                final float childScale = Anime.interpolateFloats(distanceAmount, MIN_SCALE, MAX_SCALE);
-                final float childAlpha = Anime.interpolateFloats(distanceAmount, MIN_ALPHA, MAX_ALPHA);
-                child.setScaleX(childScale);
-                child.setScaleY(childScale);
-                child.setAlpha(childAlpha);
-                if (distanceAmount > greatestDistance) {
-                    greatestDistance = distanceAmount;
-                    tempCenter = parent.getChildAdapterPosition(child);
-                }
-            }
-            final int oldCenter = currentCenter;
-            currentCenter = tempCenter;
-            notifyItemChanged(oldCenter);
-            notifyItemChanged(currentCenter);
         }
     }
 }
