@@ -34,7 +34,8 @@
     <dimen name="x5">40dp</dimen>
     <dimen name="x6">48dp</dimen>
     <dimen name="x7">56dp</dimen>
-
+    <dimen name="x8">64dp</dimen>
+    <dimen name="x9">72dp</dimen>
 
     <dimen name="text_body">15sp</dimen>
     <dimen name="text_h1">64sp</dimen>
@@ -172,6 +173,7 @@
     <dimen name="sense_voice_fixed_margin">36px</dimen>
 
     <dimen name="expansion_icon_min_size">60dp</dimen>
+    <dimen name="expansion_detail_row_height">@dimen/x9</dimen>
     <!-- px not typo -->
 
     <!-- Graphs -->

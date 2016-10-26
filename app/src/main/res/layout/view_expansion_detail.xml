@@ -8,12 +8,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="@dimen/x2">
+        android:paddingTop="@dimen/x2">
 
         <RelativeLayout
             android:id="@+id/view_expansion_detail_info_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/x2"
+            android:paddingEnd="@dimen/x2">
 
             <ImageView
                 android:id="@+id/view_expansion_detail_icon"
@@ -52,6 +54,7 @@
                 style="@style/AppTheme.Button.Rounded"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/x2"
                 android:layout_alignParentBottom="true"
                 android:text="@string/action_connect"
                 android:visibility="gone"/>
@@ -61,17 +64,18 @@
             android:id="@+id/view_expansion_detail_connected_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:divider="@drawable/divider_horizontal_inset"
+            android:divider="@drawable/divider_horizontal"
             android:gravity="bottom"
             android:orientation="vertical"
             android:showDividers="middle"
             android:visibility="gone">
 
-            <FrameLayout
+            <LinearLayout
                 android:id="@+id/view_expansion_detail_enabled_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/expansion_detail_row_height"
                 android:background="@drawable/selectable_dark_bounded"
+                android:gravity="center_vertical"
                 android:padding="@dimen/x2"
                 android:visibility="gone">
 
@@ -80,25 +84,26 @@
                     style="@style/AppTheme.Text.Body.New"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="start|center_vertical"
                     android:drawableEnd="@drawable/info_button_icon_small"
                     android:drawablePadding="@dimen/x1"
                     android:gravity="center"
                     android:text="@string/title_enabled"/>
 
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+
                 <include
                     android:id="@+id/view_expansion_detail_configuration_selection_switch"
-                    layout="@layout/widget_switch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="end|center_vertical"/>
+                    layout="@layout/widget_switch"/>
 
-            </FrameLayout>
+            </LinearLayout>
 
             <FrameLayout
                 android:id="@+id/view_expansion_detail_configuration_selection_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/expansion_detail_row_height"
                 android:background="@drawable/selectable_dark_bounded"
                 android:padding="@dimen/x2">
 
@@ -138,7 +143,8 @@
             <LinearLayout
                 android:id="@+id/view_expansion_detail_remove_access_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/expansion_detail_row_height"
+                android:gravity="center_vertical"
                 android:background="@drawable/selectable_dark_bounded"
                 android:padding="@dimen/x2">
 
