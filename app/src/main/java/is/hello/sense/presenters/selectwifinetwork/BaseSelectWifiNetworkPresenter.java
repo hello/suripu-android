@@ -48,13 +48,19 @@ public abstract class BaseSelectWifiNetworkPresenter
     }
 
     @SuppressWarnings("unused")
-    public void onRescanButtonClicked(@Nullable final View clickedView){
+    public void onRescanButtonClicked(@Nullable final View clickedView) {
         sendOnRescanAnalytics();
         rescan(true);
     }
 
+    @Override
+    public void onViewCreated() {
+        super.onViewCreated();
+        view.showMacAddress(hardwareInteractor.showMacAddress());
+    }
+
     protected void rescan(final boolean sendCountryCode) {
-        execute( () -> view.showScanning());
+        execute(() -> view.showScanning());
         if (!hardwareInteractor.hasPeripheral()) {
             bindAndSubscribe(hardwareInteractor.rediscoverLastPeripheral(),
                              ignored -> rescan(sendCountryCode),
@@ -73,6 +79,7 @@ public abstract class BaseSelectWifiNetworkPresenter
 
             return;
         }
+        view.showMacAddress(hardwareInteractor.showMacAddress());
 
         showHardwareActivity(() -> {
             logEvent("inside onComplete showHardwareActivity");
@@ -103,13 +110,14 @@ public abstract class BaseSelectWifiNetworkPresenter
         }, null);
     }
 
-    private void presentErrorDialog(@NonNull final Throwable e, final String operation){
+    private void presentErrorDialog(@NonNull final Throwable e, final String operation) {
         final ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(e);
         builder.withOperation(operation);
         view.showErrorDialog(builder);
     }
 
     public interface Output extends BaseOutput {
+        void showMacAddress(String macAddress);
 
         void showScanning();
 
