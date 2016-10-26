@@ -65,6 +65,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     private static final int TIME_REQUEST_CODE = 0x747;
     private static final int SOUND_REQUEST_CODE = 0x50;
     private static final int REPEAT_REQUEST_CODE = 0x59;
+    private static final int EXPANSION_VALUE_REQUEST_CODE = 0x69;
 
     @Inject
     DateFormatter dateFormatter;
@@ -239,7 +240,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                 case LIGHT:
                     showExpansionValue(formattedExpansionValueRange,
                                        ignore -> redirectToExpansionPicker(expansionAlarm.getId(),
-                                                                           getString(expansionAlarm.getCategory().categoryDisplayString)));
+                                                                           expansionAlarm.getCategory()));
                     break;
                 case TEMPERATURE:
                     //todo
@@ -289,6 +290,10 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             final List<Integer> selectedDays = data.getIntegerArrayListExtra(ListActivity.VALUE_ID);
             alarm.setDaysOfWeek(selectedDays);
             repeatDays.setText(alarm.getRepeatSummary(getActivity(), false));
+            markDirty();
+        } else if (requestCode == EXPANSION_VALUE_REQUEST_CODE) {
+            //todo handle should expect to return an ExpansionAlarm object to be able to update alarm expansions.
+            final ExpansionAlarm expansionAlarm = (ExpansionAlarm) data.getSerializableExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM);
             markDirty();
         }
     }
@@ -397,7 +402,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                     case CONNECTED_ON:
                         showExpansionValue(getString(R.string.smart_alarm_expansion_state_connected_on),
                                               ignored -> this.redirectToExpansionPicker(expansion.getId(),
-                                                                                        getString(expansion.getCategory().categoryDisplayString))
+                                                                                        expansion.getCategory())
                                           );
                         break;
                     case CONNECTED_OFF:
@@ -413,14 +418,17 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     private void redirectToExpansionPicker(final long expansionId,
-                                           final String expansionCategory) {
-        startActivity(ExpansionValuePickerActivity.getExpansionDetailIntent(getActivity(),
-                                                                            expansionId,
-                                                                            expansionCategory));
+                                           @NonNull final Category expansionCategory) {
+        startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
+                                                                      expansionId,
+                                                                      expansionCategory),
+                               EXPANSION_VALUE_REQUEST_CODE);
     }
 
     private void redirectToExpansionDetail(final long expansionId) {
-        startActivity(ExpansionSettingsActivity.getExpansionDetailIntent(getActivity(), expansionId));
+        startActivityForResult(ExpansionSettingsActivity.getExpansionDetailIntent(getActivity(),
+                                                                                  expansionId),
+                               EXPANSION_VALUE_REQUEST_CODE);
     }
 
     private void bindExpansionsThrowable(@NonNull final Throwable throwable) {
@@ -477,10 +485,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                                    @NonNull final View.OnClickListener listener) {
         this.expansionLightsValue.setVisibility(View.VISIBLE);
         this.expansionLightsValue.setText(state);
-        Views.setSafeOnClickListener(this.expansionLightsValue, lightsValueView -> {
-            markDirty();
-            listener.onClick(lightsValueView);
-        });
+        Views.setSafeOnClickListener(this.expansionLightsValue, listener);
     }
 
     //end region

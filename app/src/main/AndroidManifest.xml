@@ -142,7 +142,7 @@
 
         <activity android:name=".flows.expansions.ui.activities.ExpansionValuePickerActivity"
                   android:theme="@style/AppTheme.Expansions"
-                  android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+                  android:parentActivityName=".ui.activities.SmartAlarmDetailActivity"/>
 
         <activity
             xmlns:tools="http://schemas.android.com/tools"
