@@ -29,8 +29,7 @@ public class UnitFormatter extends Interactor {
     public static final String UNIT_SUFFIX_NOISE = "dB";
     public static final String UNIT_SUFFIX_GAS = "ppm";
     public static final String UNIT_SUFFIX_LIGHT_TEMPERATURE = "k";
-    public static final String UNIT_SUFFIX_KELVIN = "k";
-    public static final String UNIT_SUFFIX_PRESSURE = "mBar";
+    public static final String UNIT_SUFFIX_PRESSURE = "mbar";
 
 
     // Used by PreferencesInteractor
@@ -140,10 +139,9 @@ public class UnitFormatter extends Interactor {
                 return UNIT_SUFFIX_AIR_QUALITY;
             case LIGHT_TEMPERATURE:
                 return UNIT_SUFFIX_LIGHT_TEMPERATURE;
-            case UV:
-                return UNIT_SUFFIX_KELVIN;
             case PRESSURE:
                 return UNIT_SUFFIX_PRESSURE;
+            case UV:
             case UNKNOWN:
             default:
                 return Constants.EMPTY_STRING;
