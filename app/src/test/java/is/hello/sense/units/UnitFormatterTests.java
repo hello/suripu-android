@@ -246,7 +246,7 @@ public class UnitFormatterTests extends InjectionTestCase {
         assertThat(unitFormatter.getSuffixForSensor(SensorType.TVOC),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_AIR_QUALITY)));
         assertThat(unitFormatter.getSuffixForSensor(SensorType.UV),
-                   is(equalTo(Constants.EMPTY_STRING));
+                   is(equalTo(Constants.EMPTY_STRING)));
         assertThat(unitFormatter.getSuffixForSensor(SensorType.LIGHT_TEMPERATURE),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_LIGHT_TEMPERATURE)));
         assertThat(unitFormatter.getSuffixForSensor(SensorType.PRESSURE),
