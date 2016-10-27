@@ -13,8 +13,8 @@ import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.interactors.pairsense.PairSenseInteractor;
 import is.hello.sense.ui.common.UserSupport;
@@ -36,11 +36,11 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
 
 
     public PairSensePresenter(final HardwareInteractor hardwareInteractor,
-                              final UserFeaturesInteractor userFeaturesInteractor,
+                              final DevicesInteractor devicesInteractor,
                               final ApiService apiService,
                               final PairSenseInteractor pairSenseInteractor,
                               final PreferencesInteractor preferencesInteractor) {
-        super(hardwareInteractor, userFeaturesInteractor, apiService, pairSenseInteractor,preferencesInteractor);
+        super(hardwareInteractor, devicesInteractor, apiService, pairSenseInteractor,preferencesInteractor);
     }
 
     @StringRes
