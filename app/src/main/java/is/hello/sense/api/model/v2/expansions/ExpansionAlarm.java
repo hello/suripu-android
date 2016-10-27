@@ -1,11 +1,10 @@
 package is.hello.sense.api.model.v2.expansions;
 
-import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
-import is.hello.sense.api.gson.Exclude;
 import is.hello.sense.api.model.ApiResponse;
 
 /**
@@ -28,10 +27,11 @@ public class ExpansionAlarm extends ApiResponse {
     @SerializedName("target_value")
     public final ExpansionValueRange expansionRange;
 
-    @Exclude
+    //@Exclude
     private String displayValue = "empty value";
-    @Exclude
-    private Drawable displayIcon = null;
+    //@Exclude
+    @DrawableRes
+    private int displayIcon;
 
     public ExpansionAlarm(final long id,
                           @NonNull final Category category,
@@ -78,14 +78,15 @@ public class ExpansionAlarm extends ApiResponse {
     }
 
     public void setDisplayValue(@NonNull final String displayValue){
-        this.displayValue = displayValue;
+       this.displayValue = displayValue;
     }
 
-    public Drawable getDisplayIcon() {
+    @DrawableRes
+    public int getDisplayIcon() {
         return displayIcon;
     }
 
-    public void setDisplayIcon(@NonNull final Drawable displayIcon) {
-        this.displayIcon = displayIcon;
+    public void setDisplayIcon(@DrawableRes final int displayIcon) {
+       this.displayIcon = displayIcon;
     }
 }

@@ -1,9 +1,7 @@
 package is.hello.sense.flows.expansions.utils;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Category;
@@ -35,14 +33,15 @@ public class ExpansionCategoryFormatter {
         }
     }
 
-    public Drawable getDisplayIcon(@NonNull final Category category, @NonNull final Context context) {
+    @DrawableRes
+    public int getDisplayIconRes(@NonNull final Category category) {
         switch (category){
             case LIGHT:
-                return ContextCompat.getDrawable(context, R.drawable.icon_alarm_light);
+                return R.drawable.icon_alarm_light;
             case TEMPERATURE:
-                return ContextCompat.getDrawable(context, R.drawable.icon_alarm_light);
+                return R.drawable.icon_alarm_light;
             default:
-                return ContextCompat.getDrawable(context, R.drawable.error_white);
+                return R.drawable.error_white;
         }
     }
 }

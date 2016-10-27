@@ -17,13 +17,15 @@
         android:layout_marginEnd="@dimen/x1"
         android:textAppearance="@style/AppTheme.Text.Body"
         android:gravity="start|center_vertical"
+        android:layout_gravity="center_vertical"
+        android:text="Lights"
         android:drawableStart="@drawable/icon_alarm_light"
         android:drawablePadding="@dimen/x3"/>
 
     <FrameLayout
         android:gravity="center_vertical|end"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/item_row_alarm_detail_expansion_value"

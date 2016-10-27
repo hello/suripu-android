@@ -53,6 +53,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
+import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Drawing;
@@ -168,6 +169,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
         expansionAlarmsRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_smart_alarm_detail_expansion_rv);
         expansionAlarmsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        expansionAlarmsRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
         expansionAlarmsRecyclerView.setNestedScrollingEnabled(false);
         expansionAlarmsRecyclerView.setHasFixedSize(false);
 
@@ -241,8 +243,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             final String formattedExpansionValueRange = expansionCategoryFormatter.getFormattedValueRange(expansionAlarm.getCategory(),
                                                                                                           expansionAlarm.expansionRange);
             expansionAlarm.setDisplayValue(formattedExpansionValueRange);
-            expansionAlarm.setDisplayIcon(expansionCategoryFormatter.getDisplayIcon(expansionAlarm.getCategory(),
-                                                                                    getActivity()));
+            expansionAlarm.setDisplayIcon(expansionCategoryFormatter.getDisplayIconRes(expansionAlarm.getCategory()));
         }
 
         expansionAlarmsAdapter.replaceAll(expansionAlarms);
@@ -403,7 +404,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         for (final Expansion expansion : expansions) {
 
             final ExpansionAlarm expansionAlarm = new ExpansionAlarm(expansion);
-            expansionAlarm.setDisplayIcon(expansionCategoryFormatter.getDisplayIcon(expansionAlarm.getCategory(), getActivity()));
+            expansionAlarm.setDisplayIcon(expansionCategoryFormatter.getDisplayIconRes(expansionAlarm.getCategory()));
             switch (expansion.getState()) {
                 case CONNECTED_ON:
                     expansionAlarm.setDisplayValue(getString(R.string.smart_alarm_expansion_state_connected_on));

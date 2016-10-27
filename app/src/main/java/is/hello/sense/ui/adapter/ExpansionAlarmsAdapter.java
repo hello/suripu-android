@@ -1,6 +1,7 @@
 package is.hello.sense.ui.adapter;
 
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,8 +59,12 @@ public class ExpansionAlarmsAdapter extends ArrayRecyclerAdapter<ExpansionAlarm,
             if(expansionAlarm != null) {
                 this.errorImageView.setVisibility(View.GONE);
                 this.valueTextView.setVisibility(View.VISIBLE);
-                this.categoryNameTextView.setCompoundDrawables(null, expansionAlarm.getDisplayIcon(), null, null);
-                //this.categoryNameTextView.setCompoundDrawablePadding(); //todo see if needed
+                this.categoryNameTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                                                               ContextCompat.getDrawable(itemView.getContext(),
+                                                                                         expansionAlarm.getDisplayIcon()),
+                                                               null,
+                                                               null,
+                                                               null);
                 this.categoryNameTextView.setText(expansionAlarm.getCategory().categoryDisplayString);
                 this.valueTextView.setText(expansionAlarm.getDisplayValue());
             } else {
