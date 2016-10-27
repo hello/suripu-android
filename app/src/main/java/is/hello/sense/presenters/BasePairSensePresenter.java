@@ -12,8 +12,8 @@ import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SenseTimeZone;
+import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.interactors.pairsense.PairSenseInteractor;
 import is.hello.sense.presenters.outputs.BaseOutput;
@@ -32,20 +32,20 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     private boolean linkedAccount = false;
 
     private final ApiService apiService;
-    protected final UserFeaturesInteractor userFeaturesInteractor;
+    protected final DevicesInteractor devicesInteractor;
     private final PairSenseInteractor pairSenseInteractor;
     protected final PreferencesInteractor preferencesInteractor;
 
     @NonNull
-    private Subscription userFeaturesSubscription = Subscriptions.empty();;
+    private Subscription devicesSubscription = Subscriptions.empty();
 
     public BasePairSensePresenter(@NonNull final HardwareInteractor hardwareInteractor,
-                                  @NonNull final UserFeaturesInteractor userFeaturesInteractor,
+                                  @NonNull final DevicesInteractor devicesInteractor,
                                   @NonNull final ApiService apiService,
                                   @NonNull final PairSenseInteractor pairSenseInteractor,
                                   @NonNull final PreferencesInteractor preferencesInteractor) {
         super(hardwareInteractor);
-        this.userFeaturesInteractor = userFeaturesInteractor;
+        this.devicesInteractor = devicesInteractor;
         this.apiService = apiService;
         this.pairSenseInteractor = pairSenseInteractor;
         this.preferencesInteractor = preferencesInteractor;
@@ -190,10 +190,10 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
 
     private void getDeviceFeatures() {
         showBlockingActivity(R.string.title_pushing_data);
-        userFeaturesSubscription.unsubscribe();
-        userFeaturesSubscription = bind(userFeaturesInteractor.featureSubject)
-                .subscribe(features -> {
-                               preferencesInteractor.setFeatures(features);
+        devicesSubscription.unsubscribe();
+        devicesSubscription = bind(devicesInteractor.devices)
+                .subscribe(devices -> {
+                               preferencesInteractor.setDevice(devices.getSense());
                                onFinished();
                            },
                            error -> {
@@ -201,7 +201,7 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
                                onFinished();
                            }
                           );
-        userFeaturesInteractor.update();
+        devicesInteractor.update();
 
     }
 
@@ -231,8 +231,8 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     }
 
     private void releaseSubscription() {
-        userFeaturesSubscription.unsubscribe();
-        userFeaturesSubscription = Subscriptions.empty();
+        devicesSubscription.unsubscribe();
+        devicesSubscription = Subscriptions.empty();
     }
 
     public interface Output extends BaseOutput {

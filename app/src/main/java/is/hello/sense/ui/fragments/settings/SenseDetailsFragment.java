@@ -45,7 +45,6 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.activities.SettingsActivity;
