@@ -13,36 +13,28 @@ import java.util.ArrayList;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
+import is.hello.sense.util.Constants;
 
 
 /**
- * todo rename this file and move to correct flow package
+ * todo move to correct flow package
+ * <p>
+ * Responsible for showing a vertical list of values.
  */
-public class CustomAdapter extends ArrayRecyclerAdapter<Integer, CustomAdapter.BaseViewHolder> {
+public class ExpansionValuePickerAdapter extends ArrayRecyclerAdapter<Integer, ExpansionValuePickerAdapter.BaseViewHolder> {
     private final LayoutInflater inflater;
-    private final String symbol;
-    private final int min;
-    private final int difference;
     private final int selectedColor;
     private final int normalColor;
 
+    private int min;
+    private int difference = 0;
+    private String symbol = Constants.EMPTY_STRING;
     private int selectedPosition = RecyclerView.NO_POSITION;
 
-    /**
-     * @param context
-     * @param min     min value to display
-     * @param max     max value to display
-     * @param symbol  symbol to display next to each value.
-     */
-    public CustomAdapter(@NonNull final Context context,
-                         final int min,
-                         final int max,
-                         final String symbol) {
+
+    public ExpansionValuePickerAdapter(@NonNull final Context context) {
         super(new ArrayList<>());
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.min = min;
-        this.difference = max - min + 1;
-        this.symbol = symbol;
         this.selectedColor = ContextCompat.getColor(this.inflater.getContext(), R.color.primary);
         this.normalColor = ContextCompat.getColor(this.inflater.getContext(), R.color.standard);
         notifyDataSetChanged();
@@ -68,6 +60,25 @@ public class CustomAdapter extends ArrayRecyclerAdapter<Integer, CustomAdapter.B
         holder.bind(position);
     }
 
+    /**
+     * @param min min value to display.
+     * @param max max value to display.
+     */
+    public void setRange(final int min,
+                         final int max) {
+        this.min = min;
+        this.difference = max - min + 1;
+        notifyDataSetChanged();
+    }
+
+    /**
+     * @param symbol symbol to display next to each value.
+     */
+    public void setSymbol(@NonNull final String symbol) {
+        this.symbol = symbol;
+        notifyDataSetChanged();
+    }
+
     public void setSelectedPosition(final int selectedPosition) {
         final int oldPosition = this.selectedPosition;
         this.selectedPosition = selectedPosition;
@@ -77,6 +88,7 @@ public class CustomAdapter extends ArrayRecyclerAdapter<Integer, CustomAdapter.B
 
     /**
      * This is not the index position. This is the value the user see's
+     *
      * @return the value the user see's.
      */
     public int getSelectedValue() {

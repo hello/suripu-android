@@ -21,7 +21,6 @@
         <activity
             android:name="net.hockeyapp.android.UpdateActivity"/>
 
-        <activity android:name="is.hello.sense.debug.DeleteMeActivity"/>
         <activity
             android:name="net.hockeyapp.android.FeedbackActivity"/>
 

@@ -17,7 +17,6 @@ import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.debug.DeleteMeActivity;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountPreferencesInteractor;
@@ -109,9 +108,6 @@ public class DebugActivity extends InjectionActivity {
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
         adapter.add(new DetailItem("Reset app usage stats", this::resetAppUsage));
         adapter.add(new DetailItem("View Room Conditions Welcome Card", this::viewRoomConditionsWelcomeCard));
-        adapter.add(new DetailItem("Test View", () -> {
-            startActivity(new Intent(this, DeleteMeActivity.class));
-        })); //todo delete this option
         adapter.add(new DetailItem("Log Out", this::logOut));
 
         recyclerView.setAdapter(adapter);

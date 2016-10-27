@@ -6,15 +6,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import is.hello.go99.Anime;
-import is.hello.sense.ui.widget.CustomView;
+import is.hello.sense.ui.widget.ExpansionValuePickerView;
 
 /**
- * todo rename to match the custom adapter/view this was made for.
- *
- * This decoration is designed to be used with {@link CustomView} for correctly displaying the
+ * This decoration is designed to be used with {@link ExpansionValuePickerView} for correctly displaying the
  * middle/selected value and letting the view know what that position is.
  */
-public class CustomItemDecoration extends RecyclerView.ItemDecoration {
+public class ExpansionValuePickerItemDecoration extends RecyclerView.ItemDecoration {
     private static final float MIN_SCALE = 0.7f;
     private static final float MAX_SCALE = 1.5f;
     private static final float MIN_ALPHA = 0.2f;
@@ -57,8 +55,8 @@ public class CustomItemDecoration extends RecyclerView.ItemDecoration {
             }
         }
 
-        if (parent instanceof CustomView) {
-            ((CustomView) parent).setSelectedPosition(tempCenter);
+        if (parent instanceof ExpansionValuePickerView) {
+            ((ExpansionValuePickerView) parent).setSelectedPosition(tempCenter);
         }
     }
 
