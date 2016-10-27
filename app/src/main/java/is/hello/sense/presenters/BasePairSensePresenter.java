@@ -193,14 +193,15 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
         devicesSubscription.unsubscribe();
         devicesSubscription = bind(devicesInteractor.devices)
                 .subscribe(devices -> {
+                               devicesSubscription.unsubscribe(); // Unsubscribe so onfinished isn't called multiple times. Triggering an error for too many BLE commands at once
                                preferencesInteractor.setDevice(devices.getSense());
                                onFinished();
                            },
                            error -> {
+                               devicesSubscription.unsubscribe();// Unsubscribe so onfinished isn't called multiple times. Triggering an error for too many BLE commands at once
                                Logger.error(getClass().getSimpleName(), "Could not get features from Sense, ignoring.", error);
                                onFinished();
-                           }
-                          );
+                           });
         devicesInteractor.update();
 
     }
