@@ -175,8 +175,8 @@
     <string name="day_saturday">Sat</string>
     <string name="day_sunday">Sun</string>
     <string name="alarm_day_separator">", "</string>
-    <string name="smart_alarm_days_repeat_prefix">"Smart Alarm  ―  "</string>
-    <string name="alarm_days_repeat_prefix">"Alarm  ―  "</string>
+    <string name="smart_alarm_days_repeat_format">"Smart Alarm  ―  %1$s"</string>
+    <string name="alarm_days_repeat_format">"Alarm  ―  %1$s"</string>
     <string name="alarm_never">Alarm</string>
     <string name="smart_alarm_never">Smart Alarm</string>
     <string name="alarm_repeat_never">Never</string>
@@ -753,7 +753,11 @@
     <string name="sense_mac_address">Sense MAC Address</string>
     <string name="action_copy">Copy</string>
     <string name="copied">Copied</string>
+
+    <string name="custom_adapter_item">%1$d %2$s</string>
+
     <string name="alarm_source_voice">Voice Alarm</string>
     <string name="alarm_source_mobile_app">Alarm</string>
-    <string name="custom_adapter_item">%1$d %2$s</string>
+    <string name="voice_alarm_never">Voice Alarm</string>
+    <string name="voice_alarm_days_repeat_format">Voice Alarm  ―  %1$s</string>
 </resources>
