@@ -46,7 +46,7 @@ public class ExpansionCategoryFormatter {
             case LIGHT:
                 return R.drawable.icon_alarm_light;
             case TEMPERATURE:
-                return R.drawable.icon_alarm_light;
+                return R.drawable.icon_alarm_thermostat;
             default:
                 return R.drawable.error_white;
         }
