@@ -2,8 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- PARTIAL -->
 
-    <permission android:name="is.hello.sense.debug.permission.C2D_MESSAGE" android:protectionLevel="signature" />
-    <uses-permission android:name="is.hello.sense.debug.permission.C2D_MESSAGE" />
+    <permission
+        android:name="is.hello.sense.debug.permission.C2D_MESSAGE"
+        android:protectionLevel="signature"/>
+    <uses-permission android:name="is.hello.sense.debug.permission.C2D_MESSAGE"/>
 
     <application>
 
@@ -14,34 +16,34 @@
         <activity
             android:name="is.hello.sense.ui.activities.DebugActivity"
             android:label="@string/activity_debug"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"/>
 
         <activity
-            android:name="net.hockeyapp.android.UpdateActivity" />
+            android:name="net.hockeyapp.android.UpdateActivity"/>
 
         <activity
-            android:name="net.hockeyapp.android.FeedbackActivity" />
+            android:name="net.hockeyapp.android.FeedbackActivity"/>
 
         <activity
             android:name="is.hello.sense.debug.PiruPeaActivity"
-            android:screenOrientation="portrait"
-            android:label="Piru-Pea" />
+            android:label="Piru-Pea"
+            android:screenOrientation="portrait"/>
 
         <activity
-            android:name="is.hello.sense.debug.WelcomeDialogsActivity" />
+            android:name="is.hello.sense.debug.WelcomeDialogsActivity"/>
 
         <receiver
             android:name="is.hello.sense.notifications.NotificationReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND" >
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="is.hello.sense.debug" />
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <category android:name="is.hello.sense.debug"/>
             </intent-filter>
         </receiver>
 
         <meta-data
             android:name="com.mixpanel.android.MPConfig.ResourcePackageName"
-            android:value="is.hello.sense" />
+            android:value="is.hello.sense"/>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
