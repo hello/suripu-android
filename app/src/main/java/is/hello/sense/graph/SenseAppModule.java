@@ -21,6 +21,7 @@ import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
+import is.hello.sense.interactors.HasVoiceInteractor;
 import is.hello.sense.interactors.InsightInfoInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
