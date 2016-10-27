@@ -143,7 +143,7 @@ public final class Styles {
     public static
     @NonNull
     CharSequence createUnitSuperscriptSpan(@NonNull String suffix) {
-        final SpannableString spannableSuffix = new SpannableString(' ' + suffix);
+        final SpannableString spannableSuffix = new SpannableString(suffix);
         if (UnitFormatter.UNIT_SUFFIX_TEMPERATURE.equals(suffix)) {
             spannableSuffix.setSpan(new RelativeSizeSpan(0.6f),
                                     0, spannableSuffix.length(),
@@ -197,7 +197,7 @@ public final class Styles {
             case UNIT_STYLE_SUBSCRIPT:
                 builder.append(createUnitSubscriptSpan(suffix));
                 break;
-        }
+    }
 
         return builder;
     }
