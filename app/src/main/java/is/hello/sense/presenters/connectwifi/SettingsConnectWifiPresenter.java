@@ -4,8 +4,8 @@ import android.support.annotation.NonNull;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.interactors.pairsense.PairSenseInteractor;
 import is.hello.sense.util.Analytics;
@@ -16,12 +16,12 @@ public class SettingsConnectWifiPresenter extends BaseConnectWifiPresenter {
 
     public SettingsConnectWifiPresenter(
             @NonNull final HardwareInteractor hardwareInteractor,
-            @NonNull final UserFeaturesInteractor userFeaturesInteractor,
+            @NonNull final DevicesInteractor devicesInteractor,
             @NonNull final ApiService apiService,
             @NonNull final PairSenseInteractor pairSenseInteractor,
             @NonNull final PreferencesInteractor preferencesInteractor,
             final boolean shouldLinkAccount) {
-        super(hardwareInteractor, userFeaturesInteractor, apiService, pairSenseInteractor,preferencesInteractor);
+        super(hardwareInteractor, devicesInteractor, apiService, pairSenseInteractor, preferencesInteractor);
         this.shouldLinkAccount = shouldLinkAccount;
     }
 
