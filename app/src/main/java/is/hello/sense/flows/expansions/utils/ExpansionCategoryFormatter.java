@@ -29,6 +29,15 @@ public class ExpansionCategoryFormatter {
 
     }
 
+    public String getFormattedAttributionValueRange(@NonNull final Category category,
+                                                    @NonNull final ExpansionValueRange expansionRange,
+                                                    @NonNull final Context context) {
+        return context.getString(R.string.smart_alarm_expansion_attribute_format,
+                                 getFormattedValueRange(category,
+                                                        expansionRange,
+                                                        context));
+    }
+
     public String getSuffix(@NonNull final Category category){
         switch (category){
             case LIGHT:

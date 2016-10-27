@@ -29,6 +29,7 @@ import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.ApiException;
+import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
@@ -57,6 +58,8 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
     PreferencesInteractor preferences;
     @Inject
     DateFormatter dateFormatter;
+    @Inject
+    ExpansionCategoryFormatter expansionCategoryFormatter;
 
     private RecyclerView recyclerView;
     private ProgressBar activityIndicator;
@@ -100,7 +103,10 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
 
-        this.adapter = new SmartAlarmAdapter(getActivity(), this, dateFormatter);
+        this.adapter = new SmartAlarmAdapter(getActivity(),
+                                             this,
+                                             dateFormatter,
+                                             expansionCategoryFormatter);
         recyclerView.setAdapter(adapter);
 
         this.addButton = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_list_add);

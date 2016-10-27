@@ -5,6 +5,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +21,11 @@ import java.util.List;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
+import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
+import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
+import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 
 public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.BaseViewHolder> {
@@ -32,13 +37,16 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
     private final DateFormatter dateFormatter;
 
     private final List<Alarm> alarms = new ArrayList<>();
+    private final ExpansionCategoryFormatter expansionFormatter;
     private Message currentMessage;
     private boolean use24Time = false;
 
     public SmartAlarmAdapter(@NonNull Context context,
                              @NonNull InteractionListener interactionListener,
-                             @NonNull DateFormatter dateFormatter) {
+                             @NonNull DateFormatter dateFormatter,
+                             @NonNull ExpansionCategoryFormatter expansionAlarmFormatter) {
         this.dateFormatter = dateFormatter;
+        this.expansionFormatter = expansionAlarmFormatter;
         this.inflater = LayoutInflater.from(context);
         this.interactionListener = interactionListener;
     }
@@ -139,6 +147,8 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
         final CompoundButton enabled;
         final TextView time;
         final TextView repeat;
+        final RecyclerView expansionsRV;
+        private final ExpansionAlarmsAdapter expansionsAdapter;
 
         AlarmViewHolder(@NonNull View view) {
             super(view);
@@ -146,19 +156,43 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
             this.enabled = (CompoundButton) view.findViewById(R.id.item_smart_alarm_enabled);
             this.time = (TextView) view.findViewById(R.id.item_smart_alarm_time);
             this.repeat = (TextView) view.findViewById(R.id.item_smart_alarm_repeat);
+            this.expansionsRV = (RecyclerView) view.findViewById(R.id.item_smart_alarm_expansions_rv);
+
+            this.expansionsRV.setLayoutManager(new LinearLayoutManager(view.getContext()));
+            this.expansionsRV.setHasFixedSize(false);
+            this.expansionsRV.setNestedScrollingEnabled(false);
+            this.expansionsRV.setOverScrollMode(View.OVER_SCROLL_NEVER);
+            this.expansionsRV.addItemDecoration(new DividerItemDecoration(view.getContext()));
+            this.expansionsAdapter = new ExpansionAlarmsAdapter(new ArrayList<>(0));
+            this.expansionsAdapter.setWantsAttributionStyle(true);
+            this.expansionsRV.setAdapter(expansionsAdapter);
 
             view.setOnClickListener(this);
             view.setOnLongClickListener(this);
         }
 
         @Override
-        void bind(int position) {
+        void bind(final int position) {
             final Alarm alarm = alarms.get(position);
             enabled.setTag(position);
             enabled.setChecked(alarm.isEnabled());
             enabled.setOnClickListener(this);
             time.setText(dateFormatter.formatAsAlarmTime(alarm.getTime(), use24Time));
-            repeat.setText(alarm.getDaysOfWeekSummary(repeat.getContext())); //todo modify to use source
+            repeat.setText(alarm.getDaysOfWeekSummary(repeat.getContext()));
+
+            for (final ExpansionAlarm ea :
+                    alarm.getExpansions()) {
+                ea.setDisplayIcon(expansionFormatter.getDisplayIconRes(ea.getCategory()));
+                if(ea.expansionRange != null) {
+                    ea.setDisplayValue(expansionFormatter.getFormattedAttributionValueRange(ea.getCategory(),
+                                                                                            ea.expansionRange,
+                                                                                            itemView.getContext()));
+                } else {
+                    ea.setDisplayValue(Constants.EMPTY_STRING);
+                }
+            }
+
+            expansionsAdapter.replaceAll(alarm.getExpansions());
         }
 
         @Override
