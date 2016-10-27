@@ -39,12 +39,12 @@ public class HasVoiceInteractor extends ValueInteractor<Boolean> {
 
     @Override
     protected Observable<Boolean> provideUpdateObservable() {
-        devicesInteractor.provideUpdateObservable()
-                         .subscribe(devices -> {
-                             preferencesInteractor.setDevice(devices.getSense());
-                         });
-        return preferencesInteractor.observableBoolean(PreferencesInteractor.HAS_VOICE, false);
 
+        return devicesInteractor.provideUpdateObservable()
+                                .flatMap(devices -> {
+                                    preferencesInteractor.setDevice(devices.getSense());
+                                    return preferencesInteractor.observableBoolean(PreferencesInteractor.HAS_VOICE, false);
+                                });
     }
 
 }
