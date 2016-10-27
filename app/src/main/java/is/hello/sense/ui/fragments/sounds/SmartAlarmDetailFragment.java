@@ -256,7 +256,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) {
-            expansionsInteractor.update();
+            attemptToUpdateExpansions();
             return;
         }
 
@@ -420,6 +420,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         }
 
         expansionAlarmsAdapter.replaceAll(expansionAlarms);
+        alarm.setExpansions(expansionAlarms);
     }
 
     private void onExpansionAlarmItemClicked(final int position, @NonNull final ExpansionAlarm expansionAlarm) {
@@ -450,7 +451,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     public void onExpansionErrorIconPress(@NonNull final View view) {
-        expansionsInteractor.update();
+        attemptToUpdateExpansions();
     }
 
     private void showExpansionError() {
@@ -465,6 +466,12 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                 })
                 .build(getActivity())
                 .show();
+    }
+
+    private void attemptToUpdateExpansions() {
+        if(preferences.hasVoice()) {
+            expansionsInteractor.update();
+        }
     }
 
     private void updateAlarmFromAdapterExpansions() {
