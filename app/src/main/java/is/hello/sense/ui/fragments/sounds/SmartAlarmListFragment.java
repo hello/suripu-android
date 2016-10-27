@@ -125,7 +125,7 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
     @Override
     public void onResume() {
         super.onResume();
-        //update();
+        update();
     }
 
     @Override
