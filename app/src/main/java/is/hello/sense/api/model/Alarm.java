@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.util.DateFormatter;
@@ -70,7 +70,7 @@ public class Alarm extends ApiResponse {
     private boolean smart;
 
     @SerializedName("expansions")
-    private ArrayList<Expansion> expansions;
+    private List<ExpansionAlarm> expansions;
 
     private transient AlarmTones alarmTones;
 
@@ -169,14 +169,15 @@ public class Alarm extends ApiResponse {
         return editable;
     }
 
-    public ArrayList<Expansion> getExpansions() {
+    @NonNull
+    public List<ExpansionAlarm> getExpansions() {
         if (expansions == null) {
             expansions = new ArrayList<>();
         }
         return expansions;
     }
 
-    public void setExpansions(@NonNull final ArrayList<Expansion> expansions) {
+    public void setExpansions(@NonNull final List<ExpansionAlarm> expansions) {
         this.expansions = expansions;
     }
 
@@ -326,6 +327,7 @@ public class Alarm extends ApiResponse {
                 ", daysOfWeek=" + daysOfWeek +
                 ", sound=" + sound +
                 ", smart=" + smart +
+                ", expansions=" + expansions +
                 '}';
     }
 

@@ -1,6 +1,7 @@
 package is.hello.sense.flows.expansions.ui.activities;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
 import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
@@ -24,6 +26,9 @@ import is.hello.sense.ui.common.OnBackPressedInterceptor;
 
 public class ExpansionSettingsActivity extends ScopedInjectionActivity
         implements FragmentNavigation {
+
+    private static final String EXTRA_EXPANSION_DETAIL_ID = ExpansionSettingsActivity.class.getName() + "EXTRA_EXPANSION_DETAIL_ID";
+
     private FragmentNavigationDelegate navigationDelegate;
 
     @Override
@@ -42,10 +47,24 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
         if (savedInstanceState != null) {
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         } else if (navigationDelegate.getTopFragment() == null) {
-            showExpansionList();
+
+            if(wantsExpansionDetailThenStartPickerActivity()){
+                showExpansionDetail(getIntent().getLongExtra(EXTRA_EXPANSION_DETAIL_ID, Expansion.NO_ID));
+            } else {
+                showExpansionList();
+            }
         }
 
 
+    }
+
+    public static Intent getExpansionDetailIntent(@NonNull final Context context, final long expansionId){
+        return new Intent(context, ExpansionSettingsActivity.class)
+                .putExtra(EXTRA_EXPANSION_DETAIL_ID, expansionId);
+    }
+
+    private boolean wantsExpansionDetailThenStartPickerActivity() {
+        return getIntent().hasExtra(EXTRA_EXPANSION_DETAIL_ID);
     }
 
     //region Router
@@ -103,12 +122,32 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
         } else if (fragment instanceof ExpansionsAuthFragment) {
             showConfigurationSelection();
         } else if (fragment instanceof ConfigSelectionFragment) {
-            if (result != null && result.hasExtra(ConfigSelectionFragment.EXPANSION_ID_KEY)) {
-                showExpansionDetail(result.getLongExtra(ConfigSelectionFragment.EXPANSION_ID_KEY, Expansion.NO_ID));
+            if (result != null
+                    && result.hasExtra(ConfigSelectionFragment.EXPANSION_ID_KEY)
+                    && result.hasExtra(ConfigSelectionFragment.EXPANSION_CATEGORY)) {
+                final long expansionId = result.getLongExtra(ConfigSelectionFragment.EXPANSION_ID_KEY, Expansion.NO_ID);
+                if(wantsExpansionDetailThenStartPickerActivity()){
+                    final Category category = (Category) result.getSerializableExtra(ConfigSelectionFragment.EXPANSION_CATEGORY);
+                    showExpansionPickerActivity(expansionId, category);
+                } else {
+                    showExpansionDetail(expansionId);
+                }
             } else {
-                showExpansionList();
+                if(wantsExpansionDetailThenStartPickerActivity()) {
+                    setResult(RESULT_CANCELED); //todo handle better
+                    finish();
+                } else {
+                    showExpansionList();
+                }
             }
         }
+    }
+
+    private void showExpansionPickerActivity(final long expansionId, @NonNull final Category category) {
+        final Intent intent = ExpansionValuePickerActivity.getIntent(this, expansionId, category);
+        intent.setFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+        startActivity(intent);
+        finish();
     }
 
     @Override

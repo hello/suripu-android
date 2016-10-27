@@ -24,7 +24,7 @@ import rx.Observable;
 public class UnitFormatter extends Interactor {
     public static final String UNIT_SUFFIX_TEMPERATURE = "°";
     public static final String UNIT_SUFFIX_LIGHT = "lx";
-    public static final String UNIT_SUFFIX_HUMIDITY = "%";
+    public static final String UNIT_SUFFIX_PERCENT = "%";
     public static final String UNIT_SUFFIX_AIR_QUALITY = "µg/m³";
     public static final String UNIT_SUFFIX_NOISE = "dB";
     public static final String UNIT_SUFFIX_GAS = "ppm";
@@ -127,7 +127,7 @@ public class UnitFormatter extends Interactor {
             case TEMPERATURE:
                 return UNIT_SUFFIX_TEMPERATURE;
             case HUMIDITY:
-                return UNIT_SUFFIX_HUMIDITY;
+                return UNIT_SUFFIX_PERCENT;
             case PARTICULATES:
                 return UNIT_SUFFIX_AIR_QUALITY;
             case LIGHT:

@@ -134,9 +134,15 @@
                   android:label="@string/voice_settings_title"
                   android:theme="@style/AppTheme.Expansions"
                   android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+
         <activity
             android:name=".flows.voicecommands.ui.activities.VoiceCommandActivity"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity" />
+
+
+        <activity android:name=".flows.expansions.ui.activities.ExpansionValuePickerActivity"
+                  android:theme="@style/AppTheme.Expansions"
+                  android:parentActivityName=".ui.activities.SmartAlarmDetailActivity"/>
 
         <activity
             xmlns:tools="http://schemas.android.com/tools"

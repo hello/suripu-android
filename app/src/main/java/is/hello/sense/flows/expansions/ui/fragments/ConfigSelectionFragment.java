@@ -29,6 +29,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
         implements ArrayRecyclerAdapter.OnItemClickedListener<Configuration>,
         OnBackPressedInterceptor{
     public static final String EXPANSION_ID_KEY = ConfigSelectionFragment.class.getSimpleName() + ".expansion_id_key";
+    public static final String EXPANSION_CATEGORY = ConfigSelectionFragment.class.getSimpleName() + ".expansion_category";
 
     @Inject
     ConfigurationsInteractor configurationsInteractor;
@@ -176,6 +177,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
         if(expansion != null) {
             finishFlowWithResult(Activity.RESULT_OK,
                                  new Intent().putExtra(EXPANSION_ID_KEY, expansion.getId())
+                                             .putExtra(EXPANSION_CATEGORY, expansion.getCategory())
                                 );
         } else {
             finishFlow();
