@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.alarms.AlarmSource;
 import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
@@ -69,6 +70,9 @@ public class Alarm extends ApiResponse {
     @SerializedName("smart")
     private boolean smart;
 
+    @SerializedName("source")
+    private AlarmSource source;
+
     @SerializedName("expansions")
     private List<ExpansionAlarm> expansions;
 
@@ -84,6 +88,7 @@ public class Alarm extends ApiResponse {
         this.editable = true;
         this.smart = true;
         this.daysOfWeek = new HashSet<>();
+        this.source = AlarmSource.OTHER;
     }
 
 
@@ -179,6 +184,10 @@ public class Alarm extends ApiResponse {
 
     public void setExpansions(@NonNull final List<ExpansionAlarm> expansions) {
         this.expansions = expansions;
+    }
+
+    public AlarmSource getSource(){
+        return source;
     }
 
     /**
@@ -328,6 +337,7 @@ public class Alarm extends ApiResponse {
                 ", sound=" + sound +
                 ", smart=" + smart +
                 ", expansions=" + expansions +
+                ", source=" + source +
                 '}';
     }
 
