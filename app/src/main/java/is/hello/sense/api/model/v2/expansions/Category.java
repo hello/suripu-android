@@ -8,7 +8,7 @@ import is.hello.sense.api.gson.Enums;
 
 public enum Category implements Enums.FromString {
     LIGHT("Room", R.string.expansion_category_lights),
-    TEMPERATURE("Thermostat", R.string.expansion_category_thermostats),
+    TEMPERATURE("Thermostat", R.string.expansion_category_thermostat),
     UNKNOWN("Configuration", R.string.expansion_category_configurations);
 
     //todo remove when ConfigurationType field is returned

@@ -736,8 +736,11 @@
     <string name="smart_alarm_expansion_state_connected_off">Off</string>
     <string name="smart_alarm_expansion_state_connected_on">Connect</string>
     <string name="expansion_category_lights">Lights</string>
-    <string name="expansion_category_thermostats">Thermostats</string>
+    <string name="expansion_category_thermostat">Thermostat</string>
     <string name="expansion_category_configurations">Configurations</string>
+
+    <string name="smart_alarm_expansion_same_value_format">%1$d%2$s</string>
+    <string name="smart_alarm_expansion_range_value_format">%1$d%2$s - %3$d%4$s</string>
     <!-- end region -->
 
     <string name="label_voice">Voice</string>

@@ -2,6 +2,7 @@ package is.hello.sense.api.model.v2.expansions;
 
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -37,7 +38,7 @@ public class ExpansionAlarm extends ApiResponse {
                           @NonNull final Category category,
                           @NonNull final String serviceName,
                           final boolean enabled,
-                          @NonNull final ExpansionValueRange range){
+                          @Nullable final ExpansionValueRange range){
         this.id = id;
         this.category = category;
         this.serviceName = serviceName;
@@ -50,7 +51,7 @@ public class ExpansionAlarm extends ApiResponse {
              expansion.getCategory(),
              expansion.getServiceName(),
              true,
-             expansion.getValueRange());
+             null);
     }
 
     public long getId(){

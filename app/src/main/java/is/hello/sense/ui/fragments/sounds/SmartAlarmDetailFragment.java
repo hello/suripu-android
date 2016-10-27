@@ -172,6 +172,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         expansionAlarmsRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
         expansionAlarmsRecyclerView.setNestedScrollingEnabled(false);
         expansionAlarmsRecyclerView.setHasFixedSize(false);
+        expansionAlarmsRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
         expansionAlarmsRecyclerView.setAdapter(expansionAlarmsAdapter);
         expansionAlarmsAdapter.setOnItemClickedListener(this::onExpansionAlarmItemClicked);
@@ -191,7 +192,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        expansionsInteractor.expansions.forget();
+
         bindAndSubscribe(expansionsInteractor.expansions,
                          this::bindFilteredExpansions,
                          this::bindExpansionsThrowable);
@@ -207,6 +208,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                                  }
                              } else {
                                  expansionAlarmsRecyclerView.setVisibility(View.GONE);
+                                 expansionsInteractor.expansions.forget();
                              }
                          },
                          Functions.LOG_ERROR);
@@ -238,17 +240,6 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                          Functions.LOG_ERROR);
     }
 
-    private void bindExpansionAlarms(@NonNull final List<ExpansionAlarm> expansionAlarms) {
-        for(final ExpansionAlarm expansionAlarm : expansionAlarms){
-            final String formattedExpansionValueRange = expansionCategoryFormatter.getFormattedValueRange(expansionAlarm.getCategory(),
-                                                                                                          expansionAlarm.expansionRange);
-            expansionAlarm.setDisplayValue(formattedExpansionValueRange);
-            expansionAlarm.setDisplayIcon(expansionCategoryFormatter.getDisplayIconRes(expansionAlarm.getCategory()));
-        }
-
-        expansionAlarmsAdapter.replaceAll(expansionAlarms);
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -262,11 +253,17 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     @Override
-    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) {
+            expansionsInteractor.update();
             return;
         }
+
+        if(data == null){
+            return;
+        }
+
         if (requestCode == TIME_REQUEST_CODE) {
             final int hour = data.getIntExtra(TimePickerDialogFragment.RESULT_HOUR, 7);
             final int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, 30);
@@ -403,25 +400,35 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
         for (final Expansion expansion : expansions) {
 
-            final ExpansionAlarm expansionAlarm = new ExpansionAlarm(expansion);
-            expansionAlarm.setDisplayIcon(expansionCategoryFormatter.getDisplayIconRes(expansionAlarm.getCategory()));
-            switch (expansion.getState()) {
-                case CONNECTED_ON:
-                    expansionAlarm.setDisplayValue(getString(R.string.smart_alarm_expansion_state_connected_on));
-                    break;
-                case CONNECTED_OFF:
-                    expansionAlarm.setDisplayValue(getString(R.string.smart_alarm_expansion_state_connected_off));
-                default:
-                    expansionAlarm.setDisplayValue(getString(expansion.getState().displayValue));
-            }
-            expansionAlarms.add(expansionAlarm);
+            final ExpansionAlarm updatedExpansionAlarm = new ExpansionAlarm(expansion);
+            updatedExpansionAlarm.setDisplayValue(getString(expansionCategoryFormatter.getDisplayValueResFromState(expansion.getState())));
+            expansionAlarms.add(updatedExpansionAlarm);
         }
+        bindExpansionAlarms(expansionAlarms);
+    }
+
+    private void bindExpansionAlarms(@NonNull final List<ExpansionAlarm> expansionAlarms) {
+        for(final ExpansionAlarm expansionAlarm : expansionAlarms){
+            if(expansionAlarm.isEnabled() && expansionAlarm.expansionRange != null) {
+                expansionAlarm.setDisplayValue(expansionCategoryFormatter.getFormattedValueRange(expansionAlarm.getCategory(),
+                                                                                     expansionAlarm.expansionRange,
+                                                                                     getActivity())
+                                              );
+
+            }
+            expansionAlarm.setDisplayIcon(expansionCategoryFormatter.getDisplayIconRes(expansionAlarm.getCategory()));
+        }
+
         expansionAlarmsAdapter.replaceAll(expansionAlarms);
     }
 
     private void onExpansionAlarmItemClicked(final int position, @NonNull final ExpansionAlarm expansionAlarm) {
-        //todo handle redirect to picker
-        redirectToExpansionDetail(expansionAlarm.getId());
+        if(expansionAlarm.isEnabled()){
+            redirectToExpansionPicker(expansionAlarm.getId(),
+                                      expansionAlarm.getCategory());
+        } else {
+            redirectToExpansionDetail(expansionAlarm.getId());
+        }
     }
 
     private void redirectToExpansionPicker(final long expansionId,

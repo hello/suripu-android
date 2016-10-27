@@ -49,7 +49,7 @@ public class ExpansionAlarmsAdapter extends ArrayRecyclerAdapter<ExpansionAlarm,
             this.categoryNameTextView = (TextView) itemView.findViewById(R.id.item_row_alarm_detail_expansion_category);
             this.valueTextView = (TextView) itemView.findViewById(R.id.item_row_alarm_detail_expansion_value);
             this.errorImageView = (ImageView) itemView.findViewById(R.id.item_row_alarm_detail_expansion_error);
-            this.valueTextView.setOnClickListener(this);
+            this.itemView.setOnClickListener(this);
         }
 
         @Override
