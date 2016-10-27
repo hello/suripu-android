@@ -37,7 +37,7 @@ public class ExpansionsInteractor extends ValueInteractor<ArrayList<Expansion>> 
     }
 
     public Observable<Expansion> findByCategories(@NonNull final List<Category> category){
-        return latest().flatMap(Observable::from)
+        return expansions.flatMap(Observable::from)
                        .filter( expansion -> category.contains(expansion.getCategory()));
     }
 }

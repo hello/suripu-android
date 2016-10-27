@@ -140,7 +140,11 @@
 
         <View style="@style/Divider.Horizontal" />
 
-        <include layout="@layout/view_alarm_expansions_light"/>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/fragment_smart_alarm_detail_expansion_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:overScrollMode="never"/>
 
         <View android:id="@+id/fragment_smart_alarm_detail_delete_divider"
               style="@style/Divider.Horizontal" />

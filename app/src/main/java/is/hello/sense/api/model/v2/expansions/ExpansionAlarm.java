@@ -1,6 +1,8 @@
 package is.hello.sense.api.model.v2.expansions;
 
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -26,11 +28,17 @@ public class ExpansionAlarm extends ApiResponse {
     @SerializedName("target_value")
     public final ExpansionValueRange expansionRange;
 
+    //@Exclude
+    private String displayValue = "empty value";
+    //@Exclude
+    @DrawableRes
+    private int displayIcon;
+
     public ExpansionAlarm(final long id,
                           @NonNull final Category category,
                           @NonNull final String serviceName,
                           final boolean enabled,
-                          @NonNull final ExpansionValueRange range){
+                          @Nullable final ExpansionValueRange range){
         this.id = id;
         this.category = category;
         this.serviceName = serviceName;
@@ -43,7 +51,7 @@ public class ExpansionAlarm extends ApiResponse {
              expansion.getCategory(),
              expansion.getServiceName(),
              true,
-             expansion.getValueRange());
+             null);
     }
 
     public long getId(){
@@ -64,5 +72,22 @@ public class ExpansionAlarm extends ApiResponse {
 
     public boolean isEnabled(){
         return enabled;
+    }
+
+    public String getDisplayValue() {
+        return displayValue;
+    }
+
+    public void setDisplayValue(@NonNull final String displayValue){
+       this.displayValue = displayValue;
+    }
+
+    @DrawableRes
+    public int getDisplayIcon() {
+        return displayIcon;
+    }
+
+    public void setDisplayIcon(@DrawableRes final int displayIcon) {
+       this.displayIcon = displayIcon;
     }
 }
