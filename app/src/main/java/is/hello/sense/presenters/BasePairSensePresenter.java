@@ -37,7 +37,7 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     protected final PreferencesInteractor preferencesInteractor;
 
     @NonNull
-    private Subscription udevicesSubscription = Subscriptions.empty();;
+    private Subscription devicesSubscription = Subscriptions.empty();
 
     public BasePairSensePresenter(@NonNull final HardwareInteractor hardwareInteractor,
                                   @NonNull final DevicesInteractor devicesInteractor,
@@ -190,8 +190,8 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
 
     private void getDeviceFeatures() {
         showBlockingActivity(R.string.title_pushing_data);
-        udevicesSubscription.unsubscribe();
-        udevicesSubscription = bind(devicesInteractor.devices)
+        devicesSubscription.unsubscribe();
+        devicesSubscription = bind(devicesInteractor.devices)
                 .subscribe(devices -> {
                                preferencesInteractor.setDevice(devices.getSense());
                                onFinished();
@@ -231,8 +231,8 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     }
 
     private void releaseSubscription() {
-        udevicesSubscription.unsubscribe();
-        udevicesSubscription = Subscriptions.empty();
+        devicesSubscription.unsubscribe();
+        devicesSubscription = Subscriptions.empty();
     }
 
     public interface Output extends BaseOutput {

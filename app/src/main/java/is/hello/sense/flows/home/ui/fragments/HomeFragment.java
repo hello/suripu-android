@@ -9,21 +9,15 @@ import javax.inject.Inject;
 
 import is.hello.sense.flows.home.ui.views.HomeView;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.interactors.DevicesInteractor;
-import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.interactors.HasVoiceInteractor;
 import is.hello.sense.ui.widget.SelectorView;
-import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
 public class HomeFragment extends BacksideTabFragment<HomeView>
         implements SelectorView.OnSelectionChangedListener {
 
     @Inject
-    PreferencesInteractor preferencesInteractor;
-    @Inject
-    DevicesInteractor devicesInteractor;
-
-    private Subscription userFeaturesSubscription = Subscriptions.empty();
+    HasVoiceInteractor hasVoiceInteractor;
 
     @Override
     public void initializePresenterView() {
@@ -50,24 +44,16 @@ public class HomeFragment extends BacksideTabFragment<HomeView>
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addInteractor(preferencesInteractor);
-        addInteractor(devicesInteractor);
+        addInteractor(hasVoiceInteractor);
     }
 
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bindAndSubscribe(preferencesInteractor.observableBoolean(PreferencesInteractor.HAS_VOICE, false),
+        bindAndSubscribe(hasVoiceInteractor.hasVoice,
                          presenterView::showVoiceFragment,
                          Functions.LOG_ERROR);
-
-        if (!preferencesInteractor.contains(PreferencesInteractor.HAS_VOICE)) {
-            userFeaturesSubscription.unsubscribe();
-            userFeaturesSubscription = bind(devicesInteractor.devices)
-                    .subscribe((devices) -> preferencesInteractor.setDevice(devices.getSense()),
-                               Functions.LOG_ERROR);
-            devicesInteractor.update();
-        }
+        hasVoiceInteractor.update();
 
     }
 
@@ -79,13 +65,6 @@ public class HomeFragment extends BacksideTabFragment<HomeView>
     @Override
     public void onUpdate() {
 
-    }
-
-    @Override
-    protected void onRelease() {
-        super.onRelease();
-        userFeaturesSubscription.unsubscribe();
-        userFeaturesSubscription = Subscriptions.empty();
     }
 
     @Override
