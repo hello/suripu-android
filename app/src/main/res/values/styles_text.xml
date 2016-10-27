@@ -249,15 +249,15 @@
     <style name="AppTheme.Text.SmartAlarm"/>
 
     <style name="AppTheme.Text.SmartAlarm.Time">
-        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textSize">@dimen/text_size_smart_alarm_time</item>
     </style>
 
     <style name="AppTheme.Text.SmartAlarm.Repeat">
         <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textSize">@dimen/text_size_section_heading</item>
+        <item name="android:textSize">@dimen/text_h7</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/text_light</item>
+        <item name="android:textColor">@color/text_extra_light</item>
     </style>
 
     <style name="AppTheme.Text.SmartAlarm.Time.Big">
