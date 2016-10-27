@@ -133,10 +133,22 @@ public class PreferencesInteractor extends BasePreferencesInteractor {
     //region userFeatures helper
     public void setDevice(@Nullable final SenseDevice device) {
         if (device == null) {
+            if (getBoolean(HAS_SOUNDS, false) && hasVoice()) {
+                // don't update unless this will change the state. This will suppress alerting any
+                // subscribers about the state changing to one it already is in.
+                // It is possible one of these is false and will trigger the subscriber but that is ok
+                // since it will only happen once and in a very rare case.
+                return;
+            }
             // if no device is on this account we should update sleep sounds too.
             edit().putBoolean(HAS_VOICE, false)
                   .putBoolean(HAS_SOUNDS, false)
                   .apply();
+            return;
+        }
+        if (hasVoice()) {
+            // Again, don't update the prefs with a state it's already in so subscribers don't
+            // get alerted again.
             return;
         }
         if (device.hardwareVersion == SenseDevice.HardwareVersion.SENSE_WITH_VOICE) {
