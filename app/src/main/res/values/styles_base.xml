@@ -90,6 +90,10 @@
         <item name="android:textColor">@color/standard</item>
     </style>
 
+    <style name="AppTheme.Text.Body.Paragraph">
+        <item name="android:lineSpacingMultiplier">@dimen/line_multiple_body</item>
+    </style>
+
 
     <style name="AppTheme.Button.Primary">
         <item name="android:paddingTop">@dimen/x1</item>

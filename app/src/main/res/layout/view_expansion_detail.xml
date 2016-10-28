@@ -45,6 +45,7 @@
 
             <TextView
                 android:id="@+id/view_expansion_detail_description"
+                style="@style/AppTheme.Text.Body.Paragraph"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/view_expansion_detail_icon"/>
