@@ -228,7 +228,7 @@ public class Sensor extends ApiResponse {
     public static Sensor newUVTestCase(final Float value) {
         return new Sensor("uv",
                           SensorType.UV,
-                          SensorUnit.KELVIN,
+                          SensorUnit.UNKNOWN,
                           "message",
                           Condition.IDEAL,
                           value,

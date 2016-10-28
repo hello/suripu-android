@@ -16,6 +16,7 @@ import is.hello.sense.api.model.v2.Scale;
 import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.util.Constants;
 
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -158,7 +159,7 @@ public class UnitFormatterTests extends InjectionTestCase {
     public void formatUV() throws Exception {
         assertThat(unitFormatter.createUnitBuilder(SensorType.UV, 42)
                                 .buildWithStyle(),
-                   is(equalTo("42 k")));
+                   is(equalTo("42 ")));
     }
 
     @Test
@@ -179,7 +180,7 @@ public class UnitFormatterTests extends InjectionTestCase {
     public void formatPressure() throws Exception {
         assertThat(unitFormatter.createUnitBuilder(SensorType.PRESSURE, 42)
                                 .buildWithStyle(),
-                   is(equalTo("42 mBar")));
+                   is(equalTo("42 mbar")));
     }
 
     @Test
@@ -245,7 +246,7 @@ public class UnitFormatterTests extends InjectionTestCase {
         assertThat(unitFormatter.getSuffixForSensor(SensorType.TVOC),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_AIR_QUALITY)));
         assertThat(unitFormatter.getSuffixForSensor(SensorType.UV),
-                   is(equalTo(UnitFormatter.UNIT_SUFFIX_KELVIN)));
+                   is(equalTo(Constants.EMPTY_STRING)));
         assertThat(unitFormatter.getSuffixForSensor(SensorType.LIGHT_TEMPERATURE),
                    is(equalTo(UnitFormatter.UNIT_SUFFIX_LIGHT_TEMPERATURE)));
         assertThat(unitFormatter.getSuffixForSensor(SensorType.PRESSURE),

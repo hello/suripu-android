@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/x2"
-        style="@style/AppTheme.Text.Body.New"
+        style="@style/AppTheme.Text.Body.Paragraph"
         android:text="@string/voice_volume_description"/>
 
     <Space
