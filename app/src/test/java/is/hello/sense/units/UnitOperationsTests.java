@@ -9,35 +9,36 @@ public class UnitOperationsTests {
     @Test
     public void convertFromPercentageValue() throws Exception {
         final int levels = 11;
-        assertEquals(UnitOperations.percentageToLevel(100, levels), 11);
-        assertEquals(UnitOperations.percentageToLevel(91, levels), 10);
-        assertEquals(UnitOperations.percentageToLevel(82, levels), 9);
-        assertEquals(UnitOperations.percentageToLevel(73, levels), 8);
-        assertEquals(UnitOperations.percentageToLevel(64, levels), 7);
-        assertEquals(UnitOperations.percentageToLevel(55, levels), 6);
-        assertEquals(UnitOperations.percentageToLevel(46, levels), 5);
-        assertEquals(UnitOperations.percentageToLevel(37, levels), 4);
-        assertEquals(UnitOperations.percentageToLevel(28, levels), 3);
-        assertEquals(UnitOperations.percentageToLevel(19, levels), 2);
-        assertEquals(UnitOperations.percentageToLevel(10, levels), 1);
+        assertEquals(11, UnitOperations.percentageToLevel(100, levels));
+        assertEquals(11, UnitOperations.percentageToLevel(91, levels));
+        assertEquals(10, UnitOperations.percentageToLevel(82, levels));
+        assertEquals(9, UnitOperations.percentageToLevel(80, levels));
+        assertEquals(9, UnitOperations.percentageToLevel(73, levels));
+        assertEquals(8, UnitOperations.percentageToLevel(64, levels));
+        assertEquals(7, UnitOperations.percentageToLevel(55, levels));
+        assertEquals(6, UnitOperations.percentageToLevel(46, levels));
+        assertEquals(5, UnitOperations.percentageToLevel(37, levels));
+        assertEquals(4, UnitOperations.percentageToLevel(28, levels));
+        assertEquals(3, UnitOperations.percentageToLevel(19, levels));
+        assertEquals(2, UnitOperations.percentageToLevel(10, levels));
     }
 
     @Test
     public void levelToPercentage() throws Exception {
         final int levels = 11;
-        assertEquals(UnitOperations.levelToPercentage(1, levels), 10);
-        assertEquals(UnitOperations.levelToPercentage(2, levels), 19);
-        assertEquals(UnitOperations.levelToPercentage(3, levels), 28);
-        assertEquals(UnitOperations.levelToPercentage(4, levels), 37);
-        assertEquals(UnitOperations.levelToPercentage(5, levels), 46);
-        assertEquals(UnitOperations.levelToPercentage(6, levels), 55);
-        assertEquals(UnitOperations.levelToPercentage(7, levels), 64);
-        assertEquals(UnitOperations.levelToPercentage(8, levels), 73);
-        assertEquals(UnitOperations.levelToPercentage(9, levels), 82);
+        assertEquals(9, UnitOperations.levelToPercentage(1, levels));
+        assertEquals(18, UnitOperations.levelToPercentage(2, levels));
+        assertEquals(27, UnitOperations.levelToPercentage(3, levels));
+        assertEquals(36, UnitOperations.levelToPercentage(4, levels));
+        assertEquals(45, UnitOperations.levelToPercentage(5, levels));
+        assertEquals(55, UnitOperations.levelToPercentage(6, levels));
+        assertEquals(64, UnitOperations.levelToPercentage(7, levels));
+        assertEquals(73, UnitOperations.levelToPercentage(8, levels));
+        assertEquals(82, UnitOperations.levelToPercentage(9, levels));
 
-        assertEquals(UnitOperations.levelToPercentage(10, levels), 91);
+        assertEquals(91, UnitOperations.levelToPercentage(10, levels));
 
-        assertEquals(UnitOperations.levelToPercentage(11, levels), 100);
+        assertEquals(100, UnitOperations.levelToPercentage(11, levels));
     }
 
 }
