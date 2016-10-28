@@ -190,6 +190,8 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
 
     private void getDeviceFeatures() {
         showBlockingActivity(R.string.title_pushing_data);
+        //todo figure out a way to automatically unsubscribe after first value is received.
+        //todo should also consider forgetting the subject here.
         devicesSubscription.unsubscribe();
         devicesSubscription = bind(devicesInteractor.devices)
                 .subscribe(devices -> {
