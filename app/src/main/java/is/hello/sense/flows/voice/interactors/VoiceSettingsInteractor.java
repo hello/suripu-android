@@ -22,6 +22,7 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
     private static final String KEY_SENSE_ID = VoiceSettingsInteractor.class.getName() + "KEY_SENSE_ID";
     private final ApiService apiService;
     private String senseId = EMPTY_ID;
+    private boolean changingVolume = false;
 
     public InteractorSubject<SenseVoiceSettings> settingsSubject = this.subject;
 
@@ -65,6 +66,7 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
     }
 
     public Observable<SenseVoiceSettings> setMuted(final boolean muted){
+        changingVolume = false;
         return getNewInstanceOfLatestSettings()
                 .flatMap( newSettings -> {
                     newSettings.setMuted(muted);
@@ -73,6 +75,7 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
     }
 
     public Observable<SenseVoiceSettings> setPrimaryUser(final boolean isPrimaryUser){
+        changingVolume = false;
         return getNewInstanceOfLatestSettings()
                 .flatMap( newSettings -> {
                     newSettings.setPrimaryUser(isPrimaryUser);
@@ -81,6 +84,7 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
     }
 
     public Observable<SenseVoiceSettings> setVolume(final int volume){
+        changingVolume = true;
         return getNewInstanceOfLatestSettings()
                 .flatMap(newSettings -> {
                     newSettings.setVolume(volume);
@@ -102,9 +106,12 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
                          .flatMap( ignore -> provideUpdateObservable()
                                  .doOnNext( responseSettings -> {
                                      //updateVolumeTextView subject with new settings
-                                    if(newSettings.equals(responseSettings)){
-                                        settingsSubject.onNext(responseSettings);
-                                    }
+                                     if (newSettings.equals(responseSettings)) {
+                                         if (!changingVolume) {
+                                             responseSettings.setVolume(settingsSubject.getValue().getVolume());
+                                         }
+                                         settingsSubject.onNext(responseSettings);
+                                     }
                                  })
                                  .repeatWhen( onComplete -> onComplete.zipWith(
                                          Observable.range(1, REPEAT_MAX_COUNT)
