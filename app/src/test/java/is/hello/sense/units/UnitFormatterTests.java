@@ -159,7 +159,7 @@ public class UnitFormatterTests extends InjectionTestCase {
     public void formatUV() throws Exception {
         assertThat(unitFormatter.createUnitBuilder(SensorType.UV, 42)
                                 .buildWithStyle(),
-                   is(equalTo("42 k")));
+                   is(equalTo("42 ")));
     }
 
     @Test
@@ -180,7 +180,7 @@ public class UnitFormatterTests extends InjectionTestCase {
     public void formatPressure() throws Exception {
         assertThat(unitFormatter.createUnitBuilder(SensorType.PRESSURE, 42)
                                 .buildWithStyle(),
-                   is(equalTo("42 mBar")));
+                   is(equalTo("42 mbar")));
     }
 
     @Test
