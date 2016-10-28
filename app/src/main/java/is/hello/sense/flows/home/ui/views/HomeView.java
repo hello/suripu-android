@@ -46,13 +46,16 @@ public class HomeView extends PresenterView {
                                                  new StaticFragmentAdapter.Item(VoiceFragment.class, getString(R.string.label_voice)));
         this.pager.setAdapter(adapter);
         this.pager.setFadePageTransformer(true);
-        this.subNavSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
-        this.subNavSelector.setBackground(new TabsBackgroundDrawable(this.context.getResources(),
-                                                                     TabsBackgroundDrawable.Style.SUBNAV));
-        this.subNavSelector.addOption(R.string.home_subnav_insights, false);
-        this.subNavSelector.addOption(R.string.home_subnav_voice, false);
-        this.subNavSelector.setTranslationY(0);
-        this.subNavSelector.setOnSelectionChangedListener(listener);
+        post(() -> {
+            this.subNavSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
+            this.subNavSelector.setBackground(new TabsBackgroundDrawable(this.context.getResources(),
+                                                                         TabsBackgroundDrawable.Style.SUBNAV));
+            this.subNavSelector.addOption(R.string.home_subnav_insights, false);
+            this.subNavSelector.addOption(R.string.home_subnav_voice, false);
+            this.subNavSelector.setTranslationY(0);
+            this.subNavSelector.setOnSelectionChangedListener(listener);
+            this.subNavSelector.setSelectedIndex(this.pager.getCurrentItem());
+        });
     }
 
     @Override
@@ -80,11 +83,11 @@ public class HomeView extends PresenterView {
     }
 
 
-    public int currentPagerItem(){
+    public int currentPagerItem() {
         return pager.getCurrentItem();
     }
 
-    public int getPagerId(){
+    public int getPagerId() {
         return pager.getId();
     }
 
@@ -137,4 +140,5 @@ public class HomeView extends PresenterView {
                 })
                 .start();
     }
+
 }
