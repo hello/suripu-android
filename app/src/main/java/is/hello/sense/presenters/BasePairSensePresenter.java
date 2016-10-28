@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
+import java.util.concurrent.TimeUnit;
+
 import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
@@ -181,23 +183,37 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
         showBlockingActivity(R.string.title_pushing_data);
 
         bindAndSubscribe(hardwareInteractor.pushData(),
-                         ignored -> getDeviceFeatures(),
+                         ignored -> getDeviceFeatures(false),
                          error -> {
                              Logger.error(getClass().getSimpleName(), "Could not push Sense data, ignoring.", error);
-                             getDeviceFeatures();
+                             getDeviceFeatures(false);
                          });
     }
 
-    private void getDeviceFeatures() {
-        showBlockingActivity(R.string.title_pushing_data);
+    /**
+     * @param isRetrying should be true if using from any thread not the UI thread. Trying to show
+     *                   the blocking activity from another thread will trigger an error and not
+     *                   show voice tutorial if the user has it.
+     *                   <p>
+     *                   todo clean up how this presenter is showing blocking activities (will be done as we transition to viper2).
+     */
+    private void getDeviceFeatures(final boolean isRetrying) {
+        if (!isRetrying) {
+            showBlockingActivity(R.string.title_pushing_data);
+        }
         //todo figure out a way to automatically unsubscribe after first value is received.
         //todo should also consider forgetting the subject here.
         devicesSubscription.unsubscribe();
         devicesSubscription = bind(devicesInteractor.devices)
+                .delay(2, TimeUnit.SECONDS)
                 .subscribe(devices -> {
                                devicesSubscription.unsubscribe(); // Unsubscribe so onfinished isn't called multiple times. Triggering an error for too many BLE commands at once
-                               preferencesInteractor.setDevice(devices.getSense());
-                               onFinished();
+                               if (devices == null || devices.getSense() == null) {
+                                   getDeviceFeatures(true); // servers not in sync. try again.
+                               } else {
+                                   preferencesInteractor.setDevice(devices.getSense());
+                                   onFinished();
+                               }
                            },
                            error -> {
                                devicesSubscription.unsubscribe();// Unsubscribe so onfinished isn't called multiple times. Triggering an error for too many BLE commands at once

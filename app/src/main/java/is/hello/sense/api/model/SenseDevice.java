@@ -44,7 +44,8 @@ public class SenseDevice extends BaseDevice {
     @Override
     public String toString() {
         return "Sense{" +
-                "wiFiInfo=" + wiFiInfo +
+                "hardwareversion=" + hardwareVersion.toString() +
+                ", wiFiInfo=" + wiFiInfo +
                 '}';
     }
 
@@ -74,7 +75,7 @@ public class SenseDevice extends BaseDevice {
         }
 
         public WiFiSignalStrength getSignalStrength() {
-            if (rssi != 0){
+            if (rssi != 0) {
                 return WiFiSignalStrength.fromRssi(rssi);
             }
             return WiFiSignalStrength.fromCondition(condition);
@@ -97,7 +98,8 @@ public class SenseDevice extends BaseDevice {
         WHITE(R.string.device_color_white),
         UNKNOWN(R.string.missing_data_placeholder);
 
-        public final @StringRes
+        public final
+        @StringRes
         int nameRes;
 
         Color(final int nameRes) {
@@ -114,7 +116,8 @@ public class SenseDevice extends BaseDevice {
         SENSE_WITH_VOICE(R.string.device_hardware_version_sense_with_voice),
         UNKNOWN(R.string.device_hardware_version_unknown);
 
-        public final @StringRes
+        public final
+        @StringRes
         int nameRes;
 
         HardwareVersion(final int nameRes) {
@@ -130,7 +133,7 @@ public class SenseDevice extends BaseDevice {
         @SerializedName("status")
         public final SwapStatus status;
 
-        public SwapResponse(final SwapStatus status){
+        public SwapResponse(final SwapStatus status) {
             this.status = status;
         }
 
@@ -139,13 +142,13 @@ public class SenseDevice extends BaseDevice {
         }
     }
 
-    public enum SwapStatus implements Enums.FromString{
+    public enum SwapStatus implements Enums.FromString {
         OK,
         ACCOUNT_PAIRED_TO_MULTIPLE_SENSE,
         NEW_SENSE_PAIRED_TO_DIFFERENT_ACCOUNT,
         UNKNOWN;
 
-        public static SwapStatus fromString(final String value){
+        public static SwapStatus fromString(final String value) {
             return Enums.fromString(value, values(), UNKNOWN);
         }
     }
@@ -154,7 +157,7 @@ public class SenseDevice extends BaseDevice {
         @SerializedName("sense_id")
         public final String senseId;
 
-        public SwapRequest(@NonNull final String senseId){
+        public SwapRequest(@NonNull final String senseId) {
             this.senseId = senseId;
         }
     }
