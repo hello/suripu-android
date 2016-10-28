@@ -180,10 +180,12 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
             time.setText(dateFormatter.formatAsAlarmTime(alarm.getTime(), use24Time));
             repeat.setText(alarm.getDaysOfWeekSummary(repeat.getContext()));
 
+            expansionsAdapter.clear();
+
             for (final ExpansionAlarm ea :
                     alarm.getExpansions()) {
                 ea.setDisplayIcon(expansionFormatter.getDisplayIconRes(ea.getCategory()));
-                if(ea.expansionRange != null) {
+                if(ea.isEnabled() && ea.expansionRange != null) {
                     ea.setDisplayValue(expansionFormatter.getFormattedAttributionValueRange(ea.getCategory(),
                                                                                             ea.expansionRange,
                                                                                             itemView.getContext()));

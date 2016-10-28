@@ -50,7 +50,7 @@ public class ExpansionAlarm extends ApiResponse {
         this(expansion.getId(),
              expansion.getCategory(),
              expansion.getServiceName(),
-             true,
+             expansion.isConnected(),
              null);
     }
 

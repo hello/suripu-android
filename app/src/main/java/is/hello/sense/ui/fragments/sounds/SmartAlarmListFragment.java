@@ -121,17 +121,11 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        onUpdate();
+        update();
         final Observable<Boolean> use24Time = preferences.observableUse24Time();
         bindAndSubscribe(use24Time, adapter::setUse24Time, Functions.LOG_ERROR);
         bindAndSubscribe(smartAlarmPresenter.alarms, this::bindAlarms, this::alarmsUnavailable);
 
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        update();
     }
 
     @Override
@@ -156,10 +150,6 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
                              ignored -> activityIndicator.setVisibility(View.GONE),
                              this::presentError);
         }
-    }
-
-    public void onUpdate() {
-        smartAlarmPresenter.update();
     }
 
     public void startLoading() {
@@ -301,7 +291,7 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
 
     public void retry(@NonNull final View sender) {
         startLoading();
-        onUpdate();
+        update();
     }
 
     @Override

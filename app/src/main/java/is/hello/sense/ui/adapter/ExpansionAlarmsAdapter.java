@@ -34,10 +34,13 @@ public class ExpansionAlarmsAdapter extends ArrayRecyclerAdapter<ExpansionAlarm,
         holder.bind(position);
     }
 
-    public List<ExpansionAlarm> getAllCopy() {
+    public List<ExpansionAlarm> getAllEnabledWithValueRangeCopy() {
         final List<ExpansionAlarm> copy = new ArrayList<>(getItemCount());
         for (int i = 0; i < getItemCount(); i++) {
-            copy.add(getItem(i));
+            final ExpansionAlarm temp = getItem(i);
+            if(temp.isEnabled()) { //todo once the selector view is hooked up add && temp.expansionRange != null
+                copy.add(temp);
+            }
         }
         return copy;
     }
