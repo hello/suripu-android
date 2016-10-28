@@ -71,10 +71,9 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
     }
 
     //region Router
-
-    //todo replace with picker fragment
+    //todo use category to decide how many pickers to inflate
     private void showValuePicker(final long expansionId, @NonNull final Category category) {
-        pushFragment(ExpansionDetailFragment.newInstance(expansionId), null, false);
+        pushFragment(ExpansionDetailFragment.newValuePickerInstance(expansionId), null, false);
     }
 
     public void showConfigurationSelection() {

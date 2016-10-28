@@ -7,6 +7,7 @@
     android:layout_height="wrap_content"
     android:paddingStart="@dimen/x2"
     android:paddingEnd="@dimen/x2"
+    android:visibility="gone"
     tools:showIn="@layout/view_expansion_detail">
 
     <ImageView

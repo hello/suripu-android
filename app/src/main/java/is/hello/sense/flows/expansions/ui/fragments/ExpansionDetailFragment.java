@@ -19,10 +19,12 @@ import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
 import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.flows.expansions.ui.views.ExpansionDetailView;
+import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -50,17 +52,31 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     @Inject
     ConfigurationsInteractor configurationsInteractor; // todo remove when selected config end point is ready.
 
+    @Inject
+    ExpansionCategoryFormatter expansionCategoryFormatter;
+
     private static final String ARG_EXPANSION_ID = ExpansionDetailFragment.class + "ARG_EXPANSION_ID";
+    private static final String ARG_VALUE_PICKER = ExpansionDetailFragment.class + "ARG_VALUE_PICKER";
     private Subscription updateStateSubscription;
     /**
      * Tracks when fetching configurations fails to show the dialog at the right time.
      */
     private boolean lastConfigurationsFetchFailed = false;
+    private boolean wantsValuePicker = false;
 
     public static ExpansionDetailFragment newInstance(final long expansionId) {
         final ExpansionDetailFragment fragment = new ExpansionDetailFragment();
         final Bundle args = new Bundle();
         args.putLong(ARG_EXPANSION_ID, expansionId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static ExpansionDetailFragment newValuePickerInstance(final long expansionId) {
+        final ExpansionDetailFragment fragment = new ExpansionDetailFragment();
+        final Bundle args = new Bundle();
+        args.putLong(ARG_EXPANSION_ID, expansionId);
+        args.putBoolean(ARG_VALUE_PICKER, true);
         fragment.setArguments(args);
         return fragment;
     }
@@ -71,6 +87,15 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             presenterView = new ExpansionDetailView(getActivity(),
                                                     this::onEnabledIconClicked,
                                                     this::onRemoveAccessClicked);
+        }
+    }
+
+    @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        final Bundle arguments = getArguments();
+        if (arguments != null) {
+            wantsValuePicker = arguments.getBoolean(ARG_VALUE_PICKER, false);
         }
     }
 
@@ -151,7 +176,14 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             cancelFlow();
             return;
         }
-        presenterView.setExpansionInfo(expansion, picasso);
+        if(wantsValuePicker) {
+            final ExpansionValueRange expansionValueRange = expansion.getValueRange();
+            presenterView.showExpansionValuePicker(expansionValueRange,
+                                                   expansionValueRange.max - expansionValueRange.min, //initial value is midpoint
+                                                   expansionCategoryFormatter.getSuffix(expansion.getCategory()));
+        } else {
+            presenterView.showExpansionInfo(expansion, picasso);
+        }
         if (expansion.requiresAuthentication()) {
             presenterView.showConnectButton(this::onConnectClicked);
         } else if (expansion.requiresConfiguration()) {
