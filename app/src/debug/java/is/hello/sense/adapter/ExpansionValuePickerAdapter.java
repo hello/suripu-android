@@ -94,6 +94,10 @@ public class ExpansionValuePickerAdapter extends ArrayRecyclerAdapter<Integer, E
         return getItem(this.selectedPosition);
     }
 
+    public int getMinValue() {
+        return this.min;
+    }
+
     public class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder {
         private final TextView textView;
 

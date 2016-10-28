@@ -144,7 +144,7 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
     }
 
     private void showExpansionPickerActivity(final long expansionId, @NonNull final Category category) {
-        final Intent intent = ExpansionValuePickerActivity.getIntent(this, expansionId, category);
+        final Intent intent = ExpansionValuePickerActivity.getIntent(this, expansionId, category, null);
         intent.setFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
         startActivity(intent);
         finish();

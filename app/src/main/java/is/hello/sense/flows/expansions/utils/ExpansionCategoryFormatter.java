@@ -3,6 +3,7 @@ package is.hello.sense.flows.expansions.utils;
 import android.content.Context;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import is.hello.sense.R;
@@ -68,6 +69,22 @@ public class ExpansionCategoryFormatter {
                 return R.string.smart_alarm_expansion_state_connected_off;
             default:
                 return R.string.smart_alarm_expansion_state_connected_on;
+        }
+    }
+
+    public int[] getInitialValues(@NonNull final Category category,
+                                  @Nullable final ExpansionValueRange initialValueRange,
+                                  @NonNull final ExpansionValueRange defaultValueRange) {
+        final int minValue = initialValueRange != null ? initialValueRange.min : defaultValueRange.max - defaultValueRange.min;
+        final int maxValue = initialValueRange != null ? initialValueRange.max : defaultValueRange.max - defaultValueRange.min;
+
+        switch (category){
+            case LIGHT:
+                return new int[]{maxValue};
+            case TEMPERATURE:
+                return new int[]{minValue, maxValue};
+            default:
+                throw new IllegalStateException("no initial values provided yet for category " + category);
         }
     }
 }

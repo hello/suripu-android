@@ -38,6 +38,7 @@ import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
+import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
 import is.hello.sense.flows.expansions.interactors.ExpansionsInteractor;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionValuePickerActivity;
@@ -429,17 +430,20 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     private void onExpansionAlarmItemClicked(final int position, @NonNull final ExpansionAlarm expansionAlarm) {
         if(expansionAlarm.isEnabled()){
             redirectToExpansionPicker(expansionAlarm.getId(),
-                                      expansionAlarm.getCategory());
+                                      expansionAlarm.getCategory(),
+                                      expansionAlarm.getExpansionRange());
         } else {
             redirectToExpansionDetail(expansionAlarm.getId());
         }
     }
 
     private void redirectToExpansionPicker(final long expansionId,
-                                           @NonNull final Category expansionCategory) {
+                                           @NonNull final Category expansionCategory,
+                                           @Nullable final ExpansionValueRange valueRange) {
         startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
                                                                       expansionId,
-                                                                      expansionCategory),
+                                                                      expansionCategory,
+                                                                      valueRange),
                                EXPANSION_VALUE_REQUEST_CODE);
     }
 

@@ -14,6 +14,7 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
 import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
 import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
@@ -30,6 +31,7 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
 
     private static final String EXTRA_EXPANSION_DETAIL_ID = ExpansionValuePickerActivity.class.getName() + "EXTRA_EXPANSION_DETAIL_ID";
     private static final String EXTRA_EXPANSION_CATEGORY = ExpansionValuePickerActivity.class.getName() + "EXTRA_EXPANSION_CATEGORY";
+    private static final String EXTRA_EXPANSION_VALUE_RANGE = ExpansionValuePickerActivity.class.getName() + "EXTRA_EXPANSION_VALUE_RANGE";
 
     private FragmentNavigationDelegate navigationDelegate;
 
@@ -55,7 +57,8 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
             if(category != null) {
                 setTitle(category.categoryDisplayString);
                 showValuePicker(intent.getLongExtra(EXTRA_EXPANSION_DETAIL_ID, Expansion.NO_ID),
-                                category);
+                                category,
+                                (ExpansionValueRange) intent.getSerializableExtra(EXTRA_EXPANSION_VALUE_RANGE));
             } else {
                 finish(); //todo handle better
             }
@@ -66,16 +69,23 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
 
     public static Intent getIntent(@NonNull final Context context,
                                    final long expansionId,
-                                   @NonNull final Category expansionCategory){
+                                   @NonNull final Category expansionCategory,
+                                   @Nullable final ExpansionValueRange expansionValueRange){
         return new Intent(context, ExpansionValuePickerActivity.class)
                 .putExtra(EXTRA_EXPANSION_DETAIL_ID, expansionId)
-                .putExtra(EXTRA_EXPANSION_CATEGORY, expansionCategory);
+                .putExtra(EXTRA_EXPANSION_CATEGORY, expansionCategory)
+                .putExtra(EXTRA_EXPANSION_VALUE_RANGE, expansionValueRange);
     }
 
     //region Router
     //todo use category to decide how many pickers to inflate
-    private void showValuePicker(final long expansionId, @NonNull final Category category) {
-        pushFragment(ExpansionDetailFragment.newValuePickerInstance(expansionId), null, false);
+    private void showValuePicker(final long expansionId,
+                                 @NonNull final Category category,
+                                 @Nullable final ExpansionValueRange valueRange) {
+        pushFragment(ExpansionDetailFragment.newValuePickerInstance(expansionId,
+                                                                    category,
+                                                                    valueRange),
+                     null, false);
     }
 
     public void showConfigurationSelection() {
@@ -118,7 +128,7 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
                         && result.hasExtra(ConfigSelectionFragment.EXPANSION_CATEGORY)) {
                     final long expansionId = result.getLongExtra(ConfigSelectionFragment.EXPANSION_ID_KEY, Expansion.NO_ID);
                         final Category category = (Category) result.getSerializableExtra(ConfigSelectionFragment.EXPANSION_CATEGORY);
-                        showValuePicker(expansionId, category);
+                        showValuePicker(expansionId, category, null);
                     }
                 } else {
                     setResult(RESULT_CANCELED);

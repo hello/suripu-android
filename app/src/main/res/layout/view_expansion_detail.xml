@@ -8,13 +8,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingTop="@dimen/x2">
+        android:orientation="vertical">
 
         <include layout="@layout/view_expansion_detail_info"/>
 
-        <is.hello.sense.ui.widget.ExpansionValuePickerView
-            android:id="@+id/view_expansion_detail_value_picker"
+        <is.hello.sense.flows.expansions.ui.widget.ExpansionRangePicker
+            android:id="@+id/view_expansion_detail_range_picker"
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:visibility="gone"/>

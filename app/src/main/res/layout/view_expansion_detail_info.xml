@@ -5,6 +5,7 @@
     android:id="@+id/view_expansion_detail_info_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingTop="@dimen/x2"
     android:paddingStart="@dimen/x2"
     android:paddingEnd="@dimen/x2"
     android:visibility="gone"

@@ -60,14 +60,19 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     @Inject
     ExpansionCategoryFormatter expansionCategoryFormatter;
 
-    private static final String ARG_EXPANSION_ID = ExpansionDetailFragment.class + "ARG_EXPANSION_ID";
-    private static final String ARG_VALUE_PICKER = ExpansionDetailFragment.class + "ARG_VALUE_PICKER";
+    private static final String ARG_EXPANSION_ID = ExpansionDetailFragment.class.getSimpleName() + "ARG_EXPANSION_ID";
+    private static final String ARG_VALUE_PICKER = ExpansionDetailFragment.class.getSimpleName() + "ARG_VALUE_PICKER";
+    private static final String ARG_EXPANSION_CATEGORY = ExpansionDetailFragment.class.getSimpleName() + "ARG_EXPANSION_CATEGORY";
+    private static final String ARG_EXPANSION_VALUE_RANGE = ExpansionDetailFragment.class.getSimpleName() + "ARG_EXPANSION_VALUE_RANGE";
     private Subscription updateStateSubscription;
     /**
      * Tracks when fetching configurations fails to show the dialog at the right time.
      */
     private boolean lastConfigurationsFetchFailed = false;
     private boolean wantsValuePicker = false;
+    //used by value picker for inflating # pickers and setting up
+    private ExpansionValueRange initialValueRange;
+    private Category expansionCategory;
 
     public static ExpansionDetailFragment newInstance(final long expansionId) {
         final ExpansionDetailFragment fragment = new ExpansionDetailFragment();
@@ -77,10 +82,14 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         return fragment;
     }
 
-    public static ExpansionDetailFragment newValuePickerInstance(final long expansionId) {
+    public static ExpansionDetailFragment newValuePickerInstance(final long expansionId,
+                                                                 @NonNull final Category category,
+                                                                 @Nullable final ExpansionValueRange valueRange) {
         final ExpansionDetailFragment fragment = new ExpansionDetailFragment();
         final Bundle args = new Bundle();
         args.putLong(ARG_EXPANSION_ID, expansionId);
+        args.putSerializable(ARG_EXPANSION_CATEGORY, category);
+        args.putSerializable(ARG_EXPANSION_VALUE_RANGE, valueRange);
         args.putBoolean(ARG_VALUE_PICKER, true);
         fragment.setArguments(args);
         return fragment;
@@ -101,6 +110,8 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         final Bundle arguments = getArguments();
         if (arguments != null) {
             wantsValuePicker = arguments.getBoolean(ARG_VALUE_PICKER, false);
+            expansionCategory = (Category) arguments.getSerializable(ARG_EXPANSION_CATEGORY);
+            initialValueRange = (ExpansionValueRange) arguments.getSerializable(ARG_EXPANSION_VALUE_RANGE);
         }
     }
 
@@ -183,9 +194,13 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         }
         //todo currently assumes that when wantsValuePicker = true the expansion is enabled, configured, and authenticated
         if(wantsValuePicker) {
-            final ExpansionValueRange expansionValueRange = expansion.getValueRange();
-            presenterView.showExpansionValuePicker(expansion,
-                                                   expansionValueRange.max - expansionValueRange.min, //initial value is midpoint
+
+            final int[] initialValues = expansionCategoryFormatter.getInitialValues(expansion.getCategory(),
+                                                                                    initialValueRange,
+                                                                                    expansion.getValueRange());
+
+            presenterView.showExpansionRangePicker(expansion,
+                                                   initialValues,
                                                    expansionCategoryFormatter.getSuffix(expansion.getCategory()));
         } else {
             presenterView.showExpansionInfo(expansion, picasso);
@@ -197,6 +212,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         } else {
             configurationsInteractor.update();
             presenterView.showEnableSwitch(expansion.isConnected(), this);
+            presenterView.showRemoveAccess(! wantsValuePicker);
         }
 
     }
