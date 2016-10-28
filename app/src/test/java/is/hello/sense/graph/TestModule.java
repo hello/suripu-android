@@ -17,8 +17,11 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.TestApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.TestApiSessionManager;
-import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractorTests;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
+import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractorTests;
+import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
+import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
+import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractorTest;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.interactors.AccountInteractor;
@@ -42,7 +45,6 @@ import is.hello.sense.interactors.SenseOTAStatusInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractorTests;
 import is.hello.sense.interactors.SenseVoiceInteractor;
 import is.hello.sense.interactors.SenseVoiceInteractorTests;
-import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractorTest;
 import is.hello.sense.interactors.SmartAlarmInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractorTests;
 import is.hello.sense.interactors.SwapSenseInteractor;
@@ -57,7 +59,6 @@ import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractorTests;
 import is.hello.sense.interactors.questions.ApiQuestionProviderTests;
 import is.hello.sense.interactors.questions.ReviewQuestionProviderTests;
-import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.rating.LocalUsageTrackerTests;
 import is.hello.sense.ui.adapter.SmartAlarmAdapterTests;
 import is.hello.sense.ui.fragments.RoomConditionsFragmentTests;
@@ -232,5 +233,11 @@ public final class TestModule {
     @Singleton
     ConfigurationsInteractor providesConfigurationInteractor(final ApiService service){
         return new ConfigurationsInteractor(service);
+    }
+
+    @Provides
+    @Singleton
+    ExpansionCategoryFormatter providesExpansionCategoryFormatter(){
+        return new ExpansionCategoryFormatter();
     }
 }
