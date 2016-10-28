@@ -346,19 +346,19 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
                 !preferences.getBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, false)));
         stageOne.subscribe(showReview -> {
                                if (showReview) {
-                                   if (!preferences.getBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, false)) {
+                                   final boolean reviewedOnAmazon = preferences.getBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, false);
+                                    // Amazon review links point to the first version of Sense and thus should not be shown for voice
+                                   if (!reviewedOnAmazon && !preferences.hasVoice()) {
                                        final String country = Locale.getDefault().getCountry();
                                        if (country.equalsIgnoreCase(Locale.US.getCountry())) {
                                            questionsInteractor.setSource(QuestionsInteractor.Source.REVIEW_AMAZON);
                                        } else if (country.equalsIgnoreCase(Locale.UK.getCountry())) {
                                            questionsInteractor.setSource(QuestionsInteractor.Source.REVIEW_AMAZON_UK);
-                                       }
+                                       } // else, default source is API
                                    } else {
                                        questionsInteractor.setSource(QuestionsInteractor.Source.REVIEW);
                                    }
-                               } else {
-                                   questionsInteractor.setSource(QuestionsInteractor.Source.API);
-                               }
+                               } // else, default source is API
                                questionsInteractor.update();
                            },
                            e -> {
