@@ -2,6 +2,7 @@ package is.hello.sense.ui.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 public class ExpansionAlarmsAdapter extends ArrayRecyclerAdapter<ExpansionAlarm, ExpansionAlarmsAdapter.ExpansionAlarmViewHolder> {
 
     private boolean wantsAttributionStyle = false;
+    private int lastClickedItemIndex = RecyclerView.NO_POSITION;
 
     public ExpansionAlarmsAdapter(@NonNull final List<ExpansionAlarm> storage) {
         super(storage);
@@ -38,7 +40,7 @@ public class ExpansionAlarmsAdapter extends ArrayRecyclerAdapter<ExpansionAlarm,
         final List<ExpansionAlarm> copy = new ArrayList<>(getItemCount());
         for (int i = 0; i < getItemCount(); i++) {
             final ExpansionAlarm temp = getItem(i);
-            if(temp.isEnabled()) { //todo once the selector view is hooked up add && temp.expansionRange != null
+            if(temp.isEnabled() && temp.hasExpansionRange()) {
                 copy.add(temp);
             }
         }
@@ -54,6 +56,12 @@ public class ExpansionAlarmsAdapter extends ArrayRecyclerAdapter<ExpansionAlarm,
         notifyDataSetChanged();
     }
 
+    public void updateLastClickedItem(@NonNull final ExpansionAlarm expansionAlarm) {
+        if(lastClickedItemIndex != RecyclerView.NO_POSITION) {
+            set(lastClickedItemIndex, expansionAlarm);
+        }
+    }
+
     public class ExpansionAlarmViewHolder extends ArrayRecyclerAdapter.ViewHolder {
         private final TextView categoryNameTextView;
         private final TextView valueTextView;
@@ -65,6 +73,12 @@ public class ExpansionAlarmsAdapter extends ArrayRecyclerAdapter<ExpansionAlarm,
             this.valueTextView = (TextView) itemView.findViewById(R.id.item_row_expansion_alarm_value);
             this.errorImageView = (ImageView) itemView.findViewById(R.id.item_row_expansion_alarm_error);
             this.itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(final View ignored) {
+            ExpansionAlarmsAdapter.this.lastClickedItemIndex = getAdapterPosition();
+            super.onClick(ignored);
         }
 
         @Override

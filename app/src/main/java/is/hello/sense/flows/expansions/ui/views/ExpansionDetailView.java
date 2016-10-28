@@ -130,13 +130,15 @@ public class ExpansionDetailView extends PresenterView {
         this.configurationTypeTextView.setText(expansion.getConfigurationType());
     }
 
-    public void showExpansionValuePicker(@NonNull final ExpansionValueRange valueRange,
+    public void showExpansionValuePicker(@NonNull final Expansion expansion,
                                          final int initialValue,
                                          @NonNull final String suffix){
+        final ExpansionValueRange expansionValueRange = expansion.getValueRange();
         this.expansionValuePickerView.setVisibility(VISIBLE);
         this.expansionValuePickerView.setNestedScrollingEnabled(true);
-        this.expansionValuePickerView.initialize(valueRange.min, valueRange.max, suffix);
+        this.expansionValuePickerView.initialize(expansionValueRange.min, expansionValueRange.max, suffix);
         this.expansionValuePickerView.setSelectedPosition(initialValue);
+        this.configurationTypeTextView.setText(expansion.getConfigurationType());
     }
 
 
@@ -182,6 +184,16 @@ public class ExpansionDetailView extends PresenterView {
             enabledSwitchClickListener.onCheckedChanged(buttonView, isChecked);
         });
         this.enabledSwitch.setEnabled(true);
+    }
+
+    //todo get diff values
+    public int getSelectedMin() {
+        return this.expansionValuePickerView.getSelectedValue();
+    }
+
+    //todo get diff values
+    public int getSelectedMax() {
+        return this.expansionValuePickerView.getSelectedValue();
     }
 
     //endregion

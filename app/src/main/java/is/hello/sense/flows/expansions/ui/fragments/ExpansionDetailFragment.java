@@ -1,5 +1,6 @@
 package is.hello.sense.flows.expansions.ui.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,13 +20,16 @@ import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
 import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
+import is.hello.sense.flows.expansions.ui.activities.ExpansionValuePickerActivity;
 import is.hello.sense.flows.expansions.ui.views.ExpansionDetailView;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
 import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
@@ -37,7 +41,8 @@ import rx.subscriptions.Subscriptions;
 import static is.hello.sense.api.model.v2.expansions.Expansion.NO_ID;
 
 public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailView>
-        implements CompoundButton.OnCheckedChangeListener {
+        implements CompoundButton.OnCheckedChangeListener,
+        OnBackPressedInterceptor {
     public static final int RESULT_CONFIGURE_PRESSED = 100;
     public static final int RESULT_ACTION_PRESSED = 101;
     private static final int REQUEST_CODE_UPDATE_STATE_ERROR = 102;
@@ -176,9 +181,10 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             cancelFlow();
             return;
         }
+        //todo currently assumes that when wantsValuePicker = true the expansion is enabled, configured, and authenticated
         if(wantsValuePicker) {
             final ExpansionValueRange expansionValueRange = expansion.getValueRange();
-            presenterView.showExpansionValuePicker(expansionValueRange,
+            presenterView.showExpansionValuePicker(expansion,
                                                    expansionValueRange.max - expansionValueRange.min, //initial value is midpoint
                                                    expansionCategoryFormatter.getSuffix(expansion.getCategory()));
         } else {
@@ -189,7 +195,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         } else if (expansion.requiresConfiguration()) {
             presenterView.showConfigurationSuccess(getString(R.string.action_connect), this::onConfigureClicked);
         } else {
-            configurationsInteractor.update(); //todo remove after selected config end point is ready
+            configurationsInteractor.update();
             presenterView.showEnableSwitch(expansion.isConnected(), this);
         }
 
@@ -271,7 +277,6 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     }
 
     private void onConnectClicked(final View ignored) {
-        //todo test when value is lost
         finishFlowWithResult(RESULT_ACTION_PRESSED);
     }
 
@@ -297,6 +302,19 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         updateState(isChecked ? State.CONNECTED_ON : State.CONNECTED_OFF, (ignored) ->
                 hideBlockingActivity(true, ExpansionDetailFragment.this.presenterView::showUpdateSwitchSuccess));
 
+    }
+
+    @Override
+    public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
+        if(wantsValuePicker && expansionDetailsInteractor.expansionSubject.hasValue()){
+            final Intent intentWithExpansionAlarm = new Intent();
+            final ExpansionAlarm expansionAlarm = new ExpansionAlarm(expansionDetailsInteractor.expansionSubject.getValue());
+            expansionAlarm.setExpansionRange(presenterView.getSelectedMin(), presenterView.getSelectedMax());
+            intentWithExpansionAlarm.putExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM, expansionAlarm);
+            finishFlowWithResult(Activity.RESULT_OK, intentWithExpansionAlarm);
+            return true;
+        }
+        return false;
     }
     //endregion
 }

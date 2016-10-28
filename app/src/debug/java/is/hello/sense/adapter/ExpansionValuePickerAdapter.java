@@ -37,7 +37,6 @@ public class ExpansionValuePickerAdapter extends ArrayRecyclerAdapter<Integer, E
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.selectedColor = ContextCompat.getColor(this.inflater.getContext(), R.color.primary);
         this.normalColor = ContextCompat.getColor(this.inflater.getContext(), R.color.standard);
-        notifyDataSetChanged();
     }
 
     @Override

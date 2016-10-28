@@ -55,7 +55,7 @@ public class ExpansionValuePickerItemDecoration extends RecyclerView.ItemDecorat
             }
         }
 
-        if (parent instanceof ExpansionValuePickerView) {
+        if (parent instanceof ExpansionValuePickerView && !parent.isAnimating()) {
             ((ExpansionValuePickerView) parent).setSelectedPosition(tempCenter);
         }
     }

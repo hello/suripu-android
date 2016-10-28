@@ -30,6 +30,7 @@ public class ExpansionValuePickerView extends RecyclerView {
         super(context, attrs, defStyle);
         setLayoutManager(new LinearLayoutManager(context));
         setHasFixedSize(true);
+        setOverScrollMode(OVER_SCROLL_NEVER);
         setItemAnimator(null);
         addItemDecoration(new ExpansionValuePickerItemDecoration());
     }

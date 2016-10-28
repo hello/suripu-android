@@ -26,7 +26,7 @@ public class ExpansionAlarm extends ApiResponse {
     public final boolean enabled;
 
     @SerializedName("target_value")
-    public final ExpansionValueRange expansionRange;
+    private ExpansionValueRange expansionRange;
 
     //@Exclude
     private String displayValue = "empty value";
@@ -89,5 +89,17 @@ public class ExpansionAlarm extends ApiResponse {
 
     public void setDisplayIcon(@DrawableRes final int displayIcon) {
        this.displayIcon = displayIcon;
+    }
+
+    public void setExpansionRange(final int min, final int max) {
+        this.expansionRange = new ExpansionValueRange(min, max);
+    }
+
+    public boolean hasExpansionRange() {
+        return expansionRange != null;
+    }
+
+    public ExpansionValueRange getExpansionRange() {
+        return expansionRange;
     }
 }

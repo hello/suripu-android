@@ -287,8 +287,11 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             repeatDays.setText(alarm.getRepeatSummary(getActivity(), false));
             markDirty();
         } else if (requestCode == EXPANSION_VALUE_REQUEST_CODE) {
-            //todo handle should expect to return an ExpansionAlarm object to be able to update alarm expansions.
             final ExpansionAlarm expansionAlarm = (ExpansionAlarm) data.getSerializableExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM);
+            //todo how to handle when expansion disabled should the returned expansionAlarm be preformatted?
+            expansionAlarm.setDisplayValue(expansionCategoryFormatter.getFormattedValueRange(expansionAlarm.getCategory(), expansionAlarm.getExpansionRange(), getActivity()));
+            expansionAlarm.setDisplayIcon(expansionCategoryFormatter.getDisplayIconRes(expansionAlarm.getCategory()));
+            expansionAlarmsAdapter.updateLastClickedItem(expansionAlarm);
             markDirty();
         }
     }
@@ -409,9 +412,9 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
     private void bindExpansionAlarms(@NonNull final List<ExpansionAlarm> expansionAlarms) {
         for(final ExpansionAlarm expansionAlarm : expansionAlarms){
-            if(expansionAlarm.isEnabled() && expansionAlarm.expansionRange != null) {
+            if(expansionAlarm.isEnabled() && expansionAlarm.hasExpansionRange()) {
                 expansionAlarm.setDisplayValue(expansionCategoryFormatter.getFormattedValueRange(expansionAlarm.getCategory(),
-                                                                                     expansionAlarm.expansionRange,
+                                                                                     expansionAlarm.getExpansionRange(),
                                                                                      getActivity())
                                               );
 
