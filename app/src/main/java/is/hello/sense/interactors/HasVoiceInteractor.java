@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
-import is.hello.sense.functional.Function;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.InteractorSubject;
 import rx.Observable;
