@@ -17,6 +17,7 @@ import javax.inject.Inject;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.sensors.SensorStatus;
 import is.hello.sense.flows.home.interactors.SensorResponseInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
@@ -127,7 +128,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
 
         bindAndSubscribe(interactor.latest(),
                          conditions -> {
-                             this.hasCurrentConditions = !conditions.getSensors().isEmpty();
+                             this.hasCurrentConditions = !(conditions.getSensors().isEmpty() || conditions.getStatus() == SensorStatus.WAITING_FOR_DATA);
                          },
                          e -> {
                              Logger.error(getClass().getSimpleName(), "Could not load conditions", e);
@@ -313,8 +314,12 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
     }
 
     static class SenseColor {
-        final @StringRes int headingRes;
-        final @StringRes int subheadingRes;
+        final
+        @StringRes
+        int headingRes;
+        final
+        @StringRes
+        int subheadingRes;
 
         SenseColor(@StringRes int headingRes,
                    @StringRes int subheadingRes) {
