@@ -16,13 +16,16 @@ import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 
 public class ExpansionAlarmsAdapter extends ArrayRecyclerAdapter<ExpansionAlarm, ExpansionAlarmsAdapter.ExpansionAlarmViewHolder> {
 
+    private boolean wantsAttributionStyle = false;
+
     public ExpansionAlarmsAdapter(@NonNull final List<ExpansionAlarm> storage) {
         super(storage);
     }
 
     @Override
     public ExpansionAlarmViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_row_alarm_detail_expansion, parent, false);
+        final int layoutRes = wantsAttributionStyle ? R.layout.item_row_expansion_alarm_attribution : R.layout.item_row_expansion_alarm_detail;
+        final View view = LayoutInflater.from(parent.getContext()).inflate(layoutRes, parent, false);
         return new ExpansionAlarmViewHolder(view);
     }
 
@@ -31,12 +34,24 @@ public class ExpansionAlarmsAdapter extends ArrayRecyclerAdapter<ExpansionAlarm,
         holder.bind(position);
     }
 
-    public List<ExpansionAlarm> getAllCopy() {
+    public List<ExpansionAlarm> getAllEnabledWithValueRangeCopy() {
         final List<ExpansionAlarm> copy = new ArrayList<>(getItemCount());
         for (int i = 0; i < getItemCount(); i++) {
-            copy.add(getItem(i));
+            final ExpansionAlarm temp = getItem(i);
+            if(temp.isEnabled()) { //todo once the selector view is hooked up add && temp.expansionRange != null
+                copy.add(temp);
+            }
         }
         return copy;
+    }
+
+    /**
+     * @param attributionStyle if true use the layout for item_row_expansion_alarm_attribution.
+     *                         Default is false. Will refresh entire view.
+     */
+    public void setWantsAttributionStyle(final boolean attributionStyle) {
+        this.wantsAttributionStyle = attributionStyle;
+        notifyDataSetChanged();
     }
 
     public class ExpansionAlarmViewHolder extends ArrayRecyclerAdapter.ViewHolder {
@@ -46,9 +61,9 @@ public class ExpansionAlarmsAdapter extends ArrayRecyclerAdapter<ExpansionAlarm,
 
         public ExpansionAlarmViewHolder(final View itemView) {
             super(itemView);
-            this.categoryNameTextView = (TextView) itemView.findViewById(R.id.item_row_alarm_detail_expansion_category);
-            this.valueTextView = (TextView) itemView.findViewById(R.id.item_row_alarm_detail_expansion_value);
-            this.errorImageView = (ImageView) itemView.findViewById(R.id.item_row_alarm_detail_expansion_error);
+            this.categoryNameTextView = (TextView) itemView.findViewById(R.id.item_row_expansion_alarm_category);
+            this.valueTextView = (TextView) itemView.findViewById(R.id.item_row_expansion_alarm_value);
+            this.errorImageView = (ImageView) itemView.findViewById(R.id.item_row_expansion_alarm_error);
             this.itemView.setOnClickListener(this);
         }
 

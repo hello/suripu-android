@@ -475,7 +475,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     private void updateAlarmFromAdapterExpansions() {
-        this.alarm.setExpansions(expansionAlarmsAdapter.getAllCopy());
+        this.alarm.setExpansions(expansionAlarmsAdapter.getAllEnabledWithValueRangeCopy());
         finishSaveAlarmOperation();
     }
 
