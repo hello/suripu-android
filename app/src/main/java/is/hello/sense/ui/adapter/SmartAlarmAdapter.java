@@ -158,7 +158,7 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
             enabled.setChecked(alarm.isEnabled());
             enabled.setOnClickListener(this);
             time.setText(dateFormatter.formatAsAlarmTime(alarm.getTime(), use24Time));
-            repeat.setText(alarm.getDaysOfWeekSummary(repeat.getContext()));
+            repeat.setText(alarm.getDaysOfWeekSummary(repeat.getContext())); //todo modify to use source
         }
 
         @Override
