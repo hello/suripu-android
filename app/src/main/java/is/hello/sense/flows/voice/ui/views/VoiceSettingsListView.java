@@ -41,24 +41,31 @@ public class VoiceSettingsListView extends PresenterView {
         this.primaryUserValueTextView.setOnClickListener(null);
     }
 
-    public void setVolumeValueClickListener(@NonNull final OnClickListener listener){
+    public void setVolumeValueClickListener(@NonNull final OnClickListener listener) {
         Views.setTimeOffsetOnClickListener(volumeValueTextView, listener);
     }
 
     public void updateMuteSwitch(final boolean isChecked,
-                                 @NonNull final CompoundButton.OnCheckedChangeListener listener){
+                                 @NonNull final CompoundButton.OnCheckedChangeListener listener) {
         this.muteSwitch.setOnCheckedChangeListener(null);
         this.muteSwitch.setChecked(isChecked);
         this.muteSwitch.setOnCheckedChangeListener(listener);
         this.muteSwitch.setVisibility(VISIBLE);
     }
 
+    public void flipMuteSwitch(@NonNull final CompoundButton.OnCheckedChangeListener listener) {
+        updateMuteSwitch(!this.muteSwitch.isChecked(), listener);
+    }
+
     public void updateVolumeTextView(@NonNull final SenseVoiceSettings settings) {
+        Integer volume = settings.getVolume();
+        if (volume == null) {
+            volume = SenseVoiceSettings.DEFAULT_START_VOLUME;
+        }
         this.volumeValueTextView.setText(String.valueOf(
-                UnitOperations.percentageToLevel(settings.getVolume(),
+                UnitOperations.percentageToLevel(volume,
                                                  SenseVoiceSettings.TOTAL_VOLUME_LEVELS)));
         this.volumeValueTextView.setVisibility(VISIBLE);
-
     }
 
     public void makePrimaryUser() {

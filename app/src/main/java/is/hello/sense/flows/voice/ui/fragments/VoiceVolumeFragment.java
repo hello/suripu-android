@@ -26,7 +26,7 @@ public class VoiceVolumeFragment extends PresenterFragment<VoiceVolumeView> {
 
     @Override
     public void initializePresenterView() {
-        if(presenterView == null){
+        if (presenterView == null) {
             presenterView = new VoiceVolumeView(getActivity());
         }
         presenterView.setDoneButtonClickListener(this::postSelectedVolume);
@@ -44,7 +44,7 @@ public class VoiceVolumeFragment extends PresenterFragment<VoiceVolumeView> {
         hideBlockingActivity(false, null);
         bindAndSubscribe(voiceSettingsInteractor.settingsSubject,
                          this::bindSettings,
-                         this::presentError);
+                         Functions.IGNORE_ERROR);
     }
 
     @Override
@@ -54,7 +54,11 @@ public class VoiceVolumeFragment extends PresenterFragment<VoiceVolumeView> {
     }
 
     public void bindSettings(@NonNull final SenseVoiceSettings settings) {
-        this.presenterView.setVolume(settings.getVolume());
+        Integer volume = settings.getVolume();
+        if (volume == null) {
+            volume = SenseVoiceSettings.DEFAULT_START_VOLUME;
+        }
+        this.presenterView.setVolume(volume);
     }
 
     private void postSelectedVolume(final View ignore) {
@@ -69,7 +73,7 @@ public class VoiceVolumeFragment extends PresenterFragment<VoiceVolumeView> {
         updateSettingsSubscription = bind(updateObservable)
                 .subscribe(Functions.NO_OP,
                            this::presentError,
-                           () -> hideBlockingActivity(true, stateSafeExecutor.bind(this::finishFlow))
+                           () -> hideBlockingActivity(false, stateSafeExecutor.bind(this::finishFlow))
                           );
 
     }
@@ -80,7 +84,7 @@ public class VoiceVolumeFragment extends PresenterFragment<VoiceVolumeView> {
     }
 
     private void showProgress(final boolean show) {
-        if(show){
+        if (show) {
             presenterView.setVisibility(View.INVISIBLE);
             showBlockingActivity(null);
         } else {

@@ -1,6 +1,7 @@
 package is.hello.sense.api.model.v2.voice;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
@@ -16,6 +17,11 @@ public class SenseVoiceSettings extends ApiResponse {
     public static final int VOLUME_EQUALS_THRESHOLD = 2;
 
     public static final int TOTAL_VOLUME_LEVELS = 11;
+
+    /**
+     * Probably wont ever be used but just in case.
+     */
+    public static final int DEFAULT_START_VOLUME = 3;
 
     @SerializedName("volume")
     private Integer volume;
@@ -48,7 +54,8 @@ public class SenseVoiceSettings extends ApiResponse {
         this.isPrimaryUser = isPrimaryUser;
     }
 
-    public int getVolume() {
+    @Nullable
+    public Integer getVolume() {
         return volume;
     }
 
@@ -56,7 +63,8 @@ public class SenseVoiceSettings extends ApiResponse {
         this.volume = volume;
     }
 
-    public boolean isMuted() {
+    @Nullable
+    public Boolean isMuted() {
         return isMuted;
     }
 
@@ -64,7 +72,8 @@ public class SenseVoiceSettings extends ApiResponse {
         isMuted = muted;
     }
 
-    public boolean isPrimaryUser() {
+    @Nullable
+    public Boolean isPrimaryUser() {
         return isPrimaryUser;
     }
 
@@ -78,19 +87,29 @@ public class SenseVoiceSettings extends ApiResponse {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         final SenseVoiceSettings that = (SenseVoiceSettings) o;
 
         if (this.isMuted != null && that.isMuted != null) {
-            if (isMuted != that.isMuted) return false;
+            if (isMuted != that.isMuted) {
+                return false;
+            }
         }
         if (this.volume != null && that.volume != null) {
-            if (!this.isWithinVolumeThreshold(that.volume)) return false;
+            if (!this.isWithinVolumeThreshold(that.volume)) {
+                return false;
+            }
         }
         if (this.isPrimaryUser != null && that.isPrimaryUser != null) {
-            if (isPrimaryUser != that.isPrimaryUser) return false;
+            if (isPrimaryUser != that.isPrimaryUser) {
+                return false;
+            }
         }
         return true;
 

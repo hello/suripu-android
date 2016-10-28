@@ -94,7 +94,20 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
                                          Observable.range(1, REPEAT_MAX_COUNT)
                                          , (ignore2, integer) -> integer)
                                                                      .takeUntil(integer -> hasUpdatedTo(newSettings))
-                                                                     .flatMap(repeatCount -> Observable.timer(RESUBSCRIBE_DELAY_MILLIS, TimeUnit.MILLISECONDS))));
+                                                                     .flatMap(repeatCount -> Observable.timer(RESUBSCRIBE_DELAY_MILLIS, TimeUnit.MILLISECONDS))
+                                                                     .doOnCompleted(() -> {
+                                                                         if (!hasUpdatedTo(newSettings)) {
+                                                                             if (newSettings.getVolume() != null) {
+                                                                                 settingsSubject.onError(new SettingsUpdateThrowable());
+                                                                             }
+                                                                             if (newSettings.isMuted() != null) {
+                                                                                 settingsSubject.onError(new MuteUpdateThrowable());
+                                                                             }
+                                                                             if (newSettings.isPrimaryUser() != null) {
+                                                                                 settingsSubject.onError(new PrimaryUpdateThrowable());
+                                                                             }
+                                                                         }
+                                                                     })));
     }
 
     private Boolean hasUpdatedTo(@NonNull final SenseVoiceSettings newSettings) {
@@ -103,5 +116,16 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
 
     public void setSenseId(@NonNull final String id) {
         this.senseId = id;
+    }
+
+    public static class SettingsUpdateThrowable extends Throwable {
+
+    }
+
+    public static class MuteUpdateThrowable extends SettingsUpdateThrowable {
+
+    }
+
+    public static class PrimaryUpdateThrowable extends SettingsUpdateThrowable {
     }
 }
