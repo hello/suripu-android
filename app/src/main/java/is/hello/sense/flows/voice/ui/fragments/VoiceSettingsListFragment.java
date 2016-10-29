@@ -90,17 +90,11 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
 
     public void bindSettings(@NonNull final SenseVoiceSettings settings) {
         presenterView.updateVolumeTextView(settings);
-        Boolean isMuted = settings.isMuted();
-        if (isMuted == null) {
-            isMuted = false;
-        }
-        Boolean isPrimary = settings.isPrimaryUser();
-        if (isPrimary == null) {
-            isPrimary = false;
-        }
-        presenterView.updateMuteSwitch(isMuted, this::onMuteSwitchChanged);
 
-        if (isPrimary) {
+        presenterView.updateMuteSwitch(settings.isMuteOrDefault(),
+                                       this::onMuteSwitchChanged);
+
+        if (settings.isPrimaryUserOrDefault()) {
             presenterView.makePrimaryUser();
         } else {
             presenterView.makeSecondaryUser(this::showPrimaryUserDialog);

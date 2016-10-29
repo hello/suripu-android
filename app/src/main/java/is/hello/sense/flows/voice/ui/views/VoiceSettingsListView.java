@@ -2,9 +2,7 @@ package is.hello.sense.flows.voice.ui.views;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
@@ -58,12 +56,8 @@ public class VoiceSettingsListView extends PresenterView {
     }
 
     public void updateVolumeTextView(@NonNull final SenseVoiceSettings settings) {
-        Integer volume = settings.getVolume();
-        if (volume == null) {
-            volume = SenseVoiceSettings.DEFAULT_START_VOLUME;
-        }
         this.volumeValueTextView.setText(String.valueOf(
-                UnitOperations.percentageToLevel(volume,
+                UnitOperations.percentageToLevel(settings.getVolumeOrDefault(),
                                                  SenseVoiceSettings.TOTAL_VOLUME_LEVELS)));
         this.volumeValueTextView.setVisibility(VISIBLE);
     }

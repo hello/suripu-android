@@ -54,11 +54,7 @@ public class VoiceVolumeFragment extends PresenterFragment<VoiceVolumeView> {
     }
 
     public void bindSettings(@NonNull final SenseVoiceSettings settings) {
-        Integer volume = settings.getVolume();
-        if (volume == null) {
-            volume = SenseVoiceSettings.DEFAULT_START_VOLUME;
-        }
-        this.presenterView.setVolume(volume);
+        this.presenterView.setVolume(settings.getVolumeOrDefault());
     }
 
     private void postSelectedVolume(final View ignore) {

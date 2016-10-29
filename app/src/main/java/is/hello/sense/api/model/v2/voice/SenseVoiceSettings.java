@@ -136,4 +136,16 @@ public class SenseVoiceSettings extends ApiResponse {
                 ", isPrimaryUser=" + isPrimaryUser +
                 '}';
     }
+
+    public Boolean isPrimaryUserOrDefault() {
+        return (isPrimaryUser == null) ? false : isPrimaryUser;
+    }
+
+    public Boolean isMuteOrDefault() {
+        return (isMuted == null) ? false : isMuted;
+    }
+
+    public Integer getVolumeOrDefault() {
+        return (volume == null) ? DEFAULT_START_VOLUME : volume;
+    }
 }
