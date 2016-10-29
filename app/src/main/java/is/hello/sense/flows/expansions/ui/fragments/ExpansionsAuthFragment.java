@@ -109,7 +109,17 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
     @Override
     public void onCompletionUrlStarted() {
         presenterView.showProgress(false);
+        showBlockingActivity(R.string.expansions_completing);
+    }
+
+    @Override
+    public void onCompletionUrlFinished() {
         finishFlow();
+    }
+
+    @Override
+    public void onResourceError() {
+        hideBlockingActivity(false, null);
     }
 
     @Override
