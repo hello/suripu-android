@@ -65,7 +65,6 @@ public final class Constants {
             .withDayOfMonth(15)
             .toLocalDate();
 
-
     // From Retrofit
     public static final int HTTP_CONNECT_TIMEOUT_MILLIS = 15 * 1000; // 15s
     public static final int HTTP_READ_TIMEOUT_MILLIS = 20 * 1000; // 20s

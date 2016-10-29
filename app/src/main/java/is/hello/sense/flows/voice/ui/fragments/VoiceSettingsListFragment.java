@@ -1,5 +1,6 @@
 package is.hello.sense.flows.voice.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,6 +9,7 @@ import android.widget.CompoundButton;
 
 import javax.inject.Inject;
 
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.v2.voice.SenseVoiceSettings;
@@ -16,6 +18,7 @@ import is.hello.sense.flows.voice.ui.views.VoiceSettingsListView;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.CurrentSenseInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import rx.Observable;
@@ -31,11 +34,12 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     CurrentSenseInteractor currentSenseInteractor;
 
     public static final int RESULT_VOLUME_SELECTED = 99;
+    private static final int RESULT_HELP_PRESSED = 103;
     private Subscription updateSettingsSubscription = Subscriptions.empty();
 
     @Override
     public void initializePresenterView() {
-        if(presenterView == null){
+        if (presenterView == null) {
             presenterView = new VoiceSettingsListView(getActivity());
             presenterView.setVolumeValueClickListener(this::redirectToVolumeSelection);
         }
@@ -64,6 +68,16 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     }
 
     @Override
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RESULT_HELP_PRESSED && resultCode == RESULT_HELP_PRESSED) {
+            UserSupport.showUserGuide(getActivity());
+        }
+    }
+
+    @Override
     protected void onRelease() {
         super.onRelease();
         updateSettingsSubscription.unsubscribe();
@@ -77,9 +91,10 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     public void bindSettings(@NonNull final SenseVoiceSettings settings) {
         presenterView.updateVolumeTextView(settings);
 
-        presenterView.updateMuteSwitch(settings.isMuted(), this::onMuteSwitchChanged);
+        presenterView.updateMuteSwitch(settings.isMuteOrDefault(),
+                                       this::onMuteSwitchChanged);
 
-        if(settings.isPrimaryUser()){
+        if (settings.isPrimaryUserOrDefault()) {
             presenterView.makePrimaryUser();
         } else {
             presenterView.makeSecondaryUser(this::showPrimaryUserDialog);
@@ -99,9 +114,9 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     private void showPrimaryUserDialog(final View ignored) {
         showAlertDialog(new SenseAlertDialog.Builder()
                                 .setTitle(R.string.voice_settings_primary_user_dialog_title)
-                       .setMessage(R.string.voice_settings_primary_user_dialog_message)
-                       .setPositiveButton(R.string.voice_settings_primary_user_dialog_positive_button,
-                                          this::makePrimaryUser));
+                                .setMessage(R.string.voice_settings_primary_user_dialog_message)
+                                .setPositiveButton(R.string.voice_settings_primary_user_dialog_positive_button,
+                                                   this::makePrimaryUser));
     }
 
     private void updateSettings(@NonNull final Observable<SenseVoiceSettings> updateObservable) {
@@ -115,9 +130,21 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     }
 
     private void presentError(@NonNull final Throwable e) {
-        //todo show proper dialog
         showProgress(false);
-        showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e));
+        if (e instanceof VoiceSettingsInteractor.SettingsUpdateThrowable) {
+            final ErrorDialogFragment.PresenterBuilder builder = new ErrorDialogFragment.PresenterBuilder(e);
+            builder.withTitle(StringRef.from(R.string.voice_settings_update_error_title));
+            builder.withMessage(StringRef.from(R.string.voice_settings_update_error_message));
+            builder.withAction(RESULT_HELP_PRESSED, R.string.label_having_trouble);
+            showErrorDialog(builder, RESULT_HELP_PRESSED);
+            if (e instanceof VoiceSettingsInteractor.MuteUpdateThrowable) {
+                presenterView.flipMuteSwitch(this::onMuteSwitchChanged);
+            } else if (e instanceof VoiceSettingsInteractor.PrimaryUpdateThrowable) {
+                presenterView.makeSecondaryUser(this::showPrimaryUserDialog);
+            }
+        } else {
+            showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e));
+        }
     }
 
     private void redirectToVolumeSelection(final View ignore) {
@@ -125,7 +152,7 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     }
 
     private void showProgress(final boolean show) {
-        if(show){
+        if (show) {
             presenterView.setVisibility(View.INVISIBLE);
             showBlockingActivity(null);
         } else {

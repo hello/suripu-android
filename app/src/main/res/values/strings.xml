@@ -761,4 +761,7 @@
     <string name="voice_alarm_never">Voice Alarm</string>
     <string name="voice_alarm_days_repeat_format">Voice Alarm  ―  %1$s</string>
     <string name="smart_alarm_expansion_attribute_format">set at %1$s</string>
+
+    <string name="voice_settings_update_error_title">Changes not saved</string>
+    <string name="voice_settings_update_error_message">Sense did not accept the changes.</string>
 </resources>

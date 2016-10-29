@@ -1,12 +1,13 @@
 package is.hello.sense.api.model.v2.voice;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
 import is.hello.sense.api.model.ApiResponse;
-
+//todo fix equals method.
 public class SenseVoiceSettings extends ApiResponse {
 
     /**
@@ -16,6 +17,11 @@ public class SenseVoiceSettings extends ApiResponse {
     public static final int VOLUME_EQUALS_THRESHOLD = 2;
 
     public static final int TOTAL_VOLUME_LEVELS = 11;
+
+    /**
+     * Probably wont ever be used but just in case.
+     */
+    public static final int DEFAULT_START_VOLUME = 3;
 
     @SerializedName("volume")
     private Integer volume;
@@ -48,7 +54,8 @@ public class SenseVoiceSettings extends ApiResponse {
         this.isPrimaryUser = isPrimaryUser;
     }
 
-    public int getVolume() {
+    @Nullable
+    public Integer getVolume() {
         return volume;
     }
 
@@ -56,7 +63,8 @@ public class SenseVoiceSettings extends ApiResponse {
         this.volume = volume;
     }
 
-    public boolean isMuted() {
+    @Nullable
+    public Boolean isMuted() {
         return isMuted;
     }
 
@@ -64,7 +72,8 @@ public class SenseVoiceSettings extends ApiResponse {
         isMuted = muted;
     }
 
-    public boolean isPrimaryUser() {
+    @Nullable
+    public Boolean isPrimaryUser() {
         return isPrimaryUser;
     }
 
@@ -76,21 +85,36 @@ public class SenseVoiceSettings extends ApiResponse {
         return Math.abs(volume - otherVolume) <= VOLUME_EQUALS_THRESHOLD;
     }
 
+    /**
+     * Weird equal case. Read code.
+     * @param o
+     * @return
+     */
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         final SenseVoiceSettings that = (SenseVoiceSettings) o;
 
         if (this.isMuted != null && that.isMuted != null) {
-            if (isMuted != that.isMuted) return false;
+            if (isMuted != that.isMuted) {
+                return false;
+            }
         }
         if (this.volume != null && that.volume != null) {
-            if (!this.isWithinVolumeThreshold(that.volume)) return false;
+            if (!this.isWithinVolumeThreshold(that.volume)) {
+                return false;
+            }
         }
         if (this.isPrimaryUser != null && that.isPrimaryUser != null) {
-            if (isPrimaryUser != that.isPrimaryUser) return false;
+            if (isPrimaryUser != that.isPrimaryUser) {
+                return false;
+            }
         }
         return true;
 
@@ -111,5 +135,17 @@ public class SenseVoiceSettings extends ApiResponse {
                 ", isMuted=" + isMuted +
                 ", isPrimaryUser=" + isPrimaryUser +
                 '}';
+    }
+
+    public Boolean isPrimaryUserOrDefault() {
+        return (isPrimaryUser == null) ? false : isPrimaryUser;
+    }
+
+    public Boolean isMuteOrDefault() {
+        return (isMuted == null) ? false : isMuted;
+    }
+
+    public Integer getVolumeOrDefault() {
+        return (volume == null) ? DEFAULT_START_VOLUME : volume;
     }
 }
