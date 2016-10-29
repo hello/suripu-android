@@ -88,7 +88,7 @@ public class SenseApplication extends Application {
                     localUsageTracker.resetAsync();
 
                     final Intent launchIntent = new Intent(this,LaunchActivity.class);
-                    launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(launchIntent);
                 }, Functions.LOG_ERROR);
     }
