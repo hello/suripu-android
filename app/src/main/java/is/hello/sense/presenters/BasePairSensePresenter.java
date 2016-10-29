@@ -6,7 +6,6 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 
@@ -221,10 +220,8 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
                 .subscribe(devices -> {
                                devicesSubscription.unsubscribe(); // Unsubscribe so onfinished isn't called multiple times. Triggering an error for too many BLE commands at once
                                if (devices == null || devices.getSense() == null) {
-                                   Log.e(getClass().getSimpleName(),"Null Try Again");
                                    getDeviceFeatures(retry - 1); // servers not in sync. try again.
                                } else {
-                                   Log.e(getClass().getSimpleName(),"Device: "+devices.toString());
                                    preferencesInteractor.setDevice(devices.getSense());
                                    onFinished();
                                }
