@@ -734,8 +734,8 @@
     <string name="voice_settings_progress_updating">Updating</string>
 
     <string name="title_lights">Lights</string>
-    <string name="smart_alarm_expansion_state_connected_off">Off</string>
-    <string name="smart_alarm_expansion_state_connected_on">Connect</string>
+    <string name="smart_alarm_expansion_state_connected_off">Connect</string>
+    <string name="smart_alarm_expansion_state_connected_on">Off</string>
     <string name="expansion_category_lights">Lights</string>
     <string name="expansion_category_thermostat">Thermostat</string>
     <string name="expansion_category_configurations">Configurations</string>

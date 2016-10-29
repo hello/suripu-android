@@ -65,10 +65,10 @@ public class ExpansionCategoryFormatter {
     @StringRes
     public int getDisplayValueResFromState(@NonNull final State expansionState){
         switch (expansionState) {
-            case CONNECTED_OFF:
-                return R.string.smart_alarm_expansion_state_connected_off;
-            default:
+            case CONNECTED_ON:
                 return R.string.smart_alarm_expansion_state_connected_on;
+            default:
+                return R.string.smart_alarm_expansion_state_connected_off;
         }
     }
 
