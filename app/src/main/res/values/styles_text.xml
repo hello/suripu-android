@@ -249,7 +249,7 @@
     <style name="AppTheme.Text.SmartAlarm"/>
 
     <style name="AppTheme.Text.SmartAlarm.Time">
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textSize">@dimen/text_size_smart_alarm_time</item>
     </style>
 
