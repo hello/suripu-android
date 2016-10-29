@@ -15,7 +15,7 @@
         <is.hello.sense.flows.expansions.ui.widget.ExpansionRangePicker
             android:id="@+id/view_expansion_detail_range_picker"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="@dimen/x37.5"
             android:visibility="gone"/>
 
         <include layout="@layout/view_expansion_detail_action_rows"/>
