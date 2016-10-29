@@ -709,6 +709,7 @@
     <string name="are_you_sure">Are you sure?</string>
     <string name="expansion_detail_remove_access_dialog_message">Are you sure you want to remove this expansion? Previously set alarms will still sound, but will no longer activate this expansion.</string>
     <string name="expansions_configuration_selection_loading">Loading\nconfigurations</string>
+    <string name="expansions_completing">Establishing\nconnection</string>
 
     <string name="welcome_dialog_expansions_title">Expansions</string>
     <string name="welcome_dialog_expansions_message">Enabling access to compatible smart devices allows Sense to activate them at relevant moments, like turning on your lights when Sense’s alarm sounds.</string>

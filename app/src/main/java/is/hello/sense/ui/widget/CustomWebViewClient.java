@@ -39,7 +39,7 @@ public class CustomWebViewClient extends WebViewClient{
     @Override
     public void onPageStarted(final WebView view, final String url, final Bitmap favicon) {
         super.onPageStarted(view, url, favicon);
-        Logger.debug(CustomWebViewClient.class.getName() + "page started", url);
+        Logger.debug(CustomWebViewClient.class.getName() + " page started", url);
         if(listener != null && url.contains(completionUrl)){
             listener.onCompletionUrlStarted();
         }
@@ -47,11 +47,13 @@ public class CustomWebViewClient extends WebViewClient{
 
     @Override
     public void onPageFinished(final WebView view, final String url) {
-        Logger.debug(CustomWebViewClient.class.getName() + "page finished", url);
+        Logger.debug(CustomWebViewClient.class.getName() + " page finished", url);
         super.onPageFinished(view, url);
         if(listener != null){
-            if(url.contains(initialUrl)) {
+            if (url.contains(initialUrl)) {
                 listener.onInitialUrlLoaded();
+            } else if (url.contains(completionUrl)) {
+                listener.onCompletionUrlFinished();
             } else {
                 listener.onOtherUrlLoaded();
             }
@@ -73,6 +75,8 @@ public class CustomWebViewClient extends WebViewClient{
     public interface Listener {
         void onInitialUrlLoaded();
         void onCompletionUrlStarted();
+        void onCompletionUrlFinished();
         void onOtherUrlLoaded();
+        void onResourceError();
     }
 }
