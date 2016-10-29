@@ -1,4 +1,4 @@
-package is.hello.sense.adapter;
+package is.hello.sense.flows.home.ui.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -51,7 +51,7 @@ public class ExpansionValuePickerAdapter extends ArrayRecyclerAdapter<Integer, E
 
     @Override
     public BaseViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-        return new BaseViewHolder(inflater.inflate(R.layout.custom_item, parent, false));
+        return new BaseViewHolder(inflater.inflate(R.layout.item_expansion_value_picker, parent, false));
     }
 
     @Override
