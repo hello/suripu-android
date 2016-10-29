@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.alarms.AlarmSource;
 import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
@@ -176,7 +177,7 @@ public class Alarm extends ApiResponse {
 
     @NonNull
     public List<ExpansionAlarm> getExpansions() {
-        if (expansions == null) {
+        if (expansions == null || !BuildConfig.DEBUG) { //todo add support for prod
             expansions = new ArrayList<>();
         }
         return expansions;

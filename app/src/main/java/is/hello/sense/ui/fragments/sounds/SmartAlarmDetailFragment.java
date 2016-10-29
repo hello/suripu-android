@@ -31,6 +31,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.ApiException;
@@ -193,27 +194,27 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        bindAndSubscribe(expansionsInteractor.expansions,
-                         this::bindFilteredExpansions,
-                         this::bindExpansionsThrowable);
-
-        bindAndSubscribe(preferences.observableBoolean(PreferencesInteractor.HAS_VOICE, false),
-                         enabled -> {
-                             if (enabled) {
-                                 expansionAlarmsRecyclerView.setVisibility(View.VISIBLE);
-                                 if(alarm.getExpansions().isEmpty()) {
-                                     expansionsInteractor.update();
+        if (BuildConfig.DEBUG) { //todo add support for prod
+            bindAndSubscribe(expansionsInteractor.expansions,
+                             this::bindFilteredExpansions,
+                             this::bindExpansionsThrowable);
+            bindAndSubscribe(preferences.observableBoolean(PreferencesInteractor.HAS_VOICE, false),
+                             enabled -> {
+                                 if (enabled) {
+                                     expansionAlarmsRecyclerView.setVisibility(View.VISIBLE);
+                                     if (alarm.getExpansions().isEmpty()) {
+                                         expansionsInteractor.update();
+                                     } else {
+                                         bindExpansionAlarms(alarm.getExpansions());
+                                     }
                                  } else {
-                                     bindExpansionAlarms(alarm.getExpansions());
+                                     expansionAlarmsRecyclerView.setVisibility(View.GONE);
+                                     expansionsInteractor.expansions.forget();
                                  }
-                             } else {
-                                 expansionAlarmsRecyclerView.setVisibility(View.GONE);
-                                 expansionsInteractor.expansions.forget();
-                             }
-                         },
-                         Functions.LOG_ERROR);
+                             },
+                             Functions.LOG_ERROR);
 
+        }
         bindAndSubscribe(preferences.observableUse24Time(),
                          newValue -> {
                              this.use24Time = newValue;
@@ -261,7 +262,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             return;
         }
 
-        if(data == null){
+        if (data == null) {
             return;
         }
 
@@ -308,10 +309,10 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void onDestroyView() {
         super.onDestroyView();
 
-        if(expansionAlarmsAdapter != null){
+        if (expansionAlarmsAdapter != null) {
             expansionAlarmsAdapter.setOnItemClickedListener(null);
         }
-        if(expansionAlarmsRecyclerView != null) {
+        if (expansionAlarmsRecyclerView != null) {
             expansionAlarmsRecyclerView.setAdapter(null);
             expansionAlarmsRecyclerView = null;
         }
@@ -412,11 +413,11 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     private void bindExpansionAlarms(@NonNull final List<ExpansionAlarm> expansionAlarms) {
-        for(final ExpansionAlarm expansionAlarm : expansionAlarms){
-            if(expansionAlarm.isEnabled() && expansionAlarm.hasExpansionRange()) {
+        for (final ExpansionAlarm expansionAlarm : expansionAlarms) {
+            if (expansionAlarm.isEnabled() && expansionAlarm.hasExpansionRange()) {
                 expansionAlarm.setDisplayValue(expansionCategoryFormatter.getFormattedValueRange(expansionAlarm.getCategory(),
-                                                                                     expansionAlarm.getExpansionRange(),
-                                                                                     getActivity())
+                                                                                                 expansionAlarm.getExpansionRange(),
+                                                                                                 getActivity())
                                               );
 
             }
@@ -428,7 +429,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     private void onExpansionAlarmItemClicked(final int position, @NonNull final ExpansionAlarm expansionAlarm) {
-        if(expansionAlarm.isEnabled()){
+        if (expansionAlarm.isEnabled()) {
             redirectToExpansionPicker(expansionAlarm.getId(),
                                       expansionAlarm.getCategory(),
                                       expansionAlarm.getExpansionRange());
@@ -469,14 +470,14 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
                 })
                 .setNegativeButton(R.string.label_having_trouble, () -> {
-                //todo should alert dialog pop up here?
+                    //todo should alert dialog pop up here?
                 })
                 .build(getActivity())
                 .show();
     }
 
     private void attemptToUpdateExpansions() {
-        if(preferences.hasVoice()) {
+        if (preferences.hasVoice() && BuildConfig.DEBUG) {/// todo add support for prod
             expansionsInteractor.update();
         }
     }
@@ -521,7 +522,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         });
     }
 
-    private void finishSaveAlarmOperation(){
+    private void finishSaveAlarmOperation() {
         final Observable<VoidResponse> saveOperation;
         if (index == SmartAlarmDetailActivity.INDEX_NEW) {
             saveOperation = smartAlarmInteractor.addSmartAlarm(alarm);
