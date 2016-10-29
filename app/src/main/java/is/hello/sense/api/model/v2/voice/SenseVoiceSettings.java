@@ -7,7 +7,7 @@ import android.support.annotation.VisibleForTesting;
 import com.google.gson.annotations.SerializedName;
 
 import is.hello.sense.api.model.ApiResponse;
-
+//todo fix equals method.
 public class SenseVoiceSettings extends ApiResponse {
 
     /**
@@ -85,6 +85,11 @@ public class SenseVoiceSettings extends ApiResponse {
         return Math.abs(volume - otherVolume) <= VOLUME_EQUALS_THRESHOLD;
     }
 
+    /**
+     * Weird equal case. Read code.
+     * @param o
+     * @return
+     */
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
