@@ -19,7 +19,7 @@ public class ExpansionCategoryFormatter {
                                          @NonNull final ExpansionValueRange valueRange,
                                          @NonNull final Context context){
         final CharSequence suffix = getSuffix(category);
-        if(valueRange.hasSameValues()){
+        if(Category.LIGHT.equals(category)){
             return context.getString(R.string.smart_alarm_expansion_same_value_format,
                                      valueRange.min, suffix);
         } else {

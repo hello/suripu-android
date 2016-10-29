@@ -28,26 +28,60 @@ public class ExpansionRangePicker extends LinearLayout{
 
     public ExpansionRangePicker(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setOrientation(HORIZONTAL); //todo only support horizontal orientation
+        setOrientation(HORIZONTAL); // only support horizontal orientation right now
     }
+
+
 
     public void initPickers(@NonNull final ExpansionValueRange valueRange,
                             @NonNull final String symbol,
                             @NonNull final int[] initialValues){
 
+        //todo refactor
+        selectedMinValue = initialValues[0];
+        selectedMaxValue = initialValues.length > 1 ? initialValues[1] : selectedMinValue;
+
         post( () -> {
             final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(getMeasuredWidth() / initialValues.length,
                                                                                          getMeasuredHeight());
 
-            for (final int initialValue : initialValues) {
+            for (int i = 0; i < initialValues.length; i++) {
                 final ExpansionValuePickerView valuePickerView = new ExpansionValuePickerView(getContext());
                 valuePickerView.setNestedScrollingEnabled(true);
                 valuePickerView.initialize(valueRange.min, valueRange.max, symbol);
                 //todo scroll to proper initial value because the default scrollToPosition function will scroll to top of position not center which is what we want.
-                valuePickerView.scrollToPosition(initialValue - valueRange.min);
+                valuePickerView.scrollToPosition(initialValues[i] - valueRange.min);
+
+                if(i == 0) {
+                    if(initialValues.length == 1){
+                        valuePickerView.setOnValueChangedListener(this::updateSelectedMinAndMaxValue);
+                    } else {
+                        valuePickerView.setOnValueChangedListener(this::updateSelectedMinValue);
+                    }
+                } else {
+                    valuePickerView.setOnValueChangedListener(this::updateSelectedMaxValue);
+                    //todo add divider view
+                }
+
                 addView(valuePickerView, layoutParams);
             }
         });
+    }
+
+    private void updateSelectedMinAndMaxValue(final int newSelectedValue) {
+        updateSelectedMaxValue(newSelectedValue);
+        updateSelectedMinValue(newSelectedValue);
+    }
+
+    private void updateSelectedMaxValue(final int newMaxValue) {
+        selectedMaxValue = newMaxValue;
+
+        //todo prevent max from being less than min
+    }
+
+    private void updateSelectedMinValue(final int newMinValue) {
+        selectedMinValue = newMinValue;
+        //todo if min >= max need to force other value picker to scroll
     }
 
     public int getSelectedMinValue() {
