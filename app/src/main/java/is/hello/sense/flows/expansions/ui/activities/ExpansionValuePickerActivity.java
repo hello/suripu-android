@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.MenuItem;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,9 +14,11 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
 import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
 import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
+import is.hello.sense.flows.expansions.ui.fragments.ExpansionsAuthFragment;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -28,6 +31,7 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
 
     private static final String EXTRA_EXPANSION_DETAIL_ID = ExpansionValuePickerActivity.class.getName() + "EXTRA_EXPANSION_DETAIL_ID";
     private static final String EXTRA_EXPANSION_CATEGORY = ExpansionValuePickerActivity.class.getName() + "EXTRA_EXPANSION_CATEGORY";
+    private static final String EXTRA_EXPANSION_VALUE_RANGE = ExpansionValuePickerActivity.class.getName() + "EXTRA_EXPANSION_VALUE_RANGE";
 
     private FragmentNavigationDelegate navigationDelegate;
 
@@ -53,7 +57,8 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
             if(category != null) {
                 setTitle(category.categoryDisplayString);
                 showValuePicker(intent.getLongExtra(EXTRA_EXPANSION_DETAIL_ID, Expansion.NO_ID),
-                                category);
+                                category,
+                                (ExpansionValueRange) intent.getSerializableExtra(EXTRA_EXPANSION_VALUE_RANGE));
             } else {
                 finish(); //todo handle better
             }
@@ -64,17 +69,23 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
 
     public static Intent getIntent(@NonNull final Context context,
                                    final long expansionId,
-                                   @NonNull final Category expansionCategory){
+                                   @NonNull final Category expansionCategory,
+                                   @Nullable final ExpansionValueRange expansionValueRange){
         return new Intent(context, ExpansionValuePickerActivity.class)
                 .putExtra(EXTRA_EXPANSION_DETAIL_ID, expansionId)
-                .putExtra(EXTRA_EXPANSION_CATEGORY, expansionCategory);
+                .putExtra(EXTRA_EXPANSION_CATEGORY, expansionCategory)
+                .putExtra(EXTRA_EXPANSION_VALUE_RANGE, expansionValueRange);
     }
 
     //region Router
-
-    //todo replace with picker fragment
-    private void showValuePicker(final long expansionId, @NonNull final Category category) {
-        pushFragment(ExpansionDetailFragment.newInstance(expansionId), null, false);
+    //todo use category to decide how many pickers to inflate
+    private void showValuePicker(final long expansionId,
+                                 @NonNull final Category category,
+                                 @Nullable final ExpansionValueRange valueRange) {
+        pushFragment(ExpansionDetailFragment.newValuePickerInstance(expansionId,
+                                                                    category,
+                                                                    valueRange),
+                     null, false);
     }
 
     public void showConfigurationSelection() {
@@ -103,11 +114,12 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
         if (responseCode == RESULT_CANCELED) {
             popFragment(fragment, false);
         } else {
-            if (fragment instanceof ExpansionDetailFragment) { //todo replace handling with picker fragment
+            if (fragment instanceof ExpansionDetailFragment) {
+                //todo handle RESULT_CONNECT_PRESSED or cancel flow if not authenticated?
                 if (responseCode == ExpansionDetailFragment.RESULT_CONFIGURE_PRESSED) {
                     showConfigurationSelection();
                 } else {
-                    setResult(RESULT_OK, result); //todo put Expansion Alarm object in result for Smart Alarm Detail Fragment to use
+                    setResult(RESULT_OK, result);
                     finish();
                 }
             } else if (fragment instanceof ConfigSelectionFragment) {
@@ -116,7 +128,7 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
                         && result.hasExtra(ConfigSelectionFragment.EXPANSION_CATEGORY)) {
                     final long expansionId = result.getLongExtra(ConfigSelectionFragment.EXPANSION_ID_KEY, Expansion.NO_ID);
                         final Category category = (Category) result.getSerializableExtra(ConfigSelectionFragment.EXPANSION_CATEGORY);
-                        showValuePicker(expansionId, category);
+                        showValuePicker(expansionId, category, null);
                     }
                 } else {
                     setResult(RESULT_CANCELED);
@@ -129,6 +141,18 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
     @Override
     public final Fragment getTopFragment() {
         return navigationDelegate.getTopFragment();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        final Fragment fragment = getTopFragment();
+        if (fragment instanceof ExpansionsAuthFragment && fragment.onOptionsItemSelected(item)) {
+            return true;
+        } else if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

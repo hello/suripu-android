@@ -2,6 +2,7 @@ package is.hello.sense.ui.widget;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -14,6 +15,8 @@ import is.hello.sense.ui.recycler.ExpansionValuePickerItemDecoration;
  */
 public class ExpansionValuePickerView extends RecyclerView {
     private final ExpansionValuePickerAdapter expansionValuePickerAdapter = new ExpansionValuePickerAdapter(getContext());
+    @Nullable
+    private OnValueChangedListener onChangedListener;
 
     public ExpansionValuePickerView(final Context context) {
         this(context, null);
@@ -30,8 +33,22 @@ public class ExpansionValuePickerView extends RecyclerView {
         super(context, attrs, defStyle);
         setLayoutManager(new LinearLayoutManager(context));
         setHasFixedSize(true);
+        setOverScrollMode(OVER_SCROLL_NEVER);
         setItemAnimator(null);
         addItemDecoration(new ExpansionValuePickerItemDecoration());
+        addOnScrollListener(new OnScrollListener() {
+            @Override
+            public void onScrolled(final RecyclerView recyclerView, final int dx, final int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                notifyValueChangedListener();
+            }
+        });
+    }
+
+    private void notifyValueChangedListener() {
+        if(onChangedListener != null){
+            this.onChangedListener.onValueChanged(getSelectedValue());
+        }
     }
 
     /**
@@ -71,5 +88,13 @@ public class ExpansionValuePickerView extends RecyclerView {
             return RecyclerView.NO_POSITION;
         }
         return expansionValuePickerAdapter.getSelectedValue();
+    }
+
+    public void setOnValueChangedListener(@Nullable final OnValueChangedListener listener){
+        this.onChangedListener = listener;
+    }
+
+    public interface OnValueChangedListener {
+        void onValueChanged(final int newValue);
     }
 }

@@ -185,9 +185,9 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
             for (final ExpansionAlarm ea :
                     alarm.getExpansions()) {
                 ea.setDisplayIcon(expansionFormatter.getDisplayIconRes(ea.getCategory()));
-                if(ea.isEnabled() && ea.expansionRange != null) {
+                if(ea.isEnabled() && ea.hasExpansionRange()) {
                     ea.setDisplayValue(expansionFormatter.getFormattedAttributionValueRange(ea.getCategory(),
-                                                                                            ea.expansionRange,
+                                                                                            ea.getExpansionRange(),
                                                                                             itemView.getContext()));
                 } else {
                     ea.setDisplayValue(Constants.EMPTY_STRING);
