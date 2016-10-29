@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
+import java.util.concurrent.TimeUnit;
+
 import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
@@ -29,7 +31,12 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     protected static final String OPERATION_LINK_ACCOUNT = "Linking account";
     protected static final String ARG_HAS_LINKED_ACCOUNT = "hasLinkedAccount";
 
+    //todo undue these
+    private static final int RETRY_TIMES = 10;
+    private static final int DELAY = 2;
+
     private boolean linkedAccount = false;
+
 
     private final ApiService apiService;
     protected final DevicesInteractor devicesInteractor;
@@ -181,23 +188,43 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
         showBlockingActivity(R.string.title_pushing_data);
 
         bindAndSubscribe(hardwareInteractor.pushData(),
-                         ignored -> getDeviceFeatures(),
+                         ignored -> getDeviceFeatures(RETRY_TIMES),
                          error -> {
                              Logger.error(getClass().getSimpleName(), "Could not push Sense data, ignoring.", error);
-                             getDeviceFeatures();
+                             getDeviceFeatures(RETRY_TIMES);
                          });
     }
 
-    private void getDeviceFeatures() {
-        showBlockingActivity(R.string.title_pushing_data);
+    /**
+     * @param retry will make UI calls if equal to {@link #RETRY_TIMES}, which should be the case
+     *              only if called from the UI thread. Trying to show the blocking activity from
+     *              another thread will trigger an error and not show voice tutorial if the user has it.
+     *              <p>
+     *              todo clean up how this presenter is showing blocking activities (will be done as we transition to viper2).
+     */
+    private void getDeviceFeatures(final int retry) {
+        if (retry == RETRY_TIMES) {
+            showBlockingActivity(R.string.title_pushing_data);
+        }
         //todo figure out a way to automatically unsubscribe after first value is received.
         //todo should also consider forgetting the subject here.
         devicesSubscription.unsubscribe();
+
+        if (retry == 0) {
+            onFinished();
+            return;
+        }
+        devicesInteractor.devices.forget();
         devicesSubscription = bind(devicesInteractor.devices)
+                .delay(DELAY, TimeUnit.SECONDS)
                 .subscribe(devices -> {
                                devicesSubscription.unsubscribe(); // Unsubscribe so onfinished isn't called multiple times. Triggering an error for too many BLE commands at once
-                               preferencesInteractor.setDevice(devices.getSense());
-                               onFinished();
+                               if (devices == null || devices.getSense() == null) {
+                                   getDeviceFeatures(retry - 1); // servers not in sync. try again.
+                               } else {
+                                   preferencesInteractor.setDevice(devices.getSense());
+                                   onFinished();
+                               }
                            },
                            error -> {
                                devicesSubscription.unsubscribe();// Unsubscribe so onfinished isn't called multiple times. Triggering an error for too many BLE commands at once
