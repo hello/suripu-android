@@ -273,7 +273,7 @@ import is.hello.sense.ui.widget.util.Styles;
                 rendered.setSpan(new RelativeSizeSpan(0.4f),
                                  0, rendered.length(),
                                  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                rendered.setSpan(new TypefaceSpan("sans-serif"),
+                rendered.setSpan(new TypefaceSpan("sans-serif-light"),
                                  0, rendered.length(),
                                  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
