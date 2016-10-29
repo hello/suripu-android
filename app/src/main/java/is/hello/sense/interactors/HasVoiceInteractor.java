@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
+import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.InteractorSubject;
 import rx.Observable;
 
@@ -41,8 +42,9 @@ public class HasVoiceInteractor extends ValueInteractor<Boolean> {
     protected Observable<Boolean> provideUpdateObservable() {
         devicesInteractor.provideUpdateObservable()
                          .subscribe(devices -> {
-                             preferencesInteractor.setDevice(devices.getSense());
-                         });
+                                        preferencesInteractor.setDevice(devices.getSense());
+                                    },
+                                    Functions.LOG_ERROR);
         return preferencesInteractor.observableBoolean(PreferencesInteractor.HAS_VOICE, false);
 
     }
