@@ -7,7 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
-import is.hello.sense.adapter.ExpansionValuePickerAdapter;
+import is.hello.sense.flows.home.ui.adapters.ExpansionValuePickerAdapter;
 import is.hello.sense.ui.recycler.ExpansionValuePickerItemDecoration;
 
 /**
