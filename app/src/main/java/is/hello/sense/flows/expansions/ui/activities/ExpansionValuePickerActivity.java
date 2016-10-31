@@ -89,7 +89,7 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
     }
 
     public void showConfigurationSelection() {
-        pushFragment(new ConfigSelectionFragment(), null, false);
+        pushFragment(new ConfigSelectionFragment(), null, true);
     }
 
     // end region
@@ -126,9 +126,9 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
                 if (result != null
                         && result.hasExtra(ConfigSelectionFragment.EXPANSION_ID_KEY)
                         && result.hasExtra(ConfigSelectionFragment.EXPANSION_CATEGORY)) {
-                    final long expansionId = result.getLongExtra(ConfigSelectionFragment.EXPANSION_ID_KEY, Expansion.NO_ID);
-                        final Category category = (Category) result.getSerializableExtra(ConfigSelectionFragment.EXPANSION_CATEGORY);
-                        showValuePicker(expansionId, category, null);
+                    // todo restore initial values by just popping fragment requires saving initial range state
+                    popFragment(fragment, false);
+
                     }
                 } else {
                     setResult(RESULT_CANCELED);

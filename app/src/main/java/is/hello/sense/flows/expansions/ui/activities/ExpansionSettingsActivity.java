@@ -126,7 +126,7 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
                     && result.hasExtra(ConfigSelectionFragment.EXPANSION_ID_KEY)
                     && result.hasExtra(ConfigSelectionFragment.EXPANSION_CATEGORY)) {
                 final long expansionId = result.getLongExtra(ConfigSelectionFragment.EXPANSION_ID_KEY, Expansion.NO_ID);
-                if(wantsExpansionDetailThenStartPickerActivity()){
+                if(wantsExpansionDetailThenStartPickerActivity() && responseCode == ConfigSelectionFragment.RESULT_CONFIG_SELECTED){
                     final Category category = (Category) result.getSerializableExtra(ConfigSelectionFragment.EXPANSION_CATEGORY);
                     showExpansionPickerActivity(expansionId, category);
                 } else {
