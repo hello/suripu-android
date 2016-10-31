@@ -33,8 +33,8 @@ public class ExpansionCategoryFormatter {
                                                         context));
     }
 
-    public String getSuffix(@NonNull final Category category){
-        switch (category){
+    public String getSuffix(@NonNull final Category category) {
+        switch (category) {
             case LIGHT:
                 return UnitFormatter.UNIT_SUFFIX_PERCENT;
             case TEMPERATURE:
@@ -46,7 +46,7 @@ public class ExpansionCategoryFormatter {
 
     @DrawableRes
     public int getDisplayIconRes(@NonNull final Category category) {
-        switch (category){
+        switch (category) {
             case LIGHT:
                 return R.drawable.icon_alarm_light;
             case TEMPERATURE:
@@ -57,28 +57,10 @@ public class ExpansionCategoryFormatter {
     }
 
     @StringRes
-    public int getDisplayValueResFromState(@NonNull final State expansionState){
+    public int getDisplayValueResFromState(@NonNull final State expansionState) {
         switch (expansionState) {
             case CONNECTED_ON:
                 return R.string.smart_alarm_expansion_state_connected_on;
-            default:
-                return R.string.smart_alarm_expansion_state_connected_off;
-        }
-    }
-
-    public int[] getInitialValues(@NonNull final Category category,
-                                  @Nullable final ExpansionValueRange initialValueRange,
-                                  @NonNull final ExpansionValueRange defaultValueRange) {
-        final int minValue = initialValueRange != null ? initialValueRange.min : defaultValueRange.max - defaultValueRange.min;
-        final int maxValue = initialValueRange != null ? initialValueRange.max : defaultValueRange.max - defaultValueRange.min;
-
-        switch (category){
-            case LIGHT:
-                return new int[]{maxValue};
-            case TEMPERATURE:
-                return new int[]{maxValue}; //if revert back to range use {minValue, maxValue}
-            default:
-                throw new IllegalStateException("no initial values provided yet for category " + category);
         }
     }
 }

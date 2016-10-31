@@ -38,7 +38,7 @@ public class ExpansionAlarm extends ApiResponse {
                           @NonNull final Category category,
                           @NonNull final String serviceName,
                           final boolean enabled,
-                          @Nullable final ExpansionValueRange range){
+                          @Nullable final ExpansionValueRange range) {
         this.id = id;
         this.category = category;
         this.serviceName = serviceName;
@@ -54,12 +54,12 @@ public class ExpansionAlarm extends ApiResponse {
              null);
     }
 
-    public long getId(){
+    public long getId() {
         return id;
     }
 
     public Category getCategory() {
-        if(category == null){
+        if (category == null) {
             return Category.UNKNOWN;
         } else {
             return category;
@@ -70,7 +70,7 @@ public class ExpansionAlarm extends ApiResponse {
         this.category = category;
     }
 
-    public boolean isEnabled(){
+    public boolean isEnabled() {
         return enabled;
     }
 
@@ -78,8 +78,8 @@ public class ExpansionAlarm extends ApiResponse {
         return displayValue;
     }
 
-    public void setDisplayValue(@NonNull final String displayValue){
-       this.displayValue = displayValue;
+    public void setDisplayValue(@NonNull final String displayValue) {
+        this.displayValue = displayValue;
     }
 
     @DrawableRes
@@ -88,11 +88,18 @@ public class ExpansionAlarm extends ApiResponse {
     }
 
     public void setDisplayIcon(@DrawableRes final int displayIcon) {
-       this.displayIcon = displayIcon;
+        this.displayIcon = displayIcon;
     }
 
-    public void setExpansionRange(final int min, final int max) {
-        this.expansionRange = new ExpansionValueRange(min, max);
+    /**
+     * Because we only track one value for each expansion we can use it for both the min and max
+     * of the expansion range. At a future time we may see expansion range condense into a single
+     * integer value.
+     *
+     * @param selectedValue the value the user choose. Not to be confused with index position.
+     */
+    public void setExpansionRange(final int selectedValue) {
+        this.expansionRange = new ExpansionValueRange(selectedValue, selectedValue);
     }
 
     public boolean hasExpansionRange() {

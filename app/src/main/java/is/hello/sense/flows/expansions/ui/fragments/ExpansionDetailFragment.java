@@ -193,11 +193,8 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             return;
         }
         //todo currently assumes that when wantsValuePicker = true the expansion is enabled, configured, and authenticated
-        if(wantsValuePicker) {
-
-            final int[] initialValues = expansionCategoryFormatter.getInitialValues(expansion.getCategory(),
-                                                                                    initialValueRange,
-                                                                                    expansion.getValueRange());
+        if (wantsValuePicker) {
+            final int initialValues = initialValueRange != null ? initialValueRange.max : expansion.getValueRange().max - expansion.getValueRange().min;
 
             presenterView.showExpansionRangePicker(expansion,
                                                    initialValues,
@@ -213,7 +210,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         } else {
             configurationsInteractor.update();
             presenterView.showEnableSwitch(expansion.isConnected(), this);
-            presenterView.showRemoveAccess(! wantsValuePicker);
+            presenterView.showRemoveAccess(!wantsValuePicker);
         }
 
     }
@@ -323,10 +320,10 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
     @Override
     public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
-        if(wantsValuePicker && expansionDetailsInteractor.expansionSubject.hasValue()){
+        if (wantsValuePicker && expansionDetailsInteractor.expansionSubject.hasValue()) {
             final Intent intentWithExpansionAlarm = new Intent();
             final ExpansionAlarm expansionAlarm = new ExpansionAlarm(expansionDetailsInteractor.expansionSubject.getValue());
-            expansionAlarm.setExpansionRange(presenterView.getSelectedMin(), presenterView.getSelectedMax());
+            expansionAlarm.setExpansionRange(presenterView.getSelectedValue());
             intentWithExpansionAlarm.putExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM, expansionAlarm);
             finishFlowWithResult(Activity.RESULT_OK, intentWithExpansionAlarm);
             return true;
