@@ -22,11 +22,6 @@ public class ExpansionCategoryFormatter {
 
         return context.getString(R.string.smart_alarm_expansion_same_value_format,
                                      valueRange.min, suffix);
-        //todo uncomment if need to handle displaying min and max range.
-        /*return context.getString(R.string.smart_alarm_expansion_range_value_format,
-                                     valueRange.min, suffix,
-                                     valueRange.max, suffix);*/
-
     }
 
     public String getFormattedAttributionValueRange(@NonNull final Category category,
