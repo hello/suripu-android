@@ -29,7 +29,7 @@ public class SettingsPairSenseInteractor extends PairSenseInteractor{
 
     @Override
     public boolean shouldClearPeripheral() {
-        return false;
+        return true;
     }
 
     @Override
