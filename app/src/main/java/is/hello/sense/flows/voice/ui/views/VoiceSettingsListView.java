@@ -41,7 +41,7 @@ public class VoiceSettingsListView extends PresenterView {
     public void releaseViews() {
         this.volumeViewGroup.setOnClickListener(null);
         this.muteSwitch.setOnCheckedChangeListener(null);
-        this.primaryUserValueTextView.setOnClickListener(null);
+        this.primaryUserGroup.setOnClickListener(null);
     }
 
     public void setVolumeClickListener(@NonNull final OnClickListener listener) {
