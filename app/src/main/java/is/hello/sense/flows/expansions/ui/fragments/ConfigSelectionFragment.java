@@ -30,6 +30,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
         OnBackPressedInterceptor{
     public static final String EXPANSION_ID_KEY = ConfigSelectionFragment.class.getSimpleName() + ".expansion_id_key";
     public static final String EXPANSION_CATEGORY = ConfigSelectionFragment.class.getSimpleName() + ".expansion_category";
+    public static final int RESULT_CONFIG_SELECTED = 110;
 
     @Inject
     ConfigurationsInteractor configurationsInteractor;
@@ -101,7 +102,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
 
     @Override
     public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
-        finishFlowWithExpansionDetailIntent();
+        finishFlowWithExpansionDetailIntent(false);
         return true;
     }
 
@@ -149,7 +150,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     @VisibleForTesting
     public void bindConfigurationPostResponse(@NonNull final Configuration configuration) {
         hideBlockingActivity(R.string.expansions_configuration_selection_configured,
-                             stateSafeExecutor.bind(this::finishFlowWithExpansionDetailIntent));
+                             stateSafeExecutor.bind(() -> this.finishFlowWithExpansionDetailIntent(true)));
 
     }
 
@@ -171,13 +172,13 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
                              this::bindConfigurationPostResponse,
                              this::presentError);
         } else {
-            finishFlowWithExpansionDetailIntent();
+            finishFlowWithExpansionDetailIntent(false);
         }
     }
 
-    private void finishFlowWithExpansionDetailIntent(){
+    private void finishFlowWithExpansionDetailIntent(final boolean configSelected){
         if(expansion != null) {
-            finishFlowWithResult(Activity.RESULT_OK,
+            finishFlowWithResult(configSelected ? RESULT_CONFIG_SELECTED : Activity.RESULT_OK,
                                  new Intent().putExtra(EXPANSION_ID_KEY, expansion.getId())
                                              .putExtra(EXPANSION_CATEGORY, expansion.getCategory())
                                 );
