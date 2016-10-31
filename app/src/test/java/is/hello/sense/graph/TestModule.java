@@ -57,8 +57,14 @@ import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
 import is.hello.sense.interactors.ZoomedOutTimelineInteractorTests;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractorTests;
+import is.hello.sense.interactors.onboarding.OnboardingPairSenseInteractorTests;
+import is.hello.sense.interactors.pairsense.OnboardingPairSenseInteractor;
+import is.hello.sense.interactors.pairsense.SettingsPairSenseInteractor;
+import is.hello.sense.interactors.pairsense.UpgradePairSenseInteractor;
 import is.hello.sense.interactors.questions.ApiQuestionProviderTests;
 import is.hello.sense.interactors.questions.ReviewQuestionProviderTests;
+import is.hello.sense.interactors.settings.SettingsPairSenseInteractorTests;
+import is.hello.sense.interactors.upgrade.UpgradePairSenseInteractorTests;
 import is.hello.sense.rating.LocalUsageTrackerTests;
 import is.hello.sense.ui.adapter.SmartAlarmAdapterTests;
 import is.hello.sense.ui.fragments.RoomConditionsFragmentTests;
@@ -135,7 +141,13 @@ import static org.mockito.Mockito.mock;
 
             SensorLabelInteractorTest.class,
 
-            ConfigurationsInteractorTests.class
+            ConfigurationsInteractorTests.class,
+
+            OnboardingPairSenseInteractorTests.class,
+
+            SettingsPairSenseInteractorTests.class,
+
+            UpgradePairSenseInteractorTests.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")

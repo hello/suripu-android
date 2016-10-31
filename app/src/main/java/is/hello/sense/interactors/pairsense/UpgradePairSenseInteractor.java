@@ -45,7 +45,7 @@ public class UpgradePairSenseInteractor extends PairSenseInteractor{
 
     @Override
     public boolean shouldClearPeripheral() {
-        return true;
+        return false;
     }
 
     @Override
