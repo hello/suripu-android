@@ -2,6 +2,7 @@ package is.hello.sense.api.model;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
@@ -181,6 +182,15 @@ public class Alarm extends ApiResponse {
             expansions = new ArrayList<>();
         }
         return expansions;
+    }
+
+    @Nullable
+    public ExpansionAlarm getExpansion(final int position) {
+        if(expansions == null || expansions.isEmpty() || position >= expansions.size()) {
+            return null;
+        } else {
+            return expansions.get(position);
+        }
     }
 
     public void setExpansions(@NonNull final List<ExpansionAlarm> expansions) {

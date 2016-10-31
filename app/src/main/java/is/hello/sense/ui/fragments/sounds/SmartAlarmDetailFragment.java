@@ -11,7 +11,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +24,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -195,18 +195,16 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (BuildConfig.DEBUG) { //todo add support for prod
-            bindAndSubscribe(expansionsInteractor.expansions,
+            expansionsInteractor.expansions.forget();
+            bindAndSubscribe(expansionsInteractor.findByCategories(Arrays.asList(Category.LIGHT, Category.TEMPERATURE)),
                              this::bindFilteredExpansions,
                              this::bindExpansionsThrowable);
+
             bindAndSubscribe(preferences.observableBoolean(PreferencesInteractor.HAS_VOICE, false),
                              enabled -> {
                                  if (enabled) {
                                      expansionAlarmsRecyclerView.setVisibility(View.VISIBLE);
-                                     if (alarm.getExpansions().isEmpty()) {
-                                         expansionsInteractor.update();
-                                     } else {
-                                         bindExpansionAlarms(alarm.getExpansions());
-                                     }
+                                     expansionsInteractor.update();
                                  } else {
                                      expansionAlarmsRecyclerView.setVisibility(View.GONE);
                                      expansionsInteractor.expansions.forget();
@@ -399,31 +397,28 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
     public void bindFilteredExpansions(@NonNull final List<Expansion> expansions) {
 
-        Log.e(SmartAlarmDetailFragment.class.getName(), "alarm expansions" + alarm.getExpansions());
-
         final List<ExpansionAlarm> expansionAlarms = new ArrayList<>(expansions.size());
 
-        for (final Expansion expansion : expansions) {
-
+        for (int i = 0; i < expansions.size(); i++) {
+            final Expansion expansion = expansions.get(i);
+            final ExpansionAlarm existing = alarm.getExpansion(i);
             final ExpansionAlarm updatedExpansionAlarm = new ExpansionAlarm(expansion);
-            updatedExpansionAlarm.setDisplayValue(getString(expansionCategoryFormatter.getDisplayValueResFromState(expansion.getState())));
-            expansionAlarms.add(updatedExpansionAlarm);
-        }
-        bindExpansionAlarms(expansionAlarms);
-    }
-
-    private void bindExpansionAlarms(@NonNull final List<ExpansionAlarm> expansionAlarms) {
-        for (final ExpansionAlarm expansionAlarm : expansionAlarms) {
-            if (expansionAlarm.isEnabled() && expansionAlarm.hasExpansionRange()) {
-                expansionAlarm.setDisplayValue(expansionCategoryFormatter.getFormattedValueRange(expansionAlarm.getCategory(),
-                                                                                                 expansionAlarm.getExpansionRange(),
+            if (existing != null
+                    && existing.hasExpansionRange()
+                    && updatedExpansionAlarm.isEnabled()) {
+                updatedExpansionAlarm.setDisplayValue(expansionCategoryFormatter.getFormattedValueRange(existing.getCategory(),
+                                                                                                 existing.getExpansionRange(),
                                                                                                  getActivity())
                                               );
 
+            } else {
+                updatedExpansionAlarm.setDisplayValue(getString(expansionCategoryFormatter.getDisplayValueResFromState(expansion.getState())));
             }
-            expansionAlarm.setDisplayIcon(expansionCategoryFormatter.getDisplayIconRes(expansionAlarm.getCategory()));
-        }
 
+            updatedExpansionAlarm.setDisplayIcon(expansionCategoryFormatter.getDisplayIconRes(expansion.getCategory()));
+
+            expansionAlarms.add(updatedExpansionAlarm);
+        }
         expansionAlarmsAdapter.replaceAll(expansionAlarms);
         alarm.setExpansions(expansionAlarms);
     }

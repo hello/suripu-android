@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.api.model.v2.MultiDensityImage;
 
-public class Expansion extends ApiResponse {
+public class Expansion extends ApiResponse implements Comparable{
 
     public static final long NO_ID = -1;
     public static final String INVALID_URL = Expansion.class.getName() + "invalid_expansion_url";
@@ -140,6 +140,11 @@ public class Expansion extends ApiResponse {
                 ", valueRange=" + valueRange +
                 "}";
 
+    }
+
+    @Override
+    public int compareTo(@NonNull final Object o) {
+        return Long.compare(this.id, ((Expansion) o).id);
     }
 
     public static Expansion generateTemperatureTestCase(@NonNull final State state){

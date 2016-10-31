@@ -96,6 +96,7 @@ public class ExpansionAlarmsAdapter extends ArrayRecyclerAdapter<ExpansionAlarm,
                                                                null);
                 this.categoryNameTextView.setText(expansionAlarm.getCategory().categoryDisplayString);
                 this.valueTextView.setText(expansionAlarm.getDisplayValue());
+
             } else {
                 this.valueTextView.setVisibility(View.GONE);
                 this.errorImageView.setVisibility(View.VISIBLE);
