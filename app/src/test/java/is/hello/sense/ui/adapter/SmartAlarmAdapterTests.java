@@ -166,7 +166,7 @@ public class SmartAlarmAdapterTests extends InjectionTestCase {
         alarm1.addDayOfWeek(DateTimeConstants.SUNDAY);
         alarm1.setSmart(false);
         alarm1.setTime(new LocalTime(8, 30));
-        alarm1.setSource(AlarmSource.VOICE_SOURCE);
+        alarm1.setSource(AlarmSource.VOICE_SERVICE);
 
         final Alarm alarm2 = new Alarm();
         alarm2.setEnabled(false);
@@ -174,7 +174,7 @@ public class SmartAlarmAdapterTests extends InjectionTestCase {
         alarm2.setRingOnce();
         alarm2.setSmart(false);
         alarm2.setTime(new LocalTime(5, 45));
-        alarm2.setSource(AlarmSource.VOICE_SOURCE);
+        alarm2.setSource(AlarmSource.VOICE_SERVICE);
 
         adapter.bindAlarms(Lists.newArrayList(alarm1, alarm2));
 

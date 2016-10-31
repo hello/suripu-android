@@ -264,7 +264,7 @@ public class Alarm extends ApiResponse {
     //todo should be moved out to a ResMapper class
     public @NonNull String getDaysOfWeekSummary(@NonNull final Context context) {
         if (Lists.isEmpty(daysOfWeek)) {
-            if(AlarmSource.VOICE_SOURCE.equals(source)){
+            if(AlarmSource.VOICE_SERVICE.equals(source)){
                 return context.getString(R.string.voice_alarm_never);
             } else if (isSmart()) {
                 return context.getString(R.string.smart_alarm_never);
@@ -274,7 +274,7 @@ public class Alarm extends ApiResponse {
         }
 
         final String daysString = getRepeatSummary(context, true);
-        if(AlarmSource.VOICE_SOURCE.equals(source)){
+        if(AlarmSource.VOICE_SERVICE.equals(source)){
             return context.getString(R.string.voice_alarm_days_repeat_format, daysString);
         } else if (isSmart()) {
             return context.getString(R.string.smart_alarm_days_repeat_format, daysString);
