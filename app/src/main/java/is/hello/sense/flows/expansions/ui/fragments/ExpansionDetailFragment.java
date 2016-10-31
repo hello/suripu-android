@@ -209,6 +209,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             presenterView.showConnectButton(this::onConnectClicked);
         } else if (expansion.requiresConfiguration()) {
             presenterView.showConfigurationSuccess(getString(R.string.action_connect), this::onConfigureClicked);
+            presenterView.showRemoveAccess(! wantsValuePicker);
         } else {
             configurationsInteractor.update();
             presenterView.showEnableSwitch(expansion.isConnected(), this);
