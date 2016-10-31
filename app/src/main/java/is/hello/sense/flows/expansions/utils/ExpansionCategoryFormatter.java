@@ -3,7 +3,6 @@ package is.hello.sense.flows.expansions.utils;
 import android.content.Context;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import is.hello.sense.R;
@@ -17,11 +16,11 @@ public class ExpansionCategoryFormatter {
 
     public String getFormattedValueRange(@NonNull final Category category,
                                          @NonNull final ExpansionValueRange valueRange,
-                                         @NonNull final Context context){
+                                         @NonNull final Context context) {
         final CharSequence suffix = getSuffix(category);
 
         return context.getString(R.string.smart_alarm_expansion_same_value_format,
-                                     valueRange.min, suffix);
+                                 valueRange.min, suffix);
     }
 
     public String getFormattedAttributionValueRange(@NonNull final Category category,
@@ -61,6 +60,9 @@ public class ExpansionCategoryFormatter {
         switch (expansionState) {
             case CONNECTED_ON:
                 return R.string.smart_alarm_expansion_state_connected_on;
+            default:
+                return R.string.smart_alarm_expansion_state_connected_off;
+
         }
     }
 }
