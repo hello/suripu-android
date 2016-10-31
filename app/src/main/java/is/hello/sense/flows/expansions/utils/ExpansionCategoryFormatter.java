@@ -19,14 +19,13 @@ public class ExpansionCategoryFormatter {
                                          @NonNull final ExpansionValueRange valueRange,
                                          @NonNull final Context context){
         final CharSequence suffix = getSuffix(category);
-        if(Category.LIGHT.equals(category)){
-            return context.getString(R.string.smart_alarm_expansion_same_value_format,
+
+        return context.getString(R.string.smart_alarm_expansion_same_value_format,
                                      valueRange.min, suffix);
-        } else {
-            return context.getString(R.string.smart_alarm_expansion_range_value_format,
+        //todo uncomment if need to handle displaying min and max range.
+        /*return context.getString(R.string.smart_alarm_expansion_range_value_format,
                                      valueRange.min, suffix,
-                                     valueRange.max, suffix);
-        }
+                                     valueRange.max, suffix);*/
 
     }
 
@@ -82,7 +81,7 @@ public class ExpansionCategoryFormatter {
             case LIGHT:
                 return new int[]{maxValue};
             case TEMPERATURE:
-                return new int[]{minValue, maxValue};
+                return new int[]{maxValue}; //if revert back to range use {minValue, maxValue}
             default:
                 throw new IllegalStateException("no initial values provided yet for category " + category);
         }
