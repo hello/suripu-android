@@ -89,7 +89,7 @@ public class Alarm extends ApiResponse {
         this.editable = true;
         this.smart = true;
         this.daysOfWeek = new HashSet<>();
-        this.source = AlarmSource.OTHER;
+        this.source = AlarmSource.MOBILE_APP;
     }
 
 

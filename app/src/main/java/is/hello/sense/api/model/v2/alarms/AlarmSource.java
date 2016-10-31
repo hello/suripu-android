@@ -20,6 +20,6 @@ public enum AlarmSource implements Enums.FromString{
     }
 
     public static AlarmSource fromString(@NonNull final String value){
-        return Enums.fromString(value, values(), OTHER);
+        return Enums.fromString(value, values(), MOBILE_APP);
     }
 }
