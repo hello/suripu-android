@@ -94,7 +94,6 @@ public class ExpansionDetailView extends PresenterView {
         this.configurationSelectedTextView.setText(configurationName);
         this.configurationSelectedTextView.setVisibility(VISIBLE);
         this.connectedContainer.setVisibility(VISIBLE);
-        this.removeAccessContainer.setEnabled(true);
     }
 
     public void showConfigurationsError(@NonNull final OnClickListener configurationErrorImageViewClickListener) {
@@ -103,7 +102,6 @@ public class ExpansionDetailView extends PresenterView {
         this.configurationSelectedTextView.setVisibility(GONE);
         this.configurationErrorImageView.setVisibility(VISIBLE);
         this.connectedContainer.setVisibility(VISIBLE);
-        this.removeAccessContainer.setEnabled(true);
     }
 
     public void showConfigurationSpinner() {
@@ -143,6 +141,11 @@ public class ExpansionDetailView extends PresenterView {
     }
 
 
+    public void showRemoveAccess(final boolean isOn){
+        this.removeAccessContainer.setVisibility(isOn ? VISIBLE : GONE);
+        this.removeAccessContainer.setEnabled(isOn);
+    }
+
     //region switch
 
     /**
@@ -173,11 +176,6 @@ public class ExpansionDetailView extends PresenterView {
         this.connectedContainer.setVisibility(VISIBLE);
         this.enabledContainer.setVisibility(VISIBLE);
         this.setEnableSwitch(isOn, enabledSwitchClickListener);
-    }
-
-    public void showRemoveAccess(final boolean isOn){
-        this.removeAccessContainer.setVisibility(isOn ? VISIBLE : GONE);
-        this.removeAccessContainer.setEnabled(isOn);
     }
 
     private void setEnableSwitch(final boolean isOn,
