@@ -9,7 +9,7 @@ import is.hello.sense.api.gson.Enums;
 public enum AlarmSource implements Enums.FromString{
 
     MOBILE_APP(R.string.alarm_source_mobile_app),
-    VOICE_SOURCE(R.string.alarm_source_voice),
+    VOICE_SERVICE(R.string.alarm_source_voice),
     OTHER(R.string.device_unknown);
 
     @StringRes
@@ -20,6 +20,6 @@ public enum AlarmSource implements Enums.FromString{
     }
 
     public static AlarmSource fromString(@NonNull final String value){
-        return Enums.fromString(value, values(), OTHER);
+        return Enums.fromString(value, values(), MOBILE_APP);
     }
 }
