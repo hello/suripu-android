@@ -73,7 +73,7 @@ public class ExpansionRotaryPickerView extends RecyclerView implements View.OnCl
     private
     @Nullable
     Drawable itemBackground;
-    private boolean wantsLeadingZeros = true;
+    private boolean wantsLeadingZeros = false;
     private int itemGravity = Gravity.CENTER;
     private boolean magnifyItemsNearCenter = true;
     private String symbol = Constants.EMPTY_STRING;
