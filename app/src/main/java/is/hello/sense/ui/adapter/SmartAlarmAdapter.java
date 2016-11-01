@@ -143,7 +143,9 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
     }
 
     class AlarmViewHolder extends BaseViewHolder
-            implements View.OnClickListener, View.OnLongClickListener {
+            implements View.OnClickListener,
+            View.OnLongClickListener,
+            ArrayRecyclerAdapter.OnItemClickedListener<ExpansionAlarm> {
         final CompoundButton enabled;
         final TextView time;
         final TextView repeat;
@@ -165,6 +167,7 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
             this.expansionsRV.addItemDecoration(new DividerItemDecoration(view.getContext()));
             this.expansionsAdapter = new ExpansionAlarmsAdapter(new ArrayList<>(0));
             this.expansionsAdapter.setWantsAttributionStyle(true);
+            expansionsAdapter.setOnItemClickedListener(this);
             this.expansionsRV.setAdapter(expansionsAdapter);
 
             view.setOnClickListener(this);
@@ -227,6 +230,11 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
             }
 
             return false;
+        }
+
+        @Override
+        public void onItemClicked(final int position, @NonNull final ExpansionAlarm item) {
+            onClick(null); //fake default alarm click listener
         }
     }
 
