@@ -103,6 +103,10 @@ public class ExpansionAlarm extends ApiResponse implements Comparable {
         this.expansionRange = new ExpansionValueRange(selectedValue, selectedValue);
     }
 
+    public void setExpansionRange(@NonNull final ExpansionValueRange expansionRange) {
+        this.expansionRange = expansionRange;
+    }
+
     public boolean hasExpansionRange() {
         return expansionRange != null;
     }

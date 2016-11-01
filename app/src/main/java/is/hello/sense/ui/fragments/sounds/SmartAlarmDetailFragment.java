@@ -195,7 +195,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (BuildConfig.DEBUG) { //todo add support for prod
-            expansionsInteractor.expansions.forget();
+            //expansionsInteractor.expansions.forget();
             bindAndSubscribe(expansionsInteractor.findByCategories(Arrays.asList(Category.LIGHT, Category.TEMPERATURE)),
                              this::bindFilteredExpansions,
                              this::bindExpansionsThrowable);
@@ -288,12 +288,24 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             markDirty();
         } else if (requestCode == EXPANSION_VALUE_REQUEST_CODE) {
             final ExpansionAlarm expansionAlarm = (ExpansionAlarm) data.getSerializableExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM);
-            //todo how to handle when expansion disabled should the returned expansionAlarm be preformatted?
-            expansionAlarm.setDisplayValue(expansionCategoryFormatter.getFormattedValueRange(expansionAlarm.getCategory(), expansionAlarm.getExpansionRange(), getActivity()));
-            expansionAlarm.setDisplayIcon(expansionCategoryFormatter.getDisplayIconRes(expansionAlarm.getCategory()));
-            expansionAlarmsAdapter.updateLastClickedItem(expansionAlarm);
-            markDirty();
+            updateExpansionAlarmFromResult(expansionAlarm);
         }
+    }
+
+    private void updateExpansionAlarmFromResult(@Nullable final ExpansionAlarm expansionAlarm) {
+        if(expansionAlarm == null){
+            return;
+        }
+        //todo ExpansionDetailFragment needs to
+        if(expansionAlarm.isEnabled() && expansionAlarm.hasExpansionRange()) {
+            expansionAlarm.setDisplayValue(expansionCategoryFormatter.getFormattedValueRange(expansionAlarm.getCategory(), expansionAlarm.getExpansionRange(), getActivity()));
+        } else {
+            expansionAlarm.setDisplayValue(getString(expansionCategoryFormatter.getDisplayValueRes(expansionAlarm.isEnabled())));
+        }
+        expansionAlarm.setDisplayIcon(expansionCategoryFormatter.getDisplayIconRes(expansionAlarm.getCategory()));
+        expansionAlarmsAdapter.updateLastClickedItem(expansionAlarm);
+        alarm.setExpansions(expansionAlarmsAdapter.getAllEnabledWithValueRangeCopy());
+        markDirty();
     }
 
     @Override
@@ -406,9 +418,10 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             if (existing != null
                     && existing.hasExpansionRange()
                     && updatedExpansionAlarm.isEnabled()) {
+                updatedExpansionAlarm.setExpansionRange(existing.getExpansionRange());
                 updatedExpansionAlarm.setDisplayValue(expansionCategoryFormatter.getFormattedValueRange(existing.getCategory(),
-                                                                                                 existing.getExpansionRange(),
-                                                                                                 getActivity())
+                                                                                                        existing.getExpansionRange(),
+                                                                                                        getActivity())
                                               );
 
             } else {
