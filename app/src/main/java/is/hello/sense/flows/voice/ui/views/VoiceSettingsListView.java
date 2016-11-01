@@ -26,10 +26,10 @@ public class VoiceSettingsListView extends PresenterView {
         super(activity);
 
         this.volumeViewGroup = (ViewGroup) findViewById(R.id.view_voice_settings_list_volume_container);
-        this.volumeValueTextView = (TextView) findViewById(R.id.view_voice_settings_list_volume_value_tv);
+        this.volumeValueTextView = (TextView) volumeViewGroup.findViewById(R.id.view_voice_settings_list_volume_value_tv);
         this.muteSwitch = (CompoundButton) findViewById(R.id.view_voice_settings_mute_switch);
         this.primaryUserGroup = (ViewGroup) findViewById(R.id.view_voice_settings_list_primary_user_container);
-        this.primaryUserValueTextView = (TextView) findViewById(R.id.view_voice_settings_list_primary_user_value_tv);
+        this.primaryUserValueTextView = (TextView) primaryUserGroup.findViewById(R.id.view_voice_settings_list_primary_user_value_tv);
     }
 
     @Override
