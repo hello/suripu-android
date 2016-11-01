@@ -17,6 +17,7 @@ import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionListFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionsAuthFragment;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment;
 
@@ -52,8 +53,8 @@ public class ExpansionSettingsModule {
 
     @Provides
     @Singleton
-    public ExpansionCategoryFormatter providesExpansionCategoryFormatter(){
-        return new ExpansionCategoryFormatter();
+    public ExpansionCategoryFormatter providesExpansionCategoryFormatter(@NonNull final PreferencesInteractor preferencesInteractor){
+        return new ExpansionCategoryFormatter(preferencesInteractor);
     }
 
 }
