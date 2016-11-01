@@ -62,7 +62,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         showBlockingActivity(R.string.expansions_configuration_selection_loading);
-        presenterView.postDelayed(() -> {
+        presenterView.postDelayed(stateSafeExecutor.bind( () -> {
             bindAndSubscribe(expansionDetailsInteractor.expansionSubject,
                              this::bindExpansion,
                              this::presentError);
@@ -70,7 +70,13 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
             bindAndSubscribe(configurationsInteractor.configSubject,
                              this::bindConfigurations,
                              this::presentError);
-        }, 2000);
+        }), 2000);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        stateSafeExecutor.clearPending();
     }
 
     @Override
