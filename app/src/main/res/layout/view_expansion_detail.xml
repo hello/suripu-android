@@ -1,23 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView
+
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:fillViewport="true"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <include
+        android:id="@+id/view_expansion_detail_infoid"
+        layout="@layout/view_expansion_detail_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_above="@+id/view_expansion_detail_bottom"
+        android:layout_alignParentTop="true"/>
 
-        <include layout="@layout/view_expansion_detail_info"/>
+    <is.hello.sense.flows.expansions.ui.widget.ExpansionValuePickerView
+        android:id="@+id/view_expansion_detail_expansion_value_picker_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/view_expansion_detail_bottom"
+        android:layout_alignParentTop="true"
+        android:background="@color/background_light"
+        android:visibility="gone"/>
 
-        <is.hello.sense.flows.expansions.ui.widget.ExpansionRangePicker
-            android:id="@+id/view_expansion_detail_range_picker"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/x37.5"
-            android:visibility="gone"/>
-
-        <include layout="@layout/view_expansion_detail_action_rows"/>
-    </LinearLayout>
-</android.support.v4.widget.NestedScrollView>
+    <include
+        android:id="@+id/view_expansion_detail_bottom"
+        layout="@layout/view_expansion_detail_action_rows"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
+</RelativeLayout>
