@@ -431,13 +431,14 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             final ExpansionAlarm expansionAlarm = getExpansionAlarm(expansion.getId());
             if (expansionAlarm == null || !expansionAlarm.isEnabled()) {
                 value.setText(R.string.expansions_off);
+                container.setOnClickListener((ignored) -> redirectToExpansionPicker(expansion));
             } else {
                 value.setText(expansionCategoryFormatter.getFormattedValueRange(expansion.getCategory(),
                                                                                 expansionAlarm.getExpansionRange(),
                                                                                 getActivity()));
+                container.setOnClickListener((ignored) -> redirectToExpansionPicker(expansionAlarm));
             }
-
-            container.setOnClickListener((ignored) -> redirectToExpansionPicker(expansion));
+            ;
         }
 
 
@@ -472,13 +473,20 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                 .show();
     }
 
-    private void redirectToExpansionPicker(@NonNull final Expansion expansion) {
-       /* startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
-                                                                      expansionId,
-                                                                      expansionCategory,
-                                                                      valueRange),
-                               EXPANSION_VALUE_REQUEST_CODE);*/
-        //todo redirect
+    private void redirectToExpansionPicker(@NonNull final ExpansionAlarm expansionAlarm) {
+
+        startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
+                                                                      expansionAlarm),
+                               EXPANSION_VALUE_REQUEST_CODE);
+
+    }
+
+    public void redirectToExpansionPicker(@NonNull final Expansion expansion) {
+
+        startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
+                                                                      expansion),
+                               EXPANSION_VALUE_REQUEST_CODE);
+
     }
 
     private void redirectToExpansionDetail(final long expansionId) {

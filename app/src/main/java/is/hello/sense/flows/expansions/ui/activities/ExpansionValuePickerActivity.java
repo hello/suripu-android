@@ -14,6 +14,7 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
 import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
 import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
@@ -28,10 +29,7 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
         implements FragmentNavigation {
 
     public static final String EXTRA_EXPANSION_ALARM = ExpansionValuePickerActivity.class.getName() + "EXTRA_EXPANSION_ALARM";
-
-    private static final String EXTRA_EXPANSION_DETAIL_ID = ExpansionValuePickerActivity.class.getName() + "EXTRA_EXPANSION_DETAIL_ID";
-    private static final String EXTRA_EXPANSION_CATEGORY = ExpansionValuePickerActivity.class.getName() + "EXTRA_EXPANSION_CATEGORY";
-    private static final String EXTRA_EXPANSION_VALUE_RANGE = ExpansionValuePickerActivity.class.getName() + "EXTRA_EXPANSION_VALUE_RANGE";
+    private static final String EXTRA_EXPANSION = ExpansionValuePickerActivity.class.getName() + "EXTRA_EXPANSION";
 
     private FragmentNavigationDelegate navigationDelegate;
 
@@ -51,16 +49,25 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
         if (savedInstanceState != null) {
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         } else if (navigationDelegate.getTopFragment() == null) {
-            final Intent intent = getIntent();
 
-            final Category category = (Category) intent.getSerializableExtra(EXTRA_EXPANSION_CATEGORY);
-            if(category != null) {
-                setTitle(category.categoryDisplayString);
-                showValuePicker(intent.getLongExtra(EXTRA_EXPANSION_DETAIL_ID, Expansion.NO_ID),
-                                category,
-                                (ExpansionValueRange) intent.getSerializableExtra(EXTRA_EXPANSION_VALUE_RANGE));
-            } else {
+            final Intent intent = getIntent();
+            final Expansion expansion = (Expansion) intent.getSerializableExtra(EXTRA_EXPANSION);
+            final ExpansionAlarm expansionAlarm = (ExpansionAlarm) intent.getSerializableExtra(EXTRA_EXPANSION_ALARM);
+            if (expansionAlarm == null && expansion == null) {
                 finish(); //todo handle better
+                return;
+            }
+            if (expansionAlarm != null) {
+                setTitle(expansionAlarm.getCategory().categoryDisplayString);
+                showValuePicker(expansionAlarm.getId(),
+                                expansionAlarm.getCategory(),
+                                expansionAlarm.getExpansionRange());
+            }else {
+                setTitle(expansion.getCategory().categoryDisplayString);
+                showValuePicker(expansion.getId(),
+                                expansion.getCategory(),
+                                expansion.getValueRange());
+
             }
         }
 
@@ -68,13 +75,16 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
     }
 
     public static Intent getIntent(@NonNull final Context context,
-                                   final long expansionId,
-                                   @NonNull final Category expansionCategory,
-                                   @Nullable final ExpansionValueRange expansionValueRange){
+                                   @NonNull final ExpansionAlarm expansionAlarm) {
         return new Intent(context, ExpansionValuePickerActivity.class)
-                .putExtra(EXTRA_EXPANSION_DETAIL_ID, expansionId)
-                .putExtra(EXTRA_EXPANSION_CATEGORY, expansionCategory)
-                .putExtra(EXTRA_EXPANSION_VALUE_RANGE, expansionValueRange);
+                .putExtra(EXTRA_EXPANSION_ALARM, expansionAlarm);
+    }
+
+    //todo support enable button
+    public static Intent getIntent(@NonNull final Context context,
+                                   @NonNull final Expansion expansion) {
+        return new Intent(context, ExpansionValuePickerActivity.class)
+                .putExtra(EXTRA_EXPANSION, expansion);
     }
 
     //region Router
@@ -129,11 +139,11 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
                     // todo restore initial values by just popping fragment requires saving initial range state
                     popFragment(fragment, false);
 
-                    }
-                } else {
-                    setResult(RESULT_CANCELED);
-                    finish(); //todo handle better
                 }
+            } else {
+                setResult(RESULT_CANCELED);
+                finish(); //todo handle better
+            }
         }
     }
 
@@ -160,8 +170,8 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
         final Fragment fragment = getTopFragment();
         if (!(fragment instanceof OnBackPressedInterceptor) ||
                 !((OnBackPressedInterceptor) fragment).onInterceptBackPressed(stateSafeExecutor.bind(super::onBackPressed))) {
-                    stateSafeExecutor.execute(super::onBackPressed);
-                }
+            stateSafeExecutor.execute(super::onBackPressed);
+        }
     }
 
 
