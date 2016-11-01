@@ -41,7 +41,7 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     public void initializePresenterView() {
         if (presenterView == null) {
             presenterView = new VoiceSettingsListView(getActivity());
-            presenterView.setVolumeValueClickListener(this::redirectToVolumeSelection);
+            presenterView.setVolumeClickListener(this::redirectToVolumeSelection);
         }
     }
 
