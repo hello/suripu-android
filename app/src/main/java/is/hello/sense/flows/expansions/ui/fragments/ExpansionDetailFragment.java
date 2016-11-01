@@ -98,9 +98,15 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     @Override
     public void initializePresenterView() {
         if (presenterView == null) {
-            presenterView = new ExpansionDetailView(getActivity(),
-                                                    this::onEnabledIconClicked,
-                                                    this::onRemoveAccessClicked);
+            if (wantsValuePicker) {
+                presenterView = new ExpansionDetailView(getActivity(),
+                                                        this::onEnabledIconClickedAlarm,
+                                                        this::onRemoveAccessClicked);
+            } else {
+                presenterView = new ExpansionDetailView(getActivity(),
+                                                        this::onEnabledIconClickedExpansion,
+                                                        this::onRemoveAccessClicked);
+            }
         }
     }
 
@@ -206,7 +212,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             presenterView.showConnectButton(this::onConnectClicked);
         } else if (expansion.requiresConfiguration()) {
             presenterView.showConfigurationSuccess(getString(R.string.action_connect), this::onConfigureClicked);
-            presenterView.showRemoveAccess(! wantsValuePicker);
+            presenterView.showRemoveAccess(!wantsValuePicker);
         } else {
             configurationsInteractor.update();
             presenterView.showEnableSwitch(expansion.isConnected(), this);
@@ -304,10 +310,14 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
     }
 
-    private void onEnabledIconClicked(final View ignored) {
+    private void onEnabledIconClickedExpansion(final View ignored) {
         WelcomeDialogFragment.show(getActivity(),
                                    R.xml.welcome_dialog_expansions,
                                    true);
+    }
+
+    private void onEnabledIconClickedAlarm(final View ignored) {
+        //todo do alarm action.
     }
 
     @Override
