@@ -57,6 +57,7 @@ public class ExpansionDetailView extends PresenterView {
         this.connectButton = (Button) findViewById(R.id.view_expansion_detail_connect_button);
         // connected
         this.connectedContainer = (ViewGroup) findViewById(R.id.view_expansion_detail_bottom);
+        this.connectedContainer.setVisibility(GONE);// can't set included layouts to gone
         this.enabledContainer = (ViewGroup) connectedContainer.findViewById(R.id.view_expansion_detail_enabled_container);
         this.enabledTextView = (TextView) enabledContainer.findViewById(R.id.view_expansion_detail_enabled_tv);
         this.enabledSwitch = (CompoundButton) enabledContainer.findViewById(R.id.view_expansion_detail_configuration_selection_switch);
