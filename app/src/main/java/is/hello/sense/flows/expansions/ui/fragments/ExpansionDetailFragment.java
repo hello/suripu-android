@@ -104,7 +104,8 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         if (presenterView == null) {
             presenterView = new ExpansionDetailView(getActivity(),
                                                     this::onEnabledIconClickedExpansion,
-                                                    this::onRemoveAccessClicked);
+                                                    this::onRemoveAccessClicked,
+                                                    (v) -> this.configurationsInteractor.update());
         }
     }
 
@@ -133,6 +134,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             }
             expansionDetailsInteractor.setId(id);
             configurationsInteractor.setExpansionId(id);
+            isEnabledForSmartAlarm = savedInstanceState.getBoolean(ARG_EXPANSION_ENABLED_FOR_SMART_ALARM);
         } else {
             cancelFlow();
             return;
@@ -166,6 +168,12 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         }
     }
 
+    @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(ARG_EXPANSION_ENABLED_FOR_SMART_ALARM, isEnabledForSmartAlarm);
+    }
+
     public void updateState(@NonNull final State state, @NonNull final Action1<Object> onNext) {
         this.updateStateSubscription.unsubscribe();
         this.updateStateSubscription = bind(expansionDetailsInteractor.setState(state))
@@ -178,17 +186,21 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         if (configurations == null) {
             return;
         }
-        Configuration selectedConfig = null;
-        for (int i = 0; i < configurations.size(); i++) {
-            final Configuration config = configurations.get(i);
-            if (config.isSelected()) {
-                selectedConfig = config;
-                break;
+        if (configurations.isEmpty()) {
+            presenterView.showConfigurationEmpty();
+        } else {
+            Configuration selectedConfig = null;
+            for (int i = 0; i < configurations.size(); i++) {
+                final Configuration config = configurations.get(i);
+                if (config.isSelected()) {
+                    selectedConfig = config;
+                    break;
+                }
             }
-        }
-        //todo pass along selected config and list to move work to interactor
-        if (selectedConfig != null) {
-            presenterView.showConfigurationSuccess(selectedConfig.getName(), this::onConfigureClicked);
+            //todo pass along selected config and list to move work to interactor
+            if (selectedConfig != null) {
+                presenterView.showConfigurationSuccess(selectedConfig.getName(), this::onConfigureClicked);
+            }
         }
     }
 
@@ -216,12 +228,11 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             configurationsInteractor.update();
             if (wantsValuePicker) {
                 presenterView.showEnableSwitch(isEnabledForSmartAlarm, this);
-            }else {
+            } else {
                 presenterView.showEnableSwitch(expansion.isConnected(), this);
             }
             presenterView.showRemoveAccess(!wantsValuePicker);
         }
-
     }
 
     //region errors

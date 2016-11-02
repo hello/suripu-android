@@ -36,6 +36,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.VoidResponse;
+import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.api.model.v2.expansions.State;
@@ -255,7 +256,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) {
-            if (requestCode == EXPANSION_VALUE_REQUEST_CODE){
+            if (requestCode == EXPANSION_VALUE_REQUEST_CODE) {
                 expansionsInteractor.update();
             }
             return;
@@ -290,18 +291,18 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         } else if (requestCode == EXPANSION_VALUE_REQUEST_CODE) {
             final ExpansionAlarm expansionAlarm = (ExpansionAlarm) data.getSerializableExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM);
             //todo how to handle when expansion disabled should the returned expansionAlarm be preformatted?
-            final ExpansionAlarm savedExpansionAlarm = getExpansionAlarm(expansionAlarm.getId());
+            final ExpansionAlarm savedExpansionAlarm = alarm.getExpansionAlarm(expansionAlarm.getCategory());
             if (savedExpansionAlarm != null) {
                 savedExpansionAlarm.setExpansionRange(expansionAlarm.getExpansionRange().max);
                 savedExpansionAlarm.setEnabled(expansionAlarm.isEnabled());
-                final Expansion expansion = getExpansion(savedExpansionAlarm.getId());
+                final Expansion expansion = getExpansion(savedExpansionAlarm.getCategory());
                 if (expansion != null) {
                     updateExpansion(expansion);
                 }
                 expansionsInteractor.update();
-            }else {
+            } else {
                 alarm.getExpansions().add(expansionAlarm);
-                final Expansion expansion = getExpansion(expansionAlarm.getId());
+                final Expansion expansion = getExpansion(expansionAlarm.getCategory());
                 if (expansion != null) {
                     updateExpansion(expansion);
                 }
@@ -417,13 +418,13 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         }
     }
 
-    private Expansion getExpansion(final long id) {
+    private Expansion getExpansion(final Category category) {
         if (!expansionsInteractor.expansions.hasValue()) {
             return null;
         }
         final List<Expansion> expansions = expansionsInteractor.expansions.getValue();
         for (final Expansion expansion : expansions) {
-            if (expansion.getId() == id) {
+            if (expansion.getCategory() == category) {
                 return expansion;
             }
         }
@@ -431,15 +432,15 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     private void updateExpansion(@NonNull final Expansion expansion) {
-        switch ((int) expansion.getId()) {
-            case THERMO_EXPANSION_ID:
+        switch (expansion.getCategory()) {
+            case TEMPERATURE:
                 updateExpansion(expansion,
                                 thermoExpansionValue,
                                 thermoExpansionError,
                                 thermoExpansionContainer,
                                 thermoExpansionProgress);
                 break;
-            case LIGHT_EXPANSION_ID:
+            case LIGHT:
                 updateExpansion(expansion,
                                 lightExpansionValue,
                                 lightExpansionError,
@@ -463,7 +464,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
             value.setText(R.string.expansions_state_not_connected);
         }
         if (expansion.getState() == State.CONNECTED_ON) {
-            final ExpansionAlarm expansionAlarm = getExpansionAlarm(expansion.getId());
+            final ExpansionAlarm expansionAlarm = alarm.getExpansionAlarm(expansion.getCategory());
             if (expansionAlarm == null || !expansionAlarm.isEnabled()) {
                 value.setText(R.string.expansions_off);
                 container.setOnClickListener((ignored) -> redirectToExpansionPicker(expansion));
@@ -476,21 +477,6 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         }
 
 
-    }
-
-
-    private ExpansionAlarm getExpansionAlarm(final long expansionId) {
-        final List<ExpansionAlarm> alarms = alarm.getExpansions();
-        if (alarms.isEmpty()) {
-            return null;
-        }
-        for (final ExpansionAlarm expansionAlarm : alarms) {
-            if (expansionAlarm.getId() == expansionId) {
-                return expansionAlarm;
-            }
-        }
-
-        return null;
     }
 
     private void bindExpansionError(final Throwable throwable) {

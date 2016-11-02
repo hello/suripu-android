@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -34,6 +35,7 @@ public class ExpansionDetailView extends PresenterView {
 
     final TextView configurationTypeTextView;
     final TextView configurationSelectedTextView;
+    final TextView configRetry;
     final ImageView configurationErrorImageView;
     final ViewGroup removeAccessContainer;
     final ViewGroup connectedContainer;
@@ -45,7 +47,8 @@ public class ExpansionDetailView extends PresenterView {
 
     public ExpansionDetailView(@NonNull final Activity activity,
                                @NonNull final OnClickListener enabledTextViewClickListener,
-                               @NonNull final OnClickListener removeAccessTextViewClickListener) {
+                               @NonNull final OnClickListener removeAccessTextViewClickListener,
+                               @NonNull final OnClickListener configRetryListener) {
         super(activity);
         this.expansionInfoContainer = (ViewGroup) findViewById(R.id.view_expansion_detail_infoid);
         this.deviceNameTextView = (TextView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_device_name);
@@ -65,13 +68,21 @@ public class ExpansionDetailView extends PresenterView {
         this.configurationErrorImageView = (ImageView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_error);
         this.configurationTypeTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_type_tv);
         this.configurationSelectedTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_selection_tv);
+        this.configRetry = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_reload);
         this.removeAccessContainer = (ViewGroup) connectedContainer.findViewById(R.id.view_expansion_detail_remove_access_container);
         this.configurationLoading = (ProgressBar) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_loading);
         this.expansionValuePickerView = (ExpansionValuePickerView) findViewById(R.id.view_expansion_detail_expansion_value_picker_view);
         //hook up listeners
         Views.setSafeOnClickListener(this.enabledTextView, enabledTextViewClickListener);
         Views.setSafeOnClickListener(this.removeAccessContainer, removeAccessTextViewClickListener);
+        Views.setSafeOnClickListener(this.configRetry, v -> {
+            configRetry.setVisibility(GONE);
+            configurationLoading.setVisibility(VISIBLE);
+            configRetryListener.onClick(v);
+        });
     }
+
+
 
     @Override
     protected int getLayoutRes() {
@@ -94,6 +105,14 @@ public class ExpansionDetailView extends PresenterView {
         this.configurationSelectedTextView.setText(configurationName);
         this.configurationSelectedTextView.setVisibility(VISIBLE);
         this.connectedContainer.setVisibility(VISIBLE);
+        this.configRetry.setVisibility(GONE);
+    }
+
+    public void showConfigurationEmpty() {
+        this.configurationLoading.setVisibility(GONE);
+        this.configurationSelectedTextView.setVisibility(GONE);
+        this.connectedContainer.setVisibility(VISIBLE);
+        this.configRetry.setVisibility(VISIBLE);
     }
 
     public void showConfigurationsError(@NonNull final OnClickListener configurationErrorImageViewClickListener) {
@@ -102,6 +121,7 @@ public class ExpansionDetailView extends PresenterView {
         this.configurationSelectedTextView.setVisibility(GONE);
         this.configurationErrorImageView.setVisibility(VISIBLE);
         this.connectedContainer.setVisibility(VISIBLE);
+        this.configRetry.setVisibility(GONE);
     }
 
     public void showConfigurationSpinner() {
@@ -148,7 +168,7 @@ public class ExpansionDetailView extends PresenterView {
     }
 
 
-    public void showRemoveAccess(final boolean isOn){
+    public void showRemoveAccess(final boolean isOn) {
         this.removeAccessContainer.setVisibility(isOn ? VISIBLE : GONE);
         this.removeAccessContainer.setEnabled(isOn);
     }

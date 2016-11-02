@@ -83,10 +83,9 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
                 .putExtra(EXTRA_EXPANSION_ALARM, expansionAlarm);
     }
 
-    //todo support enable button
     public static Intent getIntent(@NonNull final Context context,
                                    @NonNull final Expansion expansion,
-                                   @NonNull final boolean isEnabled) {
+                                   final boolean isEnabled) {
         return new Intent(context, ExpansionValuePickerActivity.class)
                 .putExtra(EXTRA_EXPANSION, expansion)
                 .putExtra(EXTRA_IS_ENABLED, isEnabled);

@@ -38,14 +38,12 @@ public class ExpansionAlarm extends ApiResponse {
                           @NonNull final Category category,
                           @NonNull final String serviceName,
                           final boolean enabled,
-                          @Nullable final ExpansionValueRange range,
-                          final boolean isEnabled) {
+                          @Nullable final ExpansionValueRange range) {
         this.id = id;
         this.category = category;
         this.serviceName = serviceName;
         this.enabled = enabled;
         this.expansionRange = range;
-        this.enabled = isEnabled;
     }
 
     public ExpansionAlarm(@NonNull final Expansion expansion,
@@ -53,9 +51,8 @@ public class ExpansionAlarm extends ApiResponse {
         this(expansion.getId(),
              expansion.getCategory(),
              expansion.getServiceName(),
-             expansion.isConnected(),
-             null,
-             isEnabled);
+             isEnabled,
+             null);
     }
 
     public long getId() {
@@ -106,7 +103,7 @@ public class ExpansionAlarm extends ApiResponse {
         this.expansionRange = new ExpansionValueRange(selectedValue, selectedValue);
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(final boolean enabled) {
         this.enabled = enabled;
     }
 
