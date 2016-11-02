@@ -121,7 +121,12 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
             presenterView.setTitle(getString(R.string.expansions_configuration_selection_title_format, expansion.getServiceName()));
             presenterView.setSubtitle(getString(R.string.expansions_configuration_selection_subtitle_format, expansion.getConfigurationType()));
             configurationsInteractor.setExpansionId(expansion.getId());
-            configurationsInteractor.update();
+
+            if (expansion.requiresConfiguration() || expansion.isConnected()) {
+                configurationsInteractor.update();
+            } else {
+                bindConfigurations(null); //show empty configuration
+            }
         }else {
             cancelFlow();
         }
