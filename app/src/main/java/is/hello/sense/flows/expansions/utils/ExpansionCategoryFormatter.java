@@ -49,6 +49,19 @@ public class ExpansionCategoryFormatter {
         }
     }
 
+    public UnitConverter getReverseUnitConverter(@NonNull final Category category) {
+        switch (category){
+            case TEMPERATURE:
+                if(preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, true)){
+                    return UnitConverter.IDENTITY;
+                } else {
+                    return UnitOperations::fahrenheitToCelsius;
+                }
+            default:
+                return UnitConverter.IDENTITY;
+        }
+    }
+
     public String getFormattedAttributionValueRange(@NonNull final Category category,
                                                     @NonNull final ExpansionValueRange expansionRange,
                                                     @NonNull final Context context) {
