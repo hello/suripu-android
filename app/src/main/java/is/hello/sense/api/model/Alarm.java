@@ -179,7 +179,7 @@ public class Alarm extends ApiResponse {
 
     @NonNull
     public List<ExpansionAlarm> getExpansions() {
-        if (expansions == null || !BuildConfig.DEBUG) { //todo add support for prod
+        if (expansions == null) {
             expansions = new ArrayList<>();
         }
         return expansions;

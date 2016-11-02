@@ -203,16 +203,14 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (BuildConfig.DEBUG) { //todo add support for prod
-            bindAndSubscribe(expansionsInteractor.expansions,
-                             this::bindExpansions,
-                             this::bindExpansionError);
+        bindAndSubscribe(expansionsInteractor.expansions,
+                         this::bindExpansions,
+                         this::bindExpansionError);
 
-            bindAndSubscribe(preferences.observableBoolean(PreferencesInteractor.HAS_VOICE, false),
-                             this::setVoiceState,
-                             Functions.LOG_ERROR);
+        bindAndSubscribe(preferences.observableBoolean(PreferencesInteractor.HAS_VOICE, false),
+                         this::setVoiceState,
+                         Functions.LOG_ERROR);
 
-        }
         bindAndSubscribe(preferences.observableUse24Time(),
                          newValue -> {
                              this.use24Time = newValue;
