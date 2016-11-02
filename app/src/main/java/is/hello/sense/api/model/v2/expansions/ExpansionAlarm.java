@@ -23,7 +23,7 @@ public class ExpansionAlarm extends ApiResponse {
     private String serviceName;
 
     @SerializedName("enabled")
-    public final boolean enabled;
+    public boolean enabled;
 
     @SerializedName("target_value")
     private ExpansionValueRange expansionRange;
@@ -38,20 +38,24 @@ public class ExpansionAlarm extends ApiResponse {
                           @NonNull final Category category,
                           @NonNull final String serviceName,
                           final boolean enabled,
-                          @Nullable final ExpansionValueRange range) {
+                          @Nullable final ExpansionValueRange range,
+                          final boolean isEnabled) {
         this.id = id;
         this.category = category;
         this.serviceName = serviceName;
         this.enabled = enabled;
         this.expansionRange = range;
+        this.enabled = isEnabled;
     }
 
-    public ExpansionAlarm(@NonNull final Expansion expansion) {
+    public ExpansionAlarm(@NonNull final Expansion expansion,
+                          final boolean isEnabled) {
         this(expansion.getId(),
              expansion.getCategory(),
              expansion.getServiceName(),
              expansion.isConnected(),
-             null);
+             null,
+             isEnabled);
     }
 
     public long getId() {
@@ -101,6 +105,11 @@ public class ExpansionAlarm extends ApiResponse {
     public void setExpansionRange(final int selectedValue) {
         this.expansionRange = new ExpansionValueRange(selectedValue, selectedValue);
     }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
 
     public boolean hasExpansionRange() {
         return expansionRange != null;

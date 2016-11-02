@@ -61,12 +61,14 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
                 setTitle(expansionAlarm.getCategory().categoryDisplayString);
                 showValuePicker(expansionAlarm.getId(),
                                 expansionAlarm.getCategory(),
-                                expansionAlarm.getExpansionRange());
-            }else {
+                                expansionAlarm.getExpansionRange(),
+                                expansionAlarm.isEnabled());
+            } else {
                 setTitle(expansion.getCategory().categoryDisplayString);
                 showValuePicker(expansion.getId(),
                                 expansion.getCategory(),
-                                expansion.getValueRange());
+                                expansion.getValueRange(),
+                                false);
 
             }
         }
@@ -88,13 +90,14 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
     }
 
     //region Router
-    //todo use category to decide how many pickers to inflate
     private void showValuePicker(final long expansionId,
                                  @NonNull final Category category,
-                                 @Nullable final ExpansionValueRange valueRange) {
+                                 @Nullable final ExpansionValueRange valueRange,
+                                 final boolean enabledForSmartAlarm) {
         pushFragment(ExpansionDetailFragment.newValuePickerInstance(expansionId,
                                                                     category,
-                                                                    valueRange),
+                                                                    valueRange,
+                                                                    enabledForSmartAlarm),
                      null, false);
     }
 

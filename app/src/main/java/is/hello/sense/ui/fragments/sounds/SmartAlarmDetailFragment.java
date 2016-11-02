@@ -287,8 +287,22 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         } else if (requestCode == EXPANSION_VALUE_REQUEST_CODE) {
             final ExpansionAlarm expansionAlarm = (ExpansionAlarm) data.getSerializableExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM);
             //todo how to handle when expansion disabled should the returned expansionAlarm be preformatted?
-            expansionAlarm.setDisplayValue(expansionCategoryFormatter.getFormattedValueRange(expansionAlarm.getCategory(), expansionAlarm.getExpansionRange(), getActivity()));
-            expansionAlarm.setDisplayIcon(expansionCategoryFormatter.getDisplayIconRes(expansionAlarm.getCategory()));
+            final ExpansionAlarm savedExpansionAlarm = getExpansionAlarm(expansionAlarm.getId());
+            if (savedExpansionAlarm != null) {
+                savedExpansionAlarm.setExpansionRange(expansionAlarm.getExpansionRange().max);
+                savedExpansionAlarm.setEnabled(expansionAlarm.isEnabled());
+                final Expansion expansion = getExpansion(savedExpansionAlarm.getId());
+                if (expansion != null) {
+                    updateExpansion(expansion);
+                }
+            }else {
+                alarm.getExpansions().add(expansionAlarm);
+                final Expansion expansion = getExpansion(expansionAlarm.getId());
+                if (expansion != null) {
+                    updateExpansion(expansion);
+                }
+
+            }
             markDirty();
         }
     }
@@ -395,24 +409,41 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         thermoExpansionContainer.setOnClickListener((v) -> redirectToExpansionDetail(THERMO_EXPANSION_ID));
         lightExpansionContainer.setOnClickListener((v) -> redirectToExpansionDetail(LIGHT_EXPANSION_ID));
         for (final Expansion expansion : expansions) {
-            switch ((int) expansion.getId()) {
-                case THERMO_EXPANSION_ID:
-                    updateExpansion(expansion,
-                                    thermoExpansionValue,
-                                    thermoExpansionError,
-                                    thermoExpansionContainer,
-                                    thermoExpansionProgress);
-                    break;
-                case LIGHT_EXPANSION_ID:
-                    updateExpansion(expansion,
-                                    lightExpansionValue,
-                                    lightExpansionError,
-                                    lightExpansionContainer,
-                                    lightExpansionProgress);
-                    break;
-                default:
+            updateExpansion(expansion);
+        }
+    }
 
+    private Expansion getExpansion(final long id) {
+        if (!expansionsInteractor.expansions.hasValue()) {
+            return null;
+        }
+        final List<Expansion> expansions = expansionsInteractor.expansions.getValue();
+        for (final Expansion expansion : expansions) {
+            if (expansion.getId() == id) {
+                return expansion;
             }
+        }
+        return null;
+    }
+
+    private void updateExpansion(@NonNull final Expansion expansion) {
+        switch ((int) expansion.getId()) {
+            case THERMO_EXPANSION_ID:
+                updateExpansion(expansion,
+                                thermoExpansionValue,
+                                thermoExpansionError,
+                                thermoExpansionContainer,
+                                thermoExpansionProgress);
+                break;
+            case LIGHT_EXPANSION_ID:
+                updateExpansion(expansion,
+                                lightExpansionValue,
+                                lightExpansionError,
+                                lightExpansionContainer,
+                                lightExpansionProgress);
+                break;
+            default:
+
         }
     }
 
@@ -438,7 +469,6 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                                                                                 getActivity()));
                 container.setOnClickListener((ignored) -> redirectToExpansionPicker(expansionAlarm));
             }
-            ;
         }
 
 
