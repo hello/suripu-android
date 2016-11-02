@@ -29,8 +29,10 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 
 public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.BaseViewHolder> {
-    @VisibleForTesting static final int VIEW_ID_ALARM = 0;
-    @VisibleForTesting static final int VIEW_ID_MESSAGE = 1;
+    @VisibleForTesting
+    static final int VIEW_ID_ALARM = 0;
+    @VisibleForTesting
+    static final int VIEW_ID_MESSAGE = 1;
 
     private final LayoutInflater inflater;
     private final InteractionListener interactionListener;
@@ -184,20 +186,22 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
             repeat.setText(alarm.getDaysOfWeekSummary(repeat.getContext()));
 
             expansionsAdapter.clear();
-
-            for (final ExpansionAlarm ea :
-                    alarm.getExpansions()) {
+            final List<ExpansionAlarm> tempAlarms = new ArrayList<>(0);
+            for (final ExpansionAlarm ea : alarm.getExpansions()) {
                 ea.setDisplayIcon(expansionFormatter.getDisplayIconRes(ea.getCategory()));
-                if(ea.isEnabled() && ea.hasExpansionRange()) {
-                    ea.setDisplayValue(expansionFormatter.getFormattedAttributionValueRange(ea.getCategory(),
-                                                                                            ea.getExpansionRange(),
-                                                                                            itemView.getContext()));
-                } else {
-                    ea.setDisplayValue(Constants.EMPTY_STRING);
+                if (ea.isEnabled()) {
+                    if (ea.hasExpansionRange()) {
+                        ea.setDisplayValue(expansionFormatter.getFormattedAttributionValueRange(ea.getCategory(),
+                                                                                                ea.getExpansionRange(),
+                                                                                                itemView.getContext()));
+                    } else {
+                        ea.setDisplayValue(Constants.EMPTY_STRING);
+                    }
+                    tempAlarms.add(ea);
                 }
             }
 
-            expansionsAdapter.replaceAll(alarm.getExpansions());
+            expansionsAdapter.replaceAll(tempAlarms);
         }
 
         @Override
@@ -255,18 +259,18 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
 
         @Override
         void bind(int ignored) {
-            if (currentMessage.titleRes != 0 ) {
+            if (currentMessage.titleRes != 0) {
                 titleText.setAllCaps(false);
                 titleText.setText(currentMessage.titleRes);
                 titleText.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 titleText.setVisibility(View.GONE);
             }
 
             if (currentMessage.titleIconRes != 0) {
                 imageView.setImageResource(currentMessage.titleIconRes);
                 imageView.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 imageView.setVisibility(View.GONE);
             }
             messageText.setText(currentMessage.message.resolve(messageText.getContext()));
@@ -281,17 +285,25 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
 
     public interface InteractionListener {
         void onAlarmEnabledChanged(int position, boolean enabled);
+
         void onAlarmClicked(int position, @NonNull Alarm alarm);
+
         boolean onAlarmLongClicked(int position, @NonNull Alarm alarm);
     }
 
     public static class Message {
-        public @StringRes final int titleRes;
+        public
+        @StringRes
+        final int titleRes;
         public final StringRef message;
 
-        public @DrawableRes int titleIconRes = 0;
+        public
+        @DrawableRes
+        int titleIconRes = 0;
 
-        public @StringRes int actionRes = android.R.string.ok;
+        public
+        @StringRes
+        int actionRes = android.R.string.ok;
         public View.OnClickListener onClickListener;
 
         public Message(@StringRes int titleRes, @NonNull StringRef message) {
