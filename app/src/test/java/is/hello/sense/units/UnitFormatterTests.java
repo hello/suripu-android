@@ -116,6 +116,24 @@ public class UnitFormatterTests extends InjectionTestCase {
                    is(equalTo("39 °")));
     }
 
+    @Test
+    public void getTemperatureUnitConverter() throws Exception {
+        preferences.edit().putBoolean(PreferencesInteractor.USE_CELSIUS, false)
+                   .commit();
+
+        assertThat(unitFormatter.getTemperatureUnitConverter().convert(0f),
+                   is(equalTo(32f)));
+    }
+
+    @Test
+    public void getReverseTemperatureUnitConverter() throws Exception {
+        preferences.edit().putBoolean(PreferencesInteractor.USE_CELSIUS, false)
+                   .commit();
+
+        assertThat(unitFormatter.getReverseTemperatureUnitConverter().convert(32f),
+                   is(equalTo(0f)));
+    }
+
 
     @Test
     public void formatLight() throws Exception {
