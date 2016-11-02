@@ -8,15 +8,15 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.segment.analytics.Properties;
@@ -39,7 +39,7 @@ import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
-import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
+import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.flows.expansions.interactors.ExpansionsInteractor;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionValuePickerActivity;
@@ -49,13 +49,11 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
-import is.hello.sense.ui.adapter.ExpansionAlarmsAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
-import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Drawing;
@@ -71,6 +69,8 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     private static final int SOUND_REQUEST_CODE = 0x50;
     private static final int REPEAT_REQUEST_CODE = 0x59;
     private static final int EXPANSION_VALUE_REQUEST_CODE = 0x69;
+    private static final int LIGHT_EXPANSION_ID = 2;
+    private static final int THERMO_EXPANSION_ID = 1;
 
     @Inject
     DateFormatter dateFormatter;
@@ -93,9 +93,19 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     private TextView time;
     private TextView toneName;
     private TextView repeatDays;
-    private RecyclerView expansionAlarmsRecyclerView;
-    private ExpansionAlarmsAdapter expansionAlarmsAdapter;
 
+    private TextView lightExpansionValue;
+    private TextView thermoExpansionValue;
+
+    private LinearLayout expansionsContainer;
+    private LinearLayout lightExpansionContainer;
+    private LinearLayout thermoExpansionContainer;
+
+    private ProgressBar lightExpansionProgress;
+    private ProgressBar thermoExpansionProgress;
+
+    private ImageView lightExpansionError;
+    private ImageView thermoExpansionError;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -117,14 +127,23 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         addPresenter(expansionsInteractor);
 
         setRetainInstance(true);
-
-        expansionAlarmsAdapter = new ExpansionAlarmsAdapter(new ArrayList<>(2));
     }
 
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_smart_alarm_detail, container, false);
+        this.expansionsContainer = (LinearLayout) view.findViewById(R.id.fragment_smart_alarm_detail_expansions_container);
+        this.lightExpansionProgress = (ProgressBar) expansionsContainer.findViewById(R.id.fragment_smart_alarm_detail_expansions_light_progress);
+        this.thermoExpansionProgress = (ProgressBar) expansionsContainer.findViewById(R.id.fragment_smart_alarm_detail_expansions_temp_progress);
+        this.lightExpansionValue = (TextView) expansionsContainer.findViewById(R.id.fragment_smart_alarm_detail_expansions_light_value);
+        this.thermoExpansionValue = (TextView) expansionsContainer.findViewById(R.id.fragment_smart_alarm_detail_expansions_temp_value);
+        this.lightExpansionContainer = (LinearLayout) expansionsContainer.findViewById(R.id.fragment_smart_alarm_detail_expansions_light_container);
+        this.thermoExpansionContainer = (LinearLayout) expansionsContainer.findViewById(R.id.fragment_smart_alarm_detail_expansions_temp_container);
+        this.lightExpansionError = (ImageView) expansionsContainer.findViewById(R.id.fragment_smart_alarm_detail_expansions_light_error);
+        this.thermoExpansionError = (ImageView) expansionsContainer.findViewById(R.id.fragment_smart_alarm_detail_expansions_temp_error);
+
+        setVoiceState(false);
 
         this.time = (TextView) view.findViewById(R.id.fragment_smart_alarm_detail_time);
         updateTime();
@@ -169,16 +188,6 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         this.repeatDays = (TextView) repeatRow.findViewById(R.id.fragment_smart_alarm_detail_repeat_days);
         repeatDays.setText(alarm.getRepeatSummary(getActivity(), false));
 
-        expansionAlarmsRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_smart_alarm_detail_expansion_rv);
-        expansionAlarmsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        expansionAlarmsRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
-        expansionAlarmsRecyclerView.setNestedScrollingEnabled(false);
-        expansionAlarmsRecyclerView.setHasFixedSize(false);
-        expansionAlarmsRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
-
-        expansionAlarmsRecyclerView.setAdapter(expansionAlarmsAdapter);
-        expansionAlarmsAdapter.setOnItemClickedListener(this::onExpansionAlarmItemClicked);
-
         final View deleteRow = view.findViewById(R.id.fragment_smart_alarm_detail_delete);
         Views.setSafeOnClickListener(deleteRow, stateSafeExecutor, this::deleteAlarm);
 
@@ -196,22 +205,11 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         super.onViewCreated(view, savedInstanceState);
         if (BuildConfig.DEBUG) { //todo add support for prod
             bindAndSubscribe(expansionsInteractor.expansions,
-                             this::bindFilteredExpansions,
-                             this::bindExpansionsThrowable);
+                             this::bindExpansions,
+                             this::bindExpansionError);
+
             bindAndSubscribe(preferences.observableBoolean(PreferencesInteractor.HAS_VOICE, false),
-                             enabled -> {
-                                 if (enabled) {
-                                     expansionAlarmsRecyclerView.setVisibility(View.VISIBLE);
-                                     if (alarm.getExpansions().isEmpty()) {
-                                         expansionsInteractor.update();
-                                     } else {
-                                         bindExpansionAlarms(alarm.getExpansions());
-                                     }
-                                 } else {
-                                     expansionAlarmsRecyclerView.setVisibility(View.GONE);
-                                     expansionsInteractor.expansions.forget();
-                                 }
-                             },
+                             this::setVoiceState,
                              Functions.LOG_ERROR);
 
         }
@@ -258,7 +256,9 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) {
-            attemptToUpdateExpansions();
+            if (requestCode == EXPANSION_VALUE_REQUEST_CODE) {
+                expansionsInteractor.update();
+            }
             return;
         }
 
@@ -291,9 +291,23 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         } else if (requestCode == EXPANSION_VALUE_REQUEST_CODE) {
             final ExpansionAlarm expansionAlarm = (ExpansionAlarm) data.getSerializableExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM);
             //todo how to handle when expansion disabled should the returned expansionAlarm be preformatted?
-            expansionAlarm.setDisplayValue(expansionCategoryFormatter.getFormattedValueRange(expansionAlarm.getCategory(), expansionAlarm.getExpansionRange(), getActivity()));
-            expansionAlarm.setDisplayIcon(expansionCategoryFormatter.getDisplayIconRes(expansionAlarm.getCategory()));
-            expansionAlarmsAdapter.updateLastClickedItem(expansionAlarm);
+            final ExpansionAlarm savedExpansionAlarm = alarm.getExpansionAlarm(expansionAlarm.getCategory());
+            if (savedExpansionAlarm != null) {
+                savedExpansionAlarm.setExpansionRange(expansionAlarm.getExpansionRange().max);
+                savedExpansionAlarm.setEnabled(expansionAlarm.isEnabled());
+                final Expansion expansion = getExpansion(savedExpansionAlarm.getCategory());
+                if (expansion != null) {
+                    updateExpansion(expansion);
+                }
+                expansionsInteractor.update();
+            } else {
+                alarm.getExpansions().add(expansionAlarm);
+                final Expansion expansion = getExpansion(expansionAlarm.getCategory());
+                if (expansion != null) {
+                    updateExpansion(expansion);
+                }
+
+            }
             markDirty();
         }
     }
@@ -306,27 +320,10 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        if (expansionAlarmsAdapter != null) {
-            expansionAlarmsAdapter.setOnItemClickedListener(null);
-        }
-        if (expansionAlarmsRecyclerView != null) {
-            expansionAlarmsRecyclerView.setAdapter(null);
-            expansionAlarmsRecyclerView = null;
-        }
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
-
         smartAlarmInteractor.forgetAvailableAlarmSoundsCache();
-
-        expansionAlarmsAdapter = null;
     }
-
 
     private SmartAlarmDetailActivity getDetailActivity() {
         return (SmartAlarmDetailActivity) getActivity();
@@ -397,72 +394,94 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
 
     //region Expansion
 
-    public void bindFilteredExpansions(@NonNull final List<Expansion> expansions) {
-
-        Log.e(SmartAlarmDetailFragment.class.getName(), "alarm expansions" + alarm.getExpansions());
-
-        final List<ExpansionAlarm> expansionAlarms = new ArrayList<>(expansions.size());
-
-        for (final Expansion expansion : expansions) {
-
-            final ExpansionAlarm updatedExpansionAlarm = new ExpansionAlarm(expansion);
-            updatedExpansionAlarm.setDisplayValue(getString(expansionCategoryFormatter.getDisplayValueResFromState(expansion.getState())));
-            expansionAlarms.add(updatedExpansionAlarm);
-        }
-        bindExpansionAlarms(expansionAlarms);
-    }
-
-    private void bindExpansionAlarms(@NonNull final List<ExpansionAlarm> expansionAlarms) {
-        for (final ExpansionAlarm expansionAlarm : expansionAlarms) {
-            if (expansionAlarm.isEnabled() && expansionAlarm.hasExpansionRange()) {
-                expansionAlarm.setDisplayValue(expansionCategoryFormatter.getFormattedValueRange(expansionAlarm.getCategory(),
-                                                                                                 expansionAlarm.getExpansionRange(),
-                                                                                                 getActivity())
-                                              );
-
-            }
-            expansionAlarm.setDisplayIcon(expansionCategoryFormatter.getDisplayIconRes(expansionAlarm.getCategory()));
-        }
-
-        expansionAlarmsAdapter.replaceAll(expansionAlarms);
-        alarm.setExpansions(expansionAlarms);
-    }
-
-    private void onExpansionAlarmItemClicked(final int position, @NonNull final ExpansionAlarm expansionAlarm) {
-        if (expansionAlarm.isEnabled()) {
-            redirectToExpansionPicker(expansionAlarm.getId(),
-                                      expansionAlarm.getCategory(),
-                                      expansionAlarm.getExpansionRange());
+    /**
+     * @param hasVoice true if voice is enabled
+     */
+    private void setVoiceState(final boolean hasVoice) {
+        if (hasVoice) {
+            expansionsContainer.setVisibility(View.VISIBLE);
+            expansionsInteractor.update();
         } else {
-            redirectToExpansionDetail(expansionAlarm.getId());
+            expansionsContainer.setVisibility(View.GONE);
         }
     }
 
-    private void redirectToExpansionPicker(final long expansionId,
-                                           @NonNull final Category expansionCategory,
-                                           @Nullable final ExpansionValueRange valueRange) {
-        startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
-                                                                      expansionId,
-                                                                      expansionCategory,
-                                                                      valueRange),
-                               EXPANSION_VALUE_REQUEST_CODE);
+    /**
+     * Update on click listeners of each row.
+     */
+    private void bindExpansions(@NonNull final ArrayList<Expansion> expansions) {
+        // Set initial click listener
+        thermoExpansionContainer.setOnClickListener((v) -> redirectToExpansionDetail(THERMO_EXPANSION_ID));
+        lightExpansionContainer.setOnClickListener((v) -> redirectToExpansionDetail(LIGHT_EXPANSION_ID));
+        for (final Expansion expansion : expansions) {
+            updateExpansion(expansion);
+        }
     }
 
-    private void redirectToExpansionDetail(final long expansionId) {
-        startActivityForResult(ExpansionSettingsActivity.getExpansionDetailIntent(getActivity(),
-                                                                                  expansionId),
-                               EXPANSION_VALUE_REQUEST_CODE);
+    private Expansion getExpansion(final Category category) {
+        if (!expansionsInteractor.expansions.hasValue()) {
+            return null;
+        }
+        final List<Expansion> expansions = expansionsInteractor.expansions.getValue();
+        for (final Expansion expansion : expansions) {
+            if (expansion.getCategory() == category) {
+                return expansion;
+            }
+        }
+        return null;
     }
 
-    private void bindExpansionsThrowable(@NonNull final Throwable throwable) {
-        this.showExpansionError();
+    private void updateExpansion(@NonNull final Expansion expansion) {
+        switch (expansion.getCategory()) {
+            case TEMPERATURE:
+                updateExpansion(expansion,
+                                thermoExpansionValue,
+                                thermoExpansionError,
+                                thermoExpansionContainer,
+                                thermoExpansionProgress);
+                break;
+            case LIGHT:
+                updateExpansion(expansion,
+                                lightExpansionValue,
+                                lightExpansionError,
+                                lightExpansionContainer,
+                                lightExpansionProgress);
+                break;
+            default:
+
+        }
     }
 
-    public void onExpansionErrorIconPress(@NonNull final View view) {
-        attemptToUpdateExpansions();
+    private void updateExpansion(@NonNull final Expansion expansion,
+                                 @NonNull final TextView value,
+                                 @NonNull final ImageView error,
+                                 @NonNull final LinearLayout container,
+                                 @NonNull final ProgressBar progressBar) {
+        error.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
+        value.setVisibility(View.VISIBLE);
+        if (expansion.getState() == State.REVOKED ||
+                expansion.getState() == State.NOT_CONFIGURED ||
+                expansion.getState() == State.CONNECTED_OFF) {
+            value.setText(R.string.expansions_state_not_connected);
+        }
+        if (expansion.getState() == State.CONNECTED_ON) {
+            final ExpansionAlarm expansionAlarm = alarm.getExpansionAlarm(expansion.getCategory());
+            if (expansionAlarm == null || !expansionAlarm.isEnabled()) {
+                value.setText(R.string.expansions_off);
+                container.setOnClickListener((ignored) -> redirectToExpansionPicker(expansion));
+            } else {
+                value.setText(expansionCategoryFormatter.getFormattedValueRange(expansion.getCategory(),
+                                                                                expansionAlarm.getExpansionRange(),
+                                                                                getActivity()));
+                container.setOnClickListener((ignored) -> redirectToExpansionPicker(expansionAlarm));
+            }
+        }
+
+
     }
 
-    private void showExpansionError() {
+    private void bindExpansionError(final Throwable throwable) {
         new SenseAlertDialog.Builder()
                 .setTitle(R.string.expansion_not_loaded_title)
                 .setMessage(R.string.expansion_not_loaded_message)
@@ -476,14 +495,32 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                 .show();
     }
 
-    private void attemptToUpdateExpansions() {
-        if (preferences.hasVoice() && BuildConfig.DEBUG) {/// todo add support for prod
-            expansionsInteractor.update();
-        }
+    private void redirectToExpansionPicker(@NonNull final ExpansionAlarm expansionAlarm) {
+
+        startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
+                                                                      expansionAlarm),
+                               EXPANSION_VALUE_REQUEST_CODE);
+
+    }
+
+    public void redirectToExpansionPicker(@NonNull final Expansion expansion) {
+
+        startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
+                                                                      expansion,
+                                                                      false),
+                               EXPANSION_VALUE_REQUEST_CODE);
+
+    }
+
+    private void redirectToExpansionDetail(final long expansionId) {
+        startActivityForResult(ExpansionSettingsActivity.getExpansionDetailIntent(getActivity(),
+                                                                                  expansionId),
+                               EXPANSION_VALUE_REQUEST_CODE);
     }
 
     private void updateAlarmFromAdapterExpansions() {
-        this.alarm.setExpansions(expansionAlarmsAdapter.getAllEnabledWithValueRangeCopy());
+        //  this.alarm.setExpansions(expansionAlarmsAdapter.getAllEnabledWithValueRangeCopy());
+        //todo update alarm state
         finishSaveAlarmOperation();
     }
 

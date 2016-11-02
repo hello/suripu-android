@@ -28,6 +28,7 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
         implements FragmentNavigation {
 
     private static final String EXTRA_EXPANSION_DETAIL_ID = ExpansionSettingsActivity.class.getName() + "EXTRA_EXPANSION_DETAIL_ID";
+    public static final String EXTRA_EXPANSION = ExpansionSettingsActivity.class.getName() + "EXTRA_EXPANSION";
 
     private FragmentNavigationDelegate navigationDelegate;
 
@@ -48,7 +49,7 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         } else if (navigationDelegate.getTopFragment() == null) {
 
-            if(wantsExpansionDetailThenStartPickerActivity()){
+            if (wantsExpansionDetailThenStartPickerActivity()) {
                 showExpansionDetail(getIntent().getLongExtra(EXTRA_EXPANSION_DETAIL_ID, Expansion.NO_ID));
             } else {
                 showExpansionList();
@@ -58,7 +59,7 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
 
     }
 
-    public static Intent getExpansionDetailIntent(@NonNull final Context context, final long expansionId){
+    public static Intent getExpansionDetailIntent(@NonNull final Context context, final long expansionId) {
         return new Intent(context, ExpansionSettingsActivity.class)
                 .putExtra(EXTRA_EXPANSION_DETAIL_ID, expansionId);
     }
@@ -126,14 +127,14 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
                     && result.hasExtra(ConfigSelectionFragment.EXPANSION_ID_KEY)
                     && result.hasExtra(ConfigSelectionFragment.EXPANSION_CATEGORY)) {
                 final long expansionId = result.getLongExtra(ConfigSelectionFragment.EXPANSION_ID_KEY, Expansion.NO_ID);
-                if(wantsExpansionDetailThenStartPickerActivity() && responseCode == ConfigSelectionFragment.RESULT_CONFIG_SELECTED){
-                    final Category category = (Category) result.getSerializableExtra(ConfigSelectionFragment.EXPANSION_CATEGORY);
-                    showExpansionPickerActivity(expansionId, category);
+                if (wantsExpansionDetailThenStartPickerActivity() && responseCode == ConfigSelectionFragment.RESULT_CONFIG_SELECTED) {
+                    final Expansion expansion = (Expansion) result.getSerializableExtra(EXTRA_EXPANSION);
+                    showExpansionPickerActivity(expansion);
                 } else {
                     showExpansionDetail(expansionId);
                 }
             } else {
-                if(wantsExpansionDetailThenStartPickerActivity()) {
+                if (wantsExpansionDetailThenStartPickerActivity()) {
                     setResult(RESULT_CANCELED); //todo handle better
                     finish();
                 } else {
@@ -143,8 +144,8 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
         }
     }
 
-    private void showExpansionPickerActivity(final long expansionId, @NonNull final Category category) {
-        final Intent intent = ExpansionValuePickerActivity.getIntent(this, expansionId, category, null);
+    private void showExpansionPickerActivity(@NonNull final Expansion expansion) {
+        final Intent intent = ExpansionValuePickerActivity.getIntent(this, expansion, true);
         intent.setFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
         startActivity(intent);
         finish();
@@ -173,8 +174,8 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
         final Fragment fragment = getTopFragment();
         if (!(fragment instanceof OnBackPressedInterceptor) ||
                 !((OnBackPressedInterceptor) fragment).onInterceptBackPressed(stateSafeExecutor.bind(super::onBackPressed))) {
-                    stateSafeExecutor.execute(super::onBackPressed);
-                }
+            stateSafeExecutor.execute(super::onBackPressed);
+        }
     }
 
 

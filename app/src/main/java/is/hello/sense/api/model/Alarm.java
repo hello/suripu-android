@@ -2,6 +2,7 @@ package is.hello.sense.api.model;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
@@ -23,6 +24,7 @@ import java.util.UUID;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.alarms.AlarmSource;
+import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
@@ -181,6 +183,17 @@ public class Alarm extends ApiResponse {
             expansions = new ArrayList<>();
         }
         return expansions;
+    }
+
+    @Nullable
+    public ExpansionAlarm getExpansionAlarm(final Category category) {
+        for (final ExpansionAlarm expansionAlarm : getExpansions()) {
+            if (expansionAlarm.getCategory() == category) {
+                return expansionAlarm;
+            }
+        }
+
+        return null;
     }
 
     public void setExpansions(@NonNull final List<ExpansionAlarm> expansions) {

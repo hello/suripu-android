@@ -686,6 +686,7 @@
 
     <string name="action_expansions">Expansions</string>
     <string name="expansion_list_title">Expansions</string>
+    <string name="expansions_off">Off</string>
     <string name="expansions_state_not_connected">Connect</string>
     <string name="expansions_state_connected_on">Enabled</string>
     <string name="expansions_state_connected_off">Disabled</string>
