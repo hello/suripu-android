@@ -199,10 +199,18 @@ public class SmartAlarmAdapterTests extends InjectionTestCase {
         alarm1.setRepeated(false);
         alarm1.setSmart(false);
         alarm1.setTime(new LocalTime(8, 30));
-        alarm1.setExpansions(Arrays.asList(new ExpansionAlarm(1, Category.LIGHT, "Hue", true,
-                                                              new ExpansionValueRange(100, 100)),
-                                           new ExpansionAlarm(1, Category.TEMPERATURE, "Nest", true,
-                                                              new ExpansionValueRange(0, 100))));
+        alarm1.setExpansions(Arrays.asList(new ExpansionAlarm(1,
+                                                              Category.LIGHT,
+                                                              "Hue",
+                                                              true,
+                                                              new ExpansionValueRange(100, 100),
+                                                              true),
+                                           new ExpansionAlarm(1,
+                                                              Category.TEMPERATURE,
+                                                              "Nest",
+                                                              true,
+                                                              new ExpansionValueRange(0, 100),
+                                                              true)));
 
 
         adapter.bindAlarms(Lists.newArrayList(alarm1));

@@ -214,7 +214,11 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             presenterView.showRemoveAccess(!wantsValuePicker);
         } else {
             configurationsInteractor.update();
-            presenterView.showEnableSwitch(isEnabledForSmartAlarm, this);
+            if (wantsValuePicker) {
+                presenterView.showEnableSwitch(isEnabledForSmartAlarm, this);
+            }else {
+                presenterView.showEnableSwitch(expansion.isConnected(), this);
+            }
             presenterView.showRemoveAccess(!wantsValuePicker);
         }
 

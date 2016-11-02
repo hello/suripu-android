@@ -19,6 +19,7 @@ import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
+import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.flows.expansions.ui.views.ConfigSelectionView;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
@@ -27,7 +28,7 @@ import is.hello.sense.ui.common.OnBackPressedInterceptor;
 
 public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionView>
         implements ArrayRecyclerAdapter.OnItemClickedListener<Configuration>,
-        OnBackPressedInterceptor{
+        OnBackPressedInterceptor {
     public static final String EXPANSION_ID_KEY = ConfigSelectionFragment.class.getSimpleName() + ".expansion_id_key";
     public static final String EXPANSION_CATEGORY = ConfigSelectionFragment.class.getSimpleName() + ".expansion_category";
     public static final int RESULT_CONFIG_SELECTED = 110;
@@ -149,12 +150,12 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     private Configuration.Empty getEmptyConfiguration(@Nullable final Expansion expansion) {
         if (expansion != null) {
             return new Configuration.Empty(getString(R.string.expansions_configuration_selection_item_missing_title_format, expansion.getConfigurationType()),
-                                                       getString(R.string.expansions_configuration_selection_item_missing_subtitle_format, expansion.getServiceName(), expansion.getConfigurationType()),
-                                                       R.drawable.icon_warning);
+                                           getString(R.string.expansions_configuration_selection_item_missing_subtitle_format, expansion.getServiceName(), expansion.getConfigurationType()),
+                                           R.drawable.icon_warning);
         } else {
             return new Configuration.Empty(getString(R.string.expansions_configuration_selection_empty_title_default),
-                                                       getString(R.string.expansions_configuration_selection_empty_subtitle_default),
-                                                       R.drawable.icon_warning);
+                                           getString(R.string.expansions_configuration_selection_empty_subtitle_default),
+                                           R.drawable.icon_warning);
         }
     }
 
@@ -187,11 +188,12 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
         }
     }
 
-    private void finishFlowWithExpansionDetailIntent(final boolean configSelected){
-        if(expansion != null) {
+    private void finishFlowWithExpansionDetailIntent(final boolean configSelected) {
+        if (expansion != null) {
             finishFlowWithResult(configSelected ? RESULT_CONFIG_SELECTED : Activity.RESULT_OK,
                                  new Intent().putExtra(EXPANSION_ID_KEY, expansion.getId())
                                              .putExtra(EXPANSION_CATEGORY, expansion.getCategory())
+                                             .putExtra(ExpansionSettingsActivity.EXTRA_EXPANSION, expansion)
                                 );
         } else {
             finishFlow();

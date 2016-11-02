@@ -30,6 +30,7 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
 
     public static final String EXTRA_EXPANSION_ALARM = ExpansionValuePickerActivity.class.getName() + "EXTRA_EXPANSION_ALARM";
     private static final String EXTRA_EXPANSION = ExpansionValuePickerActivity.class.getName() + "EXTRA_EXPANSION";
+    private static final String EXTRA_IS_ENABLED = ExpansionValuePickerActivity.class.getName() + "EXTRA_IS_ENABLED";
 
     private FragmentNavigationDelegate navigationDelegate;
 
@@ -68,7 +69,7 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
                 showValuePicker(expansion.getId(),
                                 expansion.getCategory(),
                                 expansion.getValueRange(),
-                                false);
+                                intent.getBooleanExtra(EXTRA_IS_ENABLED, false));
 
             }
         }
@@ -84,9 +85,11 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
 
     //todo support enable button
     public static Intent getIntent(@NonNull final Context context,
-                                   @NonNull final Expansion expansion) {
+                                   @NonNull final Expansion expansion,
+                                   @NonNull final boolean isEnabled) {
         return new Intent(context, ExpansionValuePickerActivity.class)
-                .putExtra(EXTRA_EXPANSION, expansion);
+                .putExtra(EXTRA_EXPANSION, expansion)
+                .putExtra(EXTRA_IS_ENABLED, isEnabled);
     }
 
     //region Router

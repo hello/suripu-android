@@ -255,6 +255,9 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) {
+            if (requestCode == EXPANSION_VALUE_REQUEST_CODE){
+                expansionsInteractor.update();
+            }
             return;
         }
 
@@ -514,7 +517,8 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public void redirectToExpansionPicker(@NonNull final Expansion expansion) {
 
         startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
-                                                                      expansion),
+                                                                      expansion,
+                                                                      false),
                                EXPANSION_VALUE_REQUEST_CODE);
 
     }
