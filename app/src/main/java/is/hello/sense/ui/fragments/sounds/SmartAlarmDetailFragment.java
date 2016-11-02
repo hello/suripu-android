@@ -460,7 +460,9 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         error.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
         value.setVisibility(View.VISIBLE);
-        if (expansion.getState() == State.REVOKED || expansion.getState() == State.NOT_CONFIGURED) {
+        if (expansion.getState() == State.REVOKED ||
+                expansion.getState() == State.NOT_CONFIGURED ||
+                expansion.getState() == State.CONNECTED_OFF) {
             value.setText(R.string.expansions_state_not_connected);
         }
         if (expansion.getState() == State.CONNECTED_ON) {
