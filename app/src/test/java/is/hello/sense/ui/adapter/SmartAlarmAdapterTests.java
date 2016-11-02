@@ -203,14 +203,12 @@ public class SmartAlarmAdapterTests extends InjectionTestCase {
                                                               Category.LIGHT,
                                                               "Hue",
                                                               true,
-                                                              new ExpansionValueRange(100, 100),
-                                                              true),
+                                                              new ExpansionValueRange(100, 100)),
                                            new ExpansionAlarm(1,
                                                               Category.TEMPERATURE,
                                                               "Nest",
                                                               true,
-                                                              new ExpansionValueRange(0, 100),
-                                                              true)));
+                                                              new ExpansionValueRange(0, 100))));
 
 
         adapter.bindAlarms(Lists.newArrayList(alarm1));
