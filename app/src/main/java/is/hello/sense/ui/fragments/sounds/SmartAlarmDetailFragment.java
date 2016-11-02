@@ -297,7 +297,6 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                 if (expansion != null) {
                     updateExpansion(expansion);
                 }
-                expansionsInteractor.update();
             } else {
                 alarm.getExpansions().add(expansionAlarm);
                 final Expansion expansion = getExpansion(expansionAlarm.getCategory());
@@ -306,6 +305,7 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                 }
 
             }
+            expansionsInteractor.update();
             markDirty();
         }
     }
