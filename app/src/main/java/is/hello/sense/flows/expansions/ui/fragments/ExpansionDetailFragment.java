@@ -125,6 +125,10 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         updateStateSubscription = Subscriptions.empty();
+
+        if (savedInstanceState != null) {
+            isEnabledForSmartAlarm = savedInstanceState.getBoolean(ARG_EXPANSION_ENABLED_FOR_SMART_ALARM);
+        }
         final Bundle arguments = getArguments();
         if (arguments != null) {
             final long id = arguments.getLong(ARG_EXPANSION_ID, NO_ID);
@@ -134,7 +138,6 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             }
             expansionDetailsInteractor.setId(id);
             configurationsInteractor.setExpansionId(id);
-            isEnabledForSmartAlarm = savedInstanceState.getBoolean(ARG_EXPANSION_ENABLED_FOR_SMART_ALARM);
         } else {
             cancelFlow();
             return;
