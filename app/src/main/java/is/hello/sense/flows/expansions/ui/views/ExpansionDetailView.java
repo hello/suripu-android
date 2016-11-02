@@ -83,7 +83,6 @@ public class ExpansionDetailView extends PresenterView {
     }
 
 
-
     @Override
     protected int getLayoutRes() {
         return R.layout.view_expansion_detail;
@@ -148,22 +147,26 @@ public class ExpansionDetailView extends PresenterView {
     }
 
     /**
-     * @param expansion    expansion this is for
+     * @param min          min value
+     * @param max          max value
      * @param initialValue should be the actual value, not index position.
      * @param suffix       will be attached to each value. If no suffix should be used pass
+     * @param configType   configuration to display
      *                     {@link is.hello.sense.util.Constants#EMPTY_STRING}.
      */
-    public void showExpansionRangePicker(@NonNull final Expansion expansion,
+    public void showExpansionRangePicker(final int min,
+                                         final int max,
                                          final int initialValue,
-                                         @NonNull final String suffix) {
+                                         @NonNull final String suffix,
+                                         @NonNull final String configType) {
         post(() -> {
             this.expansionValuePickerView.setVisibility(VISIBLE);
-            this.expansionValuePickerView.initialize(expansion.getValueRange().min,
-                                                     expansion.getValueRange().max,
+            this.expansionValuePickerView.initialize(min,
+                                                     max,
                                                      initialValue,
                                                      suffix);
 
-            this.configurationTypeTextView.setText(expansion.getConfigurationType());
+            this.configurationTypeTextView.setText(configType);
         });
     }
 
