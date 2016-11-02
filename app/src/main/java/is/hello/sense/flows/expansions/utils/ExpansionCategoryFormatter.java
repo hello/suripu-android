@@ -9,18 +9,44 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
 import is.hello.sense.api.model.v2.expansions.State;
+import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.units.UnitConverter;
 import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.units.UnitOperations;
 import is.hello.sense.util.Constants;
 
 public class ExpansionCategoryFormatter {
+
+    private final PreferencesInteractor preferences;
+
+    public ExpansionCategoryFormatter(@NonNull final PreferencesInteractor preferencesInteractor){
+        this.preferences = preferencesInteractor;
+    }
 
     public String getFormattedValueRange(@NonNull final Category category,
                                          @NonNull final ExpansionValueRange valueRange,
                                          @NonNull final Context context) {
         final CharSequence suffix = getSuffix(category);
 
+        final UnitConverter unitConverter = getUnitConverter(category);
+
         return context.getString(R.string.smart_alarm_expansion_same_value_format,
-                                 valueRange.min, suffix);
+                                 unitConverter.convert((float) valueRange.min)
+                                              .intValue(),
+                                 suffix);
+    }
+
+    public UnitConverter getUnitConverter(@NonNull final Category category) {
+        switch (category){
+            case TEMPERATURE:
+                if(preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, true)){
+                    return UnitConverter.IDENTITY;
+                } else {
+                    return UnitOperations::celsiusToFahrenheit;
+                }
+            default:
+                return UnitConverter.IDENTITY;
+        }
     }
 
     public String getFormattedAttributionValueRange(@NonNull final Category category,

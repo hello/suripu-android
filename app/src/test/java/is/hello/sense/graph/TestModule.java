@@ -20,6 +20,7 @@ import is.hello.sense.api.sessions.TestApiSessionManager;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractorTests;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
+import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatterTest;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractorTest;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
@@ -58,9 +59,6 @@ import is.hello.sense.interactors.ZoomedOutTimelineInteractorTests;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractorTests;
 import is.hello.sense.interactors.onboarding.OnboardingPairSenseInteractorTests;
-import is.hello.sense.interactors.pairsense.OnboardingPairSenseInteractor;
-import is.hello.sense.interactors.pairsense.SettingsPairSenseInteractor;
-import is.hello.sense.interactors.pairsense.UpgradePairSenseInteractor;
 import is.hello.sense.interactors.questions.ApiQuestionProviderTests;
 import is.hello.sense.interactors.questions.ReviewQuestionProviderTests;
 import is.hello.sense.interactors.settings.SettingsPairSenseInteractorTests;
@@ -148,6 +146,8 @@ import static org.mockito.Mockito.mock;
             SettingsPairSenseInteractorTests.class,
 
             UpgradePairSenseInteractorTests.class,
+
+            ExpansionCategoryFormatterTest.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")
@@ -249,7 +249,7 @@ public final class TestModule {
 
     @Provides
     @Singleton
-    ExpansionCategoryFormatter providesExpansionCategoryFormatter(){
-        return new ExpansionCategoryFormatter();
+    ExpansionCategoryFormatter providesExpansionCategoryFormatter(@NonNull final PreferencesInteractor preferencesInteractor){
+        return new ExpansionCategoryFormatter(preferencesInteractor);
     }
 }
