@@ -7,12 +7,13 @@ import android.support.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 import is.hello.sense.api.model.ApiResponse;
+import is.hello.sense.util.Constants;
 
 /**
  * Provide to {@link is.hello.sense.api.model.Alarm} to specify which
  * expansions are enabled
  */
-public class ExpansionAlarm extends ApiResponse {
+public class ExpansionAlarm extends ApiResponse implements Comparable {
     @SerializedName("id")
     private final long id;
 
@@ -28,9 +29,8 @@ public class ExpansionAlarm extends ApiResponse {
     @SerializedName("target_value")
     private ExpansionValueRange expansionRange;
 
-    //@Exclude
-    private String displayValue = "empty value";
-    //@Exclude
+    private String displayValue;
+
     @DrawableRes
     private int displayIcon;
 
@@ -44,6 +44,7 @@ public class ExpansionAlarm extends ApiResponse {
         this.serviceName = serviceName;
         this.enabled = enabled;
         this.expansionRange = range;
+        this.displayValue = Constants.EMPTY_STRING;
     }
 
     public ExpansionAlarm(@NonNull final Expansion expansion) {
@@ -102,11 +103,20 @@ public class ExpansionAlarm extends ApiResponse {
         this.expansionRange = new ExpansionValueRange(selectedValue, selectedValue);
     }
 
+    public void setExpansionRange(@NonNull final ExpansionValueRange expansionRange) {
+        this.expansionRange = expansionRange;
+    }
+
     public boolean hasExpansionRange() {
         return expansionRange != null;
     }
 
     public ExpansionValueRange getExpansionRange() {
         return expansionRange;
+    }
+
+    @Override
+    public int compareTo(@NonNull final Object other) {
+        return Long.compare(this.id, ((ExpansionAlarm) other).id);
     }
 }

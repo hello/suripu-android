@@ -36,8 +36,9 @@ public class ExpansionsInteractor extends ValueInteractor<ArrayList<Expansion>> 
         return apiService.getExpansions();
     }
 
-    public Observable<Expansion> findByCategories(@NonNull final List<Category> category){
-        return expansions.flatMap(Observable::from)
-                       .filter( expansion -> category.contains(expansion.getCategory()));
+    public Observable<List<Expansion>> findByCategories(@NonNull final List<Category> categories){
+        return latest().flatMap(Observable::from)
+                         .filter( expansion -> categories.contains(expansion.getCategory()))
+                         .toSortedList();
     }
 }

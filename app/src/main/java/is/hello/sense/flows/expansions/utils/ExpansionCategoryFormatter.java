@@ -62,7 +62,16 @@ public class ExpansionCategoryFormatter {
                 return R.string.smart_alarm_expansion_state_connected_on;
             default:
                 return R.string.smart_alarm_expansion_state_connected_off;
-
         }
     }
+
+    @StringRes
+    public int getDisplayValueRes(final boolean enabled) {
+        if(enabled){
+            return R.string.smart_alarm_expansion_state_connected_on;
+        } else{
+            return R.string.smart_alarm_expansion_state_connected_off;
+        }
+    }
+
 }
