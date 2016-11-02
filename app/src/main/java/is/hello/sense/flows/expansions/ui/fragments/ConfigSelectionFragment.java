@@ -175,7 +175,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
         final Configuration selectedConfig = adapter.getSelectedItem();
         if (selectedConfig != null) {
             if (expansion != null) {
-                showBlockingActivity(getString(R.string.expansions_configuration_selection_setting_progress_format, expansion.getCategory()));
+                showBlockingActivity(getString(R.string.expansions_configuration_selection_setting_progress_format, expansion.getConfigurationType()));
             } else {
                 showBlockingActivity(R.string.expansions_configuration_selection_setting_progress_default);
             }
