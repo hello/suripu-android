@@ -12,9 +12,11 @@ import android.text.style.ClickableSpan;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import is.hello.go99.animators.AnimatorTemplate;
+import is.hello.sense.util.SafeOnCheckedChangeListener;
 import is.hello.sense.util.SafeOnClickListener;
 import is.hello.sense.util.StateSafeExecutor;
 import is.hello.sense.util.TimeOffsetOnClickListener;
@@ -143,6 +145,11 @@ public final class Views {
 
     public static void setTimeOffsetOnClickListener(@NonNull final View view, @NonNull final View.OnClickListener onClickListener){
         view.setOnClickListener(new TimeOffsetOnClickListener(onClickListener));
+    }
+
+    public static void setSafeOnSwitchClickListener(@NonNull final CompoundButton compoundButton,
+                                                    @NonNull final CompoundButton.OnCheckedChangeListener checkChangeListener) {
+        compoundButton.setOnCheckedChangeListener(new SafeOnCheckedChangeListener(null, checkChangeListener));
     }
 
 
