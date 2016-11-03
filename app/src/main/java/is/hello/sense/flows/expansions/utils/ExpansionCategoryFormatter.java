@@ -9,18 +9,16 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
 import is.hello.sense.api.model.v2.expansions.State;
-import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.units.UnitConverter;
 import is.hello.sense.units.UnitFormatter;
-import is.hello.sense.units.UnitOperations;
 import is.hello.sense.util.Constants;
 
 public class ExpansionCategoryFormatter {
 
-    private final PreferencesInteractor preferences;
+    private final UnitFormatter unitFormatter;
 
-    public ExpansionCategoryFormatter(@NonNull final PreferencesInteractor preferencesInteractor){
-        this.preferences = preferencesInteractor;
+    public ExpansionCategoryFormatter(@NonNull final UnitFormatter unitFormatter){
+        this.unitFormatter = unitFormatter;
     }
 
     public String getFormattedValueRange(@NonNull final Category category,
@@ -39,11 +37,7 @@ public class ExpansionCategoryFormatter {
     public UnitConverter getUnitConverter(@NonNull final Category category) {
         switch (category){
             case TEMPERATURE:
-                if(preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, true)){
-                    return UnitConverter.IDENTITY;
-                } else {
-                    return UnitOperations::celsiusToFahrenheit;
-                }
+                return unitFormatter.getTemperatureUnitConverter();
             default:
                 return UnitConverter.IDENTITY;
         }
@@ -52,11 +46,7 @@ public class ExpansionCategoryFormatter {
     public UnitConverter getReverseUnitConverter(@NonNull final Category category) {
         switch (category){
             case TEMPERATURE:
-                if(preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, true)){
-                    return UnitConverter.IDENTITY;
-                } else {
-                    return UnitOperations::fahrenheitToCelsius;
-                }
+                return unitFormatter.getReverseTemperatureUnitConverter();
             default:
                 return UnitConverter.IDENTITY;
         }

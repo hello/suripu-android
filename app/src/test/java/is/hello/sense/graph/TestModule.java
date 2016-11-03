@@ -66,6 +66,7 @@ import is.hello.sense.interactors.upgrade.UpgradePairSenseInteractorTests;
 import is.hello.sense.rating.LocalUsageTrackerTests;
 import is.hello.sense.ui.adapter.SmartAlarmAdapterTests;
 import is.hello.sense.ui.fragments.RoomConditionsFragmentTests;
+import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitFormatterTests;
 import is.hello.sense.util.BatteryUtil;
 import is.hello.sense.util.DateFormatterTests;
@@ -249,7 +250,7 @@ public final class TestModule {
 
     @Provides
     @Singleton
-    ExpansionCategoryFormatter providesExpansionCategoryFormatter(@NonNull final PreferencesInteractor preferencesInteractor){
-        return new ExpansionCategoryFormatter(preferencesInteractor);
+    ExpansionCategoryFormatter providesExpansionCategoryFormatter(@NonNull final UnitFormatter unitFormatter){
+        return new ExpansionCategoryFormatter(unitFormatter);
     }
 }

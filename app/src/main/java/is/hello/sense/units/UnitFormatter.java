@@ -92,16 +92,35 @@ public class UnitFormatter extends Interactor {
         }
     }
 
+    /**
+     * Always use this method when need to convert temperature.
+     * Defaults converter based on {@link Locale#getCountry()} if user never modifies unit pref in settings.
+     * @return proper expected {@link UnitConverter} for temperature
+     */
+    @NonNull
+    public UnitConverter getTemperatureUnitConverter(){
+        if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
+            return UnitConverter.IDENTITY;
+        } else {
+            return UnitOperations::celsiusToFahrenheit;
+        }
+    }
+
+    @NonNull
+    public UnitConverter getReverseTemperatureUnitConverter(){
+        if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
+            return UnitConverter.IDENTITY;
+        } else {
+            return UnitOperations::fahrenheitToCelsius;
+        }
+    }
+
 
     @NonNull
     public UnitConverter getUnitConverterForSensor(@NonNull final SensorType type) {
         switch (type) {
             case TEMPERATURE: {
-                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
-                    return UnitConverter.IDENTITY;
-                } else {
-                    return UnitOperations::celsiusToFahrenheit;
-                }
+                return getTemperatureUnitConverter();
             }
             default: {
                 return UnitConverter.IDENTITY;
@@ -154,7 +173,7 @@ public class UnitFormatter extends Interactor {
         String measuredIn = Constants.EMPTY_STRING;
         switch (type) {
             case TEMPERATURE:
-                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, false)) {
+                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
                     measuredIn = ApiService.UNIT_TEMPERATURE_CELSIUS.toUpperCase();
                 } else {
                     measuredIn = ApiService.UNIT_TEMPERATURE_US_CUSTOMARY.toUpperCase();
@@ -169,7 +188,7 @@ public class UnitFormatter extends Interactor {
     public int getAboutStringRes(@NonNull final SensorType type) {
         switch (type) {
             case TEMPERATURE:
-                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, false)) {
+                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
                     return R.string.sensor_about_temperature_celsius;
                 } else {
                     return R.string.sensor_about_temperature_fahrenheit;
