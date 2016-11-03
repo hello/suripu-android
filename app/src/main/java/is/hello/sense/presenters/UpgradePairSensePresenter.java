@@ -4,8 +4,8 @@ import android.support.annotation.NonNull;
 
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
+import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.interactors.UserFeaturesInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.interactors.pairsense.UpgradePairSenseInteractor;
 import is.hello.sense.util.Analytics;
@@ -13,12 +13,12 @@ import is.hello.sense.util.Analytics;
 public class UpgradePairSensePresenter extends PairSensePresenter {
 
     public UpgradePairSensePresenter(@NonNull final HardwareInteractor hardwareInteractor,
-                                     @NonNull final UserFeaturesInteractor userFeaturesInteractor,
+                                     @NonNull final DevicesInteractor devicesInteractor,
                                      @NonNull final ApiService apiService,
                                      @NonNull final UpgradePairSenseInteractor upgradePairSenseInteractor,
                                      @NonNull final PreferencesInteractor preferencesInteractor) {
         super(hardwareInteractor,
-              userFeaturesInteractor,
+              devicesInteractor,
               apiService,
               upgradePairSenseInteractor,
               preferencesInteractor);

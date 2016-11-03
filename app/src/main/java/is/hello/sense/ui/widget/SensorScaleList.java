@@ -3,6 +3,7 @@ package is.hello.sense.ui.widget;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -51,13 +52,12 @@ public class SensorScaleList extends LinearLayout {
         findViewById(R.id.item_circle_view_name).setVisibility(GONE);
         findViewById(R.id.item_circle_view_title).setVisibility(VISIBLE);
         findViewById(R.id.item_circle_view_divider).setVisibility(GONE);
-        final TextView value = ((TextView) findViewById(R.id.item_circle_view_value));
-        value.setText(getContext().getString(R.string.sensor_scale_list_measured_in, measuredIn));
-        value.setTextSize(Styles.pxToDp(getContext().getResources().getDimensionPixelSize(R.dimen.text_h7)));
-        value.setTextColor(ContextCompat.getColor(getContext(), R.color.gray3));
-        ((RelativeLayout.LayoutParams) value.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        if (!TextUtils.isEmpty(measuredIn)) {
+            final TextView value = ((TextView) findViewById(R.id.item_circle_view_value));
+            value.setText(getContext().getString(R.string.sensor_scale_list_measured_in, measuredIn));
+            value.setTextSize(Styles.pxToDp(getContext().getResources().getDimensionPixelSize(R.dimen.text_h7)));
+            value.setTextColor(ContextCompat.getColor(getContext(), R.color.gray3));
+            ((RelativeLayout.LayoutParams) value.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        }
     }
-
-
-
 }

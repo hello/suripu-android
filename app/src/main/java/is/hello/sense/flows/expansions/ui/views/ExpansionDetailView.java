@@ -15,12 +15,14 @@ import com.squareup.picasso.Picasso;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.flows.expansions.ui.widget.ExpansionValuePickerView;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.widget.util.Views;
 
 @SuppressLint("ViewConstructor")
 public class ExpansionDetailView extends PresenterView {
 
+    final ViewGroup expansionInfoContainer;
     final TextView deviceNameTextView;
     final TextView serviceNameTextView;
     final ImageView expansionIconImageView;
@@ -32,26 +34,32 @@ public class ExpansionDetailView extends PresenterView {
 
     final TextView configurationTypeTextView;
     final TextView configurationSelectedTextView;
+    final TextView configRetry;
     final ImageView configurationErrorImageView;
-    final TextView removeAccessTextView;
+    final ViewGroup removeAccessContainer;
     final ViewGroup connectedContainer;
     final ViewGroup enabledContainer;
 
     final ProgressBar configurationLoading;
 
+    final ExpansionValuePickerView expansionValuePickerView;
+
     public ExpansionDetailView(@NonNull final Activity activity,
                                @NonNull final OnClickListener enabledTextViewClickListener,
-                               @NonNull final OnClickListener removeAccessTextViewClickListener) {
+                               @NonNull final OnClickListener removeAccessTextViewClickListener,
+                               @NonNull final OnClickListener configRetryListener) {
         super(activity);
-        this.deviceNameTextView = (TextView) findViewById(R.id.view_expansion_detail_device_name);
-        this.serviceNameTextView = (TextView) findViewById(R.id.view_expansion_detail_device_service_name);
-        this.expansionIconImageView = (ImageView) findViewById(R.id.view_expansion_detail_icon);
-        this.expansionDescriptionTextView = (TextView) findViewById(R.id.view_expansion_detail_description);
-        //todo show based on expansion state
+        this.expansionInfoContainer = (ViewGroup) findViewById(R.id.view_expansion_detail_infoid);
+        this.deviceNameTextView = (TextView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_device_name);
+        this.serviceNameTextView = (TextView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_device_service_name);
+        this.expansionIconImageView = (ImageView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_icon);
+        this.expansionDescriptionTextView = (TextView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_description);
+
         // not connected
         this.connectButton = (Button) findViewById(R.id.view_expansion_detail_connect_button);
         // connected
-        this.connectedContainer = (ViewGroup) findViewById(R.id.view_expansion_detail_connected_container);
+        this.connectedContainer = (ViewGroup) findViewById(R.id.view_expansion_detail_bottom);
+        this.connectedContainer.setVisibility(GONE);// can't set included layouts to gone
         this.enabledContainer = (ViewGroup) connectedContainer.findViewById(R.id.view_expansion_detail_enabled_container);
         this.enabledTextView = (TextView) enabledContainer.findViewById(R.id.view_expansion_detail_enabled_tv);
         this.enabledSwitch = (CompoundButton) enabledContainer.findViewById(R.id.view_expansion_detail_configuration_selection_switch);
@@ -59,14 +67,20 @@ public class ExpansionDetailView extends PresenterView {
         this.configurationErrorImageView = (ImageView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_error);
         this.configurationTypeTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_type_tv);
         this.configurationSelectedTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_selection_tv);
-        this.removeAccessTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_remove_access_tv);
+        this.configRetry = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_reload);
+        this.removeAccessContainer = (ViewGroup) connectedContainer.findViewById(R.id.view_expansion_detail_remove_access_container);
         this.configurationLoading = (ProgressBar) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_loading);
-
-
+        this.expansionValuePickerView = (ExpansionValuePickerView) findViewById(R.id.view_expansion_detail_expansion_value_picker_view);
         //hook up listeners
         Views.setSafeOnClickListener(this.enabledTextView, enabledTextViewClickListener);
-        Views.setSafeOnClickListener(this.removeAccessTextView, removeAccessTextViewClickListener);
+        Views.setSafeOnClickListener(this.removeAccessContainer, removeAccessTextViewClickListener);
+        Views.setSafeOnClickListener(this.configRetry, v -> {
+            configRetry.setVisibility(GONE);
+            configurationLoading.setVisibility(VISIBLE);
+            configRetryListener.onClick(v);
+        });
     }
+
 
     @Override
     protected int getLayoutRes() {
@@ -76,7 +90,7 @@ public class ExpansionDetailView extends PresenterView {
     @Override
     public void releaseViews() {
         this.connectButton.setOnClickListener(null);
-        this.removeAccessTextView.setOnClickListener(null);
+        this.removeAccessContainer.setOnClickListener(null);
         this.configurationSelectedTextView.setOnClickListener(null);
         this.enabledSwitch.setOnClickListener(null);
         this.enabledTextView.setOnClickListener(null);
@@ -89,7 +103,14 @@ public class ExpansionDetailView extends PresenterView {
         this.configurationSelectedTextView.setText(configurationName);
         this.configurationSelectedTextView.setVisibility(VISIBLE);
         this.connectedContainer.setVisibility(VISIBLE);
-        this.removeAccessTextView.setEnabled(true);
+        this.configRetry.setVisibility(GONE);
+    }
+
+    public void showConfigurationEmpty() {
+        this.configurationLoading.setVisibility(GONE);
+        this.configurationSelectedTextView.setVisibility(GONE);
+        this.connectedContainer.setVisibility(VISIBLE);
+        this.configRetry.setVisibility(VISIBLE);
     }
 
     public void showConfigurationsError(@NonNull final OnClickListener configurationErrorImageViewClickListener) {
@@ -98,7 +119,7 @@ public class ExpansionDetailView extends PresenterView {
         this.configurationSelectedTextView.setVisibility(GONE);
         this.configurationErrorImageView.setVisibility(VISIBLE);
         this.connectedContainer.setVisibility(VISIBLE);
-        this.removeAccessTextView.setEnabled(true);
+        this.configRetry.setVisibility(GONE);
     }
 
     public void showConfigurationSpinner() {
@@ -113,8 +134,9 @@ public class ExpansionDetailView extends PresenterView {
     }
 
 
-    public void setExpansionInfo(@NonNull final Expansion expansion,
-                                 @NonNull final Picasso picasso) {
+    public void showExpansionInfo(@NonNull final Expansion expansion,
+                                  @NonNull final Picasso picasso) {
+        this.expansionInfoContainer.setVisibility(VISIBLE);
         this.deviceNameTextView.setText(expansion.getDeviceName());
         this.serviceNameTextView.setText(expansion.getServiceName());
         picasso.load(expansion.getIcon().getUrl(getResources()))
@@ -123,6 +145,35 @@ public class ExpansionDetailView extends PresenterView {
         this.configurationTypeTextView.setText(expansion.getConfigurationType());
     }
 
+    /**
+     * @param min          min value
+     * @param max          max value
+     * @param initialValue should be the actual value, not index position.
+     * @param suffix       will be attached to each value. If no suffix should be used pass
+     * @param configType   configuration to display
+     *                     {@link is.hello.sense.util.Constants#EMPTY_STRING}.
+     */
+    public void showExpansionRangePicker(final int min,
+                                         final int max,
+                                         final int initialValue,
+                                         @NonNull final String suffix,
+                                         @NonNull final String configType) {
+        post(() -> {
+            this.expansionValuePickerView.setVisibility(VISIBLE);
+            this.expansionValuePickerView.initialize(min,
+                                                     max,
+                                                     initialValue,
+                                                     suffix);
+
+            this.configurationTypeTextView.setText(configType);
+        });
+    }
+
+
+    public void showRemoveAccess(final boolean isOn) {
+        this.removeAccessContainer.setVisibility(isOn ? VISIBLE : GONE);
+        this.removeAccessContainer.setEnabled(isOn);
+    }
 
     //region switch
 
@@ -153,7 +204,6 @@ public class ExpansionDetailView extends PresenterView {
                                  @NonNull final CompoundButton.OnCheckedChangeListener enabledSwitchClickListener) {
         this.connectedContainer.setVisibility(VISIBLE);
         this.enabledContainer.setVisibility(VISIBLE);
-        this.removeAccessTextView.setEnabled(true);
         this.setEnableSwitch(isOn, enabledSwitchClickListener);
     }
 
@@ -161,11 +211,13 @@ public class ExpansionDetailView extends PresenterView {
                                  @NonNull final CompoundButton.OnCheckedChangeListener enabledSwitchClickListener) {
         this.enabledSwitch.setOnCheckedChangeListener(null);
         this.enabledSwitch.setChecked(isOn);
-        this.enabledSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            buttonView.setEnabled(false);
-            enabledSwitchClickListener.onCheckedChanged(buttonView, isChecked);
-        });
+        this.enabledSwitch.setEnabled(false);
+        Views.setSafeOnSwitchClickListener(this.enabledSwitch, enabledSwitchClickListener);
         this.enabledSwitch.setEnabled(true);
+    }
+
+    public int getSelectedValue() {
+        return this.expansionValuePickerView.getSelectedValue();
     }
 
     //endregion

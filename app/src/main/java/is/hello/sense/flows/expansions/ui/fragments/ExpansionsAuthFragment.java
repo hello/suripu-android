@@ -1,6 +1,7 @@
 package is.hello.sense.flows.expansions.ui.fragments;
 
 import android.app.ActionBar;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -20,8 +21,8 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
+import is.hello.sense.flows.expansions.ui.views.ExpansionsAuthView;
 import is.hello.sense.mvp.presenters.PresenterFragment;
-import is.hello.sense.mvp.view.expansions.ExpansionsAuthView;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.CustomWebViewClient;
@@ -42,6 +43,8 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
         this.setHasOptionsMenu(true);
         setActionBarHomeAsUpIndicator(R.drawable.app_style_ab_cancel);
         addInteractor(expansionDetailsInteractor);
+
+        lockOrientation(true);
     }
 
     @Override
@@ -99,6 +102,13 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        //Call during onDestroy because onRelease is called twice which prevents orientation from being unlocked
+        lockOrientation(false);
+    }
+
     //region CustomWebViewClient Listener
 
     @Override
@@ -109,7 +119,17 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
     @Override
     public void onCompletionUrlStarted() {
         presenterView.showProgress(false);
+        showBlockingActivity(R.string.expansions_completing);
+    }
+
+    @Override
+    public void onCompletionUrlFinished() {
         finishFlow();
+    }
+
+    @Override
+    public void onResourceError() {
+        hideBlockingActivity(false, null);
     }
 
     @Override
@@ -131,6 +151,14 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
         }
     }
 
+    private void lockOrientation(final boolean lock) {
+        if(getActivity() != null){
+            getActivity().setRequestedOrientation(
+                    lock ? ActivityInfo.SCREEN_ORIENTATION_LOCKED : ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
+                                                 );
+        }
+    }
+
     @VisibleForTesting
     public void bindLatestExpansion(@Nullable final Expansion expansion) {
         if(expansion == null){
@@ -149,6 +177,7 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
     public void presentError(final Throwable e) {
         //todo handle better
         presenterView.showProgress(false);
+        hideBlockingActivity(false, null);
         showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e));
     }
 }

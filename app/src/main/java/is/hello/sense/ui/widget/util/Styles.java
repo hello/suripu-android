@@ -197,7 +197,7 @@ public final class Styles {
             case UNIT_STYLE_SUBSCRIPT:
                 builder.append(createUnitSubscriptSpan(suffix));
                 break;
-        }
+    }
 
         return builder;
     }

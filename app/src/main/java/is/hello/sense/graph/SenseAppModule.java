@@ -15,10 +15,13 @@ import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
+import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
+import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
+import is.hello.sense.interactors.HasVoiceInteractor;
 import is.hello.sense.interactors.InsightInfoInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
@@ -40,7 +43,7 @@ import is.hello.sense.presenters.BaseHardwarePresenter;
 import is.hello.sense.settings.SettingsModule;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
-import is.hello.sense.ui.activities.HomeActivity;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
@@ -81,7 +84,8 @@ import is.hello.sense.zendesk.ZendeskModule;
                 UtilityModule.class,
                 FacebookApiModule.class,
                 PillModule.class,
-                SenseOTAModule.class //todo remove after converting fragments to use presenters
+                SenseOTAModule.class, //todo remove after converting fragments to use presenters,
+                ExpansionSettingsModule.class //todo remove after HomeActivity uses ScopedInjection
         },
         injects = {
                 SenseApplication.class,
@@ -142,12 +146,14 @@ import is.hello.sense.zendesk.ZendeskModule;
                 OnboardingSenseColorsFragment.class,
                 OnboardingRegisterAudioFragment.class,
                 OnboardingPairPill.class,
-                is.hello.sense.mvp.presenters.home.BacksideFragment.class,
-                is.hello.sense.mvp.presenters.home.RoomConditionsFragment.class,
-                is.hello.sense.mvp.presenters.home.TrendsFragment.class,
-                is.hello.sense.mvp.presenters.home.InsightsFragment.class,
-                is.hello.sense.mvp.presenters.home.SoundsFragment.class,
-                is.hello.sense.mvp.presenters.home.AppSettingsFragment.class,
+                is.hello.sense.flows.home.ui.fragments.BacksideFragment.class,
+                is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment.class,
+                is.hello.sense.flows.home.ui.fragments.TrendsFragment.class,
+                is.hello.sense.flows.home.ui.fragments.InsightsFragment.class,
+                is.hello.sense.flows.home.ui.fragments.SoundsFragment.class,
+                is.hello.sense.flows.home.ui.fragments.HomeFragment.class,
+                is.hello.sense.flows.home.ui.fragments.VoiceFragment.class,
+                AppSettingsFragment.class,
 
 
         }

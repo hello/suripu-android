@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_row_expansion_alarm_container"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/smart_alarm_details_row_height"
+    android:gravity="center_vertical"
+    android:paddingLeft="@dimen/x3"
+    android:paddingRight="@dimen/x3"
+    android:orientation="horizontal"
+    android:background="@drawable/selectable_dark_bounded">
+
+    <TextView
+        android:id="@+id/item_row_expansion_alarm_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/x1"
+        android:textAppearance="@style/AppTheme.Text.Body"
+        android:gravity="start|center_vertical"
+        android:layout_gravity="center_vertical"
+        android:drawableStart="@drawable/icon_alarm_light"
+        android:drawablePadding="@dimen/x3"/>
+
+    <FrameLayout
+        android:gravity="center_vertical|end"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/item_row_expansion_alarm_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:visibility="gone"
+            android:drawableEnd="@drawable/disclosure_chevron_small"
+            android:drawablePadding="@dimen/x1"
+            android:fontFamily="sans-serif"
+            android:textColor="@color/light_accent"
+            style="@style/AppTheme.Text.Body.MidSized"/>
+
+        <ImageView
+            android:id="@+id/item_row_expansion_alarm_error"
+            android:src="@drawable/icon_warning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:visibility="gone"/>
+
+    </FrameLayout>
+
+</LinearLayout>

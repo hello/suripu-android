@@ -29,6 +29,7 @@ import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.ApiException;
+import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
@@ -57,6 +58,8 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
     PreferencesInteractor preferences;
     @Inject
     DateFormatter dateFormatter;
+    @Inject
+    ExpansionCategoryFormatter expansionCategoryFormatter;
 
     private RecyclerView recyclerView;
     private ProgressBar activityIndicator;
@@ -100,7 +103,10 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
 
-        this.adapter = new SmartAlarmAdapter(getActivity(), this, dateFormatter);
+        this.adapter = new SmartAlarmAdapter(getActivity(),
+                                             this,
+                                             dateFormatter,
+                                             expansionCategoryFormatter);
         recyclerView.setAdapter(adapter);
 
         this.addButton = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_list_add);
@@ -115,17 +121,11 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        onUpdate();
+        update();
         final Observable<Boolean> use24Time = preferences.observableUse24Time();
         bindAndSubscribe(use24Time, adapter::setUse24Time, Functions.LOG_ERROR);
         bindAndSubscribe(smartAlarmPresenter.alarms, this::bindAlarms, this::alarmsUnavailable);
 
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        update();
     }
 
     @Override
@@ -150,10 +150,6 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
                              ignored -> activityIndicator.setVisibility(View.GONE),
                              this::presentError);
         }
-    }
-
-    public void onUpdate() {
-        smartAlarmPresenter.update();
     }
 
     public void startLoading() {
@@ -295,7 +291,7 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
 
     public void retry(@NonNull final View sender) {
         startLoading();
-        onUpdate();
+        update();
     }
 
     @Override

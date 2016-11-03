@@ -44,9 +44,13 @@ public class SensorGraphDrawable extends Drawable {
      */
     private static final int GRADIENT_BOTTOM_ALPHA = 40;
     /**
-     * Width of lines
+     * Width of graph lines
      */
     private static final float STROKE_WIDTH = 2f;
+    /**
+     * Width of limit lines
+     */
+    private static final float LIMIT_LINE_WIDTH = 1f;
     /**
      * White portion of scrubber
      */
@@ -122,7 +126,7 @@ public class SensorGraphDrawable extends Drawable {
 
         this.linePaint.setColor(ContextCompat.getColor(context, R.color.gray3));
         this.linePaint.setStyle(Paint.Style.STROKE);
-        this.linePaint.setStrokeWidth(STROKE_WIDTH);
+        this.linePaint.setStrokeWidth(LIMIT_LINE_WIDTH);
 
         this.scrubberPaint.setColor(strokeColor);
         this.scrubberPaint.setStyle(Paint.Style.FILL);

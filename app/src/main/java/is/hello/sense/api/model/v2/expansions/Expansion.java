@@ -39,6 +39,9 @@ public class Expansion extends ApiResponse {
     @SerializedName("state")
     private State state;
 
+    @SerializedName("value_range")
+    private ExpansionValueRange valueRange;
+
     private Expansion(final long id,
                       @NonNull final Category category,
                       @NonNull final String deviceName,
@@ -118,6 +121,10 @@ public class Expansion extends ApiResponse {
         this.state = state;
     }
 
+    public ExpansionValueRange getValueRange() {
+        return valueRange;
+    }
+
     @Override
     public String toString() {
         return "Expansion{" +
@@ -130,6 +137,7 @@ public class Expansion extends ApiResponse {
                 ", completionUri=" + completionUri +
                 ", description=" + description +
                 ", state=" + state +
+                ", valueRange=" + valueRange +
                 "}";
 
     }

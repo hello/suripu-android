@@ -48,8 +48,10 @@ public class SenseOTAIntroFragment extends SenseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        view.destroy();
-        view = null;
+        if(this.view != null) {
+            this.view.destroy();
+            this.view = null;
+        }
     }
 
     public void onContinue(final View ignored) {

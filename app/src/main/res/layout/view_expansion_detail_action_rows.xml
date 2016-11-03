@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/view_expansion_detail_connected_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:divider="@drawable/divider_horizontal"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:showDividers="middle"
+    android:visibility="visible"
+    tools:showIn="@layout/view_expansion_detail">
+
+    <LinearLayout
+        android:id="@+id/view_expansion_detail_enabled_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/expansion_detail_row_height"
+        android:background="@drawable/selectable_dark_bounded"
+        android:gravity="center_vertical"
+        android:padding="@dimen/x2"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/view_expansion_detail_enabled_tv"
+            style="@style/AppTheme.Text.Body.New"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@drawable/info_button_icon_small"
+            android:drawablePadding="@dimen/x1"
+            android:gravity="center"
+            android:text="@string/title_enabled"/>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <include
+            android:id="@+id/view_expansion_detail_configuration_selection_switch"
+            layout="@layout/widget_switch"/>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/view_expansion_detail_configuration_selection_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/expansion_detail_row_height"
+        android:background="@drawable/selectable_dark_bounded"
+        android:padding="@dimen/x2">
+
+        <TextView
+            android:id="@+id/view_expansion_detail_configuration_type_tv"
+            style="@style/AppTheme.Text.Body.New"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginEnd="@dimen/x2"/>
+
+        <ImageView
+            android:id="@+id/view_expansion_detail_configuration_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:src="@drawable/icon_warning"
+            android:visibility="gone"/>
+
+        <ProgressBar
+            android:id="@+id/view_expansion_detail_configuration_loading"
+            style="@style/AppTheme.ProgressBar.Tiny"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"/>
+
+        <TextView
+            android:id="@+id/view_expansion_detail_configuration_selection_tv"
+            style="@style/AppTheme.Text.Body.Dim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:drawableEnd="@drawable/disclosure_chevron_small"
+            android:drawablePadding="@dimen/x1"
+            android:visibility="gone"/>
+        <TextView
+            android:id="@+id/view_expansion_detail_configuration_reload"
+            style="@style/AppTheme.Text.Body.Dim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/action_retry"
+            android:layout_gravity="end|center_vertical"
+            android:drawableEnd="@drawable/disclosure_chevron_small"
+            android:drawablePadding="@dimen/x1"
+            android:visibility="gone"/>
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/view_expansion_detail_remove_access_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/expansion_detail_row_height"
+        android:gravity="center_vertical"
+        android:background="@drawable/selectable_dark_bounded"
+        android:padding="@dimen/x2"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/view_expansion_detail_remove_access_tv"
+            style="@style/AppTheme.Text.Body.New"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="@string/expansion_detail_remove_access"
+            android:textColor="@color/destructive_accent"/>
+    </LinearLayout>
+
+</LinearLayout>

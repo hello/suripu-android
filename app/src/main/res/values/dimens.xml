@@ -34,7 +34,9 @@
     <dimen name="x5">40dp</dimen>
     <dimen name="x6">48dp</dimen>
     <dimen name="x7">56dp</dimen>
-
+    <dimen name="x8">64dp</dimen>
+    <dimen name="x9">72dp</dimen>
+    <dimen name="x37.5">300dp</dimen>
 
     <dimen name="text_body">15sp</dimen>
     <dimen name="text_h1">64sp</dimen>
@@ -75,7 +77,7 @@
     <dimen name="text_size_score_share_title">80dp</dimen>
     <dimen name="text_size_score_share_text">20dp</dimen>
     <dimen name="text_size_score_share_date_text">10dp</dimen>
-    <dimen name="text_size_smart_alarm_time">36sp</dimen>
+    <dimen name="text_size_smart_alarm_time">42sp</dimen>
     <dimen name="text_size_smart_alarm_time_big">72sp</dimen>
     <dimen name="text_size_condition">36sp</dimen>
     <dimen name="text_size_scale_reading">64sp</dimen>
@@ -139,7 +141,7 @@
     <dimen name="scale_view_segment">12dp</dimen>
 
     <dimen name="gap_smart_alarm_list_bottom">96dp</dimen>
-    <dimen name="smart_alarm_details_row_height">72dp</dimen>
+    <dimen name="smart_alarm_details_row_height">@dimen/x9</dimen>
 
     <dimen name="view_interaction_stroke">2dp</dimen>
     <dimen name="view_interaction_area">45dp</dimen>
@@ -172,6 +174,7 @@
     <dimen name="sense_voice_fixed_margin">36px</dimen>
 
     <dimen name="expansion_icon_min_size">60dp</dimen>
+    <dimen name="expansion_detail_row_height">@dimen/x9</dimen>
     <!-- px not typo -->
 
     <!-- Graphs -->
@@ -260,5 +263,7 @@
     <dimen name="dialog_max_height">700dp</dimen>
 
     <dimen name="dialog_bottom_max_height">400dp</dimen>
+    <dimen name="volume_picker_min_size">40dp</dimen>
+    <dimen name="smart_alarm_expansion_attribution_row_height">44dp</dimen>
 
 </resources>

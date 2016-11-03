@@ -19,7 +19,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import is.hello.buruberi.util.Rx;
-import is.hello.sense.api.model.UserFeatures;
+import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
@@ -66,21 +66,15 @@ public class PreferencesInteractor extends BasePreferencesInteractor {
 
     public static final String ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN = "room_conditions_welcome_card_times_shown";
 
-    public static final String USER_FEATURES = "user_features";
     public static final String HAS_VOICE = "has_voice";
-
     public static final String HAS_SOUNDS = "has_sounds";
-
-    private final Gson gson;
 
 
     public
     @Inject
     PreferencesInteractor(@NonNull final Context context,
-                          @NonNull final Gson gson,
                           @NonNull @GlobalSharedPreferences final SharedPreferences sharedPreferences) {
         super(context, sharedPreferences);
-        this.gson = gson;
 
         migrateIfNeeded();
 
@@ -137,10 +131,45 @@ public class PreferencesInteractor extends BasePreferencesInteractor {
     //endregion
 
     //region userFeatures helper
+    public void setDevice(@Nullable final SenseDevice device) {
+        if (device == null) {
+            if (!getBoolean(HAS_SOUNDS, false) && !hasVoice()) {
+                // don't update unless this will change the state. This will suppress alerting any
+                // subscribers about the state changing to one it already is in.
+                // It is possible one of these is false and will trigger the subscriber but that is ok
+                // since it will only happen once and in a very rare case.
+                return;
+            }
+            // if no device is on this account we should update sleep sounds too.
+            edit().putBoolean(HAS_VOICE, false)
+                  .putBoolean(HAS_SOUNDS, false)
+                  .apply();
+            return;
+        }
+        if (device.hardwareVersion == SenseDevice.HardwareVersion.SENSE_WITH_VOICE) {
+
+            if (hasVoice()) {
+                // Again, don't update the prefs with a state it's already in so subscribers don't
+                // get alerted again.
+                return;
+            }
+            edit().putBoolean(HAS_VOICE, true)
+                  .apply();
+        } else {
+            if (!hasVoice()) {
+                // Again, don't update the prefs with a state it's already in so subscribers don't
+                // get alerted again.
+                return;
+            }
+            edit().putBoolean(HAS_VOICE, false)
+                  .apply();
+
+        }
+    }
 
     /**
      * Stored with the key {@link PreferencesInteractor#HAS_VOICE}. Should be updated via
-     * {@link PreferencesInteractor#setFeatures(UserFeatures)}.
+     * {@link PreferencesInteractor#setDevice(SenseDevice)}.
      *
      * @return whether or not the account has a Sense with voice.
      */
@@ -148,58 +177,15 @@ public class PreferencesInteractor extends BasePreferencesInteractor {
         return getBoolean(HAS_VOICE, false);
     }
 
-    /**
-     * If we ever need to get the {@link UserFeatures} associated with the Sense on this account.
-     * If this method is never used in the future we should probably stop storing the UserFeatures
-     * as well.
-     *
-     * @return {@link UserFeatures} or null
-     */
-    @SuppressWarnings("unused")
-    @Nullable
-    public UserFeatures getUseFeatures() {
-        UserFeatures userFeatures = null;
-        try {
-            userFeatures = gson.fromJson(getString(USER_FEATURES, null), UserFeatures.class);
-        } catch (final JsonParseException e) {
-            Logger.error(PreferencesInteractor.class.getName(), "could not deserialize user features", e);
-        }
-        return userFeatures;
-    }
-
-    /**
-     * Use this to update both the stored {@link UserFeatures} and boolean value for
-     * {@link PreferencesInteractor#HAS_VOICE}.
-     *
-     * @param features when null this will remove the values from prefs.
-     */
-    public void setFeatures(@Nullable final UserFeatures features) {
-        final SharedPreferences.Editor editor = edit();
-        if (features == null) {
-            editor.remove(HAS_VOICE)
-                  .remove(USER_FEATURES)
-                  .apply();
-            Logger.info(PreferencesInteractor.class.getName(), "cleared user features");
-            return;
-        }
-
-        try {
-            final String serializedFeatures = gson.toJson(features);
-            editor.putString(USER_FEATURES, serializedFeatures)
-                  .putBoolean(HAS_VOICE, features.voice)
-                  .apply();
-        } catch (final JsonSyntaxException e) {
-            Logger.error(PreferencesInteractor.class.getName(), "could not serialize user features", e);
-        }
-    }
     //endregion
 
     /**
      * Responsible for releasing anything dependent on Sense being paired.
      */
     public void resetSenseDependentPrefs() {
-        setFeatures(null);
-        edit().remove(HAS_SOUNDS);
+        edit().remove(HAS_SOUNDS)
+              .remove(HAS_VOICE)
+              .apply();
     }
 }
 

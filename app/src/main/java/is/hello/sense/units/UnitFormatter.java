@@ -24,13 +24,12 @@ import rx.Observable;
 public class UnitFormatter extends Interactor {
     public static final String UNIT_SUFFIX_TEMPERATURE = "°";
     public static final String UNIT_SUFFIX_LIGHT = "lx";
-    public static final String UNIT_SUFFIX_HUMIDITY = "%";
+    public static final String UNIT_SUFFIX_PERCENT = "%";
     public static final String UNIT_SUFFIX_AIR_QUALITY = "µg/m³";
     public static final String UNIT_SUFFIX_NOISE = "dB";
     public static final String UNIT_SUFFIX_GAS = "ppm";
     public static final String UNIT_SUFFIX_LIGHT_TEMPERATURE = "k";
-    public static final String UNIT_SUFFIX_KELVIN = "k";
-    public static final String UNIT_SUFFIX_PRESSURE = "mBar";
+    public static final String UNIT_SUFFIX_PRESSURE = "mbar";
 
 
     // Used by PreferencesInteractor
@@ -93,16 +92,35 @@ public class UnitFormatter extends Interactor {
         }
     }
 
+    /**
+     * Always use this method when need to convert temperature.
+     * Defaults converter based on {@link Locale#getCountry()} if user never modifies unit pref in settings.
+     * @return proper expected {@link UnitConverter} for temperature
+     */
+    @NonNull
+    public UnitConverter getTemperatureUnitConverter(){
+        if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
+            return UnitConverter.IDENTITY;
+        } else {
+            return UnitOperations::celsiusToFahrenheit;
+        }
+    }
+
+    @NonNull
+    public UnitConverter getReverseTemperatureUnitConverter(){
+        if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
+            return UnitConverter.IDENTITY;
+        } else {
+            return UnitOperations::fahrenheitToCelsius;
+        }
+    }
+
 
     @NonNull
     public UnitConverter getUnitConverterForSensor(@NonNull final SensorType type) {
         switch (type) {
             case TEMPERATURE: {
-                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
-                    return UnitConverter.IDENTITY;
-                } else {
-                    return UnitOperations::celsiusToFahrenheit;
-                }
+                return getTemperatureUnitConverter();
             }
             default: {
                 return UnitConverter.IDENTITY;
@@ -127,7 +145,7 @@ public class UnitFormatter extends Interactor {
             case TEMPERATURE:
                 return UNIT_SUFFIX_TEMPERATURE;
             case HUMIDITY:
-                return UNIT_SUFFIX_HUMIDITY;
+                return UNIT_SUFFIX_PERCENT;
             case PARTICULATES:
                 return UNIT_SUFFIX_AIR_QUALITY;
             case LIGHT:
@@ -140,10 +158,9 @@ public class UnitFormatter extends Interactor {
                 return UNIT_SUFFIX_AIR_QUALITY;
             case LIGHT_TEMPERATURE:
                 return UNIT_SUFFIX_LIGHT_TEMPERATURE;
-            case UV:
-                return UNIT_SUFFIX_KELVIN;
             case PRESSURE:
                 return UNIT_SUFFIX_PRESSURE;
+            case UV:
             case UNKNOWN:
             default:
                 return Constants.EMPTY_STRING;
@@ -156,7 +173,7 @@ public class UnitFormatter extends Interactor {
         String measuredIn = Constants.EMPTY_STRING;
         switch (type) {
             case TEMPERATURE:
-                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, false)) {
+                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
                     measuredIn = ApiService.UNIT_TEMPERATURE_CELSIUS.toUpperCase();
                 } else {
                     measuredIn = ApiService.UNIT_TEMPERATURE_US_CUSTOMARY.toUpperCase();
@@ -171,7 +188,7 @@ public class UnitFormatter extends Interactor {
     public int getAboutStringRes(@NonNull final SensorType type) {
         switch (type) {
             case TEMPERATURE:
-                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, false)) {
+                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
                     return R.string.sensor_about_temperature_celsius;
                 } else {
                     return R.string.sensor_about_temperature_fahrenheit;

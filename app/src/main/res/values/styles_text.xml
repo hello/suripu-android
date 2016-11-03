@@ -15,6 +15,14 @@
         <item name="android:background">@color/background_light</item>
     </style>
 
+    <style name="Body.Dim" parent="AppTheme.Text.Body">
+        <item name="android:textColor">@color/dim</item>
+    </style>
+
+    <style name="Body.Dark" parent="AppTheme.Text.Body">
+        <item name="android:textColor">@color/dark</item>
+    </style>
+
     <style name="Label" parent="AppTheme.Text.Header.H7">
         <item name="android:textColor">@color/dim</item>
     </style>
@@ -35,15 +43,22 @@
         <item name="android:textSize">@dimen/text_h7</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/gray6</item>
+        <item name="android:textAllCaps">true</item>
+
     </style>
 
     <style name="Card.Body">
-        <item name="android:textSize">@dimen/text_h8</item>
+        <item name="android:textSize">@dimen/text_body</item>
         <item name="android:textColor">@color/gray5</item>
     </style>
 
     <style name="Card.Value">
         <item name="android:textSize">@dimen/text_h4</item>
+    </style>
+
+    <style name="Card.Unit">
+        <item name="android:textSize">@dimen/text_h8</item>
+        <item name="android:textColor">@color/gray5</item>
     </style>
 
 
@@ -148,6 +163,10 @@
         <item name="android:textSize">@dimen/text_size_body_small</item>
     </style>
 
+    <style name="AppTheme.Text.Body.Link">
+        <item name="android:textColor">@color/text_color_link</item>
+    </style>
+
     <style name="AppTheme.Text.Body.Dim">
         <item name="android:textColor">@color/text_dim</item>
     </style>
@@ -236,9 +255,9 @@
 
     <style name="AppTheme.Text.SmartAlarm.Repeat">
         <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textSize">@dimen/text_size_section_heading</item>
+        <item name="android:textSize">@dimen/text_h7</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/text_light</item>
+        <item name="android:textColor">@color/text_extra_light</item>
     </style>
 
     <style name="AppTheme.Text.SmartAlarm.Time.Big">

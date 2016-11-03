@@ -2,6 +2,7 @@ package is.hello.sense.api.model;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
@@ -20,8 +21,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
-import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.api.model.v2.alarms.AlarmSource;
+import is.hello.sense.api.model.v2.expansions.Category;
+import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.util.DateFormatter;
@@ -69,8 +73,11 @@ public class Alarm extends ApiResponse {
     @SerializedName("smart")
     private boolean smart;
 
+    @SerializedName("source")
+    private AlarmSource source;
+
     @SerializedName("expansions")
-    private ArrayList<Expansion> expansions;
+    private List<ExpansionAlarm> expansions;
 
     private transient AlarmTones alarmTones;
 
@@ -84,6 +91,7 @@ public class Alarm extends ApiResponse {
         this.editable = true;
         this.smart = true;
         this.daysOfWeek = new HashSet<>();
+        this.source = AlarmSource.MOBILE_APP;
     }
 
 
@@ -169,15 +177,35 @@ public class Alarm extends ApiResponse {
         return editable;
     }
 
-    public ArrayList<Expansion> getExpansions() {
+    @NonNull
+    public List<ExpansionAlarm> getExpansions() {
         if (expansions == null) {
             expansions = new ArrayList<>();
         }
         return expansions;
     }
 
-    public void setExpansions(@NonNull final ArrayList<Expansion> expansions) {
+    @Nullable
+    public ExpansionAlarm getExpansionAlarm(final Category category) {
+        for (final ExpansionAlarm expansionAlarm : getExpansions()) {
+            if (expansionAlarm.getCategory() == category) {
+                return expansionAlarm;
+            }
+        }
+
+        return null;
+    }
+
+    public void setExpansions(@NonNull final List<ExpansionAlarm> expansions) {
         this.expansions = expansions;
+    }
+
+    public AlarmSource getSource(){
+        return source;
+    }
+
+    public void setSource(@NonNull final AlarmSource source) {
+        this.source = source;
     }
 
     /**
@@ -216,6 +244,7 @@ public class Alarm extends ApiResponse {
         });
     }
 
+    //todo should be moved out to a ResMapper class
     public static @NonNull String nameForDayOfWeek(@NonNull Context context,
                                                    @JodaWeekDay int dayOfWeek) {
         switch (dayOfWeek) {
@@ -245,9 +274,12 @@ public class Alarm extends ApiResponse {
         }
     }
 
-    public @NonNull String getDaysOfWeekSummary(@NonNull Context context) {
+    //todo should be moved out to a ResMapper class
+    public @NonNull String getDaysOfWeekSummary(@NonNull final Context context) {
         if (Lists.isEmpty(daysOfWeek)) {
-            if (isSmart()) {
+            if(AlarmSource.VOICE_SERVICE.equals(source)){
+                return context.getString(R.string.voice_alarm_never);
+            } else if (isSmart()) {
                 return context.getString(R.string.smart_alarm_never);
             } else {
                 return context.getString(R.string.alarm_never);
@@ -255,14 +287,17 @@ public class Alarm extends ApiResponse {
         }
 
         final String daysString = getRepeatSummary(context, true);
-        if (isSmart()) {
-            return context.getString(R.string.smart_alarm_days_repeat_prefix) + daysString;
+        if(AlarmSource.VOICE_SERVICE.equals(source)){
+            return context.getString(R.string.voice_alarm_days_repeat_format, daysString);
+        } else if (isSmart()) {
+            return context.getString(R.string.smart_alarm_days_repeat_format, daysString);
         } else {
-            return context.getString(R.string.alarm_days_repeat_prefix) + daysString;
+            return context.getString(R.string.alarm_days_repeat_format, daysString);
         }
     }
 
-    public @NonNull String getRepeatSummary(@NonNull Context context, boolean longForm) {
+    //todo should be moved out to a ResMapper class
+    public @NonNull String getRepeatSummary(@NonNull final Context context, final boolean longForm) {
         final int daysCount = daysOfWeek.size();
         if (daysCount == 0) {
             return context.getString(R.string.alarm_repeat_never);
@@ -326,6 +361,8 @@ public class Alarm extends ApiResponse {
                 ", daysOfWeek=" + daysOfWeek +
                 ", sound=" + sound +
                 ", smart=" + smart +
+                ", expansions=" + expansions +
+                ", source=" + source +
                 '}';
     }
 

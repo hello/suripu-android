@@ -240,7 +240,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             status2Label.setText(R.string.label_firmware_version);
             status2.setText(device.firmwareVersion);
 
-            if(device.shouldUpgrade() && BuildConfig.IS_BETA){
+            if (device.shouldUpgrade()) {
                 actionButton.setText(R.string.action_upgrade_sense);
                 actionButton.setEnabled(true);
                 actionButton.setVisibility(View.VISIBLE);

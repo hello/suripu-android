@@ -11,11 +11,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.shadows.ShadowSystemClock;
 
+import java.util.Arrays;
+
 import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
+import is.hello.sense.api.model.v2.alarms.AlarmSource;
+import is.hello.sense.api.model.v2.expansions.Category;
+import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
+import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
+import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.DateFormatter;
@@ -29,6 +36,8 @@ import static org.junit.Assert.assertThat;
 
 public class SmartAlarmAdapterTests extends InjectionTestCase {
     @Inject DateFormatter dateFormatter;
+    @Inject
+    ExpansionCategoryFormatter expansionCategoryFormatter;
 
     private final FrameLayout fakeParent = new FrameLayout(getContext());
     private final FakeAlarmEnabledChangedListener alarmEnabledChangedListener = new FakeAlarmEnabledChangedListener();
@@ -39,7 +48,10 @@ public class SmartAlarmAdapterTests extends InjectionTestCase {
 
     @Before
     public void setUp() {
-        this.adapter = new SmartAlarmAdapter(getContext(), alarmEnabledChangedListener, dateFormatter);
+        this.adapter = new SmartAlarmAdapter(getContext(),
+                                             alarmEnabledChangedListener,
+                                             dateFormatter,
+                                             expansionCategoryFormatter);
     }
 
     @After
@@ -143,6 +155,72 @@ public class SmartAlarmAdapterTests extends InjectionTestCase {
         assertThat(holder2.enabled.isChecked(), is(false));
         assertThat(holder2.repeat.getText().toString(), is(equalTo("Alarm")));
         assertThat(holder2.time.getText().toString(), is(equalTo("5:45 AM")));
+    }
+
+    @Test
+    public void voiceAlarmRendering() throws Exception {
+        final Alarm alarm1 = new Alarm();
+        alarm1.setEnabled(true);
+        alarm1.setRepeated(true);
+        alarm1.addDayOfWeek(DateTimeConstants.SATURDAY);
+        alarm1.addDayOfWeek(DateTimeConstants.SUNDAY);
+        alarm1.setSmart(false);
+        alarm1.setTime(new LocalTime(8, 30));
+        alarm1.setSource(AlarmSource.VOICE_SERVICE);
+
+        final Alarm alarm2 = new Alarm();
+        alarm2.setEnabled(false);
+        alarm2.setRepeated(false);
+        alarm2.setRingOnce();
+        alarm2.setSmart(false);
+        alarm2.setTime(new LocalTime(5, 45));
+        alarm2.setSource(AlarmSource.VOICE_SERVICE);
+
+        adapter.bindAlarms(Lists.newArrayList(alarm1, alarm2));
+
+
+        final SmartAlarmAdapter.AlarmViewHolder holder1 = RecyclerAdapterTesting.createAndBindView(adapter,
+                                                                                                   fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 0);
+        assertThat(holder1.enabled.isChecked(), is(true));
+        assertThat(holder1.repeat.getText().toString(), is(equalTo("Voice Alarm  ―  Weekends")));
+        assertThat(holder1.time.getText().toString(), is(equalTo("8:30 AM")));
+
+        final SmartAlarmAdapter.AlarmViewHolder holder2 = RecyclerAdapterTesting.createAndBindView(adapter,
+                                                                                                   fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 1);
+        assertThat(holder2.enabled.isChecked(), is(false));
+        assertThat(holder2.repeat.getText().toString(), is(equalTo("Voice Alarm")));
+        assertThat(holder2.time.getText().toString(), is(equalTo("5:45 AM")));
+    }
+
+    @Test
+    public void expansionAttributionAlarmRendering() throws Exception {
+        final Alarm alarm1 = new Alarm();
+        alarm1.setEnabled(true);
+        alarm1.setRepeated(false);
+        alarm1.setSmart(false);
+        alarm1.setTime(new LocalTime(8, 30));
+        alarm1.setExpansions(Arrays.asList(new ExpansionAlarm(1,
+                                                              Category.LIGHT,
+                                                              "Hue",
+                                                              true,
+                                                              new ExpansionValueRange(100, 100)),
+                                           new ExpansionAlarm(1,
+                                                              Category.TEMPERATURE,
+                                                              "Nest",
+                                                              true,
+                                                              new ExpansionValueRange(0, 100))));
+
+
+        adapter.bindAlarms(Lists.newArrayList(alarm1));
+
+
+        final SmartAlarmAdapter.AlarmViewHolder holder1 = RecyclerAdapterTesting.createAndBindView(adapter,
+                                                                                                   fakeParent, SmartAlarmAdapter.VIEW_ID_ALARM, 0);
+        assertThat(holder1.enabled.isChecked(), is(true));
+        assertThat(holder1.repeat.getText().toString(), is(equalTo("Alarm")));
+        assertThat(holder1.time.getText().toString(), is(equalTo("8:30 AM")));
+        assertThat(holder1.expansionsRV.getAdapter().getItemCount(), is(2));
+
     }
 
     @Test

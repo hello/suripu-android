@@ -23,7 +23,6 @@ import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.StoreReview;
 import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.UpdateCheckIn;
-import is.hello.sense.api.model.UserFeatures;
 import is.hello.sense.api.model.VoiceResponse;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Insight;
@@ -47,6 +46,7 @@ import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
+import is.hello.sense.api.model.v2.voice.SenseVoiceSettings;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import retrofit.http.Body;
@@ -247,6 +247,12 @@ public interface ApiService {
     @PUT("/v2/devices/swap")
     Observable<SenseDevice.SwapResponse> swapDevices(@NonNull @Body SenseDevice.SwapRequest newSenseId);
 
+    @GET("/v2/devices/sense/{id}/voice")
+    Observable<SenseVoiceSettings> getVoiceSettings(@Path("id") @NonNull String senseId);
+
+    @PATCH("/v2/devices/sense/{id}/voice")
+    Observable<VoidResponse> setVoiceSettings(@Path("id") @NonNull String senseId, @Body SenseVoiceSettings settings);
+
     //endregion
 
 
@@ -338,10 +344,6 @@ public interface ApiService {
     Observable<ArrayList<VoiceResponse>> getOnboardingVoiceResponse();
 
     //endregion
-
-    @GET("/v2/features")
-    Observable<UserFeatures> getUserFeatures();
-
 
     //region Expansions
 

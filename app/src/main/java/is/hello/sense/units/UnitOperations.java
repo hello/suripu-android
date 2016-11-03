@@ -30,4 +30,28 @@ public class UnitOperations {
             return (temperature * 1.8f) + 32.f;
         }
     }
+
+    public static Float fahrenheitToCelsius(@Nullable final Float temperature) {
+        if (temperature == null) {
+            return null;
+        } else {
+            return (temperature - 32.f) / 1.8f;
+        }
+    }
+
+    /**
+     * @param percentage must be between 0 - 100 %
+     * @return converted value based on number of levels
+     */
+    public static int percentageToLevel(final int percentage, final int levels) {
+        // uses positive offset to adjust for server response decrementing percentage
+        return (int) Math.ceil((percentage / 100f) * levels);
+    }
+
+    /**
+     * @return converted value between 0 and 100
+     */
+    public static int levelToPercentage(final int selectedLevel, final int levels) {
+        return Math.round((selectedLevel * 100f) / levels);
+    }
 }

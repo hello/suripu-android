@@ -5,6 +5,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,25 +21,34 @@ import java.util.List;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
+import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
+import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
+import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 
 public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.BaseViewHolder> {
-    @VisibleForTesting static final int VIEW_ID_ALARM = 0;
-    @VisibleForTesting static final int VIEW_ID_MESSAGE = 1;
+    @VisibleForTesting
+    static final int VIEW_ID_ALARM = 0;
+    @VisibleForTesting
+    static final int VIEW_ID_MESSAGE = 1;
 
     private final LayoutInflater inflater;
     private final InteractionListener interactionListener;
     private final DateFormatter dateFormatter;
 
     private final List<Alarm> alarms = new ArrayList<>();
+    private final ExpansionCategoryFormatter expansionFormatter;
     private Message currentMessage;
     private boolean use24Time = false;
 
     public SmartAlarmAdapter(@NonNull Context context,
                              @NonNull InteractionListener interactionListener,
-                             @NonNull DateFormatter dateFormatter) {
+                             @NonNull DateFormatter dateFormatter,
+                             @NonNull ExpansionCategoryFormatter expansionAlarmFormatter) {
         this.dateFormatter = dateFormatter;
+        this.expansionFormatter = expansionAlarmFormatter;
         this.inflater = LayoutInflater.from(context);
         this.interactionListener = interactionListener;
     }
@@ -135,10 +145,14 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
     }
 
     class AlarmViewHolder extends BaseViewHolder
-            implements View.OnClickListener, View.OnLongClickListener {
+            implements View.OnClickListener,
+            View.OnLongClickListener,
+            ArrayRecyclerAdapter.OnItemClickedListener<ExpansionAlarm> {
         final CompoundButton enabled;
         final TextView time;
         final TextView repeat;
+        final RecyclerView expansionsRV;
+        private final ExpansionAlarmsAdapter expansionsAdapter;
 
         AlarmViewHolder(@NonNull View view) {
             super(view);
@@ -146,19 +160,48 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
             this.enabled = (CompoundButton) view.findViewById(R.id.item_smart_alarm_enabled);
             this.time = (TextView) view.findViewById(R.id.item_smart_alarm_time);
             this.repeat = (TextView) view.findViewById(R.id.item_smart_alarm_repeat);
+            this.expansionsRV = (RecyclerView) view.findViewById(R.id.item_smart_alarm_expansions_rv);
+
+            this.expansionsRV.setLayoutManager(new LinearLayoutManager(view.getContext()));
+            this.expansionsRV.setHasFixedSize(false);
+            this.expansionsRV.setNestedScrollingEnabled(false);
+            this.expansionsRV.setOverScrollMode(View.OVER_SCROLL_NEVER);
+            this.expansionsRV.addItemDecoration(new DividerItemDecoration(view.getContext()));
+            this.expansionsAdapter = new ExpansionAlarmsAdapter(new ArrayList<>(0));
+            this.expansionsAdapter.setWantsAttributionStyle(true);
+            expansionsAdapter.setOnItemClickedListener(this);
+            this.expansionsRV.setAdapter(expansionsAdapter);
 
             view.setOnClickListener(this);
             view.setOnLongClickListener(this);
         }
 
         @Override
-        void bind(int position) {
+        void bind(final int position) {
             final Alarm alarm = alarms.get(position);
             enabled.setTag(position);
             enabled.setChecked(alarm.isEnabled());
             enabled.setOnClickListener(this);
             time.setText(dateFormatter.formatAsAlarmTime(alarm.getTime(), use24Time));
             repeat.setText(alarm.getDaysOfWeekSummary(repeat.getContext()));
+
+            expansionsAdapter.clear();
+            final List<ExpansionAlarm> tempAlarms = new ArrayList<>(0);
+            for (final ExpansionAlarm ea : alarm.getExpansions()) {
+                ea.setDisplayIcon(expansionFormatter.getDisplayIconRes(ea.getCategory()));
+                if (ea.isEnabled()) {
+                    if (ea.hasExpansionRange()) {
+                        ea.setDisplayValue(expansionFormatter.getFormattedAttributionValueRange(ea.getCategory(),
+                                                                                                ea.getExpansionRange(),
+                                                                                                itemView.getContext()));
+                    } else {
+                        ea.setDisplayValue(Constants.EMPTY_STRING);
+                    }
+                    tempAlarms.add(ea);
+                }
+            }
+
+            expansionsAdapter.replaceAll(tempAlarms);
         }
 
         @Override
@@ -192,6 +235,11 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
 
             return false;
         }
+
+        @Override
+        public void onItemClicked(final int position, @NonNull final ExpansionAlarm item) {
+            onClick(null); //fake default alarm click listener
+        }
     }
 
     class MessageViewHolder extends BaseViewHolder {
@@ -211,18 +259,18 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
 
         @Override
         void bind(int ignored) {
-            if (currentMessage.titleRes != 0 ) {
+            if (currentMessage.titleRes != 0) {
                 titleText.setAllCaps(false);
                 titleText.setText(currentMessage.titleRes);
                 titleText.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 titleText.setVisibility(View.GONE);
             }
 
             if (currentMessage.titleIconRes != 0) {
                 imageView.setImageResource(currentMessage.titleIconRes);
                 imageView.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 imageView.setVisibility(View.GONE);
             }
             messageText.setText(currentMessage.message.resolve(messageText.getContext()));
@@ -237,17 +285,25 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
 
     public interface InteractionListener {
         void onAlarmEnabledChanged(int position, boolean enabled);
+
         void onAlarmClicked(int position, @NonNull Alarm alarm);
+
         boolean onAlarmLongClicked(int position, @NonNull Alarm alarm);
     }
 
     public static class Message {
-        public @StringRes final int titleRes;
+        public
+        @StringRes
+        final int titleRes;
         public final StringRef message;
 
-        public @DrawableRes int titleIconRes = 0;
+        public
+        @DrawableRes
+        int titleIconRes = 0;
 
-        public @StringRes int actionRes = android.R.string.ok;
+        public
+        @StringRes
+        int actionRes = android.R.string.ok;
         public View.OnClickListener onClickListener;
 
         public Message(@StringRes int titleRes, @NonNull StringRef message) {

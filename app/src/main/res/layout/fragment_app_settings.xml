@@ -75,25 +75,37 @@
                 android:layout_height="wrap_content"
                 android:text="@string/label_units_and_time"/>
 
-        </LinearLayout>
-
-        <is.hello.sense.ui.widget.RoundedLinearLayout
-            style="@style/AppTheme.Card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/gap_card_inter"
-            android:layout_marginLeft="@dimen/gap_card_horizontal"
-            android:layout_marginRight="@dimen/gap_card_horizontal"
-            android:orientation="vertical">
-
-            <TextView
+            <LinearLayout
+                android:orientation="vertical"
                 android:id="@+id/fragment_app_settings_expansions"
-                style="@style/AppTheme.Card.Item"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/action_expansions"/>
+                android:layout_height="wrap_content">
 
-        </is.hello.sense.ui.widget.RoundedLinearLayout>
+                <View style="@style/Divider.Horizontal"/>
+
+                <TextView
+                    style="@style/AppTheme.Card.Item"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_expansions"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/fragment_app_settings_voice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <View style="@style/Divider.Horizontal"/>
+
+                <TextView
+                    style="@style/AppTheme.Card.Item"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_voice"/>
+            </LinearLayout>
+
+        </LinearLayout>
 
         <is.hello.sense.ui.widget.RoundedLinearLayout
             style="@style/AppTheme.Card"
