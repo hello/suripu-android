@@ -145,7 +145,6 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         }
         expansionDetailsInteractor.expansionSubject.forget();
         configurationsInteractor.configSubject.forget();
-        expansionDetailsInteractor.update();
 
         bindAndSubscribe(expansionDetailsInteractor.expansionSubject,
                          this::bindExpansion,
@@ -154,6 +153,8 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         bindAndSubscribe(configurationsInteractor.configSubject,
                          this::bindConfigurations,
                          this::presentConfigurationError);
+        // never call update for observable before subscribing
+        expansionDetailsInteractor.update();
     }
 
     @Override
