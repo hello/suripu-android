@@ -694,6 +694,7 @@
     <string name="expansions_state_unknown">Unknown</string>
     <string name="expansions_state_not_configured">Configure</string>
     <string name="expansions_connect_title">Connect</string>
+    <string name="expansions_select">Select</string>
 
     <string name="expansions_configuration_selection_title_format">Connected to %1$s</string>
     <string name="expansions_configuration_selection_subtitle_format">Select the %1$s that Sense will control.</string>
