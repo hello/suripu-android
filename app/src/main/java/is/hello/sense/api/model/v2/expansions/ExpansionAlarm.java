@@ -99,7 +99,7 @@ public class ExpansionAlarm extends ApiResponse {
      *
      * @param selectedValue the value the user choose. Not to be confused with index position.
      */
-    public void setExpansionRange(final int selectedValue) {
+    public void setExpansionRange(final float selectedValue) {
         this.expansionRange = new ExpansionValueRange(selectedValue, selectedValue);
     }
 

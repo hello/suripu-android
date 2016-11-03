@@ -216,9 +216,9 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         //todo currently assumes that when wantsValuePicker = true the expansion is enabled, configured, and authenticated
         if (wantsValuePicker) {
             final UnitConverter unitConverter = expansionCategoryFormatter.getUnitConverter(expansionCategory);
-            final int max = unitConverter.convert((float) expansion.getValueRange().max).intValue();
-            final int min = unitConverter.convert((float) expansion.getValueRange().min).intValue();
-            final int initialValues = unitConverter.convert((float) (initialValueRange != null ? initialValueRange.max : expansion.getValueRange().max - expansion.getValueRange().min)).intValue();
+            final int max = (int) Math.ceil(unitConverter.convert(expansion.getValueRange().max));
+            final int min = (int) Math.ceil(unitConverter.convert(expansion.getValueRange().min));
+            final int initialValues = unitConverter.convert((initialValueRange != null ? initialValueRange.max : expansion.getValueRange().max - expansion.getValueRange().min)).intValue();
             presenterView.showExpansionRangePicker(min,
                                                    max,
                                                    initialValues,
@@ -357,7 +357,9 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             final ExpansionAlarm expansionAlarm = new ExpansionAlarm(expansionDetailsInteractor.expansionSubject.getValue(),
                                                                      isEnabledForSmartAlarm);
             final UnitConverter unitConverter = expansionCategoryFormatter.getReverseUnitConverter(expansionCategory);
-            expansionAlarm.setExpansionRange(unitConverter.convert((float) presenterView.getSelectedValue()).intValue());
+            final int selectedValue = presenterView.getSelectedValue();
+            final float convertedValue = unitConverter.convert((float) selectedValue);
+            expansionAlarm.setExpansionRange(convertedValue);
             intentWithExpansionAlarm.putExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM, expansionAlarm);
             finishFlowWithResult(Activity.RESULT_OK, intentWithExpansionAlarm);
             return true;

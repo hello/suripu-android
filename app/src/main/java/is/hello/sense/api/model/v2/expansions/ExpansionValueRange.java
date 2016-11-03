@@ -11,12 +11,12 @@ import is.hello.sense.api.model.ApiResponse;
 public class ExpansionValueRange extends ApiResponse {
 
     @SerializedName("min")
-    public final int min;
+    public final float min;
 
     @SerializedName("max")
-    public final int max;
+    public final float max;
 
-    public ExpansionValueRange(final int min, final int max) {
+    public ExpansionValueRange(final float min, final float max) {
         this.min = min;
         this.max = max;
     }
