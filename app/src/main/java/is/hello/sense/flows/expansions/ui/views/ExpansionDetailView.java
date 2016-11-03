@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -212,10 +211,8 @@ public class ExpansionDetailView extends PresenterView {
                                  @NonNull final CompoundButton.OnCheckedChangeListener enabledSwitchClickListener) {
         this.enabledSwitch.setOnCheckedChangeListener(null);
         this.enabledSwitch.setChecked(isOn);
-        this.enabledSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            buttonView.setEnabled(false);
-            enabledSwitchClickListener.onCheckedChanged(buttonView, isChecked);
-        });
+        this.enabledSwitch.setEnabled(false);
+        Views.setSafeOnSwitchClickListener(this.enabledSwitch, enabledSwitchClickListener);
         this.enabledSwitch.setEnabled(true);
     }
 
