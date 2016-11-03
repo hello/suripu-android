@@ -111,6 +111,7 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
                         success ? R.string.sleep_pill_paired : R.string.action_done,
                         bind(() -> {
                             if (success) {
+                                hardwareInteractor.reset();
                                 Analytics.trackEvent(getPillPairedAnalyticsEvent(), null);
                                 view.finishFlow();
                             } else {
