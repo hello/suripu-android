@@ -230,7 +230,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         if (expansion.requiresAuthentication()) {
             presenterView.showConnectButton(this::onConnectClicked);
         } else if (expansion.requiresConfiguration()) {
-            presenterView.showConfigurationSuccess(getString(R.string.action_connect), this::onConfigureClicked);
+            presenterView.showConfigurationSuccess(getString(R.string.expansions_select), this::onConfigureClicked);
             presenterView.showRemoveAccess(!wantsValuePicker);
         } else {
             configurationsInteractor.update();
