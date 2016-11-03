@@ -2,6 +2,7 @@ package is.hello.sense.interactors.hardware;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -54,7 +55,7 @@ public abstract class BaseHardwareInteractor extends Interactor {
     protected boolean wantsHighPowerPreScan = false;
 
     public BaseHardwareInteractor(@NonNull final Context context,
-                                  @NonNull final BluetoothStack bluetoothStack){
+                                  @NonNull final BluetoothStack bluetoothStack) {
         this.context = context;
         this.bluetoothStack = bluetoothStack;
         this.respondToError = e -> {
@@ -114,7 +115,7 @@ public abstract class BaseHardwareInteractor extends Interactor {
         }
     }
 
-    public boolean isBonded(){
+    public boolean isBonded() {
         return peripheral != null && GattPeripheral.BOND_BONDED == peripheral.getBondStatus();
     }
 
@@ -176,9 +177,18 @@ public abstract class BaseHardwareInteractor extends Interactor {
         if (peripheral != null) {
             if (peripheral.isConnected()) {
                 logEvent("disconnect from paired peripheral");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    peripheral.removeBond().subscribe(peripheral2 -> {
+                                                          logEvent("removed bond");
+                                                          peripheral2.disconnect().subscribe(ignored -> logEvent("disconnected peripheral"),
+                                                                                             e -> logEvent("Could not disconnect peripheral " + e.getLocalizedMessage()));
+                                                      },
+                                                      t -> logEvent("Could not remove bond peripheral " + t.getLocalizedMessage()));
+                } else {
+                    peripheral.disconnect().subscribe(ignored -> logEvent("disconnected peripheral"),
+                                                      e -> logEvent("Could not disconnect peripheral " + e.getLocalizedMessage()));
+                }
 
-                peripheral.disconnect().subscribe(ignored -> logEvent("disconnected peripheral"),
-                                                  e -> logEvent("Could not disconnect peripheral " + e));
             }
 
             this.peripheral = null;
@@ -224,7 +234,7 @@ public abstract class BaseHardwareInteractor extends Interactor {
      * Usually done at end of successful flow
      */
     @CallSuper
-    public void reset(){
+    public void reset() {
         wantsHighPowerPreScan = false;
         clearPeripheral();
     }
