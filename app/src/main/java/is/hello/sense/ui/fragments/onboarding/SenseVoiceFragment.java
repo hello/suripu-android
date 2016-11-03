@@ -88,10 +88,10 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPresenter(senseVoiceInteractor);
-
         if(savedInstanceState == null){
             Analytics.trackEvent(Analytics.Onboarding.EVENT_VOICE_TUTORIAL, null);
         }
+        hardwareInteractor.reset();
     }
 
     @Nullable
