@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/x6"
             android:gravity="center_horizontal"
-            android:text="Sleep Timeline."/>
+            android:text="Sleep Timeline"/>
 
 
         <TextView
