@@ -98,7 +98,7 @@ public class Expansion extends ApiResponse {
         return state;
     }
 
-    public boolean isConnected(){
+    public boolean isConnected() {
         return State.CONNECTED_ON.equals(state);
     }
 
@@ -107,13 +107,13 @@ public class Expansion extends ApiResponse {
     }
 
     public boolean requiresAuthentication() {
-        return State.REVOKED.equals(state);
+        return State.REVOKED.equals(state) || State.NOT_CONNECTED.equals(state);
     }
 
     /**
      * Replace with real field once server is ready
      */
-    public String getConfigurationType(){
+    public String getConfigurationType() {
         return category.displayString;
     }
 
@@ -142,7 +142,7 @@ public class Expansion extends ApiResponse {
 
     }
 
-    public static Expansion generateTemperatureTestCase(@NonNull final State state){
+    public static Expansion generateTemperatureTestCase(@NonNull final State state) {
         return new Expansion(1,
                              Category.TEMPERATURE,
                              "Nest Thermostat",
@@ -154,7 +154,7 @@ public class Expansion extends ApiResponse {
                              state);
     }
 
-    public static Expansion generateLightTestCase(@NonNull final State state){
+    public static Expansion generateLightTestCase(@NonNull final State state) {
         return new Expansion(2,
                              Category.LIGHT,
                              "Hue Light",
@@ -166,7 +166,7 @@ public class Expansion extends ApiResponse {
                              state);
     }
 
-    public static Expansion generateInvalidTestCase(){
+    public static Expansion generateInvalidTestCase() {
         return new Expansion(NO_ID,
                              Category.UNKNOWN,
                              "Invalid name",
