@@ -13,9 +13,9 @@ import javax.inject.Inject;
 
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.api.model.v2.Trends.TimeScale;
+import is.hello.sense.flows.home.ui.views.TrendsView;
 import is.hello.sense.interactors.ScopedValueInteractor.BindResult;
 import is.hello.sense.interactors.TrendsInteractor;
-import is.hello.sense.flows.home.ui.views.TrendsView;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.graphing.trends.TrendFeedViewItem;
 import is.hello.sense.ui.widget.graphing.trends.TrendGraphView;
@@ -126,6 +126,8 @@ public class TrendsFragment extends BacksideTabFragment<TrendsView> implements
 
     @Override
     public final void isFinished() {
-        presenterView.isFinished();
+        if(presenterView != null) {
+            presenterView.isFinished();
+        }
     }
 }
