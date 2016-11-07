@@ -35,7 +35,8 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
 
     @Inject
     ZoomedOutTimelineInteractor presenter;
-    @Inject DateFormatter dateFormatter;
+    @Inject
+    DateFormatter dateFormatter;
     @Inject
     PreferencesInteractor preferences;
 
@@ -110,10 +111,10 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
             // a specific offset if we want it to be centered. Of course,
             // we can only get the offset after layout.
 
-            layoutManager.postLayout(() -> {
+            layoutManager.postLayout(() -> recyclerView.post(() -> {
                 recyclerView.scrollBy(-layoutManager.getItemWidth(), 0);
-                recyclerView.post(presenter::retrieveTimelines);
-            });
+                presenter.retrieveTimelines();
+            }));
         } else {
             layoutManager.scrollToPosition(position);
             recyclerView.post(presenter::retrieveTimelines);
