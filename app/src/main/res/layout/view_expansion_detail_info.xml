@@ -30,7 +30,7 @@
         android:padding="@dimen/x1"/>
 
     <TextView
-        android:id="@+id/view_expansion_detail_device_service_name"
+        android:id="@+id/view_expansion_detail_device_company_name"
         style="@style/AppTheme.Text.Body.MidSized.Dim"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -119,7 +119,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     public void bindExpansion(@Nullable final Expansion expansion) {
         if (expansion != null) {
             this.expansion = expansion;
-            presenterView.setTitle(getString(R.string.expansions_configuration_selection_title_format, expansion.getServiceName()));
+            presenterView.setTitle(getString(R.string.expansions_configuration_selection_title_format, expansion.getCompanyName()));
             presenterView.setSubtitle(getString(R.string.expansions_configuration_selection_subtitle_format, expansion.getConfigurationType()));
             configurationsInteractor.setExpansionId(expansion.getId());
 
@@ -150,7 +150,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     private Configuration.Empty getEmptyConfiguration(@Nullable final Expansion expansion) {
         if (expansion != null) {
             return new Configuration.Empty(getString(R.string.expansions_configuration_selection_item_missing_title_format, expansion.getConfigurationType()),
-                                           getString(R.string.expansions_configuration_selection_item_missing_subtitle_format, expansion.getServiceName(), expansion.getConfigurationType()),
+                                           getString(R.string.expansions_configuration_selection_item_missing_subtitle_format, expansion.getCompanyName(), expansion.getConfigurationType()),
                                            R.drawable.icon_warning);
         } else {
             return new Configuration.Empty(getString(R.string.expansions_configuration_selection_empty_title_default),
