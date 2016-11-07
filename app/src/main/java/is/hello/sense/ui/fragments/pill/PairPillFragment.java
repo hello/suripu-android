@@ -24,6 +24,9 @@ import is.hello.sense.ui.widget.util.Views;
 public class PairPillFragment extends BasePresenterFragment
         implements BasePairPillPresenter.Output {
 
+    private static final String ARG_SKIP = PairPillFragment.class.getName() + ".ARG_SKIP";
+
+
     @Inject
     BasePairPillPresenter presenter;
     protected ProgressBar activityIndicator;
@@ -32,6 +35,15 @@ public class PairPillFragment extends BasePresenterFragment
     protected DiagramVideoView diagram;
     protected Button skipButton;
     protected Button retryButton;
+
+
+    public static PairPillFragment newInstance(final boolean skip) {
+        final Bundle args = new Bundle();
+        args.putBoolean(ARG_SKIP, skip);
+        final PairPillFragment fragment = new PairPillFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     protected BasePairPillPresenter getPresenter() {
@@ -46,24 +58,26 @@ public class PairPillFragment extends BasePresenterFragment
         ((TextView) view.findViewById(R.id.fragment_pair_pill_title)).setText(presenter.getTitleRes());
         this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_pair_pill_activity);
         this.activityStatus = (TextView) view.findViewById(R.id.fragment_pair_pill_status);
-
         this.diagram = (DiagramVideoView) view.findViewById(R.id.fragment_pair_pill_diagram);
-
         this.skipButton = (Button) view.findViewById(R.id.fragment_pair_pill_skip);
-        Views.setSafeOnClickListener(skipButton, ignored -> presenter.skipPairingPill());
-
         this.retryButton = (Button) view.findViewById(R.id.fragment_pair_pill_retry);
-        Views.setSafeOnClickListener(retryButton, ignored -> presenter.retry());
-        OnboardingToolbar.of(this, view)
-                         .setWantsBackButton(presenter.wantsBackButton())
-                         .setOnHelpClickListener(presenter::onHelpClick);
 
-        if (BuildConfig.DEBUG) {
-            diagram.setOnLongClickListener(ignored -> {
-                presenter.skipPairingPill();
-                return true;
-            });
-            diagram.setBackgroundResource(R.drawable.selectable_dark);
+        final Bundle args = getArguments();
+        if (args != null && args.getBoolean(ARG_SKIP, false)) {
+            view.post(() -> presenter.showFinishedLoading(false));
+        } else {
+            OnboardingToolbar.of(this, view)
+                             .setWantsBackButton(presenter.wantsBackButton())
+                             .setOnHelpClickListener(presenter::onHelpClick);
+            Views.setSafeOnClickListener(skipButton, ignored -> presenter.skipPairingPill());
+            Views.setSafeOnClickListener(retryButton, ignored -> presenter.retry());
+            if (BuildConfig.DEBUG) {
+                diagram.setOnLongClickListener(ignored -> {
+                    presenter.skipPairingPill();
+                    return true;
+                });
+                diagram.setBackgroundResource(R.drawable.selectable_dark);
+            }
         }
         return view;
     }
