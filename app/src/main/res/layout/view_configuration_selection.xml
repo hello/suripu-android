@@ -34,6 +34,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/view_configuration_button"
-        android:layout_below="@+id/view_configuration_subtitle"/>
+        android:layout_below="@+id/view_configuration_subtitle"
+        android:scrollbars="none"
+        android:overScrollMode="never"/>
 
 </RelativeLayout>
