@@ -30,6 +30,7 @@ public class ConfigSelectionView extends PresenterView{
         this.recyclerView.setHasFixedSize(true);
         this.recyclerView.setLayoutManager(new LinearLayoutManager(context));
         this.recyclerView.addItemDecoration(new DividerItemDecoration(context));
+        this.recyclerView.setOverScrollMode(OVER_SCROLL_NEVER);
         this.recyclerView.setAdapter(adapter);
     }
 

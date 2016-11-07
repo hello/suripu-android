@@ -14,9 +14,9 @@
 
     <TextView
         android:id="@+id/item_row_configuration_name"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/AppTheme.Text.Body.New.Ellipsize"
+        style="@style/AppTheme.Text.Body.New"
         android:layout_alignParentStart="true"
         android:layout_toStartOf="@+id/item_row_configuration_checkbox"
         android:layout_marginEnd="@dimen/x1"
