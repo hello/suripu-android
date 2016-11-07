@@ -28,10 +28,22 @@ public class ExpansionCategoryFormatter {
 
         final UnitConverter unitConverter = getUnitConverter(category);
 
-        return context.getString(R.string.smart_alarm_expansion_same_value_format,
-                                 unitConverter.convert((float) valueRange.min)
-                                              .intValue(),
-                                 suffix);
+        switch (category){
+            case TEMPERATURE:
+                if (!valueRange.hasSameValues()) {
+                    return context.getString(R.string.smart_alarm_expansion_range_value_format,
+                                             unitConverter.convert(valueRange.min)
+                                                          .intValue(), suffix,
+                                             unitConverter.convert(valueRange.max)
+                                                          .intValue(), suffix);
+                }
+            case LIGHT:
+            default:
+                return context.getString(R.string.smart_alarm_expansion_same_value_format,
+                                         unitConverter.convert(valueRange.min)
+                                                      .intValue(),
+                                         suffix);
+        }
     }
 
     public UnitConverter getUnitConverter(@NonNull final Category category) {
