@@ -41,7 +41,10 @@ public class GridTrendGraphView extends TrendGraphView {
     private final AnimatorContext animatorContext;
     private boolean showText = true;
 
-    public GridTrendGraphView(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext, @NonNull AnimationCallback animationCallback) {
+    public GridTrendGraphView(@NonNull final Context context,
+                              @NonNull final Graph graph,
+                              @NonNull final AnimatorContext animatorContext,
+                              @NonNull final AnimationCallback animationCallback) {
         super(context, animatorContext, animationCallback);
         this.animatorContext = animatorContext;
         this.drawable = new GridGraphDrawable(context, graph, animatorContext);
@@ -70,7 +73,7 @@ public class GridTrendGraphView extends TrendGraphView {
     }
 
     @Override
-    public void bindGraph(@NonNull Graph graph) {
+    public void bindGraph(@NonNull final Graph graph) {
         isAnimating = true;
         final Graph oldGraph = getGraph();
         if (getAlpha() == 0) { // No need to animate, the view isn't visible.
@@ -99,14 +102,14 @@ public class GridTrendGraphView extends TrendGraphView {
             final ValueAnimator shrinkAnimator = getHeightChangeAnimator(maxAnimationFactor, minAnimationFactor, currentHeight);
             shrinkAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
-                public void onAnimationEnd(Animator animation) {
+                public void onAnimationEnd(final Animator animation) {
                     GridTrendGraphView.super.bindGraph(graph);
                     ((GridGraphDrawable) drawable).initHeight(getWidth() / elements);
                     final int targetHeight = getDrawableHeight(graph);
                     final ValueAnimator expandAnimator = getHeightChangeAnimator(minAnimationFactor, maxAnimationFactor, targetHeight);
                     expandAnimator.addListener(new AnimatorListenerAdapter() {
                         @Override
-                        public void onAnimationEnd(Animator animation) {
+                        public void onAnimationEnd(final Animator animation) {
                             finishedAnimating();
                         }
                     });
@@ -135,7 +138,7 @@ public class GridTrendGraphView extends TrendGraphView {
             }
             animator.addListener(new AnimatorListenerAdapter() {
                 @Override
-                public void onAnimationEnd(Animator animation) {
+                public void onAnimationEnd(final Animator animation) {
                     ((GridGraphDrawable) drawable).initHeight(getWidth() / elements, graph);
                     if (!GridTrendGraphView.this.getGraph().equals(graph)) {
                         GridTrendGraphView.super.bindGraph(graph);

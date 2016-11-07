@@ -18,13 +18,24 @@ public abstract class TrendGraphView extends View implements TrendFeedViewItem.O
     protected static final float maxAnimationFactor = 1f;
     protected static final float minAnimationFactor = 0;
     protected boolean isAnimating = false;
+    @Nullable
     protected AnimationCallback animationCallback;
 
-    protected TrendGraphView(@NonNull final Context context, @NonNull final AnimatorContext animatorContext, @NonNull final AnimationCallback animationCallback) {
+    protected TrendGraphView(@NonNull final Context context,
+                             @NonNull final AnimatorContext animatorContext,
+                             @NonNull final AnimationCallback animationCallback) {
         super(context);
         this.animatorContext = animatorContext;
         this.animationCallback = animationCallback;
 
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if(animationCallback != null){
+            animationCallback = null;
+        }
     }
 
     public Graph getGraph() {
@@ -42,7 +53,9 @@ public abstract class TrendGraphView extends View implements TrendFeedViewItem.O
 
     protected void finishedAnimating() {
         isAnimating = false;
-        animationCallback.isFinished();
+        if(animationCallback != null) {
+            animationCallback.isFinished();
+        }
     }
 
     public void fadeOut(@Nullable final Animator.AnimatorListener animatorListener) {
