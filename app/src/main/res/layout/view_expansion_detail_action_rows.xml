@@ -49,13 +49,34 @@
         android:background="@drawable/selectable_dark_bounded"
         android:padding="@dimen/x2">
 
-        <TextView
-            android:id="@+id/view_expansion_detail_configuration_type_tv"
-            style="@style/AppTheme.Text.Body.New"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:id="@+id/view_expansion_detail_configuration_selection_text"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical"
-            android:layout_marginEnd="@dimen/x2"/>
+            android:layout_gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/view_expansion_detail_configuration_type_tv"
+                style="@style/AppTheme.Text.Body.New"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginEnd="@dimen/x2"/>
+
+            <TextView
+                android:id="@+id/view_expansion_detail_configuration_selection_tv"
+                style="@style/AppTheme.Text.Body.Dim.Ellipsize"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_toEndOf="@+id/view_expansion_detail_configuration_type_tv"
+                android:gravity="end"
+                android:drawableEnd="@drawable/disclosure_chevron_small"
+                android:drawablePadding="@dimen/x1"
+                android:visibility="gone"/>
+        </RelativeLayout>
+
+
 
         <ImageView
             android:id="@+id/view_expansion_detail_configuration_error"
@@ -72,15 +93,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"/>
 
-        <TextView
-            android:id="@+id/view_expansion_detail_configuration_selection_tv"
-            style="@style/AppTheme.Text.Body.Dim"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:drawableEnd="@drawable/disclosure_chevron_small"
-            android:drawablePadding="@dimen/x1"
-            android:visibility="gone"/>
         <TextView
             android:id="@+id/view_expansion_detail_configuration_reload"
             style="@style/AppTheme.Text.Body.Dim"
