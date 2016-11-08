@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="voice_alarm_title">Alarm and Sleep Sounds</string>
-    <string name="voice_alarm_message">\"Wake me up at 10am.\"</string>
+    <string name="voice_alarm_message">\"Wake me up at 10 AM.\"</string>
     <string name="voice_sleep_title">Sleep</string>
     <string name="voice_sleep_message">\"How was my sleep last night?\"</string>
     <string name="voice_rc_title">Room Conditions</string>
