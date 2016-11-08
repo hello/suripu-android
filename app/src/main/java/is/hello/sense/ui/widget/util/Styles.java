@@ -68,6 +68,9 @@ public final class Styles {
     public static final int UNIT_STYLE_SUPERSCRIPT = (1 << 1);
     public static final int UNIT_STYLE_SUBSCRIPT = (1 << 2);
 
+    private static final int ENABLED_ALPHA_INT = 255;
+    private static final int DISABLED_ALPHA_INT = 50;
+
     @IntDef({
             UNIT_STYLE_SUPERSCRIPT,
             UNIT_STYLE_SUBSCRIPT,
@@ -479,7 +482,7 @@ public final class Styles {
      * Used when setting {@link android.widget.ImageView#setImageAlpha(int)}
      */
     public static int getImageViewAlpha(final boolean isEnabled){
-        return isEnabled ? 255 : 50;
+        return isEnabled ? Styles.ENABLED_ALPHA_INT : Styles.DISABLED_ALPHA_INT;
     }
 
     /**
