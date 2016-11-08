@@ -179,12 +179,18 @@ public class HardwareInteractor extends BaseHardwareInteractor {
     }
 
     public Observable<SensePeripheral> closestPeripheral(@NonNull final Set<String> excludedDeviceIDs) {
+        return closestPeripheral(excludedDeviceIDs, SensePeripheral.DesiredHardwareVersion.ANY);
+    }
+
+    public Observable<SensePeripheral> closestPeripheral(@NonNull final Set<String> excludedDeviceIDs,
+                                                         final SensePeripheral.DesiredHardwareVersion desiredHardwareVersion) {
         logEvent("closestPeripheral( excluding " + excludedDeviceIDs + ")");
         return pending.bind(TOKEN_DISCOVERY, () -> {
             final PeripheralCriteria criteria = new PeripheralCriteria();
             criteria.setWantsHighPowerPreScan(wantsHighPowerPreScan);
-            return SensePeripheral.discover(bluetoothStack, criteria)
-                                  .map(peripherals -> filterPeripherals(peripherals, excludedDeviceIDs))
+            return SensePeripheral.discover(bluetoothStack, criteria, desiredHardwareVersion)
+                                  .map(peripherals ->
+                                               filterPeripherals(peripherals, excludedDeviceIDs))
                                   .flatMap(peripherals -> {
                                       if (!peripherals.isEmpty()) {
                                           final SensePeripheral closestPeripheral = getClosestPeripheral(peripherals);

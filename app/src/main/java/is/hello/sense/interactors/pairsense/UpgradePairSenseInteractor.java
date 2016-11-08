@@ -14,7 +14,7 @@ import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
 
-public class UpgradePairSenseInteractor extends PairSenseInteractor{
+public class UpgradePairSenseInteractor extends PairSenseInteractor {
 
     protected final SwapSenseInteractor swapSenseInteractor;
     protected final CurrentSenseInteractor resetOriginalInteractor;
@@ -64,7 +64,8 @@ public class UpgradePairSenseInteractor extends PairSenseInteractor{
         final SenseDevice currentSenseDevice = resetOriginalInteractor.getCurrentSense();
         if (currentSenseDevice != null) {
             return hardwareInteractor.closestPeripheral(
-                    Collections.singleton(currentSenseDevice.deviceId));
+                    Collections.singleton(currentSenseDevice.deviceId),
+                    SensePeripheral.DesiredHardwareVersion.SENSE_WITH_VOICE);
         } else {
             return Observable.error(new SenseRequiredException());
         }
@@ -75,18 +76,18 @@ public class UpgradePairSenseInteractor extends PairSenseInteractor{
         sendSwapAccountRequestEvent();
         swapSenseInteractor.setRequest(hardwareInteractor.getDeviceId());
         return swapSenseInteractor.canSwap()
-                                  .doOnNext( status -> {
+                                  .doOnNext(status -> {
                                       logEvent("Swap Status: " + status);
                                       sendSwappedAccountsEvent();
                                   })
                                   .flatMap(okStatus -> hardwareInteractor.linkAccount());
     }
 
-    protected void sendSwapAccountRequestEvent(){
+    protected void sendSwapAccountRequestEvent() {
         Analytics.trackEvent(Analytics.Upgrade.EVENT_SWAP_ACCOUNTS_REQUEST, null);
     }
 
-    protected void sendSwappedAccountsEvent(){
+    protected void sendSwappedAccountsEvent() {
         Analytics.trackEvent(Analytics.Upgrade.EVENT_SWAPPED_ACCOUNTS, null);
     }
 }
