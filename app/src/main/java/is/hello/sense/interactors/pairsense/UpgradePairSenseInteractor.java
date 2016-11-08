@@ -63,9 +63,7 @@ public class UpgradePairSenseInteractor extends PairSenseInteractor {
         hardwareInteractor.clearPeripheral();
         final SenseDevice currentSenseDevice = resetOriginalInteractor.getCurrentSense();
         if (currentSenseDevice != null) {
-            return hardwareInteractor.closestPeripheral(
-                    Collections.singleton(currentSenseDevice.deviceId),
-                    SensePeripheral.DesiredHardwareVersion.SENSE_WITH_VOICE);
+            return hardwareInteractor.closestPeripheral(SensePeripheral.DesiredHardwareVersion.SENSE_WITH_VOICE);
         } else {
             return Observable.error(new SenseRequiredException());
         }
