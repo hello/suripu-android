@@ -30,7 +30,6 @@
         android:layout_alignParentEnd="true"
         android:layout_marginStart="@dimen/x.5"
         android:layout_centerVertical="true"
-        android:drawableEnd="@drawable/disclosure_chevron"
         android:drawablePadding="@dimen/x.5"
         style="@style/AppTheme.Text.Body.MidSized.New"/>
 

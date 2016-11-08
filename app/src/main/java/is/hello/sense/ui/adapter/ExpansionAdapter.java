@@ -31,7 +31,8 @@ public class ExpansionAdapter extends ArrayRecyclerAdapter<Expansion, ExpansionA
     }
 
     @Override
-    public void onBindViewHolder(ExpansionViewHolder holder, int position) {
+    public void onBindViewHolder(final ExpansionViewHolder holder,
+                                 final int position) {
         holder.bind(position);
     }
 
@@ -49,10 +50,11 @@ public class ExpansionAdapter extends ArrayRecyclerAdapter<Expansion, ExpansionA
         }
 
         @Override
-        public void bind(int position) {
+        public void bind(final int position) {
             super.bind(position);
             final Expansion expansion = getItem(position);
             if(expansion != null) {
+                setEnabled(expansion.isAvailable());
                 picasso.cancelRequest(iconImageView);
                 picasso.load(expansion.getIcon().getUrl(itemView.getResources()))
                        .into(iconImageView);
@@ -60,6 +62,18 @@ public class ExpansionAdapter extends ArrayRecyclerAdapter<Expansion, ExpansionA
                 this.stateTextView.setText(expansion.getState().displayValue);
             }
 
+        }
+
+        public void setEnabled(final boolean enabled){
+            itemView.setEnabled(enabled);
+
+            if(enabled){
+                this.stateTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.disclosure_chevron, 0);
+                itemView.setAlpha(1);
+            } else {
+                this.stateTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                itemView.setAlpha(0.2f);
+            }
         }
     }
 }
