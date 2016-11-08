@@ -29,6 +29,17 @@
                 android:clickable="true"
                 android:focusable="true"/>
 
+            <ImageView
+                android:id="@+id/fragment_sensor_detail_calibrating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/fragment_sensor_detail_selector"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/x5"
+                android:src="@drawable/sensor_calibrating"
+                android:visibility="gone"
+                />
+
 
             <TextView
                 android:id="@+id/fragment_sensor_detail_value"

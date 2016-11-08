@@ -8,12 +8,15 @@ import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
 
 public enum Condition implements Enums.FromString {
-    UNKNOWN(R.color.dim,0),
-    ALERT(R.color.sensor_alert,1),
-    WARNING(R.color.sensor_warning,2),
-    IDEAL(R.color.sensor_ideal,3);
+    UNKNOWN(R.color.dim, 0),
+    ALERT(R.color.sensor_alert, 1),
+    WARNING(R.color.sensor_warning, 2),
+    IDEAL(R.color.sensor_ideal, 3),
+    CALIBRATING(R.color.dim, 4);
 
-    public final @ColorRes @DrawableRes int colorRes;
+    @ColorRes
+    @DrawableRes
+    public final int colorRes;
     public final int value;
 
     Condition(@ColorRes final int colorRes,
