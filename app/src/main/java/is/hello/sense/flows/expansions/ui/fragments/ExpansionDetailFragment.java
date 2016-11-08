@@ -277,7 +277,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
                 if (expansionDetailsInteractor.expansionSubject.hasValue()) {
                     final Expansion expansion = expansionDetailsInteractor.expansionSubject.getValue();
                     builder.withTitle(StringRef.from(getString(R.string.error_configurations_unavailable_title, expansion.getCategory().displayString)));
-                    builder.withMessage(StringRef.from(getString(R.string.error_configurations_unavailable_message, expansion.getCategory().displayString, expansion.getServiceName())));
+                    builder.withMessage(StringRef.from(getString(R.string.error_configurations_unavailable_message, expansion.getCategory().displayString, expansion.getCompanyName())));
                 } else {
                     builder.withTitle(R.string.error_configurations_unavailable_title_no_expansion);
                     builder.withMessage(StringRef.from(getString(R.string.error_configurations_unavailable_message, Category.fromString(null).displayString, null)));

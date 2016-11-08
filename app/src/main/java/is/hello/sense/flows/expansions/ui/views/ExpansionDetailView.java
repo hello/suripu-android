@@ -24,7 +24,7 @@ public class ExpansionDetailView extends PresenterView {
 
     final ViewGroup expansionInfoContainer;
     final TextView deviceNameTextView;
-    final TextView serviceNameTextView;
+    final TextView companyNameTextView;
     final ImageView expansionIconImageView;
     final TextView expansionDescriptionTextView;
     final Button connectButton;
@@ -51,7 +51,7 @@ public class ExpansionDetailView extends PresenterView {
         super(activity);
         this.expansionInfoContainer = (ViewGroup) findViewById(R.id.view_expansion_detail_infoid);
         this.deviceNameTextView = (TextView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_device_name);
-        this.serviceNameTextView = (TextView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_device_service_name);
+        this.companyNameTextView = (TextView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_device_company_name);
         this.expansionIconImageView = (ImageView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_icon);
         this.expansionDescriptionTextView = (TextView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_description);
 
@@ -138,7 +138,7 @@ public class ExpansionDetailView extends PresenterView {
                                   @NonNull final Picasso picasso) {
         this.expansionInfoContainer.setVisibility(VISIBLE);
         this.deviceNameTextView.setText(expansion.getDeviceName());
-        this.serviceNameTextView.setText(expansion.getServiceName());
+        this.companyNameTextView.setText(expansion.getCompanyName());
         picasso.load(expansion.getIcon().getUrl(getResources()))
                .into(expansionIconImageView);
         this.expansionDescriptionTextView.setText(expansion.getDescription());
