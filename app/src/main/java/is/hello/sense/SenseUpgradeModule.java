@@ -53,7 +53,6 @@ import is.hello.sense.ui.fragments.updating.SelectWifiNetworkFragment;
                 SenseUpgradeReadyFragment.class,
                 SenseResetOriginalFragment.class,
                 UnpairPillFragment.class,
-                UnpairPillPresenter.class,
                 PairPillFragment.class,
                 BluetoothFragment.class,
                 ConnectToWiFiFragment.class,
@@ -141,8 +140,8 @@ public class SenseUpgradeModule {
 
     @Provides
     @Singleton
-    UnpairPillPresenter providesUnpairPillPresenter() {
-        return new UnpairPillPresenter();
+    UnpairPillPresenter providesUnpairPillPresenter(final HardwareInteractor interactor) {
+        return new UnpairPillPresenter(interactor);
     }
 
     @Provides

@@ -11,7 +11,6 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.presenters.BasePresenter;
-import is.hello.sense.presenters.EmptyPresenter;
 import is.hello.sense.presenters.UnpairPillPresenter;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSimpleStepView;
