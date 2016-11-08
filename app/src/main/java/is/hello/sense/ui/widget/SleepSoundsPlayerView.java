@@ -27,12 +27,13 @@ import is.hello.sense.api.model.v2.SleepSoundStatus;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.IListObject;
 
 @SuppressLint("ViewConstructor")
 public class SleepSoundsPlayerView extends RelativeLayout implements SleepSoundsAdapter.IDisplayedValues {
-    private static final float minFadeFactor = .2f;
-    private static final float maxFadeFactor = 1f;
+    private static final float minFadeFactor = Styles.DISABLED_ALPHA_FLOAT;
+    private static final float maxFadeFactor = Styles.ENABLED_ALPHA_FLOAT;
 
     private final AnimatorContext animatorContext;
     private final TitleRow titleRow;

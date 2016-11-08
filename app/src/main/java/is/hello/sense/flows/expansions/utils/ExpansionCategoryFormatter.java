@@ -101,6 +101,8 @@ public class ExpansionCategoryFormatter {
         switch (expansionState) {
             case CONNECTED_ON:
                 return R.string.smart_alarm_expansion_state_connected_on;
+            case NOT_AVAILABLE:
+                return R.string.expansions_state_not_available;
             default:
                 return R.string.smart_alarm_expansion_state_connected_off;
 

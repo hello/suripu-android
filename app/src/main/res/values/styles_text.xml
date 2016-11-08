@@ -23,6 +23,14 @@
         <item name="android:textColor">@color/dark</item>
     </style>
 
+    <style name="Body.New" parent="AppTheme.Text.Body">
+        <item name="android:textColor">@color/text_color_selector_body_new</item>
+    </style>
+
+    <style name="Body.Accent" parent="AppTheme.Text.Body">
+        <item name="android:textColor">@color/text_color_selector_light_accent</item>
+    </style>
+
     <style name="Label" parent="AppTheme.Text.Header.H7">
         <item name="android:textColor">@color/dim</item>
     </style>
