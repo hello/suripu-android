@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -34,6 +35,7 @@ public final class SensorDetailView extends PresenterView
 
 
     private final SelectorView subNavSelector;
+    private final ImageView calibrationImageView;
     private final TextView valueTextView;
     private final TextView messageTextView;
     private final TextView about;
@@ -55,6 +57,7 @@ public final class SensorDetailView extends PresenterView
         noDataColor = ContextCompat.getColor(getContext(), R.color.dim);
         this.unitFormatter = unitFormatter;
         this.subNavSelector = (SelectorView) findViewById(R.id.fragment_sensor_detail_selector);
+        this.calibrationImageView = (ImageView) findViewById(R.id.fragment_sensor_detail_calibrating);
         this.valueTextView = (TextView) findViewById(R.id.fragment_sensor_detail_value);
         this.messageTextView = (TextView) findViewById(R.id.fragment_sensor_detail_message);
         this.sensorGraphView = (SensorGraphView) findViewById(R.id.fragment_sensor_detail_graph_view);
@@ -133,6 +136,7 @@ public final class SensorDetailView extends PresenterView
 
     public final void updateSensor(@NonNull final Sensor sensor) {
         post(() -> {
+            showCalibratingState(sensor.isCalibrating());
             final SensorType type = sensor.getType();
             this.scaleList.renderScales(unitFormatter.getConvertedScales(sensor.getScales(), type),
                                         unitFormatter.getMeasuredInString(type));
@@ -201,6 +205,17 @@ public final class SensorDetailView extends PresenterView
             this.subNavSelector.getButtonAt(1).setBackgroundColor(color);
             this.valueTextView.setTextColor(color);
         });
+    }
+
+    private void showCalibratingState(final boolean show) {
+        if (show) {
+            this.valueTextView.setVisibility(INVISIBLE);
+            this.calibrationImageView.setVisibility(VISIBLE);
+        } else {
+            this.calibrationImageView.setVisibility(INVISIBLE);
+            this.valueTextView.setVisibility(VISIBLE);
+        }
+
     }
 
     @Override
