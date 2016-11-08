@@ -38,7 +38,6 @@ allprojects {
                 secretKey helloAwsSecretKey
             }
         }
-        mavenLocal() //todo remove after commonsense is published on maven.
     }
 }
 
