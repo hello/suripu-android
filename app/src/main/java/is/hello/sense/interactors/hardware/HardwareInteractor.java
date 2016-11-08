@@ -141,7 +141,7 @@ public class HardwareInteractor extends BaseHardwareInteractor {
 
     public
     @Nullable
-    SensePeripheral getClosestPeripheral(@NonNull List<SensePeripheral> peripherals) {
+    SensePeripheral getClosestPeripheral(@NonNull final List<SensePeripheral> peripherals) {
         logEvent("getClosestPeripheral(" + peripherals + ")");
 
         if (peripherals.isEmpty()) {
@@ -149,22 +149,6 @@ public class HardwareInteractor extends BaseHardwareInteractor {
         } else {
             return Collections.max(peripherals, (l, r) -> Functions.compareInts(l.getScannedRssi(), r.getScannedRssi()));
         }
-    }
-
-    @NonNull
-    public List<SensePeripheral> filterPeripherals(@NonNull final List<SensePeripheral> peripherals,
-                                                   @NonNull final Set<String> excludedDeviceIDs) {
-        if (excludedDeviceIDs.isEmpty()) {
-            return peripherals;
-        }
-        final List<SensePeripheral> validPeripherals = new ArrayList<>();
-
-        for (final SensePeripheral sp : peripherals) {
-            if (!excludedDeviceIDs.contains(sp.getDeviceId())) {
-                validPeripherals.add(sp);
-            }
-        }
-        return validPeripherals;
     }
 
     public Observable<SensePeripheral> closestPeripheral() {
@@ -175,22 +159,15 @@ public class HardwareInteractor extends BaseHardwareInteractor {
             return Observable.just(peripheral);
         }
 
-        return closestPeripheral(Collections.emptySet());
+        return closestPeripheral(SensePeripheral.DesiredHardwareVersion.ANY);
     }
 
-    public Observable<SensePeripheral> closestPeripheral(@NonNull final Set<String> excludedDeviceIDs) {
-        return closestPeripheral(excludedDeviceIDs, SensePeripheral.DesiredHardwareVersion.ANY);
-    }
-
-    public Observable<SensePeripheral> closestPeripheral(@NonNull final Set<String> excludedDeviceIDs,
-                                                         final SensePeripheral.DesiredHardwareVersion desiredHardwareVersion) {
-        logEvent("closestPeripheral( excluding " + excludedDeviceIDs + ")");
+    public Observable<SensePeripheral> closestPeripheral(final SensePeripheral.DesiredHardwareVersion desiredHardwareVersion) {
+        logEvent("closestPeripheral( desiredHardwareVersion " + desiredHardwareVersion + ")");
         return pending.bind(TOKEN_DISCOVERY, () -> {
             final PeripheralCriteria criteria = new PeripheralCriteria();
             criteria.setWantsHighPowerPreScan(wantsHighPowerPreScan);
             return SensePeripheral.discover(bluetoothStack, criteria, desiredHardwareVersion)
-                                  .map(peripherals ->
-                                               filterPeripherals(peripherals, excludedDeviceIDs))
                                   .flatMap(peripherals -> {
                                       if (!peripherals.isEmpty()) {
                                           final SensePeripheral closestPeripheral = getClosestPeripheral(peripherals);
@@ -407,7 +384,7 @@ public class HardwareInteractor extends BaseHardwareInteractor {
                          .doOnCompleted(this::clearPeripheral);
     }
 
-    public Observable<Void> factoryReset(@NonNull SenseDevice apiDevice) {
+    public Observable<Void> factoryReset(@NonNull final SenseDevice apiDevice) {
         logEvent("factoryReset()");
 
         if (peripheral == null) {
@@ -415,8 +392,8 @@ public class HardwareInteractor extends BaseHardwareInteractor {
         }
 
         return pending.bind(TOKEN_FACTORY_RESET, () -> {
-            Observable<VoidResponse> resetBackEnd = devicesPresenter.removeSenseAssociations(apiDevice);
-            Observable<Void> resetSense = peripheral.factoryReset();
+            final Observable<VoidResponse> resetBackEnd = devicesPresenter.removeSenseAssociations(apiDevice);
+            final Observable<Void> resetSense = peripheral.factoryReset();
             return resetBackEnd.flatMap(ignored -> resetSense)
                                .doOnError(this.respondToError);
         });
