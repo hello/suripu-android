@@ -59,7 +59,6 @@ import static is.hello.sense.ui.common.UserSupport.showSupportedDevices;
 import static is.hello.sense.ui.common.UserSupport.showUserGuide;
 
 public final class Styles {
-    public static final float LETTER_SPACING_SECTION_HEADING_LARGE = 0.2f;
 
     public static final boolean UNDERLINE_LINKS = false;
 
@@ -470,5 +469,12 @@ public final class Styles {
 
     public static int pxToDp(final int px) {
         return (int) (px / Resources.getSystem().getDisplayMetrics().density);
+    }
+
+    /**
+     * @return int value between 0 - 255 based on enabled state.
+     */
+    public static int getImageViewAlpha(final boolean isEnabled){
+        return isEnabled ? 255 : 150;
     }
 }

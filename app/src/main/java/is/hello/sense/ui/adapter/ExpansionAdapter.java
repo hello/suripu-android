@@ -13,6 +13,7 @@ import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.ui.widget.util.Styles;
 
 public class ExpansionAdapter extends ArrayRecyclerAdapter<Expansion, ExpansionAdapter.ExpansionViewHolder> {
 
@@ -68,7 +69,7 @@ public class ExpansionAdapter extends ArrayRecyclerAdapter<Expansion, ExpansionA
             itemView.setEnabled(enabled);
             stateTextView.setEnabled(enabled);
             deviceNameTextView.setEnabled(enabled);
-            iconImageView.setImageAlpha(enabled ? 255 : 100);
+            iconImageView.setImageAlpha(Styles.getImageViewAlpha(enabled));
 
             if(enabled){
                 this.stateTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.disclosure_chevron, 0);
