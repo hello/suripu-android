@@ -66,13 +66,14 @@ public class ExpansionAdapter extends ArrayRecyclerAdapter<Expansion, ExpansionA
 
         public void setEnabled(final boolean enabled){
             itemView.setEnabled(enabled);
+            stateTextView.setEnabled(enabled);
+            deviceNameTextView.setEnabled(enabled);
+            iconImageView.setImageAlpha(enabled ? 255 : 100);
 
             if(enabled){
                 this.stateTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.disclosure_chevron, 0);
-                itemView.setAlpha(1);
             } else {
                 this.stateTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                itemView.setAlpha(0.2f);
             }
         }
     }
