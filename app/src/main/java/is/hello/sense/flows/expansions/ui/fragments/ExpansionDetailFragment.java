@@ -104,7 +104,6 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     public void initializePresenterView() {
         if (presenterView == null) {
             presenterView = new ExpansionDetailView(getActivity(),
-                                                    this::onEnabledIconClickedExpansion,
                                                     this::onRemoveAccessClicked,
                                                     (v) -> this.configurationsInteractor.update());
         }
@@ -214,6 +213,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             cancelFlow();
             return;
         }
+
         //todo currently assumes that when wantsValuePicker = true the expansion is enabled, configured, and authenticated
         if (wantsValuePicker) {
             final UnitConverter unitConverter = expansionCategoryFormatter.getUnitConverter(expansionCategory);
@@ -225,8 +225,10 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
                                                    initialValues,
                                                    expansionCategoryFormatter.getSuffix(expansion.getCategory()),
                                                    expansion.getConfigurationType());
+            presenterView.setExpansionEnabledTextViewClickListener(this.getExpansionAlarmInfoDialogClickListener(expansion.getCategory()));
         } else {
             presenterView.showExpansionInfo(expansion, picasso);
+            presenterView.setExpansionEnabledTextViewClickListener(this.getExpansionInfoDialogClickListener(expansion.getCategory()));
         }
         if (expansion.requiresAuthentication()) {
             presenterView.showConnectButton(this::onConnectClicked);
@@ -333,10 +335,40 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
     }
 
-    private void onEnabledIconClickedExpansion(final View ignored) {
-        WelcomeDialogFragment.show(getActivity(),
-                                   R.xml.welcome_dialog_expansions,
-                                   true);
+    private View.OnClickListener getExpansionInfoDialogClickListener(@NonNull final Category category) {
+        final int xmlResId;
+        switch (category){
+            case LIGHT:
+                xmlResId = R.xml.welcome_dialog_expansions_settings_light;
+                break;
+            case TEMPERATURE:
+                xmlResId = R.xml.welcome_dialog_expansions_settings_thermostat;
+                break;
+            default:
+                xmlResId = R.xml.welcome_dialog_expansions;
+        }
+
+        return ignoredView -> WelcomeDialogFragment.show(getActivity(),
+                                                         xmlResId,
+                                                         true);
+    }
+
+    private View.OnClickListener getExpansionAlarmInfoDialogClickListener(@NonNull final Category category) {
+        final int xmlResId;
+        switch (category){
+            case LIGHT:
+                xmlResId = R.xml.welcome_dialog_expansions_alarm_light;
+                break;
+            case TEMPERATURE:
+                xmlResId = R.xml.welcome_dialog_expansions_alarm_thermostat;
+                break;
+            default:
+                xmlResId = R.xml.welcome_dialog_expansions;
+        }
+
+        return ignoredView -> WelcomeDialogFragment.show(getActivity(),
+                                                         xmlResId,
+                                                         true);
     }
 
     @Override
