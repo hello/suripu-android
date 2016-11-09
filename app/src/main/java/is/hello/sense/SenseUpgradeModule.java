@@ -140,8 +140,10 @@ public class SenseUpgradeModule {
 
     @Provides
     @Singleton
-    UnpairPillPresenter providesUnpairPillPresenter(final HardwareInteractor interactor) {
-        return new UnpairPillPresenter(interactor);
+    UnpairPillPresenter providesUnpairPillPresenter(final HardwareInteractor hardwareInteractor,
+                                                    final DevicesInteractor devicesInteractor) {
+        return new UnpairPillPresenter(hardwareInteractor,
+                                       devicesInteractor);
     }
 
     @Provides
