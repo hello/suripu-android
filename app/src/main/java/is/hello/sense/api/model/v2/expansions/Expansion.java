@@ -117,6 +117,13 @@ public class Expansion extends ApiResponse {
         return State.CONNECTED_ON.equals(state);
     }
 
+    /**
+     * @return if expansion is allowed by server to be integrated
+     */
+    public boolean isAvailable() {
+        return !State.NOT_AVAILABLE.equals(state);
+    }
+
     public boolean requiresConfiguration() {
         return State.NOT_CONFIGURED.equals(state);
     }
@@ -196,4 +203,5 @@ public class Expansion extends ApiResponse {
                              "description",
                              State.UNKNOWN);
     }
+
 }

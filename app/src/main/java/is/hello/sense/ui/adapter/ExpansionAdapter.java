@@ -13,6 +13,7 @@ import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.ui.widget.util.Styles;
 
 public class ExpansionAdapter extends ArrayRecyclerAdapter<Expansion, ExpansionAdapter.ExpansionViewHolder> {
 
@@ -31,7 +32,8 @@ public class ExpansionAdapter extends ArrayRecyclerAdapter<Expansion, ExpansionA
     }
 
     @Override
-    public void onBindViewHolder(ExpansionViewHolder holder, int position) {
+    public void onBindViewHolder(final ExpansionViewHolder holder,
+                                 final int position) {
         holder.bind(position);
     }
 
@@ -49,16 +51,31 @@ public class ExpansionAdapter extends ArrayRecyclerAdapter<Expansion, ExpansionA
         }
 
         @Override
-        public void bind(int position) {
+        public void bind(final int position) {
             super.bind(position);
             final Expansion expansion = getItem(position);
             if(expansion != null) {
+                setEnabled(expansion.isAvailable());
                 picasso.cancelRequest(iconImageView);
                 picasso.load(expansion.getIcon().getUrl(itemView.getResources()))
                        .into(iconImageView);
                 this.deviceNameTextView.setText(expansion.getDeviceName());
                 this.stateTextView.setText(expansion.getState().displayValue);
             }
+
+        }
+
+        public void setEnabled(final boolean enabled){
+            itemView.setEnabled(enabled);
+            stateTextView.setEnabled(enabled);
+            deviceNameTextView.setEnabled(enabled);
+            iconImageView.setImageAlpha(Styles.getImageViewAlpha(enabled));
+
+
+            this.stateTextView.setCompoundDrawablesWithIntrinsicBounds(0,
+                                                                       0,
+                                                                       enabled? R.drawable.disclosure_chevron : 0,
+                                                                       0);
 
         }
     }

@@ -145,7 +145,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <LinearLayout
                 android:id="@+id/fragment_smart_alarm_detail_expansions_light_container"
@@ -154,19 +154,25 @@
                 android:background="@drawable/selectable_dark_bounded"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingLeft="@dimen/x3"
-                android:paddingRight="@dimen/x3">
+                android:paddingStart="@dimen/x3"
+                android:paddingEnd="@dimen/x3">
+
+                <ImageView
+                    android:id="@+id/fragment_smart_alarm_detail_expansions_light_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_alarm_light"
+                    android:paddingEnd="@dimen/x3"/>
 
                 <TextView
+                    android:id="@+id/fragment_smart_alarm_detail_expansions_light_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="@dimen/x1"
-                    android:drawablePadding="@dimen/x3"
-                    android:drawableStart="@drawable/icon_alarm_light"
                     android:gravity="start|center_vertical"
                     android:text="@string/expansion_category_lights"
-                    android:textAppearance="@style/AppTheme.Text.Body"/>
+                    android:textAppearance="@style/Body.New"/>
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -179,10 +185,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center_vertical"
-                        android:drawableEnd="@drawable/disclosure_chevron_small"
                         android:drawablePadding="@dimen/x1"
                         android:fontFamily="sans-serif"
-                        android:textColor="@color/light_accent"
+                        android:textColor="@color/text_color_selector_light_accent"
                         android:visibility="gone"/>
 
                     <ImageView
@@ -199,7 +204,7 @@
                         style="@style/AppTheme.ProgressBar.Tiny"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"/>
+                        android:layout_gravity="center_vertical|end"/>
 
                 </FrameLayout>
 
@@ -215,19 +220,25 @@
                 android:background="@drawable/selectable_dark_bounded"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingLeft="@dimen/x3"
-                android:paddingRight="@dimen/x3">
+                android:paddingStart="@dimen/x3"
+                android:paddingEnd="@dimen/x3">
+
+                <ImageView
+                    android:id="@+id/fragment_smart_alarm_detail_expansions_temp_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_alarm_thermostat"
+                    android:paddingEnd="@dimen/x3"/>
 
                 <TextView
+                    android:id="@+id/fragment_smart_alarm_detail_expansions_temp_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="@dimen/x1"
-                    android:drawablePadding="@dimen/x3"
-                    android:drawableStart="@drawable/icon_alarm_thermostat"
                     android:gravity="start|center_vertical"
                     android:text="@string/expansion_category_thermostat"
-                    android:textAppearance="@style/AppTheme.Text.Body"/>
+                    android:textAppearance="@style/Body.New"/>
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -240,10 +251,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center_vertical"
-                        android:drawableEnd="@drawable/disclosure_chevron_small"
                         android:drawablePadding="@dimen/x1"
                         android:fontFamily="sans-serif"
-                        android:textColor="@color/light_accent"
+                        android:textColor="@color/text_color_selector_light_accent"
                         android:visibility="gone"/>
 
                     <ImageView
@@ -259,7 +269,7 @@
                         style="@style/AppTheme.ProgressBar.Tiny"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"/>
+                        android:layout_gravity="center_vertical|end"/>
 
                 </FrameLayout>
 

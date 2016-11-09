@@ -59,12 +59,17 @@ import static is.hello.sense.ui.common.UserSupport.showSupportedDevices;
 import static is.hello.sense.ui.common.UserSupport.showUserGuide;
 
 public final class Styles {
-    public static final float LETTER_SPACING_SECTION_HEADING_LARGE = 0.2f;
+
+    public static final float DISABLED_ALPHA_FLOAT = 0.2f;
+    public static final float ENABLED_ALPHA_FLOAT = 1.0f;
 
     public static final boolean UNDERLINE_LINKS = false;
 
     public static final int UNIT_STYLE_SUPERSCRIPT = (1 << 1);
     public static final int UNIT_STYLE_SUBSCRIPT = (1 << 2);
+
+    private static final int ENABLED_ALPHA_INT = 255;
+    private static final int DISABLED_ALPHA_INT = 50;
 
     @IntDef({
             UNIT_STYLE_SUPERSCRIPT,
@@ -470,5 +475,21 @@ public final class Styles {
 
     public static int pxToDp(final int px) {
         return (int) (px / Resources.getSystem().getDisplayMetrics().density);
+    }
+
+    /**
+     * @return int value between 0 - 255 based on enabled state.
+     * Used when setting {@link android.widget.ImageView#setImageAlpha(int)}
+     */
+    public static int getImageViewAlpha(final boolean isEnabled){
+        return isEnabled ? Styles.ENABLED_ALPHA_INT : Styles.DISABLED_ALPHA_INT;
+    }
+
+    /**
+     * @return float value between 0f - 1.0f based on enabled state.
+     * Used when setting {@link View#setAlpha(float)}
+     */
+    public static float getViewAlpha(final boolean isEnabled){
+        return isEnabled ? Styles.ENABLED_ALPHA_FLOAT : Styles.DISABLED_ALPHA_FLOAT;
     }
 }

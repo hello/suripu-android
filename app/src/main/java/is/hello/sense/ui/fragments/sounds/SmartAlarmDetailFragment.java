@@ -31,7 +31,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
-import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.ApiException;
@@ -57,6 +56,7 @@ import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Drawing;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -107,6 +107,12 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     private ImageView lightExpansionError;
     private ImageView thermoExpansionError;
 
+    private ImageView thermoExpansionIcon;
+    private ImageView lightExpansionIcon;
+
+    private TextView thermoExpansionLabel;
+    private TextView lightExpansionLabel;
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,6 +140,10 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_smart_alarm_detail, container, false);
         this.expansionsContainer = (LinearLayout) view.findViewById(R.id.fragment_smart_alarm_detail_expansions_container);
+        this.thermoExpansionIcon = (ImageView) expansionsContainer.findViewById(R.id.fragment_smart_alarm_detail_expansions_temp_icon);
+        this.lightExpansionIcon = (ImageView) expansionsContainer.findViewById(R.id.fragment_smart_alarm_detail_expansions_light_icon);
+        this.thermoExpansionLabel = (TextView) expansionsContainer.findViewById(R.id.fragment_smart_alarm_detail_expansions_temp_label);
+        this.lightExpansionLabel = (TextView) expansionsContainer.findViewById(R.id.fragment_smart_alarm_detail_expansions_light_label);
         this.lightExpansionProgress = (ProgressBar) expansionsContainer.findViewById(R.id.fragment_smart_alarm_detail_expansions_light_progress);
         this.thermoExpansionProgress = (ProgressBar) expansionsContainer.findViewById(R.id.fragment_smart_alarm_detail_expansions_temp_progress);
         this.lightExpansionValue = (TextView) expansionsContainer.findViewById(R.id.fragment_smart_alarm_detail_expansions_light_value);
@@ -433,6 +443,8 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         switch (expansion.getCategory()) {
             case TEMPERATURE:
                 updateExpansion(expansion,
+                                thermoExpansionIcon,
+                                thermoExpansionLabel,
                                 thermoExpansionValue,
                                 thermoExpansionError,
                                 thermoExpansionContainer,
@@ -440,6 +452,8 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
                 break;
             case LIGHT:
                 updateExpansion(expansion,
+                                lightExpansionIcon,
+                                lightExpansionLabel,
                                 lightExpansionValue,
                                 lightExpansionError,
                                 lightExpansionContainer,
@@ -451,6 +465,8 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
     }
 
     private void updateExpansion(@NonNull final Expansion expansion,
+                                 @NonNull final ImageView icon,
+                                 @NonNull final TextView label,
                                  @NonNull final TextView value,
                                  @NonNull final ImageView error,
                                  @NonNull final LinearLayout container,
@@ -458,15 +474,21 @@ public class SmartAlarmDetailFragment extends InjectionFragment {
         error.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
         value.setVisibility(View.VISIBLE);
-        if (expansion.getState() == State.REVOKED ||
-                expansion.getState() == State.NOT_CONFIGURED ||
-                expansion.getState() == State.CONNECTED_OFF) {
-            value.setText(R.string.expansions_state_not_connected);
-        }
+        final boolean isEnabled = expansion.getState() != State.NOT_AVAILABLE;
+        icon.setImageAlpha(Styles.getImageViewAlpha(isEnabled));
+        label.setEnabled(isEnabled);
+        value.setEnabled(isEnabled);
+        container.setEnabled(isEnabled);
+        value.setCompoundDrawablesWithIntrinsicBounds(0,
+                                                      0,
+                                                      isEnabled ? R.drawable.disclosure_chevron_small : 0,
+                                                      0);
+
+        value.setText(expansionCategoryFormatter.getDisplayValueResFromState(expansion.getState()));
+
         if (expansion.getState() == State.CONNECTED_ON) {
             final ExpansionAlarm expansionAlarm = alarm.getExpansionAlarm(expansion.getCategory());
             if (expansionAlarm == null || !expansionAlarm.isEnabled()) {
-                value.setText(R.string.expansions_off);
                 container.setOnClickListener((ignored) -> redirectToExpansionPicker(expansion));
             } else {
                 value.setText(expansionCategoryFormatter.getFormattedValueRange(expansion.getCategory(),
