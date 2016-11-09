@@ -25,6 +25,7 @@ import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoiceResponse;
 import is.hello.sense.api.model.VoidResponse;
+import is.hello.sense.api.model.v2.Alert;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.api.model.v2.InsightType;
@@ -363,6 +364,13 @@ public interface ApiService {
     @PATCH("/v2/expansions/{id}/configurations")
     Observable<Configuration> setConfigurations(@Path("id") long expansionId,
                                                 @Body @NonNull Configuration configuration);
+
+    //endregion
+
+    //region Alerts
+
+    @GET("/v2/alerts")
+    Observable<ArrayList<Alert>> getAlerts();
 
     //endregion
 }

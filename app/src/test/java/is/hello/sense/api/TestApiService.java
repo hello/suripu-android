@@ -40,6 +40,7 @@ import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.VoiceResponse;
 import is.hello.sense.api.model.VoidResponse;
+import is.hello.sense.api.model.v2.Alert;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.api.model.v2.InsightType;
@@ -487,5 +488,10 @@ public final class TestApiService implements ApiService {
     public Observable<SensorsDataResponse> postSensors(@NonNull @Body final SensorDataRequest request) {
         //todo missing different queryScopes except LAST_3H_5_MINUTE
         return loadResponse("post_sensors_v2_"+request.queryScope.name(), new TypeToken<SensorsDataResponse>(){}.getType());
+    }
+
+    @Override
+    public Observable<ArrayList<Alert>> getAlerts() {
+        return unimplemented();
     }
 }
