@@ -20,7 +20,6 @@ import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
-import is.hello.sense.interactors.AlertsInteractor;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.interactors.InsightInfoInteractor;
@@ -191,10 +190,12 @@ public class SenseAppModule {
         return new DevicesInteractor(apiService);
     }
 
+    /*
+    todo uncomment when actually using interactor
     @Provides
     @Singleton
     public AlertsInteractor providesAlertsInteractor(@NonNull final ApiService apiService){
         return new AlertsInteractor(apiService);
-    }
+    }*/
 
 }
