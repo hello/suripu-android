@@ -2,10 +2,7 @@ package is.hello.sense.presenters;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
-
-import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Devices;
@@ -28,11 +25,12 @@ public class UnpairPillPresenter extends BaseHardwarePresenter<UnpairPillPresent
      */
     private boolean handlePrimaryClick = false;
 
-    @Inject
-    DevicesInteractor devicesInteractor;
+    private DevicesInteractor devicesInteractor;
 
-    public UnpairPillPresenter(@NonNull final HardwareInteractor hardwareInteractor) {
+    public UnpairPillPresenter(@NonNull final HardwareInteractor hardwareInteractor,
+                               @NonNull final DevicesInteractor devicesInteractor) {
         super(hardwareInteractor);
+        this.devicesInteractor = devicesInteractor;
     }
 
     @Override
@@ -50,7 +48,6 @@ public class UnpairPillPresenter extends BaseHardwarePresenter<UnpairPillPresent
 
 
     private void bindDevices(@NonNull final Devices devices) {
-        Log.e(getClass().getSimpleName(), "bindDevices: " + (devices.toString()));
         if (!handlePrimaryClick) {
             return;
         }
