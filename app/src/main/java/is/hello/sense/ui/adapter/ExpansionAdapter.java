@@ -71,11 +71,12 @@ public class ExpansionAdapter extends ArrayRecyclerAdapter<Expansion, ExpansionA
             deviceNameTextView.setEnabled(enabled);
             iconImageView.setImageAlpha(Styles.getImageViewAlpha(enabled));
 
-            if(enabled){
-                this.stateTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.disclosure_chevron, 0);
-            } else {
-                this.stateTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-            }
+
+            this.stateTextView.setCompoundDrawablesWithIntrinsicBounds(0,
+                                                                       0,
+                                                                       enabled? R.drawable.disclosure_chevron : 0,
+                                                                       0);
+
         }
     }
 }

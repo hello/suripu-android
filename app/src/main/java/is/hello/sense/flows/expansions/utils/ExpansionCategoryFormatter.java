@@ -96,13 +96,17 @@ public class ExpansionCategoryFormatter {
         }
     }
 
+    /**
+     * @return display string resource that will be used primarily in
+     * {@link is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment}
+     */
     @StringRes
     public int getDisplayValueResFromState(@NonNull final State expansionState) {
         switch (expansionState) {
             case CONNECTED_ON:
                 return R.string.smart_alarm_expansion_state_connected_on;
             case NOT_AVAILABLE:
-                return R.string.expansions_state_not_available;
+                return R.string.expansions_state_not_available; //used in expansions as well
             default:
                 return R.string.smart_alarm_expansion_state_connected_off;
 
