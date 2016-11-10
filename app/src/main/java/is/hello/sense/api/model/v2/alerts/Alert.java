@@ -1,4 +1,4 @@
-package is.hello.sense.api.model.v2;
+package is.hello.sense.api.model.v2.alerts;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -51,10 +51,5 @@ public class Alert extends ApiResponse {
 
     public boolean isValid() {
         return !Category.UNKNOWN.equals(category);
-    }
-
-    public enum Category {
-        EXPANSION_UNREACHABLE,
-        UNKNOWN
     }
 }

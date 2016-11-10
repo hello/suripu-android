@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import com.segment.analytics.Properties;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.v2.Alert;
+import is.hello.sense.api.model.v2.alerts.Alert;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomAlertDialog;
 import is.hello.sense.util.Analytics;
