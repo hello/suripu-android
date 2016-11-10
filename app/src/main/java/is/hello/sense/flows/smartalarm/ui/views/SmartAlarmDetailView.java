@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -22,9 +23,10 @@ import is.hello.sense.ui.widget.util.Views;
 @SuppressLint("ViewConstructor")
 public class SmartAlarmDetailView extends PresenterView {
 
-    private final TextView time;
-    private final TextView toneName;
-    private final TextView repeatDays;
+    private final TextView timeTextView;
+    private final CompoundButton smartAlarmToggle;
+    private final TextView toneNameTextView;
+    private final TextView repeatDaysTextView;
 
     private final TextView lightExpansionValue;
     private final TextView thermoExpansionValue;
@@ -44,13 +46,14 @@ public class SmartAlarmDetailView extends PresenterView {
 
     private final TextView thermoExpansionLabel;
     private final TextView lightExpansionLabel;
+    private final View deleteRowDivider;
+    private final View deleteRow;
 
     public SmartAlarmDetailView(@NonNull final Activity activity,
                                 @NonNull final OnClickListener timeClickListener,
                                 @NonNull final OnClickListener helpClickListener,
                                 @NonNull final OnClickListener toneClickListener,
-                                @NonNull final OnClickListener repeatClickListener,
-                                @NonNull final OnClickListener deleteClickListener) {
+                                @NonNull final OnClickListener repeatClickListener) {
         super(activity);
         this.expansionsContainer = (LinearLayout) findViewById(R.id.view_smart_alarm_detail_expansions_container);
         this.thermoExpansionIcon = (ImageView) expansionsContainer.findViewById(R.id.view_smart_alarm_detail_expansions_temp_icon);
@@ -65,56 +68,30 @@ public class SmartAlarmDetailView extends PresenterView {
         this.thermoExpansionContainer = (LinearLayout) expansionsContainer.findViewById(R.id.view_smart_alarm_detail_expansions_temp_container);
         this.lightExpansionError = (ImageView) expansionsContainer.findViewById(R.id.view_smart_alarm_detail_expansions_light_error);
         this.thermoExpansionError = (ImageView) expansionsContainer.findViewById(R.id.view_smart_alarm_detail_expansions_temp_error);
-        this.time = (TextView) findViewById(R.id.view_smart_alarm_detail_time);
-        //  setVoiceState(false);
-        //  updateTime();
-        final View timeContainer = findViewById(R.id.view_smart_alarm_detail_time_container);
-        Views.setSafeOnClickListener(timeContainer, timeClickListener);
-        final CompoundButton smartToggle = (CompoundButton) findViewById(R.id.view_smart_alarm_detail_smart_switch);
-       /* smartToggle.setChecked(alarm.isSmart());
-        smartToggle.setOnCheckedChangeListener((button, checked) -> {
-            alarm.setSmart(checked);
-            markDirty();
-        });*/
-
+        this.timeTextView = (TextView) findViewById(R.id.view_smart_alarm_detail_time);
+        this.smartAlarmToggle = (CompoundButton) findViewById(R.id.view_smart_alarm_detail_smart_switch);
+        this.toneNameTextView = (TextView) findViewById(R.id.view_smart_alarm_detail_tone_name);
+        this.repeatDaysTextView = (TextView) findViewById(R.id.view_smart_alarm_detail_repeat_days);
+        this.deleteRowDivider = findViewById(R.id.view_smart_alarm_detail_delete_divider);
+        this.deleteRow = findViewById(R.id.view_smart_alarm_detail_delete);
         final View smartRow = findViewById(R.id.view_smart_alarm_detail_smart);
-        smartRow.setOnClickListener(ignored -> smartToggle.toggle());
-
+        final View timeContainer = findViewById(R.id.view_smart_alarm_detail_time_container);
+        final View soundRow = findViewById(R.id.view_smart_alarm_detail_tone);
+        final View repeatRow = findViewById(R.id.view_smart_alarm_detail_repeat);
         final ImageButton smartHelp = (ImageButton) findViewById(R.id.view_smart_alarm_detail_smart_help);
         final Drawable smartHelpDrawable = smartHelp.getDrawable().mutate();
         final int accent = ContextCompat.getColor(activity, R.color.light_accent);
         final int dimmedAccent = Drawing.colorWithAlpha(accent, 178);
         Drawables.setTintColor(smartHelpDrawable, dimmedAccent);
         smartHelp.setImageDrawable(smartHelpDrawable);
+        Views.setSafeOnClickListener(smartRow, v -> smartAlarmToggle.toggle());
         Views.setSafeOnClickListener(smartHelp, helpClickListener);
-
-
-        final View soundRow = findViewById(R.id.view_smart_alarm_detail_tone);
+        Views.setSafeOnClickListener(timeContainer, timeClickListener);
         Views.setSafeOnClickListener(soundRow, toneClickListener);
-
-        this.toneName = (TextView) soundRow.findViewById(R.id.view_smart_alarm_detail_tone_name);
-        /*if (alarm.getSound() != null && !TextUtils.isEmpty(alarm.getSound().name)) {
-            toneName.setText(alarm.getSound().name);
-        } else {
-            toneName.setText(R.string.no_sound_placeholder);
-        }*/
-
-        final View repeatRow = findViewById(R.id.view_smart_alarm_detail_repeat);
         Views.setSafeOnClickListener(repeatRow, repeatClickListener);
-
-        this.repeatDays = (TextView) repeatRow.findViewById(R.id.view_smart_alarm_detail_repeat_days);
-        //repeatDays.setText(alarm.getRepeatSummary(getActivity(), false));
-
-        final View deleteRow = findViewById(R.id.view_smart_alarm_detail_delete);
-        Views.setSafeOnClickListener(deleteRow, deleteClickListener);
-
-       /* if (this.index == SmartAlarmDetailActivity.INDEX_NEW) {
-            final View deleteRowDivider = view.findViewById(R.id.fragment_smart_alarm_detail_delete_divider);
-            deleteRowDivider.setVisibility(View.GONE);
-            deleteRow.setVisibility(View.GONE);
-        }*/
-
+        showExpansionsContainer(false);
     }
+    //region PresenterView
 
     @Override
     protected int getLayoutRes() {
@@ -125,4 +102,55 @@ public class SmartAlarmDetailView extends PresenterView {
     public void releaseViews() {
 
     }
+
+    //endregion
+    //region methods
+
+    /**
+     * @param deleteClickListener if null will hide the delete row. If not null will show and set.
+     */
+    public void showDeleteRow(@Nullable final OnClickListener deleteClickListener) {
+        if (deleteClickListener == null) {
+            deleteRowDivider.setVisibility(View.GONE);
+            deleteRow.setVisibility(View.GONE);
+        } else {
+            Views.setSafeOnClickListener(deleteRow, deleteClickListener);
+            deleteRowDivider.setVisibility(View.VISIBLE);
+            deleteRow.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void setSmartAlarm(final boolean isChecked,
+                              @NonNull final CompoundButton.OnCheckedChangeListener checkedChangeListener) {
+        this.smartAlarmToggle.setOnCheckedChangeListener(null);
+        this.smartAlarmToggle.setChecked(isChecked);
+        this.smartAlarmToggle.setOnCheckedChangeListener(checkedChangeListener);
+    }
+
+    public void setTone(@Nullable final String toneName) {
+        if (toneName == null) {
+            toneNameTextView.setText(R.string.no_sound_placeholder);
+        }
+        this.toneNameTextView.setText(toneName);
+    }
+
+    public void setRepeatDaysTextView(@NonNull final String repeatDays) {
+        this.repeatDaysTextView.setText(repeatDays);
+    }
+
+    /**
+     * @param hasVoice true if voice is enabled
+     */
+    private void showExpansionsContainer(final boolean hasVoice) {
+        if (hasVoice) {
+            expansionsContainer.setVisibility(View.VISIBLE);
+        } else {
+            expansionsContainer.setVisibility(View.GONE);
+        }
+    }
+
+    public void setTime(@NonNull final String time) {
+        timeTextView.setText(time);
+    }
+    //endregion
 }
