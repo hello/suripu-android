@@ -252,18 +252,17 @@ public class HomeActivity extends ScopedInjectionActivity
         bindAndSubscribe(onLogOut,
                          ignored -> finish(),
                          Functions.LOG_ERROR);
-        if (isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE) {
+        if (shouldUpdateDeviceIssues()) {
             bindAndSubscribe(deviceIssuesPresenter.topIssue,
                              this::bindDeviceIssue,
                              Functions.LOG_ERROR);
         }
 
-        bindAndSubscribe(alertsInteractor.alerts,
-                         this::bindAlerts,
-                         Functions.LOG_ERROR);
-
-        alertsInteractor.update();
-        //todo ask jimmy how frequently to check for alerts
+        if(shouldUpdateAlerts()) {
+            bindAndSubscribe(alertsInteractor.alerts,
+                             this::bindAlerts,
+                             Functions.LOG_ERROR);
+        }
 
         checkInForUpdates();
     }
@@ -281,6 +280,10 @@ public class HomeActivity extends ScopedInjectionActivity
         super.onResume();
 
         Distribution.checkForUpdates(this);
+
+        if(shouldUpdateAlerts()){
+            alertsInteractor.update();
+        }
 
         if (showBackside) {
             slidingLayersView.openWithoutAnimation();
@@ -551,23 +554,28 @@ public class HomeActivity extends ScopedInjectionActivity
 
     //endregion
 
-    public void bindAlerts(@NonNull final ArrayList<Alert> alerts){
-        if(alerts.isEmpty()){
-            deviceIssuesPresenter.update();
-        } else {
-            final Alert firstAlert = alerts.get(0);
-            if(firstAlert.isValid()
-                    && getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) == null){
-                localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
-                BottomAlertDialogFragment.newInstance(firstAlert)
-                                         .showAllowingStateLoss(getFragmentManager(),
-                                                                BottomAlertDialogFragment.TAG);
-            }
-        }
+    //region Device Issues and Alerts
+
+    private boolean shouldUpdateAlerts() {
+        return getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
     }
 
+    private boolean shouldUpdateDeviceIssues() {
+        return isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
+    }
 
-    //region Device Issues
+    public void bindAlerts(@NonNull final ArrayList<Alert> alerts){
+        if ( ! alerts.isEmpty()
+                && alerts.get(0).isValid()
+                && getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) == null) {
+                localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
+                BottomAlertDialogFragment.newInstance(alerts.get(0))
+                                         .showAllowingStateLoss(getFragmentManager(),
+                                                                BottomAlertDialogFragment.TAG);
+        } else if (shouldUpdateDeviceIssues()) {
+            deviceIssuesPresenter.update();
+        }
+    }
 
     public void bindDeviceIssue(@NonNull final DeviceIssuesInteractor.Issue issue) {
         if (issue == DeviceIssuesInteractor.Issue.NONE
