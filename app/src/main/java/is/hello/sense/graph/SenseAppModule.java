@@ -151,6 +151,7 @@ import is.hello.sense.zendesk.ZendeskModule;
                 HomeFragment.class,
                 VoiceFragment.class,
                 AppSettingsFragment.class,
+                is.hello.sense.flows.smartalarm.ui.activities.SmartAlarmDetailActivity.class
 
 
         }

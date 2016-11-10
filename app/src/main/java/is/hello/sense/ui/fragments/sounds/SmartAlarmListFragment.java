@@ -227,10 +227,13 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
 
 
     private void editAlarm(@NonNull final Alarm alarm, final int index) {
-        final Bundle arguments = SmartAlarmDetailActivity.getArguments(alarm, index);
+       /* final Bundle arguments = SmartAlarmDetailActivity.getArguments(alarm, index);
         final Intent intent = new Intent(getActivity(), SmartAlarmDetailActivity.class);
         intent.putExtras(arguments);
-        startActivity(intent);
+        startActivity(intent);*/
+        is.hello.sense.flows.smartalarm.ui.activities.SmartAlarmDetailActivity.startActivity(getActivity(),
+                                                                                             alarm,
+                                                                                             index);
     }
 
     @Override

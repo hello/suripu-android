@@ -27,6 +27,7 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 
+@Deprecated
 public class SmartAlarmDetailActivity extends InjectionActivity {
 
     @Inject
