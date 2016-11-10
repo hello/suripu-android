@@ -49,6 +49,10 @@ public class Alert extends ApiResponse {
         return category;
     }
 
+    public boolean isValid() {
+        return !Category.UNKNOWN.equals(category);
+    }
+
     public enum Category {
         EXPANSION_UNREACHABLE,
         UNKNOWN
