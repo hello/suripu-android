@@ -106,6 +106,7 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
         getActionBar().setHomeAsUpIndicator(R.drawable.app_style_ab_cancel);
         getActionBar().setHomeActionContentDescription(android.R.string.cancel);
         getActionBar().setTitle(R.string.title_alarm);
+        showSmartAlarmDetailFragment();
     }
 
     @Override
@@ -182,6 +183,10 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
 
     public boolean skipUI() {
         return skipUI;
+    }
+
+    private void showSmartAlarmDetailFragment() {
+        navigationDelegate.pushFragment(new SmartAlarmDetailFragment(), null, false);
     }
 
     private void processSetAlarmIntent() {
