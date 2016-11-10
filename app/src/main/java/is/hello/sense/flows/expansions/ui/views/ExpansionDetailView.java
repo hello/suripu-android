@@ -140,6 +140,7 @@ public class ExpansionDetailView extends PresenterView {
         this.deviceNameTextView.setText(expansion.getDeviceName());
         this.companyNameTextView.setText(expansion.getCompanyName());
         picasso.load(expansion.getIcon().getUrl(getResources()))
+               .placeholder(R.drawable.icon_expansions_default)
                .into(expansionIconImageView);
         this.expansionDescriptionTextView.setText(expansion.getDescription());
         this.configurationTypeTextView.setText(expansion.getConfigurationType());
