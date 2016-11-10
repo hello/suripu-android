@@ -63,7 +63,7 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.GenericListObject;
 import rx.Observable;
 
-
+@Deprecated
 public class SmartAlarmDetailFragment extends InjectionFragment {
     private static final int TIME_REQUEST_CODE = 0x747;
     private static final int SOUND_REQUEST_CODE = 0x50;
