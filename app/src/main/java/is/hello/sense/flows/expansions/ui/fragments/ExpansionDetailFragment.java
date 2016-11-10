@@ -225,11 +225,12 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
                                                    initialValues,
                                                    expansionCategoryFormatter.getSuffix(expansion.getCategory()),
                                                    expansion.getConfigurationType());
-            presenterView.setExpansionEnabledTextViewClickListener(this.getExpansionAlarmInfoDialogClickListener(expansion.getCategory()));
         } else {
             presenterView.showExpansionInfo(expansion, picasso);
-            presenterView.setExpansionEnabledTextViewClickListener(this.getExpansionInfoDialogClickListener(expansion.getCategory()));
         }
+
+        presenterView.setExpansionEnabledTextViewClickListener(this.getExpansionInfoDialogClickListener(expansion.getCategory()));
+
         if (expansion.requiresAuthentication()) {
             presenterView.showConnectButton(this::onConnectClicked);
         } else if (expansion.requiresConfiguration()) {
@@ -336,36 +337,9 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     }
 
     private View.OnClickListener getExpansionInfoDialogClickListener(@NonNull final Category category) {
-        final int xmlResId;
-        switch (category){
-            case LIGHT:
-                xmlResId = R.xml.welcome_dialog_expansions_settings_light;
-                break;
-            case TEMPERATURE:
-                xmlResId = R.xml.welcome_dialog_expansions_settings_thermostat;
-                break;
-            default:
-                xmlResId = R.xml.welcome_dialog_expansions;
-        }
-
-        return ignoredView -> WelcomeDialogFragment.show(getActivity(),
-                                                         xmlResId,
-                                                         true);
-    }
-
-    private View.OnClickListener getExpansionAlarmInfoDialogClickListener(@NonNull final Category category) {
-        final int xmlResId;
-        switch (category){
-            case LIGHT:
-                xmlResId = R.xml.welcome_dialog_expansions_alarm_light;
-                break;
-            case TEMPERATURE:
-                xmlResId = R.xml.welcome_dialog_expansions_alarm_thermostat;
-                break;
-            default:
-                xmlResId = R.xml.welcome_dialog_expansions;
-        }
-
+        final int xmlResId = wantsValuePicker ?
+                expansionCategoryFormatter.getExpansionAlarmInfoDialogXmlRes(category) :
+                expansionCategoryFormatter.getExpansionInfoDialogXmlRes(category);
         return ignoredView -> WelcomeDialogFragment.show(getActivity(),
                                                          xmlResId,
                                                          true);
