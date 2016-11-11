@@ -16,12 +16,12 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
-import is.hello.sense.interactors.HasVoiceInteractor;
 import is.hello.sense.interactors.InsightInfoInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
@@ -43,7 +43,6 @@ import is.hello.sense.presenters.BaseHardwarePresenter;
 import is.hello.sense.settings.SettingsModule;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
-import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
@@ -190,5 +189,13 @@ public class SenseAppModule {
     DevicesInteractor providesDevicesInteractor(@NonNull final ApiService apiService) {
         return new DevicesInteractor(apiService);
     }
+
+    /*
+    todo uncomment when actually using interactor
+    @Provides
+    @Singleton
+    public AlertsInteractor providesAlertsInteractor(@NonNull final ApiService apiService){
+        return new AlertsInteractor(apiService);
+    }*/
 
 }

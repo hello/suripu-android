@@ -152,6 +152,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         bindAndSubscribe(configurationsInteractor.configSubject,
                          this::bindConfigurations,
                          this::presentConfigurationError);
+
         // never call update for observable before subscribing
         expansionDetailsInteractor.update();
     }
