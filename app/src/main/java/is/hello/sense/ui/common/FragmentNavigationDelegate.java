@@ -126,16 +126,7 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
         final FragmentTransaction transaction = createTransaction(fragment, title,
                                                                   wantsBackStackEntry);
         if (!wantsBackStackEntry) {
-            // There's no state safe way to pop the back stack to the beginning.
-            // Since state loss is fine inside of this method, we just swallow
-            // any IllegalStateExceptions thrown.
-            try {
-                getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            } catch (IllegalStateException e) {
-                Logger.info(getClass().getSimpleName(),
-                            "Popping back stack is currently impossible. State loss happening.",
-                            e);
-            }
+            clearBackStackAllowingStateLoss();
         }
         transaction.commitAllowingStateLoss();
     }
@@ -147,6 +138,19 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
             getFragmentManager().popBackStackImmediate(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         } else {
             getFragmentManager().popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+    }
+
+    public void clearBackStackAllowingStateLoss(){
+        // There's no state safe way to pop the back stack to the beginning.
+        // Since state loss is fine inside of this method, we just swallow
+        // any IllegalStateExceptions thrown.
+        try {
+            getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        } catch (IllegalStateException e) {
+            Logger.info(getClass().getSimpleName(),
+                        "Popping back stack is currently impossible. State loss happening.",
+                        e);
         }
     }
 

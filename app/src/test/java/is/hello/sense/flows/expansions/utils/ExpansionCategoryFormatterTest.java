@@ -27,7 +27,7 @@ public class ExpansionCategoryFormatterTest extends InjectionTestCase{
     }
 
     @Test
-    public void getFormattedValueRangeIgnoresMax() throws Exception {
+    public void getFormattedValueRangeIgnoresMaxForLightCategory() throws Exception {
 
         assertEquals("0%" , expansionCategoryFormatter.getFormattedValueRange(Category.LIGHT, new ExpansionValueRange(0, 32), getContext()));
         assertEquals("0%" , expansionCategoryFormatter.getFormattedValueRange(Category.LIGHT, new ExpansionValueRange(0, 100), getContext()));
@@ -38,12 +38,17 @@ public class ExpansionCategoryFormatterTest extends InjectionTestCase{
         preferencesInteractor.edit().putBoolean(PreferencesInteractor.USE_CELSIUS, true)
                              .commit();
 
-        assertEquals("0°" , expansionCategoryFormatter.getFormattedValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 32), getContext()));
+        assertEquals("0°" , expansionCategoryFormatter.getFormattedValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 0), getContext()));
+
+        assertEquals("0° - 32°" , expansionCategoryFormatter.getFormattedValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 32), getContext()));
 
         preferencesInteractor.edit().putBoolean(PreferencesInteractor.USE_CELSIUS, false)
                              .commit();
 
-        assertEquals("32°" , expansionCategoryFormatter.getFormattedValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 100), getContext()));
+        assertEquals("32°" , expansionCategoryFormatter.getFormattedValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 0), getContext()));
+
+        assertEquals("32° - 89°" , expansionCategoryFormatter.getFormattedValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 32), getContext()));
+
     }
 
     @Test
@@ -57,12 +62,14 @@ public class ExpansionCategoryFormatterTest extends InjectionTestCase{
         preferencesInteractor.edit().putBoolean(PreferencesInteractor.USE_CELSIUS, true)
                              .commit();
 
-        assertEquals("set at 0°" , expansionCategoryFormatter.getFormattedAttributionValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 32), getContext()));
+        assertEquals("set at 0°" , expansionCategoryFormatter.getFormattedAttributionValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 0), getContext()));
+
+        assertEquals("set at 0° - 32°" , expansionCategoryFormatter.getFormattedAttributionValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 32), getContext()));
 
         preferencesInteractor.edit().putBoolean(PreferencesInteractor.USE_CELSIUS, false)
                              .commit();
 
-        assertEquals("set at 32°" , expansionCategoryFormatter.getFormattedAttributionValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 100), getContext()));
+        assertEquals("set at 32° - 89°" , expansionCategoryFormatter.getFormattedAttributionValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 32), getContext()));
     }
 
     @Test

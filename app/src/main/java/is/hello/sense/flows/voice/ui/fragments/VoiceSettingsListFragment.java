@@ -35,6 +35,7 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
 
     public static final int RESULT_VOLUME_SELECTED = 99;
     private static final int RESULT_HELP_PRESSED = 103;
+    private static final int RESULT_CANCEL_FLOW = 104;
     private Subscription updateSettingsSubscription = Subscriptions.empty();
 
     @Override
@@ -58,11 +59,11 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
         showProgress(true);
         bindAndSubscribe(currentSenseInteractor.senseDevice,
                          this::bindSenseDevice,
-                         this::presentError);
+                         this::presentSettingsUnavailable);
 
         bindAndSubscribe(settingsInteractor.settingsSubject,
                          this::bindSettings,
-                         this::presentError);
+                         this::presentSettingsUnavailable);
 
         currentSenseInteractor.update();
     }
@@ -74,6 +75,8 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RESULT_HELP_PRESSED && resultCode == RESULT_HELP_PRESSED) {
             UserSupport.showUserGuide(getActivity());
+        } else if(requestCode == RESULT_CANCEL_FLOW){
+            cancelFlow();
         }
     }
 
@@ -120,7 +123,7 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     }
 
     private void updateSettings(@NonNull final Observable<SenseVoiceSettings> updateObservable) {
-        showBlockingActivity(R.string.voice_settings_progress_updating); //todo use real copy
+        showBlockingActivity(R.string.voice_settings_progress_updating);
         updateSettingsSubscription.unsubscribe();
         updateSettingsSubscription = bind(updateObservable)
                 .subscribe(Functions.NO_OP,
@@ -145,6 +148,13 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
         } else {
             showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e));
         }
+    }
+
+    private void presentSettingsUnavailable(@NonNull final Throwable e) {
+        hideBlockingActivity(false, null);
+        presenterView.setVisibility(View.INVISIBLE);
+        showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e),
+                        RESULT_CANCEL_FLOW);
     }
 
     private void redirectToVolumeSelection(final View ignore) {

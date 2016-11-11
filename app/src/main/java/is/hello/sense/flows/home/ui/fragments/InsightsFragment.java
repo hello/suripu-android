@@ -99,7 +99,6 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     public final void initializePresenterView() {
         if (presenterView == null) {
             presenterView = new InsightsView(getActivity(), dateFormatter, picasso, this);
-            update();
         }
     }
 

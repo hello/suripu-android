@@ -135,13 +135,13 @@ public class PairSenseFragment extends BasePresenterFragment
     public void presentHighPowerErrorDialog(final int requestCode) {
         final PromptForHighPowerDialogFragment dialogFragment = new PromptForHighPowerDialogFragment();
         dialogFragment.setTargetFragment(this, requestCode);
-        dialogFragment.show(getFragmentManager(), PromptForHighPowerDialogFragment.TAG);
+        dialogFragment.showAllowingStateLoss(getFragmentManager(), PromptForHighPowerDialogFragment.TAG);
     }
 
     @Override
     public void presentTroubleShootingDialog() {
         final TroubleshootSenseDialogFragment dialogFragment = new TroubleshootSenseDialogFragment();
-        dialogFragment.show(getFragmentManager(), TroubleshootSenseDialogFragment.TAG);
+        dialogFragment.showAllowingStateLoss(getFragmentManager(), TroubleshootSenseDialogFragment.TAG);
     }
 
     @Override

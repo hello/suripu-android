@@ -16,6 +16,7 @@ public enum State implements Enums.FromString {
     CONNECTED_OFF(R.string.expansions_state_connected_off),
     REVOKED(R.string.expansions_state_revoked),
     NOT_CONFIGURED(R.string.expansions_state_not_configured),
+    NOT_AVAILABLE(R.string.expansions_state_not_available),
     UNKNOWN(R.string.expansions_state_unknown);
 
     @StringRes

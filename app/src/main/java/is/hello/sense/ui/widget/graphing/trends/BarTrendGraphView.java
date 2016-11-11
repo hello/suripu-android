@@ -35,7 +35,10 @@ import is.hello.sense.ui.widget.util.Styles;
  */
 public class BarTrendGraphView extends TrendGraphView {
 
-    public BarTrendGraphView(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext, @NonNull AnimationCallback animationCallback) {
+    public BarTrendGraphView(@NonNull final Context context,
+                             @NonNull final Graph graph,
+                             @NonNull final AnimatorContext animatorContext,
+                             @NonNull final AnimationCallback animationCallback) {
         super(context, animatorContext,animationCallback);
         this.drawable = new BarGraphDrawable(context, graph, animatorContext);
         setBackground(drawable);
@@ -103,7 +106,9 @@ public class BarTrendGraphView extends TrendGraphView {
         private final Paint bottomLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
 
-        public BarGraphDrawable(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
+        public BarGraphDrawable(@NonNull final Context context,
+                                @NonNull final Graph graph,
+                                @NonNull final AnimatorContext animatorContext) {
             super(context, graph, animatorContext);
 
             Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.AppTheme_Text_Trends_BarGraph);

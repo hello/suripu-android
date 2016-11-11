@@ -30,6 +30,7 @@ public class ConfigSelectionView extends PresenterView{
         this.recyclerView.setHasFixedSize(true);
         this.recyclerView.setLayoutManager(new LinearLayoutManager(context));
         this.recyclerView.addItemDecoration(new DividerItemDecoration(context));
+        this.recyclerView.setOverScrollMode(OVER_SCROLL_NEVER);
         this.recyclerView.setAdapter(adapter);
     }
 
@@ -54,5 +55,13 @@ public class ConfigSelectionView extends PresenterView{
 
     public void setDoneButtonClickListener(@NonNull final OnClickListener listener) {
         Views.setSafeOnClickListener(this.button, listener);
+    }
+
+    public CharSequence getTitleText(){
+        return this.titleTextView.getText();
+    }
+
+    public CharSequence getSubtitleText(){
+        return this.subtitleTextView.getText();
     }
 }

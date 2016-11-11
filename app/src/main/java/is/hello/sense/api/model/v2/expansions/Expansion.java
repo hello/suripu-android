@@ -21,8 +21,17 @@ public class Expansion extends ApiResponse {
     @SerializedName("device_name")
     private String deviceName;
 
+    /**
+     * Used for server-side configurations
+     */
     @SerializedName("service_name")
     private String serviceName;
+
+    /**
+     * Used for displaying to users in UI
+     */
+    @SerializedName("company_name")
+    private String companyName;
 
     @SerializedName("icon")
     private MultiDensityImage icon;
@@ -46,6 +55,7 @@ public class Expansion extends ApiResponse {
                       @NonNull final Category category,
                       @NonNull final String deviceName,
                       @NonNull final String serviceName,
+                      @NonNull final String companyName,
                       @NonNull final MultiDensityImage icon,
                       @NonNull final String authUri,
                       @NonNull final String completionUri,
@@ -55,6 +65,7 @@ public class Expansion extends ApiResponse {
         this.category = category;
         this.deviceName = deviceName;
         this.serviceName = serviceName;
+        this.companyName = companyName;
         this.icon = icon;
         this.authUri = authUri;
         this.completionUri = completionUri;
@@ -76,6 +87,10 @@ public class Expansion extends ApiResponse {
 
     public String getServiceName() {
         return serviceName;
+    }
+
+    public String getCompanyName() {
+        return companyName;
     }
 
     public MultiDensityImage getIcon() {
@@ -100,6 +115,13 @@ public class Expansion extends ApiResponse {
 
     public boolean isConnected() {
         return State.CONNECTED_ON.equals(state);
+    }
+
+    /**
+     * @return if expansion is allowed by server to be integrated
+     */
+    public boolean isAvailable() {
+        return !State.NOT_AVAILABLE.equals(state);
     }
 
     public boolean requiresConfiguration() {
@@ -132,6 +154,7 @@ public class Expansion extends ApiResponse {
                 ", category=" + category +
                 ", deviceName=" + deviceName +
                 ", serviceName=" + serviceName +
+                ", companyName=" + companyName +
                 ", iconRes=" + icon +
                 ", authUri=" + authUri +
                 ", completionUri=" + completionUri +
@@ -146,6 +169,7 @@ public class Expansion extends ApiResponse {
         return new Expansion(1,
                              Category.TEMPERATURE,
                              "Nest Thermostat",
+                             "NEST",
                              "Nest",
                              new MultiDensityImage(),
                              "invalid uri",
@@ -158,6 +182,7 @@ public class Expansion extends ApiResponse {
         return new Expansion(2,
                              Category.LIGHT,
                              "Hue Light",
+                             "HUE",
                              "Hue",
                              new MultiDensityImage(),
                              "invalid uri",
@@ -171,10 +196,12 @@ public class Expansion extends ApiResponse {
                              Category.UNKNOWN,
                              "Invalid name",
                              "Invalid service name",
+                             "Invalid company name",
                              new MultiDensityImage(),
                              "invalid uri",
                              "invalid uri",
                              "description",
                              State.UNKNOWN);
     }
+
 }

@@ -28,10 +28,22 @@ public class ExpansionCategoryFormatter {
 
         final UnitConverter unitConverter = getUnitConverter(category);
 
-        return context.getString(R.string.smart_alarm_expansion_same_value_format,
-                                 unitConverter.convert((float) valueRange.min)
-                                              .intValue(),
-                                 suffix);
+        switch (category){
+            case TEMPERATURE:
+                if (!valueRange.hasSameValues()) {
+                    return context.getString(R.string.smart_alarm_expansion_range_value_format,
+                                             unitConverter.convert(valueRange.min)
+                                                          .intValue(), suffix,
+                                             unitConverter.convert(valueRange.max)
+                                                          .intValue(), suffix);
+                }
+            case LIGHT:
+            default:
+                return context.getString(R.string.smart_alarm_expansion_same_value_format,
+                                         unitConverter.convert(valueRange.min)
+                                                      .intValue(),
+                                         suffix);
+        }
     }
 
     public UnitConverter getUnitConverter(@NonNull final Category category) {
@@ -84,11 +96,17 @@ public class ExpansionCategoryFormatter {
         }
     }
 
+    /**
+     * @return display string resource that will be used primarily in
+     * {@link is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment}
+     */
     @StringRes
     public int getDisplayValueResFromState(@NonNull final State expansionState) {
         switch (expansionState) {
             case CONNECTED_ON:
                 return R.string.smart_alarm_expansion_state_connected_on;
+            case NOT_AVAILABLE:
+                return R.string.expansions_state_not_available; //used in expansions as well
             default:
                 return R.string.smart_alarm_expansion_state_connected_off;
 

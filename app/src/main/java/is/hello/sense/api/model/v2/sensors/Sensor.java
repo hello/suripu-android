@@ -55,7 +55,7 @@ public class Sensor extends ApiResponse {
                   @NonNull final String message,
                   @NonNull final Condition condition,
                   @Nullable final Float value,
-                  @NonNull final List<Scale> scales){
+                  @NonNull final List<Scale> scales) {
         this.name = name;
         this.type = type;
         this.unit = unit;
@@ -119,6 +119,10 @@ public class Sensor extends ApiResponse {
     public boolean hasBetterConditionThan(@NonNull final Sensor sensor) {
         // ide complains about simplifying. Basically if a sensor's condition is not available, treat the other sensor as better condition.
         return condition == null || sensor.condition != null && condition.value > sensor.getCondition().value;
+    }
+
+    public boolean isCalibrating() {
+        return Condition.CALIBRATING.equals(condition);
     }
 
     @Override

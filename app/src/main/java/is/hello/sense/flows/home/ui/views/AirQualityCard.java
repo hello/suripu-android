@@ -6,6 +6,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -54,14 +55,22 @@ public class AirQualityCard extends LinearLayout {
         for (final Sensor sensor : sensors) {
             inflate(getContext(), R.layout.item_chevron_row, this);
             final View row = getChildAt(getChildCount() - 1);
+            final TextView value = (TextView) row.findViewById(R.id.item_chevron_view_value);
             ((TextView) row.findViewById(R.id.item_chevron_view_name)).setText(sensor.getName());
-            if (unitFormatter == null) {
-                ((TextView) row.findViewById(R.id.item_chevron_view_value)).setText(formatValue(sensor.getValue(), Constants.EMPTY_STRING));
+            if (sensor.isCalibrating()) {
+                row.findViewById(R.id.item_chevron_view_circle).setVisibility(GONE);
+                value.setText(R.string.sensor_calibrating);
+                ((RelativeLayout.LayoutParams) value.getLayoutParams())
+                        .addRule(RelativeLayout.ALIGN_PARENT_RIGHT,
+                                 RelativeLayout.TRUE);
+            } else if (unitFormatter == null) {
+                value.setText(formatValue(sensor.getValue(), Constants.EMPTY_STRING));
             } else {
-                ((TextView) row.findViewById(R.id.item_chevron_view_value)).setText(unitFormatter.createUnitBuilder(sensor)
-                                                                                                 .build());
+                value.setText(unitFormatter.createUnitBuilder(sensor)
+                                           .build());
             }
-            ((TextView) row.findViewById(R.id.item_chevron_view_value)).setTextColor(ContextCompat.getColor(getContext(), sensor.getColor()));
+
+            value.setTextColor(ContextCompat.getColor(getContext(), sensor.getColor()));
             row.setOnClickListener(v -> {
                 if (onRowClickListener != null) {
                     onRowClickListener.onClick(sensor);

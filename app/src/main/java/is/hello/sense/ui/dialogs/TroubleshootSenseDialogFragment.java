@@ -1,14 +1,14 @@
 package is.hello.sense.ui.dialogs;
 
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.os.Bundle;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 
-public class TroubleshootSenseDialogFragment extends DialogFragment {
+public class TroubleshootSenseDialogFragment extends SenseDialogFragment {
     public static final String TAG = TroubleshootSenseDialogFragment.class.getSimpleName();
 
     @Override

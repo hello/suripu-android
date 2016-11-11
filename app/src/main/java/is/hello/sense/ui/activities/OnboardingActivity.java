@@ -2,7 +2,6 @@ package is.hello.sense.ui.activities;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
@@ -385,7 +384,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
                 .putInt(PreferencesInteractor.LAST_ONBOARDING_CHECK_POINT, checkPoint)
                 .apply();
 
-        getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        navigationDelegate.clearBackStackAllowingStateLoss();
     }
 
     public void showIntroductionFragment() {

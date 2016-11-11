@@ -32,7 +32,10 @@ import is.hello.sense.ui.widget.util.Styles;
 @SuppressLint("ViewConstructor")
 public class BubbleTrendGraphView extends TrendGraphView {
 
-    public BubbleTrendGraphView(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext, @NonNull AnimationCallback animationCallback) {
+    public BubbleTrendGraphView(@NonNull final Context context,
+                                @NonNull final Graph graph,
+                                @NonNull final AnimatorContext animatorContext,
+                                @NonNull final AnimationCallback animationCallback) {
         super(context, animatorContext, animationCallback);
         this.drawable = new BubbleGraphDrawable(context, graph, animatorContext);
         setBackground(drawable);
@@ -83,10 +86,12 @@ public class BubbleTrendGraphView extends TrendGraphView {
         private final TextPaint textValuePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         private final TextPaint textPercentPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 
-        private Rect textValueRect = new Rect();
-        private Rect textTitleRect = new Rect();
+        private final Rect textValueRect = new Rect();
+        private final Rect textTitleRect = new Rect();
 
-        public BubbleGraphDrawable(@NonNull Context context, @NonNull Graph graph, @NonNull AnimatorContext animatorContext) {
+        public BubbleGraphDrawable(@NonNull final Context context,
+                                   @NonNull final Graph graph,
+                                   @NonNull final AnimatorContext animatorContext) {
             super(context, graph, animatorContext);
 
             this.minBubbleHeight = resources.getDimensionPixelSize(R.dimen.trends_bubblegraph_min_height);
@@ -106,7 +111,7 @@ public class BubbleTrendGraphView extends TrendGraphView {
         }
 
         @Override
-        protected void onBoundsChange(Rect bounds) {
+        protected void onBoundsChange(final Rect bounds) {
             super.onBoundsChange(bounds);
             canvasWidth = bounds.width();
             midY = bounds.height() / 2;
@@ -114,8 +119,8 @@ public class BubbleTrendGraphView extends TrendGraphView {
         }
 
         @Override
-        public void draw(Canvas canvas) {
-            for (BubbleController.Bubble bubble : currentBubbleController.getDrawOrder()) {
+        public void draw(@NonNull final Canvas canvas) {
+            for (final BubbleController.Bubble bubble : currentBubbleController.getDrawOrder()) {
                 final String textValue = bubble.getTextValue();
                 bubble.getTextValuePaint().getTextBounds(textValue, 0, textValue.length(), textValueRect);
                 textTitlePaint.getTextBounds(bubble.textTitle, 0, bubble.textTitle.length(), textTitleRect);
@@ -150,7 +155,7 @@ public class BubbleTrendGraphView extends TrendGraphView {
         }
 
         @Override
-        public void updateGraph(@NonNull Graph graph) {
+        public void updateGraph(@NonNull final Graph graph) {
             isAnimating = true;
             if (graph.getTimeScale() == this.graph.getTimeScale()) {
                 BubbleGraphDrawable.this.graph = graph;
@@ -169,7 +174,7 @@ public class BubbleTrendGraphView extends TrendGraphView {
             currentBubbleController.get(CENTER_BUBBLE).setTargetBubble(animateTo.get(CENTER_BUBBLE));
             currentBubbleController.get(RIGHT_BUBBLE).setTargetBubble(animateTo.get(RIGHT_BUBBLE));
 
-            ValueAnimator animator = ValueAnimator.ofFloat(minAnimationFactor, maxAnimationFactor);
+            final ValueAnimator animator = ValueAnimator.ofFloat(minAnimationFactor, maxAnimationFactor);
             animator.setDuration(Anime.DURATION_NORMAL);
             animator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
             animator.addUpdateListener(a -> {
@@ -178,7 +183,7 @@ public class BubbleTrendGraphView extends TrendGraphView {
             });
             animator.addListener(new AnimatorListenerAdapter() {
                 @Override
-                public void onAnimationEnd(Animator animation) {
+                public void onAnimationEnd(final Animator animation) {
                     BubbleGraphDrawable.this.graph = graph;
                     currentBubbleController = animateTo;
                     finishedAnimating();
@@ -189,8 +194,8 @@ public class BubbleTrendGraphView extends TrendGraphView {
 
         }
 
-        private BubbleController createBubbleController(@NonNull Graph graph) {
-            BubbleController bubbleController = new BubbleController();
+        private BubbleController createBubbleController(@NonNull final Graph graph) {
+            final BubbleController bubbleController = new BubbleController();
             final List<Float> values = graph.getSections().get(0).getValues();
             final List<String> titles = graph.getSections().get(0).getTitles();
 
@@ -210,13 +215,13 @@ public class BubbleTrendGraphView extends TrendGraphView {
         private class BubbleController extends ArrayList<BubbleController.Bubble> {
 
             public void setBubblePositions() {
-                Bubble leftBubble = get(LEFT_BUBBLE);
-                Bubble centerBubble = get(CENTER_BUBBLE);
-                Bubble rightBubble = get(RIGHT_BUBBLE);
+                final Bubble leftBubble = get(LEFT_BUBBLE);
+                final Bubble centerBubble = get(CENTER_BUBBLE);
+                final Bubble rightBubble = get(RIGHT_BUBBLE);
 
                 // Determine if the bubbles take up more space than the screen provides.
-                float bubbleWidth = leftBubble.radius * 2 + centerBubble.radius * 2 + rightBubble.radius * 2;
-                float overflow = bubbleWidth - canvasWidth;
+                final float bubbleWidth = leftBubble.radius * 2 + centerBubble.radius * 2 + rightBubble.radius * 2;
+                final float overflow = bubbleWidth - canvasWidth;
 
                 // Put middle bubble directly in center of the screen.
                 centerBubble.midX = canvasWidth / 2;
@@ -251,14 +256,14 @@ public class BubbleTrendGraphView extends TrendGraphView {
             }
 
             private void offsetPositions(float x) {
-                for (Bubble bubble : this) {
+                for (final Bubble bubble : this) {
                     bubble.midX += x;
                 }
             }
 
 
             public List<Bubble> getDrawOrder() {
-                ArrayList<Bubble> bubbles = new ArrayList<>();
+                final ArrayList<Bubble> bubbles = new ArrayList<>();
                 bubbles.add(get(LEFT_BUBBLE));
                 bubbles.add(get(RIGHT_BUBBLE));
                 bubbles.add(get(CENTER_BUBBLE));

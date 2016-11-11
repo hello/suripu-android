@@ -4,14 +4,12 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.view.View;
 
-
 import javax.inject.Inject;
 
 import is.hello.sense.flows.home.ui.views.HomeView;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.HasVoiceInteractor;
 import is.hello.sense.ui.widget.SelectorView;
-import rx.subscriptions.Subscriptions;
 
 public class HomeFragment extends BacksideTabFragment<HomeView>
         implements SelectorView.OnSelectionChangedListener {

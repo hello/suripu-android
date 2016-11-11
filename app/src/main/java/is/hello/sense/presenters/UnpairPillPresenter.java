@@ -2,23 +2,21 @@ package is.hello.sense.presenters;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
-
-import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.interactors.DevicesInteractor;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.presenters.outputs.BaseOutput;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 
-public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Output> {
+public class UnpairPillPresenter extends BaseHardwarePresenter<UnpairPillPresenter.Output> {
     private final static int ONE_SECOND_DELAY = 1000;
     /**
      * When we bindAndSubscribe to devicesInteractor.devices during onViewCreated the value from
@@ -27,11 +25,17 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
      */
     private boolean handlePrimaryClick = false;
 
-    @Inject
-    DevicesInteractor devicesInteractor;
+    private DevicesInteractor devicesInteractor;
+
+    public UnpairPillPresenter(@NonNull final HardwareInteractor hardwareInteractor,
+                               @NonNull final DevicesInteractor devicesInteractor) {
+        super(hardwareInteractor);
+        this.devicesInteractor = devicesInteractor;
+    }
 
     @Override
     public void onDetach() {
+        super.onDetach();
         devicesInteractor = null;
     }
 
@@ -44,7 +48,6 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
 
 
     private void bindDevices(@NonNull final Devices devices) {
-        Log.e(getClass().getSimpleName(), "bindDevices: " + (devices.toString()));
         if (!handlePrimaryClick) {
             return;
         }
@@ -91,7 +94,10 @@ public class UnpairPillPresenter extends BasePresenter<UnpairPillPresenter.Outpu
             onPrimaryClick(clickedView);
         });
         dialog.setNegativeButton(R.string.action_dont_pair, (dialogInterface, i) -> {
-            execute(view::cancelFlow);
+            execute(() -> {
+                hardwareInteractor.reset();
+                view.cancelFlow();
+            });
         });
         dialog.show();
     }
