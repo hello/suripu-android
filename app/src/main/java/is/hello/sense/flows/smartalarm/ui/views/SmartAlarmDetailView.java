@@ -18,6 +18,7 @@ import is.hello.sense.R;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Drawing;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 
 @SuppressLint("ViewConstructor")
@@ -89,7 +90,6 @@ public class SmartAlarmDetailView extends PresenterView {
         Views.setSafeOnClickListener(timeContainer, timeClickListener);
         Views.setSafeOnClickListener(soundRow, toneClickListener);
         Views.setSafeOnClickListener(repeatRow, repeatClickListener);
-        showExpansionsContainer(false);
     }
     //region PresenterView
 
@@ -138,19 +138,50 @@ public class SmartAlarmDetailView extends PresenterView {
         this.repeatDaysTextView.setText(repeatDays);
     }
 
-    /**
-     * @param hasVoice true if voice is enabled
-     */
-    private void showExpansionsContainer(final boolean hasVoice) {
-        if (hasVoice) {
-            expansionsContainer.setVisibility(View.VISIBLE);
-        } else {
-            expansionsContainer.setVisibility(View.GONE);
-        }
+    public void showExpansionsContainer() {
+        expansionsContainer.setVisibility(View.VISIBLE);
     }
 
-    public void setTime(@NonNull final String time) {
+    public void setTime(@NonNull final CharSequence time) {
         timeTextView.setText(time);
     }
+
+    public void setLightExpansion(final boolean isEnabled,
+                                  @NonNull final String value,
+                                  @NonNull final OnClickListener containerClickListener) {
+        this.lightExpansionError.setVisibility(GONE);
+        this.lightExpansionProgress.setVisibility(View.GONE);
+        this.lightExpansionValue.setVisibility(View.VISIBLE);
+        this.lightExpansionIcon.setImageAlpha(Styles.getImageViewAlpha(isEnabled));
+        this.lightExpansionLabel.setEnabled(isEnabled);
+        this.lightExpansionValue.setEnabled(isEnabled);
+        this.lightExpansionContainer.setEnabled(isEnabled);
+        this.lightExpansionValue.setCompoundDrawablesWithIntrinsicBounds(0,
+                                                                         0,
+                                                                         isEnabled ? R.drawable.disclosure_chevron_small : 0,
+                                                                         0);
+        this.lightExpansionValue.setText(value);
+        Views.setSafeOnClickListener(this.lightExpansionContainer, containerClickListener);
+    }
+
+    public void setThermoExpansion(final boolean isEnabled,
+                                   @NonNull final String value,
+                                   @NonNull final OnClickListener containerClickListener) {
+        this.thermoExpansionError.setVisibility(GONE);
+        this.thermoExpansionProgress.setVisibility(View.GONE);
+        this.thermoExpansionValue.setVisibility(View.VISIBLE);
+        this.thermoExpansionIcon.setImageAlpha(Styles.getImageViewAlpha(isEnabled));
+        this.thermoExpansionLabel.setEnabled(isEnabled);
+        this.thermoExpansionValue.setEnabled(isEnabled);
+        this.thermoExpansionContainer.setEnabled(isEnabled);
+        this.thermoExpansionValue.setCompoundDrawablesWithIntrinsicBounds(0,
+                                                                          0,
+                                                                          isEnabled ? R.drawable.disclosure_chevron_small : 0,
+                                                                          0);
+        this.thermoExpansionValue.setText(value);
+        Views.setSafeOnClickListener(this.thermoExpansionContainer, containerClickListener);
+    }
+
+
     //endregion
 }

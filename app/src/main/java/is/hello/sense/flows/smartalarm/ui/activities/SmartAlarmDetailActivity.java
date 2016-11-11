@@ -38,10 +38,8 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
         implements FragmentNavigation {
 
     //region static fields & functions
-    public static final String EXTRA_ALARM = SmartAlarmDetailActivity.class.getName() + ".ARG_ALARM";
-    public static final String EXTRA_INDEX = SmartAlarmDetailActivity.class.getName() + ".ARG_INDEX";
-    private static final String KEY_INDEX = SmartAlarmDetailActivity.class.getName() + ".KEY_INDEX";
-    private static final String KEY_SKIP = SmartAlarmDetailActivity.class.getName() + ".KEY_SKIP";
+    public static final String EXTRA_ALARM = SmartAlarmDetailActivity.class.getName() + ".EXTRA_ALARM";
+    public static final String EXTRA_INDEX = SmartAlarmDetailActivity.class.getName() + ".EXTRA_INDEX";
 
     public static void startActivity(@NonNull final Context context,
                                      @NonNull final Alarm alarm,
@@ -57,26 +55,17 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
     @Inject
     ApiSessionManager sessionManager;
     private FragmentNavigationDelegate navigationDelegate;
-    private Alarm alarm;
-    private int index;
-    private boolean skipUI = false;
-    private SmartAlarmDetailFragment detailFragment;
     //endregion
 
     //region ScopedInjectionActivity
     @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putSerializable(SmartAlarmDetailActivity.EXTRA_ALARM, alarm);
-        outState.putInt(KEY_INDEX, index);
-        outState.putBoolean(KEY_SKIP, skipUI);
-    }
-
-    @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
+        //noinspection ConstantConditions
+        getActionBar().setHomeAsUpIndicator(R.drawable.app_style_ab_cancel);
+        getActionBar().setHomeActionContentDescription(android.R.string.cancel);
+        getActionBar().setTitle(R.string.title_alarm);
         this.navigationDelegate = new FragmentNavigationDelegate(this,
                                                                  R.id.activity_navigation_container,
                                                                  stateSafeExecutor);
@@ -87,26 +76,14 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
                                           "ACTION_SET_ALARM");
                 Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
                 processSetAlarmIntent();
-            } else {
-                this.alarm = (Alarm) getIntent().getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
-                this.index = getIntent().getIntExtra(SmartAlarmDetailActivity.EXTRA_INDEX, Constants.NONE);
+                return;
             }
         } else {
             this.navigationDelegate.onRestoreInstanceState(savedInstanceState);
-            this.alarm = (Alarm) savedInstanceState.getSerializable(SmartAlarmDetailActivity.EXTRA_ALARM);
-            this.index = savedInstanceState.getInt(KEY_INDEX, Constants.NONE);
-            this.skipUI = savedInstanceState.getBoolean(KEY_SKIP, false);
         }
-
-        if (this.alarm == null) {
-            this.alarm = new Alarm();
-        }
-
-        //noinspection ConstantConditions
-        getActionBar().setHomeAsUpIndicator(R.drawable.app_style_ab_cancel);
-        getActionBar().setHomeActionContentDescription(android.R.string.cancel);
-        getActionBar().setTitle(R.string.title_alarm);
-        showSmartAlarmDetailFragment();
+        final Alarm alarm = (Alarm) getIntent().getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
+        final int index = getIntent().getIntExtra(SmartAlarmDetailActivity.EXTRA_INDEX, Constants.NONE);
+        showSmartAlarmDetailFragment(alarm, index, false);
     }
 
     @Override
@@ -171,22 +148,10 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
     //endregion
 
     //region methods
-
-    @NonNull
-    public Alarm getAlarm() {
-        return alarm;
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public boolean skipUI() {
-        return skipUI;
-    }
-
-    private void showSmartAlarmDetailFragment() {
-        navigationDelegate.pushFragment(new SmartAlarmDetailFragment(), null, false);
+    private void showSmartAlarmDetailFragment(@NonNull final Alarm alarm,
+                                              final int index,
+                                              final boolean skipUI) {
+        navigationDelegate.pushFragment(SmartAlarmDetailFragment.newInstance(alarm, index, skipUI), null, false);
     }
 
     private void processSetAlarmIntent() {
@@ -195,7 +160,7 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
         final int minute = intent.getIntExtra(AlarmClock.EXTRA_MINUTES, 30);
         final List<Integer> calendarDays = intent.getIntegerArrayListExtra(AlarmClock.EXTRA_DAYS);
 
-        this.alarm = new Alarm();
+        final Alarm alarm = new Alarm();
         alarm.setTime(new LocalTime(hour, minute));
         if (!Lists.isEmpty(calendarDays)) {
             final Set<Integer> days = alarm.getDaysOfWeek();
@@ -204,10 +169,11 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
             }
         }
 
-        this.index = Constants.NONE;
-        this.skipUI = (intent.getBooleanExtra(AlarmClock.EXTRA_SKIP_UI, false) &&
+        final int index = Constants.NONE;
+        final boolean skipUI = (intent.getBooleanExtra(AlarmClock.EXTRA_SKIP_UI, false) &&
                 intent.hasExtra(AlarmClock.EXTRA_HOUR) &&
                 intent.hasExtra(AlarmClock.EXTRA_MINUTES));
+        showSmartAlarmDetailFragment(alarm, index, skipUI);
     }
 
     private void bounce() {
