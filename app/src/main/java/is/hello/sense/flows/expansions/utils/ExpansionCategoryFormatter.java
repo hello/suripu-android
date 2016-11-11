@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.support.annotation.XmlRes;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Category;
@@ -111,30 +110,6 @@ public class ExpansionCategoryFormatter {
             default:
                 return R.string.smart_alarm_expansion_state_connected_off;
 
-        }
-    }
-
-    @XmlRes
-    public int getExpansionInfoDialogXmlRes(@NonNull final Category category) {
-        switch (category){
-            case LIGHT:
-                return R.xml.welcome_dialog_expansions_settings_light;
-            case TEMPERATURE:
-                return R.xml.welcome_dialog_expansions_settings_thermostat;
-            default:
-                return R.xml.welcome_dialog_expansions;
-        }
-    }
-
-    @XmlRes
-    public int getExpansionAlarmInfoDialogXmlRes(@NonNull final Category category) {
-        switch (category){
-            case LIGHT:
-                return R.xml.welcome_dialog_expansions_alarm_light;
-            case TEMPERATURE:
-                return R.xml.welcome_dialog_expansions_alarm_thermostat;
-            default:
-                return R.xml.welcome_dialog_expansions;
         }
     }
 }
