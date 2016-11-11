@@ -1,6 +1,8 @@
 package is.hello.sense.flows.smartalarm.ui.fragments;
 
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -18,6 +21,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
+import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.api.model.v2.expansions.State;
@@ -165,9 +169,81 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         this.smartAlarmInteractor.update();
         this.hasVoiceInteractor.update();
     }
+
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != Activity.RESULT_OK) {
+            if (requestCode == EXPANSION_VALUE_REQUEST_CODE) {
+                this.expansionsInteractor.update();
+            }
+            return;
+        }
+
+        if (data == null) {
+            return;
+        }
+
+        if (requestCode == TIME_REQUEST_CODE) {
+            final int hour = data.getIntExtra(TimePickerDialogFragment.RESULT_HOUR, 7);
+            final int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, 30);
+            this.alarm.setTime(new LocalTime(hour, minute));
+            updateUIForAlarm();
+
+            markDirty();
+        } else if (requestCode == SOUND_REQUEST_CODE) {
+            final int soundId = data.getIntExtra(ListActivity.VALUE_ID, -1);
+            if (soundId != -1) {
+                final Alarm.Sound selectedSound = alarm.getAlarmSoundWithId(soundId);
+                if (selectedSound != null) {
+                    this.alarm.setSound(selectedSound);
+                    this.presenterView.setTone(selectedSound.name);
+                }
+            }
+            markDirty();
+        } else if (requestCode == REPEAT_REQUEST_CODE) {
+            final List<Integer> selectedDays = data.getIntegerArrayListExtra(ListActivity.VALUE_ID);
+            this.alarm.setDaysOfWeek(selectedDays);
+            this.presenterView.setRepeatDaysTextView(alarm.getRepeatSummary(getActivity(), false));
+            markDirty();
+        } else if (requestCode == EXPANSION_VALUE_REQUEST_CODE) {
+            final ExpansionAlarm expansionAlarm = (ExpansionAlarm) data.getSerializableExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM);
+            final ExpansionAlarm savedExpansionAlarm = alarm.getExpansionAlarm(expansionAlarm.getCategory());
+            if (savedExpansionAlarm != null) {
+                savedExpansionAlarm.setExpansionRange(expansionAlarm.getExpansionRange().max);
+                savedExpansionAlarm.setEnabled(expansionAlarm.isEnabled());
+                final Expansion expansion = getExpansion(savedExpansionAlarm.getCategory());
+                if (expansion != null) {
+                    updateExpansion(expansion);
+                }
+            } else {
+                this.alarm.getExpansions().add(expansionAlarm);
+                final Expansion expansion = getExpansion(expansionAlarm.getCategory());
+                if (expansion != null) {
+                    updateExpansion(expansion);
+                }
+
+            }
+            this.expansionsInteractor.update();
+            markDirty();
+        }
+    }
     //endregion
 
     //region methods
+    private Expansion getExpansion(final Category category) {
+        if (!expansionsInteractor.expansions.hasValue()) {
+            return null;
+        }
+        final List<Expansion> expansions = expansionsInteractor.expansions.getValue();
+        for (final Expansion expansion : expansions) {
+            if (expansion.getCategory() == category) {
+                return expansion;
+            }
+        }
+        return null;
+    }
+
     private void updateUIForAlarm() {
         final CharSequence formattedTime = this.dateFormatter.formatAsAlarmTime(this.alarm.getTime(),
                                                                                 this.use24Time);
