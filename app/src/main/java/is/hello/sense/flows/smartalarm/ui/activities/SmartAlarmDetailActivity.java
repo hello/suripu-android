@@ -1,5 +1,6 @@
 package is.hello.sense.flows.smartalarm.ui.activities;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -112,7 +113,9 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
             onBackPressed();
             return true;
         } else if (item.getItemId() == R.id.item_save) {
-            //   detailFragment.saveAlarm();
+            if (getTopFragment() instanceof SmartAlarmDetailFragment) {
+                getTopFragment().onOptionsItemSelected(item);
+            }
             return true;
         }
         return super.onMenuItemSelected(featureId, item);
@@ -137,7 +140,13 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
 
     @Override
     public final void flowFinished(@NonNull final Fragment fragment, final int responseCode, @Nullable final Intent result) {
-
+        if (responseCode == Activity.RESULT_CANCELED) {
+            if (fragment instanceof SmartAlarmDetailFragment) {
+                finish();
+                return;
+            }
+            popFragment(fragment, false);
+        }
     }
 
     @Nullable

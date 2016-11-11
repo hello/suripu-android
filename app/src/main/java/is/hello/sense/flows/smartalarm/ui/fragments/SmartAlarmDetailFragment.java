@@ -2,11 +2,13 @@ package is.hello.sense.flows.smartalarm.ui.fragments;
 
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 
@@ -19,8 +21,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
@@ -36,6 +40,8 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.activities.ListActivity;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -130,7 +136,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
             this.skipUI = args.getBoolean(ARG_SKIP, false);
             this.alarm = (Alarm) args.getSerializable(ARG_ALARM);
             this.index = args.getInt(ARG_INDEX);
-            this.dirty = (index == Constants.NONE);
+            this.dirty = (this.index == Constants.NONE);
         }
         addInteractor(this.smartAlarmInteractor);
         addInteractor(this.hasVoiceInteractor);
@@ -171,6 +177,17 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (this.skipUI) {
+            LoadingDialogFragment.show(getFragmentManager(),
+                                       null, LoadingDialogFragment.DEFAULTS);
+        } else {
+            WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_alarm, false);
+        }
+    }
+
+    @Override
     public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) {
@@ -189,7 +206,6 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
             final int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, 30);
             this.alarm.setTime(new LocalTime(hour, minute));
             updateUIForAlarm();
-
             markDirty();
         } else if (requestCode == SOUND_REQUEST_CODE) {
             final int soundId = data.getIntExtra(ListActivity.VALUE_ID, -1);
@@ -204,11 +220,11 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         } else if (requestCode == REPEAT_REQUEST_CODE) {
             final List<Integer> selectedDays = data.getIntegerArrayListExtra(ListActivity.VALUE_ID);
             this.alarm.setDaysOfWeek(selectedDays);
-            this.presenterView.setRepeatDaysTextView(alarm.getRepeatSummary(getActivity(), false));
+            this.presenterView.setRepeatDaysTextView(this.alarm.getRepeatSummary(getActivity(), false));
             markDirty();
         } else if (requestCode == EXPANSION_VALUE_REQUEST_CODE) {
             final ExpansionAlarm expansionAlarm = (ExpansionAlarm) data.getSerializableExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM);
-            final ExpansionAlarm savedExpansionAlarm = alarm.getExpansionAlarm(expansionAlarm.getCategory());
+            final ExpansionAlarm savedExpansionAlarm = this.alarm.getExpansionAlarm(expansionAlarm.getCategory());
             if (savedExpansionAlarm != null) {
                 savedExpansionAlarm.setExpansionRange(expansionAlarm.getExpansionRange().max);
                 savedExpansionAlarm.setEnabled(expansionAlarm.isEnabled());
@@ -228,14 +244,19 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
             markDirty();
         }
     }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
     //endregion
 
     //region methods
     private Expansion getExpansion(final Category category) {
-        if (!expansionsInteractor.expansions.hasValue()) {
+        if (!this.expansionsInteractor.expansions.hasValue()) {
             return null;
         }
-        final List<Expansion> expansions = expansionsInteractor.expansions.getValue();
+        final List<Expansion> expansions = this.expansionsInteractor.expansions.getValue();
         for (final Expansion expansion : expansions) {
             if (expansion.getCategory() == category) {
                 return expansion;
@@ -251,7 +272,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         this.presenterView.setSmartAlarm(this.alarm.isSmart(), this::onSmartAlarmToggled);
         this.presenterView.setRepeatDaysTextView(this.alarm.getRepeatSummary(getActivity(), false));
         if (alarm.getSound() != null && !TextUtils.isEmpty(alarm.getSound().name)) {
-            this.presenterView.setTone(alarm.getSound().name);
+            this.presenterView.setTone(this.alarm.getSound().name);
         } else {
             this.presenterView.setTone(null);
         }
@@ -263,8 +284,8 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     }
 
     private void onTimeClicked(final View ignored) {
-        final TimePickerDialogFragment picker = TimePickerDialogFragment.newInstance(alarm.getTime(),
-                                                                                     use24Time);
+        final TimePickerDialogFragment picker = TimePickerDialogFragment.newInstance(this.alarm.getTime(),
+                                                                                     this.use24Time);
         picker.setTargetFragment(this, TIME_REQUEST_CODE);
         picker.showAllowingStateLoss(getFragmentManager(), TimePickerDialogFragment.TAG);
 
@@ -306,6 +327,19 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     }
 
     private void onDeleteClicked(final View ignored) {
+        final SenseAlertDialog.Builder builder = new SenseAlertDialog.Builder();
+        builder.setMessage(R.string.dialog_message_confirm_delete_alarm);
+        builder.setPositiveButton(R.string.action_delete, () -> {
+            LoadingDialogFragment.show(getFragmentManager(),
+                                       null, LoadingDialogFragment.DEFAULTS);
+            bindAndSubscribe(smartAlarmInteractor.deleteSmartAlarm(index),
+                             ignored2 ->
+                                     cancelFlow(),
+                             this::presentError);
+        });
+        builder.setNegativeButton(android.R.string.cancel, null);
+        builder.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
+        builder.build(getActivity()).show();
 
     }
 
@@ -317,13 +351,27 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
 
     private void saveAlarm() {
 
+
+    }
+
+    public void presentError(@NonNull final Throwable e) {
+        LoadingDialogFragment.close(getFragmentManager());
+
+        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity());
+        if (e instanceof SmartAlarmInteractor.DayOverlapError) {
+            errorDialogBuilder.withMessage(StringRef.from(R.string.error_smart_alarm_day_overlap));
+        } else if (ApiException.statusEquals(e, 412)) {
+            errorDialogBuilder.withMessage(StringRef.from(getString(R.string.error_smart_alarm_requires_device)));
+        }
+        final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
+        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
     private void markDirty() {
         this.dirty = true;
     }
 
-    void bindSmartAlarmSounds(@Nullable final ArrayList<Alarm.Sound> sounds) {
+    private void bindSmartAlarmSounds(@Nullable final ArrayList<Alarm.Sound> sounds) {
         if (sounds != null && !sounds.isEmpty()) {
             this.alarm.setAlarmTones(sounds);
             if (this.alarm.getSound() == null) {
@@ -383,14 +431,12 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     }
 
     private void redirectToExpansionPicker(@NonNull final ExpansionAlarm expansionAlarm) {
-
         startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
                                                                       expansionAlarm),
                                EXPANSION_VALUE_REQUEST_CODE);
     }
 
     public void redirectToExpansionPicker(@NonNull final Expansion expansion) {
-
         startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
                                                                       expansion,
                                                                       false),
