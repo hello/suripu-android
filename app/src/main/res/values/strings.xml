@@ -716,6 +716,12 @@
     <string name="welcome_dialog_expansions_title">Expansions</string>
     <string name="welcome_dialog_expansions_message">Enabling access to compatible smart devices allows Sense to activate them at relevant moments, like turning on your lights when Sense’s alarm sounds.</string>
 
+    <string name="welcome_dialog_expansions_settings_light_message">Enabling access to compatible lights lets you control them using Voice, and allows Sense to activate them automatically at relevant moments, like turning on your lights when Sense’s alarm sounds.</string>
+    <string name="welcome_dialog_expansions_settings_thermostat_message">Enabling access to a compatible thermostat lets you control it using Voice, and allows Sense to automatically set the temperature at relevant moments, like warming your home before you wake.</string>
+
+    <string name="welcome_dialog_expansions_alarm_light_message">Enabling lights allows Sense to turn on your lights when Sense’s alarm sounds.</string>
+    <string name="welcome_dialog_expansions_alarm_thermostat_message">Enabling thermostat allows Sense to set your ideal temperature when you wake.</string>
+
     <string name="enabling_expansion">Enabling expansion</string>
     <string name="disabling_expansion">Disabling expansion</string>
 
