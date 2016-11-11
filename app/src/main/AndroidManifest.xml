@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="is.hello.sense">
+<manifest package="is.hello.sense"
+          xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true"/>
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
     <permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
+        android:name=".SenseApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:name=".SenseApplication"
-        android:supportsRtl="false">
+        android:supportsRtl="false"
+        android:theme="@style/AppTheme">>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -33,19 +37,20 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_path"/>
         </provider>
+
         <activity
             android:name=".ui.activities.LaunchActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
 
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
 
             <intent-filter>
-                <action android:name="android.intent.onClick.SHOW_ALARMS" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.onClick.SHOW_ALARMS"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
 
         </activity>
@@ -65,36 +70,39 @@
             android:name=".ui.activities.OnboardingActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Onboarding"
-            android:screenOrientation="portrait" />
+            android:windowSoftInputMode="adjustResize"/>
 
-        <activity android:name=".ui.activities.PillUpdateActivity"
-                  android:parentActivityName=".flows.home.ui.activities.HomeActivity"
-                  android:launchMode="singleTop"
-                  android:windowSoftInputMode="adjustResize"
-                  android:theme="@style/AppTheme.Onboarding"
-                  android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.activities.PillUpdateActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Onboarding"
+            android:windowSoftInputMode="adjustResize"/>
 
-        <activity android:name=".ui.activities.SenseUpgradeActivity"
-                  android:parentActivityName=".flows.home.ui.activities.HomeActivity"
-                  android:launchMode="singleTop"
-                  android:windowSoftInputMode="adjustResize"
-                  android:theme="@style/AppTheme.Onboarding"
-                  android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.activities.SenseUpgradeActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Onboarding"
+            android:windowSoftInputMode="adjustResize"/>
 
         <activity
             android:name=".flows.sensordetails.ui.activities.SensorDetailActivity"
-            android:parentActivityName=".flows.home.ui.activities.HomeActivity" />
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
 
         <activity
             android:name=".ui.activities.SmartAlarmDetailActivity"
             android:label="@string/app_name">
 
             <intent-filter>
-                <action android:name="android.intent.action.SET_ALARM" />
-                <action android:name="android.intent.onClick.SET_ALARM" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.SET_ALARM"/>
+                <action android:name="android.intent.onClick.SET_ALARM"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
 
         </activity>
@@ -104,9 +112,10 @@
             android:label="@string/app_name">
 
             <intent-filter>
-                <action android:name="android.intent.action.SET_ALARM" />
-                <action android:name="android.intent.onClick.SET_ALARM" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.SET_ALARM"/>
+                <action android:name="android.intent.onClick.SET_ALARM"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
 
         </activity>
@@ -114,69 +123,72 @@
         <activity
             android:name=".ui.activities.SessionLogViewerActivity"
             android:label="Session Log"
-            android:parentActivityName=".flows.home.ui.activities.HomeActivity" />
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
 
         <activity
             android:name=".ui.fragments.VideoPlayerActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
-            android:theme="@style/AppTheme.NoActionBar.Black" />
+            android:theme="@style/AppTheme.NoActionBar.Black"/>
 
         <activity
             android:name=".ui.common.FragmentNavigationActivity"
-            android:parentActivityName=".flows.home.ui.activities.HomeActivity" />
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
 
         <activity
             android:name=".ui.activities.HardwareFragmentActivity"
-            android:parentActivityName=".flows.home.ui.activities.HomeActivity" />
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
 
         <activity
             android:name=".ui.activities.ListActivity"
-            android:parentActivityName=".flows.home.ui.activities.HomeActivity" />
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
 
         <activity
             android:name=".ui.activities.SettingsActivity"
-            android:parentActivityName=".flows.home.ui.activities.HomeActivity" />
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
 
-        <activity android:name=".flows.expansions.ui.activities.ExpansionSettingsActivity"
-                  android:label="@string/expansion_list_title"
-                  android:theme="@style/AppTheme.Expansions"
-                  android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+        <activity
+            android:name=".flows.expansions.ui.activities.ExpansionSettingsActivity"
+            android:label="@string/expansion_list_title"
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"
+            android:theme="@style/AppTheme.Expansions"/>
 
-        <activity android:name=".flows.voice.ui.activities.VoiceSettingsActivity"
-                  android:label="@string/voice_settings_title"
-                  android:theme="@style/AppTheme.Expansions"
-                  android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+        <activity
+            android:name=".flows.voice.ui.activities.VoiceSettingsActivity"
+            android:label="@string/voice_settings_title"
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"
+            android:theme="@style/AppTheme.Expansions"/>
 
         <activity
             android:name=".flows.voicecommands.ui.activities.VoiceCommandActivity"
-            android:parentActivityName=".flows.home.ui.activities.HomeActivity" />
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
 
-
-        <activity android:name=".flows.expansions.ui.activities.ExpansionValuePickerActivity"
-                  android:theme="@style/AppTheme.Expansions"
-                  android:parentActivityName=".ui.activities.SmartAlarmDetailActivity"/>
 
         <activity
-            xmlns:tools="http://schemas.android.com/tools"
+            android:name=".flows.expansions.ui.activities.ExpansionValuePickerActivity"
+            android:parentActivityName=".ui.activities.SmartAlarmDetailActivity"
+            android:theme="@style/AppTheme.Expansions"/>
+
+        <activity
             android:name="com.facebook.FacebookActivity"
+            xmlns:tools="http://schemas.android.com/tools"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name"
             android:theme="@style/FacebookTheme"
-            tools:replace="android:theme"
-            android:label="@string/app_name" />
+            tools:replace="android:theme"/>
 
         <service
             android:name=".bluetooth.DfuService"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
-                <action android:name="no.nordicsemi.android.action.DFU_UPLOAD" />
+                <action android:name="no.nordicsemi.android.action.DFU_UPLOAD"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </service>
 
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:value="@integer/google_play_services_version"/>
 
         <meta-data
             android:name="com.bugsnag.android.API_KEY"
