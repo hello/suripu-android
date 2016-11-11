@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.List;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
 import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
@@ -75,7 +74,6 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
     }
 
     private void showExpansionDetail(final long expansionId) {
-        //todo setting to false here because it will overriding onBackPressed to return to ExpansionList in different PR
         pushFragment(ExpansionDetailFragment.newInstance(expansionId), null, false);
     }
 
@@ -117,6 +115,10 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
                 showExpansionAuth();
             } else if (responseCode == ExpansionDetailFragment.RESULT_CONFIGURE_PRESSED) {
                 showConfigurationSelection();
+            } else if(result != null && result.hasExtra(ExpansionDetailFragment.EXTRA_EXPANSION_ID)){
+                showExpansionDetail(result.getLongExtra(ExpansionDetailFragment.EXTRA_EXPANSION_ID, Expansion.NO_ID));
+            } else if(wantsExpansionDetailThenStartPickerActivity()){
+                stateSafeExecutor.execute(super::onBackPressed);
             } else {
                 showExpansionList();
             }
