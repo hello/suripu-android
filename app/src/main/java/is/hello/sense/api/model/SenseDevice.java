@@ -44,7 +44,7 @@ public class SenseDevice extends BaseDevice {
     @Override
     public String toString() {
         return "Sense{" +
-                "hardwareversion=" + hardwareVersion.toString() +
+                "hardwareVersion=" + hardwareVersion.toString() +
                 ", wiFiInfo=" + wiFiInfo +
                 '}';
     }

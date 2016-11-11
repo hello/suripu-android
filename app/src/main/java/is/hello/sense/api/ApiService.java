@@ -232,6 +232,10 @@ public interface ApiService {
     @GET("/v2/devices")
     Observable<Devices> registeredDevices();
 
+    /**
+     * Used to determine how may accounts have already been paired to a Sense, for adjusting onboarding flow
+     * to show how to set up partner's account. Pending deprecation.
+     */
     @GET("/v2/devices/info")
     Observable<DevicesInfo> devicesInfo();
 

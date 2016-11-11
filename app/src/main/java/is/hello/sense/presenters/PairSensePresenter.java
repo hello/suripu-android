@@ -198,7 +198,7 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
         } else {
             showHardwareActivity(() -> bindAndSubscribe(hardwareInteractor.unsafeFactoryReset(),
                                                         ignored -> hideBlockingActivity(true, () -> {
-                                                            Analytics.setSenseId("unpaired");
+                                                            Analytics.resetSenseTraits();
                                                             preferencesInteractor.resetSenseDependentPrefs();
                                                             view.showMessageDialog(R.string.title_power_cycle_sense_factory_reset,
                                                                                    R.string.message_power_cycle_sense_factory_reset);

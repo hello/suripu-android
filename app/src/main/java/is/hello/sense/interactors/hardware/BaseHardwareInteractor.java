@@ -129,6 +129,22 @@ public abstract class BaseHardwareInteractor extends Interactor {
         }
     }
 
+    /**
+     *  Currently using getMacAddress because there is no getHardwareVersion method
+     *  isSenseWithVoice requires advertisement data records not publicly accessible.
+     * @return {@link is.hello.sense.api.model.SenseDevice.HardwareVersion}
+     */
+    @NonNull
+    public SenseDevice.HardwareVersion getHardwareVersion() {
+        if(peripheral == null){
+            return SenseDevice.HardwareVersion.UNKNOWN;
+        } else {
+            return peripheral.getMacAddress() != null ?
+                    SenseDevice.HardwareVersion.SENSE_WITH_VOICE :
+                    SenseDevice.HardwareVersion.SENSE;
+        }
+    }
+
     public boolean isDeviceSupported() {
         return Compatibility.generateReport(context).isSupported();
     }
