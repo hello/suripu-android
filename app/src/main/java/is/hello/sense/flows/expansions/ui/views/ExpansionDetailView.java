@@ -45,6 +45,7 @@ public class ExpansionDetailView extends PresenterView {
     final ExpansionValuePickerView expansionValuePickerView;
 
     public ExpansionDetailView(@NonNull final Activity activity,
+                               @NonNull final OnClickListener enabledTextViewClickListener,
                                @NonNull final OnClickListener removeAccessTextViewClickListener,
                                @NonNull final OnClickListener configRetryListener) {
         super(activity);
@@ -71,6 +72,7 @@ public class ExpansionDetailView extends PresenterView {
         this.configurationLoading = (ProgressBar) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_loading);
         this.expansionValuePickerView = (ExpansionValuePickerView) findViewById(R.id.view_expansion_detail_expansion_value_picker_view);
         //hook up listeners
+        Views.setSafeOnClickListener(this.enabledTextView, enabledTextViewClickListener);
         Views.setSafeOnClickListener(this.removeAccessContainer, removeAccessTextViewClickListener);
         Views.setSafeOnClickListener(this.configRetry, v -> {
             configRetry.setVisibility(GONE);
@@ -142,10 +144,6 @@ public class ExpansionDetailView extends PresenterView {
                .into(expansionIconImageView);
         this.expansionDescriptionTextView.setText(expansion.getDescription());
         this.configurationTypeTextView.setText(expansion.getConfigurationType());
-    }
-
-    public void setExpansionEnabledTextViewClickListener(@NonNull final OnClickListener listener){
-        Views.setSafeOnClickListener(this.enabledTextView, listener);
     }
 
     /**

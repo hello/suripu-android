@@ -104,6 +104,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     public void initializePresenterView() {
         if (presenterView == null) {
             presenterView = new ExpansionDetailView(getActivity(),
+                                                    this::onEnabledIconClickedExpansion,
                                                     this::onRemoveAccessClicked,
                                                     (v) -> this.configurationsInteractor.update());
         }
@@ -213,7 +214,6 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             cancelFlow();
             return;
         }
-
         //todo currently assumes that when wantsValuePicker = true the expansion is enabled, configured, and authenticated
         if (wantsValuePicker) {
             final UnitConverter unitConverter = expansionCategoryFormatter.getUnitConverter(expansionCategory);
@@ -228,9 +228,6 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         } else {
             presenterView.showExpansionInfo(expansion, picasso);
         }
-
-        presenterView.setExpansionEnabledTextViewClickListener(this.getExpansionInfoDialogClickListener(expansion.getCategory()));
-
         if (expansion.requiresAuthentication()) {
             presenterView.showConnectButton(this::onConnectClicked);
         } else if (expansion.requiresConfiguration()) {
@@ -336,13 +333,10 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
     }
 
-    private View.OnClickListener getExpansionInfoDialogClickListener(@NonNull final Category category) {
-        final int xmlResId = wantsValuePicker ?
-                expansionCategoryFormatter.getExpansionAlarmInfoDialogXmlRes(category) :
-                expansionCategoryFormatter.getExpansionInfoDialogXmlRes(category);
-        return ignoredView -> WelcomeDialogFragment.show(getActivity(),
-                                                         xmlResId,
-                                                         true);
+    private void onEnabledIconClickedExpansion(final View ignored) {
+        WelcomeDialogFragment.show(getActivity(),
+                                   R.xml.welcome_dialog_expansions,
+                                   true);
     }
 
     @Override
