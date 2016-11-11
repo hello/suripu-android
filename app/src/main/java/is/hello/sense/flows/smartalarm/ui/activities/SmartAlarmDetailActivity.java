@@ -146,6 +146,8 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
                 return;
             }
             popFragment(fragment, false);
+        } else if (responseCode == Activity.RESULT_OK) {
+            finish();
         }
     }
 

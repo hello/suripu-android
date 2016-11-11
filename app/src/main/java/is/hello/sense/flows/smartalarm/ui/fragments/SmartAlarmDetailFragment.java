@@ -25,6 +25,7 @@ import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.ApiException;
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
@@ -40,6 +41,7 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.activities.ListActivity;
+import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
@@ -48,6 +50,7 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.GenericListObject;
+import rx.Observable;
 
 public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetailView> {
     //region static functions and fields
@@ -247,7 +250,12 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.item_save:
+                saveAlarm();
+                return true;
+        }
+        return false;
     }
     //endregion
 
@@ -350,8 +358,50 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     }
 
     private void saveAlarm() {
+        if (!dirty && alarm.isEnabled()) {
+            finishFlow();
+            return;
+        }
 
+        alarm.setEnabled(true);
 
+        // This is the only callback that does not have an outside state guard.
+        stateSafeExecutor.execute(() -> {
+            if (alarm.getSound() == null) {
+                LoadingDialogFragment.close(getFragmentManager());
+
+                final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
+                        .withMessage(StringRef.from(R.string.error_no_smart_alarm_tone))
+                        .build();
+                dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+            } else if (smartAlarmInteractor.isAlarmTooSoon(alarm)) {
+                LoadingDialogFragment.close(getFragmentManager());
+
+                final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
+                        .withMessage(StringRef.from(R.string.error_alarm_too_soon))
+                        .build();
+                dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+            } else {
+                if (alarm.getDaysOfWeek().isEmpty()) {
+                    alarm.setRingOnce();
+                }
+                finishSaveAlarmOperation();
+            }
+        });
+
+    }
+
+    private void finishSaveAlarmOperation() {
+        final Observable<VoidResponse> saveOperation;
+        if (index == SmartAlarmDetailActivity.INDEX_NEW) {
+            saveOperation = smartAlarmInteractor.addSmartAlarm(alarm);
+        } else {
+            saveOperation = smartAlarmInteractor.saveSmartAlarm(index, alarm);
+        }
+
+        LoadingDialogFragment.show(getFragmentManager(),
+                                   null, LoadingDialogFragment.DEFAULTS);
+        bindAndSubscribe(saveOperation, ignored -> finishFlow(), this::presentError);
     }
 
     public void presentError(@NonNull final Throwable e) {
