@@ -34,7 +34,6 @@ import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SenseTimeZone;
-import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.StoreReview;
 import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.UpdateCheckIn;
@@ -253,18 +252,6 @@ public final class TestApiService implements ApiService {
     public Observable<RoomConditions> currentRoomConditions(@NonNull @Query("temp_unit") String unit) {
         return loadResponse("current_conditions", new TypeToken<RoomConditions>() {
         }.getType());
-    }
-
-    @Override
-    public Observable<ArrayList<SensorGraphSample>> sensorHistoryForDay(@Path("sensor") String sensor,
-                                                               @Query("timestamp_millis") long timestamp) {
-        return unimplemented();
-    }
-
-    @Override
-    public Observable<ArrayList<SensorGraphSample>> sensorHistoryForWeek(@Path("sensor") String sensor,
-                                                                @Query("timestamp_millis") long timestamp) {
-        return unimplemented();
     }
 
     @Override
