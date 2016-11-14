@@ -15,6 +15,7 @@ import is.hello.sense.graph.InteractorSubject;
 import is.hello.sense.units.UnitFormatter;
 import rx.Observable;
 
+@Deprecated
 @Singleton public class RoomConditionsInteractor extends ValueInteractor<RoomConditionsInteractor.Result> {
     public static final int HISTORY_HOURS = 2;
 

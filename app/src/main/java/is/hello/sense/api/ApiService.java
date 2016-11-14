@@ -170,9 +170,11 @@ public interface ApiService {
 
     //region Room Conditions
 
+    @Deprecated
     @GET("/v1/room/current")
     Observable<RoomConditions> currentRoomConditions(@NonNull @Query("temp_unit") String unit);
 
+    @Deprecated
     @GET("/v1/room/all_sensors/hours")
     Observable<RoomSensorHistory> roomSensorHistory(@Query("quantity") int numberOfHours,
                                                     @Query("from_utc") long timestamp);
