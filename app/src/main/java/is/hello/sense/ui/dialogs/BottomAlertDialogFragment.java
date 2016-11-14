@@ -3,6 +3,7 @@ package is.hello.sense.ui.dialogs;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.segment.analytics.Properties;
 
@@ -12,6 +13,11 @@ import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomAlertDialog;
 import is.hello.sense.util.Analytics;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+/**
+ * Used specifically for displaying {@link Alert} objects in a bottom dialog.
+ */
 public class BottomAlertDialogFragment extends SenseDialogFragment {
 
     public static final String TAG = BottomAlertDialogFragment.class.getName() + "TAG";
@@ -33,17 +39,15 @@ public class BottomAlertDialogFragment extends SenseDialogFragment {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.alert = (Alert) getArguments().getSerializable(ARG_ALERT);
-
         if (savedInstanceState == null) {
-            if(alert != null) {
-                final Properties properties = Analytics.createProperties(
-                        Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, alert.getCategory());
+            setAlert((Alert) getArguments().getSerializable(ARG_ALERT));
 
-                Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
-            }
+            final Properties properties = Analytics.createProperties(
+                    Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, alert.getCategory());
+
+            Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
         } else {
-            this.alert = (Alert) savedInstanceState.getSerializable(ARG_ALERT);
+            setAlert((Alert) savedInstanceState.getSerializable(ARG_ALERT));
         }
     }
 
@@ -63,5 +67,10 @@ public class BottomAlertDialogFragment extends SenseDialogFragment {
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(ARG_ALERT, alert);
+    }
+
+    private void setAlert(@Nullable final Alert alert) {
+        this.alert = alert;
+        checkNotNull(alert, BottomAlertDialogFragment.TAG + " requires non null Alert object passed in arguments");
     }
 }

@@ -18,13 +18,13 @@ import is.hello.sense.api.model.ApiResponse;
 public class Alert extends ApiResponse {
 
     @SerializedName("title")
-    private String title;
+    private final String title;
 
     @SerializedName("body")
-    private String body;
+    private final String body;
 
     @SerializedName("category")
-    private Category category;
+    private final Category category;
 
     public Alert(@Nullable final String title,
                  @NonNull final String body,
