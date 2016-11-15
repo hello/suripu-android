@@ -40,6 +40,7 @@ import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.api.model.v2.alarms.AlarmGroups;
+import is.hello.sense.api.model.v2.alerts.Alert;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.State;
@@ -363,6 +364,13 @@ public interface ApiService {
     @PATCH("/v2/expansions/{id}/configurations")
     Observable<Configuration> setConfigurations(@Path("id") long expansionId,
                                                 @Body @NonNull Configuration configuration);
+
+    //endregion
+
+    //region Alerts
+
+    @GET("/v2/alerts")
+    Observable<ArrayList<Alert>> getAlerts();
 
     //endregion
 }

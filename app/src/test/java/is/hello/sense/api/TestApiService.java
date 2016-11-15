@@ -58,6 +58,7 @@ import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.TimelineEventBuilder;
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.api.model.v2.alarms.AlarmGroups;
+import is.hello.sense.api.model.v2.alerts.Alert;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.State;
@@ -487,5 +488,10 @@ public final class TestApiService implements ApiService {
     public Observable<SensorsDataResponse> postSensors(@NonNull @Body final SensorDataRequest request) {
         //todo missing different queryScopes except LAST_3H_5_MINUTE
         return loadResponse("post_sensors_v2_"+request.queryScope.name(), new TypeToken<SensorsDataResponse>(){}.getType());
+    }
+
+    @Override
+    public Observable<ArrayList<Alert>> getAlerts() {
+        return unimplemented();
     }
 }
