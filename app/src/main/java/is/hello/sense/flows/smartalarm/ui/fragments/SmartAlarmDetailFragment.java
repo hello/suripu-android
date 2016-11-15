@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -42,7 +41,7 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.activities.ListActivity;
-import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
@@ -53,7 +52,8 @@ import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.GenericListObject;
 import rx.Observable;
 
-public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetailView> {
+public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetailView>
+        implements OnBackPressedInterceptor {
     //region static functions and fields
     public static final String ARG_ALARM = SmartAlarmDetailFragment.class.getName() + ".ARG_ALARM";
     public static final String ARG_INDEX = SmartAlarmDetailFragment.class.getName() + ".ARG_INDEX";
@@ -152,7 +152,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
             this.skipUI = args.getBoolean(ARG_SKIP, false);
             this.alarm = (Alarm) args.getSerializable(ARG_ALARM);
             this.index = args.getInt(ARG_INDEX);
-            this.dirty = (this.index == Constants.NONE);
+            this.dirty = false;
             this.expansionsInteractor.update();
         }
         updateUIForAlarm();
@@ -263,6 +263,33 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         }
         return false;
     }
+
+    //endregion
+
+    //region OnBackPressedInterceptor
+
+    @Override
+    public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
+        if (dirty) {
+            final SenseAlertDialog.Builder builder = new SenseAlertDialog.Builder();
+            if (isNewAlarm()) {
+                builder.setTitle(R.string.dialog_title_smart_alarm_new_cancel);
+                builder.setMessage(R.string.dialog_message_smart_alarm_new_cancel);
+            } else {
+                builder.setTitle(R.string.dialog_title_smart_alarm_edit_cancel);
+                builder.setMessage(R.string.dialog_message_smart_alarm_edit_cancel);
+            }
+            builder.setNegativeButton(R.string.action_keep_editing, null);
+            builder.setPositiveButton(R.string.action_discard, defaultBehavior::run);
+            builder.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
+            builder.build(getActivity())
+                   .show();
+        } else {
+            defaultBehavior.run();
+        }
+        return true;
+    }
+
     //endregion
 
     //region methods
@@ -290,7 +317,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         } else {
             this.presenterView.setTone(null);
         }
-        if (this.index == Constants.NONE) {
+        if (isNewAlarm()) {
             this.presenterView.showDeleteRow(null);
         } else {
             this.presenterView.showDeleteRow(this::onDeleteClicked);
@@ -375,18 +402,19 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         stateSafeExecutor.execute(() -> {
             if (alarm.getSound() == null) {
                 LoadingDialogFragment.close(getFragmentManager());
-
-                final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
+                new ErrorDialogFragment.PresenterBuilder(null)
                         .withMessage(StringRef.from(R.string.error_no_smart_alarm_tone))
-                        .build();
-                dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+                        .build()
+                        .showAllowingStateLoss(getFragmentManager(),
+                                               ErrorDialogFragment.TAG);
             } else if (smartAlarmInteractor.isAlarmTooSoon(alarm)) {
                 LoadingDialogFragment.close(getFragmentManager());
 
-                final ErrorDialogFragment dialogFragment = new ErrorDialogFragment.Builder()
+                new ErrorDialogFragment.PresenterBuilder(null)
                         .withMessage(StringRef.from(R.string.error_alarm_too_soon))
-                        .build();
-                dialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+                        .build()
+                        .showAllowingStateLoss(getFragmentManager(),
+                                               ErrorDialogFragment.TAG);
             } else {
                 if (alarm.getDaysOfWeek().isEmpty()) {
                     alarm.setRingOnce();
@@ -399,7 +427,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
 
     private void finishSaveAlarmOperation() {
         final Observable<VoidResponse> saveOperation;
-        if (index == Constants.NONE) {
+        if (isNewAlarm()) {
             saveOperation = smartAlarmInteractor.addSmartAlarm(alarm);
         } else {
             saveOperation = smartAlarmInteractor.saveSmartAlarm(index, alarm);
@@ -517,6 +545,14 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
                 })
                 .build(getActivity())
                 .show();
+    }
+
+    /**
+     * @return true if the user is adding a new alarm.
+     * False if editing an existing alarm.
+     */
+    private boolean isNewAlarm() {
+        return index == Constants.NONE;
     }
     //endregion
 }
