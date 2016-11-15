@@ -61,6 +61,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     @Inject
     ExpansionCategoryFormatter expansionCategoryFormatter;
 
+    public static final String EXTRA_EXPANSION_ID = ExpansionDetailFragment.class.getName() + "EXTRA_EXPANSION_ID";
     private static final String ARG_EXPANSION_ID = ExpansionDetailFragment.class.getSimpleName() + "ARG_EXPANSION_ID";
     private static final String ARG_VALUE_PICKER = ExpansionDetailFragment.class.getSimpleName() + "ARG_VALUE_PICKER";
     private static final String ARG_EXPANSION_CATEGORY = ExpansionDetailFragment.class.getSimpleName() + "ARG_EXPANSION_CATEGORY";
@@ -232,6 +233,9 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
         presenterView.setExpansionEnabledTextViewClickListener(this.getExpansionInfoDialogClickListener(expansion.getCategory()));
 
+
+        presenterView.showConnectedContainer(!expansion.requiresAuthentication());
+
         if (expansion.requiresAuthentication()) {
             presenterView.showConnectButton(this::onConnectClicked);
         } else if (expansion.requiresConfiguration()) {
@@ -313,9 +317,22 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
     // region listeners
     private void onRemoveAccessClicked(final View ignored) {
+        final Runnable hideBlockingRunnable =
+                stateSafeExecutor.bind(() -> {
+                    this.finishFlowWithResult(Activity.RESULT_OK,
+                                              new Intent().putExtra(EXTRA_EXPANSION_ID,
+                                                                    getArguments().getLong(ARG_EXPANSION_ID, NO_ID))
+                                             );
+                                       }
+                                      );
+
         final SenseAlertDialog.SerializedRunnable finishRunnable = () ->
-                ExpansionDetailFragment.this.updateState(State.REVOKED, (ignored2) ->
-                        hideBlockingActivity(true, this::finishFlow));
+                ExpansionDetailFragment.this.updateState(State.REVOKED,
+                                                         ignored2 ->
+                                                                hideBlockingActivity(true,
+                                                                                     hideBlockingRunnable
+                                                                                    )
+                                                        );
         showAlertDialog(new SenseAlertDialog.Builder().setTitle(R.string.are_you_sure)
                                                       .setMessage(R.string.expansion_detail_remove_access_dialog_message)
                                                       .setNegativeButton(R.string.action_cancel, null)
@@ -370,6 +387,9 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             expansionAlarm.setExpansionRange(convertedValue);
             intentWithExpansionAlarm.putExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM, expansionAlarm);
             finishFlowWithResult(Activity.RESULT_OK, intentWithExpansionAlarm);
+            return true;
+        } else if(! wantsValuePicker){
+            finishFlow();
             return true;
         }
         return false;
