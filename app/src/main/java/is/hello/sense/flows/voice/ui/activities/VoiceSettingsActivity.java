@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.MenuItem;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,6 +17,7 @@ import is.hello.sense.flows.voice.ui.fragments.VoiceVolumeFragment;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 
 import static is.hello.sense.flows.voice.ui.fragments.VoiceSettingsListFragment.RESULT_VOLUME_SELECTED;
 
@@ -79,6 +81,24 @@ public class VoiceSettingsActivity extends ScopedInjectionActivity
     @Override
     public Fragment getTopFragment() {
         return navigationDelegate.getTopFragment();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        final Fragment fragment = getTopFragment();
+        if (!(fragment instanceof OnBackPressedInterceptor) ||
+                !((OnBackPressedInterceptor) fragment).onInterceptBackPressed(stateSafeExecutor.bind(super::onBackPressed))) {
+            stateSafeExecutor.execute(super::onBackPressed);
+        }
     }
 
     //region Router
