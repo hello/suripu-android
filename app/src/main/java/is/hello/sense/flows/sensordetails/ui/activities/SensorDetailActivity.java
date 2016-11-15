@@ -54,11 +54,7 @@ public class SensorDetailActivity extends ScopedInjectionActivity
 
         final Sensor sensor = (Sensor) getIntent().getSerializableExtra(EXTRA_SENSOR);
         final int color = ContextCompat.getColor(this, sensor.getColor());
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            final Window window = getWindow();
-            Windows.setStatusBarColor(window, Drawing.darkenColorBy(color, .2f));
-        }
+        setStatusBarColor(Drawing.darkenColorBy(color, .2f));
 
         actionBar = getActionBar();
         if (actionBar != null) {

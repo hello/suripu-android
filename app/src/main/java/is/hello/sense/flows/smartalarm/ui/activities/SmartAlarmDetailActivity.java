@@ -79,12 +79,18 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
                 processSetAlarmIntent();
                 return;
             }
+            final Alarm alarm = (Alarm) getIntent().getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
+            final int index = getIntent().getIntExtra(SmartAlarmDetailActivity.EXTRA_INDEX, Constants.NONE);
+            showSmartAlarmDetailFragment(alarm, index, false);
         } else {
             this.navigationDelegate.onRestoreInstanceState(savedInstanceState);
-        }
-        final Alarm alarm = (Alarm) getIntent().getSerializableExtra(SmartAlarmDetailActivity.EXTRA_ALARM);
-        final int index = getIntent().getIntExtra(SmartAlarmDetailActivity.EXTRA_INDEX, Constants.NONE);
-        showSmartAlarmDetailFragment(alarm, index, false);
+        } }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // For some reason this doesn't work if called from onCreate like it does in SensorDetailActivity.
+        setStatusBarColor();
     }
 
     @Override
@@ -147,6 +153,9 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
             }
             popFragment(fragment, false);
         } else if (responseCode == Activity.RESULT_OK) {
+            if (fragment instanceof SmartAlarmDetailFragment) {
+
+            }
             finish();
         }
     }
@@ -162,7 +171,9 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
     private void showSmartAlarmDetailFragment(@NonNull final Alarm alarm,
                                               final int index,
                                               final boolean skipUI) {
-        navigationDelegate.pushFragment(SmartAlarmDetailFragment.newInstance(alarm, index, skipUI), null, false);
+        navigationDelegate.pushFragment(SmartAlarmDetailFragment.newInstance(alarm, index, skipUI),
+                                        SmartAlarmDetailFragment.class.getSimpleName(),
+                                        false);
     }
 
     private void processSetAlarmIntent() {

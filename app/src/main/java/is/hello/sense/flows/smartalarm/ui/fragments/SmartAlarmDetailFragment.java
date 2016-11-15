@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -115,24 +116,36 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
 
     @Override
     public void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
         outState.putBoolean(KEY_SKIP, this.skipUI); // probably won't ever be needed.
         outState.putSerializable(KEY_ALARM, this.alarm);
         outState.putInt(KEY_INDEX, this.index);
         outState.putBoolean(KEY_DIRTY, this.dirty);
+        super.onSaveInstanceState(outState);
     }
+
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        addInteractor(this.smartAlarmInteractor);
+        addInteractor(this.hasVoiceInteractor);
+        addInteractor(this.preferences);
+        addInteractor(this.expansionsInteractor);
+    }
+
+    @Override
+    public void onViewCreated(final View view,
+                              final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         if (savedInstanceState != null) {
             this.dirty = savedInstanceState.getBoolean(KEY_DIRTY, false);
             this.alarm = (Alarm) savedInstanceState.getSerializable(KEY_ALARM);
             this.skipUI = savedInstanceState.getBoolean(KEY_SKIP);
-            this.index = savedInstanceState.getInt(KEY_INDEX);
+            this.index = savedInstanceState.getInt(ARG_INDEX);
         } else {
             final Bundle args = getArguments();
-            if (args == null) { // should never be allowed to happen
+            if (args == null) {
+                // should never happen but just in case.
                 cancelFlow();
                 return;
             }
@@ -140,18 +153,8 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
             this.alarm = (Alarm) args.getSerializable(ARG_ALARM);
             this.index = args.getInt(ARG_INDEX);
             this.dirty = (this.index == Constants.NONE);
+            this.expansionsInteractor.update();
         }
-        addInteractor(this.smartAlarmInteractor);
-        addInteractor(this.hasVoiceInteractor);
-        addInteractor(this.preferences);
-        addInteractor(this.expansionsInteractor);
-        setRetainInstance(true);
-    }
-
-    @Override
-    public void onViewCreated(final View view,
-                              final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         updateUIForAlarm();
         bindAndSubscribe(this.expansionsInteractor.expansions,
                          this::bindExpansions,
@@ -160,7 +163,6 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
                          hasVoice -> {
                              if (hasVoice) {
                                  this.presenterView.showExpansionsContainer();
-                                 this.expansionsInteractor.update();
                              }
                          },
                          Functions.LOG_ERROR);
@@ -231,6 +233,10 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
             if (savedExpansionAlarm != null) {
                 savedExpansionAlarm.setExpansionRange(expansionAlarm.getExpansionRange().max);
                 savedExpansionAlarm.setEnabled(expansionAlarm.isEnabled());
+                savedExpansionAlarm.setDisplayValue(expansionCategoryFormatter
+                                                            .getFormattedAttributionValueRange(expansionAlarm.getCategory(),
+                                                                                               expansionAlarm.getExpansionRange(),
+                                                                                               getActivity()));
                 final Expansion expansion = getExpansion(savedExpansionAlarm.getCategory());
                 if (expansion != null) {
                     updateExpansion(expansion);
@@ -393,7 +399,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
 
     private void finishSaveAlarmOperation() {
         final Observable<VoidResponse> saveOperation;
-        if (index == SmartAlarmDetailActivity.INDEX_NEW) {
+        if (index == Constants.NONE) {
             saveOperation = smartAlarmInteractor.addSmartAlarm(alarm);
         } else {
             saveOperation = smartAlarmInteractor.saveSmartAlarm(index, alarm);
