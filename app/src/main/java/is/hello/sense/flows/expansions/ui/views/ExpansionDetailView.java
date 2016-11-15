@@ -58,7 +58,7 @@ public class ExpansionDetailView extends PresenterView {
         this.connectButton = (Button) findViewById(R.id.view_expansion_detail_connect_button);
         // connected
         this.connectedContainer = (ViewGroup) findViewById(R.id.view_expansion_detail_bottom);
-        this.connectedContainer.setVisibility(GONE);// can't set included layouts to gone
+        this.showConnectedContainer(false); // can't set included layouts to gone
         this.enabledContainer = (ViewGroup) connectedContainer.findViewById(R.id.view_expansion_detail_enabled_container);
         this.enabledTextView = (TextView) enabledContainer.findViewById(R.id.view_expansion_detail_enabled_tv);
         this.enabledSwitch = (CompoundButton) enabledContainer.findViewById(R.id.view_expansion_detail_configuration_selection_switch);
@@ -100,14 +100,12 @@ public class ExpansionDetailView extends PresenterView {
         this.configurationLoading.setVisibility(GONE);
         this.configurationSelectedTextView.setText(configurationName);
         this.configurationSelectedTextView.setVisibility(VISIBLE);
-        this.connectedContainer.setVisibility(VISIBLE);
         this.configRetry.setVisibility(GONE);
     }
 
     public void showConfigurationEmpty() {
         this.configurationLoading.setVisibility(GONE);
         this.configurationSelectedTextView.setVisibility(GONE);
-        this.connectedContainer.setVisibility(VISIBLE);
         this.configRetry.setVisibility(VISIBLE);
     }
 
@@ -116,7 +114,6 @@ public class ExpansionDetailView extends PresenterView {
         this.configurationLoading.setVisibility(GONE);
         this.configurationSelectedTextView.setVisibility(GONE);
         this.configurationErrorImageView.setVisibility(VISIBLE);
-        this.connectedContainer.setVisibility(VISIBLE);
         this.configRetry.setVisibility(GONE);
     }
 
@@ -205,7 +202,6 @@ public class ExpansionDetailView extends PresenterView {
      */
     public void showEnableSwitch(final boolean isOn,
                                  @NonNull final CompoundButton.OnCheckedChangeListener enabledSwitchClickListener) {
-        this.connectedContainer.setVisibility(VISIBLE);
         this.enabledContainer.setVisibility(VISIBLE);
         this.setEnableSwitch(isOn, enabledSwitchClickListener);
     }
@@ -221,6 +217,10 @@ public class ExpansionDetailView extends PresenterView {
 
     public int getSelectedValue() {
         return this.expansionValuePickerView.getSelectedValue();
+    }
+
+    public void showConnectedContainer(final boolean isOn) {
+        this.connectedContainer.setVisibility(isOn ? VISIBLE : GONE);
     }
 
     //endregion

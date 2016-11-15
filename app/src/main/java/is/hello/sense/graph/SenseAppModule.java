@@ -17,6 +17,8 @@ import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.flows.home.interactors.AlertsInteractor;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.home.ui.fragments.BacksideFragment;
 import is.hello.sense.flows.home.ui.fragments.HomeFragment;
@@ -184,6 +186,12 @@ public class SenseAppModule {
     @Singleton
     DevicesInteractor providesDevicesInteractor(@NonNull final ApiService apiService) {
         return new DevicesInteractor(apiService);
+    }
+
+    @Provides
+    @Singleton
+    public AlertsInteractor providesAlertsInteractor(@NonNull final ApiService apiService){
+        return new AlertsInteractor(apiService);
     }
 
 }

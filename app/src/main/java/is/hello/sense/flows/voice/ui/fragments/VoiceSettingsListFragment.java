@@ -18,7 +18,6 @@ import is.hello.sense.flows.voice.ui.views.VoiceSettingsListView;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.CurrentSenseInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import rx.Observable;
@@ -34,7 +33,6 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     CurrentSenseInteractor currentSenseInteractor;
 
     public static final int RESULT_VOLUME_SELECTED = 99;
-    private static final int RESULT_HELP_PRESSED = 103;
     private static final int RESULT_CANCEL_FLOW = 104;
     private Subscription updateSettingsSubscription = Subscriptions.empty();
 
@@ -73,9 +71,7 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
                                  final int resultCode,
                                  final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RESULT_HELP_PRESSED && resultCode == RESULT_HELP_PRESSED) {
-            UserSupport.showUserGuide(getActivity());
-        } else if(requestCode == RESULT_CANCEL_FLOW){
+        if(requestCode == RESULT_CANCEL_FLOW){
             cancelFlow();
         }
     }
@@ -138,8 +134,6 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
             final ErrorDialogFragment.PresenterBuilder builder = new ErrorDialogFragment.PresenterBuilder(e);
             builder.withTitle(StringRef.from(R.string.voice_settings_update_error_title));
             builder.withMessage(StringRef.from(R.string.voice_settings_update_error_message));
-            builder.withAction(RESULT_HELP_PRESSED, R.string.label_having_trouble);
-            showErrorDialog(builder, RESULT_HELP_PRESSED);
             if (e instanceof VoiceSettingsInteractor.MuteUpdateThrowable) {
                 presenterView.flipMuteSwitch(this::onMuteSwitchChanged);
             } else if (e instanceof VoiceSettingsInteractor.PrimaryUpdateThrowable) {
