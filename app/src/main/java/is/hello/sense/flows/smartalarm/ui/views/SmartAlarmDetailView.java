@@ -15,11 +15,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.NotTested;
 
 @SuppressLint("ViewConstructor")
 public class SmartAlarmDetailView extends PresenterView {
@@ -85,7 +87,7 @@ public class SmartAlarmDetailView extends PresenterView {
         final int dimmedAccent = Drawing.colorWithAlpha(accent, 178);
         Drawables.setTintColor(smartHelpDrawable, dimmedAccent);
         smartHelp.setImageDrawable(smartHelpDrawable);
-        Views.setSafeOnClickListener(smartRow, v -> smartAlarmToggle.toggle());
+        Views.setSafeOnClickListener(smartRow, v -> this.smartAlarmToggle.toggle());
         Views.setSafeOnClickListener(smartHelp, helpClickListener);
         Views.setSafeOnClickListener(timeContainer, timeClickListener);
         Views.setSafeOnClickListener(soundRow, toneClickListener);
@@ -93,11 +95,13 @@ public class SmartAlarmDetailView extends PresenterView {
     }
     //region PresenterView
 
+    @NotTested
     @Override
     protected int getLayoutRes() {
         return R.layout.view_smart_alarm_detail;
     }
 
+    @NotTested
     @Override
     public void releaseViews() {
 
@@ -109,17 +113,25 @@ public class SmartAlarmDetailView extends PresenterView {
     /**
      * @param deleteClickListener if null will hide the delete row. If not null will show and set.
      */
+    @NotTested
     public void showDeleteRow(@Nullable final OnClickListener deleteClickListener) {
         if (deleteClickListener == null) {
-            deleteRowDivider.setVisibility(View.GONE);
-            deleteRow.setVisibility(View.GONE);
+            this.deleteRowDivider.setVisibility(View.GONE);
+            this.deleteRow.setVisibility(View.GONE);
         } else {
-            Views.setSafeOnClickListener(deleteRow, deleteClickListener);
-            deleteRowDivider.setVisibility(View.VISIBLE);
-            deleteRow.setVisibility(View.VISIBLE);
+            Views.setSafeOnClickListener(this.deleteRow, deleteClickListener);
+            this.deleteRowDivider.setVisibility(View.VISIBLE);
+            this.deleteRow.setVisibility(View.VISIBLE);
         }
     }
 
+    /**
+     * Set the state of the smart alarm toggle button.
+     *
+     * @param isChecked             set to true or false
+     * @param checkedChangeListener listener to call when the user taps this.
+     */
+    @NotTested
     public void setSmartAlarm(final boolean isChecked,
                               @NonNull final CompoundButton.OnCheckedChangeListener checkedChangeListener) {
         this.smartAlarmToggle.setOnCheckedChangeListener(null);
@@ -127,25 +139,51 @@ public class SmartAlarmDetailView extends PresenterView {
         this.smartAlarmToggle.setOnCheckedChangeListener(checkedChangeListener);
     }
 
+    /**
+     * Set the text for the current tone.
+     *
+     * @param toneName if null will default to "None".
+     */
+    @NotTested
     public void setTone(@Nullable final String toneName) {
         if (toneName == null) {
-            toneNameTextView.setText(R.string.no_sound_placeholder);
+            this.toneNameTextView.setText(R.string.no_sound_placeholder);
         }
         this.toneNameTextView.setText(toneName);
     }
 
+    /**
+     * @param repeatDays set text for repeat days.
+     */
+    @NotTested
     public void setRepeatDaysTextView(@NonNull final String repeatDays) {
         this.repeatDaysTextView.setText(repeatDays);
     }
 
+    /**
+     * Display the two expansions rows.
+     */
+    @NotTested
     public void showExpansionsContainer() {
-        expansionsContainer.setVisibility(View.VISIBLE);
+        this.expansionsContainer.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * @param time set text of current time shown.
+     */
+    @NotTested
     public void setTime(@NonNull final CharSequence time) {
-        timeTextView.setText(time);
+        this.timeTextView.setText(time);
     }
 
+    /**
+     * Set the state of the {@link Category#LIGHT} expansion row.
+     *
+     * @param isEnabled              if true will be clickable.
+     * @param value                  text for this expansion.
+     * @param containerClickListener click listener
+     */
+    @NotTested
     public void setLightExpansion(final boolean isEnabled,
                                   @NonNull final String value,
                                   @NonNull final OnClickListener containerClickListener) {
@@ -164,6 +202,14 @@ public class SmartAlarmDetailView extends PresenterView {
         Views.setSafeOnClickListener(this.lightExpansionContainer, containerClickListener);
     }
 
+    /**
+     * Set the state of the {@link Category#TEMPERATURE} expansion row.
+     *
+     * @param isEnabled              if true will be clickable.
+     * @param value                  text for this expansion.
+     * @param containerClickListener click listener
+     */
+    @NotTested
     public void setThermoExpansion(final boolean isEnabled,
                                    @NonNull final String value,
                                    @NonNull final OnClickListener containerClickListener) {
