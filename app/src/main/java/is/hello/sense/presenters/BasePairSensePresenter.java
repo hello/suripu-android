@@ -148,6 +148,7 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
 
     protected boolean hasPeripheralPair() {
         Analytics.setSenseId(hardwareInteractor.getDeviceId());
+        Analytics.setSenseVersion(hardwareInteractor.getHardwareVersion());
         if (hardwareInteractor.isBonded()) {
             showBlockingActivity(R.string.title_clearing_bond);
             return true;

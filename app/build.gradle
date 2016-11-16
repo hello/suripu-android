@@ -179,7 +179,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'me.grantland:autofittextview:0.2.1'
     compile 'de.hdodenhof:circleimageview:2.0.0'
-    compile 'is.hello.commonsense:ble:2016.11.7.2'
+    compile 'is.hello.commonsense:ble:2016.11.15.1'
     compile 'is.hello:anime-android-go-99:0.5.0'
     compile 'com.facebook.android:facebook-android-sdk:4.13.1'
     compile 'no.nordicsemi.android:dfu:0.6.3'

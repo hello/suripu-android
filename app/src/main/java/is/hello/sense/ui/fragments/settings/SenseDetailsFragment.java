@@ -588,7 +588,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             bindAndSubscribe(hardwarePresenter.factoryReset(device),
                              device -> {
                                  loadingDialogFragment.dismissSafely();
-                                 Analytics.setSenseId("unpaired");
+                                 Analytics.resetSenseTraits();
 
                                  MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset,
                                                                                                             R.string.message_power_cycle_sense_factory_reset);
@@ -620,7 +620,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         dialog.setPositiveButton(R.string.action_replace_device, (d, which) -> {
             bindAndSubscribe(devicesPresenter.unregisterDevice(device),
                              ignored -> {
-                                 Analytics.setSenseId("unpaired");
+                                 Analytics.resetSenseTraits();
                                  hardwarePresenter.reset();
                                  preferencesInteractor.resetSenseDependentPrefs();
                                  finishDeviceReplaced();
