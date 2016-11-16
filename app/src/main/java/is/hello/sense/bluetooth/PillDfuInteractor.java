@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
-import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
+import is.hello.buruberi.bluetooth.stacks.util.AdvertisingData;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
@@ -28,14 +28,12 @@ import rx.schedulers.Schedulers;
 @Singleton
 public class PillDfuInteractor extends ValueInteractor<PillPeripheral> {
     private static final String PILL_DFU_NAME = "PillDFU";
-    private static final String PILL_PREFIX = "Pill";
     private static final String EXTRA_DEVICE_ID = PillDfuInteractor.class.getName() + "EXTRA_DEVICE_ID";
     private final Context context;
     private final BluetoothStack bluetoothStack;
     private boolean isUpdating;
     private String deviceId;
     public final InteractorSubject<PillPeripheral> sleepPill = this.subject;
-
 
     @Inject
     public PillDfuInteractor(@NonNull final Context context,
@@ -59,40 +57,28 @@ public class PillDfuInteractor extends ValueInteractor<PillPeripheral> {
     @Override
     protected Observable<PillPeripheral> provideUpdateObservable() {
         final PeripheralCriteria criteria = new PeripheralCriteria();
-        criteria.setDuration(20000);
-        criteria.addPredicate(ad ->
-                        (PillPeripheral.isPillOneFive(ad) && PillPeripheral.isPillNormal(ad))
-                        || PillPeripheral.isPillDfu(ad)
-                             );
+        criteria.setDuration(PeripheralCriteria.DEFAULT_DURATION_MS);
+        criteria.addPredicate(PillDfuInteractor::hasUpdateAdvertisingData);
         return bluetoothStack.discoverPeripherals(criteria)
-                             .map(gattPeripherals -> {
-                                 GattPeripheral closestPill = null;
-                                 for (final GattPeripheral peripheral : gattPeripherals) {
-                                     final String pillName = peripheral.getName();
-                                     if (pillName != null && pillName.startsWith(PILL_PREFIX)) {
-                                         if (closestPill == null || closestPill.getScanTimeRssi() < peripheral.getScanTimeRssi()) {
-                                             closestPill = peripheral;
-                                         }
-                                     }
-                                 }
-                                 if (closestPill == null) {
-                                     return null;
-                                 }
-
-                                 return new PillPeripheral(closestPill);
-                             })
-                             .flatMap(pillPeripheral -> {
-                                 if (pillPeripheral == null) {
-                                     return Observable.error(new PillNotFoundException());
-                                 } else if (pillPeripheral.isTooFar()) {
-                                     return Observable.error(new RssiException());
-                                 } else {
-                                     return Observable.just(pillPeripheral);
-                                 }
-                             });
+                             .map(PillPeripheral::getClosestByRssi)
+                             .flatMap(PillDfuInteractor::pillPeripheralChecks);
 
     }
 
+    private static Boolean hasUpdateAdvertisingData(@Nullable final AdvertisingData ad) {
+        return (PillPeripheral.isPillOneFive(ad) && PillPeripheral.isPillNormal(ad))
+                || PillPeripheral.isPillDfu(ad);
+    }
+
+    private static Observable<PillPeripheral> pillPeripheralChecks(@Nullable final PillPeripheral pillPeripheral){
+        if (pillPeripheral == null) {
+            return Observable.error(new PillNotFoundException());
+        } else if (pillPeripheral.isTooFar()) {
+            return Observable.error(new RssiException());
+        } else {
+            return Observable.just(pillPeripheral);
+        }
+    }
 
     @Nullable
     @Override

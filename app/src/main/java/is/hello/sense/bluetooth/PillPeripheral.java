@@ -13,6 +13,8 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -93,6 +95,17 @@ public final class PillPeripheral implements Serializable {
             }
         }
         return false;
+    }
+
+    @Nullable
+    public static PillPeripheral getClosestByRssi(@NonNull final List<GattPeripheral> peripherals){
+        Collections.sort(peripherals,
+                         (current, other) -> Integer.compare(other.getScanTimeRssi(),
+                                                             current.getScanTimeRssi()));
+        if(peripherals.isEmpty()){
+            return null;
+        }
+        return new PillPeripheral(peripherals.get(0));
     }
 
     //region Creation
