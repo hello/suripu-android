@@ -95,19 +95,6 @@
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
 
         <activity
-            android:name=".ui.activities.SmartAlarmDetailActivity"
-            android:label="@string/app_name">
-
-            <intent-filter>
-                <action android:name="android.intent.action.SET_ALARM"/>
-                <action android:name="android.intent.onClick.SET_ALARM"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-
-        </activity>
-
-        <activity
             android:name=".flows.smartalarm.ui.activities.SmartAlarmDetailActivity"
             android:label="@string/app_name">
 
@@ -165,7 +152,7 @@
 
         <activity
             android:name=".flows.expansions.ui.activities.ExpansionValuePickerActivity"
-            android:parentActivityName=".ui.activities.SmartAlarmDetailActivity"
+            android:parentActivityName=".flows.smartalarm.ui.activities.SmartAlarmDetailActivity"
             android:theme="@style/AppTheme.Expansions"/>
 
         <activity

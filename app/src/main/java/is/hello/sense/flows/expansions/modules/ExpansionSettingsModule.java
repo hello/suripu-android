@@ -17,8 +17,6 @@ import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionListFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionsAuthFragment;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
-import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
-import is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment;
 import is.hello.sense.units.UnitFormatter;
 
 @Module(complete = false, injects = {
@@ -27,8 +25,6 @@ import is.hello.sense.units.UnitFormatter;
         ExpansionsAuthFragment.class,
         ExpansionDetailFragment.class,
         ConfigSelectionFragment.class,
-        SmartAlarmDetailActivity.class,
-        SmartAlarmDetailFragment.class,
         ExpansionValuePickerActivity.class
 })
 public class ExpansionSettingsModule {

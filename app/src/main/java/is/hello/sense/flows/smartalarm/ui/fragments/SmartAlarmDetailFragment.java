@@ -160,7 +160,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
             this.skipUI = args.getBoolean(ARG_SKIP, false);
             this.alarm = (Alarm) args.getSerializable(ARG_ALARM);
             this.index = args.getInt(ARG_INDEX);
-            this.dirty = false;
+            this.dirty = index == Constants.NONE;
             this.expansionsInteractor.update();
         }
         updateUIForAlarm();
