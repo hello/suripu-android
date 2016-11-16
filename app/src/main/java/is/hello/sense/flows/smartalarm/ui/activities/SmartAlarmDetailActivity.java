@@ -42,6 +42,11 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
     public static final String EXTRA_ALARM = SmartAlarmDetailActivity.class.getName() + ".EXTRA_ALARM";
     public static final String EXTRA_INDEX = SmartAlarmDetailActivity.class.getName() + ".EXTRA_INDEX";
 
+    /**
+     * @param context used to start the activity.
+     * @param alarm   alarm object to represent.
+     * @param index   position of alarm. If new should be {@link Constants#NONE}.
+     */
     public static void startActivity(@NonNull final Context context,
                                      @NonNull final Alarm alarm,
                                      final int index) {
@@ -84,18 +89,19 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
             showSmartAlarmDetailFragment(alarm, index, false);
         } else {
             this.navigationDelegate.onRestoreInstanceState(savedInstanceState);
-        } }
+        }
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
         // For some reason this doesn't work if called from onCreate like it does in SensorDetailActivity.
-        setStatusBarColor();
+        setStatusBarColorPrimary();
     }
 
     @Override
     protected List<Object> getModules() {
-        return new ArrayList<>();
+        return new ArrayList<>(); //todo create a module for this flow
     }
 
     @Override

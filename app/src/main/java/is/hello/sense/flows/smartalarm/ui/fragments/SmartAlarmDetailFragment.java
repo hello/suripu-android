@@ -50,6 +50,7 @@ import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.GenericListObject;
+import is.hello.sense.util.NotTested;
 import rx.Observable;
 
 public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetailView>
@@ -103,6 +104,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     //endregion
 
     //region PresenterFragment
+    @NotTested
     @Override
     public void initializePresenterView() {
         if (this.presenterView == null) {
@@ -114,6 +116,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         }
     }
 
+    @NotTested
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         outState.putBoolean(KEY_SKIP, this.skipUI); // probably won't ever be needed.
@@ -124,6 +127,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     }
 
 
+    @NotTested
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,6 +137,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         addInteractor(this.expansionsInteractor);
     }
 
+    @NotTested
     @Override
     public void onViewCreated(final View view,
                               final Bundle savedInstanceState) {
@@ -181,6 +186,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         this.hasVoiceInteractor.update();
     }
 
+    @NotTested
     @Override
     public void onResume() {
         super.onResume();
@@ -192,6 +198,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         }
     }
 
+    @NotTested
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -215,7 +222,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         } else if (requestCode == SOUND_REQUEST_CODE) {
             final int soundId = data.getIntExtra(ListActivity.VALUE_ID, -1);
             if (soundId != -1) {
-                final Alarm.Sound selectedSound = alarm.getAlarmSoundWithId(soundId);
+                final Alarm.Sound selectedSound = this.alarm.getAlarmSoundWithId(soundId);
                 if (selectedSound != null) {
                     this.alarm.setSound(selectedSound);
                     this.presenterView.setTone(selectedSound.name);
@@ -233,7 +240,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
             if (savedExpansionAlarm != null) {
                 savedExpansionAlarm.setExpansionRange(expansionAlarm.getExpansionRange().max);
                 savedExpansionAlarm.setEnabled(expansionAlarm.isEnabled());
-                savedExpansionAlarm.setDisplayValue(expansionCategoryFormatter
+                savedExpansionAlarm.setDisplayValue(this.expansionCategoryFormatter
                                                             .getFormattedAttributionValueRange(expansionAlarm.getCategory(),
                                                                                                expansionAlarm.getExpansionRange(),
                                                                                                getActivity()));
@@ -254,6 +261,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         }
     }
 
+    @NotTested
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
@@ -268,9 +276,10 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
 
     //region OnBackPressedInterceptor
 
+    @NotTested
     @Override
     public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
-        if (dirty) {
+        if (this.dirty) {
             final SenseAlertDialog.Builder builder = new SenseAlertDialog.Builder();
             if (isNewAlarm()) {
                 builder.setTitle(R.string.dialog_title_smart_alarm_new_cancel);
@@ -293,6 +302,15 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     //endregion
 
     //region methods
+
+    /**
+     * Retrieves an Expansion from {@link ExpansionsInteractor#expansions} if it has the same
+     * Category.
+     *
+     * @param category search for an expansion using this category.
+     * @return an Expansion for {@link Category#LIGHT} or {@link Category#TEMPERATURE}
+     */
+    @NotTested
     private Expansion getExpansion(final Category category) {
         if (!this.expansionsInteractor.expansions.hasValue()) {
             return null;
@@ -306,13 +324,18 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         return null;
     }
 
+    /**
+     * Call to update all UI views with the current state of {@link #alarm}.
+     */
+    @NotTested
     private void updateUIForAlarm() {
-        final CharSequence formattedTime = this.dateFormatter.formatAsAlarmTime(this.alarm.getTime(),
-                                                                                this.use24Time);
-        this.presenterView.setTime(formattedTime);
-        this.presenterView.setSmartAlarm(this.alarm.isSmart(), this::onSmartAlarmToggled);
-        this.presenterView.setRepeatDaysTextView(this.alarm.getRepeatSummary(getActivity(), false));
-        if (alarm.getSound() != null && !TextUtils.isEmpty(alarm.getSound().name)) {
+        this.presenterView.setTime(this.dateFormatter.formatAsAlarmTime(this.alarm.getTime(),
+                                                                        this.use24Time));
+        this.presenterView.setSmartAlarm(this.alarm.isSmart(),
+                                         this::onSmartAlarmToggled);
+        this.presenterView.setRepeatDaysTextView(this.alarm.getRepeatSummary(getActivity(),
+                                                                             false));
+        if (this.alarm.getSound() != null && !TextUtils.isEmpty(this.alarm.getSound().name)) {
             this.presenterView.setTone(this.alarm.getSound().name);
         } else {
             this.presenterView.setTone(null);
@@ -324,18 +347,35 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         }
     }
 
+    /**
+     * Allow user to choose a new time for the alarm.
+     *
+     * @param ignored
+     */
+    @NotTested
     private void onTimeClicked(final View ignored) {
         final TimePickerDialogFragment picker = TimePickerDialogFragment.newInstance(this.alarm.getTime(),
                                                                                      this.use24Time);
         picker.setTargetFragment(this, TIME_REQUEST_CODE);
         picker.showAllowingStateLoss(getFragmentManager(), TimePickerDialogFragment.TAG);
-
     }
 
+    /**
+     * Show a dialog explaining smart alarm.
+     *
+     * @param ignored
+     */
+    @NotTested
     private void onHelpClicked(final View ignored) {
         WelcomeDialogFragment.show(getActivity(), R.xml.welcome_dialog_smart_alarm, false);
     }
 
+    /**
+     * Allow user to pick a tone (mp3 file) Sense will play when the alarm is started.
+     *
+     * @param ignored
+     */
+    @NotTested
     private void onToneClicked(final View ignored) {
         if (this.alarm.getAlarmTones() == null) {
             this.smartAlarmInteractor.update();
@@ -353,6 +393,12 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
 
     }
 
+    /**
+     * Allow user to change what days the alarm repeats on.
+     *
+     * @param ignored
+     */
+    @NotTested
     private void onRepeatClicked(final View ignored) {
         final int firstCalendarDayOfWeek = Calendar.getInstance().getFirstDayOfWeek();
         final int firstJodaTimeDayOfWeek = DateFormatter.calendarDayToJodaTimeDay(firstCalendarDayOfWeek);
@@ -367,13 +413,19 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
                 new GenericListObject(converter, daysOfWeek));
     }
 
+    /**
+     * Show prompt that will delete the alarm.
+     *
+     * @param ignored
+     */
+    @NotTested
     private void onDeleteClicked(final View ignored) {
         final SenseAlertDialog.Builder builder = new SenseAlertDialog.Builder();
         builder.setMessage(R.string.dialog_message_confirm_delete_alarm);
         builder.setPositiveButton(R.string.action_delete, () -> {
             LoadingDialogFragment.show(getFragmentManager(),
                                        null, LoadingDialogFragment.DEFAULTS);
-            bindAndSubscribe(smartAlarmInteractor.deleteSmartAlarm(index),
+            bindAndSubscribe(this.smartAlarmInteractor.deleteSmartAlarm(this.index),
                              ignored2 ->
                                      cancelFlow(),
                              this::presentError);
@@ -384,30 +436,42 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
 
     }
 
+    /**
+     * Callback when the user toggles the smart alarm. Will update the state of {@link #alarm}.
+     *
+     * @param ignored
+     * @param isChecked
+     */
+    @NotTested
     private void onSmartAlarmToggled(final CompoundButton ignored,
                                      final boolean isChecked) {
         this.alarm.setSmart(isChecked);
         markDirty();
     }
 
+    /**
+     * Save the current state of {@link #alarm}.
+     * Will perform validation to make sure the alarm is in an acceptable state.
+     */
+    @NotTested
     private void saveAlarm() {
-        if (!dirty && alarm.isEnabled()) {
+        if (!this.dirty && this.alarm.isEnabled()) {
             finishFlow();
             return;
         }
 
-        alarm.setEnabled(true);
+        this.alarm.setEnabled(true);
 
         // This is the only callback that does not have an outside state guard.
-        stateSafeExecutor.execute(() -> {
-            if (alarm.getSound() == null) {
+        this.stateSafeExecutor.execute(() -> {
+            if (this.alarm.getSound() == null) {
                 LoadingDialogFragment.close(getFragmentManager());
                 new ErrorDialogFragment.PresenterBuilder(null)
                         .withMessage(StringRef.from(R.string.error_no_smart_alarm_tone))
                         .build()
                         .showAllowingStateLoss(getFragmentManager(),
                                                ErrorDialogFragment.TAG);
-            } else if (smartAlarmInteractor.isAlarmTooSoon(alarm)) {
+            } else if (this.smartAlarmInteractor.isAlarmTooSoon(alarm)) {
                 LoadingDialogFragment.close(getFragmentManager());
 
                 new ErrorDialogFragment.PresenterBuilder(null)
@@ -416,45 +480,59 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
                         .showAllowingStateLoss(getFragmentManager(),
                                                ErrorDialogFragment.TAG);
             } else {
-                if (alarm.getDaysOfWeek().isEmpty()) {
-                    alarm.setRingOnce();
+                if (this.alarm.getDaysOfWeek().isEmpty()) {
+                    this.alarm.setRingOnce();
                 }
-                finishSaveAlarmOperation();
+                final Observable<VoidResponse> saveOperation;
+                if (isNewAlarm()) {
+                    saveOperation = this.smartAlarmInteractor.addSmartAlarm(this.alarm);
+                } else {
+                    saveOperation = this.smartAlarmInteractor.saveSmartAlarm(this.index,
+                                                                             this.alarm);
+                }
+
+                LoadingDialogFragment.show(getFragmentManager(),
+                                           null, LoadingDialogFragment.DEFAULTS);
+                bindAndSubscribe(saveOperation, ignored -> finishFlow(), this::presentError);
             }
         });
 
     }
 
-    private void finishSaveAlarmOperation() {
-        final Observable<VoidResponse> saveOperation;
-        if (isNewAlarm()) {
-            saveOperation = smartAlarmInteractor.addSmartAlarm(alarm);
-        } else {
-            saveOperation = smartAlarmInteractor.saveSmartAlarm(index, alarm);
-        }
-
-        LoadingDialogFragment.show(getFragmentManager(),
-                                   null, LoadingDialogFragment.DEFAULTS);
-        bindAndSubscribe(saveOperation, ignored -> finishFlow(), this::presentError);
-    }
-
+    /**
+     * Show the error dialog
+     *
+     * @param e
+     */
+    @NotTested
     public void presentError(@NonNull final Throwable e) {
         LoadingDialogFragment.close(getFragmentManager());
 
-        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity());
+        final ErrorDialogFragment.PresenterBuilder errorDialogBuilder = new ErrorDialogFragment.PresenterBuilder(e);
         if (e instanceof SmartAlarmInteractor.DayOverlapError) {
             errorDialogBuilder.withMessage(StringRef.from(R.string.error_smart_alarm_day_overlap));
         } else if (ApiException.statusEquals(e, 412)) {
             errorDialogBuilder.withMessage(StringRef.from(getString(R.string.error_smart_alarm_requires_device)));
         }
-        final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
-        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+        errorDialogBuilder.build()
+                          .showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
+
+    /**
+     * Use when the state of the alarm has changed.
+     */
+    @NotTested
     private void markDirty() {
         this.dirty = true;
     }
 
+    /**
+     * Bind function for {@link #smartAlarmInteractor#availableAlarmSounds()}.
+     *
+     * @param sounds different sounds (mp3 files) Sense can play.
+     */
+    @NotTested
     private void bindSmartAlarmSounds(@Nullable final ArrayList<Alarm.Sound> sounds) {
         if (sounds != null && !sounds.isEmpty()) {
             this.alarm.setAlarmTones(sounds);
@@ -473,6 +551,13 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         }
     }
 
+    /**
+     * Bind function for {@link #expansionsInteractor#expansions}.
+     *
+     * @param expansions list of expansions that can be modified for this alarm. Only supports
+     *                   {@link Category#LIGHT} and {@link Category#TEMPERATURE}
+     */
+    @NotTested
     private void bindExpansions(@NonNull final ArrayList<Expansion> expansions) {
         // Set initial click listener
         for (final Expansion expansion : expansions) {
@@ -480,6 +565,12 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         }
     }
 
+    /**
+     * Update the current state of an expansion in the view.
+     *
+     * @param expansion expansions new state.
+     */
+    @NotTested
     private void updateExpansion(@NonNull final Expansion expansion) {
         final boolean enabled = expansion.getState() != State.NOT_AVAILABLE;
         final int defaultValue = this.expansionCategoryFormatter.getDisplayValueResFromState(expansion.getState());
@@ -514,12 +605,24 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         }
     }
 
+    /**
+     * Show a picker for the given expansion alarm.
+     *
+     * @param expansionAlarm
+     */
+    @NotTested
     private void redirectToExpansionPicker(@NonNull final ExpansionAlarm expansionAlarm) {
         startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
                                                                       expansionAlarm),
                                EXPANSION_VALUE_REQUEST_CODE);
     }
 
+    /**
+     * Show a picker for the given expansion.
+     *
+     * @param expansion
+     */
+    @NotTested
     public void redirectToExpansionPicker(@NonNull final Expansion expansion) {
         startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
                                                                       expansion,
@@ -527,12 +630,24 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
                                EXPANSION_VALUE_REQUEST_CODE);
     }
 
+    /**
+     * Show a picker for the given expansion ID.
+     *
+     * @param expansionId
+     */
+    @NotTested
     private void redirectToExpansionDetail(final long expansionId) {
         startActivityForResult(ExpansionSettingsActivity.getExpansionDetailIntent(getActivity(),
                                                                                   expansionId),
                                EXPANSION_VALUE_REQUEST_CODE);
     }
 
+    /**
+     * Show an error when we fail to fetch expansions from {@link #expansionsInteractor#expansions}.
+     *
+     * @param throwable
+     */
+    @NotTested
     private void bindExpansionError(final Throwable throwable) {
         new SenseAlertDialog.Builder()
                 .setTitle(R.string.expansion_not_loaded_title)
@@ -551,8 +666,9 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
      * @return true if the user is adding a new alarm.
      * False if editing an existing alarm.
      */
+    @NotTested
     private boolean isNewAlarm() {
-        return index == Constants.NONE;
+        return this.index == Constants.NONE;
     }
     //endregion
 }

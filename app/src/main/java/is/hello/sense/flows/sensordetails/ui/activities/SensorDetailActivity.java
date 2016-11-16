@@ -51,10 +51,10 @@ public class SensorDetailActivity extends ScopedInjectionActivity
         this.navigationDelegate = new FragmentNavigationDelegate(this,
                                                                  R.id.activity_navigation_container,
                                                                  stateSafeExecutor);
-
+        
         final Sensor sensor = (Sensor) getIntent().getSerializableExtra(EXTRA_SENSOR);
         final int color = ContextCompat.getColor(this, sensor.getColor());
-        setStatusBarColor(Drawing.darkenColorBy(color, .2f));
+        setStatusBarColor(Drawing.darkenColorBy(color, Drawing.DARK_MULTIPLIER));
 
         actionBar = getActionBar();
         if (actionBar != null) {

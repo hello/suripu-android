@@ -23,7 +23,7 @@ public abstract class SenseActivity extends Activity {
         Analytics.onPause(this);
     }
 
-    public void setStatusBarColor() {
+    public void setStatusBarColorPrimary() {
         setStatusBarColorRes(R.color.primary);
     }
 
