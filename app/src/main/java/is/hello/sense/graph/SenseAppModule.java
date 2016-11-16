@@ -27,6 +27,8 @@ import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
+import is.hello.sense.flows.smartalarm.ui.activities.SmartAlarmDetailActivity;
+import is.hello.sense.flows.smartalarm.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
@@ -147,8 +149,8 @@ import is.hello.sense.zendesk.ZendeskModule;
                 HomeFragment.class,
                 VoiceFragment.class,
                 AppSettingsFragment.class,
-                is.hello.sense.flows.smartalarm.ui.activities.SmartAlarmDetailActivity.class,
-                is.hello.sense.flows.smartalarm.ui.fragments.SmartAlarmDetailFragment.class
+                SmartAlarmDetailActivity.class,
+                SmartAlarmDetailFragment.class
 
 
         }
