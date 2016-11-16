@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -33,7 +35,6 @@ import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.flows.expansions.interactors.ExpansionsInteractor;
-import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionValuePickerActivity;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
 import is.hello.sense.flows.smartalarm.ui.views.SmartAlarmDetailView;
@@ -66,10 +67,12 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     public static final String KEY_INDEX = SmartAlarmDetailFragment.class.getName() + ".KEY_INDEX";
     public static final String KEY_SKIP = SmartAlarmDetailFragment.class.getName() + ".KEY_SKIP";
     public static final String KEY_DIRTY = SmartAlarmDetailFragment.class.getName() + ".KEY_DIRTY";
-    private static final int TIME_REQUEST_CODE = 0x747;
-    private static final int SOUND_REQUEST_CODE = 0x50;
-    private static final int REPEAT_REQUEST_CODE = 0x59;
-    private static final int EXPANSION_VALUE_REQUEST_CODE = 0x69;
+    public static final String EXTRA_EXPANSION_ID = SmartAlarmDetailFragment.class.getName() + ".EXTRA_EXPANSION_ID";
+    public static final int RESULT_EXPANSION_AUTH = 3101;
+    private static final int TIME_REQUEST_CODE = 1863;
+    private static final int SOUND_REQUEST_CODE = 80;
+    private static final int REPEAT_REQUEST_CODE = 89;
+    private static final int EXPANSION_VALUE_REQUEST_CODE = 105;
     private static final int DEFAULT_HOUR = 7;
     private static final int DEFAULT_MINUTE = 30;
 
@@ -137,6 +140,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         addInteractor(this.smartAlarmInteractor);
         addInteractor(this.hasVoiceInteractor);
         addInteractor(this.preferences);
@@ -271,6 +275,15 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
 
     @NotTested
     @Override
+    public void onCreateOptionsMenu(final Menu menu,
+                                    final MenuInflater inflater) {
+        getActivity().getMenuInflater().inflate(R.menu.alarm_detail, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+
+    @NotTested
+    @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.item_save:
@@ -337,7 +350,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     /**
      * Allow user to choose a new time for the alarm.
      *
-     * @param ignored
+     * @param ignored ignored
      */
     @NotTested
     private void onTimeClicked(final View ignored) {
@@ -350,7 +363,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     /**
      * Show a dialog explaining smart alarm.
      *
-     * @param ignored
+     * @param ignored ignored
      */
     @NotTested
     private void onHelpClicked(final View ignored) {
@@ -360,7 +373,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     /**
      * Allow user to pick a tone (mp3 file) Sense will play when the alarm is started.
      *
-     * @param ignored
+     * @param ignored ignored
      */
     @NotTested
     private void onToneClicked(final View ignored) {
@@ -383,7 +396,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     /**
      * Allow user to change what days the alarm repeats on.
      *
-     * @param ignored
+     * @param ignored ignored
      */
     @NotTested
     private void onRepeatClicked(final View ignored) {
@@ -403,7 +416,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     /**
      * Show prompt that will delete the alarm.
      *
-     * @param ignored
+     * @param ignored ignored
      */
     @NotTested
     private void onDeleteClicked(final View ignored) {
@@ -429,8 +442,8 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     /**
      * Callback when the user toggles the smart alarm. Will update the state of {@link #alarm}.
      *
-     * @param ignored
-     * @param isChecked
+     * @param ignored   not used
+     * @param isChecked true turns the alarm into a smart alarm
      */
     @NotTested
     private void onSmartAlarmToggled(final CompoundButton ignored,
@@ -497,7 +510,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     /**
      * Show the error dialog
      *
-     * @param e
+     * @param e checked for 412 status or instance of {@link is.hello.sense.interactors.SmartAlarmInteractor.DayOverlapError}
      */
     @NotTested
     public void presentError(@NonNull final Throwable e) {
@@ -582,6 +595,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
                 clickListener = (ignored) -> redirectToExpansionPicker(expansionAlarm);
             }
         } else {
+            // Not connect. Need to authorize.
             value = getString(defaultValue);
             clickListener = (ignored) -> redirectToExpansionDetail(expansion.getId());
         }
@@ -602,7 +616,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     /**
      * Show a picker for the given expansion alarm.
      *
-     * @param expansionAlarm
+     * @param expansionAlarm alarm to be changed
      */
     @NotTested
     private void redirectToExpansionPicker(@NonNull final ExpansionAlarm expansionAlarm) {
@@ -615,7 +629,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     /**
      * Show a picker for the given expansion.
      *
-     * @param expansion
+     * @param expansion expansion to be modified
      */
     @NotTested
     public void redirectToExpansionPicker(@NonNull final Expansion expansion) {
@@ -627,25 +641,25 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     }
 
     /**
-     * Show a picker for the given expansion ID.
+     * Show authorization for the given expansion ID.
      *
-     * @param expansionId
+     * @param expansionId expansion id to authenticate
      */
     @NotTested
     private void redirectToExpansionDetail(final long expansionId) {
         //todo should finish flow and let activity start another fragment
-        startActivityForResult(ExpansionSettingsActivity.getExpansionDetailIntent(getActivity(),
-                                                                                  expansionId),
-                               EXPANSION_VALUE_REQUEST_CODE);
+        final Intent intent = new Intent();
+        intent.putExtra(EXTRA_EXPANSION_ID, expansionId);
+        finishFlowWithResult(RESULT_EXPANSION_AUTH, intent);
     }
 
     /**
      * Show an error when we fail to fetch expansions from {@link #expansionsInteractor#expansions}.
      *
-     * @param throwable
+     * @param ignored ignored
      */
     @NotTested
-    private void bindExpansionError(final Throwable throwable) {
+    private void bindExpansionError(final Throwable ignored) {
         new SenseAlertDialog.Builder()
                 .setTitle(R.string.expansion_not_loaded_title)
                 .setMessage(R.string.expansion_not_loaded_message)

@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.provider.AlarmClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import com.segment.analytics.Properties;
@@ -23,7 +22,14 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
+import is.hello.sense.api.model.v2.expansions.Category;
+import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
+import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
+import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
+import is.hello.sense.flows.expansions.ui.fragments.ExpansionsAuthFragment;
 import is.hello.sense.flows.smartalarm.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -127,23 +133,12 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
         }
     }
 
-    @NotTested
-    @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
-        getMenuInflater().inflate(R.menu.alarm_detail, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
 
     @NotTested
     @Override
     public boolean onMenuItemSelected(final int featureId, @NonNull final MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
-            return true;
-        } else if (item.getItemId() == R.id.item_save) {
-            if (getTopFragment() instanceof SmartAlarmDetailFragment) {
-                getTopFragment().onOptionsItemSelected(item);
-            }
             return true;
         }
         return super.onMenuItemSelected(featureId, item);
@@ -153,33 +148,88 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
     //region FragmentNavigation
     @NotTested
     @Override
-    public final void pushFragment(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
+    public final void pushFragment(@NonNull final Fragment fragment,
+                                   @Nullable final String title,
+                                   final boolean wantsBackStackEntry) {
         navigationDelegate.pushFragment(fragment, title, wantsBackStackEntry);
     }
 
     @NotTested
     @Override
-    public final void pushFragmentAllowingStateLoss(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
+    public final void pushFragmentAllowingStateLoss(@NonNull final Fragment fragment,
+                                                    @Nullable final String title,
+                                                    final boolean wantsBackStackEntry) {
         navigationDelegate.pushFragmentAllowingStateLoss(fragment, title, wantsBackStackEntry);
     }
 
     @NotTested
     @Override
-    public final void popFragment(@NonNull final Fragment fragment, final boolean immediate) {
+    public final void popFragment(@NonNull final Fragment fragment,
+                                  final boolean immediate) {
         navigationDelegate.popFragment(fragment, immediate);
     }
 
     @NotTested
     @Override
-    public final void flowFinished(@NonNull final Fragment fragment, final int responseCode, @Nullable final Intent result) {
-        if (responseCode == Activity.RESULT_CANCELED) {
-            if (fragment instanceof SmartAlarmDetailFragment) {
+    public final void flowFinished(@NonNull final Fragment fragment,
+                                   final int responseCode,
+                                   @Nullable final Intent result) {
+//ExpansionAuthFragment
+        switch (responseCode) {
+            case RESULT_CANCELED:
+                if (fragment instanceof SmartAlarmDetailFragment) {
+                    finish();
+                    return;
+                }
+                popFragment(fragment, false);
+                break;
+            case RESULT_OK:
+                if (fragment instanceof ExpansionDetailFragment) {
+                    popFragment(fragment, true);
+                    return;
+                }
+                if (fragment instanceof ExpansionsAuthFragment) {
+                    popFragment(fragment, true);
+                    showConfigurationSelection();
+                    return;
+                }
+                if (fragment instanceof ConfigSelectionFragment) {
+                    popFragment(fragment, true);
+                    return;
+                }
                 finish();
-                return;
-            }
-            popFragment(fragment, false);
-        } else if (responseCode == Activity.RESULT_OK) {
-            finish();
+                break;
+            case SmartAlarmDetailFragment.RESULT_EXPANSION_AUTH:
+                if (result != null) {
+                    final long expansionId = result.getLongExtra(SmartAlarmDetailFragment.EXTRA_EXPANSION_ID, Constants.NONE);
+                    if (expansionId != Constants.NONE) {
+                        //show auth fragment
+                        showExpansionDetail(expansionId);
+                    }
+                }
+                break;
+            case ExpansionDetailFragment.RESULT_ACTION_PRESSED:
+                showExpansionAuth();
+                break;
+            case ExpansionDetailFragment.RESULT_CONFIGURE_PRESSED:
+                showConfigurationSelection();
+                break;
+            case ConfigSelectionFragment.RESULT_CONFIG_SELECTED:
+                if (result != null) {
+                    // todo move extra to a class that makes sense, leaving to make sure nothing breaks for now
+                    final Expansion expansion = (Expansion) result.getSerializableExtra(ExpansionSettingsActivity.EXTRA_EXPANSION);
+                    if (expansion != null) {
+                        popFragment(fragment, true);
+                        showValuePicker(expansion.getId(),
+                                        expansion.getCategory(),
+                                        expansion.getValueRange(),
+                                        false); // todo default to true.
+                    }
+                }
+                break;
+            default:
+
+
         }
     }
 
@@ -207,9 +257,36 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
     private void showSmartAlarmDetailFragment(@NonNull final Alarm alarm,
                                               final int index,
                                               final boolean skipUI) {
-        navigationDelegate.pushFragment(SmartAlarmDetailFragment.newInstance(alarm, index, skipUI),
-                                        SmartAlarmDetailFragment.class.getSimpleName(),
-                                        false);
+        pushFragment(SmartAlarmDetailFragment.newInstance(alarm, index, skipUI),
+                     SmartAlarmDetailFragment.class.getSimpleName(),
+                     false);
+    }
+
+    @NotTested
+    private void showExpansionDetail(final long expansionId) {
+        pushFragment(ExpansionDetailFragment.newInstance(expansionId), null, true);
+    }
+
+    @NotTested
+    private void showValuePicker(final long expansionId,
+                                 @NonNull final Category category,
+                                 @Nullable final ExpansionValueRange valueRange,
+                                 final boolean enabledForSmartAlarm) {
+        // todo make another fragment for this.
+        pushFragment(ExpansionDetailFragment.newValuePickerInstance(expansionId,
+                                                                    category,
+                                                                    valueRange, enabledForSmartAlarm), null, true);
+    }
+
+
+    @NotTested
+    private void showExpansionAuth() {
+        pushFragment(new ExpansionsAuthFragment(), null, true);
+    }
+
+    @NotTested
+    public void showConfigurationSelection() {
+        pushFragment(new ConfigSelectionFragment(), null, true);
     }
 
     /**
