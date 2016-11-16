@@ -54,6 +54,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingSetLocationFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
@@ -298,6 +299,8 @@ public class OnboardingActivity extends ScopedInjectionActivity
             } else if (responseCode == IntroductionFragment.RESPONSE_GET_STARTED) {
                 showGetStarted(false);
             }
+        } else if (fragment instanceof OnboardingSetLocationFragment) {
+            showSetupSense();
         } else if (fragment instanceof ConnectToWiFiFragment) {
             showPairPill(true);
         } else if (fragment instanceof BluetoothFragment) {
@@ -462,7 +465,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
             final Account account = getAccount();
             bindAndSubscribe(apiService.updateAccount(account, true), ignored -> {
                 LoadingDialogFragment.close(getFragmentManager());
-                showEnhancedAudio();
+                showSetLocation();
             }, e -> {
                 LoadingDialogFragment.close(getFragmentManager());
                 ErrorDialogFragment.presentError(this, e);
@@ -472,6 +475,10 @@ public class OnboardingActivity extends ScopedInjectionActivity
 
     public void showEnhancedAudio() {
         pushFragment(new OnboardingRegisterAudioFragment(), null, false);
+    }
+
+    public void showSetLocation() {
+        pushFragment(new OnboardingSetLocationFragment(), null, false);
     }
 
     public void showSetupSense() {
