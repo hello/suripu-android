@@ -12,6 +12,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 
+import com.segment.analytics.Properties;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 
@@ -47,6 +49,7 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.TimePickerDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.GenericListObject;
@@ -200,7 +203,9 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
 
     @NotTested
     @Override
-    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) {
             if (requestCode == EXPANSION_VALUE_REQUEST_CODE) {
@@ -427,7 +432,10 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
                                        null, LoadingDialogFragment.DEFAULTS);
             bindAndSubscribe(this.smartAlarmInteractor.deleteSmartAlarm(this.index),
                              ignored2 ->
-                                     cancelFlow(),
+                             {
+                                 sendAnalytics();
+                                 cancelFlow();
+                             },
                              this::presentError);
         });
         builder.setNegativeButton(android.R.string.cancel, null);
@@ -456,6 +464,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     @NotTested
     private void saveAlarm() {
         if (!this.dirty && this.alarm.isEnabled()) {
+            sendAnalytics();
             finishFlow();
             return;
         }
@@ -493,7 +502,11 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
 
                 LoadingDialogFragment.show(getFragmentManager(),
                                            null, LoadingDialogFragment.DEFAULTS);
-                bindAndSubscribe(saveOperation, ignored -> finishFlow(), this::presentError);
+                bindAndSubscribe(saveOperation, ignored -> {
+                    sendAnalytics();
+                    LoadingDialogFragment.close(getFragmentManager());
+                    finishFlow();
+                }, this::presentError);
             }
         });
 
@@ -559,7 +572,6 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
      */
     @NotTested
     private void bindExpansions(@NonNull final ArrayList<Expansion> expansions) {
-        // Set initial click listener
         for (final Expansion expansion : expansions) {
             updateExpansion(expansion);
         }
@@ -612,6 +624,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
      */
     @NotTested
     private void redirectToExpansionPicker(@NonNull final ExpansionAlarm expansionAlarm) {
+        //todo should finish flow and let activity start another fragment
         startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
                                                                       expansionAlarm),
                                EXPANSION_VALUE_REQUEST_CODE);
@@ -624,6 +637,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
      */
     @NotTested
     public void redirectToExpansionPicker(@NonNull final Expansion expansion) {
+        //todo should finish flow and let activity start another fragment
         startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
                                                                       expansion,
                                                                       false),
@@ -637,6 +651,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
      */
     @NotTested
     private void redirectToExpansionDetail(final long expansionId) {
+        //todo should finish flow and let activity start another fragment
         startActivityForResult(ExpansionSettingsActivity.getExpansionDetailIntent(getActivity(),
                                                                                   expansionId),
                                EXPANSION_VALUE_REQUEST_CODE);
@@ -669,6 +684,21 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     @NotTested
     private boolean isNewAlarm() {
         return this.index == Constants.NONE;
+    }
+
+
+    /**
+     * Send analytics for the current state of the alarm. Should be done when finished modifying.
+     */
+    public void sendAnalytics() {
+        final String daysRepeated = TextUtils.join(", ", alarm.getSortedDaysOfWeek());
+        final Properties properties =
+                Analytics.createProperties(Analytics.Backside.PROP_ALARM_ENABLED, alarm.isEnabled(),
+                                           Analytics.Backside.PROP_ALARM_IS_SMART, alarm.isSmart(),
+                                           Analytics.Backside.PROP_ALARM_DAYS_REPEATED, daysRepeated,
+                                           Analytics.Backside.PROP_ALARM_HOUR, alarm.getHourOfDay(),
+                                           Analytics.Backside.PROP_ALARM_MINUTE, alarm.getMinuteOfHour());
+        Analytics.trackEvent(Analytics.Backside.EVENT_ALARM_SAVED, properties);
     }
     //endregion
 }

@@ -34,6 +34,7 @@ import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
+import is.hello.sense.util.NotTested;
 
 public class SmartAlarmDetailActivity extends ScopedInjectionActivity
         implements FragmentNavigation {
@@ -47,6 +48,7 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
      * @param alarm   alarm object to represent.
      * @param index   position of alarm. If new should be {@link Constants#NONE}.
      */
+    @NotTested
     public static void startActivity(@NonNull final Context context,
                                      @NonNull final Alarm alarm,
                                      final int index) {
@@ -64,6 +66,15 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
     //endregion
 
     //region ScopedInjectionActivity
+
+    @NotTested
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bounce();
+    }
+
+    @NotTested
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +103,7 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
         }
     }
 
+    @NotTested
     @Override
     protected void onResume() {
         super.onResume();
@@ -99,11 +111,13 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
         setStatusBarColorPrimary();
     }
 
+    @NotTested
     @Override
     protected List<Object> getModules() {
         return new ArrayList<>(); //todo create a module for this flow
     }
 
+    @NotTested
     @Override
     public void onBackPressed() {
         final Fragment fragment = getTopFragment();
@@ -113,12 +127,14 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
         }
     }
 
+    @NotTested
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.alarm_detail, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
+    @NotTested
     @Override
     public boolean onMenuItemSelected(final int featureId, @NonNull final MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -135,21 +151,25 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
     //endregion
 
     //region FragmentNavigation
+    @NotTested
     @Override
     public final void pushFragment(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
         navigationDelegate.pushFragment(fragment, title, wantsBackStackEntry);
     }
 
+    @NotTested
     @Override
     public final void pushFragmentAllowingStateLoss(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
         navigationDelegate.pushFragmentAllowingStateLoss(fragment, title, wantsBackStackEntry);
     }
 
+    @NotTested
     @Override
     public final void popFragment(@NonNull final Fragment fragment, final boolean immediate) {
         navigationDelegate.popFragment(fragment, immediate);
     }
 
+    @NotTested
     @Override
     public final void flowFinished(@NonNull final Fragment fragment, final int responseCode, @Nullable final Intent result) {
         if (responseCode == Activity.RESULT_CANCELED) {
@@ -159,13 +179,11 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
             }
             popFragment(fragment, false);
         } else if (responseCode == Activity.RESULT_OK) {
-            if (fragment instanceof SmartAlarmDetailFragment) {
-
-            }
             finish();
         }
     }
 
+    @NotTested
     @Nullable
     @Override
     public final Fragment getTopFragment() {
@@ -174,6 +192,18 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
     //endregion
 
     //region methods
+
+    /**
+     * Shows the fragment that will allow the user to create/modify/delete the alarm passed to this
+     * activity.
+     *
+     * @param alarm  - should be provided with {@link SmartAlarmDetailActivity#startActivity(Context, Alarm, int)}
+     * @param index  - position of alarm in list from {@link is.hello.sense.ui.fragments.sounds.SmartAlarmListFragment}.
+     *               Should be {@link Constants#NONE} if the user is creating a new one.
+     * @param skipUI - true if from another app saving an alarm and we should not show any UI while
+     *               saving it.
+     */
+    @NotTested
     private void showSmartAlarmDetailFragment(@NonNull final Alarm alarm,
                                               final int index,
                                               final boolean skipUI) {
@@ -182,6 +212,10 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
                                         false);
     }
 
+    /**
+     * Call if this activity is started from another app saving an alarm for the user.
+     */
+    @NotTested
     private void processSetAlarmIntent() {
         final Intent intent = getIntent();
         final int hour = intent.getIntExtra(AlarmClock.EXTRA_HOUR, 7);
@@ -204,6 +238,10 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
         showSmartAlarmDetailFragment(alarm, index, skipUI);
     }
 
+    /**
+     * Kill this activity if the user isn't logged in.
+     */
+    @NotTested
     private void bounce() {
         if (!sessionManager.hasSession()) {
             startActivity(new Intent(this, OnboardingActivity.class));
