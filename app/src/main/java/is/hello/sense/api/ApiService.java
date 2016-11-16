@@ -19,7 +19,6 @@ import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SenseTimeZone;
-import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.StoreReview;
 import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.UpdateCheckIn;
@@ -172,20 +171,14 @@ public interface ApiService {
 
     //region Room Conditions
 
+    @Deprecated
     @GET("/v1/room/current")
     Observable<RoomConditions> currentRoomConditions(@NonNull @Query("temp_unit") String unit);
 
+    @Deprecated
     @GET("/v1/room/all_sensors/hours")
     Observable<RoomSensorHistory> roomSensorHistory(@Query("quantity") int numberOfHours,
                                                     @Query("from_utc") long timestamp);
-
-    @GET("/v1/room/{sensor}/day")
-    Observable<ArrayList<SensorGraphSample>> sensorHistoryForDay(@Path("sensor") String sensor,
-                                                                 @Query("from") long timestamp);
-
-    @GET("/v1/room/{sensor}/week")
-    Observable<ArrayList<SensorGraphSample>> sensorHistoryForWeek(@Path("sensor") String sensor,
-                                                                  @Query("from") long timestamp);
 
     @GET("/v2/sensors")
     Observable<SensorResponse> getSensors();

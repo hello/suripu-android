@@ -14,11 +14,11 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
+import is.hello.sense.flows.home.ui.views.AppSettingsView;
 import is.hello.sense.flows.voice.ui.activities.VoiceSettingsActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.interactors.HasVoiceInteractor;
-import is.hello.sense.flows.home.ui.views.AppSettingsView;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
@@ -26,8 +26,6 @@ import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Share;
-import rx.Subscription;
-import rx.subscriptions.Subscriptions;
 
 public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> implements
         AppSettingsView.ClickListenerGenerator {
