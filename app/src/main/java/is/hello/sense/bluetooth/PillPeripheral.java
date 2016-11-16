@@ -36,7 +36,7 @@ public final class PillPeripheral implements Serializable {
     //region Identifiers
     public static final byte[] NORMAL_ADVERTISEMENT_SERVICE_128_BIT = Bytes.fromString("23D1BCEA5F782315DEEF121210E10000");
     public static final byte[] DFU_ADVERTISEMENT_SERVICE_128_BIT = Bytes.fromString("23D1BCEA5F782315DEEF121230150000");
-    public static final byte[] MANUFACTURE_DATA_PILL_ONE_FIVE_PREFIX = Bytes.fromString("EA032212");
+    public static final byte[] MANUFACTURE_DATA_PILL_ONE_FIVE_PREFIX = Bytes.fromString("EA0312");
     private static final UUID SERVICE = UUID.fromString("0000e110-1212-efde-1523-785feabcd123");
     private static final UUID CHARACTERISTIC_COMMAND_UUID = UUID.fromString("0000DEED-0000-1000-8000-00805F9B34FB");
     private static final byte COMMAND_WIPE_FIRMWARE = 8;
@@ -80,11 +80,19 @@ public final class PillPeripheral implements Serializable {
                 b -> Arrays.equals(PillPeripheral.NORMAL_ADVERTISEMENT_SERVICE_128_BIT, b));
     }
 
+    //TODO once we can properly fetch {@link AdvertisingData.TYPE_MANUFACTURE_SPECIFIC_DATA} stop iterating over all record types
     public static boolean isPillOneFive(@Nullable final AdvertisingData advertisingData) {
-        return advertisingData != null
-                && advertisingData.anyRecordMatches(
-                AdvertisingData.TYPE_MANUFACTURER_SPECIFIC_DATA,
-                b -> Bytes.startWith(b, MANUFACTURE_DATA_PILL_ONE_FIVE_PREFIX));
+        if(advertisingData == null){
+            return false;
+        }
+
+        for(final int recordType : advertisingData.copyRecordTypes()){
+            if(advertisingData.anyRecordMatches(recordType,
+                                             b -> Bytes.startWith(b, MANUFACTURE_DATA_PILL_ONE_FIVE_PREFIX))){
+                return true;
+            }
+        }
+        return false;
     }
 
     //region Creation
