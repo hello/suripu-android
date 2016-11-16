@@ -60,7 +60,7 @@ public class PillDfuInteractor extends ValueInteractor<PillPeripheral> {
     protected Observable<PillPeripheral> provideUpdateObservable() {
         final PeripheralCriteria criteria = new PeripheralCriteria();
         criteria.setDuration(PeripheralCriteria.DEFAULT_DURATION_MS);
-        criteria.addPredicate(ad -> (PillPeripheral.isPillNormal(ad) || PillPeripheral.isPillDfu(ad)));
+        criteria.addPredicate(ad -> ((PillPeripheral.isPillNormal(ad) && PillPeripheral.isPillOneFive(ad)) || PillPeripheral.isPillDfu(ad)));
         return bluetoothStack.discoverPeripherals(criteria)
                              .map(gattPeripherals -> {
                                  GattPeripheral closestPill = null;

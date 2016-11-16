@@ -28,7 +28,6 @@ import is.hello.sense.bluetooth.exceptions.PillCharNotFoundException;
 import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
 import is.hello.sense.functional.Functions;
 import rx.Observable;
-import rx.Subscriber;
 
 
 //todo move to commonsense or commonpill??? after this is working
@@ -37,6 +36,7 @@ public final class PillPeripheral implements Serializable {
     //region Identifiers
     public static final byte[] NORMAL_ADVERTISEMENT_SERVICE_128_BIT = Bytes.fromString("23D1BCEA5F782315DEEF121210E10000");
     public static final byte[] DFU_ADVERTISEMENT_SERVICE_128_BIT = Bytes.fromString("23D1BCEA5F782315DEEF121230150000");
+    public static final byte[] MANUFACTURE_DATA_PILL_ONE_FIVE_PREFIX = Bytes.fromString("EA032212");
     private static final UUID SERVICE = UUID.fromString("0000e110-1212-efde-1523-785feabcd123");
     private static final UUID CHARACTERISTIC_COMMAND_UUID = UUID.fromString("0000DEED-0000-1000-8000-00805F9B34FB");
     private static final byte COMMAND_WIPE_FIRMWARE = 8;
@@ -78,6 +78,13 @@ public final class PillPeripheral implements Serializable {
                 && advertisingData.anyRecordMatches(
                 AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
                 b -> Arrays.equals(PillPeripheral.NORMAL_ADVERTISEMENT_SERVICE_128_BIT, b));
+    }
+
+    public static boolean isPillOneFive(@Nullable final AdvertisingData advertisingData) {
+        return advertisingData != null
+                && advertisingData.anyRecordMatches(
+                AdvertisingData.TYPE_MANUFACTURER_SPECIFIC_DATA,
+                b -> Bytes.startWith(b, MANUFACTURE_DATA_PILL_ONE_FIVE_PREFIX));
     }
 
     //region Creation
