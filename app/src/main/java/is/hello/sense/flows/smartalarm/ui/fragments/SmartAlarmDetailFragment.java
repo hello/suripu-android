@@ -313,13 +313,13 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
                                                         .getFormattedAttributionValueRange(newExpansionAlarm.getCategory(),
                                                                                            newExpansionAlarm.getExpansionRange(),
                                                                                            getActivity()));
-            final Expansion expansion = getExpansion(savedExpansionAlarm.getCategory());
+            final Expansion expansion = expansionsInteractor.getExpansion(savedExpansionAlarm.getCategory());
             if (expansion != null) {
                 updateExpansion(expansion);
             }
         } else {
             this.alarm.getExpansions().add(newExpansionAlarm);
-            final Expansion expansion = getExpansion(newExpansionAlarm.getCategory());
+            final Expansion expansion = expansionsInteractor.getExpansion(newExpansionAlarm.getCategory());
             if (expansion != null) {
                 updateExpansion(expansion);
             }
