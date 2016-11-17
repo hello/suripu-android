@@ -93,16 +93,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"/>
 
-        <TextView
-            android:id="@+id/view_expansion_detail_configuration_reload"
-            style="@style/AppTheme.Text.Body.Dim"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/action_retry"
-            android:layout_gravity="end|center_vertical"
-            android:drawableEnd="@drawable/disclosure_chevron_small"
-            android:drawablePadding="@dimen/x1"
-            android:visibility="gone"/>
     </FrameLayout>
 
     <LinearLayout

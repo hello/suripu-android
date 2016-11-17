@@ -105,8 +105,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     public void initializePresenterView() {
         if (presenterView == null) {
             presenterView = new ExpansionDetailView(getActivity(),
-                                                    this::onRemoveAccessClicked,
-                                                    (v) -> this.configurationsInteractor.update());
+                                                    this::onRemoveAccessClicked);
         }
     }
 
@@ -192,22 +191,22 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         if (configurations == null) {
             return;
         }
-        if (configurations.isEmpty()) {
-            presenterView.showConfigurationEmpty();
-        } else {
-            Configuration selectedConfig = null;
-            for (int i = 0; i < configurations.size(); i++) {
-                final Configuration config = configurations.get(i);
-                if (config.isSelected()) {
-                    selectedConfig = config;
-                    break;
-                }
-            }
-            //todo pass along selected config and list to move work to interactor
-            if (selectedConfig != null) {
-                presenterView.showConfigurationSuccess(selectedConfig.getName(), this::onConfigureClicked);
+        Configuration selectedConfig = null;
+        for (int i = 0; i < configurations.size(); i++) {
+            final Configuration config = configurations.get(i);
+            if (config.isSelected()) {
+                selectedConfig = config;
+                break;
             }
         }
+        //todo pass along selected config and list to move work to interactor
+        final String configName;
+        if (selectedConfig == null) {
+            configName = getString(R.string.expansions_select);
+        } else {
+            configName = selectedConfig.getName();
+        }
+        presenterView.showConfigurationSuccess(configName, this::onConfigureClicked);
     }
 
     public void bindExpansion(@Nullable final Expansion expansion) {
@@ -319,19 +318,19 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     private void onRemoveAccessClicked(final View ignored) {
         final Runnable hideBlockingRunnable =
                 stateSafeExecutor.bind(() -> {
-                    this.finishFlowWithResult(Activity.RESULT_OK,
-                                              new Intent().putExtra(EXTRA_EXPANSION_ID,
-                                                                    getArguments().getLong(ARG_EXPANSION_ID, NO_ID))
-                                             );
+                                           this.finishFlowWithResult(Activity.RESULT_OK,
+                                                                     new Intent().putExtra(EXTRA_EXPANSION_ID,
+                                                                                           getArguments().getLong(ARG_EXPANSION_ID, NO_ID))
+                                                                    );
                                        }
                                       );
 
         final SenseAlertDialog.SerializedRunnable finishRunnable = () ->
                 ExpansionDetailFragment.this.updateState(State.REVOKED,
                                                          ignored2 ->
-                                                                hideBlockingActivity(true,
-                                                                                     hideBlockingRunnable
-                                                                                    )
+                                                                 hideBlockingActivity(true,
+                                                                                      hideBlockingRunnable
+                                                                                     )
                                                         );
         showAlertDialog(new SenseAlertDialog.Builder().setTitle(R.string.are_you_sure)
                                                       .setMessage(R.string.expansion_detail_remove_access_dialog_message)
@@ -388,7 +387,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             intentWithExpansionAlarm.putExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM, expansionAlarm);
             finishFlowWithResult(Activity.RESULT_OK, intentWithExpansionAlarm);
             return true;
-        } else if(! wantsValuePicker){
+        } else if (!wantsValuePicker) {
             finishFlow();
             return true;
         }
