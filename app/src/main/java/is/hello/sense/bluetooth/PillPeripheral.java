@@ -97,14 +97,20 @@ public final class PillPeripheral implements Serializable {
         return false;
     }
 
+    /**
+     * @param peripherals to choose from
+     * @return a new {@link PillPeripheral} based on strength of Rssi or {@code null} if empty list <br>
+     * Ex. peripheral A with Rssi -50 is stronger than peripheral B with Rssi of -51
+     * so A is returned.
+     */
     @Nullable
     public static PillPeripheral getClosestByRssi(@NonNull final List<GattPeripheral> peripherals){
-        Collections.sort(peripherals,
-                         (current, other) -> Integer.compare(other.getScanTimeRssi(),
-                                                             current.getScanTimeRssi()));
         if(peripherals.isEmpty()){
             return null;
         }
+        Collections.sort(peripherals,
+                         (current, other) -> Integer.compare(other.getScanTimeRssi(),
+                                                             current.getScanTimeRssi()));
         return new PillPeripheral(peripherals.get(0));
     }
 

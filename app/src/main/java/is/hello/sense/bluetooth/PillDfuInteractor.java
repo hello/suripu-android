@@ -65,11 +65,21 @@ public class PillDfuInteractor extends ValueInteractor<PillPeripheral> {
 
     }
 
+    /**
+     * @param ad to determine identity of peripheral
+     * @return true only if {@link AdvertisingData}
+     * has same characteristics as Pill 1.5 or Pill in DFU mode
+     */
     private static Boolean hasUpdateAdvertisingData(@Nullable final AdvertisingData ad) {
         return (PillPeripheral.isPillOneFive(ad) && PillPeripheral.isPillNormal(ad))
                 || PillPeripheral.isPillDfu(ad);
     }
 
+    /**
+     * @param pillPeripheral to check
+     * @return {@link Observable#error(Throwable)} if checks fail
+     * or the peripheral as an Observable itself if all valid
+     */
     private static Observable<PillPeripheral> pillPeripheralChecks(@Nullable final PillPeripheral pillPeripheral){
         if (pillPeripheral == null) {
             return Observable.error(new PillNotFoundException());
