@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import is.hello.sense.R;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.common.SenseFragment;
+import is.hello.sense.util.Analytics;
 
 /**
  * Show user explanation for requiring location permission
@@ -19,6 +20,14 @@ public class OnboardingSetLocationFragment extends SenseFragment {
 
     private OnboardingSimpleStepView view;
     private final LocationPermission permission = new LocationPermission(this);
+
+    @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.Onboarding.EVENT_LOCATION, null);
+        }
+    }
 
     @Nullable
     @Override
@@ -42,7 +51,7 @@ public class OnboardingSetLocationFragment extends SenseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if(view != null) {
+        if (view != null) {
             this.view.destroy();
         }
     }
@@ -52,7 +61,7 @@ public class OnboardingSetLocationFragment extends SenseFragment {
                                            @NonNull final String[] permissions,
                                            @NonNull final int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(permission.isGrantedFromResult(requestCode, permissions, grantResults)){
+        if (permission.isGrantedFromResult(requestCode, permissions, grantResults)) {
             finishFlow();
         } else {
             permission.showEnableInstructionsDialog();
@@ -64,7 +73,7 @@ public class OnboardingSetLocationFragment extends SenseFragment {
     }
 
     private void setLocation(final View primaryButton) {
-        if(! permission.isGranted()){
+        if (!permission.isGranted()) {
             permission.requestPermissionWithDialog();
         } else {
             finishFlow();

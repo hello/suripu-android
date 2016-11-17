@@ -49,7 +49,6 @@ import is.hello.sense.ui.fragments.onboarding.HaveSenseReadyFragment;
 import is.hello.sense.ui.fragments.onboarding.IntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPill;
-import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
@@ -471,10 +470,6 @@ public class OnboardingActivity extends ScopedInjectionActivity
                 ErrorDialogFragment.presentError(this, e);
             });
         }
-    }
-
-    public void showEnhancedAudio() {
-        pushFragment(new OnboardingRegisterAudioFragment(), null, false);
     }
 
     public void showSetLocation() {
