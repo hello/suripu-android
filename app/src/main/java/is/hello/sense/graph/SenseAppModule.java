@@ -16,7 +16,6 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
-import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
@@ -61,7 +60,6 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPill;
-import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
@@ -141,7 +139,6 @@ import is.hello.sense.zendesk.ZendeskModule;
 
                 //todo remove when fragments use presenters
                 OnboardingSenseColorsFragment.class,
-                OnboardingRegisterAudioFragment.class,
                 OnboardingPairPill.class,
                 BacksideFragment.class,
                 RoomConditionsFragment.class,
