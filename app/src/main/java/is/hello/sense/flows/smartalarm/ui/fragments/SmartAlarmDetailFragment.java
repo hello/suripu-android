@@ -171,6 +171,11 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
             this.index = args.getInt(ARG_INDEX);
             this.dirty = index == Constants.NONE;
             this.expansionsInteractor.update();
+            if (alarm == null) {
+                // should never happen but just in case.
+                cancelFlow();
+                return;
+            }
         }
         updateUIForAlarm();
         bindAndSubscribe(this.expansionsInteractor.expansions,
@@ -294,6 +299,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     //endregion
 
     //region methods
+
     /**
      * Used to update the fragment when the user has authenticated or choose a new value for the expansion.
      *
