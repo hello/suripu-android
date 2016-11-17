@@ -1,7 +1,6 @@
 package is.hello.sense.flows.smartalarm.ui.fragments;
 
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,7 +34,6 @@ import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.flows.expansions.interactors.ExpansionsInteractor;
-import is.hello.sense.flows.expansions.ui.activities.ExpansionValuePickerActivity;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
 import is.hello.sense.flows.smartalarm.ui.views.SmartAlarmDetailView;
 import is.hello.sense.functional.Functions;
@@ -218,13 +216,6 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
                                  final int resultCode,
                                  final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != Activity.RESULT_OK) {
-            if (requestCode == EXPANSION_VALUE_REQUEST_CODE) {
-                this.expansionsInteractor.update();
-            }
-            return;
-        }
-
         if (data == null) {
             return;
         }
@@ -249,30 +240,6 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
             final List<Integer> selectedDays = data.getIntegerArrayListExtra(ListActivity.VALUE_ID);
             this.alarm.setDaysOfWeek(selectedDays);
             this.presenterView.setRepeatDaysTextView(this.alarm.getRepeatSummary(getActivity(), false));
-            markDirty();
-        } else if (requestCode == EXPANSION_VALUE_REQUEST_CODE) {
-            final ExpansionAlarm expansionAlarm = (ExpansionAlarm) data.getSerializableExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM);
-            final ExpansionAlarm savedExpansionAlarm = this.alarm.getExpansionAlarm(expansionAlarm.getCategory());
-            if (savedExpansionAlarm != null) {
-                savedExpansionAlarm.setExpansionRange(expansionAlarm.getExpansionRange().max);
-                savedExpansionAlarm.setEnabled(expansionAlarm.isEnabled());
-                savedExpansionAlarm.setDisplayValue(this.expansionCategoryFormatter
-                                                            .getFormattedAttributionValueRange(expansionAlarm.getCategory(),
-                                                                                               expansionAlarm.getExpansionRange(),
-                                                                                               getActivity()));
-                final Expansion expansion = expansionsInteractor.getExpansion(savedExpansionAlarm.getCategory());
-                if (expansion != null) {
-                    updateExpansion(expansion);
-                }
-            } else {
-                this.alarm.getExpansions().add(expansionAlarm);
-                final Expansion expansion = expansionsInteractor.getExpansion(expansionAlarm.getCategory());
-                if (expansion != null) {
-                    updateExpansion(expansion);
-                }
-
-            }
-            this.expansionsInteractor.update();
             markDirty();
         }
     }
