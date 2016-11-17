@@ -118,6 +118,7 @@ public class SmartAlarmDetailView extends PresenterView {
         if (deleteClickListener == null) {
             this.deleteRowDivider.setVisibility(View.GONE);
             this.deleteRow.setVisibility(View.GONE);
+            this.deleteRow.setOnClickListener(null);
         } else {
             Views.setSafeOnClickListener(this.deleteRow, deleteClickListener);
             this.deleteRowDivider.setVisibility(View.VISIBLE);

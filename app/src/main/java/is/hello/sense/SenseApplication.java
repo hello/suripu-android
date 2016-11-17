@@ -1,11 +1,9 @@
 package is.hello.sense;
 
-import android.content.Context;
+import android.app.Application;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
-import android.support.multidex.MultiDex;
-import android.support.multidex.MultiDexApplication;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.bugsnag.android.Bugsnag;
@@ -32,7 +30,7 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.SessionLogger;
 import rx.Observable;
 
-public class SenseApplication extends MultiDexApplication {
+public class SenseApplication extends Application {
     public static final String ACTION_BUILT_GRAPH = SenseApplication.class.getName() + ".ACTION_BUILT_GRAPH";
 
     @Inject
@@ -51,12 +49,6 @@ public class SenseApplication extends MultiDexApplication {
     }
 
     private ObjectGraph graph;
-
-    @Override
-    protected void attachBaseContext(final Context base) {
-        super.attachBaseContext(base);
-        MultiDex.install(this);
-    }
 
     @Override
     public void onCreate() {

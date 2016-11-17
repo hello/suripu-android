@@ -70,6 +70,9 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     private static final int SOUND_REQUEST_CODE = 0x50;
     private static final int REPEAT_REQUEST_CODE = 0x59;
     private static final int EXPANSION_VALUE_REQUEST_CODE = 0x69;
+    private static final int DEFAULT_HOUR = 7;
+    private static final int DEFAULT_MINUTE = 30;
+
 
     public static SmartAlarmDetailFragment newInstance(@NonNull final Alarm alarm,
                                                        final int index,
@@ -219,8 +222,8 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         }
 
         if (requestCode == TIME_REQUEST_CODE) {
-            final int hour = data.getIntExtra(TimePickerDialogFragment.RESULT_HOUR, 7);
-            final int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, 30);
+            final int hour = data.getIntExtra(TimePickerDialogFragment.RESULT_HOUR, DEFAULT_HOUR);
+            final int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, DEFAULT_MINUTE);
             this.alarm.setTime(new LocalTime(hour, minute));
             updateUIForAlarm();
             markDirty();
@@ -249,13 +252,13 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
                                                             .getFormattedAttributionValueRange(expansionAlarm.getCategory(),
                                                                                                expansionAlarm.getExpansionRange(),
                                                                                                getActivity()));
-                final Expansion expansion = getExpansion(savedExpansionAlarm.getCategory());
+                final Expansion expansion = expansionsInteractor.getExpansion(savedExpansionAlarm.getCategory());
                 if (expansion != null) {
                     updateExpansion(expansion);
                 }
             } else {
                 this.alarm.getExpansions().add(expansionAlarm);
-                final Expansion expansion = getExpansion(expansionAlarm.getCategory());
+                final Expansion expansion = expansionsInteractor.getExpansion(expansionAlarm.getCategory());
                 if (expansion != null) {
                     updateExpansion(expansion);
                 }
@@ -307,27 +310,6 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     //endregion
 
     //region methods
-
-    /**
-     * Retrieves an Expansion from {@link ExpansionsInteractor#expansions} if it has the same
-     * Category.
-     *
-     * @param category search for an expansion using this category.
-     * @return an Expansion for {@link Category#LIGHT} or {@link Category#TEMPERATURE}
-     */
-    @NotTested
-    private Expansion getExpansion(final Category category) {
-        if (!this.expansionsInteractor.expansions.hasValue()) {
-            return null;
-        }
-        final List<Expansion> expansions = this.expansionsInteractor.expansions.getValue();
-        for (final Expansion expansion : expansions) {
-            if (expansion.getCategory() == category) {
-                return expansion;
-            }
-        }
-        return null;
-    }
 
     /**
      * Call to update all UI views with the current state of {@link #alarm}.
