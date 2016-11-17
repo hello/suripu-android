@@ -156,7 +156,6 @@ tasks.whenTaskAdded { theTask ->
 }
 
 dependencies {
-
     // Is there anything we don't depend on?
     provided 'com.squareup.dagger:dagger-compiler:1.2.2'
     compile 'com.squareup.dagger:dagger:1.2.2'
@@ -173,8 +172,8 @@ dependencies {
     compile 'com.android.support:support-v13:24.0.0'
     compile 'com.android.support:recyclerview-v7:24.0.0'
     compile 'com.android.support:customtabs:24.0.0'
-    compile 'com.google.android.gms:play-services-gcm:9.2.0'
-    compile 'com.google.android.gms:play-services-location:9.2.0'
+    compile 'com.google.android.gms:play-services-gcm:9.6.1'
+    compile 'com.google.android.gms:play-services-location:9.6.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'me.grantland:autofittextview:0.2.1'

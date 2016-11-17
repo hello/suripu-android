@@ -28,6 +28,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.flows.smartalarm.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
@@ -120,7 +121,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
 
     @Override
     protected List<Object> getModules() {
-        if(getIntent() != null && getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)){
+        if (getIntent() != null && getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
             return Arrays.asList(new OnboardingModule(), new SettingsPairSenseModule(true));
         }
         return Arrays.asList(new OnboardingModule(), new OnboardingPairSenseModule());

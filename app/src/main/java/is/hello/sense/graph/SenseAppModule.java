@@ -26,6 +26,8 @@ import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
+import is.hello.sense.flows.smartalarm.ui.activities.SmartAlarmDetailActivity;
+import is.hello.sense.flows.smartalarm.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
@@ -52,7 +54,6 @@ import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.ListActivity;
-import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
@@ -67,7 +68,6 @@ import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.fragments.settings.PillDetailsFragment;
 import is.hello.sense.ui.fragments.settings.SenseDetailsFragment;
 import is.hello.sense.ui.fragments.sounds.SleepSoundsFragment;
-import is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment;
 import is.hello.sense.ui.fragments.sounds.SmartAlarmListFragment;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
 import is.hello.sense.util.Constants;
@@ -125,10 +125,8 @@ import is.hello.sense.zendesk.ZendeskModule;
                 RoomConditionsInteractor.class,
 
                 TrendsInteractor.class,
-                SmartAlarmDetailActivity.class,
                 SmartAlarmListFragment.class,
                 SleepSoundsFragment.class,
-                SmartAlarmDetailFragment.class,
                 SmartAlarmSoundDialogFragment.class,
                 SmartAlarmInteractor.class,
                 SleepSoundsInteractor.class,
@@ -148,6 +146,8 @@ import is.hello.sense.zendesk.ZendeskModule;
                 HomeFragment.class,
                 VoiceFragment.class,
                 AppSettingsFragment.class,
+                SmartAlarmDetailActivity.class,
+                SmartAlarmDetailFragment.class
 
 
         }
