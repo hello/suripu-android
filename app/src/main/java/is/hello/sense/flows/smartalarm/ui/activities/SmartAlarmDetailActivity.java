@@ -1,5 +1,6 @@
 package is.hello.sense.flows.smartalarm.ui.activities;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -63,6 +64,23 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
         intent.putExtra(EXTRA_ALARM, alarm);
         intent.putExtra(EXTRA_INDEX, index);
         context.startActivity(intent);
+    }
+
+    /**
+     * @param activity   used to start the activity.
+     * @param alarm      alarm object to represent.
+     * @param index      position of alarm. If new should be {@link Constants#NONE}.
+     * @param resultCode result code to use.
+     */
+    @NotTested
+    public static void startActivityForResult(@NonNull final Activity activity,
+                                              @NonNull final Alarm alarm,
+                                              final int index,
+                                              final int resultCode) {
+        final Intent intent = new Intent(activity, SmartAlarmDetailActivity.class);
+        intent.putExtra(EXTRA_ALARM, alarm);
+        intent.putExtra(EXTRA_INDEX, index);
+        activity.startActivityForResult(intent, resultCode);
     }
     // endregion
 
@@ -207,6 +225,7 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
                     popFragment(fragment, true);
                     return;
                 }
+                setResult(RESULT_OK);
                 finish();
                 break;
             case SmartAlarmDetailFragment.RESULT_AUTHENTICATE_EXPANSION:

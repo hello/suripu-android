@@ -26,6 +26,7 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.smartalarm.ui.activities.SmartAlarmDetailActivity;
@@ -576,8 +577,10 @@ public class OnboardingActivity extends ScopedInjectionActivity
 
     public void showSetAlarmDetail() {
         pushFragment(new Fragment(), null, false);
-        final Intent newAlarm = new Intent(this, SmartAlarmDetailActivity.class);
-        startActivityForResult(newAlarm, EDIT_ALARM_REQUEST_CODE);
+        SmartAlarmDetailActivity.startActivityForResult(this,
+                                                        new Alarm(),
+                                                        Constants.NONE,
+                                                        EDIT_ALARM_REQUEST_CODE);
     }
 
     public void checkSenseUpdateStatus() {
