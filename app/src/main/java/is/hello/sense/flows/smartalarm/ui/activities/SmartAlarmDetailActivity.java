@@ -1,6 +1,5 @@
 package is.hello.sense.flows.smartalarm.ui.activities;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -24,9 +23,11 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
+import is.hello.sense.flows.expansions.ui.activities.ExpansionValuePickerActivity;
 import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionsAuthFragment;
@@ -174,9 +175,9 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
     public final void flowFinished(@NonNull final Fragment fragment,
                                    final int responseCode,
                                    @Nullable final Intent result) {
-//ExpansionAuthFragment
         switch (responseCode) {
             case RESULT_CANCELED:
+                // When the user has backed out of cancelling their alarm.
                 if (fragment instanceof SmartAlarmDetailFragment) {
                     finish();
                     return;
@@ -185,7 +186,16 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
                 break;
             case RESULT_OK:
                 if (fragment instanceof ExpansionDetailFragment) {
+                    // When the user has modified an expansion value via the picker
                     popFragment(fragment, true);
+                    if (result != null) {
+                        // todo move extra to a class that makes sense, leaving to make sure nothing breaks for now
+                        final ExpansionAlarm newExpansionAlarm = (ExpansionAlarm) result.getSerializableExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM);
+                        final Fragment top = getTopFragment();
+                        if (top instanceof SmartAlarmDetailFragment) {
+                            ((SmartAlarmDetailFragment) top).updateExpansion(newExpansionAlarm);
+                        }
+                    }
                     return;
                 }
                 if (fragment instanceof ExpansionsAuthFragment) {
@@ -199,31 +209,59 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
                 }
                 finish();
                 break;
-            case SmartAlarmDetailFragment.RESULT_EXPANSION_AUTH:
+            case SmartAlarmDetailFragment.RESULT_AUTHENTICATE_EXPANSION:
+                // When the user selects an Expansion that has not yet been authenticated.
                 if (result != null) {
                     final long expansionId = result.getLongExtra(SmartAlarmDetailFragment.EXTRA_EXPANSION_ID, Constants.NONE);
                     if (expansionId != Constants.NONE) {
-                        //show auth fragment
-                        showExpansionDetail(expansionId);
+                        showExpansionDetailFragment(expansionId);
+                    }
+                }
+                break;
+            case SmartAlarmDetailFragment.RESULT_PICKER_EXPANSION_ALARM:
+                // When the user select an Expansion that is authenticated and enabled for this alarm
+                if (result != null) {
+                    final ExpansionAlarm expansionAlarm = (ExpansionAlarm) result.getSerializableExtra(SmartAlarmDetailFragment.EXTRA_EXPANSION_ALARM);
+                    if (expansionAlarm != null) {
+                        showValuePickerFragment(expansionAlarm.getId(),
+                                                expansionAlarm.getCategory(),
+                                                expansionAlarm.getExpansionRange(),
+                                                expansionAlarm.isEnabled());
+                    }
+                }
+                break;
+            case SmartAlarmDetailFragment.RESULT_PICKER_EXPANSION:
+                // When the user select an Expansion that is authenticated but not enabled for this alarm
+                if (result != null) {
+                    final Expansion expansion = (Expansion) result.getSerializableExtra(SmartAlarmDetailFragment.EXTRA_EXPANSION);
+                    if (expansion != null) {
+                        showValuePickerFragment(expansion.getId(),
+                                                expansion.getCategory(),
+                                                expansion.getValueRange(),
+                                                false);
                     }
                 }
                 break;
             case ExpansionDetailFragment.RESULT_ACTION_PRESSED:
+                // When "Connect" is pressed from ExpansionDetailFragment.
+                // The user has not yet authenticated an account for this expansion
                 showExpansionAuth();
                 break;
             case ExpansionDetailFragment.RESULT_CONFIGURE_PRESSED:
+                // When the user wants to change their configuration for an expansion.
                 showConfigurationSelection();
                 break;
             case ConfigSelectionFragment.RESULT_CONFIG_SELECTED:
+                // When the user has selected a configuration.
                 if (result != null) {
                     // todo move extra to a class that makes sense, leaving to make sure nothing breaks for now
                     final Expansion expansion = (Expansion) result.getSerializableExtra(ExpansionSettingsActivity.EXTRA_EXPANSION);
                     if (expansion != null) {
                         popFragment(fragment, true);
-                        showValuePicker(expansion.getId(),
-                                        expansion.getCategory(),
-                                        expansion.getValueRange(),
-                                        false); // todo default to true.
+                        showValuePickerFragment(expansion.getId(),
+                                                expansion.getCategory(),
+                                                expansion.getValueRange(),
+                                                true);
                     }
                 }
                 break;
@@ -263,19 +301,22 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
     }
 
     @NotTested
-    private void showExpansionDetail(final long expansionId) {
+    private void showExpansionDetailFragment(final long expansionId) {
         pushFragment(ExpansionDetailFragment.newInstance(expansionId), null, true);
     }
 
     @NotTested
-    private void showValuePicker(final long expansionId,
-                                 @NonNull final Category category,
-                                 @Nullable final ExpansionValueRange valueRange,
-                                 final boolean enabledForSmartAlarm) {
+    private void showValuePickerFragment(final long expansionId,
+                                         @NonNull final Category category,
+                                         @Nullable final ExpansionValueRange valueRange,
+                                         final boolean enabledForSmartAlarm) {
         // todo make another fragment for this.
         pushFragment(ExpansionDetailFragment.newValuePickerInstance(expansionId,
                                                                     category,
-                                                                    valueRange, enabledForSmartAlarm), null, true);
+                                                                    valueRange,
+                                                                    enabledForSmartAlarm),
+                     null,
+                     true);
     }
 
 

@@ -68,7 +68,11 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     public static final String KEY_SKIP = SmartAlarmDetailFragment.class.getName() + ".KEY_SKIP";
     public static final String KEY_DIRTY = SmartAlarmDetailFragment.class.getName() + ".KEY_DIRTY";
     public static final String EXTRA_EXPANSION_ID = SmartAlarmDetailFragment.class.getName() + ".EXTRA_EXPANSION_ID";
-    public static final int RESULT_EXPANSION_AUTH = 3101;
+    public static final String EXTRA_EXPANSION = SmartAlarmDetailFragment.class.getName() + ".EXTRA_EXPANSION";
+    public static final String EXTRA_EXPANSION_ALARM = SmartAlarmDetailFragment.class.getName() + ".EXTRA_EXPANSION_ALARM";
+    public static final int RESULT_AUTHENTICATE_EXPANSION = 3101;
+    public static final int RESULT_PICKER_EXPANSION = 3102;
+    public static final int RESULT_PICKER_EXPANSION_ALARM = 3103;
     private static final int TIME_REQUEST_CODE = 1863;
     private static final int SOUND_REQUEST_CODE = 80;
     private static final int REPEAT_REQUEST_CODE = 89;
@@ -156,7 +160,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
             this.dirty = savedInstanceState.getBoolean(KEY_DIRTY, false);
             this.alarm = (Alarm) savedInstanceState.getSerializable(KEY_ALARM);
             this.skipUI = savedInstanceState.getBoolean(KEY_SKIP);
-            this.index = savedInstanceState.getInt(ARG_INDEX);
+            this.index = savedInstanceState.getInt(KEY_INDEX);
         } else {
             final Bundle args = getArguments();
             if (args == null) {
@@ -323,6 +327,40 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     //endregion
 
     //region methods
+    /**
+     * Used to update the fragment when the user has authenticated or choose a new value for the expansion.
+     *
+     * @param newExpansionAlarm state of the new expansion alarm.
+     */
+    @NotTested
+    public void updateExpansion(@Nullable final ExpansionAlarm newExpansionAlarm) {
+        if (newExpansionAlarm == null) {
+            this.expansionsInteractor.update();
+            return;
+        }
+        final ExpansionAlarm savedExpansionAlarm = this.alarm.getExpansionAlarm(newExpansionAlarm.getCategory());
+        if (savedExpansionAlarm != null) {
+            savedExpansionAlarm.setExpansionRange(newExpansionAlarm.getExpansionRange().max);
+            savedExpansionAlarm.setEnabled(newExpansionAlarm.isEnabled());
+            savedExpansionAlarm.setDisplayValue(this.expansionCategoryFormatter
+                                                        .getFormattedAttributionValueRange(newExpansionAlarm.getCategory(),
+                                                                                           newExpansionAlarm.getExpansionRange(),
+                                                                                           getActivity()));
+            final Expansion expansion = getExpansion(savedExpansionAlarm.getCategory());
+            if (expansion != null) {
+                updateExpansion(expansion);
+            }
+        } else {
+            this.alarm.getExpansions().add(newExpansionAlarm);
+            final Expansion expansion = getExpansion(newExpansionAlarm.getCategory());
+            if (expansion != null) {
+                updateExpansion(expansion);
+            }
+
+        }
+        markDirty();
+        this.expansionsInteractor.update();
+    }
 
     /**
      * Call to update all UI views with the current state of {@link #alarm}.
@@ -595,7 +633,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
                 clickListener = (ignored) -> redirectToExpansionPicker(expansionAlarm);
             }
         } else {
-            // Not connect. Need to authorize.
+            // Not connected. Need to authorize.
             value = getString(defaultValue);
             clickListener = (ignored) -> redirectToExpansionDetail(expansion.getId());
         }
@@ -620,10 +658,9 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
      */
     @NotTested
     private void redirectToExpansionPicker(@NonNull final ExpansionAlarm expansionAlarm) {
-        //todo should finish flow and let activity start another fragment
-        startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
-                                                                      expansionAlarm),
-                               EXPANSION_VALUE_REQUEST_CODE);
+        final Intent intent = new Intent();
+        intent.putExtra(EXTRA_EXPANSION_ALARM, expansionAlarm);
+        finishFlowWithResult(RESULT_PICKER_EXPANSION_ALARM, intent);
     }
 
     /**
@@ -632,12 +669,10 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
      * @param expansion expansion to be modified
      */
     @NotTested
-    public void redirectToExpansionPicker(@NonNull final Expansion expansion) {
-        //todo should finish flow and let activity start another fragment
-        startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
-                                                                      expansion,
-                                                                      false),
-                               EXPANSION_VALUE_REQUEST_CODE);
+    private void redirectToExpansionPicker(@NonNull final Expansion expansion) {
+        final Intent intent = new Intent();
+        intent.putExtra(EXTRA_EXPANSION, expansion);
+        finishFlowWithResult(RESULT_PICKER_EXPANSION, intent);
     }
 
     /**
@@ -647,10 +682,9 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
      */
     @NotTested
     private void redirectToExpansionDetail(final long expansionId) {
-        //todo should finish flow and let activity start another fragment
         final Intent intent = new Intent();
         intent.putExtra(EXTRA_EXPANSION_ID, expansionId);
-        finishFlowWithResult(RESULT_EXPANSION_AUTH, intent);
+        finishFlowWithResult(RESULT_AUTHENTICATE_EXPANSION, intent);
     }
 
     /**
