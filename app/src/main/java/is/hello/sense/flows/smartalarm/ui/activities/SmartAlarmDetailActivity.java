@@ -285,10 +285,10 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
      * Shows the fragment that will allow the user to create/modify/delete the alarm passed to this
      * activity.
      *
-     * @param alarm  - should be provided with {@link SmartAlarmDetailActivity#startActivity(Context, Alarm, int)}
-     * @param index  - position of alarm in list from {@link is.hello.sense.ui.fragments.sounds.SmartAlarmListFragment}.
+     * @param alarm  should be provided with {@link SmartAlarmDetailActivity#startActivity(Context, Alarm, int)}
+     * @param index  position of alarm in list from {@link is.hello.sense.ui.fragments.sounds.SmartAlarmListFragment}.
      *               Should be {@link Constants#NONE} if the user is creating a new one.
-     * @param skipUI - true if from another app saving an alarm and we should not show any UI while
+     * @param skipUI true if from another app saving an alarm and we should not show any UI while
      *               saving it.
      */
     @NotTested
@@ -300,11 +300,24 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
                      false);
     }
 
+    /**
+     * Shows the fragment prior to authenticating.
+     *
+     * @param expansionId expansion id use.
+     */
     @NotTested
     private void showExpansionDetailFragment(final long expansionId) {
         pushFragment(ExpansionDetailFragment.newInstance(expansionId), null, true);
     }
 
+    /**
+     * Shows the fragment that will allow the user to choose a value.
+     *
+     * @param expansionId          id of expansion being modified.
+     * @param category             category for expansion
+     * @param valueRange           min/max values to display
+     * @param enabledForSmartAlarm true if enabled for this alarm.
+     */
     @NotTested
     private void showValuePickerFragment(final long expansionId,
                                          @NonNull final Category category,
@@ -319,14 +332,21 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
                      true);
     }
 
-
+    /**
+     * Show the authentication web view.
+     */
     @NotTested
     private void showExpansionAuth() {
+        //todo consider passing expansion id.
         pushFragment(new ExpansionsAuthFragment(), null, true);
     }
 
+    /**
+     * Shows the fragment that will allow the user to change their configuration.
+     */
     @NotTested
     public void showConfigurationSelection() {
+        //todo consider passing expansion id.
         pushFragment(new ConfigSelectionFragment(), null, true);
     }
 
