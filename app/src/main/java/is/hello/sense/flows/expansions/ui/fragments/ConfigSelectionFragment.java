@@ -71,6 +71,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
             bindAndSubscribe(configurationsInteractor.configSubject,
                              this::bindConfigurations,
                              this::presentError);
+            //todo handle if expansionSubject is missing value
         }), 2000);
     }
 
@@ -83,7 +84,6 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     @Override
     public void onResume() {
         super.onResume();
-        //hideBlockingActivity(false, null); todo need to hide progress on orientation switch
     }
 
     @Override

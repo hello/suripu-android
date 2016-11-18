@@ -20,7 +20,7 @@ public class ExpansionAlarm extends ApiResponse {
     private Category category;
 
     @SerializedName("service_name")
-    private String serviceName;
+    private final String serviceName;
 
     @SerializedName("enabled")
     public boolean enabled;
@@ -28,9 +28,8 @@ public class ExpansionAlarm extends ApiResponse {
     @SerializedName("target_value")
     private ExpansionValueRange expansionRange;
 
-    //@Exclude
     private String displayValue = "empty value";
-    //@Exclude
+
     @DrawableRes
     private int displayIcon;
 

@@ -11,7 +11,6 @@ import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.flows.expansions.interactors.ExpansionsInteractor;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
-import is.hello.sense.flows.expansions.ui.activities.ExpansionValuePickerActivity;
 import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionListFragment;
@@ -25,7 +24,6 @@ import is.hello.sense.units.UnitFormatter;
         ExpansionsAuthFragment.class,
         ExpansionDetailFragment.class,
         ConfigSelectionFragment.class,
-        ExpansionValuePickerActivity.class
 })
 public class ExpansionSettingsModule {
 

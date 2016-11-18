@@ -16,9 +16,10 @@ import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
-import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
+import is.hello.sense.flows.expansions.modules.ExpansionPickerModule;
 import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
+import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailPickerFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionsAuthFragment;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
@@ -36,7 +37,7 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
 
     @Override
     protected List<Object> getModules() {
-        return Collections.singletonList(new ExpansionSettingsModule());
+        return Collections.singletonList(new ExpansionPickerModule());
     }
 
     @Override
@@ -96,10 +97,10 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
                                  @NonNull final Category category,
                                  @Nullable final ExpansionValueRange valueRange,
                                  final boolean enabledForSmartAlarm) {
-        pushFragment(ExpansionDetailFragment.newValuePickerInstance(expansionId,
-                                                                    category,
-                                                                    valueRange,
-                                                                    enabledForSmartAlarm),
+        pushFragment(ExpansionDetailPickerFragment.newInstance(expansionId,
+                                                               category,
+                                                               valueRange,
+                                                               enabledForSmartAlarm),
                      null, false);
     }
 
@@ -129,7 +130,7 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
         if (responseCode == RESULT_CANCELED) {
             popFragment(fragment, false);
         } else {
-            if (fragment instanceof ExpansionDetailFragment) {
+            if (fragment instanceof ExpansionDetailPickerFragment) {
                 //todo handle RESULT_CONNECT_PRESSED or cancel flow if not authenticated?
                 if (responseCode == ExpansionDetailFragment.RESULT_CONFIGURE_PRESSED) {
                     showConfigurationSelection();
