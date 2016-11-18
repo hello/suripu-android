@@ -545,7 +545,7 @@
 
     <string name="request_permission_location_title">We need to ask for your location</string>
     <string name="request_permission_location_title2">Location Services required</string>
-    <string name="request_permission_location_message">"Android requires that Location Services are enabled to scan for Bluetooth Low Energy devices. Please enable Location Services to continue."</string>
+    <string name="request_permission_location_message">"Android requires that Location Services are enabled to scan for Bluetooth Low Energy devices. Please enable Location Services to continue. If you deny this permission, you may be unable to set up."</string>
     <string name="request_permission_location_required_title">Location Services not enabled</string>
     <string name="request_permission_location_required_message">Android requires that Location Services be enabled to scan for Bluetooth Low Energy devices. Please enable Location Services in <a href="#settings">Settings</a> to continue.</string>
     <string name="request_permission_write_external_storage_title">We need to ask for access to your photos</string>
