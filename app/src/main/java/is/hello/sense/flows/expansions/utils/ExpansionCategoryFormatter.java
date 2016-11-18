@@ -99,7 +99,7 @@ public class ExpansionCategoryFormatter {
 
     /**
      * @return display string resource that will be used primarily in
-     * {@link is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment}
+     * {@link is.hello.sense.flows.smartalarm.ui.fragments.SmartAlarmDetailFragment}
      */
     @StringRes
     public int getDisplayValueResFromState(@NonNull final State expansionState) {
