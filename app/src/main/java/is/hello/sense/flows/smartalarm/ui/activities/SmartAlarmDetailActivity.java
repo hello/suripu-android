@@ -203,86 +203,8 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
                 popFragment(fragment, false);
                 break;
             case RESULT_OK:
-                if (fragment instanceof ExpansionDetailFragment) {
-                    // When the user has modified an expansion value via the picker
-                    popFragment(fragment, true);
-                    if (result != null) {
-                        // todo move extra to a class that makes sense, leaving to make sure nothing breaks for now
-                        final ExpansionAlarm newExpansionAlarm = (ExpansionAlarm) result.getSerializableExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM);
-                        final Fragment top = getTopFragment();
-                        if (top instanceof SmartAlarmDetailFragment) {
-                            ((SmartAlarmDetailFragment) top).updateExpansion(newExpansionAlarm);
-                        }
-                    }
-                    return;
-                }
-                if (fragment instanceof ExpansionsAuthFragment) {
-                    popFragment(fragment, true);
-                    showConfigurationSelection();
-                    return;
-                }
-                if (fragment instanceof ConfigSelectionFragment) {
-                    popFragment(fragment, true);
-                    return;
-                }
                 setResult(RESULT_OK);
                 finish();
-                break;
-            case SmartAlarmDetailFragment.RESULT_AUTHENTICATE_EXPANSION:
-                // When the user selects an Expansion that has not yet been authenticated.
-                if (result != null) {
-                    final long expansionId = result.getLongExtra(SmartAlarmDetailFragment.EXTRA_EXPANSION_ID, Constants.NONE);
-                    if (expansionId != Constants.NONE) {
-                        showExpansionDetailFragment(expansionId);
-                    }
-                }
-                break;
-            case SmartAlarmDetailFragment.RESULT_PICKER_EXPANSION_ALARM:
-                // When the user select an Expansion that is authenticated and enabled for this alarm
-                if (result != null) {
-                    final ExpansionAlarm expansionAlarm = (ExpansionAlarm) result.getSerializableExtra(SmartAlarmDetailFragment.EXTRA_EXPANSION_ALARM);
-                    if (expansionAlarm != null) {
-                        showValuePickerFragment(expansionAlarm.getId(),
-                                                expansionAlarm.getCategory(),
-                                                expansionAlarm.getExpansionRange(),
-                                                expansionAlarm.isEnabled());
-                    }
-                }
-                break;
-            case SmartAlarmDetailFragment.RESULT_PICKER_EXPANSION:
-                // When the user select an Expansion that is authenticated but not enabled for this alarm
-                if (result != null) {
-                    final Expansion expansion = (Expansion) result.getSerializableExtra(SmartAlarmDetailFragment.EXTRA_EXPANSION);
-                    if (expansion != null) {
-                        showValuePickerFragment(expansion.getId(),
-                                                expansion.getCategory(),
-                                                expansion.getValueRange(),
-                                                false);
-                    }
-                }
-                break;
-            case ExpansionDetailFragment.RESULT_ACTION_PRESSED:
-                // When "Connect" is pressed from ExpansionDetailFragment.
-                // The user has not yet authenticated an account for this expansion
-                showExpansionAuth();
-                break;
-            case ExpansionDetailFragment.RESULT_CONFIGURE_PRESSED:
-                // When the user wants to change their configuration for an expansion.
-                showConfigurationSelection();
-                break;
-            case ConfigSelectionFragment.RESULT_CONFIG_SELECTED:
-                // When the user has selected a configuration.
-                if (result != null) {
-                    // todo move extra to a class that makes sense, leaving to make sure nothing breaks for now
-                    final Expansion expansion = (Expansion) result.getSerializableExtra(ExpansionSettingsActivity.EXTRA_EXPANSION);
-                    if (expansion != null) {
-                        popFragment(fragment, true);
-                        showValuePickerFragment(expansion.getId(),
-                                                expansion.getCategory(),
-                                                expansion.getValueRange(),
-                                                true);
-                    }
-                }
                 break;
             default:
 
@@ -320,63 +242,13 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
     }
 
     /**
-     * Shows the fragment prior to authenticating.
-     *
-     * @param expansionId expansion id use.
-     */
-    @NotTested
-    private void showExpansionDetailFragment(final long expansionId) {
-        pushFragment(ExpansionDetailFragment.newInstance(expansionId), null, true);
-    }
-
-    /**
-     * Shows the fragment that will allow the user to choose a value.
-     *
-     * @param expansionId          id of expansion being modified.
-     * @param category             category for expansion
-     * @param valueRange           min/max values to display
-     * @param enabledForSmartAlarm true if enabled for this alarm.
-     */
-    @NotTested
-    private void showValuePickerFragment(final long expansionId,
-                                         @NonNull final Category category,
-                                         @Nullable final ExpansionValueRange valueRange,
-                                         final boolean enabledForSmartAlarm) {
-        // todo make another fragment for this.
-        pushFragment(ExpansionDetailFragment.newValuePickerInstance(expansionId,
-                                                                    category,
-                                                                    valueRange,
-                                                                    enabledForSmartAlarm),
-                     null,
-                     true);
-    }
-
-    /**
-     * Show the authentication web view.
-     */
-    @NotTested
-    private void showExpansionAuth() {
-        //todo consider passing expansion id.
-        pushFragment(new ExpansionsAuthFragment(), null, true);
-    }
-
-    /**
-     * Shows the fragment that will allow the user to change their configuration.
-     */
-    @NotTested
-    public void showConfigurationSelection() {
-        //todo consider passing expansion id.
-        pushFragment(new ConfigSelectionFragment(), null, true);
-    }
-
-    /**
      * Call if this activity is started from another app saving an alarm for the user.
      */
     @NotTested
     private void processSetAlarmIntent() {
         final Intent intent = getIntent();
-        final int hour = intent.getIntExtra(AlarmClock.EXTRA_HOUR, 7);
-        final int minute = intent.getIntExtra(AlarmClock.EXTRA_MINUTES, 30);
+        final int hour = intent.getIntExtra(AlarmClock.EXTRA_HOUR, SmartAlarmDetailFragment.DEFAULT_HOUR);
+        final int minute = intent.getIntExtra(AlarmClock.EXTRA_MINUTES, SmartAlarmDetailFragment.DEFAULT_MINUTE);
         final List<Integer> calendarDays = intent.getIntegerArrayListExtra(AlarmClock.EXTRA_DAYS);
 
         final Alarm alarm = new Alarm();

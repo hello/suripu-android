@@ -34,6 +34,8 @@ import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.flows.expansions.interactors.ExpansionsInteractor;
+import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
+import is.hello.sense.flows.expansions.ui.activities.ExpansionValuePickerActivity;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
 import is.hello.sense.flows.smartalarm.ui.views.SmartAlarmDetailView;
 import is.hello.sense.functional.Functions;
@@ -65,18 +67,12 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     public static final String KEY_INDEX = SmartAlarmDetailFragment.class.getName() + ".KEY_INDEX";
     public static final String KEY_SKIP = SmartAlarmDetailFragment.class.getName() + ".KEY_SKIP";
     public static final String KEY_DIRTY = SmartAlarmDetailFragment.class.getName() + ".KEY_DIRTY";
-    public static final String EXTRA_EXPANSION_ID = SmartAlarmDetailFragment.class.getName() + ".EXTRA_EXPANSION_ID";
-    public static final String EXTRA_EXPANSION = SmartAlarmDetailFragment.class.getName() + ".EXTRA_EXPANSION";
-    public static final String EXTRA_EXPANSION_ALARM = SmartAlarmDetailFragment.class.getName() + ".EXTRA_EXPANSION_ALARM";
-    public static final int RESULT_AUTHENTICATE_EXPANSION = 3101;
-    public static final int RESULT_PICKER_EXPANSION = 3102;
-    public static final int RESULT_PICKER_EXPANSION_ALARM = 3103;
     private static final int TIME_REQUEST_CODE = 1863;
     private static final int SOUND_REQUEST_CODE = 80;
     private static final int REPEAT_REQUEST_CODE = 89;
     private static final int EXPANSION_VALUE_REQUEST_CODE = 105;
-    private static final int DEFAULT_HOUR = 7;
-    private static final int DEFAULT_MINUTE = 30;
+    public static final int DEFAULT_HOUR = 7;
+    public static final int DEFAULT_MINUTE = 30;
 
 
     public static SmartAlarmDetailFragment newInstance(@NonNull final Alarm alarm,
@@ -246,6 +242,11 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
             this.alarm.setDaysOfWeek(selectedDays);
             this.presenterView.setRepeatDaysTextView(this.alarm.getRepeatSummary(getActivity(), false));
             markDirty();
+        } else if (requestCode == EXPANSION_VALUE_REQUEST_CODE ) {
+            final ExpansionAlarm expansionAlarm = (ExpansionAlarm) data.getSerializableExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM);
+            if (expansionAlarm != null) {
+                updateExpansion(expansionAlarm); // will make dirty
+            }
         }
     }
 
@@ -306,7 +307,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
      * @param newExpansionAlarm state of the new expansion alarm.
      */
     @NotTested
-    public void updateExpansion(@Nullable final ExpansionAlarm newExpansionAlarm) {
+    private void updateExpansion(@Nullable final ExpansionAlarm newExpansionAlarm) {
         if (newExpansionAlarm == null) {
             this.expansionsInteractor.update();
             return;
@@ -631,9 +632,9 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
      */
     @NotTested
     private void redirectToExpansionPicker(@NonNull final ExpansionAlarm expansionAlarm) {
-        final Intent intent = new Intent();
-        intent.putExtra(EXTRA_EXPANSION_ALARM, expansionAlarm);
-        finishFlowWithResult(RESULT_PICKER_EXPANSION_ALARM, intent);
+        startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
+                                                                      expansionAlarm),
+                               EXPANSION_VALUE_REQUEST_CODE);
     }
 
     /**
@@ -643,9 +644,10 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
      */
     @NotTested
     private void redirectToExpansionPicker(@NonNull final Expansion expansion) {
-        final Intent intent = new Intent();
-        intent.putExtra(EXTRA_EXPANSION, expansion);
-        finishFlowWithResult(RESULT_PICKER_EXPANSION, intent);
+        startActivityForResult(ExpansionValuePickerActivity.getIntent(getActivity(),
+                                                                      expansion,
+                                                                      false),
+                               EXPANSION_VALUE_REQUEST_CODE);
     }
 
     /**
@@ -655,9 +657,9 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
      */
     @NotTested
     private void redirectToExpansionDetail(final long expansionId) {
-        final Intent intent = new Intent();
-        intent.putExtra(EXTRA_EXPANSION_ID, expansionId);
-        finishFlowWithResult(RESULT_AUTHENTICATE_EXPANSION, intent);
+        startActivityForResult(ExpansionSettingsActivity.getExpansionDetailIntent(getActivity(),
+                                                                                  expansionId),
+                               EXPANSION_VALUE_REQUEST_CODE);
     }
 
     /**
