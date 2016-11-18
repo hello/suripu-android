@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.MenuItem;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import is.hello.sense.R;
@@ -18,9 +18,7 @@ import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
 import is.hello.sense.flows.expansions.modules.ExpansionPickerModule;
 import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
-import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailPickerFragment;
-import is.hello.sense.flows.expansions.ui.fragments.ExpansionsAuthFragment;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -37,7 +35,7 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
 
     @Override
     protected List<Object> getModules() {
-        return Arrays.asList(new ExpansionPickerModule());
+        return Collections.singletonList(new ExpansionPickerModule());
     }
 
     @Override
@@ -132,7 +130,7 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
         } else {
             if (fragment instanceof ExpansionDetailPickerFragment) {
                 //todo handle RESULT_CONNECT_PRESSED or cancel flow if not authenticated?
-                if (responseCode == ExpansionDetailFragment.RESULT_CONFIGURE_PRESSED) {
+                if (responseCode == ExpansionDetailPickerFragment.RESULT_CONFIGURE_PRESSED) {
                     showConfigurationSelection();
                 } else {
                     setResult(RESULT_OK, result);
@@ -156,10 +154,7 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        final Fragment fragment = getTopFragment();
-        if (fragment instanceof ExpansionsAuthFragment && fragment.onOptionsItemSelected(item)) {
-            return true;
-        } else if (item.getItemId() == android.R.id.home) {
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
         }
