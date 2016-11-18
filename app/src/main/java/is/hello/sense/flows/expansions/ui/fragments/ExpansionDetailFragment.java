@@ -20,12 +20,9 @@ import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.api.model.v2.expansions.Expansion;
-import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
-import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
 import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
-import is.hello.sense.flows.expansions.ui.activities.ExpansionValuePickerActivity;
 import is.hello.sense.flows.expansions.ui.views.ExpansionDetailView;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
 import is.hello.sense.mvp.presenters.PresenterFragment;
@@ -34,7 +31,6 @@ import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
-import is.hello.sense.units.UnitConverter;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subscriptions.Subscriptions;
@@ -63,40 +59,16 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
     public static final String EXTRA_EXPANSION_ID = ExpansionDetailFragment.class.getName() + "EXTRA_EXPANSION_ID";
     private static final String ARG_EXPANSION_ID = ExpansionDetailFragment.class.getSimpleName() + "ARG_EXPANSION_ID";
-    private static final String ARG_VALUE_PICKER = ExpansionDetailFragment.class.getSimpleName() + "ARG_VALUE_PICKER";
-    private static final String ARG_EXPANSION_CATEGORY = ExpansionDetailFragment.class.getSimpleName() + "ARG_EXPANSION_CATEGORY";
-    private static final String ARG_EXPANSION_VALUE_RANGE = ExpansionDetailFragment.class.getSimpleName() + "ARG_EXPANSION_VALUE_RANGE";
-    private static final String ARG_EXPANSION_ENABLED_FOR_SMART_ALARM = ExpansionDetailFragment.class.getSimpleName() + "ARG_EXPANSION_ENABLED_FOR_SMART_ALARM";
     private Subscription updateStateSubscription;
     /**
      * Tracks when fetching configurations fails to show the dialog at the right time.
      */
     private boolean lastConfigurationsFetchFailed = false;
-    private boolean wantsValuePicker = false;
-    private boolean isEnabledForSmartAlarm;
-    //used by value picker for inflating # pickers and setting up
-    private ExpansionValueRange initialValueRange;
-    private Category expansionCategory;
 
     public static ExpansionDetailFragment newInstance(final long expansionId) {
         final ExpansionDetailFragment fragment = new ExpansionDetailFragment();
         final Bundle args = new Bundle();
         args.putLong(ARG_EXPANSION_ID, expansionId);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public static ExpansionDetailFragment newValuePickerInstance(final long expansionId,
-                                                                 @NonNull final Category category,
-                                                                 @Nullable final ExpansionValueRange valueRange,
-                                                                 final boolean enabledForSmartAlarm) {
-        final ExpansionDetailFragment fragment = new ExpansionDetailFragment();
-        final Bundle args = new Bundle();
-        args.putLong(ARG_EXPANSION_ID, expansionId);
-        args.putSerializable(ARG_EXPANSION_CATEGORY, category);
-        args.putSerializable(ARG_EXPANSION_VALUE_RANGE, valueRange);
-        args.putBoolean(ARG_EXPANSION_ENABLED_FOR_SMART_ALARM, enabledForSmartAlarm);
-        args.putBoolean(ARG_VALUE_PICKER, true);
         fragment.setArguments(args);
         return fragment;
     }
@@ -110,25 +82,10 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     }
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        final Bundle arguments = getArguments();
-        if (arguments != null) {
-            wantsValuePicker = arguments.getBoolean(ARG_VALUE_PICKER, false);
-            isEnabledForSmartAlarm = arguments.getBoolean(ARG_EXPANSION_ENABLED_FOR_SMART_ALARM, false);
-            expansionCategory = (Category) arguments.getSerializable(ARG_EXPANSION_CATEGORY);
-            initialValueRange = (ExpansionValueRange) arguments.getSerializable(ARG_EXPANSION_VALUE_RANGE);
-        }
-    }
-
-    @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         updateStateSubscription = Subscriptions.empty();
 
-        if (savedInstanceState != null) {
-            isEnabledForSmartAlarm = savedInstanceState.getBoolean(ARG_EXPANSION_ENABLED_FOR_SMART_ALARM);
-        }
         final Bundle arguments = getArguments();
         if (arguments != null) {
             final long id = arguments.getLong(ARG_EXPANSION_ID, NO_ID);
@@ -173,12 +130,6 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         }
     }
 
-    @Override
-    public void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(ARG_EXPANSION_ENABLED_FOR_SMART_ALARM, isEnabledForSmartAlarm);
-    }
-
     public void updateState(@NonNull final State state, @NonNull final Action1<Object> onNext) {
         this.updateStateSubscription.unsubscribe();
         this.updateStateSubscription = bind(expansionDetailsInteractor.setState(state))
@@ -215,39 +166,19 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             return;
         }
 
-        //todo currently assumes that when wantsValuePicker = true the expansion is enabled, configured, and authenticated
-        if (wantsValuePicker) {
-            final UnitConverter unitConverter = expansionCategoryFormatter.getUnitConverter(expansionCategory);
-            final int max = (int) Math.ceil(unitConverter.convert(expansion.getValueRange().max));
-            final int min = (int) Math.ceil(unitConverter.convert(expansion.getValueRange().min));
-            final int initialValues = unitConverter.convert((initialValueRange != null ? initialValueRange.max : expansion.getValueRange().max - expansion.getValueRange().min)).intValue();
-            presenterView.showExpansionRangePicker(min,
-                                                   max,
-                                                   initialValues,
-                                                   expansionCategoryFormatter.getSuffix(expansion.getCategory()),
-                                                   expansion.getConfigurationType());
-        } else {
-            presenterView.showExpansionInfo(expansion, picasso);
-        }
-
+        presenterView.showExpansionInfo(expansion, picasso);
         presenterView.setExpansionEnabledTextViewClickListener(this.getExpansionInfoDialogClickListener(expansion.getCategory()));
-
-
         presenterView.showConnectedContainer(!expansion.requiresAuthentication());
 
         if (expansion.requiresAuthentication()) {
             presenterView.showConnectButton(this::onConnectClicked);
         } else if (expansion.requiresConfiguration()) {
             presenterView.showConfigurationSuccess(getString(R.string.expansions_select), this::onConfigureClicked);
-            presenterView.showRemoveAccess(!wantsValuePicker);
+            presenterView.showRemoveAccess(true);
         } else {
             configurationsInteractor.update();
-            if (wantsValuePicker) {
-                presenterView.showEnableSwitch(isEnabledForSmartAlarm, this);
-            } else {
-                presenterView.showEnableSwitch(expansion.isConnected(), this);
-            }
-            presenterView.showRemoveAccess(!wantsValuePicker);
+            presenterView.showEnableSwitch(expansion.isConnected(), this);
+            presenterView.showRemoveAccess(true);
         }
     }
 
@@ -354,9 +285,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     }
 
     private View.OnClickListener getExpansionInfoDialogClickListener(@NonNull final Category category) {
-        final int xmlResId = wantsValuePicker ?
-                expansionCategoryFormatter.getExpansionAlarmInfoDialogXmlRes(category) :
-                expansionCategoryFormatter.getExpansionInfoDialogXmlRes(category);
+        final int xmlResId = expansionCategoryFormatter.getExpansionInfoDialogXmlRes(category);
         return ignoredView -> WelcomeDialogFragment.show(getActivity(),
                                                          xmlResId,
                                                          true);
@@ -364,34 +293,15 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
     @Override
     public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
-        if (wantsValuePicker) {
-            isEnabledForSmartAlarm = isChecked;
-        } else {
-            showBlockingActivity(isChecked ? R.string.enabling_expansion : R.string.disabling_expansion);
-            updateState(isChecked ? State.CONNECTED_ON : State.CONNECTED_OFF, (ignored) ->
-                    hideBlockingActivity(true, ExpansionDetailFragment.this.presenterView::showUpdateSwitchSuccess));
-        }
-
+        showBlockingActivity(isChecked ? R.string.enabling_expansion : R.string.disabling_expansion);
+        updateState(isChecked ? State.CONNECTED_ON : State.CONNECTED_OFF, (ignored) ->
+                hideBlockingActivity(true, ExpansionDetailFragment.this.presenterView::showUpdateSwitchSuccess));
     }
 
     @Override
     public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
-        if (wantsValuePicker && expansionDetailsInteractor.expansionSubject.hasValue()) {
-            final Intent intentWithExpansionAlarm = new Intent();
-            final ExpansionAlarm expansionAlarm = new ExpansionAlarm(expansionDetailsInteractor.expansionSubject.getValue(),
-                                                                     isEnabledForSmartAlarm);
-            final UnitConverter unitConverter = expansionCategoryFormatter.getReverseUnitConverter(expansionCategory);
-            final int selectedValue = presenterView.getSelectedValue();
-            final float convertedValue = unitConverter.convert((float) selectedValue);
-            expansionAlarm.setExpansionRange(convertedValue);
-            intentWithExpansionAlarm.putExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM, expansionAlarm);
-            finishFlowWithResult(Activity.RESULT_OK, intentWithExpansionAlarm);
-            return true;
-        } else if (!wantsValuePicker) {
-            finishFlow();
-            return true;
-        }
-        return false;
+        finishFlow();
+        return true;
     }
     //endregion
 }

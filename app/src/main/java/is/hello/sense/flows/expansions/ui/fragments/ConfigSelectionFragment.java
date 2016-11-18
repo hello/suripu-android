@@ -25,6 +25,7 @@ import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.ConfigurationAdapter;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
+import is.hello.sense.util.Logger;
 
 public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionView>
         implements ArrayRecyclerAdapter.OnItemClickedListener<Configuration>,
@@ -72,6 +73,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
                              this::bindConfigurations,
                              this::presentError);
             //todo handle if expansionSubject is missing value
+            Logger.error(ConfigSelectionFragment.class.getName(), "expansion detail interactor had no value");
         }), 2000);
     }
 

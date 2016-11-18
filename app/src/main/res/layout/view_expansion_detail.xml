@@ -7,21 +7,12 @@
     android:orientation="vertical">
 
     <include
-        android:id="@+id/view_expansion_detail_infoid"
+        android:id="@+id/view_expansion_detail_info_top"
         layout="@layout/view_expansion_detail_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/view_expansion_detail_bottom"
         android:layout_alignParentTop="true"/>
-
-    <is.hello.sense.flows.expansions.ui.widget.ExpansionValuePickerView
-        android:id="@+id/view_expansion_detail_expansion_value_picker_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/view_expansion_detail_bottom"
-        android:layout_alignParentTop="true"
-        android:background="@color/background_light"
-        android:visibility="gone"/>
 
     <include
         android:id="@+id/view_expansion_detail_bottom"

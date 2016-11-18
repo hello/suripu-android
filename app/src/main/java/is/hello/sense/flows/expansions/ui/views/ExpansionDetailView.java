@@ -15,7 +15,6 @@ import com.squareup.picasso.Picasso;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Expansion;
-import is.hello.sense.flows.expansions.ui.widget.ExpansionValuePickerView;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.widget.util.Views;
 
@@ -41,12 +40,10 @@ public class ExpansionDetailView extends PresenterView {
 
     final ProgressBar configurationLoading;
 
-    final ExpansionValuePickerView expansionValuePickerView;
-
     public ExpansionDetailView(@NonNull final Activity activity,
                                @NonNull final OnClickListener removeAccessTextViewClickListener) {
         super(activity);
-        this.expansionInfoContainer = (ViewGroup) findViewById(R.id.view_expansion_detail_infoid);
+        this.expansionInfoContainer = (ViewGroup) findViewById(R.id.view_expansion_detail_info_top);
         this.deviceNameTextView = (TextView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_device_name);
         this.companyNameTextView = (TextView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_device_company_name);
         this.expansionIconImageView = (ImageView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_icon);
@@ -66,7 +63,6 @@ public class ExpansionDetailView extends PresenterView {
         this.configurationSelectedTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_selection_tv);
         this.removeAccessContainer = (ViewGroup) connectedContainer.findViewById(R.id.view_expansion_detail_remove_access_container);
         this.configurationLoading = (ProgressBar) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_loading);
-        this.expansionValuePickerView = (ExpansionValuePickerView) findViewById(R.id.view_expansion_detail_expansion_value_picker_view);
         //hook up listeners
         Views.setSafeOnClickListener(this.removeAccessContainer, removeAccessTextViewClickListener);
 
@@ -130,31 +126,6 @@ public class ExpansionDetailView extends PresenterView {
         Views.setSafeOnClickListener(this.enabledTextView, listener);
     }
 
-    /**
-     * @param min          min value
-     * @param max          max value
-     * @param initialValue should be the actual value, not index position.
-     * @param suffix       will be attached to each value. If no suffix should be used pass
-     * @param configType   configuration to display
-     *                     {@link is.hello.sense.util.Constants#EMPTY_STRING}.
-     */
-    public void showExpansionRangePicker(final int min,
-                                         final int max,
-                                         final int initialValue,
-                                         @NonNull final String suffix,
-                                         @NonNull final String configType) {
-        post(() -> {
-            this.expansionValuePickerView.setVisibility(VISIBLE);
-            this.expansionValuePickerView.initialize(min,
-                                                     max,
-                                                     initialValue,
-                                                     suffix);
-
-            this.configurationTypeTextView.setText(configType);
-        });
-    }
-
-
     public void showRemoveAccess(final boolean isOn) {
         this.removeAccessContainer.setVisibility(isOn ? VISIBLE : GONE);
         this.removeAccessContainer.setEnabled(isOn);
@@ -198,10 +169,6 @@ public class ExpansionDetailView extends PresenterView {
         this.enabledSwitch.setEnabled(false);
         Views.setSafeOnSwitchClickListener(this.enabledSwitch, enabledSwitchClickListener);
         this.enabledSwitch.setEnabled(true);
-    }
-
-    public int getSelectedValue() {
-        return this.expansionValuePickerView.getSelectedValue();
     }
 
     public void showConnectedContainer(final boolean isOn) {
