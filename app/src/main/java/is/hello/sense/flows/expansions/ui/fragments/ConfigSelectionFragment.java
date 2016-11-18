@@ -73,7 +73,10 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
                              this::bindConfigurations,
                              this::presentError);
             //todo handle if expansionSubject is missing value
-            Logger.error(ConfigSelectionFragment.class.getName(), "expansion detail interactor had no value");
+            if(!expansionDetailsInteractor.expansionSubject.hasValue()) {
+                Logger.error(ConfigSelectionFragment.class.getName(), "expansion detail interactor had no value");
+                bindConfigurations(null);
+            }
         }), 2000);
     }
 

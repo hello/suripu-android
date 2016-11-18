@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.XmlRes;
 
+import javax.inject.Inject;
+
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
@@ -18,6 +20,7 @@ public class ExpansionCategoryFormatter {
 
     private final UnitFormatter unitFormatter;
 
+    @Inject
     public ExpansionCategoryFormatter(@NonNull final UnitFormatter unitFormatter){
         this.unitFormatter = unitFormatter;
     }

@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.MenuItem;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import is.hello.sense.R;
@@ -37,7 +37,7 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
 
     @Override
     protected List<Object> getModules() {
-        return Collections.singletonList(new ExpansionPickerModule());
+        return Arrays.asList(new ExpansionPickerModule());
     }
 
     @Override
@@ -139,13 +139,8 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
                     finish();
                 }
             } else if (fragment instanceof ConfigSelectionFragment) {
-                if (result != null
-                        && result.hasExtra(ConfigSelectionFragment.EXPANSION_ID_KEY)
-                        && result.hasExtra(ConfigSelectionFragment.EXPANSION_CATEGORY)) {
-                    // todo restore initial values by just popping fragment requires saving initial range state
-                    popFragment(fragment, false);
-
-                }
+                // todo restore initial values by just popping fragment requires saving initial range state
+                popFragment(fragment, false);
             } else {
                 setResult(RESULT_CANCELED);
                 finish(); //todo handle better
