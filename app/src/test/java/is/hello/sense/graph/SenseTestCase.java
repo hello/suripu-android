@@ -1,8 +1,10 @@
 package is.hello.sense.graph;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Resources;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 
 import org.junit.runner.RunWith;
@@ -38,12 +40,18 @@ public abstract class SenseTestCase {
 
     /**
      * This is an expensive operation...avoid if possible.
-     * Temporary fix for issue https://github.com/robolectric/robolectric/issues/1460
+     * 1) Temporary fix for issue https://github.com/robolectric/robolectric/issues/1460
      * with fragment transactions starting during the onViewCreated method
+     *
+     * 2) the injected dependencies in the fragment are not included in main Application objectGraph.
+     *
+     * Warning - this will break if the fragment is already attached to activity
      */
-    public static void startNestedVisibleFragment(@NonNull final Fragment fragment){
+    public static void startNestedVisibleFragment(@NonNull final Fragment fragment,
+                                                  @NonNull final Class<? extends Activity> activityClazz,
+                                                  @IdRes final int containerResId){
         Robolectric.getForegroundThreadScheduler().pause();
-        startVisibleFragment(fragment);
+        startVisibleFragment(fragment, activityClazz, containerResId);
         Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
     }
 
