@@ -34,7 +34,6 @@ public class ExpansionDetailView extends PresenterView {
 
     final TextView configurationTypeTextView;
     final TextView configurationSelectedTextView;
-    final TextView configRetry;
     final ImageView configurationErrorImageView;
     final ViewGroup removeAccessContainer;
     final ViewGroup connectedContainer;
@@ -45,8 +44,7 @@ public class ExpansionDetailView extends PresenterView {
     final ExpansionValuePickerView expansionValuePickerView;
 
     public ExpansionDetailView(@NonNull final Activity activity,
-                               @NonNull final OnClickListener removeAccessTextViewClickListener,
-                               @NonNull final OnClickListener configRetryListener) {
+                               @NonNull final OnClickListener removeAccessTextViewClickListener) {
         super(activity);
         this.expansionInfoContainer = (ViewGroup) findViewById(R.id.view_expansion_detail_infoid);
         this.deviceNameTextView = (TextView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_device_name);
@@ -66,17 +64,12 @@ public class ExpansionDetailView extends PresenterView {
         this.configurationErrorImageView = (ImageView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_error);
         this.configurationTypeTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_type_tv);
         this.configurationSelectedTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_selection_tv);
-        this.configRetry = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_reload);
         this.removeAccessContainer = (ViewGroup) connectedContainer.findViewById(R.id.view_expansion_detail_remove_access_container);
         this.configurationLoading = (ProgressBar) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_loading);
         this.expansionValuePickerView = (ExpansionValuePickerView) findViewById(R.id.view_expansion_detail_expansion_value_picker_view);
         //hook up listeners
         Views.setSafeOnClickListener(this.removeAccessContainer, removeAccessTextViewClickListener);
-        Views.setSafeOnClickListener(this.configRetry, v -> {
-            configRetry.setVisibility(GONE);
-            configurationLoading.setVisibility(VISIBLE);
-            configRetryListener.onClick(v);
-        });
+
     }
 
 
@@ -100,13 +93,6 @@ public class ExpansionDetailView extends PresenterView {
         this.configurationLoading.setVisibility(GONE);
         this.configurationSelectedTextView.setText(configurationName);
         this.configurationSelectedTextView.setVisibility(VISIBLE);
-        this.configRetry.setVisibility(GONE);
-    }
-
-    public void showConfigurationEmpty() {
-        this.configurationLoading.setVisibility(GONE);
-        this.configurationSelectedTextView.setVisibility(GONE);
-        this.configRetry.setVisibility(VISIBLE);
     }
 
     public void showConfigurationsError(@NonNull final OnClickListener configurationErrorImageViewClickListener) {
@@ -114,7 +100,6 @@ public class ExpansionDetailView extends PresenterView {
         this.configurationLoading.setVisibility(GONE);
         this.configurationSelectedTextView.setVisibility(GONE);
         this.configurationErrorImageView.setVisibility(VISIBLE);
-        this.configRetry.setVisibility(GONE);
     }
 
     public void showConfigurationSpinner() {
