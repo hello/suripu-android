@@ -70,6 +70,7 @@
     <string name="title_demographics">Demographics</string>
 
     <string name="action_ok">OK</string>
+    <string name="action_okay">Okay</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_deny">Deny</string>
     <string name="action_continue">Continue</string>

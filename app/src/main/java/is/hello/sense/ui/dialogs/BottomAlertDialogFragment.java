@@ -12,8 +12,7 @@ import is.hello.sense.api.model.v2.alerts.Alert;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomAlertDialog;
 import is.hello.sense.util.Analytics;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import is.hello.sense.util.Logger;
 
 /**
  * Used specifically for displaying {@link Alert} objects in a bottom dialog.
@@ -58,7 +57,7 @@ public class BottomAlertDialogFragment extends SenseDialogFragment {
         alertDialog.setTitle(alert.getTitle());
         alertDialog.setMessage(alert.getBody());
 
-        alertDialog.setPositiveButton(R.string.action_ok, null);
+        alertDialog.setPositiveButton(R.string.action_okay, null);
 
         return alertDialog;
     }
@@ -70,7 +69,11 @@ public class BottomAlertDialogFragment extends SenseDialogFragment {
     }
 
     private void setAlert(@Nullable final Alert alert) {
-        this.alert = alert;
-        checkNotNull(alert, BottomAlertDialogFragment.TAG + " requires non null Alert object passed in arguments");
+        if(alert == null){
+            this.alert = Alert.NewEmptyInstance();
+            Logger.error(BottomAlertDialogFragment.TAG, " requires non null Alert object passed in arguments");
+        } else {
+            this.alert = alert;
+        }
     }
 }

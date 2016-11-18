@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 import is.hello.sense.api.model.ApiResponse;
+import is.hello.sense.util.Constants;
 
 /**
  * Object representing an alert
@@ -51,5 +52,11 @@ public class Alert extends ApiResponse {
 
     public boolean isValid() {
         return !Category.UNKNOWN.equals(category);
+    }
+
+    public static Alert NewEmptyInstance() {
+        return new Alert(null,
+                         Constants.EMPTY_STRING,
+                         Category.UNKNOWN);
     }
 }
