@@ -81,6 +81,11 @@ public class ExpansionValuePickerView extends LinearLayout implements ExpansionR
         this.selectedValue = initialValue;
     }
 
+    public void setSelectedValue(final int value){
+        this.pickerView.setValue(value, false);
+        this.selectedValue = value;
+    }
+
     public int getSelectedValue() {
         return this.selectedValue;
     }

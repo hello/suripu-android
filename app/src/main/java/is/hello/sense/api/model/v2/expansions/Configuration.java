@@ -48,7 +48,15 @@ public class Configuration extends ApiResponse {
         this.selected = selected;
     }
 
+    /**
+     * until server supports this it will default to list containing single
+     * {@link Capability#UNKNOWN}
+     */
+    @NonNull
     public List<Capability> getCapabilities(){
+        if(capabilities == null){
+          return Collections.singletonList(Capability.UNKNOWN);
+        }
         return capabilities;
     }
 

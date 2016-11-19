@@ -159,28 +159,31 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
             configName = selectedConfig.getName();
         }
         presenterView.showConfigurationSuccess(configName, this::onConfigureClicked);
+        presenterView.showExpansionRangePicker(expansionCategoryFormatter.getInitialValues(expansionCategory,
+                                                                                           selectedConfig.getCapabilities(),
+                                                                                           initialValueRange));
     }
 
+    /**
+     *  currently assumes that the expansion is enabled, configured, and authenticated
+     */
     public void bindExpansion(@Nullable final Expansion expansion) {
         if (expansion == null) {
             cancelFlow();
             return;
         }
 
-        //todo currently assumes that the expansion is enabled, configured, and authenticated
-
-        //todo need to wait for configurations to indicate what capabilities are available to determine number of pickers
         final UnitConverter unitConverter = expansionCategoryFormatter.getUnitConverter(expansionCategory);
         final int max = (int) Math.ceil(unitConverter.convert(expansion.getValueRange().max));
         final int min = (int) Math.ceil(unitConverter.convert(expansion.getValueRange().min));
-        final float defaultValue = expansion.getValueRange().max - expansion.getValueRange().min;
-        final int initialValues = unitConverter.convert((initialValueRange != null ? initialValueRange.max : defaultValue))
-                                               .intValue();
-        presenterView.showExpansionRangePicker(min,
+        final int defaultValue = (int) (expansion.getValueRange().max - expansion.getValueRange().min);
+
+        presenterView.setConfigurationTypeText(expansion.getConfigurationType());
+        presenterView.initExpansionRangePicker(min,
                                                max,
-                                               initialValues,
-                                               expansionCategoryFormatter.getSuffix(expansion.getCategory()),
-                                               expansion.getConfigurationType());
+                                               defaultValue,
+                                               expansionCategoryFormatter.getSuffix(expansion.getCategory())
+                                              );
 
 
         presenterView.setExpansionEnabledTextViewClickListener(this.getExpansionInfoDialogClickListener(expansion.getCategory()));
