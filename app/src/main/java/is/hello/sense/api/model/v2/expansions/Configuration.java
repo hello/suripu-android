@@ -5,17 +5,23 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Collections;
+import java.util.List;
+
 import is.hello.sense.api.model.ApiResponse;
 
 public class Configuration extends ApiResponse {
     @SerializedName("id")
-    private String id;
+    private final String id;
 
     @SerializedName("name")
-    private String name;
+    private final String name;
 
     @SerializedName("selected")
     private boolean selected;
+
+    @SerializedName("capabilities")
+    private List<Capability> capabilities;
 
     public Configuration(@NonNull final String id,
                          @NonNull final String name,
@@ -23,6 +29,7 @@ public class Configuration extends ApiResponse {
         this.id = id;
         this.name = name;
         this.selected = selected;
+        this.capabilities = Collections.singletonList(Capability.UNKNOWN);
     }
 
     public String getId() {
@@ -39,6 +46,10 @@ public class Configuration extends ApiResponse {
 
     public void setSelected(final boolean selected) {
         this.selected = selected;
+    }
+
+    public List<Capability> getCapabilities(){
+        return capabilities;
     }
 
     @Override

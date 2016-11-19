@@ -9,10 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.graph.InteractorSubject;
 import is.hello.sense.interactors.ValueInteractor;
+import is.hello.sense.util.Constants;
 import rx.Observable;
 
 import static is.hello.sense.api.model.v2.expansions.Expansion.NO_ID;
@@ -97,6 +99,32 @@ public class ConfigurationsInteractor extends ValueInteractor<ArrayList<Configur
         } else {
             return Observable.error(error); //do not resubscribe
         }
+    }
+
+    /**
+     * Use this until server returns selected configuration from endpoint
+     * @return {@link is.hello.sense.api.model.v2.expansions.Configuration.Empty} if no selected configurations
+     * else the first selected = true configuration from {@link ConfigurationsInteractor#configSubject}
+     */
+    @NonNull
+    public Observable<Configuration> selectedConfiguration(){
+        return configSubject.map( configurations -> {
+            Configuration selectedConfig = new Configuration.Empty(Constants.EMPTY_STRING,
+                                                                   Constants.EMPTY_STRING,
+                                                                   R.drawable.error_white);
+            if (configurations == null) {
+                return selectedConfig;
+            }
+
+            for (int i = 0; i < configurations.size(); i++) {
+                final Configuration config = configurations.get(i);
+                if (config.isSelected()) {
+                    selectedConfig = config;
+                    break;
+                }
+            }
+            return selectedConfig;
+        });
     }
 
     private static class InvalidConfigurationException extends RuntimeException {

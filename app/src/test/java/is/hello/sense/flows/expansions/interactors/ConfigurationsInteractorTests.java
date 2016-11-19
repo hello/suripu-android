@@ -3,6 +3,7 @@ package is.hello.sense.flows.expansions.interactors;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,7 +15,9 @@ import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Sync;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 public class ConfigurationsInteractorTests extends InjectionTestCase {
@@ -58,6 +61,29 @@ public class ConfigurationsInteractorTests extends InjectionTestCase {
         assertFalse(configurationsInteractor.shouldResubscribe(
                 null,
                 System.currentTimeMillis() - ConfigurationsInteractor.FILTER_NULL_EMPTY_CONFIG_LIST_DURATION_MILLIS));
+    }
+
+    @Test
+    public void selectedConfiguration(){
+        final ArrayList<Configuration> testConfigs = new ArrayList<>();
+        final Configuration selectedConfig = new Configuration("2", "selected", true);
+        testConfigs.add(new Configuration("1", "not selected", false));
+        testConfigs.add(selectedConfig);
+        final Configuration resultConfig = Sync.wrapAfter(() -> configurationsInteractor.configSubject.onNext(testConfigs),
+                                                            configurationsInteractor.selectedConfiguration())
+                                                 .last();
+        assertNotNull(resultConfig);
+        assertTrue(resultConfig.isSelected());
+        assertEquals(selectedConfig, resultConfig);
+    }
+
+    @Test
+    public void selectedConfigurationReturnsEmptyIfNull(){
+        final Configuration selectedConfig = Sync.wrapAfter(() -> configurationsInteractor.configSubject.onNext(null),
+                                                            configurationsInteractor.selectedConfiguration())
+                                                 .last();
+        assertNotNull(selectedConfig);
+        assertTrue(selectedConfig instanceof Configuration.Empty);
     }
 
 }

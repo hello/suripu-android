@@ -10,8 +10,6 @@ import android.widget.CompoundButton;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
@@ -106,7 +104,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
                          this::bindExpansion,
                          this::presentExpansionError);
 
-        bindAndSubscribe(configurationsInteractor.configSubject,
+        bindAndSubscribe(configurationsInteractor.selectedConfiguration(),
                          this::bindConfigurations,
                          this::presentConfigurationError);
 
@@ -137,22 +135,12 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
                            this::presentUpdateStateError);
     }
 
-    public void bindConfigurations(@Nullable final List<Configuration> configurations) {
+    public void bindConfigurations(@NonNull final Configuration selectedConfig) {
         lastConfigurationsFetchFailed = false;
-        if (configurations == null) {
-            return;
-        }
-        Configuration selectedConfig = null;
-        for (int i = 0; i < configurations.size(); i++) {
-            final Configuration config = configurations.get(i);
-            if (config.isSelected()) {
-                selectedConfig = config;
-                break;
-            }
-        }
+
         //todo pass along selected config and list to move work to interactor
         final String configName;
-        if (selectedConfig == null) {
+        if (selectedConfig instanceof Configuration.Empty) {
             configName = getString(R.string.expansions_select);
         } else {
             configName = selectedConfig.getName();
