@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -108,12 +109,15 @@ public class ExpansionDetailPickerView extends PresenterView {
 
     /**
      * @param initialValues should be the actual values, not index position.
-     *                     {@link is.hello.sense.util.Constants#EMPTY_STRING}.
+     *                      The value {@link Pair#first} is required and
+     *                      second value {@link Pair#second} is nullable.
+     *
      */
-    public void showExpansionRangePicker(final int[] initialValues) {
+    public void showExpansionRangePicker(final Pair<Integer, Integer> initialValues) {
         post(() -> {
             this.expansionRangePicker.setVisibility(VISIBLE);
-            this.expansionRangePicker.initPickers(initialValues);
+            this.expansionRangePicker.initPickers(initialValues.first,
+                                                  initialValues.second);
         });
     }
 
@@ -140,8 +144,12 @@ public class ExpansionDetailPickerView extends PresenterView {
         this.enabledSwitch.setEnabled(true);
     }
 
-    public int getSelectedValue() {
-        return this.expansionRangePicker.getSelectedMinValue();
+    /**
+     * @return {@link Pair<Integer,Integer>} min first, and max second
+     */
+    public Pair<Integer, Integer> getSelectedValuePair() {
+        return new Pair<>(expansionRangePicker.getSelectedMinValue(),
+                          expansionRangePicker.getSelectedMaxValue());
     }
 
     public void showConnectedContainer(final boolean isOn) {

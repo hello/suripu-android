@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.view.View;
 import android.widget.CompoundButton;
 
@@ -159,9 +160,9 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
             configName = selectedConfig.getName();
         }
         presenterView.showConfigurationSuccess(configName, this::onConfigureClicked);
-        presenterView.showExpansionRangePicker(expansionCategoryFormatter.getInitialValues(expansionCategory,
-                                                                                           selectedConfig.getCapabilities(),
-                                                                                           initialValueRange));
+        presenterView.showExpansionRangePicker(expansionCategoryFormatter.getInitialValuePair(expansionCategory,
+                                                                                              selectedConfig.getCapabilities(),
+                                                                                              initialValueRange));
     }
 
     /**
@@ -280,9 +281,10 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
             final ExpansionAlarm expansionAlarm = new ExpansionAlarm(expansionDetailsInteractor.expansionSubject.getValue(),
                                                                      isEnabled);
             final UnitConverter unitConverter = expansionCategoryFormatter.getReverseUnitConverter(expansionCategory);
-            final int selectedValue = presenterView.getSelectedValue();
-            final float convertedValue = unitConverter.convert((float) selectedValue);
-            expansionAlarm.setExpansionRange(convertedValue);
+            final Pair<Integer,Integer> selectedValue = presenterView.getSelectedValuePair();
+            final float convertedMinValue = unitConverter.convert((float) selectedValue.first);
+            final float convertedMaxValue = unitConverter.convert((float) selectedValue.second);
+            expansionAlarm.setExpansionRange(new ExpansionValueRange(convertedMinValue, convertedMaxValue));
             intentWithExpansionAlarm.putExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM, expansionAlarm);
             finishFlowWithResult(Activity.RESULT_OK, intentWithExpansionAlarm);
             return true;

@@ -2,8 +2,15 @@ package is.hello.sense.flows.expansions.ui.widget;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.Gravity;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Styles;
 
 /**
  * Use to pick min and max values for {@link is.hello.sense.api.model.v2.expansions.ExpansionValueRange}
@@ -40,26 +47,67 @@ public class ExpansionRangePickerView extends LinearLayout{
         this.symbol = symbol;
     }
 
-    public void initPickers(@NonNull final int[] initialValues){
-        selectedMinValue = initialValues[0];
-        selectedMaxValue = initialValues.length > 1 ? initialValues[1] : selectedMinValue;
+    /**
+     * @param minValue is required
+     * @param maxValue is optional
+     */
+    public void initPickers(@NonNull final Integer minValue,
+                            @Nullable final Integer maxValue){
+        final boolean hasMaxPicker = maxValue != null;
+        selectedMinValue = minValue;
+        selectedMaxValue = hasMaxPicker ? maxValue : minValue;
+        final int pickerCount = hasMaxPicker ? 2 : 1;
 
         post( () -> {
-            final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(getMeasuredWidth() / initialValues.length,
-                                                                                         getMeasuredHeight());
-
-            for (final int initialValue : initialValues) {
-                final ExpansionValuePickerView valuePickerView = new ExpansionValuePickerView(getContext());
-                valuePickerView.initialize(min,
-                                           max,
-                                           0,
-                                           symbol);
-
-                valuePickerView.setSelectedValue(initialValue);
-
-                addView(valuePickerView, layoutParams);
+            if(hasMaxPicker){
+                final int dividerWidth = getResources().getDimensionPixelSize(R.dimen.x3);
+                final LinearLayout.LayoutParams pickerParams = new LinearLayout.LayoutParams((getMeasuredWidth() / pickerCount) - dividerWidth/2,
+                                                                                             getMeasuredHeight());
+                addPicker(selectedMinValue,
+                          pickerParams,
+                          this::updateSelectedMinValue
+                         );
+                addDivider(dividerWidth);
+                addPicker(selectedMaxValue,
+                          pickerParams,
+                          this::updateSelectedMaxValue);
+            } else {
+                final LinearLayout.LayoutParams pickerParams = new LinearLayout.LayoutParams(getMeasuredWidth() / pickerCount,
+                                                                                             getMeasuredHeight());
+                addPicker(selectedMinValue,
+                          pickerParams,
+                          this::updateSelectedMinAndMaxValue
+                         );
             }
         });
+    }
+
+    private void addPicker(final int initialValue,
+                           @NonNull final LayoutParams layoutParams,
+                           @NonNull final ExpansionValuePickerView.OnValueChangedListener listener){
+        final ExpansionValuePickerView valuePickerView = new ExpansionValuePickerView(getContext());
+        valuePickerView.initialize(min,
+                                   max,
+                                   0,
+                                   symbol);
+
+        valuePickerView.setOnValueChangedListener(listener);
+
+        valuePickerView.setSelectedValue(initialValue);
+
+        addView(valuePickerView, layoutParams);
+    }
+
+    private void addDivider(final int width){
+        final TextView divider = new TextView(getContext());
+        Styles.setTextAppearance(divider, R.style.AppTheme_Text_RotaryPickerItem);
+        divider.setText("-");
+        divider.setGravity(Gravity.CENTER);
+        final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width,
+                                                                               ViewGroup.LayoutParams.WRAP_CONTENT
+                                                                               );
+        params.gravity = Gravity.CENTER;
+        addView(divider, params);
     }
 
     private void updateSelectedMinAndMaxValue(final int newSelectedValue) {

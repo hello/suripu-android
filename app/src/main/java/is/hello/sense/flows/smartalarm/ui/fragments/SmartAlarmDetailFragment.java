@@ -314,7 +314,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         }
         final ExpansionAlarm savedExpansionAlarm = this.alarm.getExpansionAlarm(newExpansionAlarm.getCategory());
         if (savedExpansionAlarm != null) {
-            savedExpansionAlarm.setExpansionRange(newExpansionAlarm.getExpansionRange().max);
+            savedExpansionAlarm.setExpansionRange(newExpansionAlarm.getExpansionRange());
             savedExpansionAlarm.setEnabled(newExpansionAlarm.isEnabled());
             savedExpansionAlarm.setDisplayValue(this.expansionCategoryFormatter
                                                         .getFormattedAttributionValueRange(newExpansionAlarm.getCategory(),
