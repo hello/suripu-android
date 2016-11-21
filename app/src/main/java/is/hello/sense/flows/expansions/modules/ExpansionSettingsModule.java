@@ -11,13 +11,10 @@ import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.flows.expansions.interactors.ExpansionsInteractor;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
-import is.hello.sense.flows.expansions.ui.activities.ExpansionValuePickerActivity;
 import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionListFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionsAuthFragment;
-import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
-import is.hello.sense.units.UnitFormatter;
 
 @Module(complete = false, injects = {
         ExpansionSettingsActivity.class,
@@ -25,7 +22,6 @@ import is.hello.sense.units.UnitFormatter;
         ExpansionsAuthFragment.class,
         ExpansionDetailFragment.class,
         ConfigSelectionFragment.class,
-        ExpansionValuePickerActivity.class
 })
 public class ExpansionSettingsModule {
 
@@ -47,10 +43,6 @@ public class ExpansionSettingsModule {
         return new ConfigurationsInteractor(apiService);
     }
 
-    @Provides
-    @Singleton
-    public ExpansionCategoryFormatter providesExpansionCategoryFormatter(@NonNull final UnitFormatter unitFormatter){
-        return new ExpansionCategoryFormatter(unitFormatter);
-    }
+
 
 }

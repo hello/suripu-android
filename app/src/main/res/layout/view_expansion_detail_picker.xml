@@ -6,16 +6,17 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <include
-        android:id="@+id/view_expansion_detail_info_top"
-        layout="@layout/view_expansion_detail_info"
+    <is.hello.sense.flows.expansions.ui.widget.ExpansionValuePickerView
+        android:id="@+id/view_expansion_detail_picker_value_widget"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/view_expansion_detail_bottom"
-        android:layout_alignParentTop="true"/>
+        android:layout_above="@+id/view_expansion_detail_picker_bottom"
+        android:layout_alignParentTop="true"
+        android:background="@color/background_light"
+        android:visibility="gone"/>
 
     <include
-        android:id="@+id/view_expansion_detail_bottom"
+        android:id="@+id/view_expansion_detail_picker_bottom"
         layout="@layout/view_expansion_detail_action_rows"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

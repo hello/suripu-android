@@ -25,6 +25,7 @@ import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.ConfigurationAdapter;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
+import is.hello.sense.util.Logger;
 
 public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionView>
         implements ArrayRecyclerAdapter.OnItemClickedListener<Configuration>,
@@ -71,6 +72,11 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
             bindAndSubscribe(configurationsInteractor.configSubject,
                              this::bindConfigurations,
                              this::presentError);
+
+            if(!expansionDetailsInteractor.expansionSubject.hasValue()) {
+                Logger.error(ConfigSelectionFragment.class.getName(), "expansion detail interactor had no value");
+                bindConfigurations(null);
+            }
         }), 2000);
     }
 
@@ -83,7 +89,6 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     @Override
     public void onResume() {
         super.onResume();
-        //hideBlockingActivity(false, null); todo need to hide progress on orientation switch
     }
 
     @Override

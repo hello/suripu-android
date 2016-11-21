@@ -14,7 +14,7 @@ import com.segment.analytics.Properties;
 
 import org.joda.time.LocalTime;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -22,16 +22,8 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
-import is.hello.sense.api.model.v2.expansions.Category;
-import is.hello.sense.api.model.v2.expansions.Expansion;
-import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
-import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
-import is.hello.sense.flows.expansions.ui.activities.ExpansionValuePickerActivity;
-import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
-import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
-import is.hello.sense.flows.expansions.ui.fragments.ExpansionsAuthFragment;
+import is.hello.sense.flows.smartalarm.modules.SmartAlarmDetailModule;
 import is.hello.sense.flows.smartalarm.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -139,7 +131,7 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
     @NotTested
     @Override
     protected List<Object> getModules() {
-        return new ArrayList<>(); //todo create a module for this flow
+        return Collections.singletonList(new SmartAlarmDetailModule());
     }
 
     @NotTested
