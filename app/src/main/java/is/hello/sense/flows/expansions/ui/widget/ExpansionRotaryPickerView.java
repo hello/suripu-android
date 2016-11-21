@@ -34,6 +34,7 @@ import is.hello.sense.util.Constants;
  */
 public class ExpansionRotaryPickerView extends RecyclerView implements View.OnClickListener {
     public static final int DEFAULT_UNFOCUSED_ITEM_COUNT = 2;
+    public static final int FLING_DAMPING_FACTOR = 3;
     public static final
     @StyleRes
     int ITEM_TEXT_APPEARANCE = R.style.AppTheme_Text_Header_H1_Thin;
@@ -225,8 +226,10 @@ public class ExpansionRotaryPickerView extends RecyclerView implements View.OnCl
     }
 
     @Override
-    public boolean fling(int velocityX, int velocityY) {
-        return super.fling(velocityX / 3, velocityY / 3);
+    public boolean fling(final int velocityX,
+                         final int velocityY) {
+        return super.fling(velocityX / FLING_DAMPING_FACTOR,
+                           velocityY / FLING_DAMPING_FACTOR);
     }
 
 
