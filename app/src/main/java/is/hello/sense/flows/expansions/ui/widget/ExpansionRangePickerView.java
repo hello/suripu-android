@@ -25,6 +25,9 @@ public class ExpansionRangePickerView extends LinearLayout{
     private int min;
     private int max;
     private String symbol;
+    private ExpansionValuePickerView minPicker;
+    private ExpansionValuePickerView maxPicker;
+    private int rangeDifferenceThreshold = 3;
 
     public ExpansionRangePickerView(final Context context) {
         this(context, null, 0);
@@ -45,6 +48,15 @@ public class ExpansionRangePickerView extends LinearLayout{
         this.min = min;
         this.max = max;
         this.symbol = symbol;
+        this.rangeDifferenceThreshold = 3;
+    }
+
+    public int getSelectedMinValue() {
+        return selectedMinValue;
+    }
+
+    public int getSelectedMaxValue() {
+        return selectedMaxValue;
     }
 
     /**
@@ -63,18 +75,24 @@ public class ExpansionRangePickerView extends LinearLayout{
                 final int dividerWidth = getResources().getDimensionPixelSize(R.dimen.x3);
                 final LinearLayout.LayoutParams pickerParams = new LinearLayout.LayoutParams((getMeasuredWidth() / pickerCount) - dividerWidth/2,
                                                                                              getMeasuredHeight());
-                addPicker(selectedMinValue,
-                          pickerParams,
-                          this::updateSelectedMinValue
+                this.minPicker = addPicker(selectedMinValue,
+                                           min,
+                                           max - rangeDifferenceThreshold,
+                                           pickerParams,
+                                           this::updateSelectedMinValue
                          );
                 addDivider(dividerWidth);
-                addPicker(selectedMaxValue,
-                          pickerParams,
-                          this::updateSelectedMaxValue);
+                this.maxPicker = addPicker(selectedMaxValue,
+                                           min + rangeDifferenceThreshold,
+                                           max,
+                                           pickerParams,
+                                           this::updateSelectedMaxValue);
             } else {
                 final LinearLayout.LayoutParams pickerParams = new LinearLayout.LayoutParams(getMeasuredWidth() / pickerCount,
                                                                                              getMeasuredHeight());
                 addPicker(selectedMinValue,
+                          min,
+                          max,
                           pickerParams,
                           this::updateSelectedMinAndMaxValue
                          );
@@ -82,20 +100,22 @@ public class ExpansionRangePickerView extends LinearLayout{
         });
     }
 
-    private void addPicker(final int initialValue,
-                           @NonNull final LayoutParams layoutParams,
-                           @NonNull final ExpansionValuePickerView.OnValueChangedListener listener){
+    private ExpansionValuePickerView addPicker(final int initialValue,
+                                               final int min,
+                                               final int max,
+                                               @NonNull final LayoutParams layoutParams,
+                                               @NonNull final ExpansionValuePickerView.OnValueChangedListener listener){
         final ExpansionValuePickerView valuePickerView = new ExpansionValuePickerView(getContext());
         valuePickerView.initialize(min,
                                    max,
-                                   0,
+                                   initialValue,
                                    symbol);
 
         valuePickerView.setOnValueChangedListener(listener);
 
-        valuePickerView.setSelectedValue(initialValue);
-
         addView(valuePickerView, layoutParams);
+
+        return valuePickerView;
     }
 
     private void addDivider(final int width){
@@ -117,20 +137,23 @@ public class ExpansionRangePickerView extends LinearLayout{
 
     private void updateSelectedMaxValue(final int newMaxValue) {
         selectedMaxValue = newMaxValue;
+        updatePickerToEnforceDifference(minPicker,
+                                        selectedMaxValue - rangeDifferenceThreshold);
 
-        //todo prevent max from being less than min
     }
 
     private void updateSelectedMinValue(final int newMinValue) {
         selectedMinValue = newMinValue;
-        //todo if min >= max need to force other value picker to scroll
+        updatePickerToEnforceDifference(maxPicker,
+                                        selectedMinValue + rangeDifferenceThreshold);
+
     }
 
-    public int getSelectedMinValue() {
-        return selectedMinValue;
-    }
-
-    public int getSelectedMaxValue() {
-        return selectedMaxValue;
+    private void updatePickerToEnforceDifference(@Nullable final ExpansionValuePickerView picker,
+                                                 final int validValue){
+        if(picker != null && selectedMaxValue - selectedMinValue < rangeDifferenceThreshold){
+            picker.setSelectedValue(validValue,
+                                    true);
+        }
     }
 }
