@@ -21,9 +21,9 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Constants;
 
 public class ExpansionCategoryFormatter {
-    private final static float DEFAULT_TEMP_MUTLIPLIER = .32f; // will initialize 9-32 to 16.
-    private final static float DEFAULT_LIGHT_MUTLIPLIER = .2f; // will initialize 1-100 to 20.
-
+    private final static float DEFAULT_TEMP_MULTIPLIER = .32f; // will initialize 9-32 to 16.
+    private final static float DEFAULT_LIGHT_MULTIPLIER = .2f; // will initialize 1-100 to 20.
+    private final static int TEMP_RANGE = 3; // range of temperatures. this may be replaced by one in expansion picker
     private final UnitFormatter unitFormatter;
 
     @Inject
@@ -82,17 +82,21 @@ public class ExpansionCategoryFormatter {
     }
 
     //todo use this method to default values
-    public float getInitialValueFor(@NonNull final Category category,
-                                    @NonNull final ExpansionValueRange valueRange) {
+    public Pair<Integer, Integer> getInitialValueFor(@NonNull final Category category,
+                                                     @NonNull final ExpansionValueRange valueRange) {
         final float count = valueRange.max - valueRange.min;
+        int min;
         switch (category) {
             case TEMPERATURE:
-                return valueRange.min + (count * DEFAULT_TEMP_MUTLIPLIER);
+                min = (int) (valueRange.min + (count * DEFAULT_TEMP_MULTIPLIER));
+                return new Pair<>(min, min + TEMP_RANGE);
             case LIGHT:
-                return valueRange.min + (count * DEFAULT_LIGHT_MUTLIPLIER);
+                min = (int) (valueRange.min + (count * DEFAULT_LIGHT_MULTIPLIER));
+                break;
             default:
-                return count;
+                min = (int) (count);
         }
+        return new Pair<>(min, min);
     }
 
     public UnitConverter getUnitConverter(@NonNull final Category category) {

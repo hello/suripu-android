@@ -1,5 +1,7 @@
 package is.hello.sense.flows.expansions.utils;
 
+import android.support.v4.util.Pair;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -82,9 +84,9 @@ public class ExpansionCategoryFormatterTest extends InjectionTestCase {
     @Test
     public void hasCorrectInitialValues() throws Exception {
         ExpansionValueRange expansionValueRange = new ExpansionValueRange(9, 32);
-        assertEquals(16, (int) expansionCategoryFormatter.getInitialValueFor(Category.TEMPERATURE, expansionValueRange));
+        assertEquals(new Pair<>(16, 19), expansionCategoryFormatter.getInitialValueFor(Category.TEMPERATURE, expansionValueRange));
 
         expansionValueRange = new ExpansionValueRange(1, 100);
-        assertEquals(20, (int) expansionCategoryFormatter.getInitialValueFor(Category.LIGHT, expansionValueRange));
+        assertEquals(new Pair<>(20, 20), expansionCategoryFormatter.getInitialValueFor(Category.LIGHT, expansionValueRange));
     }
 }
