@@ -126,9 +126,9 @@ public class ExpansionDetailView extends PresenterView {
         Views.setSafeOnClickListener(this.enabledTextView, listener);
     }
 
-    public void showRemoveAccess(final boolean isOn) {
-        this.removeAccessContainer.setVisibility(isOn ? VISIBLE : GONE);
-        this.removeAccessContainer.setEnabled(isOn);
+    public void showRemoveAccess() {
+        this.removeAccessContainer.setVisibility(VISIBLE);
+        this.removeAccessContainer.setEnabled(true);
     }
 
     //region switch
