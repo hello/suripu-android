@@ -9,6 +9,8 @@ import android.support.v4.util.Pair;
 import android.view.View;
 import android.widget.CompoundButton;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
@@ -120,7 +122,7 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
                          this::bindExpansion,
                          this::presentExpansionError);
 
-        bindAndSubscribe(configurationsInteractor.selectedConfiguration(),
+        bindAndSubscribe(configurationsInteractor.configSubject,
                          this::bindConfigurations,
                          this::presentConfigurationError);
 
@@ -153,19 +155,25 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
         initialValueRange = (ExpansionValueRange) bundle.getSerializable(ARG_EXPANSION_VALUE_RANGE);
     }
 
-    public void bindConfigurations(@NonNull final Configuration selectedConfig) {
-        lastConfigurationsFetchFailed = false;
+    public void bindConfigurations(@NonNull final ArrayList<Configuration> configs) {
+        final Configuration selectedConfig = ConfigurationsInteractor.selectedConfiguration(configs);
 
         final String configName;
-        if (selectedConfig.isEmpty()) {
+        if(selectedConfig == null){
+            presentConfigurationError(new IllegalStateException("no configurations available"));
+            return;
+        }
+        else if (selectedConfig.isEmpty()) {
             configName = getString(R.string.expansions_select);
         } else {
             configName = selectedConfig.getName();
         }
+        lastConfigurationsFetchFailed = false;
         presenterView.showConfigurationSuccess(configName, this::onConfigureClicked);
         presenterView.showExpansionRangePicker(expansionCategoryFormatter.getInitialValuePair(expansionCategory,
                                                                                               selectedConfig.getCapabilities(),
                                                                                               initialValueRange));
+
     }
 
     /**
@@ -294,7 +302,7 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
 
     @Override
     public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
-        if (expansionDetailsInteractor.expansionSubject.hasValue()) {
+        if (expansionDetailsInteractor.expansionSubject.hasValue() && !lastConfigurationsFetchFailed) {
             final Intent intentWithExpansionAlarm = new Intent();
             final ExpansionAlarm expansionAlarm = new ExpansionAlarm(expansionDetailsInteractor.expansionSubject.getValue(),
                                                                      isEnabled);

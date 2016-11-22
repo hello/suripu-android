@@ -18,6 +18,7 @@ import is.hello.sense.util.Sync;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 public class ConfigurationsInteractorTests extends InjectionTestCase {
@@ -70,20 +71,11 @@ public class ConfigurationsInteractorTests extends InjectionTestCase {
         testConfigs.add(new Configuration("1", "not selected", false, false));
         testConfigs.add(selectedConfig);
         final Configuration resultConfig = Sync.wrapAfter(() -> configurationsInteractor.configSubject.onNext(testConfigs),
-                                                            configurationsInteractor.selectedConfiguration())
+                                                          configurationsInteractor.configSubject.map(ConfigurationsInteractor::selectedConfiguration))
                                                  .last();
         assertNotNull(resultConfig);
         assertTrue(resultConfig.isSelected());
         assertEquals(selectedConfig, resultConfig);
-    }
-
-    @Test
-    public void selectedConfigurationReturnsEmptyIfEmptyList(){
-        final Configuration selectedConfig = Sync.wrapAfter(() -> configurationsInteractor.configSubject.onNext(new ArrayList<>()),
-                                                            configurationsInteractor.selectedConfiguration())
-                                                 .last();
-        assertNotNull(selectedConfig);
-        assertTrue(selectedConfig.isEmpty());
     }
 
     @Test
@@ -92,19 +84,26 @@ public class ConfigurationsInteractorTests extends InjectionTestCase {
         testConfigs.add(new Configuration("1", "not selected", false, false));
         testConfigs.add(new Configuration("2", "not selected either", false, false));
         final Configuration selectedConfig = Sync.wrapAfter(() -> configurationsInteractor.configSubject.onNext(testConfigs),
-                                                            configurationsInteractor.selectedConfiguration())
+                                                            configurationsInteractor.configSubject.map(ConfigurationsInteractor::selectedConfiguration))
                                                  .last();
         assertNotNull(selectedConfig);
         assertTrue(selectedConfig.isEmpty());
     }
 
     @Test
-    public void selectedConfigurationReturnsEmptyIfNull(){
-        final Configuration selectedConfig = Sync.wrapAfter(() -> configurationsInteractor.configSubject.onNext(null),
-                                                            configurationsInteractor.selectedConfiguration())
+    public void selectedConfigurationReturnsNullIfEmptyList(){
+        final Configuration selectedConfig = Sync.wrapAfter(() -> configurationsInteractor.configSubject.onNext(new ArrayList<>()),
+                                                            configurationsInteractor.configSubject.map(ConfigurationsInteractor::selectedConfiguration))
                                                  .last();
-        assertNotNull(selectedConfig);
-        assertTrue(selectedConfig.isEmpty());
+        assertNull(selectedConfig);
+    }
+
+    @Test
+    public void selectedConfigurationReturnsNullIfNull() throws Exception{
+        final Configuration selectedConfig = Sync.wrapAfter(() -> configurationsInteractor.configSubject.onNext(null),
+                       configurationsInteractor.configSubject.map(ConfigurationsInteractor::selectedConfiguration))
+                .last();
+        assertNull(selectedConfig);
     }
 
 }

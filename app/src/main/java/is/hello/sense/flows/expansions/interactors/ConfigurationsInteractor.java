@@ -104,27 +104,31 @@ public class ConfigurationsInteractor extends ValueInteractor<ArrayList<Configur
     /**
      * Use this until server returns selected configuration from endpoint
      * @return {@link is.hello.sense.api.model.v2.expansions.Configuration.Empty} if no selected configurations
-     * else the first selected = true configuration from {@link ConfigurationsInteractor#configSubject}
+     * or null if list is null or empty
+     * else the first selected = true configuration from list
      */
-    @NonNull
-    public Observable<Configuration> selectedConfiguration(){
-        return configSubject.map( configurations -> {
-            Configuration selectedConfig = new Configuration.Empty(Constants.EMPTY_STRING,
-                                                                   Constants.EMPTY_STRING,
-                                                                   R.drawable.error_white);
-            if (configurations == null) {
-                return selectedConfig;
-            }
+    @Nullable
+    public static Configuration selectedConfiguration(@Nullable final ArrayList<Configuration> configurations){
+        if (configurations == null || configurations.isEmpty()) {
+            return null;
+        }
 
-            for (int i = 0; i < configurations.size(); i++) {
-                final Configuration config = configurations.get(i);
-                if (config.isSelected()) {
-                    selectedConfig = config;
-                    break;
-                }
+        Configuration selectedConfig = null;
+
+        for (int i = 0; i < configurations.size(); i++) {
+            final Configuration config = configurations.get(i);
+            if (config.isSelected()) {
+                selectedConfig = config;
+                break;
             }
+        }
+        if(selectedConfig == null){
+            return new Configuration.Empty(Constants.EMPTY_STRING,
+                                           Constants.EMPTY_STRING,
+                                           R.drawable.error_white);
+        } else {
             return selectedConfig;
-        });
+        }
     }
 
     private static class InvalidConfigurationException extends RuntimeException {

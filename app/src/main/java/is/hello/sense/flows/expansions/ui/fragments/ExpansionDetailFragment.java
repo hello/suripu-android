@@ -10,6 +10,8 @@ import android.widget.CompoundButton;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
@@ -104,7 +106,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
                          this::bindExpansion,
                          this::presentExpansionError);
 
-        bindAndSubscribe(configurationsInteractor.selectedConfiguration(),
+        bindAndSubscribe(configurationsInteractor.configSubject,
                          this::bindConfigurations,
                          this::presentConfigurationError);
 
@@ -135,10 +137,15 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
                            this::presentUpdateStateError);
     }
 
-    public void bindConfigurations(@NonNull final Configuration selectedConfig) {
+    public void bindConfigurations(@NonNull final ArrayList<Configuration> configs) {
         lastConfigurationsFetchFailed = false;
+        final Configuration selectedConfig = ConfigurationsInteractor.selectedConfiguration(configs);
 
         final String configName;
+        if(selectedConfig == null){
+            presentConfigurationError(new IllegalStateException("no configurations available"));
+            return;
+        }
         if (selectedConfig.isEmpty()) {
             configName = getString(R.string.expansions_select);
         } else {
