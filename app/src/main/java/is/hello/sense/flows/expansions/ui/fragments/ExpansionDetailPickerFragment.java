@@ -156,9 +156,8 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
     public void bindConfigurations(@NonNull final Configuration selectedConfig) {
         lastConfigurationsFetchFailed = false;
 
-        //todo pass along selected config and list to move work to interactor
         final String configName;
-        if (selectedConfig instanceof Configuration.Empty) {
+        if (selectedConfig.isEmpty()) {
             configName = getString(R.string.expansions_select);
         } else {
             configName = selectedConfig.getName();

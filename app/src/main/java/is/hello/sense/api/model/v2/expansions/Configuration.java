@@ -3,6 +3,7 @@ package is.hello.sense.api.model.v2.expansions;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Collections;
@@ -23,13 +24,22 @@ public class Configuration extends ApiResponse {
     @SerializedName("capabilities")
     private List<Capability> capabilities;
 
+    /**
+     * set to true if configuration should be treated as empty object
+     * in place of null checks
+     */
+    @Expose(serialize = false)
+    private boolean isEmpty;
+
     public Configuration(@NonNull final String id,
                          @NonNull final String name,
-                         final boolean selected) {
+                         final boolean selected,
+                         final boolean isEmpty) {
         this.id = id;
         this.name = name;
         this.selected = selected;
         this.capabilities = Collections.singletonList(Capability.UNKNOWN);
+        this.isEmpty = isEmpty;
     }
 
     public String getId() {
@@ -60,6 +70,10 @@ public class Configuration extends ApiResponse {
         return capabilities;
     }
 
+    public boolean isEmpty(){
+        return isEmpty;
+    }
+
     @Override
     public String toString() {
         return "Configuration{" +
@@ -85,7 +99,7 @@ public class Configuration extends ApiResponse {
         public Empty(@NonNull final String title,
                      @NonNull final String subtitle,
                      @DrawableRes final int iconRes){
-            super(EMPTY_ID, EMPTY_NAME, false);
+            super(EMPTY_ID, EMPTY_NAME, false, true);
             this.title = title;
             this.subtitle = subtitle;
             this.iconRes = iconRes;
