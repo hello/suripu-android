@@ -10,6 +10,8 @@ import android.widget.CompoundButton;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
@@ -104,7 +106,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
                          this::bindExpansion,
                          this::presentExpansionError);
 
-        bindAndSubscribe(configurationsInteractor.selectedConfiguration(),
+        bindAndSubscribe(configurationsInteractor.configSubject,
                          this::bindConfigurations,
                          this::presentConfigurationError);
 
@@ -135,12 +137,16 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
                            this::presentUpdateStateError);
     }
 
-    public void bindConfigurations(@NonNull final Configuration selectedConfig) {
+    public void bindConfigurations(@NonNull final ArrayList<Configuration> configs) {
         lastConfigurationsFetchFailed = false;
+        final Configuration selectedConfig = ConfigurationsInteractor.selectedConfiguration(configs);
 
-        //todo pass along selected config and list to move work to interactor
         final String configName;
-        if (selectedConfig instanceof Configuration.Empty) {
+        if(selectedConfig == null){
+            presentConfigurationError(new IllegalStateException("no configurations available"));
+            return;
+        }
+        if (selectedConfig.isEmpty()) {
             configName = getString(R.string.expansions_select);
         } else {
             configName = selectedConfig.getName();
@@ -162,11 +168,11 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             presenterView.showConnectButton(this::onConnectClicked);
         } else if (expansion.requiresConfiguration()) {
             presenterView.showConfigurationSuccess(getString(R.string.expansions_select), this::onConfigureClicked);
-            presenterView.showRemoveAccess(true);
+            presenterView.showRemoveAccess();
         } else {
             configurationsInteractor.update();
             presenterView.showEnableSwitch(expansion.isConnected(), this);
-            presenterView.showRemoveAccess(true);
+            presenterView.showRemoveAccess();
         }
     }
 

@@ -324,7 +324,7 @@ public class ExpansionRotaryPickerView extends RecyclerView implements View.OnCl
     }
 
     private void scrollToValue(int oldValue, int newValue, boolean animate) {
-        final int distanceToFocusedItem = itemHeight * unfocusedItemCount;
+        final int distanceToFocusedItem = (getMeasuredHeight() - itemHeight) / 2;
         final int position = adapter.getItemPosition(newValue);
 
         this.wrapAroundEventsEnabled = false;
