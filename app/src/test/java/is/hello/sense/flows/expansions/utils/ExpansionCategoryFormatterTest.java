@@ -13,7 +13,7 @@ import is.hello.sense.units.UnitConverter;
 
 import static junit.framework.Assert.assertEquals;
 
-public class ExpansionCategoryFormatterTest extends InjectionTestCase{
+public class ExpansionCategoryFormatterTest extends InjectionTestCase {
     @Inject
     PreferencesInteractor preferencesInteractor;
 
@@ -22,15 +22,15 @@ public class ExpansionCategoryFormatterTest extends InjectionTestCase{
 
 
     @Before
-    public void setUp(){
+    public void setUp() {
         preferencesInteractor.clear();
     }
 
     @Test
     public void getFormattedValueRangeIgnoresMaxForLightCategory() throws Exception {
 
-        assertEquals("0%" , expansionCategoryFormatter.getFormattedValueRange(Category.LIGHT, new ExpansionValueRange(0, 32), getContext()));
-        assertEquals("0%" , expansionCategoryFormatter.getFormattedValueRange(Category.LIGHT, new ExpansionValueRange(0, 100), getContext()));
+        assertEquals("0%", expansionCategoryFormatter.getFormattedValueRange(Category.LIGHT, new ExpansionValueRange(0, 32), getContext()));
+        assertEquals("0%", expansionCategoryFormatter.getFormattedValueRange(Category.LIGHT, new ExpansionValueRange(0, 100), getContext()));
     }
 
     @Test
@@ -38,16 +38,16 @@ public class ExpansionCategoryFormatterTest extends InjectionTestCase{
         preferencesInteractor.edit().putBoolean(PreferencesInteractor.USE_CELSIUS, true)
                              .commit();
 
-        assertEquals("0°" , expansionCategoryFormatter.getFormattedValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 0), getContext()));
+        assertEquals("0°", expansionCategoryFormatter.getFormattedValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 0), getContext()));
 
-        assertEquals("0° - 32°" , expansionCategoryFormatter.getFormattedValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 32), getContext()));
+        assertEquals("0° - 32°", expansionCategoryFormatter.getFormattedValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 32), getContext()));
 
         preferencesInteractor.edit().putBoolean(PreferencesInteractor.USE_CELSIUS, false)
                              .commit();
 
-        assertEquals("32°" , expansionCategoryFormatter.getFormattedValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 0), getContext()));
+        assertEquals("32°", expansionCategoryFormatter.getFormattedValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 0), getContext()));
 
-        assertEquals("32° - 89°" , expansionCategoryFormatter.getFormattedValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 32), getContext()));
+        assertEquals("32° - 89°", expansionCategoryFormatter.getFormattedValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 32), getContext()));
 
     }
 
@@ -62,14 +62,14 @@ public class ExpansionCategoryFormatterTest extends InjectionTestCase{
         preferencesInteractor.edit().putBoolean(PreferencesInteractor.USE_CELSIUS, true)
                              .commit();
 
-        assertEquals("set at 0°" , expansionCategoryFormatter.getFormattedAttributionValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 0), getContext()));
+        assertEquals("set at 0°", expansionCategoryFormatter.getFormattedAttributionValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 0), getContext()));
 
-        assertEquals("set at 0° - 32°" , expansionCategoryFormatter.getFormattedAttributionValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 32), getContext()));
+        assertEquals("set at 0° - 32°", expansionCategoryFormatter.getFormattedAttributionValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 32), getContext()));
 
         preferencesInteractor.edit().putBoolean(PreferencesInteractor.USE_CELSIUS, false)
                              .commit();
 
-        assertEquals("set at 32° - 89°" , expansionCategoryFormatter.getFormattedAttributionValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 32), getContext()));
+        assertEquals("set at 32° - 89°", expansionCategoryFormatter.getFormattedAttributionValueRange(Category.TEMPERATURE, new ExpansionValueRange(0, 32), getContext()));
     }
 
     @Test
@@ -79,4 +79,12 @@ public class ExpansionCategoryFormatterTest extends InjectionTestCase{
         assertEquals("", expansionCategoryFormatter.getSuffix(Category.UNKNOWN));
     }
 
+    @Test
+    public void hasCorrectInitialValues() throws Exception {
+        ExpansionValueRange expansionValueRange = new ExpansionValueRange(9, 32);
+        assertEquals(16, (int) expansionCategoryFormatter.getInitialValueFor(Category.TEMPERATURE, expansionValueRange));
+
+        expansionValueRange = new ExpansionValueRange(1, 100);
+        assertEquals(20, (int) expansionCategoryFormatter.getInitialValueFor(Category.LIGHT, expansionValueRange));
+    }
 }

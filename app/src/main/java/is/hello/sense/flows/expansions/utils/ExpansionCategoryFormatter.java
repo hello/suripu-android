@@ -21,11 +21,13 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Constants;
 
 public class ExpansionCategoryFormatter {
+    private final static float DEFAULT_TEMP_MUTLIPLIER = .32f; // will initialize 9-32 to 16.
+    private final static float DEFAULT_LIGHT_MUTLIPLIER = .2f; // will initialize 1-100 to 20.
 
     private final UnitFormatter unitFormatter;
 
     @Inject
-    public ExpansionCategoryFormatter(@NonNull final UnitFormatter unitFormatter){
+    public ExpansionCategoryFormatter(@NonNull final UnitFormatter unitFormatter) {
         this.unitFormatter = unitFormatter;
     }
 
@@ -36,7 +38,7 @@ public class ExpansionCategoryFormatter {
 
         final UnitConverter unitConverter = getUnitConverter(category);
 
-        switch (category){
+        switch (category) {
             case TEMPERATURE:
                 if (!valueRange.hasSameValues()) {
                     return context.getString(R.string.smart_alarm_expansion_range_value_format,
@@ -79,8 +81,22 @@ public class ExpansionCategoryFormatter {
         }
     }
 
+    //todo use this method to default values
+    public float getInitialValueFor(@NonNull final Category category,
+                                    @NonNull final ExpansionValueRange valueRange) {
+        final float count = valueRange.max - valueRange.min;
+        switch (category) {
+            case TEMPERATURE:
+                return valueRange.min + (count * DEFAULT_TEMP_MUTLIPLIER);
+            case LIGHT:
+                return valueRange.min + (count * DEFAULT_LIGHT_MUTLIPLIER);
+            default:
+                return count;
+        }
+    }
+
     public UnitConverter getUnitConverter(@NonNull final Category category) {
-        switch (category){
+        switch (category) {
             case TEMPERATURE:
                 return unitFormatter.getTemperatureUnitConverter();
             default:
@@ -89,7 +105,7 @@ public class ExpansionCategoryFormatter {
     }
 
     public UnitConverter getReverseUnitConverter(@NonNull final Category category) {
-        switch (category){
+        switch (category) {
             case TEMPERATURE:
                 return unitFormatter.getReverseTemperatureUnitConverter();
             default:
@@ -148,7 +164,7 @@ public class ExpansionCategoryFormatter {
 
     @XmlRes
     public int getExpansionInfoDialogXmlRes(@NonNull final Category category) {
-        switch (category){
+        switch (category) {
             case LIGHT:
                 return R.xml.welcome_dialog_expansions_settings_light;
             case TEMPERATURE:
@@ -160,7 +176,7 @@ public class ExpansionCategoryFormatter {
 
     @XmlRes
     public int getExpansionAlarmInfoDialogXmlRes(@NonNull final Category category) {
-        switch (category){
+        switch (category) {
             case LIGHT:
                 return R.xml.welcome_dialog_expansions_alarm_light;
             case TEMPERATURE:
