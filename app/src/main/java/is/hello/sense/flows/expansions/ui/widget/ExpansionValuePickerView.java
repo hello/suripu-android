@@ -16,6 +16,7 @@ public class ExpansionValuePickerView extends LinearLayout implements ExpansionR
     private int selectedValue;
 
     private final ExpansionRotaryPickerView pickerView;
+    private OnValueChangedListener valueChangedListener;
 
 
     public ExpansionValuePickerView(final Context context) {
@@ -55,6 +56,14 @@ public class ExpansionValuePickerView extends LinearLayout implements ExpansionR
     }
 
     @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if(valueChangedListener != null){
+            valueChangedListener = null;
+        }
+    }
+
+    @Override
     public void onSelectionRolledOver(@NonNull final ExpansionRotaryPickerView picker,
                                       @NonNull final ExpansionRotaryPickerView.RolloverDirection direction) {
 
@@ -68,6 +77,7 @@ public class ExpansionValuePickerView extends LinearLayout implements ExpansionR
     @Override
     public void onSelectionChanged(final int newValue) {
         this.selectedValue = newValue;
+        notifyListener(newValue);
     }
 
     public void initialize(final int min,
@@ -81,8 +91,27 @@ public class ExpansionValuePickerView extends LinearLayout implements ExpansionR
         this.selectedValue = initialValue;
     }
 
+    public void setSelectedValue(final int value){
+        this.pickerView.setValue(value, false);
+        this.selectedValue = value;
+        notifyListener(value);
+    }
+
+    public void setOnValueChangedListener(@NonNull final OnValueChangedListener listener){
+        this.valueChangedListener = listener;
+    }
+
+    private void notifyListener(final int value) {
+        if(valueChangedListener != null){
+            valueChangedListener.valueChanged(value);
+        }
+    }
+
     public int getSelectedValue() {
         return this.selectedValue;
     }
 
+    public interface OnValueChangedListener {
+        void valueChanged(int value);
+    }
 }

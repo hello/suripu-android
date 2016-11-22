@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <is.hello.sense.flows.expansions.ui.widget.ExpansionValuePickerView
+    <is.hello.sense.flows.expansions.ui.widget.ExpansionRangePickerView
         android:id="@+id/view_expansion_detail_picker_value_widget"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -11,7 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import is.hello.sense.R;
-import is.hello.sense.flows.expansions.ui.widget.ExpansionValuePickerView;
+import is.hello.sense.flows.expansions.ui.widget.ExpansionRangePickerView;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.widget.util.Views;
 
@@ -30,7 +31,7 @@ public class ExpansionDetailPickerView extends PresenterView {
 
     final ProgressBar configurationLoading;
 
-    final ExpansionValuePickerView expansionValuePickerView;
+    final ExpansionRangePickerView expansionRangePicker;
 
     public ExpansionDetailPickerView(@NonNull final Activity activity) {
         super(activity);
@@ -46,7 +47,7 @@ public class ExpansionDetailPickerView extends PresenterView {
         this.configurationTypeTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_type_tv);
         this.configurationSelectedTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_selection_tv);
         this.configurationLoading = (ProgressBar) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_loading);
-        this.expansionValuePickerView = (ExpansionValuePickerView) findViewById(R.id.view_expansion_detail_picker_value_widget);
+        this.expansionRangePicker = (ExpansionRangePickerView) findViewById(R.id.view_expansion_detail_picker_value_widget);
     }
 
 
@@ -87,27 +88,36 @@ public class ExpansionDetailPickerView extends PresenterView {
         Views.setSafeOnClickListener(this.enabledTextView, listener);
     }
 
+    public void setConfigurationTypeText(@NonNull final String configType){
+        this.configurationTypeTextView.setText(configType);
+    }
+
     /**
-     * @param min          min value
-     * @param max          max value
-     * @param initialValue should be the actual value, not index position.
+     * @param min          min value of all pickers
+     * @param max          max value of all pickers
      * @param suffix       will be attached to each value. If no suffix should be used pass
-     * @param configType   configuration to display
      *                     {@link is.hello.sense.util.Constants#EMPTY_STRING}.
      */
-    public void showExpansionRangePicker(final int min,
+    public void initExpansionRangePicker(final int min,
                                          final int max,
-                                         final int initialValue,
-                                         @NonNull final String suffix,
-                                         @NonNull final String configType) {
-        post(() -> {
-            this.expansionValuePickerView.setVisibility(VISIBLE);
-            this.expansionValuePickerView.initialize(min,
-                                                     max,
-                                                     initialValue,
-                                                     suffix);
+                                         final int defaultValue,
+                                         @NonNull final String suffix){
+        this.expansionRangePicker.init(min,
+                                       max,
+                                       suffix);
+    }
 
-            this.configurationTypeTextView.setText(configType);
+    /**
+     * @param initialValues should be the actual values, not index position.
+     *                      The value {@link Pair#first} is required and
+     *                      second value {@link Pair#second} is nullable.
+     *
+     */
+    public void showExpansionRangePicker(final Pair<Integer, Integer> initialValues) {
+        post(() -> {
+            this.expansionRangePicker.setVisibility(VISIBLE);
+            this.expansionRangePicker.initPickers(initialValues.first,
+                                                  initialValues.second);
         });
     }
 
@@ -134,8 +144,12 @@ public class ExpansionDetailPickerView extends PresenterView {
         this.enabledSwitch.setEnabled(true);
     }
 
-    public int getSelectedValue() {
-        return this.expansionValuePickerView.getSelectedValue();
+    /**
+     * @return {@link Pair<Integer,Integer>} min first, and max second
+     */
+    public Pair<Integer, Integer> getSelectedValuePair() {
+        return new Pair<>(expansionRangePicker.getSelectedMinValue(),
+                          expansionRangePicker.getSelectedMaxValue());
     }
 
     public void showConnectedContainer(final boolean isOn) {

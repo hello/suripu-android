@@ -10,7 +10,7 @@ import android.widget.CompoundButton;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -137,22 +137,16 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
                            this::presentUpdateStateError);
     }
 
-    public void bindConfigurations(@Nullable final List<Configuration> configurations) {
+    public void bindConfigurations(@NonNull final ArrayList<Configuration> configs) {
         lastConfigurationsFetchFailed = false;
-        if (configurations == null) {
+        final Configuration selectedConfig = ConfigurationsInteractor.selectedConfiguration(configs);
+
+        final String configName;
+        if(selectedConfig == null){
+            presentConfigurationError(new IllegalStateException("no configurations available"));
             return;
         }
-        Configuration selectedConfig = null;
-        for (int i = 0; i < configurations.size(); i++) {
-            final Configuration config = configurations.get(i);
-            if (config.isSelected()) {
-                selectedConfig = config;
-                break;
-            }
-        }
-        //todo pass along selected config and list to move work to interactor
-        final String configName;
-        if (selectedConfig == null) {
+        if (selectedConfig.isEmpty()) {
             configName = getString(R.string.expansions_select);
         } else {
             configName = selectedConfig.getName();

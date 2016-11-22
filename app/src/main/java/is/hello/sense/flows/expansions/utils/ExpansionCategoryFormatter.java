@@ -5,10 +5,14 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.XmlRes;
+import android.support.v4.util.Pair;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.expansions.Capability;
 import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
 import is.hello.sense.api.model.v2.expansions.State;
@@ -47,6 +51,31 @@ public class ExpansionCategoryFormatter {
                                          unitConverter.convert(valueRange.min)
                                                       .intValue(),
                                          suffix);
+        }
+    }
+
+    /**
+     *
+     * @param category of expansion or expansionAlarm
+     * @param capabilities of configuration
+     * @param valueRange of expansion or expansionAlarm or initial range
+     * @return {@link Pair <Integer,Integer>} of values where first is min and optional second is max
+     */
+    public Pair<Integer,Integer> getInitialValuePair(@NonNull final Category category,
+                                     @NonNull final List<Capability> capabilities,
+                                     @NonNull final ExpansionValueRange valueRange){
+        final UnitConverter unitConverter = getUnitConverter(category);
+        if(capabilities.contains(Capability.HEAT)
+                && capabilities.contains(Capability.COOL)){
+            return new Pair<>(
+                    unitConverter.convert(valueRange.min).intValue(),
+                    unitConverter.convert(valueRange.max).intValue()
+            );
+        } else {
+            return new Pair<>(
+                    unitConverter.convert(valueRange.min).intValue(),
+                    null
+            );
         }
     }
 
