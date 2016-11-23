@@ -279,7 +279,6 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
     // region listeners
 
     private void onConfigureClicked(final View ignored) {
-        initialValueRange = getCurrentExpansionValueRange();
         finishFlowWithResult(RESULT_CONFIGURE_PRESSED);
     }
 
