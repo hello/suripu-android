@@ -20,6 +20,8 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.alarms.AlarmGroups;
+import is.hello.sense.api.model.v2.alarms.AlarmSource;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InteractorSubject;
 import rx.Observable;
@@ -134,6 +136,7 @@ public class SmartAlarmInteractor extends ValueInteractor<ArrayList<Alarm>> {
 
     public Observable<VoidResponse> addSmartAlarm(@NonNull Alarm alarm) {
         return latest().flatMap(alarms -> {
+            alarm.setSource(AlarmSource.MOBILE_APP);
             ArrayList<Alarm> newAlarms = new ArrayList<>(alarms);
             newAlarms.add(alarm);
             return save(newAlarms);
@@ -142,6 +145,7 @@ public class SmartAlarmInteractor extends ValueInteractor<ArrayList<Alarm>> {
 
     public Observable<VoidResponse> saveSmartAlarm(int index, @NonNull Alarm alarm) {
         return latest().flatMap(alarms -> {
+            alarm.setSource(AlarmSource.MOBILE_APP);
             ArrayList<Alarm> newAlarms = new ArrayList<>(alarms);
             newAlarms.set(index, alarm);
             return save(newAlarms);
@@ -156,13 +160,14 @@ public class SmartAlarmInteractor extends ValueInteractor<ArrayList<Alarm>> {
         });
     }
 
-    public Observable<VoidResponse> save(@NonNull ArrayList<Alarm> updatedAlarms) {
+    public Observable<VoidResponse> save(@NonNull final ArrayList<Alarm> updatedAlarms) {
         if (validateAlarms(updatedAlarms)) {
-            return apiService.saveSmartAlarms(System.currentTimeMillis(), updatedAlarms)
+            return apiService.saveSmartAlarms(System.currentTimeMillis(),
+                                              AlarmGroups.from(updatedAlarms))
                              .doOnCompleted(() -> {
                                  logEvent("smart alarms saved");
                                  this.alarms.onNext(updatedAlarms);
-                             });
+                             }).map(Functions.TO_VOID_RESPONSE);
         } else {
             return Observable.error(new DayOverlapError());
         }

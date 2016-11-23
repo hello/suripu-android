@@ -16,16 +16,18 @@ import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.alarms.AlarmSource;
 import is.hello.sense.api.model.v2.expansions.Category;
+import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
+import is.hello.sense.api.model.v2.expansions.State;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.util.DateFormatter;
@@ -80,6 +82,22 @@ public class Alarm extends ApiResponse {
     private List<ExpansionAlarm> expansions;
 
     private transient AlarmTones alarmTones;
+
+    public static Alarm generateVoiceAlarmTestCase(){
+        final Alarm alarm = new Alarm();
+        alarm.setSource(AlarmSource.VOICE_SERVICE);
+        return alarm;
+    }
+
+    public static Alarm generateExpansionAlarmTestCase(){
+        final Alarm alarm = new Alarm();
+        alarm.setExpansions(
+                Collections.singletonList(
+                        new ExpansionAlarm(Expansion.generateLightTestCase(State.CONNECTED_ON),
+                                           true))
+                           );
+        return alarm;
+    }
 
 
     public Alarm() {

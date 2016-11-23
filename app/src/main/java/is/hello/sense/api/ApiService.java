@@ -259,9 +259,9 @@ public interface ApiService {
     @GET("/v2/alarms")
     Observable<AlarmGroups> smartAlarms();
 
-    @POST("/v1/alarms/{client_time_utc}")
-    Observable<VoidResponse> saveSmartAlarms(@Path("client_time_utc") long timestamp,
-                                             @NonNull @Body List<Alarm> alarms);
+    @POST("/v2/alarms/{client_time_utc}")
+    Observable<AlarmGroups> saveSmartAlarms(@Path("client_time_utc") long timestamp,
+                                             @NonNull @Body AlarmGroups alarmGroups);
 
     @GET("/v1/alarms/sounds")
     Observable<ArrayList<Alarm.Sound>> availableSmartAlarmSounds();
