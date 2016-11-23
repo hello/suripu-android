@@ -67,7 +67,7 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
                 setTitle(expansion.getCategory().categoryDisplayString);
                 showValuePicker(expansion.getId(),
                                 expansion.getCategory(),
-                                expansion.getValueRange(),
+                                null,
                                 intent.getBooleanExtra(EXTRA_IS_ENABLED, false));
 
             }

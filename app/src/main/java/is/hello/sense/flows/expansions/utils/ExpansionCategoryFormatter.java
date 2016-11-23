@@ -21,9 +21,8 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Constants;
 
 public class ExpansionCategoryFormatter {
-    private final static float DEFAULT_TEMP_MULTIPLIER = .32f; // will initialize 9-32 to 16.
+    private final static float DEFAULT_TEMP_MULTIPLIER = .27f; // will initialize 9-32 to 15.
     private final static float DEFAULT_LIGHT_MULTIPLIER = .2f; // will initialize 1-100 to 20.
-    private final static int TEMP_RANGE = 3; // range of temperatures. this may be replaced by one in expansion picker
     private final UnitFormatter unitFormatter;
 
     @Inject
@@ -81,22 +80,23 @@ public class ExpansionCategoryFormatter {
         }
     }
 
-    //todo use this method to default values
-    public Pair<Integer, Integer> getInitialValueFor(@NonNull final Category category,
-                                                     @NonNull final ExpansionValueRange valueRange) {
-        final float count = valueRange.max - valueRange.min;
-        int min;
+    /**
+     * @return formatted {@link ExpansionValueRange} with ideal values
+     * based on sensor condition scale
+     */
+    public ExpansionValueRange getIdealValueRange(@NonNull final Category category,
+                                                  @NonNull final ExpansionValueRange valueRange) {
+        final float mid = valueRange.max - valueRange.min;
+        final float min;
         switch (category) {
             case TEMPERATURE:
-                min = (int) (valueRange.min + (count * DEFAULT_TEMP_MULTIPLIER));
-                return new Pair<>(min, min + TEMP_RANGE);
+                min = valueRange.min + (int) (mid * DEFAULT_TEMP_MULTIPLIER);
+                return new ExpansionValueRange(min, min + 4);
             case LIGHT:
-                min = (int) (valueRange.min + (count * DEFAULT_LIGHT_MULTIPLIER));
-                break;
-            default:
-                min = (int) (count);
+                min = valueRange.min + (int) (mid * DEFAULT_LIGHT_MULTIPLIER);
+                return new ExpansionValueRange(min, min);
         }
-        return new Pair<>(min, min);
+        return new ExpansionValueRange(mid, mid);
     }
 
     public UnitConverter getUnitConverter(@NonNull final Category category) {
