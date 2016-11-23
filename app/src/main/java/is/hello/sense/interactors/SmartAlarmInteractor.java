@@ -20,6 +20,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.alarms.AlarmGroups;
+import is.hello.sense.api.model.v2.alarms.AlarmSource;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InteractorSubject;
@@ -135,6 +136,7 @@ public class SmartAlarmInteractor extends ValueInteractor<ArrayList<Alarm>> {
 
     public Observable<VoidResponse> addSmartAlarm(@NonNull Alarm alarm) {
         return latest().flatMap(alarms -> {
+            alarm.setSource(AlarmSource.MOBILE_APP);
             ArrayList<Alarm> newAlarms = new ArrayList<>(alarms);
             newAlarms.add(alarm);
             return save(newAlarms);
@@ -143,6 +145,7 @@ public class SmartAlarmInteractor extends ValueInteractor<ArrayList<Alarm>> {
 
     public Observable<VoidResponse> saveSmartAlarm(int index, @NonNull Alarm alarm) {
         return latest().flatMap(alarms -> {
+            alarm.setSource(AlarmSource.MOBILE_APP);
             ArrayList<Alarm> newAlarms = new ArrayList<>(alarms);
             newAlarms.set(index, alarm);
             return save(newAlarms);
