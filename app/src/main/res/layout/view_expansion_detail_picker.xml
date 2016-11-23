@@ -13,7 +13,7 @@
         android:layout_above="@+id/view_expansion_detail_picker_bottom"
         android:layout_alignParentTop="true"
         android:background="@color/background_light"
-        android:visibility="gone"/>
+        android:visibility="visible"/>
 
     <include
         android:id="@+id/view_expansion_detail_picker_bottom"

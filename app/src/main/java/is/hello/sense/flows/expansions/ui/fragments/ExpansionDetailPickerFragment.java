@@ -243,7 +243,7 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
         } else {
             showErrorDialog(ErrorDialogFragment.newInstance(throwable));
         }
-        cancelFlow();
+        presenterView.hidePickerSpinner();
     }
 
     /**

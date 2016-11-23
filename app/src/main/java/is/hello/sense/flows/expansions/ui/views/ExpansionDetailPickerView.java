@@ -82,6 +82,11 @@ public class ExpansionDetailPickerView extends PresenterView {
         this.configurationSelectedTextView.setVisibility(GONE);
         this.configurationErrorImageView.setVisibility(GONE);
         this.configurationLoading.setVisibility(VISIBLE);
+        hidePickerSpinner();
+    }
+
+    public void hidePickerSpinner(){
+        this.expansionRangePicker.removeAllViews();
     }
 
     public void setExpansionEnabledTextViewClickListener(@NonNull final OnClickListener listener){
@@ -114,11 +119,8 @@ public class ExpansionDetailPickerView extends PresenterView {
      *
      */
     public void showExpansionRangePicker(final Pair<Integer, Integer> initialValues) {
-        post(() -> {
-            this.expansionRangePicker.setVisibility(VISIBLE);
-            this.expansionRangePicker.initPickers(initialValues.first,
-                                                  initialValues.second);
-        });
+        post(() -> this.expansionRangePicker.initPickers(initialValues.first,
+                                              initialValues.second));
     }
 
     //region switch
