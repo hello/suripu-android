@@ -207,6 +207,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
             LoadingDialogFragment.show(getFragmentManager(),
                                        null, LoadingDialogFragment.DEFAULTS);
         } else {
+            LoadingDialogFragment.close(getFragmentManager());
             WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_alarm, false);
         }
     }
@@ -242,7 +243,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
             this.alarm.setDaysOfWeek(selectedDays);
             this.presenterView.setRepeatDaysTextView(this.alarm.getRepeatSummary(getActivity(), false));
             markDirty();
-        } else if (requestCode == EXPANSION_VALUE_REQUEST_CODE ) {
+        } else if (requestCode == EXPANSION_VALUE_REQUEST_CODE) {
             final ExpansionAlarm expansionAlarm = (ExpansionAlarm) data.getSerializableExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM);
             if (expansionAlarm != null) {
                 updateExpansion(expansionAlarm); // will make dirty
