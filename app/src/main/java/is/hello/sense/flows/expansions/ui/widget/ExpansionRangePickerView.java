@@ -84,7 +84,7 @@ public class ExpansionRangePickerView extends LinearLayout {
                                            max - rangeDifferenceThreshold,
                                            pickerParams,
                                            this::updateSelectedMinValue
-                         );
+                                          );
                 addDivider(dividerWidth);
                 this.maxPicker = addPicker(selectedMaxValue,
                                            min + rangeDifferenceThreshold,
@@ -104,11 +104,11 @@ public class ExpansionRangePickerView extends LinearLayout {
         });
     }
 
-    ExpansionValuePickerView addPicker(final int initialValue,
-                                       final int min,
-                                       final int max,
-                                       @NonNull final LayoutParams layoutParams,
-                                       @NonNull final ExpansionValuePickerView.OnValueChangedListener listener){
+    private ExpansionValuePickerView addPicker(final int initialValue,
+                                               final int min,
+                                               final int max,
+                                               @NonNull final LayoutParams layoutParams,
+                                               @NonNull final ExpansionValuePickerView.OnValueChangedListener listener) {
         final ExpansionValuePickerView valuePickerView = new ExpansionValuePickerView(getContext());
         valuePickerView.initialize(min,
                                    max,
@@ -116,9 +116,7 @@ public class ExpansionRangePickerView extends LinearLayout {
                                    symbol);
 
         valuePickerView.setOnValueChangedListener(listener);
-
         addView(valuePickerView, layoutParams);
-
         return valuePickerView;
     }
 
@@ -153,8 +151,8 @@ public class ExpansionRangePickerView extends LinearLayout {
     }
 
     private void updatePickerToEnforceDifference(@Nullable final ExpansionValuePickerView picker,
-                                                 final int validValue){
-        if(picker != null && selectedMaxValue - selectedMinValue < rangeDifferenceThreshold){
+                                                 final int validValue) {
+        if (picker != null && selectedMaxValue - selectedMinValue < rangeDifferenceThreshold) {
             picker.setSelectedValue(validValue,
                                     true);
         }

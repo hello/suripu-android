@@ -12,8 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/view_expansion_detail_picker_bottom"
         android:layout_alignParentTop="true"
-        android:background="@color/background_light"
-        android:visibility="visible"/>
+        android:background="@color/background_light"/>
 
     <include
         android:id="@+id/view_expansion_detail_picker_bottom"
