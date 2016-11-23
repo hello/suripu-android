@@ -306,9 +306,9 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<VoidResponse> saveSmartAlarms(@Query("client_time_utc") long timestamp,
-                                                   @NonNull @Body List<Alarm> alarms) {
-        return safeJust(new VoidResponse());
+    public Observable<AlarmGroups> saveSmartAlarms(@Path("client_time_utc") final long timestamp,
+                                                   @NonNull @Body final AlarmGroups alarmGroups) {
+        return safeJust(new AlarmGroups());
     }
 
     @Override
