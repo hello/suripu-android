@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
+import is.hello.sense.ui.recycler.CenterLinearLayoutManager;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
@@ -104,7 +105,7 @@ public class ExpansionRotaryPickerView extends RecyclerView implements View.OnCl
 
         final Resources resources = getResources();
 
-        this.layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+        this.layoutManager = new CenterLinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
         this.itemVerticalPadding =resources.getDimensionPixelSize(R.dimen.x_5);;
         this.itemHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
 
@@ -329,11 +330,7 @@ public class ExpansionRotaryPickerView extends RecyclerView implements View.OnCl
 
         this.wrapAroundEventsEnabled = false;
         if (animate) {
-            if (newValue > oldValue) {
-                smoothScrollToPosition(position + unfocusedItemCount);
-            } else {
-                smoothScrollToPosition(Math.max(0, position - unfocusedItemCount));
-            }
+            smoothScrollToPosition(position);
         } else {
             layoutManager.scrollToPositionWithOffset(position, distanceToFocusedItem);
             post(() -> {
