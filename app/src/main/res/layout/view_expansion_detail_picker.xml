@@ -6,14 +6,27 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <is.hello.sense.flows.expansions.ui.widget.ExpansionRangePickerView
-        android:id="@+id/view_expansion_detail_picker_value_widget"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/view_expansion_detail_picker_bottom"
-        android:layout_alignParentTop="true"
-        android:background="@color/background_light"
-        android:visibility="gone"/>
+        android:layout_alignParentTop="true">
+
+        <is.hello.sense.flows.expansions.ui.widget.ExpansionRangePickerView
+            android:id="@+id/view_expansion_detail_picker_value_widget"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/background_light"
+            android:visibility="gone"/>
+
+        <ProgressBar
+            android:id="@+id/view_expansion_detail_picker_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="invisible"/>
+
+    </FrameLayout>
 
     <include
         android:id="@+id/view_expansion_detail_picker_bottom"

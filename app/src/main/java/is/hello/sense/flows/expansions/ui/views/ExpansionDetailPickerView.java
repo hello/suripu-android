@@ -29,6 +29,7 @@ public class ExpansionDetailPickerView extends PresenterView {
     final ViewGroup connectedContainer;
     final ViewGroup enabledContainer;
 
+    final ProgressBar pickerLoading;
     final ProgressBar configurationLoading;
 
     final ExpansionRangePickerView expansionRangePicker;
@@ -47,6 +48,7 @@ public class ExpansionDetailPickerView extends PresenterView {
         this.configurationTypeTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_type_tv);
         this.configurationSelectedTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_selection_tv);
         this.configurationLoading = (ProgressBar) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_loading);
+        this.pickerLoading = (ProgressBar) findViewById(R.id.view_expansion_detail_picker_progress);
         this.expansionRangePicker = (ExpansionRangePickerView) findViewById(R.id.view_expansion_detail_picker_value_widget);
     }
 
@@ -69,6 +71,7 @@ public class ExpansionDetailPickerView extends PresenterView {
         this.configurationLoading.setVisibility(GONE);
         this.configurationSelectedTextView.setText(configurationName);
         this.configurationSelectedTextView.setVisibility(VISIBLE);
+        setRangePickerSpinnerVisibility(false);
     }
 
     public void showConfigurationsError(@NonNull final OnClickListener configurationErrorImageViewClickListener) {
@@ -76,12 +79,14 @@ public class ExpansionDetailPickerView extends PresenterView {
         this.configurationLoading.setVisibility(GONE);
         this.configurationSelectedTextView.setVisibility(GONE);
         this.configurationErrorImageView.setVisibility(VISIBLE);
+        setRangePickerSpinnerVisibility(false);
     }
 
     public void showConfigurationSpinner() {
         this.configurationSelectedTextView.setVisibility(GONE);
         this.configurationErrorImageView.setVisibility(GONE);
         this.configurationLoading.setVisibility(VISIBLE);
+        setRangePickerSpinnerVisibility(true);
     }
 
     public void setExpansionEnabledTextViewClickListener(@NonNull final OnClickListener listener){
@@ -90,6 +95,10 @@ public class ExpansionDetailPickerView extends PresenterView {
 
     public void setConfigurationTypeText(@NonNull final String configType){
         this.configurationTypeTextView.setText(configType);
+    }
+
+    public void setRangePickerSpinnerVisibility(final boolean isVisible){
+        this.pickerLoading.setVisibility(isVisible ? VISIBLE : INVISIBLE);
     }
 
     /**
