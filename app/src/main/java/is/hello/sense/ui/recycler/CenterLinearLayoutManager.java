@@ -6,6 +6,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 
+import java.lang.ref.WeakReference;
+
+import is.hello.sense.functional.Functions;
 import rx.functions.Func1;
 
 /**
@@ -33,17 +36,22 @@ public class CenterLinearLayoutManager extends LinearLayoutManager {
 
     private static class CenterSmoothScroller extends LinearSmoothScroller{
 
-        private final Func1<Integer,PointF> computeScrollFunc;
+        private final WeakReference<Func1<Integer,PointF>> computeScrollFunc;
 
         CenterSmoothScroller(final Context context,
-                                    final Func1<Integer,PointF> computeScrollFunc) {
+                             final Func1<Integer,PointF> computeScrollFunc) {
             super(context);
-            this.computeScrollFunc = computeScrollFunc;
+            this.computeScrollFunc = new WeakReference<>(computeScrollFunc);
         }
 
         @Override
         public PointF computeScrollVectorForPosition(final int targetPosition) {
-            return this.computeScrollFunc.call(targetPosition);
+            final Func1<Integer,PointF> func1 = Functions.extract(this.computeScrollFunc);
+            if(func1 != null) {
+                return func1.call(targetPosition);
+            } else {
+                return null;
+            }
         }
 
         @Override
