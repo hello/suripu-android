@@ -209,7 +209,7 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
         } else if (expansion.requiresConfiguration()) {
             presenterView.showConfigurationSuccess(getString(R.string.expansions_select), this::onConfigureClicked);
         } else {
-            configurationsInteractor.update();
+            updateConfigurations(null);
             presenterView.showEnableSwitch(isEnabled, this);
         }
     }
@@ -253,7 +253,7 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
      * @param throwable -
      */
     private void presentConfigurationError(final Throwable throwable) {
-        presenterView.showConfigurationsError(this::onConfigurationErrorImageViewClicked);
+        presenterView.showConfigurationsError(this::updateConfigurations);
         if (ApiException.isNetworkError(throwable)) {
             showErrorDialog(new ErrorDialogFragment.PresenterBuilder(throwable));
         } else {
@@ -283,7 +283,7 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
         finishFlowWithResult(RESULT_CONFIGURE_PRESSED);
     }
 
-    private void onConfigurationErrorImageViewClicked(final View ignored) {
+    private void updateConfigurations(@Nullable final View ignored) {
         presenterView.showConfigurationSpinner();
         configurationsInteractor.update();
     }
