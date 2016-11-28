@@ -8,6 +8,9 @@
         <import type="is.hello.sense.ui.widget.util.Views"/>
         <variable name="introViewModel"
                   type="is.hello.sense.mvvm.IntroductionViewModel"/>
+        <variable
+            name="diagramLayerDrawable"
+            type="android.graphics.drawable.LayerDrawable"/>
     </data>
 
     <RelativeLayout
@@ -26,14 +29,14 @@
                 android:id="@+id/fragment_onboarding_login_button"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="@{introViewModel.observableLoginButtonWeight, default=1}"
                 android:text="@{introViewModel.loginText}"
-                android:singleLine="true"
                 android:ellipsize="none"
                 android:onClick="@{introViewModel::onLoginButtonClicked}"
                 android:alpha="@{introViewModel.observableLoginButtonAlpha}"
                 style="@style/AppTheme.Button.Borderless.White"
-                tools:text="@string/action_log_in"/>
+                tools:text="@string/action_log_in"
+                android:maxLines="1"/>
 
             <View
                 android:id="@+id/fragment_onboarding_introduction_button_divider"
@@ -41,7 +44,8 @@
                 android:layout_height="23dp"
                 android:layout_gravity="center_vertical"
                 android:background="#66ffffff"
-                android:importantForAccessibility="no" />
+                android:importantForAccessibility="no"
+                android:alpha="@{introViewModel.observableLoginButtonAlpha}"/>
 
             <Button
                 android:id="@+id/fragment_onboarding_introduction_get_started"
@@ -49,11 +53,11 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="@{introViewModel.gettingStartedText}"
-                android:singleLine="true"
                 android:ellipsize="none"
                 style="@style/AppTheme.Button.Borderless.White"
                 android:onClick="@{(view) -> introViewModel.onGettingStartedButtonClicked()}"
-                tools:text="@string/action_get_started"/>
+                tools:text="@string/action_get_started"
+                android:maxLines="1"/>
 
         </LinearLayout>
 
@@ -70,13 +74,14 @@
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
-            android:importantForAccessibility="no" />
+            android:importantForAccessibility="no"
+            android:src="@{diagramLayerDrawable}"/>
 
         <is.hello.sense.ui.widget.ExtendedViewPager
             android:id="@+id/fragment_onboarding_introduction_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/fragment_onboarding_introduction_button_bar" />
+            android:layout_above="@id/fragment_onboarding_introduction_button_bar"/>
 
     </RelativeLayout>
 

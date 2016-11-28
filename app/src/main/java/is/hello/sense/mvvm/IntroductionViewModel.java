@@ -1,6 +1,7 @@
 package is.hello.sense.mvvm;
 
 import android.content.Context;
+import android.databinding.BindingAdapter;
 import android.databinding.ObservableFloat;
 import android.databinding.ObservableInt;
 import android.support.annotation.ColorInt;
@@ -8,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
@@ -26,10 +28,8 @@ public class IntroductionViewModel{
     private final IntroductionModel model;
     private final FragmentNavigation router;
 
-    @ColorInt
-    private int statusBarColor;
-
     public final ObservableInt observableStatusBarColor;
+    public final ObservableFloat observableLoginButtonWeight;
     public final ObservableFloat observableLoginButtonAlpha;
 
     @ColorInt
@@ -44,8 +44,8 @@ public class IntroductionViewModel{
         this.router = router;
         this.introStatusBarColor = ContextCompat.getColor(context, R.color.status_bar_grey);
         this.featureStatusBarColor = ContextCompat.getColor(context, R.color.light_accent_darkened);
-        this.statusBarColor = ContextCompat.getColor(context, R.color.light_accent);
-        this.observableStatusBarColor = new ObservableInt(statusBarColor);
+        this.observableStatusBarColor = new ObservableInt(introStatusBarColor);
+        this.observableLoginButtonWeight = new ObservableFloat(1f);
         this.observableLoginButtonAlpha = new ObservableFloat(1f);
     }
 
@@ -65,19 +65,13 @@ public class IntroductionViewModel{
 
     @ColorInt
     public int getStatusBarColor(){
-        return statusBarColor;
+        return observableStatusBarColor.get();
     }
 
     public void setStatusBarColor(@ColorInt final int color){
-        this.statusBarColor = color;
-        observableStatusBarColor.set(statusBarColor);
+        observableStatusBarColor.set(color);
     }
 
-    /**
-     * There is a bug in the data binding library that causes issues if method
-     * is executed in xml like so <br> @{ (view) -> viewModel.onButtonClicked()}
-     * @param ignoredView
-     */
     public void onLoginButtonClicked(@NonNull final View ignoredView){
         router.flowFinished(null, RESPONSE_SIGN_IN, null);
     }
@@ -86,16 +80,32 @@ public class IntroductionViewModel{
         router.flowFinished(null, RESPONSE_GET_STARTED, null);
     }
 
-    public void updateLoginButtonAlpha(final float offset){
-        final float fraction = 1f - offset;
-        observableLoginButtonAlpha.set(fraction);
+    public void updateLoginButtonWeight(final float weight){
+        observableLoginButtonWeight.set(weight);
+    }
+
+    public void updateLoginButtonAlpha(final float alpha){
+        observableLoginButtonAlpha.set(alpha);
     }
 
     public void updateStatusBarColor(final float offset) {
         @ColorInt
         final int color = Anime.interpolateColors(offset,
-                                                  statusBarColor,
+                                                  introStatusBarColor,
                                                   featureStatusBarColor);
         setStatusBarColor(color);
+    }
+
+    @BindingAdapter("android:layout_weight")
+    /**
+     * Not all xml attributes have predefined setters so custom static setters are required to be used
+     * otherwise build will fail.
+     */
+    public static void setLayoutWeight(@NonNull final View view, final float weight){
+        ((LinearLayout.LayoutParams) view.getLayoutParams()).weight = weight;
+        // To avoid extra layouts immediately after inflate
+        if (!view.isInLayout()) {
+            view.requestLayout();
+        }
     }
 }

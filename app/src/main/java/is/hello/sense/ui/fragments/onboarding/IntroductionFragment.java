@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.onboarding;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
@@ -18,10 +17,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.segment.analytics.Properties;
@@ -40,7 +36,6 @@ import is.hello.sense.ui.fragments.VideoPlayerActivity;
 import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.OnViewPagerChangeAdapter;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.SafeOnClickListener;
 
@@ -62,19 +57,11 @@ public class IntroductionFragment extends SenseFragment
             R.color.transparent,
     };
 
-    private ImageView diagramImage;
     private LayerDrawable diagramLayers;
 
     private ViewPager viewPager;
     private PageDots pageDots;
     private OnViewPagerChangeAdapter onViewPagerChangeAdapter;
-
-    private Button signInButton;
-    private LinearLayout.LayoutParams signInLayoutParams;
-    private View buttonDivider;
-    private Button getStartedButton;
-
-    private Window window;
 
     private int lastSelectedPage = INTRO_POSITION;
     private boolean statusBarChanging = false;
@@ -86,15 +73,12 @@ public class IntroductionFragment extends SenseFragment
     //region Lifecycle
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        this.window = activity.getWindow();
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.viewModel = new IntroductionViewModel(getActivity(),
+                                                   new IntroductionModel(),
+                                                   getFragmentNavigation());
 
         if (savedInstanceState != null) {
             this.lastSelectedPage = savedInstanceState.getInt("lastSelectedPage", INTRO_POSITION);
@@ -123,15 +107,8 @@ public class IntroductionFragment extends SenseFragment
                                                container,
                                                false);
 
-
-        this.viewModel = new IntroductionViewModel(getActivity(),
-                                                   new IntroductionModel(),
-                                                   getFragmentNavigation());
-
         binding.setIntroViewModel(viewModel);
-
-        this.diagramImage = binding.fragmentOnboardingIntroductionDiagram;
-        diagramImage.setImageDrawable(diagramLayers);
+        binding.setDiagramLayerDrawable(diagramLayers);
 
         this.viewPager = binding.fragmentOnboardingIntroductionPager;
 
@@ -161,12 +138,6 @@ public class IntroductionFragment extends SenseFragment
             }
         });
 
-        this.signInButton = binding.fragmentOnboardingLoginButton;
-        this.signInLayoutParams = (LinearLayout.LayoutParams) signInButton.getLayoutParams();
-
-        this.buttonDivider = binding.fragmentOnboardingIntroductionButtonDivider;
-        this.getStartedButton = binding.fragmentOnboardingIntroductionGetStarted;
-
         return binding.getRoot();
     }
 
@@ -190,20 +161,12 @@ public class IntroductionFragment extends SenseFragment
         viewPager.clearOnPageChangeListeners();
         viewPager.setAdapter(null);
         this.viewPager = null;
-
-        this.signInButton = null;
-        this.signInLayoutParams = null;
-        this.buttonDivider = null;
-        this.getStartedButton = null;
-        //todo does this need an onDestroy method ?
-        viewModel = null;
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-
-        this.window = null;
+    public void onDestroy(){
+        //todo does this need an onDestroy method ?
+        this.viewModel = null;
     }
 
     @Override
@@ -265,15 +228,8 @@ public class IntroductionFragment extends SenseFragment
             }
 
             final float fraction = 1f - offset;
-            viewModel.updateLoginButtonAlpha(offset);
-            signInLayoutParams.weight = fraction;
-            // To avoid extra layouts immediately after inflate
-            if (!signInButton.isInLayout()) {
-                signInButton.requestLayout();
-            }
-
-            //signInButton.setAlpha(fraction);
-            buttonDivider.setAlpha(fraction);
+            viewModel.updateLoginButtonAlpha(fraction);
+            viewModel.updateLoginButtonWeight(fraction);
         }
 
         final int alpha = Math.round(255f * offset);
@@ -298,14 +254,11 @@ public class IntroductionFragment extends SenseFragment
         }
 
         if (!statusBarChanging) {
-            Windows.setStatusBarColor(window, statusBarColor);
+            ((SenseActivity) getActivity()).setStatusBarColor(statusBarColor);
         }
 
-        signInLayoutParams.weight = finalFraction;
-        signInButton.requestLayout();
-
-        signInButton.setAlpha(finalFraction);
-        buttonDivider.setAlpha(finalFraction);
+        viewModel.updateLoginButtonAlpha(finalFraction);
+        viewModel.updateLoginButtonWeight(finalFraction);
 
         final Resources resources = getResources();
         final Drawable onScreen = ResourcesCompat.getDrawable(resources,
@@ -392,7 +345,7 @@ public class IntroductionFragment extends SenseFragment
                 super(itemView);
 
                 final ViewGroup rootView = (ViewGroup) itemView.findViewById(R.id.item_onboarding_introduction_feature_root);
-                rootView.setPadding(0, diagramImage.getMeasuredHeight(), 0, 0);
+                rootView.setPadding(0, binding.fragmentOnboardingIntroductionDiagram.getMeasuredHeight(), 0, 0);
 
                 this.title = (TextView) itemView.findViewById(R.id.item_onboarding_introduction_feature_title);
                 this.message = (TextView) itemView.findViewById(R.id.item_onboarding_introduction_feature_message);
