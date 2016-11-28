@@ -3,6 +3,7 @@ package is.hello.sense.ui.fragments.onboarding;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
@@ -25,8 +26,11 @@ import android.widget.TextView;
 
 import com.segment.analytics.Properties;
 
-import is.hello.go99.Anime;
 import is.hello.sense.R;
+import is.hello.sense.databinding.FragmentOnboardingIntroductionBinding;
+import is.hello.sense.mvvm.IntroductionModel;
+import is.hello.sense.mvvm.IntroductionViewModel;
+import is.hello.sense.ui.activities.SenseActivity;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.SenseFragment;
@@ -71,11 +75,12 @@ public class IntroductionFragment extends SenseFragment
     private Button getStartedButton;
 
     private Window window;
-    private @ColorInt int introStatusBarColor;
-    private @ColorInt int featureStatusBarColor;
 
     private int lastSelectedPage = INTRO_POSITION;
     private boolean statusBarChanging = false;
+
+    private FragmentOnboardingIntroductionBinding binding;
+    private IntroductionViewModel viewModel;
 
 
     //region Lifecycle
@@ -112,12 +117,23 @@ public class IntroductionFragment extends SenseFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_onboarding_introduction, container, false);
 
-        this.diagramImage = (ImageView) view.findViewById(R.id.fragment_onboarding_introduction_diagram);
+        this.binding = DataBindingUtil.inflate(inflater,
+                                               R.layout.fragment_onboarding_introduction,
+                                               container,
+                                               false);
+
+
+        this.viewModel = new IntroductionViewModel(getActivity(),
+                                                   new IntroductionModel(),
+                                                   getFragmentNavigation());
+
+        binding.setIntroViewModel(viewModel);
+
+        this.diagramImage = binding.fragmentOnboardingIntroductionDiagram;
         diagramImage.setImageDrawable(diagramLayers);
 
-        this.viewPager = (ViewPager) view.findViewById(R.id.fragment_onboarding_introduction_pager);
+        this.viewPager = binding.fragmentOnboardingIntroductionPager;
 
         this.onViewPagerChangeAdapter = new OnViewPagerChangeAdapter(viewPager, this);
         viewPager.addOnPageChangeListener(onViewPagerChangeAdapter);
@@ -135,8 +151,8 @@ public class IntroductionFragment extends SenseFragment
         final Adapter adapter = new Adapter(inflater, features,
                                             new SafeOnClickListener(null, this::watchVideo));
 
-        this.pageDots = (PageDots) view.findViewById(R.id.fragment_onboarding_introduction_page_dots);
-        Views.runWhenLaidOut(view, () -> {
+        this.pageDots = binding.fragmentOnboardingIntroductionPageDots;
+        Views.runWhenLaidOut(binding.getRoot(), () -> {
             // Can be called after the view is destroyed
             // due to the back stack being cleared out.
             if (viewPager != null) {
@@ -145,20 +161,13 @@ public class IntroductionFragment extends SenseFragment
             }
         });
 
-        this.signInButton = (Button) view.findViewById(R.id.fragment_onboarding_introduction_sign_in);
+        this.signInButton = binding.fragmentOnboardingLoginButton;
         this.signInLayoutParams = (LinearLayout.LayoutParams) signInButton.getLayoutParams();
-        Views.setSafeOnClickListener(signInButton, this::signIn);
 
-        this.buttonDivider = view.findViewById(R.id.fragment_onboarding_introduction_button_divider);
+        this.buttonDivider = binding.fragmentOnboardingIntroductionButtonDivider;
+        this.getStartedButton = binding.fragmentOnboardingIntroductionGetStarted;
 
-        this.getStartedButton = (Button) view.findViewById(R.id.fragment_onboarding_introduction_get_started);
-        Views.setSafeOnClickListener(getStartedButton, this::getStarted);
-
-        final Resources resources = getResources();
-        this.introStatusBarColor = resources.getColor(R.color.status_bar_grey);
-        this.featureStatusBarColor = resources.getColor(R.color.light_accent_darkened);
-
-        return view;
+        return binding.getRoot();
     }
 
     @Override
@@ -186,6 +195,8 @@ public class IntroductionFragment extends SenseFragment
         this.signInLayoutParams = null;
         this.buttonDivider = null;
         this.getStartedButton = null;
+        //todo does this need an onDestroy method ?
+        viewModel = null;
     }
 
     @Override
@@ -198,9 +209,9 @@ public class IntroductionFragment extends SenseFragment
     @Override
     public int getStatusBarColor(@NonNull Resources resources) {
         if (lastSelectedPage > INTRO_POSITION) {
-            return resources.getColor(R.color.light_accent_darkened);
+            return viewModel.featureStatusBarColor;
         } else {
-            return resources.getColor(R.color.status_bar_grey);
+            return viewModel.introStatusBarColor;
         }
     }
 
@@ -229,14 +240,6 @@ public class IntroductionFragment extends SenseFragment
 
     //region Actions
 
-    public void getStarted(@NonNull View sender) {
-        getFragmentNavigation().flowFinished(this, RESPONSE_GET_STARTED, null);
-    }
-
-    public void signIn(@NonNull View sender) {
-        getFragmentNavigation().flowFinished(this, RESPONSE_SIGN_IN, null);
-    }
-
     public void watchVideo(@NonNull View sender) {
         Analytics.trackEvent(Analytics.Onboarding.EVENT_PLAY_VIDEO, null);
 
@@ -255,20 +258,21 @@ public class IntroductionFragment extends SenseFragment
     public void onPageChangeScrolled(int position, float offset) {
         if (position == INTRO_POSITION) {
             if (!statusBarChanging) {
-                final @ColorInt int statusBarColor = Anime.interpolateColors(offset,
-                                                                             introStatusBarColor,
-                                                                             featureStatusBarColor);
-                Windows.setStatusBarColor(window, statusBarColor);
+                viewModel.updateStatusBarColor(offset);
+                @ColorInt
+                final int statusBarColor = viewModel.getStatusBarColor();
+                ((SenseActivity) getActivity()).setStatusBarColor(statusBarColor);
             }
 
             final float fraction = 1f - offset;
+            viewModel.updateLoginButtonAlpha(offset);
             signInLayoutParams.weight = fraction;
             // To avoid extra layouts immediately after inflate
             if (!signInButton.isInLayout()) {
                 signInButton.requestLayout();
             }
 
-            signInButton.setAlpha(fraction);
+            //signInButton.setAlpha(fraction);
             buttonDivider.setAlpha(fraction);
         }
 
@@ -286,10 +290,10 @@ public class IntroductionFragment extends SenseFragment
         final @ColorInt int statusBarColor;
         final float finalFraction;
         if (position == INTRO_POSITION) {
-            statusBarColor = introStatusBarColor;
+            statusBarColor = viewModel.introStatusBarColor;
             finalFraction = 1f;
         } else {
-            statusBarColor = featureStatusBarColor;
+            statusBarColor = viewModel.featureStatusBarColor;
             finalFraction = 0f;
         }
 

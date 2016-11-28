@@ -291,10 +291,10 @@ public class OnboardingActivity extends ScopedInjectionActivity
     }
 
     @Override
-    public void flowFinished(@NonNull final Fragment fragment,
+    public void flowFinished(@Nullable final Fragment fragment,
                              final int responseCode,
                              @Nullable final Intent result) {
-        if (fragment instanceof IntroductionFragment) {
+        if (fragment instanceof IntroductionFragment || fragment == null) {
             if (responseCode == IntroductionFragment.RESPONSE_SIGN_IN) {
                 showSignIn();
             } else if (responseCode == IntroductionFragment.RESPONSE_GET_STARTED) {

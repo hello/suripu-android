@@ -119,6 +119,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
         }
     }
+
+    dataBinding {
+        enabled = true
+    }
 }
 
 retrolambda {

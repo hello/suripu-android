@@ -1,67 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <import type="is.hello.sense.ui.widget.util.Views"/>
+        <variable name="introViewModel"
+                  type="is.hello.sense.mvvm.IntroductionViewModel"/>
+    </data>
 
-    <LinearLayout
-        android:id="@+id/fragment_onboarding_introduction_button_bar"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/button_rounded_min_height"
-        android:orientation="horizontal"
-        android:background="@color/light_accent"
-        android:layout_alignParentBottom="true">
+        android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/fragment_onboarding_introduction_sign_in"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/action_log_in"
-            android:singleLine="true"
-            android:ellipsize="none"
-            style="@style/AppTheme.Button.Borderless.White" />
+        <LinearLayout
+            android:id="@+id/fragment_onboarding_introduction_button_bar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_rounded_min_height"
+            android:orientation="horizontal"
+            android:background="@color/light_accent"
+            android:layout_alignParentBottom="true">
 
-        <View
-            android:id="@+id/fragment_onboarding_introduction_button_divider"
-            android:layout_width="1dp"
-            android:layout_height="23dp"
-            android:layout_gravity="center_vertical"
-            android:background="#66ffffff"
+            <Button
+                android:id="@+id/fragment_onboarding_login_button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@{introViewModel.loginText}"
+                android:singleLine="true"
+                android:ellipsize="none"
+                android:onClick="@{introViewModel::onLoginButtonClicked}"
+                android:alpha="@{introViewModel.observableLoginButtonAlpha}"
+                style="@style/AppTheme.Button.Borderless.White"
+                tools:text="@string/action_log_in"/>
+
+            <View
+                android:id="@+id/fragment_onboarding_introduction_button_divider"
+                android:layout_width="1dp"
+                android:layout_height="23dp"
+                android:layout_gravity="center_vertical"
+                android:background="#66ffffff"
+                android:importantForAccessibility="no" />
+
+            <Button
+                android:id="@+id/fragment_onboarding_introduction_get_started"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@{introViewModel.gettingStartedText}"
+                android:singleLine="true"
+                android:ellipsize="none"
+                style="@style/AppTheme.Button.Borderless.White"
+                android:onClick="@{(view) -> introViewModel.onGettingStartedButtonClicked()}"
+                tools:text="@string/action_get_started"/>
+
+        </LinearLayout>
+
+        <is.hello.sense.ui.widget.PageDots
+            android:id="@+id/fragment_onboarding_introduction_page_dots"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/fragment_onboarding_introduction_button_bar"
+            app:dotStyle="blue" />
+
+        <ImageView
+            android:id="@+id/fragment_onboarding_introduction_diagram"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
             android:importantForAccessibility="no" />
 
-        <Button
-            android:id="@+id/fragment_onboarding_introduction_get_started"
-            android:layout_width="0dp"
+        <is.hello.sense.ui.widget.ExtendedViewPager
+            android:id="@+id/fragment_onboarding_introduction_pager"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/action_get_started"
-            android:singleLine="true"
-            android:ellipsize="none"
-            style="@style/AppTheme.Button.Borderless.White" />
+            android:layout_above="@id/fragment_onboarding_introduction_button_bar" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
-    <is.hello.sense.ui.widget.PageDots
-        android:id="@+id/fragment_onboarding_introduction_page_dots"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/fragment_onboarding_introduction_button_bar"
-        app:dotStyle="blue" />
-
-    <ImageView
-        android:id="@+id/fragment_onboarding_introduction_diagram"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:scaleType="fitXY"
-        android:importantForAccessibility="no" />
-
-    <is.hello.sense.ui.widget.ExtendedViewPager
-        android:id="@+id/fragment_onboarding_introduction_pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/fragment_onboarding_introduction_button_bar" />
-
-</RelativeLayout>
+</layout>

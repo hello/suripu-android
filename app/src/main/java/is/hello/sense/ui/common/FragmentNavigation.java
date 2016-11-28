@@ -17,7 +17,8 @@ public interface FragmentNavigation {
     void popFragment(@NonNull Fragment fragment,
                      boolean immediate);
 
-    void flowFinished(@NonNull Fragment fragment,
+    //todo only for mvvm testing because view models don't keep reference to fragment
+    void flowFinished(@Nullable Fragment fragment,
                       int responseCode,
                       @Nullable Intent result);
 
