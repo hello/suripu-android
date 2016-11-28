@@ -10,25 +10,37 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
+import android.util.Log;
 
 import is.hello.sense.R;
 
 public class SleepScoreDrawable extends Drawable {
 
+    private static final float circleThickness = .025f;
+    private static final float textMargin = .4f;
     private final Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-    private final int circleThickness;
-    private String noDataPlaceHolder;
+    private final String noDataPlaceHolder;
+    private int height = 0;
+    private int width = 0;
+    final Rect textBounds = new Rect();
 
     public SleepScoreDrawable(@NonNull final Context context) {
-        final Resources resources = context.getResources();
-        noDataPlaceHolder = resources.getString(R.string.missing_data_placeholder);
+        noDataPlaceHolder = "82";// resources.getString(R.string.missing_data_placeholder);
         backgroundPaint.setColor(ContextCompat.getColor(context, R.color.background));
         circlePaint.setColor(ContextCompat.getColor(context, R.color.gray4));
         textPaint.setColor(ContextCompat.getColor(context, R.color.gray4));
-        circleThickness = 10; // todo use a resource.
+    }
 
+    @Override
+    public int getIntrinsicWidth() {
+        return width;
+    }
+
+    @Override
+    public int getIntrinsicHeight() {
+        return height;
 
     }
 
@@ -44,8 +56,8 @@ public class SleepScoreDrawable extends Drawable {
             radius = centerX;
         }
         canvas.drawCircle(centerX, centerY, radius, circlePaint);
-        canvas.drawCircle(centerX, centerY, radius - circleThickness, backgroundPaint);
-        canvas.drawText(noDataPlaceHolder, centerX, centerY, textPaint);
+        canvas.drawCircle(centerX, centerY, radius - radius * circleThickness, backgroundPaint);
+        drawCenter(canvas, textPaint, noDataPlaceHolder);
 
 
     }
@@ -65,20 +77,47 @@ public class SleepScoreDrawable extends Drawable {
         return 0;
     }
 
-    private void setCorrectTextSize() {
+    private void drawCenter(final Canvas canvas,
+                            final Paint paint,
+                            final String text) {
+        canvas.getClipBounds(textBounds);
+        final float cHeight = textBounds.height();
+        final float cWidth = textBounds.width();
+        paint.setTextAlign(Paint.Align.LEFT);
+        paint.getTextBounds(text, 0, text.length(), textBounds);
+        final float x = cWidth / 2f - textBounds.width() / 2f - textBounds.left;
+        final float y = cHeight / 2f + textBounds.height() / 2f - textBounds.bottom;
+        canvas.drawText(text, x, y, paint);
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setCorrectTextSize() {
         while (doesTextFit()) {
             textPaint.setTextSize(textPaint.getTextSize() + 1);
         }
         textPaint.setTextSize(textPaint.getTextSize() - 1);
+        // textPaint.setTextSize(100);
+        final Rect bounds = new Rect();
+        textPaint.getTextBounds(noDataPlaceHolder, 0, noDataPlaceHolder.length(), bounds);
+        Log.e("---Bounds---", "W/H: " + bounds.width() + " / " + bounds.height() + " vs W/H: " + getIntrinsicWidth() + " / " + getIntrinsicHeight());
 
     }
 
     @SuppressWarnings("RedundantIfStatement")
     private boolean doesTextFit() {
-        final int height = getIntrinsicHeight();
-        final int width = getIntrinsicWidth();
+        final int height = getIntrinsicHeight() - (int) (getIntrinsicHeight() * textMargin);
+        final int width = getIntrinsicWidth() - (int) (getIntrinsicWidth() * textMargin);
+        // Log.e("Size", "W/H: " + width + " / " + height);
         final Rect bounds = new Rect();
         textPaint.getTextBounds(noDataPlaceHolder, 0, noDataPlaceHolder.length(), bounds);
+        // Log.e("Bounds", "W/H: " + bounds.width() + " / " + bounds.height());
 
         if (bounds.height() > height) {
             return false;
