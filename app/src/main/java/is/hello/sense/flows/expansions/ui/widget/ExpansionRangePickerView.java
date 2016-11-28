@@ -160,7 +160,7 @@ public class ExpansionRangePickerView extends LinearLayout {
 
     public void showProgressBar() {
         removeAllViews();
-        final ProgressBar progressBar = new ProgressBar(getContext(), null, android.R.attr.progressBarStyleLarge);
+        final ProgressBar progressBar = new ProgressBar(getContext());
         final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.gravity = Gravity.CENTER;
         progressBar.setLayoutParams(lp);
