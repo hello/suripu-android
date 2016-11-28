@@ -48,6 +48,10 @@ public class ExpansionDetailPickerView extends PresenterView {
         this.configurationSelectedTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_selection_tv);
         this.configurationLoading = (ProgressBar) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_loading);
         this.expansionRangePicker = (ExpansionRangePickerView) findViewById(R.id.view_expansion_detail_picker_value_widget);
+
+        //start these at invisible so the picker spinner doesn't change positions after they're set to visible
+        this.enabledContainer.setVisibility(INVISIBLE);
+        this.connectedContainer.setVisibility(INVISIBLE);
     }
 
 
