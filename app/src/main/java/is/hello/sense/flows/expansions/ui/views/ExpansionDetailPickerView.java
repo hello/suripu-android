@@ -48,6 +48,10 @@ public class ExpansionDetailPickerView extends PresenterView {
         this.configurationSelectedTextView = (TextView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_selection_tv);
         this.configurationLoading = (ProgressBar) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_loading);
         this.expansionRangePicker = (ExpansionRangePickerView) findViewById(R.id.view_expansion_detail_picker_value_widget);
+
+        //start these at invisible so the picker spinner doesn't change positions after they're set to visible
+        this.enabledContainer.setVisibility(INVISIBLE);
+        this.connectedContainer.setVisibility(INVISIBLE);
     }
 
 
@@ -82,6 +86,11 @@ public class ExpansionDetailPickerView extends PresenterView {
         this.configurationSelectedTextView.setVisibility(GONE);
         this.configurationErrorImageView.setVisibility(GONE);
         this.configurationLoading.setVisibility(VISIBLE);
+        hidePickerSpinner();
+    }
+
+    public void hidePickerSpinner(){
+        this.expansionRangePicker.removeAllViews();
     }
 
     public void setExpansionEnabledTextViewClickListener(@NonNull final OnClickListener listener){
@@ -113,11 +122,8 @@ public class ExpansionDetailPickerView extends PresenterView {
      *
      */
     public void showExpansionRangePicker(final Pair<Integer, Integer> initialValues) {
-        post(() -> {
-            this.expansionRangePicker.setVisibility(VISIBLE);
-            this.expansionRangePicker.initPickers(initialValues.first,
-                                                  initialValues.second);
-        });
+        post(() -> this.expansionRangePicker.initPickers(initialValues.first,
+                                              initialValues.second));
     }
 
     //region switch

@@ -150,7 +150,7 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
         outState.putSerializable(ARG_EXPANSION_VALUE_RANGE, getCurrentExpansionValueRange());
     }
 
-    public void restoreState(@NonNull final Bundle bundle){
+    public void restoreState(@NonNull final Bundle bundle) {
         isEnabled = bundle.getBoolean(ARG_EXPANSION_ENABLED_FOR_SMART_ALARM);
         initialValueRange = (ExpansionValueRange) bundle.getSerializable(ARG_EXPANSION_VALUE_RANGE);
     }
@@ -159,11 +159,10 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
         final Configuration selectedConfig = ConfigurationsInteractor.selectedConfiguration(configs);
 
         final String configName;
-        if(selectedConfig == null){
+        if (selectedConfig == null) {
             presentConfigurationError(new IllegalStateException("no configurations available"));
             return;
-        }
-        else if (selectedConfig.isEmpty()) {
+        } else if (selectedConfig.isEmpty()) {
             configName = getString(R.string.expansions_select);
         } else {
             configName = selectedConfig.getName();
@@ -177,7 +176,7 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
     }
 
     /**
-     *  currently assumes that the expansion is enabled, configured, and authenticated
+     * currently assumes that the expansion is enabled, configured, and authenticated
      */
     public void bindExpansion(@Nullable final Expansion expansion) {
         if (expansion == null) {
@@ -222,8 +221,8 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
      * @return new {@link ExpansionValueRange} based on UI
      * or {@link ExpansionDetailPickerFragment#initialValueRange} if UI is gone.
      */
-    public ExpansionValueRange getCurrentExpansionValueRange(){
-        if(presenterView != null && expansionCategoryFormatter != null) {
+    public ExpansionValueRange getCurrentExpansionValueRange() {
+        if (presenterView != null && expansionCategoryFormatter != null) {
             final UnitConverter unitConverter = expansionCategoryFormatter.getReverseUnitConverter(expansionCategory);
             final Pair<Integer, Integer> selectedValue = presenterView.getSelectedValuePair();
             final float convertedMinValue = unitConverter.convert((float) selectedValue.first);
@@ -247,7 +246,7 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
         } else {
             showErrorDialog(ErrorDialogFragment.newInstance(throwable));
         }
-        cancelFlow();
+        presenterView.hidePickerSpinner();
     }
 
     /**
