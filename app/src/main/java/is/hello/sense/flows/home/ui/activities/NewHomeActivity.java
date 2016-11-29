@@ -3,6 +3,7 @@ package is.hello.sense.flows.home.ui.activities;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import is.hello.sense.R;
@@ -11,7 +12,7 @@ import is.hello.sense.R;
  * Will eventually replace {@link HomeActivity}
  */
 
-public class NewHomeActivity extends is.hello.sense.ui.common.ScopedInjectionActivity
+public class NewHomeActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private BottomNavigationView bottomNavigationView;
@@ -20,8 +21,8 @@ public class NewHomeActivity extends is.hello.sense.ui.common.ScopedInjectionAct
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_home);
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.activity_new_home_bottom_navigation_view);
-        bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        //bottomNavigationView = (BottomNavigationView) findViewById(R.id.activity_new_home_bottom_navigation_view);
+        //bottomNavigationView.setOnNavigationItemSelectedListener(this);
     }
 
     @Override

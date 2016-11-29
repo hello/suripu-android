@@ -24,6 +24,6 @@
     <item
         android:id="@+id/action_conditions"
         android:title="@string/action_conditions"
-        android:icon="@drawable/backside_icon_currently"
+        android:icon="@drawable/test_selector"
         app:showAsAction="always"/>
 </menu>

@@ -9,6 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_bar_height"
         android:layout_alignParentBottom="true"
+        app:itemBackground="@color/white_75"
+        app:itemIconTint="@color/bottom_nav_view_selector"
+        app:itemTextColor="@color/bottom_nav_view_selector"
         app:menu="@menu/menu_home"/>
 
     <FrameLayout

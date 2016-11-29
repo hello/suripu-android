@@ -2,6 +2,9 @@
 <resources>
     <style name="Platform" />
     <style name="Platform.Light" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/light_accent</item>
+        <item name="colorPrimaryDark">@color/light_accent_darkened</item>
+        <item name="colorAccent">@color/light_accent</item>
         <item name="android:actionBarItemBackground">@drawable/app_theme_selectable_background</item>
         <item name="android:listChoiceIndicatorMultiple">@drawable/holo_check_selector</item>
     </style>
