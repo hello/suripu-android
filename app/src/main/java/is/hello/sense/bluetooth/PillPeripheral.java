@@ -13,6 +13,8 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -28,7 +30,6 @@ import is.hello.sense.bluetooth.exceptions.PillCharNotFoundException;
 import is.hello.sense.bluetooth.exceptions.PillNotFoundException;
 import is.hello.sense.functional.Functions;
 import rx.Observable;
-import rx.Subscriber;
 
 
 //todo move to commonsense or commonpill??? after this is working
@@ -37,6 +38,7 @@ public final class PillPeripheral implements Serializable {
     //region Identifiers
     public static final byte[] NORMAL_ADVERTISEMENT_SERVICE_128_BIT = Bytes.fromString("23D1BCEA5F782315DEEF121210E10000");
     public static final byte[] DFU_ADVERTISEMENT_SERVICE_128_BIT = Bytes.fromString("23D1BCEA5F782315DEEF121230150000");
+    public static final byte[] MANUFACTURE_DATA_PILL_ONE_FIVE_PREFIX = Bytes.fromString("EA0312");
     private static final UUID SERVICE = UUID.fromString("0000e110-1212-efde-1523-785feabcd123");
     private static final UUID CHARACTERISTIC_COMMAND_UUID = UUID.fromString("0000DEED-0000-1000-8000-00805F9B34FB");
     private static final byte COMMAND_WIPE_FIRMWARE = 8;
@@ -78,6 +80,38 @@ public final class PillPeripheral implements Serializable {
                 && advertisingData.anyRecordMatches(
                 AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
                 b -> Arrays.equals(PillPeripheral.NORMAL_ADVERTISEMENT_SERVICE_128_BIT, b));
+    }
+
+    //TODO once we can properly fetch {@link AdvertisingData.TYPE_MANUFACTURE_SPECIFIC_DATA} stop iterating over all record types
+    public static boolean isPillOneFive(@Nullable final AdvertisingData advertisingData) {
+        if(advertisingData == null){
+            return false;
+        }
+
+        for(final int recordType : advertisingData.copyRecordTypes()){
+            if(advertisingData.anyRecordMatches(recordType,
+                                             b -> Bytes.startWith(b, MANUFACTURE_DATA_PILL_ONE_FIVE_PREFIX))){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param peripherals to choose from
+     * @return a new {@link PillPeripheral} based on strength of Rssi or {@code null} if empty list <br>
+     * Ex. peripheral A with Rssi -50 is stronger than peripheral B with Rssi of -51
+     * so A is returned.
+     */
+    @Nullable
+    public static PillPeripheral getClosestByRssi(@NonNull final List<GattPeripheral> peripherals){
+        if(peripherals.isEmpty()){
+            return null;
+        }
+        Collections.sort(peripherals,
+                         (current, other) -> Integer.compare(other.getScanTimeRssi(),
+                                                             current.getScanTimeRssi()));
+        return new PillPeripheral(peripherals.get(0));
     }
 
     //region Creation

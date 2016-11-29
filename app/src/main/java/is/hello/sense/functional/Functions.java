@@ -6,6 +6,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.ref.Reference;
 
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.functions.Action1;
@@ -46,6 +47,7 @@ public final class Functions {
     public static final Func1<Boolean, Boolean> IS_FALSE = is -> !is;
     public static final Action1<Object> NO_OP = ignored -> {};
     public static final Func1<Object, Void> TO_VOID = ignored -> null;
+    public static final Func1<Object, VoidResponse> TO_VOID_RESPONSE = ignored -> new VoidResponse();
 
     //endregion
 }

@@ -25,6 +25,8 @@ import com.segment.analytics.Properties;
 
 import org.joda.time.LocalDate;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
 import is.hello.buruberi.util.Rx;
@@ -34,7 +36,9 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.api.model.v2.alerts.Alert;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.ui.fragments.BacksideFragment;
 import is.hello.sense.flows.home.ui.fragments.BacksideTabFragment;
 import is.hello.sense.flows.home.ui.fragments.HomeFragment;
@@ -51,6 +55,7 @@ import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
 import is.hello.sense.ui.common.ScopedInjectionActivity;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
+import is.hello.sense.ui.dialogs.BottomAlertDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
@@ -85,6 +90,8 @@ public class HomeActivity extends ScopedInjectionActivity
 
     @Inject
     ApiService apiService;
+    @Inject
+    AlertsInteractor alertsInteractor;
     @Inject
     DeviceIssuesInteractor deviceIssuesPresenter;
     @Inject
@@ -146,6 +153,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
         deviceIssuesPresenter.bindScope(this);
         interactorContainer.addInteractor(deviceIssuesPresenter);
+        interactorContainer.addInteractor(alertsInteractor);
 
         this.isFirstActivityRun = (savedInstanceState == null);
         if (savedInstanceState != null) {
@@ -176,7 +184,7 @@ public class HomeActivity extends ScopedInjectionActivity
             stateSafeExecutor.execute(() -> showBacksideWithItem(BacksideView.ITEM_SOUNDS, false));
         }
 
-        deviceIssuesPresenter.update();
+        //deviceIssuesPresenter.update();
 
 
         this.rootContainer = (RelativeLayout) findViewById(R.id.activity_home_container);
@@ -242,15 +250,20 @@ public class HomeActivity extends ScopedInjectionActivity
         final IntentFilter loggedOutIntent = new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT);
         final Observable<Intent> onLogOut = Rx.fromLocalBroadcast(getApplicationContext(), loggedOutIntent);
         bindAndSubscribe(onLogOut,
-                         ignored -> {
-                             //startActivity(new Intent(this, LaunchActivity.class));
-                             finish();
-                         },
+                         ignored -> finish(),
                          Functions.LOG_ERROR);
-        if (isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE) {
-            bindAndSubscribe(deviceIssuesPresenter.latest(),
+        if (shouldUpdateDeviceIssues()) {
+            bindAndSubscribe(deviceIssuesPresenter.topIssue,
                              this::bindDeviceIssue,
                              Functions.LOG_ERROR);
+        }
+
+        if(shouldUpdateAlerts()) {
+            bindAndSubscribe(alertsInteractor.alerts,
+                             this::bindAlerts,
+                             Functions.LOG_ERROR);
+
+            alertsInteractor.update();
         }
 
         checkInForUpdates();
@@ -539,12 +552,33 @@ public class HomeActivity extends ScopedInjectionActivity
 
     //endregion
 
+    //region Device Issues and Alerts
 
-    //region Device Issues
+    private boolean shouldUpdateAlerts() {
+        return isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
+    }
+
+    private boolean shouldUpdateDeviceIssues() {
+        return isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
+    }
+
+    public void bindAlerts(@NonNull final ArrayList<Alert> alerts){
+        if ( ! alerts.isEmpty()
+                && alerts.get(0).isValid()
+                && getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) == null) {
+                localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
+                BottomAlertDialogFragment.newInstance(alerts.get(0))
+                                         .showAllowingStateLoss(getFragmentManager(),
+                                                                BottomAlertDialogFragment.TAG);
+        } else if (shouldUpdateDeviceIssues()) {
+            deviceIssuesPresenter.update();
+        }
+    }
 
     public void bindDeviceIssue(@NonNull final DeviceIssuesInteractor.Issue issue) {
-        if (issue == DeviceIssuesInteractor.Issue.NONE ||
-                getFragmentManager().findFragmentByTag(DeviceIssueDialogFragment.TAG) != null) {
+        if (issue == DeviceIssuesInteractor.Issue.NONE
+                || getFragmentManager().findFragmentByTag(DeviceIssueDialogFragment.TAG) != null
+                || getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) != null) {
             return;
         }
 

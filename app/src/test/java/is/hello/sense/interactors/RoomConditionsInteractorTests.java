@@ -10,6 +10,9 @@ import is.hello.sense.util.Sync;
 import static is.hello.sense.interactors.RoomConditionsInteractor.Result;
 import static org.junit.Assert.assertNotNull;
 
+/**
+ * Replace with {@link is.hello.sense.flows.home.interactors.SensorResponseInteractor} tests
+ */
 public class RoomConditionsInteractorTests extends InjectionTestCase {
     @Inject
     RoomConditionsInteractor presenter;

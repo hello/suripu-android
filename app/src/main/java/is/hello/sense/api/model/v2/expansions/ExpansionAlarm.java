@@ -20,7 +20,7 @@ public class ExpansionAlarm extends ApiResponse {
     private Category category;
 
     @SerializedName("service_name")
-    private String serviceName;
+    private final String serviceName;
 
     @SerializedName("enabled")
     public boolean enabled;
@@ -28,9 +28,8 @@ public class ExpansionAlarm extends ApiResponse {
     @SerializedName("target_value")
     private ExpansionValueRange expansionRange;
 
-    //@Exclude
     private String displayValue = "empty value";
-    //@Exclude
+
     @DrawableRes
     private int displayIcon;
 
@@ -92,15 +91,8 @@ public class ExpansionAlarm extends ApiResponse {
         this.displayIcon = displayIcon;
     }
 
-    /**
-     * Because we only track one value for each expansion we can use it for both the min and max
-     * of the expansion range. At a future time we may see expansion range condense into a single
-     * integer value.
-     *
-     * @param selectedValue the value the user choose. Not to be confused with index position.
-     */
-    public void setExpansionRange(final float selectedValue) {
-        this.expansionRange = new ExpansionValueRange(selectedValue, selectedValue);
+    public void setExpansionRange(@NonNull final ExpansionValueRange valueRange) {
+        this.expansionRange = valueRange;
     }
 
     public void setEnabled(final boolean enabled) {
@@ -112,6 +104,7 @@ public class ExpansionAlarm extends ApiResponse {
         return expansionRange != null;
     }
 
+    @Nullable
     public ExpansionValueRange getExpansionRange() {
         return expansionRange;
     }

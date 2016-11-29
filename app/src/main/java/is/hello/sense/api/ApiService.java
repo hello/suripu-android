@@ -19,7 +19,6 @@ import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SenseTimeZone;
-import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.StoreReview;
 import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.UpdateCheckIn;
@@ -40,6 +39,7 @@ import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.api.model.v2.alarms.AlarmGroups;
+import is.hello.sense.api.model.v2.alerts.Alert;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.State;
@@ -171,20 +171,14 @@ public interface ApiService {
 
     //region Room Conditions
 
+    @Deprecated
     @GET("/v1/room/current")
     Observable<RoomConditions> currentRoomConditions(@NonNull @Query("temp_unit") String unit);
 
+    @Deprecated
     @GET("/v1/room/all_sensors/hours")
     Observable<RoomSensorHistory> roomSensorHistory(@Query("quantity") int numberOfHours,
                                                     @Query("from_utc") long timestamp);
-
-    @GET("/v1/room/{sensor}/day")
-    Observable<ArrayList<SensorGraphSample>> sensorHistoryForDay(@Path("sensor") String sensor,
-                                                                 @Query("from") long timestamp);
-
-    @GET("/v1/room/{sensor}/week")
-    Observable<ArrayList<SensorGraphSample>> sensorHistoryForWeek(@Path("sensor") String sensor,
-                                                                  @Query("from") long timestamp);
 
     @GET("/v2/sensors")
     Observable<SensorResponse> getSensors();
@@ -232,6 +226,10 @@ public interface ApiService {
     @GET("/v2/devices")
     Observable<Devices> registeredDevices();
 
+    /**
+     * Used to determine how may accounts have already been paired to a Sense, for adjusting onboarding flow
+     * to show how to set up partner's account. Pending deprecation.
+     */
     @GET("/v2/devices/info")
     Observable<DevicesInfo> devicesInfo();
 
@@ -261,9 +259,9 @@ public interface ApiService {
     @GET("/v2/alarms")
     Observable<AlarmGroups> smartAlarms();
 
-    @POST("/v1/alarms/{client_time_utc}")
-    Observable<VoidResponse> saveSmartAlarms(@Path("client_time_utc") long timestamp,
-                                             @NonNull @Body List<Alarm> alarms);
+    @POST("/v2/alarms/{client_time_utc}")
+    Observable<AlarmGroups> saveSmartAlarms(@Path("client_time_utc") long timestamp,
+                                             @NonNull @Body AlarmGroups alarmGroups);
 
     @GET("/v1/alarms/sounds")
     Observable<ArrayList<Alarm.Sound>> availableSmartAlarmSounds();
@@ -363,6 +361,13 @@ public interface ApiService {
     @PATCH("/v2/expansions/{id}/configurations")
     Observable<Configuration> setConfigurations(@Path("id") long expansionId,
                                                 @Body @NonNull Configuration configuration);
+
+    //endregion
+
+    //region Alerts
+
+    @GET("/v2/alerts")
+    Observable<ArrayList<Alert>> getAlerts();
 
     //endregion
 }

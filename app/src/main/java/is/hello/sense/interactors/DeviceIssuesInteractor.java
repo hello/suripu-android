@@ -54,6 +54,7 @@ public class DeviceIssuesInteractor extends ScopedValueInteractor<DeviceIssuesIn
 
         if (sense != null) {
             Analytics.setSenseId(sense.deviceId);
+            Analytics.setSenseVersion(sense.hardwareVersion);
         }
 
         if (sense == null) {

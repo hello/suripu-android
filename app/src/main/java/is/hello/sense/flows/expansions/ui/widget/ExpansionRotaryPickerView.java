@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
+import is.hello.sense.ui.recycler.CenterLinearLayoutManager;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
@@ -34,6 +35,7 @@ import is.hello.sense.util.Constants;
  */
 public class ExpansionRotaryPickerView extends RecyclerView implements View.OnClickListener {
     public static final int DEFAULT_UNFOCUSED_ITEM_COUNT = 2;
+    public static final int FLING_DAMPING_FACTOR = 3;
     public static final
     @StyleRes
     int ITEM_TEXT_APPEARANCE = R.style.AppTheme_Text_Header_H1_Thin;
@@ -103,7 +105,7 @@ public class ExpansionRotaryPickerView extends RecyclerView implements View.OnCl
 
         final Resources resources = getResources();
 
-        this.layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+        this.layoutManager = new CenterLinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
         this.itemVerticalPadding =resources.getDimensionPixelSize(R.dimen.x_5);;
         this.itemHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
 
@@ -225,8 +227,10 @@ public class ExpansionRotaryPickerView extends RecyclerView implements View.OnCl
     }
 
     @Override
-    public boolean fling(int velocityX, int velocityY) {
-        return super.fling(velocityX / 3, velocityY / 3);
+    public boolean fling(final int velocityX,
+                         final int velocityY) {
+        return super.fling(velocityX / FLING_DAMPING_FACTOR,
+                           velocityY / FLING_DAMPING_FACTOR);
     }
 
 
@@ -321,16 +325,12 @@ public class ExpansionRotaryPickerView extends RecyclerView implements View.OnCl
     }
 
     private void scrollToValue(int oldValue, int newValue, boolean animate) {
-        final int distanceToFocusedItem = itemHeight * unfocusedItemCount;
+        final int distanceToFocusedItem = (getMeasuredHeight() - itemHeight) / 2;
         final int position = adapter.getItemPosition(newValue);
 
         this.wrapAroundEventsEnabled = false;
         if (animate) {
-            if (newValue > oldValue) {
-                smoothScrollToPosition(position + unfocusedItemCount);
-            } else {
-                smoothScrollToPosition(Math.max(0, position - unfocusedItemCount));
-            }
+            smoothScrollToPosition(position);
         } else {
             layoutManager.scrollToPositionWithOffset(position, distanceToFocusedItem);
             post(() -> {

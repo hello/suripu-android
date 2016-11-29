@@ -46,7 +46,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 24
         versionCode generateVersionCode()
-        versionName "1.6.1"
+        versionName "1.6.2"
     }
 
     compileOptions {
@@ -156,7 +156,6 @@ tasks.whenTaskAdded { theTask ->
 }
 
 dependencies {
-
     // Is there anything we don't depend on?
     provided 'com.squareup.dagger:dagger-compiler:1.2.2'
     compile 'com.squareup.dagger:dagger:1.2.2'
@@ -173,13 +172,13 @@ dependencies {
     compile 'com.android.support:support-v13:24.0.0'
     compile 'com.android.support:recyclerview-v7:24.0.0'
     compile 'com.android.support:customtabs:24.0.0'
-    compile 'com.google.android.gms:play-services-gcm:9.2.0'
-    compile 'com.google.android.gms:play-services-location:9.2.0'
+    compile 'com.google.android.gms:play-services-gcm:9.6.1'
+    compile 'com.google.android.gms:play-services-location:9.6.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'me.grantland:autofittextview:0.2.1'
     compile 'de.hdodenhof:circleimageview:2.0.0'
-    compile 'is.hello.commonsense:ble:2016.11.7.2'
+    compile 'is.hello.commonsense:ble:2016.11.15.1'
     compile 'is.hello:anime-android-go-99:0.5.0'
     compile 'com.facebook.android:facebook-android-sdk:4.13.1'
     compile 'no.nordicsemi.android:dfu:0.6.3'

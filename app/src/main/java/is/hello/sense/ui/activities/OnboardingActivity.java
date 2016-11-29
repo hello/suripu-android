@@ -26,8 +26,10 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.flows.smartalarm.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
@@ -49,11 +51,11 @@ import is.hello.sense.ui.fragments.onboarding.HaveSenseReadyFragment;
 import is.hello.sense.ui.fragments.onboarding.IntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPill;
-import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
+import is.hello.sense.ui.fragments.onboarding.OnboardingSetLocationFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
@@ -120,7 +122,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
 
     @Override
     protected List<Object> getModules() {
-        if(getIntent() != null && getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)){
+        if (getIntent() != null && getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
             return Arrays.asList(new OnboardingModule(), new SettingsPairSenseModule(true));
         }
         return Arrays.asList(new OnboardingModule(), new OnboardingPairSenseModule());
@@ -298,6 +300,8 @@ public class OnboardingActivity extends ScopedInjectionActivity
             } else if (responseCode == IntroductionFragment.RESPONSE_GET_STARTED) {
                 showGetStarted(false);
             }
+        } else if (fragment instanceof OnboardingSetLocationFragment) {
+            showSetupSense();
         } else if (fragment instanceof ConnectToWiFiFragment) {
             showPairPill(true);
         } else if (fragment instanceof BluetoothFragment) {
@@ -462,7 +466,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
             final Account account = getAccount();
             bindAndSubscribe(apiService.updateAccount(account, true), ignored -> {
                 LoadingDialogFragment.close(getFragmentManager());
-                showEnhancedAudio();
+                showSetLocation();
             }, e -> {
                 LoadingDialogFragment.close(getFragmentManager());
                 ErrorDialogFragment.presentError(this, e);
@@ -470,8 +474,8 @@ public class OnboardingActivity extends ScopedInjectionActivity
         }
     }
 
-    public void showEnhancedAudio() {
-        pushFragment(new OnboardingRegisterAudioFragment(), null, false);
+    public void showSetLocation() {
+        pushFragment(new OnboardingSetLocationFragment(), null, false);
     }
 
     public void showSetupSense() {
@@ -575,8 +579,10 @@ public class OnboardingActivity extends ScopedInjectionActivity
 
     public void showSetAlarmDetail() {
         pushFragment(new Fragment(), null, false);
-        final Intent newAlarm = new Intent(this, SmartAlarmDetailActivity.class);
-        startActivityForResult(newAlarm, EDIT_ALARM_REQUEST_CODE);
+        SmartAlarmDetailActivity.startActivityForResult(this,
+                                                        new Alarm(),
+                                                        Constants.NONE,
+                                                        EDIT_ALARM_REQUEST_CODE);
     }
 
     public void checkSenseUpdateStatus() {

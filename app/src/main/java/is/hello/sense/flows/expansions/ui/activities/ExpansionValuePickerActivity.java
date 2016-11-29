@@ -16,10 +16,9 @@ import is.hello.sense.api.model.v2.expansions.Category;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
-import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
+import is.hello.sense.flows.expansions.modules.ExpansionPickerModule;
 import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
-import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
-import is.hello.sense.flows.expansions.ui.fragments.ExpansionsAuthFragment;
+import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailPickerFragment;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -36,7 +35,7 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
 
     @Override
     protected List<Object> getModules() {
-        return Collections.singletonList(new ExpansionSettingsModule());
+        return Collections.singletonList(new ExpansionPickerModule());
     }
 
     @Override
@@ -68,7 +67,7 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
                 setTitle(expansion.getCategory().categoryDisplayString);
                 showValuePicker(expansion.getId(),
                                 expansion.getCategory(),
-                                expansion.getValueRange(),
+                                null,
                                 intent.getBooleanExtra(EXTRA_IS_ENABLED, false));
 
             }
@@ -96,10 +95,10 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
                                  @NonNull final Category category,
                                  @Nullable final ExpansionValueRange valueRange,
                                  final boolean enabledForSmartAlarm) {
-        pushFragment(ExpansionDetailFragment.newValuePickerInstance(expansionId,
-                                                                    category,
-                                                                    valueRange,
-                                                                    enabledForSmartAlarm),
+        pushFragment(ExpansionDetailPickerFragment.newInstance(expansionId,
+                                                               category,
+                                                               valueRange,
+                                                               enabledForSmartAlarm),
                      null, false);
     }
 
@@ -129,22 +128,17 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
         if (responseCode == RESULT_CANCELED) {
             popFragment(fragment, false);
         } else {
-            if (fragment instanceof ExpansionDetailFragment) {
+            if (fragment instanceof ExpansionDetailPickerFragment) {
                 //todo handle RESULT_CONNECT_PRESSED or cancel flow if not authenticated?
-                if (responseCode == ExpansionDetailFragment.RESULT_CONFIGURE_PRESSED) {
+                if (responseCode == ExpansionDetailPickerFragment.RESULT_CONFIGURE_PRESSED) {
                     showConfigurationSelection();
                 } else {
                     setResult(RESULT_OK, result);
                     finish();
                 }
             } else if (fragment instanceof ConfigSelectionFragment) {
-                if (result != null
-                        && result.hasExtra(ConfigSelectionFragment.EXPANSION_ID_KEY)
-                        && result.hasExtra(ConfigSelectionFragment.EXPANSION_CATEGORY)) {
-                    // todo restore initial values by just popping fragment requires saving initial range state
-                    popFragment(fragment, false);
-
-                }
+                // todo restore initial values by just popping fragment requires saving initial range state
+                popFragment(fragment, false);
             } else {
                 setResult(RESULT_CANCELED);
                 finish(); //todo handle better
@@ -160,10 +154,7 @@ public class ExpansionValuePickerActivity extends ScopedInjectionActivity
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        final Fragment fragment = getTopFragment();
-        if (fragment instanceof ExpansionsAuthFragment && fragment.onOptionsItemSelected(item)) {
-            return true;
-        } else if (item.getItemId() == android.R.id.home) {
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
         }

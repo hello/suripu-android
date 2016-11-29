@@ -17,7 +17,7 @@ import rx.Observable;
 public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings> {
 
     public static final String EMPTY_ID = Constants.EMPTY_STRING;
-    private static final int REPEAT_MAX_COUNT = 15;
+    private static final int REPEAT_MAX_COUNT = 10;
     private static final int RESUBSCRIBE_DELAY_MILLIS = 1000;
     private static final String KEY_SENSE_ID = VoiceSettingsInteractor.class.getName() + "KEY_SENSE_ID";
     private final ApiService apiService;
@@ -82,7 +82,6 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
      * @return Observable Boolean true if new settings has updated {@link this#settingsSubject}
      */
     private Observable<SenseVoiceSettings> setAndPoll(@NonNull final SenseVoiceSettings newSettings) {
-        //todo handle error if update fails after repeat count max
         return apiService.setVoiceSettings(senseId, newSettings)
                          .flatMap(ignore -> provideUpdateObservable()
                                  .doOnNext(responseSettings -> {
@@ -94,20 +93,25 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
                                          Observable.range(1, REPEAT_MAX_COUNT)
                                          , (ignore2, integer) -> integer)
                                                                      .takeUntil(integer -> hasUpdatedTo(newSettings))
-                                                                     .flatMap(repeatCount -> Observable.timer(RESUBSCRIBE_DELAY_MILLIS, TimeUnit.MILLISECONDS))
-                                                                     .doOnCompleted(() -> {
-                                                                         if (!hasUpdatedTo(newSettings)) {
+                                                                     .flatMap( count -> {
+                                                                         if (count >= REPEAT_MAX_COUNT && !hasUpdatedTo(newSettings)) {
                                                                              if (newSettings.getVolume() != null) {
-                                                                                 settingsSubject.onError(new SettingsUpdateThrowable());
+                                                                                 return Observable.error(new SettingsUpdateThrowable());
                                                                              }
-                                                                             if (newSettings.isMuted() != null) {
-                                                                                 settingsSubject.onError(new MuteUpdateThrowable());
+                                                                             else if (newSettings.isMuted() != null) {
+                                                                                 return Observable.error(new MuteUpdateThrowable());
                                                                              }
-                                                                             if (newSettings.isPrimaryUser() != null) {
-                                                                                 settingsSubject.onError(new PrimaryUpdateThrowable());
+                                                                             else if (newSettings.isPrimaryUser() != null) {
+                                                                                 return Observable.error(new PrimaryUpdateThrowable());
+                                                                             } else {
+                                                                                 return Observable.just(count);
                                                                              }
+                                                                         } else {
+                                                                             return Observable.just(count);
                                                                          }
-                                                                     })));
+                                                                     })
+                                                                     .flatMap(repeatCount -> Observable.timer(RESUBSCRIBE_DELAY_MILLIS, TimeUnit.MILLISECONDS))
+                                                                     ));
     }
 
     private Boolean hasUpdatedTo(@NonNull final SenseVoiceSettings newSettings) {

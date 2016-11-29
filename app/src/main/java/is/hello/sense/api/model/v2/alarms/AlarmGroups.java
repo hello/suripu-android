@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.ApiResponse;
@@ -19,6 +20,11 @@ public class AlarmGroups extends ApiResponse {
     @SerializedName("classic")
     private ArrayList<Alarm> classic;
 
+    public AlarmGroups(){
+        this.classic = new ArrayList<>();
+        this.voice = new ArrayList<>();
+        this.expansions = new ArrayList<>();
+    }
 
     public ArrayList<Alarm> getExpansions() {
         return expansions;
@@ -47,5 +53,31 @@ public class AlarmGroups extends ApiResponse {
         alarms.addAll(alarmGroups.getVoice());
         alarms.addAll(alarmGroups.getExpansions());
         return alarms;
+    }
+
+    /**
+     * Currently we never add any alarms to the {@link AlarmGroups#expansions} list like in iOS
+     * but the ideal behavior would be to add it to original list if modifying an existing alarm.
+     * @return {@link AlarmGroups} to be used for saving.
+     */
+    public static AlarmGroups from(@NonNull final List<Alarm> alarms){
+        final AlarmGroups alarmGroups = new AlarmGroups();
+        final ArrayList<Alarm> voiceAlarms = alarmGroups.getVoice();
+        final ArrayList<Alarm> classicAlarms = alarmGroups.getClassic();
+        for(final Alarm alarm : alarms){
+            switch (alarm.getSource()){
+                case VOICE_SERVICE:
+                    voiceAlarms.add(alarm);
+                    break;
+                case MOBILE_APP:
+                case OTHER:
+                    classicAlarms.add(alarm);
+                    break;
+                default:
+                    // don't add unknown source alarms
+                    break;
+            }
+        }
+        return alarmGroups;
     }
 }

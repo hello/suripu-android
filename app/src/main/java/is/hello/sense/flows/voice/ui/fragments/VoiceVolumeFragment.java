@@ -6,18 +6,21 @@ import android.view.View;
 
 import javax.inject.Inject;
 
+import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.voice.SenseVoiceSettings;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.flows.voice.ui.views.VoiceVolumeView;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import rx.Observable;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-public class VoiceVolumeFragment extends PresenterFragment<VoiceVolumeView> {
+public class VoiceVolumeFragment extends PresenterFragment<VoiceVolumeView>
+implements OnBackPressedInterceptor{
 
     @Inject
     VoiceSettingsInteractor voiceSettingsInteractor;
@@ -63,20 +66,27 @@ public class VoiceVolumeFragment extends PresenterFragment<VoiceVolumeView> {
     }
 
     private void updateSettings(@NonNull final Observable<SenseVoiceSettings> updateObservable) {
-        showBlockingActivity(R.string.voice_settings_progress_updating); //todo use real copy
+        showBlockingActivity(R.string.voice_settings_progress_updating);
         this.presenterView.setVisibility(View.GONE);
         updateSettingsSubscription.unsubscribe();
         updateSettingsSubscription = bind(updateObservable)
                 .subscribe(Functions.NO_OP,
                            this::presentError,
-                           () -> hideBlockingActivity(false, stateSafeExecutor.bind(this::finishFlow))
+                           () -> hideBlockingActivity(true, stateSafeExecutor.bind(this::finishFlow))
                           );
 
     }
 
     private void presentError(@NonNull final Throwable e) {
         showProgress(false);
-        showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e));
+        if (e instanceof VoiceSettingsInteractor.SettingsUpdateThrowable) {
+            final ErrorDialogFragment.PresenterBuilder builder = new ErrorDialogFragment.PresenterBuilder(e);
+            builder.withTitle(StringRef.from(R.string.voice_settings_update_error_title));
+            builder.withMessage(StringRef.from(R.string.voice_settings_update_error_message));
+            showErrorDialog(builder);
+        } else {
+            showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e));
+        }
     }
 
     private void showProgress(final boolean show) {
@@ -89,4 +99,9 @@ public class VoiceVolumeFragment extends PresenterFragment<VoiceVolumeView> {
         }
     }
 
+    @Override
+    public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
+        stateSafeExecutor.execute(this::finishFlow);
+        return true;
+    }
 }

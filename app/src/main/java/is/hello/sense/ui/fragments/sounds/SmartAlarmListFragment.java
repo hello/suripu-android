@@ -30,11 +30,11 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
+import is.hello.sense.flows.smartalarm.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.common.SubFragment;
@@ -121,11 +121,21 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        update();
         final Observable<Boolean> use24Time = preferences.observableUse24Time();
         bindAndSubscribe(use24Time, adapter::setUse24Time, Functions.LOG_ERROR);
-        bindAndSubscribe(smartAlarmPresenter.alarms, this::bindAlarms, this::alarmsUnavailable);
+        smartAlarmPresenter.alarms.forget();
+        bindAndSubscribe(smartAlarmPresenter.alarms,
+                         this::bindAlarms,
+                         this::alarmsUnavailable);
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(getUserVisibleHint()) {
+            update();
+        }
     }
 
     @Override
@@ -227,10 +237,9 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
 
 
     private void editAlarm(@NonNull final Alarm alarm, final int index) {
-        final Bundle arguments = SmartAlarmDetailActivity.getArguments(alarm, index);
-        final Intent intent = new Intent(getActivity(), SmartAlarmDetailActivity.class);
-        intent.putExtras(arguments);
-        startActivity(intent);
+        SmartAlarmDetailActivity.startActivity(getActivity(),
+                                               alarm,
+                                               index);
     }
 
     @Override
@@ -286,7 +295,7 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
             return;
         }
         Analytics.trackEvent(Analytics.Backside.EVENT_NEW_ALARM, null);
-        editAlarm(new Alarm(), SmartAlarmDetailActivity.INDEX_NEW);
+        editAlarm(new Alarm(), Constants.NONE);
     }
 
     public void retry(@NonNull final View sender) {

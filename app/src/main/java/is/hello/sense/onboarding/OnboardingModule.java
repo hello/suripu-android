@@ -10,7 +10,6 @@ import is.hello.sense.flows.home.interactors.SensorResponseInteractor;
 import is.hello.sense.presenters.RoomCheckPresenter;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
@@ -33,7 +32,6 @@ import is.hello.sense.util.RoomCheckResMapper;
                 RegisterWeightFragment.class,
                 RegisterHeightFragment.class,
                 BluetoothFragment.class,
-                OnboardingRegisterAudioFragment.class,
                 PairSenseFragment.class,
                 PairPillFragment.class,
                 OnboardingSenseColorsFragment.class,

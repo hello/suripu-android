@@ -3,26 +3,43 @@ package is.hello.sense.api.model.v2.expansions;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.Collections;
+import java.util.List;
 
 import is.hello.sense.api.model.ApiResponse;
 
 public class Configuration extends ApiResponse {
     @SerializedName("id")
-    private String id;
+    private final String id;
 
     @SerializedName("name")
-    private String name;
+    private final String name;
 
     @SerializedName("selected")
     private boolean selected;
 
+    @SerializedName("capabilities")
+    private List<Capability> capabilities;
+
+    /**
+     * set to true if configuration should be treated as empty object
+     * in place of null checks
+     */
+    @Expose(serialize = false)
+    private boolean isEmpty;
+
     public Configuration(@NonNull final String id,
                          @NonNull final String name,
-                         final boolean selected) {
+                         final boolean selected,
+                         final boolean isEmpty) {
         this.id = id;
         this.name = name;
         this.selected = selected;
+        this.capabilities = Collections.singletonList(Capability.UNKNOWN);
+        this.isEmpty = isEmpty;
     }
 
     public String getId() {
@@ -39,6 +56,22 @@ public class Configuration extends ApiResponse {
 
     public void setSelected(final boolean selected) {
         this.selected = selected;
+    }
+
+    /**
+     * until server supports this it will default to list containing single
+     * {@link Capability#UNKNOWN}
+     */
+    @NonNull
+    public List<Capability> getCapabilities(){
+        if(capabilities == null){
+          return Collections.singletonList(Capability.UNKNOWN);
+        }
+        return capabilities;
+    }
+
+    public boolean isEmpty(){
+        return isEmpty;
     }
 
     @Override
@@ -66,7 +99,7 @@ public class Configuration extends ApiResponse {
         public Empty(@NonNull final String title,
                      @NonNull final String subtitle,
                      @DrawableRes final int iconRes){
-            super(EMPTY_ID, EMPTY_NAME, false);
+            super(EMPTY_ID, EMPTY_NAME, false, true);
             this.title = title;
             this.subtitle = subtitle;
             this.iconRes = iconRes;

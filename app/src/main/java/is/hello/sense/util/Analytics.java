@@ -28,6 +28,7 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiException;
+import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 
@@ -35,6 +36,9 @@ public class Analytics {
     public static final String LOG_TAG = Analytics.class.getSimpleName();
     public static final String PLATFORM = "android";
 
+    /**
+     * Memory leak warning from Android Studio
+     */
     private static @Nullable com.segment.analytics.Analytics segment;
 
     public interface OnEventListener {
@@ -97,6 +101,19 @@ public class Analytics {
          * The id of the user's Sense.
          */
         String TRAIT_SENSE_ID = "Sense Id";
+
+        /**
+         * The last bonded hardware version of the user's Sense.
+         * Do not set after factory reset or unpair like for sense id.
+         * Should be one of {@link is.hello.sense.api.model.SenseDevice.HardwareVersion}
+         */
+        String TRAIT_SENSE_VERSION = "Sense Version";
+
+        /**
+         * The default value after factory reset or unpaired
+         * used for {@link Analytics.Global#TRAIT_SENSE_ID}
+         */
+        String PROP_SENSE_UNPAIRED = "unpaired";
 
 
         /**
@@ -752,7 +769,7 @@ public class Analytics {
         String EVENT_SENSE_PAIRED = "Upgrade Sense Paired";
 
         String EVENT_SWAP_ACCOUNTS_REQUEST = "Upgrade Swap Accounts Request";
-        String EVENT_SWAPPED_ACCOUNTS = "Upgrade Accounts Swapped";
+        String EVENT_SWAPPED_ACCOUNTS = "Upgrade Account Swapped";
         /**
          * User taps to factory reset during at end of upgrade flow
          */
@@ -914,21 +931,45 @@ public class Analytics {
         segment.reset();
     }
 
+    public static void resetSenseTraits(){
+        setSenseId(Global.PROP_SENSE_UNPAIRED);
+        // do not reset sense version so it will serve as last bonded sense version
+        //setSenseVersion(Global.PROP_SENSE_UNPAIRED);
+    }
+
     public static void setSenseId(@Nullable final String senseId) {
-        Logger.info(LOG_TAG, "Tracking Sense " + senseId);
-        if (segment == null || senseId == null) {
+        if (!trackTrait(Global.TRAIT_SENSE_ID, senseId)) {
             return;
         }
-
-        final Traits traits = new Traits();
-        traits.put(Global.TRAIT_SENSE_ID, senseId);
-        segment.identify(traits);
 
         final Context context = SenseApplication.getInstance();
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         preferences.edit()
                    .putString(PreferencesInteractor.PAIRED_SENSE_ID, senseId)
                    .apply();
+    }
+
+    public static void setSenseVersion(@Nullable final SenseDevice.HardwareVersion hardwareVersion) {
+        final Context context = SenseApplication.getInstance();
+        trackTrait(Global.TRAIT_SENSE_VERSION,
+                   hardwareVersion != null ?
+                           context.getString(hardwareVersion.nameRes) : null
+                  );
+    }
+
+    /**
+     * @return true if trait will be tracked by analytics or false if invalid
+     */
+    private static boolean trackTrait(@NonNull final String trait, @Nullable final String prop){
+        Logger.info(LOG_TAG, "Tracking " + trait + " " + prop);
+        if (segment == null || prop == null) {
+            return false;
+        }
+
+        final Traits traits = new Traits();
+        traits.put(trait, prop);
+        segment.identify(traits);
+        return true;
     }
 
     public static String getSenseId() {

@@ -34,7 +34,6 @@ import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SenseTimeZone;
-import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.StoreReview;
 import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.UpdateCheckIn;
@@ -58,6 +57,7 @@ import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.TimelineEventBuilder;
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.api.model.v2.alarms.AlarmGroups;
+import is.hello.sense.api.model.v2.alerts.Alert;
 import is.hello.sense.api.model.v2.expansions.Configuration;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.model.v2.expansions.State;
@@ -256,18 +256,6 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ArrayList<SensorGraphSample>> sensorHistoryForDay(@Path("sensor") String sensor,
-                                                               @Query("timestamp_millis") long timestamp) {
-        return unimplemented();
-    }
-
-    @Override
-    public Observable<ArrayList<SensorGraphSample>> sensorHistoryForWeek(@Path("sensor") String sensor,
-                                                                @Query("timestamp_millis") long timestamp) {
-        return unimplemented();
-    }
-
-    @Override
     public Observable<ArrayList<Question>> questions(@NonNull @Query("date") String timestamp) {
         return loadResponse("questions", new TypeToken<ArrayList<Question>>() {
         }.getType());
@@ -318,9 +306,9 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<VoidResponse> saveSmartAlarms(@Query("client_time_utc") long timestamp,
-                                                   @NonNull @Body List<Alarm> alarms) {
-        return safeJust(new VoidResponse());
+    public Observable<AlarmGroups> saveSmartAlarms(@Path("client_time_utc") final long timestamp,
+                                                   @NonNull @Body final AlarmGroups alarmGroups) {
+        return safeJust(new AlarmGroups());
     }
 
     @Override
@@ -487,5 +475,10 @@ public final class TestApiService implements ApiService {
     public Observable<SensorsDataResponse> postSensors(@NonNull @Body final SensorDataRequest request) {
         //todo missing different queryScopes except LAST_3H_5_MINUTE
         return loadResponse("post_sensors_v2_"+request.queryScope.name(), new TypeToken<SensorsDataResponse>(){}.getType());
+    }
+
+    @Override
+    public Observable<ArrayList<Alert>> getAlerts() {
+        return unimplemented();
     }
 }

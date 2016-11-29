@@ -15,19 +15,25 @@ import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
-import is.hello.sense.flows.expansions.modules.ExpansionSettingsModule;
+import is.hello.sense.flows.home.interactors.AlertsInteractor;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
+import is.hello.sense.flows.home.ui.fragments.BacksideFragment;
+import is.hello.sense.flows.home.ui.fragments.HomeFragment;
+import is.hello.sense.flows.home.ui.fragments.InsightsFragment;
+import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
+import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
+import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
+import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
-import is.hello.sense.interactors.HasVoiceInteractor;
 import is.hello.sense.interactors.InsightInfoInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.QuestionsInteractor;
 import is.hello.sense.interactors.RoomConditionsInteractor;
-import is.hello.sense.interactors.SensorHistoryInteractor;
 import is.hello.sense.interactors.SleepDurationsInteractor;
 import is.hello.sense.interactors.SleepSoundsInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
@@ -43,22 +49,15 @@ import is.hello.sense.presenters.BaseHardwarePresenter;
 import is.hello.sense.settings.SettingsModule;
 import is.hello.sense.ui.activities.DebugActivity;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
-import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.ListActivity;
-import is.hello.sense.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
-import is.hello.sense.ui.fragments.BacksideFragment;
-import is.hello.sense.ui.fragments.InsightsFragment;
-import is.hello.sense.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
-import is.hello.sense.ui.fragments.TrendsFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPill;
-import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterAudioFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
@@ -66,9 +65,7 @@ import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.fragments.settings.PillDetailsFragment;
 import is.hello.sense.ui.fragments.settings.SenseDetailsFragment;
 import is.hello.sense.ui.fragments.sounds.SleepSoundsFragment;
-import is.hello.sense.ui.fragments.sounds.SmartAlarmDetailFragment;
 import is.hello.sense.ui.fragments.sounds.SmartAlarmListFragment;
-import is.hello.sense.ui.fragments.sounds.SoundsFragment;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.UtilityModule;
@@ -84,8 +81,7 @@ import is.hello.sense.zendesk.ZendeskModule;
                 UtilityModule.class,
                 FacebookApiModule.class,
                 PillModule.class,
-                SenseOTAModule.class, //todo remove after converting fragments to use presenters,
-                ExpansionSettingsModule.class //todo remove after HomeActivity uses ScopedInjection
+                SenseOTAModule.class, //todo remove after converting fragments to use presenters
         },
         injects = {
                 SenseApplication.class,
@@ -119,21 +115,14 @@ import is.hello.sense.zendesk.ZendeskModule;
                 QuestionsInteractor.class,
                 QuestionsDialogFragment.class,
 
-                BacksideFragment.class,
                 InsightsInteractor.class,
-                InsightsFragment.class,
                 InsightInfoInteractor.class,
                 InsightInfoFragment.class,
-                RoomConditionsFragment.class,
                 RoomConditionsInteractor.class,
-                SensorHistoryInteractor.class,
+
                 TrendsInteractor.class,
-                TrendsFragment.class,
-                SmartAlarmDetailActivity.class,
                 SmartAlarmListFragment.class,
                 SleepSoundsFragment.class,
-                SoundsFragment.class,
-                SmartAlarmDetailFragment.class,
                 SmartAlarmSoundDialogFragment.class,
                 SmartAlarmInteractor.class,
                 SleepSoundsInteractor.class,
@@ -144,15 +133,14 @@ import is.hello.sense.zendesk.ZendeskModule;
 
                 //todo remove when fragments use presenters
                 OnboardingSenseColorsFragment.class,
-                OnboardingRegisterAudioFragment.class,
                 OnboardingPairPill.class,
-                is.hello.sense.flows.home.ui.fragments.BacksideFragment.class,
-                is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment.class,
-                is.hello.sense.flows.home.ui.fragments.TrendsFragment.class,
-                is.hello.sense.flows.home.ui.fragments.InsightsFragment.class,
-                is.hello.sense.flows.home.ui.fragments.SoundsFragment.class,
-                is.hello.sense.flows.home.ui.fragments.HomeFragment.class,
-                is.hello.sense.flows.home.ui.fragments.VoiceFragment.class,
+                BacksideFragment.class,
+                RoomConditionsFragment.class,
+                TrendsFragment.class,
+                InsightsFragment.class,
+                SoundsFragment.class,
+                HomeFragment.class,
+                VoiceFragment.class,
                 AppSettingsFragment.class,
 
 
@@ -189,6 +177,12 @@ public class SenseAppModule {
     @Singleton
     DevicesInteractor providesDevicesInteractor(@NonNull final ApiService apiService) {
         return new DevicesInteractor(apiService);
+    }
+
+    @Provides
+    @Singleton
+    public AlertsInteractor providesAlertsInteractor(@NonNull final ApiService apiService){
+        return new AlertsInteractor(apiService);
     }
 
 }

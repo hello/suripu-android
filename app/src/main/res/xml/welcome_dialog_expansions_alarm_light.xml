@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog>
+    <item
+        diagram="@drawable/welcome_dialog_expansions"
+        diagramFillColor="#f3f5f9"
+        title="@string/welcome_dialog_expansions_title"
+        message="@string/welcome_dialog_expansions_alarm_light_message"/>
+</dialog>

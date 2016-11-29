@@ -129,6 +129,23 @@ public abstract class BaseHardwareInteractor extends Interactor {
         }
     }
 
+    @NonNull
+    public SenseDevice.HardwareVersion getHardwareVersion() {
+        if(peripheral == null){
+            return SenseDevice.HardwareVersion.UNKNOWN;
+        } else {
+            switch (peripheral.getAdvertisedHardwareVersion()){
+                case SENSE_WITH_VOICE:
+                    return SenseDevice.HardwareVersion.SENSE_WITH_VOICE;
+                case SENSE:
+                    return SenseDevice.HardwareVersion.SENSE;
+                case UNKNOWN:
+                    default:
+                    return SenseDevice.HardwareVersion.UNKNOWN;
+            }
+        }
+    }
+
     public boolean isDeviceSupported() {
         return Compatibility.generateReport(context).isSupported();
     }

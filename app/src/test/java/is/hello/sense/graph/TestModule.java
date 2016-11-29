@@ -19,7 +19,6 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.TestApiSessionManager;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractorTests;
-import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatterTest;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractorTest;
@@ -53,7 +52,6 @@ import is.hello.sense.interactors.SwapSenseInteractorTests;
 import is.hello.sense.interactors.TimelineInteractor;
 import is.hello.sense.interactors.TimelineInteractorTests;
 import is.hello.sense.interactors.UnreadStateInteractorTests;
-import is.hello.sense.interactors.UserFeaturesInteractorTests;
 import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
 import is.hello.sense.interactors.ZoomedOutTimelineInteractorTests;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
@@ -66,7 +64,6 @@ import is.hello.sense.interactors.upgrade.UpgradePairSenseInteractorTests;
 import is.hello.sense.rating.LocalUsageTrackerTests;
 import is.hello.sense.ui.adapter.SmartAlarmAdapterTests;
 import is.hello.sense.ui.fragments.RoomConditionsFragmentTests;
-import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.units.UnitFormatterTests;
 import is.hello.sense.util.BatteryUtil;
 import is.hello.sense.util.DateFormatterTests;
@@ -100,8 +97,6 @@ import static org.mockito.Mockito.mock;
 
             PersistentPreferencesInteractor.class,
             PersistentPreferencesInteractorTests.class,
-
-            UserFeaturesInteractorTests.class,
 
             AccountInteractor.class,
             AccountInteractorTests.class,
@@ -246,11 +241,5 @@ public final class TestModule {
     @Singleton
     ConfigurationsInteractor providesConfigurationInteractor(final ApiService service){
         return new ConfigurationsInteractor(service);
-    }
-
-    @Provides
-    @Singleton
-    ExpansionCategoryFormatter providesExpansionCategoryFormatter(@NonNull final UnitFormatter unitFormatter){
-        return new ExpansionCategoryFormatter(unitFormatter);
     }
 }
