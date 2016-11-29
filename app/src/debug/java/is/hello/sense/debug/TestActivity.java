@@ -20,8 +20,8 @@ public class TestActivity extends Activity
     protected boolean isResumed = false;
     protected final StateSafeExecutor stateSafeExecutor = new StateSafeExecutor(() -> isResumed);
     private FragmentNavigationDelegate navigationDelegate;
-
-
+ 
+ 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
