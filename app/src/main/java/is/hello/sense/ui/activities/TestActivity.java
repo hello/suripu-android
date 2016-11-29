@@ -37,7 +37,8 @@ public class TestActivity extends SenseActivity {
                 imageView.getViewTreeObserver().removeOnPreDrawListener(this);
                 drawable.setHeight(imageView.getMeasuredHeight());
                 drawable.setWidth(imageView.getMeasuredWidth());
-                drawable.setCorrectTextSize();
+                drawable.setIsSelected(true);
+                drawable.setText("80");
                 return true;
             }
         });

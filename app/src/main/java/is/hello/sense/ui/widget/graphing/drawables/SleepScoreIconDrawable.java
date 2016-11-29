@@ -42,9 +42,9 @@ public class SleepScoreIconDrawable extends Drawable {
         this.fillColor = ContextCompat.getColor(context, R.color.blue2);
         this.backgroundColor = ContextCompat.getColor(context, R.color.background);
         this.noDataPlaceHolder = context.getResources().getString(R.string.missing_data_placeholder);
-        this.text = this.noDataPlaceHolder;
         this.backgroundPaint.setColor(this.backgroundColor);
         setIsSelected(false);
+        setText(null);
     }
 
     @Override
@@ -121,6 +121,7 @@ public class SleepScoreIconDrawable extends Drawable {
         } else {
             this.text = text;
         }
+        setCorrectTextSize();
     }
 
     public void setHeight(final int height) {
@@ -131,7 +132,8 @@ public class SleepScoreIconDrawable extends Drawable {
         this.width = width;
     }
 
-    public void setCorrectTextSize() {
+    public synchronized void setCorrectTextSize() {
+        this.textPaint.setTextSize(0);
         final int height = getIntrinsicHeight() - (int) (getIntrinsicHeight() * TEXT_MARGIN_RATIO);
         final int width = getIntrinsicWidth() - (int) (getIntrinsicWidth() * TEXT_MARGIN_RATIO);
         while (doesTextFit(width, height)) {
@@ -142,8 +144,8 @@ public class SleepScoreIconDrawable extends Drawable {
     }
 
     @SuppressWarnings("RedundantIfStatement")
-    private boolean doesTextFit(final int width, final int height) {
-        this.textPaint.getTextBounds(this.noDataPlaceHolder, 0, this.noDataPlaceHolder.length(), this.textBounds);
+    private synchronized boolean doesTextFit(final int width, final int height) {
+        this.textPaint.getTextBounds(this.text, 0, this.text.length(), this.textBounds);
         if (this.textBounds.height() > height) {
             return false;
         }
