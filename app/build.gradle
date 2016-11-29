@@ -47,6 +47,7 @@ android {
         targetSdkVersion 25
         versionCode generateVersionCode()
         versionName "2.0.0"
+        multiDexEnabled true
     }
 
     compileOptions {
@@ -156,6 +157,9 @@ tasks.whenTaskAdded { theTask ->
 }
 
 dependencies {
+    compile 'com.android.support:multidex:1.0.1'
+
+
     // Is there anything we don't depend on?
     provided 'com.squareup.dagger:dagger-compiler:1.2.2'
     compile 'com.squareup.dagger:dagger:1.2.2'
@@ -165,7 +169,6 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.google.code.gson:gson:2.4'
     compile 'net.danlew:android.joda:2.7.2'
-
     compile 'com.segment.analytics.android:analytics:4.1.0'
 
     compile 'com.android.support:support-v4:25.0.1'
