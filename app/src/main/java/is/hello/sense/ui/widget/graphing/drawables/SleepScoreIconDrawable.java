@@ -132,7 +132,7 @@ public class SleepScoreIconDrawable extends Drawable {
         this.width = width;
     }
 
-    public synchronized void setCorrectTextSize() {
+    public void setCorrectTextSize() {
         this.textPaint.setTextSize(0);
         final int height = getIntrinsicHeight() - (int) (getIntrinsicHeight() * TEXT_MARGIN_RATIO);
         final int width = getIntrinsicWidth() - (int) (getIntrinsicWidth() * TEXT_MARGIN_RATIO);
@@ -144,7 +144,7 @@ public class SleepScoreIconDrawable extends Drawable {
     }
 
     @SuppressWarnings("RedundantIfStatement")
-    private synchronized boolean doesTextFit(final int width, final int height) {
+    private boolean doesTextFit(final int width, final int height) {
         this.textPaint.getTextBounds(this.text, 0, this.text.length(), this.textBounds);
         if (this.textBounds.height() > height) {
             return false;
