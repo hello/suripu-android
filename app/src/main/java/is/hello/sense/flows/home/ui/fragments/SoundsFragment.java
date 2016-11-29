@@ -16,7 +16,9 @@ import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
 
-public class SoundsFragment extends BacksideTabFragment<SoundsView> implements OnSelectionChangedListener, SwipeRefreshLayout.OnRefreshListener {
+public class SoundsFragment extends BacksideTabFragment<SoundsView>
+        implements OnSelectionChangedListener,
+        SwipeRefreshLayout.OnRefreshListener {
 
     @Inject
     PreferencesInteractor preferencesInteractor;

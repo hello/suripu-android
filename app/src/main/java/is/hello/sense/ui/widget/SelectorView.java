@@ -311,6 +311,11 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         return optionButton;
     }
 
+    public ToggleButton addOption(@NonNull final Option option) {
+        final String title = getResources().getString(option.titleRes);
+        return addOption(title, title, option.wantsDivider);
+    }
+
     public ToggleButton addOption(@StringRes final int titleRes, final boolean wantsDivider) {
         final String title = getResources().getString(titleRes);
         return addOption(title, title, wantsDivider);
@@ -334,6 +339,18 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         optionButton.setChecked(isSelected);
     }
     //endregion
+
+    public static class Option {
+        @StringRes
+        private final int titleRes;
+        private final boolean wantsDivider;
+
+        public Option(@StringRes final int titleRes,
+                      final boolean wantsDivider) {
+            this.titleRes = titleRes;
+            this.wantsDivider = wantsDivider;
+        }
+    }
 
 
     public interface OnSelectionChangedListener {

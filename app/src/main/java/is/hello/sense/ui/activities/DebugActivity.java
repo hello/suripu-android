@@ -17,6 +17,7 @@ import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.debug.TestActivity;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountPreferencesInteractor;
@@ -74,7 +75,8 @@ public class DebugActivity extends InjectionActivity {
         } catch (final ClassNotFoundException ignored) {
             // Do nothing.
         }
-
+    // todo remove when done testing
+        adapter.add(new DetailItem("Test Activity", () -> startActivity(new Intent(this, TestActivity.class))));
         adapter.add(new DetailItem("View Log", this::viewLog));
         adapter.add(new DetailItem("Clear Log", this::clearLog));
 
