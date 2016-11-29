@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Platform" />
-    <style name="Platform.Light" parent="android:Theme.Material.Light">
+    <style name="Platform.Light" parent="Theme.AppCompat.Light">
         <item name="android:colorPrimary">@color/light_accent</item>
         <item name="android:colorPrimaryDark">@color/light_accent_darkened</item>
         <item name="android:colorAccent">@color/light_accent</item>

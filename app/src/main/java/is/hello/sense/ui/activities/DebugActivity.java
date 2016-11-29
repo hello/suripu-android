@@ -18,6 +18,7 @@ import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
+import is.hello.sense.flows.home.ui.activities.NewHomeActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountPreferencesInteractor;
 import is.hello.sense.interactors.PersistentPreferencesInteractor;
@@ -88,6 +89,7 @@ public class DebugActivity extends InjectionActivity {
         adapter.add(new DetailItem("Show New Sense Update", this::showNewSenseUpdate));
         adapter.add(new DetailItem("Show Sense Voice", this::showSenseVoice));
         adapter.add(new DetailItem("Show Expansions", this::showExpansion));
+        adapter.add(new DetailItem("Show New Home Activity", this::showNewHomeActivity));
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
 
         adapter.add(new DetailItem("Forget welcome dialogs", this::clearHandholdingSettings));
@@ -117,6 +119,10 @@ public class DebugActivity extends InjectionActivity {
             actionBar.setTitle("Sense " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
             actionBar.setSubtitle(apiEndpoint.getName());
         }
+    }
+
+    private void showNewHomeActivity() {
+        startActivity(new Intent(this, NewHomeActivity.class));
     }
 
     public void showRoomCheck() {

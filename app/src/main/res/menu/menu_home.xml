@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_timeline"
+        android:title="@string/action_timeline"
+        android:icon="@drawable/icon_warning"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_trends"
+        android:title="@string/title_trends"
+        android:icon="@drawable/backside_icon_trends"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_insights"
+        android:title="@string/action_insights"
+        android:icon="@drawable/backside_icon_insights"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_sounds"
+        android:title="@string/action_sounds"
+        android:icon="@drawable/backside_icon_alarm"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_conditions"
+        android:title="@string/action_conditions"
+        android:icon="@drawable/test_selector"
+        app:showAsAction="always"/>
+</menu>
