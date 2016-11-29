@@ -262,6 +262,8 @@ public class HomeActivity extends ScopedInjectionActivity
             bindAndSubscribe(alertsInteractor.alerts,
                              this::bindAlerts,
                              Functions.LOG_ERROR);
+
+            alertsInteractor.update();
         }
 
         checkInForUpdates();
@@ -280,10 +282,6 @@ public class HomeActivity extends ScopedInjectionActivity
         super.onResume();
 
         Distribution.checkForUpdates(this);
-
-        if(shouldUpdateAlerts()){
-            alertsInteractor.update();
-        }
 
         if (showBackside) {
             slidingLayersView.openWithoutAnimation();
@@ -557,7 +555,7 @@ public class HomeActivity extends ScopedInjectionActivity
     //region Device Issues and Alerts
 
     private boolean shouldUpdateAlerts() {
-        return getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
+        return isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
     }
 
     private boolean shouldUpdateDeviceIssues() {
