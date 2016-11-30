@@ -257,6 +257,10 @@
     <dimen name="action_bar_title_text_size">20dp</dimen>
     <dimen name="action_bar_subtitle_text_size">15dp</dimen>
 
+    <!-- Bottom Bar -->
+
+    <dimen name="bottom_bar_height">56dp</dimen>
+
     <!-- Dialogs -->
 
     <dimen name="dialog_max_width">500dp</dimen>
@@ -265,6 +269,5 @@
     <dimen name="dialog_bottom_max_height">400dp</dimen>
     <dimen name="volume_picker_min_size">40dp</dimen>
     <dimen name="smart_alarm_expansion_attribution_row_height">44dp</dimen>
-    <dimen name="bottom_bar_height">58dp</dimen>
 
 </resources>

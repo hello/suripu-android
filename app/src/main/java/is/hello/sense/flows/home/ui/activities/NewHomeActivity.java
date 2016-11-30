@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
+import android.util.ArrayMap;
 import android.widget.ToggleButton;
 
 import com.zendesk.logger.Logger;
@@ -23,6 +24,7 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.ScopedInjectionActivity;
 import is.hello.sense.ui.widget.SelectorView;
+import rx.functions.Func0;
 
 /**
  * Will eventually replace {@link HomeActivity}
@@ -36,14 +38,9 @@ public class NewHomeActivity extends ScopedInjectionActivity
     private static final int DEFAULT_ITEM_INDEX = 2;
     private SelectorView bottomSelectorView;
     private FragmentNavigationDelegate fragmentNavigationDelegate;
-    //todo these are the tags FragmentNavigationDelegate uses when making transactions
-    // heavy dependence on fragment.class.getSimpleName()
-    private final String TIMELINE_TAG = "RoomConditionsFragment";
-    private final String TRENDS_TAG = "TrendsFragment";
-    private final String HOME_TAG = "VoiceFragment";
-    private final String SOUNDS_TAG = "SoundsFragment";
-    private final String CONDITIONS_TAG = "AppSettingsFragment";
+    private final FragmentMapper fragmentMapper = new FragmentMapper();
     private int currentItemIndex;
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -53,15 +50,21 @@ public class NewHomeActivity extends ScopedInjectionActivity
         this.fragmentNavigationDelegate = new FragmentNavigationDelegate(this,
                                                                          R.id.activity_new_home_backside_container,
                                                                          stateSafeExecutor);
+        if(savedInstanceState != null) {
+            this.fragmentNavigationDelegate.onRestoreInstanceState(savedInstanceState);
+        }
         this.bottomSelectorView = (SelectorView) findViewById(R.id.activity_new_home_bottom_selector_view);
         initSelector(bottomSelectorView);
 
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_CURRENT_ITEM_INDEX, currentItemIndex);
+        if(fragmentNavigationDelegate != null){
+            fragmentNavigationDelegate.onSaveInstanceState(outState);
+        }
     }
 
     @Override
@@ -85,7 +88,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
         if (fragment != null && fragment != getTopFragment()) {
             pushFragment(fragment, null, false); //todo save most recent 3 fragments in backstack
         } else if (fragment == null) {
-            pushFragment(createFragmentFromTag(tag), null, false);
+            pushFragment(fragmentMapper.getFragmentFromTag(tag), null, false);
         } else {
             Logger.d(NewHomeActivity.class.getName(), fragment + " is already visible");
         }
@@ -97,33 +100,6 @@ public class NewHomeActivity extends ScopedInjectionActivity
         } else {
             this.currentItemIndex = DEFAULT_ITEM_INDEX;
         }
-    }
-
-    private Fragment createFragmentFromTag(@NonNull final String tag) {
-        final Fragment fragment;
-
-        switch (tag){
-            case TIMELINE_TAG:
-                //todo depends on BackSideFragment to call update onResume()
-                fragment = new RoomConditionsFragment();
-                break;
-            case TRENDS_TAG:
-                //todo depends on BackSideFragment to call update onResume()
-                fragment = new TrendsFragment();
-                break;
-            case SOUNDS_TAG:
-                fragment = new SoundsFragment();
-                break;
-            case CONDITIONS_TAG:
-                fragment = new AppSettingsFragment();
-                break;
-            case HOME_TAG:
-            default:
-                //todo unless dependencies on old HomeActivity are removed from InsightFragment
-                // HomeFragment can't be instantiated here
-                fragment = new VoiceFragment();
-        }
-        return fragment;
     }
 
     @Override
@@ -175,13 +151,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
                 R.drawable.icon_sound_active_24,
                 R.drawable.icon_sense_active_24,
         };
-        final String[] tags = {
-                TIMELINE_TAG,
-                TRENDS_TAG,
-                HOME_TAG,
-                SOUNDS_TAG,
-                CONDITIONS_TAG
-        };
+
         for (int i = 0; i < inactiveIcons.length; i++) {
             final SpannableString inactiveContent = createIconSpan("empty",
                                                                    inactiveIcons[i]);
@@ -192,7 +162,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
                                                                false);
             button.setPadding(0, 0, 0, 0);
         }
-        selectorView.setButtonTags((Object[]) tags);
+        selectorView.setButtonTags((Object[]) fragmentMapper.tags);
         selectorView.setOnSelectionChangedListener(this);
         selectorView.setSelectedIndex(getCurrentItemIndex());
         onSelectionChanged(getCurrentItemIndex());
@@ -212,5 +182,45 @@ public class NewHomeActivity extends ScopedInjectionActivity
 
     public void setCurrentItemIndex(final int currentItemIndex) {
         this.currentItemIndex = currentItemIndex;
+    }
+
+    private static class FragmentMapper {
+
+        //todo these are the tags FragmentNavigationDelegate uses when making transactions
+        // heavy dependence on fragment.class.getSimpleName()
+        private final String TIMELINE_TAG = RoomConditionsFragment.class.getSimpleName();
+        private final String TRENDS_TAG = TrendsFragment.class.getSimpleName();
+        private final String HOME_TAG = VoiceFragment.class.getSimpleName();
+        private final String SOUNDS_TAG = SoundsFragment.class.getSimpleName();
+        private final String CONDITIONS_TAG = AppSettingsFragment.class.getSimpleName();
+
+        final String[] tags = {
+                TIMELINE_TAG,
+                TRENDS_TAG,
+                HOME_TAG,
+                SOUNDS_TAG,
+                CONDITIONS_TAG
+        };
+
+        private final ArrayMap<String, Func0<Fragment>> map;
+
+        FragmentMapper(){
+            this.map = new ArrayMap<>(tags.length);
+            map.put(TIMELINE_TAG, RoomConditionsFragment::new);
+            map.put(TRENDS_TAG, RoomConditionsFragment::new);
+            map.put(SOUNDS_TAG, SoundsFragment::new);
+            map.put(CONDITIONS_TAG, AppSettingsFragment::new);
+            map.put(HOME_TAG, VoiceFragment::new);
+        }
+
+        Fragment getFragmentFromTag(@NonNull final String tag){
+            if(map.containsKey(tag)){
+                return map.get(tag)
+                          .call();
+            } else {
+                throw new IllegalStateException("no fragment mapped to tag " + tag);
+            }
+        }
+
     }
 }
