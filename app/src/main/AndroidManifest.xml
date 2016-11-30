@@ -125,8 +125,6 @@
         <activity
             android:name=".ui.activities.HardwareFragmentActivity"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
-        <activity
-            android:name=".ui.activities.TestActivity"/>
 
         <activity
             android:name=".ui.activities.ListActivity"

@@ -77,9 +77,6 @@ public class DebugActivity extends InjectionActivity {
 
         adapter.add(new DetailItem("View Log", this::viewLog));
         adapter.add(new DetailItem("Clear Log", this::clearLog));
-        adapter.add(new DetailItem("TestActivity", () -> {
-            startActivity(new Intent(this, TestActivity.class));
-        }));
 
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
         adapter.add(new DetailItem("Share Log", this::sendLog));
