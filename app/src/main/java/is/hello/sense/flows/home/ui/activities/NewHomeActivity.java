@@ -85,9 +85,9 @@ public class NewHomeActivity extends ScopedInjectionActivity
 
         final String tag = (String) this.bottomSelectorView.getButtonTagAt(newSelectionIndex);
         final Fragment fragment = getFragmentManager().findFragmentByTag(tag);
-        if (fragment != null && fragment != getTopFragment()) {
+        if (fragment != null && fragment != getTopFragment() && !fragment.isRemoving()) {
             pushFragment(fragment, null, false); //todo save most recent 3 fragments in backstack
-        } else if (fragment == null) {
+        } else if (fragment == null || fragment.isRemoving()) {
             pushFragment(fragmentMapper.getFragmentFromTag(tag), null, false);
         } else {
             Logger.d(NewHomeActivity.class.getName(), fragment + " is already visible");
