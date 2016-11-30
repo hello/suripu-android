@@ -77,7 +77,6 @@ public class DebugActivity extends InjectionActivity {
             // Do nothing.
         }
     // todo remove when done testing
-        adapter.add(new DetailItem("Test Activity", () -> startActivity(new Intent(this, TestActivity.class))));
         adapter.add(new DetailItem("View Log", this::viewLog));
         adapter.add(new DetailItem("Clear Log", this::clearLog));
 
