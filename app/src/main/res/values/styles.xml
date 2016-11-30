@@ -544,8 +544,24 @@
     </style>
 
     <style name="FacebookTheme" parent="FacebookTheme.Base"/>
+
     <style name="FacebookTheme.Base" parent="android:Theme.Translucent.NoTitleBar">
         <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
+    </style>
+
+    <!-- AppCompat Themes
+    (mainly for use with https://developer.android.com/topic/libraries/support-library/features.html#design) -->
+    <style name="AppTheme.AppCompat" parent="Theme.AppCompat">
+        <item name="android:windowBackground">@color/background</item>
+    </style>
+
+    <style name="AppTheme.AppCompat.TabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabBackground">@color/background_light</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="tabSelectedTextColor">@color/primary</item>
+        <item name="tabTextColor">@color/dim</item>
+        <item name="tabIndicatorColor">@color/primary</item>
+        <item name="tabPaddingStart">@dimen/x1</item>
     </style>
 
 </resources>

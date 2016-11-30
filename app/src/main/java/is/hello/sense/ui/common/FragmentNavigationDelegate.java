@@ -3,6 +3,7 @@ package is.hello.sense.ui.common;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -23,7 +24,7 @@ import is.hello.sense.util.StateSafeExecutor;
 public final class FragmentNavigationDelegate implements FragmentManager.OnBackStackChangedListener {
     public static final String SAVED_STATUS_BAR_COLOR = FragmentNavigationDelegate.class.getName() + "#SAVED_STATUS_BAR_COLOR";
 
-    private SenseActivity activity;
+    private Activity activity;
     private final @IdRes int containerId;
     private final @Nullable StateSafeExecutor stateSafeExecutor;
 
@@ -32,7 +33,7 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
 
     //region Lifecycle
 
-    public FragmentNavigationDelegate(@NonNull final SenseActivity activity,
+    public FragmentNavigationDelegate(@NonNull final Activity activity,
                                       @IdRes final int containerId,
                                       @Nullable final StateSafeExecutor stateSafeExecutor) {
         this.activity = activity;
