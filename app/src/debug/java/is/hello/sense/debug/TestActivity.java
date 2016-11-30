@@ -1,5 +1,6 @@
 package is.hello.sense.debug;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,18 +11,16 @@ import is.hello.sense.R;
 import is.hello.sense.mvp.presenters.TestViewPagerPresenterFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
-import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.util.NotTested;
+import is.hello.sense.util.StateSafeExecutor;
 
 //todo delete this class when done testing
-public class TestActivity extends InjectionActivity
+public class TestActivity extends Activity
         implements FragmentNavigation {
+    protected boolean isResumed = false;
+    protected final StateSafeExecutor stateSafeExecutor = new StateSafeExecutor(() -> isResumed);
     private FragmentNavigationDelegate navigationDelegate;
 
-    @Override
-    protected boolean shouldInjectToMainGraphObject() {
-        return false;
-    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -36,6 +35,20 @@ public class TestActivity extends InjectionActivity
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        this.isResumed = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        this.isResumed = true;
+        stateSafeExecutor.executePendingForResume();
+    }
     @NotTested
     @Override
     public final void pushFragment(@NonNull final Fragment fragment,
