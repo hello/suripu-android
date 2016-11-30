@@ -104,6 +104,7 @@ public class ExpansionAlarm extends ApiResponse {
         return expansionRange != null;
     }
 
+    @Nullable
     public ExpansionValueRange getExpansionRange() {
         return expansionRange;
     }
