@@ -18,7 +18,6 @@ import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.home.ui.fragments.BacksideTabFragment;
 import is.hello.sense.flows.home.ui.fragments.HomeFragment;
-import is.hello.sense.flows.home.ui.fragments.InsightsFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
@@ -62,17 +61,17 @@ public class BacksideView extends PresenterView {
         pager.setAdapter(adapter);
 
         final @DrawableRes int[] inactiveIcons = {
-                R.drawable.backside_icon_currently,
-                R.drawable.backside_icon_trends,
-                R.drawable.backside_icon_insights,
-                R.drawable.backside_icon_sounds,
+                R.drawable.icon_sense_24,
+                R.drawable.icon_trends_24,
+                R.drawable.icon_insight_24,
+                R.drawable.icon_sound_24,
                 R.drawable.backside_icon_settings,
         };
         final @DrawableRes int[] activeIcons = {
-                R.drawable.backside_icon_currently_active,
-                R.drawable.backside_icon_trends_active,
-                R.drawable.backside_icon_insights_active,
-                R.drawable.backside_icon_sounds_active,
+                R.drawable.icon_sense_active_24,
+                R.drawable.icon_trends_active_24,
+                R.drawable.icon_insight_active_24,
+                R.drawable.icon_sound_active_24,
                 R.drawable.backside_icon_settings_active,
         };
         for (int i = 0, count = adapter.getCount(); i < count; i++) {

@@ -21,14 +21,15 @@ import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
+import is.hello.sense.flows.home.interactors.SensorResponseInteractor;
+import is.hello.sense.flows.home.ui.adapters.SensorResponseAdapter;
+import is.hello.sense.flows.home.ui.views.RoomConditionsView;
+import is.hello.sense.flows.sensordetails.ui.activities.SensorDetailActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.flows.home.interactors.SensorResponseInteractor;
-import is.hello.sense.flows.home.ui.views.RoomConditionsView;
-import is.hello.sense.flows.home.ui.adapters.SensorResponseAdapter;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.flows.sensordetails.ui.activities.SensorDetailActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
+import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
@@ -67,6 +68,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
                 this.adapter.setErrorItemClickListener(this);
             }
             this.presenterView = new RoomConditionsView(getActivity(), this.adapter);
+            this.presenterView.setSettingsButtonClickListener(this::startSettingsActivity);
         }
     }
 
@@ -146,6 +148,13 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     }
 
     //endregion
+
+    private void startSettingsActivity(final View ignore) {
+        startActivity(new FragmentNavigationActivity.Builder(getActivity())
+                              .setDefaultTitle(R.string.app_name)
+                              .setFragmentClass(AppSettingsFragment.class)
+                              .toIntent());
+    }
 
 
     //region Displaying Data

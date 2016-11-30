@@ -7,24 +7,28 @@ import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
 import is.hello.sense.R;
-import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.flows.home.ui.adapters.SensorResponseAdapter;
+import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.recycler.CardItemDecoration;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
+import is.hello.sense.ui.widget.util.Views;
 
 @SuppressLint("ViewConstructor")
 public final class RoomConditionsView extends PresenterView {
     final RecyclerView recyclerView;
     final ProgressBar progressBar;
+    final ImageButton settingsButton;
 
     public RoomConditionsView(@NonNull final Activity activity,
                               @NonNull final SensorResponseAdapter adapter) {
         super(activity);
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.fragment_room_conditions_refresh_container);
         swipeRefreshLayout.setEnabled(false);
+        settingsButton = (ImageButton) findViewById(R.id.fragment_room_conditions_settings_button);
         progressBar = (ProgressBar) findViewById(R.id.fragment_room_conditions_loading);
         recyclerView = (RecyclerView) findViewById(R.id.fragment_room_conditions_recycler);
         recyclerView.setHasFixedSize(true);
@@ -52,5 +56,9 @@ public final class RoomConditionsView extends PresenterView {
 
     public void showProgress(final boolean show) {
         progressBar.setVisibility(show ? VISIBLE : INVISIBLE);
+    }
+
+    public void setSettingsButtonClickListener(@NonNull final OnClickListener listener){
+        Views.setSafeOnClickListener(settingsButton, listener);
     }
 }

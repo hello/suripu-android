@@ -185,15 +185,20 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
         }
 
         final UnitConverter unitConverter = expansionCategoryFormatter.getUnitConverter(expansionCategory);
-        final int max = (int) Math.ceil(unitConverter.convert(expansion.getValueRange().max));
-        final int min = (int) Math.ceil(unitConverter.convert(expansion.getValueRange().min));
-        final int defaultValue = (int) (expansion.getValueRange().max - expansion.getValueRange().min);
+        final ExpansionValueRange expansionValueRange = expansion.getValueRange();
+        final int max = (int) Math.ceil(unitConverter.convert(expansionValueRange.max));
+        final int min = (int) Math.ceil(unitConverter.convert(expansionValueRange.min));
+
+        if(initialValueRange == null){
+            initialValueRange = expansionCategoryFormatter.getIdealValueRange(expansionCategory,
+                                                                              expansionValueRange);
+        }
 
         presenterView.setConfigurationTypeText(expansion.getConfigurationType());
         presenterView.initExpansionRangePicker(min,
                                                max,
-                                               defaultValue,
-                                               expansionCategoryFormatter.getSuffix(expansion.getCategory()));
+                                               expansionCategoryFormatter.getSuffix(expansion.getCategory())
+                                              );
 
 
         presenterView.setExpansionEnabledTextViewClickListener(this.getExpansionInfoDialogClickListener(expansion.getCategory()));
@@ -276,8 +281,17 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
 
     // region listeners
 
+    /**
+     * Because THERMOSTAT configurations have different capabilities they will differ in min max values
+     * toggling from single picker to double picker with for example min = 15, max = 15
+     * will break default 3 degrees difference if initialValueRange is not cleared.
+     */
     private void onConfigureClicked(final View ignored) {
-        initialValueRange = getCurrentExpansionValueRange();
+        if(expansionCategory == Category.LIGHT) {
+            initialValueRange = getCurrentExpansionValueRange();
+        } else {
+            initialValueRange = null;
+        }
         finishFlowWithResult(RESULT_CONFIGURE_PRESSED);
     }
 
@@ -300,7 +314,9 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
 
     @Override
     public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
-        if (expansionDetailsInteractor.expansionSubject.hasValue() && !lastConfigurationsFetchFailed) {
+        if (expansionDetailsInteractor.expansionSubject.hasValue()
+                && !lastConfigurationsFetchFailed
+                && initialValueRange != null) {
             final Intent intentWithExpansionAlarm = new Intent();
             final ExpansionAlarm expansionAlarm = new ExpansionAlarm(expansionDetailsInteractor.expansionSubject.getValue(),
                                                                      isEnabled);

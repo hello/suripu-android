@@ -19,6 +19,7 @@ import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.debug.TestActivity;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
+import is.hello.sense.flows.home.ui.activities.NewHomeActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountPreferencesInteractor;
 import is.hello.sense.interactors.PersistentPreferencesInteractor;
@@ -83,6 +84,7 @@ public class DebugActivity extends InjectionActivity {
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
         adapter.add(new DetailItem("Share Log", this::sendLog));
 
+        adapter.add(new DetailItem("Show New Home Activity", this::showNewHomeActivity));
         adapter.add(new DetailItem("Show Room Check", this::showRoomCheck));
         adapter.add(new DetailItem("Show Onboarding Smart Alarm", this::showOnboardingSmartAlarm));
         adapter.add(new DetailItem("Show Update Pill", this::showUpdatePill));
@@ -119,6 +121,10 @@ public class DebugActivity extends InjectionActivity {
             actionBar.setTitle("Sense " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
             actionBar.setSubtitle(apiEndpoint.getName());
         }
+    }
+
+    private void showNewHomeActivity() {
+        startActivity(new Intent(this, NewHomeActivity.class));
     }
 
     public void showRoomCheck() {

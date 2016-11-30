@@ -109,7 +109,6 @@ public class ExpansionDetailPickerView extends PresenterView {
      */
     public void initExpansionRangePicker(final int min,
                                          final int max,
-                                         final int defaultValue,
                                          @NonNull final String suffix){
         this.expansionRangePicker.init(min,
                                        max,

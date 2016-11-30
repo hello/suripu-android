@@ -18,6 +18,7 @@ import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.debug.TestActivity;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.flows.home.ui.activities.NewHomeActivity;
 import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.home.ui.fragments.BacksideFragment;
 import is.hello.sense.flows.home.ui.fragments.HomeFragment;
@@ -96,6 +97,7 @@ import is.hello.sense.zendesk.ZendeskModule;
 
                 LaunchActivity.class,
                 HomeActivity.class,
+                NewHomeActivity.class,
 
                 SignInFragment.class,
                 RegisterFragment.class,
