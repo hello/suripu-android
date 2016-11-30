@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import is.hello.sense.R;
-import is.hello.sense.mvp.presenters.TestViewPagerPresenterFragment;
+import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.util.NotTested;
@@ -29,7 +29,7 @@ public class TestActivity extends Activity
                                                                  R.id.activity_navigation_container,
                                                                  stateSafeExecutor);
 
-        pushFragment(new TestViewPagerPresenterFragment(), null, true);
+        pushFragment(new SoundsPresenterFragment(), null, true);
 
 
     }
