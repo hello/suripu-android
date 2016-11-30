@@ -54,6 +54,11 @@ public final class ViewPagerPresenterView extends PresenterView {
         this.tabLayout.removeAllViews();
         this.viewPager.removeAllViews();
     }
+
+    @Override
+    protected boolean useAppCompat() {
+        return true;
+    }
     //endregion
 }
 

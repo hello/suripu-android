@@ -6,15 +6,29 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.widget.FrameLayout;
+
+import is.hello.sense.R;
 
 public abstract class PresenterView extends FrameLayout {
     protected final Context context;
 
     public PresenterView(@NonNull final Activity activity) {
         super(activity);
-        activity.getLayoutInflater().inflate(getLayoutRes(), this);
+        if (useAppCompat()) {
+            final Context contextThemeWrapper = new ContextThemeWrapper(activity, R.style.AppTheme_AppCompat);
+            final LayoutInflater localInflater = activity.getLayoutInflater().cloneInContext(contextThemeWrapper);
+            localInflater.inflate(getLayoutRes(), this);
+        } else {
+            activity.getLayoutInflater().inflate(getLayoutRes(), this);
+        }
         this.context = activity;
+    }
+
+    protected boolean useAppCompat() {
+        return false;
     }
 
     protected final String getString(@StringRes final int res) {
