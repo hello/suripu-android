@@ -15,7 +15,6 @@ import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 public final class ViewPagerPresenterView extends PresenterView {
 
     private final ViewPager viewPager;
-    private final StaticFragmentAdapter adapter;
     private final TabLayout tabLayout;
 
     /**
@@ -30,14 +29,14 @@ public final class ViewPagerPresenterView extends PresenterView {
         final StaticFragmentAdapter.Item[] items = fragment.getViewPagerItems();
 
         // ViewPager
-        this.adapter = new StaticFragmentAdapter(fragment.getFragmentManager(), items);
-        this.viewPager.setAdapter(this.adapter);
+        final StaticFragmentAdapter adapter = new StaticFragmentAdapter(fragment.getFragmentManager(), items);
+        this.viewPager.setAdapter(adapter);
 
         // TabLayout
         for (final StaticFragmentAdapter.Item item : items) {
             this.tabLayout.addTab(this.tabLayout.newTab().setText(item.getTitle()));
         }
-        final TabLayout.Tab firstTab = this.tabLayout.getTabAt(0);
+        final TabLayout.Tab firstTab = this.tabLayout.getTabAt(fragment.getStartingItemPosition());
         if (firstTab != null) {
             firstTab.select();
         }
