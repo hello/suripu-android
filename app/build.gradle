@@ -171,7 +171,6 @@ dependencies {
     compile 'net.danlew:android.joda:2.7.2'
     compile 'com.segment.analytics.android:analytics:4.1.0'
 
-    compile 'com.android.support:support-v4:25.0.1'
     compile 'com.android.support:support-v13:25.0.1'
     compile 'com.android.support:recyclerview-v7:25.0.1'
     compile 'com.android.support:customtabs:25.0.1'
