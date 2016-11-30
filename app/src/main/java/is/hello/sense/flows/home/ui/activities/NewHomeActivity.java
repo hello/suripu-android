@@ -15,10 +15,10 @@ import com.zendesk.logger.Logger;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
-import is.hello.sense.flows.home.ui.fragments.HomeFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
+import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.ScopedInjectionActivity;
@@ -32,25 +32,36 @@ public class NewHomeActivity extends ScopedInjectionActivity
         implements SelectorView.OnSelectionChangedListener,
         FragmentNavigation{
 
+    private static final String KEY_CURRENT_ITEM_INDEX = NewHomeActivity.class.getSimpleName() + "CURRENT_ITEM_INDEX";
+    private static final int DEFAULT_ITEM_INDEX = 2;
     private SelectorView bottomSelectorView;
     private FragmentNavigationDelegate fragmentNavigationDelegate;
-    private final String TIMELINE_TAG = "TimelineTag";
-    private final String TRENDS_TAG = "TrendsTag";
-    private final String HOME_TAG = "HomeTag";
-    private final String SOUNDS_TAG = "SoundsTag";
-    private final String CONDITIONS_TAG = "ConditionsTag";
-    private int currentItemIndex = 2;
+    //todo these are the tags FragmentNavigationDelegate uses when making transactions
+    // heavy dependence on fragment.class.getSimpleName()
+    private final String TIMELINE_TAG = "RoomConditionsFragment";
+    private final String TRENDS_TAG = "TrendsFragment";
+    private final String HOME_TAG = "VoiceFragment";
+    private final String SOUNDS_TAG = "SoundsFragment";
+    private final String CONDITIONS_TAG = "AppSettingsFragment";
+    private int currentItemIndex;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_home);
+        restoreState(savedInstanceState);
         this.fragmentNavigationDelegate = new FragmentNavigationDelegate(this,
                                                                          R.id.activity_new_home_backside_container,
                                                                          stateSafeExecutor);
         this.bottomSelectorView = (SelectorView) findViewById(R.id.activity_new_home_bottom_selector_view);
         initSelector(bottomSelectorView);
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_CURRENT_ITEM_INDEX, currentItemIndex);
     }
 
     @Override
@@ -66,25 +77,38 @@ public class NewHomeActivity extends ScopedInjectionActivity
 
     @Override
     public void onSelectionChanged(final int newSelectionIndex) {
+
+        setCurrentItemIndex(newSelectionIndex);
+
         final String tag = (String) this.bottomSelectorView.getButtonTagAt(newSelectionIndex);
         final Fragment fragment = getFragmentManager().findFragmentByTag(tag);
-        if(fragment != null && fragment != getTopFragment()){
+        if (fragment != null && fragment != getTopFragment()) {
             pushFragment(fragment, null, false); //todo save most recent 3 fragments in backstack
-        } else if(fragment == null){
+        } else if (fragment == null) {
             pushFragment(createFragmentFromTag(tag), null, false);
         } else {
             Logger.d(NewHomeActivity.class.getName(), fragment + " is already visible");
         }
     }
 
-    private Fragment createFragmentFromTag(final String tag) {
+    private void restoreState(@Nullable final Bundle savedInstanceState) {
+        if(savedInstanceState != null){
+            this.currentItemIndex = savedInstanceState.getInt(KEY_CURRENT_ITEM_INDEX, DEFAULT_ITEM_INDEX);
+        } else {
+            this.currentItemIndex = DEFAULT_ITEM_INDEX;
+        }
+    }
+
+    private Fragment createFragmentFromTag(@NonNull final String tag) {
         final Fragment fragment;
 
         switch (tag){
             case TIMELINE_TAG:
+                //todo depends on BackSideFragment to call update onResume()
                 fragment = new RoomConditionsFragment();
                 break;
             case TRENDS_TAG:
+                //todo depends on BackSideFragment to call update onResume()
                 fragment = new TrendsFragment();
                 break;
             case SOUNDS_TAG:
@@ -95,7 +119,9 @@ public class NewHomeActivity extends ScopedInjectionActivity
                 break;
             case HOME_TAG:
             default:
-                fragment = new HomeFragment();
+                //todo unless dependencies on old HomeActivity are removed from InsightFragment
+                // HomeFragment can't be instantiated here
+                fragment = new VoiceFragment();
         }
         return fragment;
     }
@@ -164,11 +190,12 @@ public class NewHomeActivity extends ScopedInjectionActivity
             final ToggleButton button = selectorView.addOption(activeContent,
                                                                inactiveContent,
                                                                false);
-            button.setTag(tags[i]);
             button.setPadding(0, 0, 0, 0);
         }
-        selectorView.setSelectedIndex(getCurrentItemIndex());
+        selectorView.setButtonTags((Object[]) tags);
         selectorView.setOnSelectionChangedListener(this);
+        selectorView.setSelectedIndex(getCurrentItemIndex());
+        onSelectionChanged(getCurrentItemIndex());
     }
 
     private SpannableString createIconSpan(@NonNull final String title,
@@ -181,5 +208,9 @@ public class NewHomeActivity extends ScopedInjectionActivity
 
     private int getCurrentItemIndex() {
         return this.currentItemIndex;
+    }
+
+    public void setCurrentItemIndex(final int currentItemIndex) {
+        this.currentItemIndex = currentItemIndex;
     }
 }

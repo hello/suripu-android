@@ -6,7 +6,9 @@
     <is.hello.sense.ui.widget.SelectorView
         android:id="@+id/activity_new_home_bottom_selector_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="@dimen/bottom_bar_height"
+        android:layout_alignParentBottom="true"
+        />
 
     <FrameLayout
         android:id="@+id/activity_new_home_backside_container"
