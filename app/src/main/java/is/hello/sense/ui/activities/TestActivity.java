@@ -29,20 +29,20 @@ public class TestActivity extends SenseActivity {
     }
 
     private void setUp(final ImageView imageView) {
-        final SleepScoreIconDrawable drawable = new SleepScoreIconDrawable(this);
         final ViewTreeObserver viewTreeObserver = imageView.getViewTreeObserver();
         viewTreeObserver.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
                 imageView.getViewTreeObserver().removeOnPreDrawListener(this);
-                drawable.setHeight(imageView.getMeasuredHeight());
-                drawable.setWidth(imageView.getMeasuredWidth());
-                drawable.setIsSelected(true);
-                drawable.setText("80");
+                new SleepScoreIconDrawable.Builder(TestActivity.this)
+                        .withSize(imageView.getMeasuredWidth(), imageView.getMeasuredHeight())
+                        .withSelected(true)
+                        .withText("80")
+                        .build()
+                        .attachTo(imageView);
                 return true;
             }
         });
-        imageView.setBackground(drawable);
 
     }
 }
