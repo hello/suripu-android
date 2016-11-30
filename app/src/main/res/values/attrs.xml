@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Zendesk workaround to prevent importing Appcompat -->
+    <attr name="showAsAction" format="string" tools:override="true"/>
+    <!-- end workaround -->
     <attr name="senseTextAppearanceHeading" format="reference"/>
     <attr name="senseTextAppearanceSubheading" format="reference"/>
     <attr name="senseTextAppearanceFieldLabel" format="reference"/>
