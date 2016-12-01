@@ -101,15 +101,19 @@ public class HomeActivity extends ScopedInjectionActivity
     private long lastUpdated = System.currentTimeMillis();
 
     private FrameLayout backsideContainer;
+    @Deprecated
     private SlidingLayersView slidingLayersView;
-
+    @Deprecated
     private ViewPager viewPager;
+    @Deprecated
     private TimelineFragmentAdapter viewPagerAdapter;
+    @Deprecated
     private int lastPagerScrollState = ViewPager.SCROLL_STATE_IDLE;
 
     private View progressOverlay;
     private SpinnerImageView spinner;
     private boolean isFirstActivityRun;
+    @Deprecated
     private boolean showBackside;
 
     private final AnimatorContext animatorContext = new AnimatorContext(getClass().getSimpleName());
@@ -409,12 +413,14 @@ public class HomeActivity extends ScopedInjectionActivity
         slidingLayersView.setTopExtraTranslationAmount(translationAmount);
     }
 
+    @Deprecated
     public boolean isCurrentFragmentLastNight() {
         final TimelineFragment currentFragment =
                 (TimelineFragment) viewPagerAdapter.getCurrentFragment();
         return (currentFragment != null && DateFormatter.isLastNight(currentFragment.getDate()));
     }
 
+    @Deprecated
     public void jumpToLastNight(final boolean animate) {
         viewPager.setCurrentItem(viewPagerAdapter.getLastNight(), animate);
     }

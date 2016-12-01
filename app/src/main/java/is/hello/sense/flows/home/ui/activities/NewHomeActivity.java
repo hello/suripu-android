@@ -24,6 +24,7 @@ import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.ScopedInjectionActivity;
+import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.SelectorView;
 import rx.functions.Func0;
 
@@ -33,7 +34,8 @@ import rx.functions.Func0;
 
 public class NewHomeActivity extends ScopedInjectionActivity
         implements SelectorView.OnSelectionChangedListener,
-        FragmentNavigation{
+        FragmentNavigation,
+        TimelineFragment.ParentProvider{
 
     private static final String KEY_CURRENT_ITEM_INDEX = NewHomeActivity.class.getSimpleName() + "CURRENT_ITEM_INDEX";
     private static final int DEFAULT_ITEM_INDEX = 2;
@@ -133,6 +135,12 @@ public class NewHomeActivity extends ScopedInjectionActivity
     @Override
     public Fragment getTopFragment() {
         return fragmentNavigationDelegate.getTopFragment();
+    }
+
+    @Override
+    public TimelineFragment.Parent get() {
+        return (TimelineFragment.Parent) getFragmentManager()
+                .findFragmentByTag(fragmentMapper.tags[0]);
     }
 
     private void initSelector(@NonNull final SelectorView selectorView) {
