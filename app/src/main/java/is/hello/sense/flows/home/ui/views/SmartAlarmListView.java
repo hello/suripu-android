@@ -19,7 +19,9 @@ import is.hello.sense.ui.adapter.SmartAlarmAdapter;
 import is.hello.sense.ui.recycler.CardItemDecoration;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.NotTested;
 
+@NotTested
 @SuppressLint("ViewConstructor")
 public class SmartAlarmListView extends PresenterView {
     private final RecyclerView recyclerView;
@@ -31,9 +33,9 @@ public class SmartAlarmListView extends PresenterView {
                               @NonNull final SmartAlarmAdapter adapter,
                               @NonNull final OnClickListener addButtonClickListener) {
         super(activity);
-        this.recyclerView = (RecyclerView) findViewById(R.id.fragment_smart_alarm_recycler);
-        this.progressBar = (ProgressBar) findViewById(R.id.fragment_smart_alarm_list_activity);
-        this.addButton = (ImageButton) findViewById(R.id.fragment_smart_alarm_list_add);
+        this.recyclerView = (RecyclerView) findViewById(R.id.view_smart_alarm_list_recycler);
+        this.progressBar = (ProgressBar) findViewById(R.id.view_smart_alarm_list_progress);
+        this.addButton = (ImageButton) findViewById(R.id.view_smart_alarm_list_add);
         this.adapter = adapter;
 
         //RecyclerView
@@ -56,7 +58,7 @@ public class SmartAlarmListView extends PresenterView {
     //region PresenterView
     @Override
     protected int getLayoutRes() {
-        return R.layout.fragment_smart_alarm_list; //todo replace with view
+        return R.layout.view_smart_alarm_list;
     }
 
     @Override
