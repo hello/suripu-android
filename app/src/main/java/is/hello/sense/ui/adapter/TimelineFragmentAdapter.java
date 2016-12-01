@@ -11,12 +11,16 @@ import android.support.annotation.VisibleForTesting;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 
+import java.lang.ref.WeakReference;
+
 import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.util.DateFormatter;
 
 public class TimelineFragmentAdapter extends FragmentPagerAdapter {
     private final LocalDate oldestDate;
+    private WeakReference<TimelineFragment.Parent> weakRefParent;
     private int count;
     @VisibleForTesting LocalDate latestDate;
     @VisibleForTesting @Nullable Timeline cachedTimeline;
@@ -25,8 +29,8 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
 
     //region Lifecycle
 
-    public TimelineFragmentAdapter(@NonNull FragmentManager fragmentManager,
-                                   @NonNull LocalDate oldestDate) {
+    public TimelineFragmentAdapter(@NonNull final FragmentManager fragmentManager,
+                                   @NonNull final LocalDate oldestDate) {
         super(fragmentManager);
 
         final LocalDate today = DateFormatter.todayForTimeline();
@@ -39,6 +43,13 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
             this.oldestDate = oldestDate;
         }
         setLatestDate(today);
+    }
+
+    public TimelineFragmentAdapter(FragmentManager fragmentManager,
+                                   LocalDate accountCreationDate,
+                                   TimelineFragment.Parent parent) {
+        this(fragmentManager, accountCreationDate);
+        this.weakRefParent = new WeakReference<>(parent);
     }
 
     @Override
@@ -114,9 +125,13 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
             this.cachedTimeline = null;
         }
 
-        return TimelineFragment.newInstance(timelineDate,
-                                            cachedTimeline,
-                                            firstTimeline);
+        final TimelineFragment fragment = TimelineFragment.newInstance(timelineDate,
+                                                                       cachedTimeline,
+                                                                       firstTimeline);
+
+        fragment.setParent(Functions.extract(weakRefParent));
+
+        return fragment;
     }
 
     //endregion
