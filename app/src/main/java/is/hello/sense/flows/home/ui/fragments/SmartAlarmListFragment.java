@@ -161,11 +161,10 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     //region methods
     public void onAddButtonClicked(@NonNull final View ignored) {
         if (this.currentAlarms.size() >= 30) {
-            final SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
-            dialog.setTitle(R.string.error_to_many_alarms_title);
-            dialog.setMessage(R.string.error_to_many_alarms_message);
-            dialog.setPositiveButton(R.string.action_ok, null);
-            dialog.show();
+            showAlertDialog(new SenseAlertDialog.Builder()
+                                    .setTitle(R.string.error_to_many_alarms_title)
+                                    .setMessage(R.string.error_to_many_alarms_message)
+                                    .setPositiveButton(R.string.action_ok, null));
             return;
         }
         Analytics.trackEvent(Analytics.Backside.EVENT_NEW_ALARM, null);
@@ -238,12 +237,11 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     public void presentError(final Throwable e) {
         presenterView.setProgressBarVisible(false);
 
-        final ErrorDialogFragment.Builder errorDialogBuilder = new ErrorDialogFragment.Builder(e, getActivity());
+        final ErrorDialogFragment.PresenterBuilder builder = new ErrorDialogFragment.PresenterBuilder(e);
         if (e instanceof SmartAlarmInteractor.DayOverlapError) {
-            errorDialogBuilder.withMessage(StringRef.from(R.string.error_smart_alarm_day_overlap));
+            builder.withMessage(StringRef.from(R.string.error_smart_alarm_day_overlap));
         }
-        final ErrorDialogFragment errorDialogFragment = errorDialogBuilder.build();
-        errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+        showErrorDialog(builder);
     }
     //endregion
 
