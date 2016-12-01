@@ -39,6 +39,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
+import is.hello.sense.flows.timeline.ui.activities.TimelineActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.interactors.PreferencesInteractor;
@@ -71,6 +72,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.NotTested;
 import is.hello.sense.util.Share;
 import rx.Observable;
 import rx.functions.Action1;
@@ -441,26 +443,20 @@ public class TimelineFragment extends InjectionFragment
     }
 
     public void showBreakdown(@NonNull final View sender) {
-        Analytics.trackEvent(Analytics.Timeline.EVENT_SLEEP_SCORE_BREAKDOWN, null);
-
         if (infoOverlay != null) {
             infoOverlay.dismiss(false);
         }
-
         bindAndSubscribe(timelinePresenter.latest(),
-                         timeline -> {
-                             final TimelineInfoFragment infoOverlay =
-                                     TimelineInfoFragment.newInstance(timeline,
-                                                                      headerView.getCardViewId());
-                             infoOverlay.show(getFragmentManager(),
-                                              R.id.activity_home_container,
-                                              TimelineInfoFragment.TAG);
-                         },
+                         this::showBreakDown,
                          Functions.LOG_ERROR);
     }
 
     //endregion
 
+    @NotTested
+    public void showBreakDown(@NonNull final Timeline timeline){
+        startActivity(TimelineActivity.getInfoIntent(getActivity(), timeline));
+    }
 
     //region Hooks
 

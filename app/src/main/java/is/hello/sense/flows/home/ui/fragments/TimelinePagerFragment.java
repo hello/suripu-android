@@ -221,7 +221,7 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
 
     @Override
     public void toggleBacksideOpen() {
-        //do nothing
+        //do nothing for now
     }
 
     @Override
