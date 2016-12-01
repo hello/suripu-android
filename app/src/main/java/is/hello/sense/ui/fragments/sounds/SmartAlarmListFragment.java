@@ -48,7 +48,8 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
-
+@Deprecated
+//todo delete when we use new home activity
 public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAdapter.InteractionListener {
     private static final int DELETE_REQUEST_CODE = 0x11;
 
