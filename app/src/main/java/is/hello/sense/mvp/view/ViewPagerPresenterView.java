@@ -12,16 +12,22 @@ import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 
 
 @SuppressLint("ViewConstructor")
-public final class ViewPagerPresenterView extends PresenterView {
+public final class ViewPagerPresenterView extends PresenterView
+        implements ViewPager.OnPageChangeListener {
 
     private final ViewPager viewPager;
     private final TabLayout tabLayout;
+    private final StaticFragmentAdapter adapter;
+    private final OnPageSelected onPageSelected;
 
     /**
-     * @param fragment - Fragment providing initialization settings and callbacks.
-     *                 Don't keep a reference to this.
+     * @param fragment       - Fragment providing initialization settings and callbacks.
+     *                       Don't keep a reference to this.
+     * @param onPageSelected - Will allow us to create a callback and release it without referencing
+     *                       the fragment.
      */
-    public ViewPagerPresenterView(@NonNull final ViewPagerPresenterFragment fragment) {
+    public ViewPagerPresenterView(@NonNull final ViewPagerPresenterFragment fragment,
+                                  @NonNull final OnPageSelected onPageSelected) {
         super(fragment.getActivity());
         this.viewPager = (ViewPager) findViewById(R.id.view_view_pager_extended_view_pager);
         this.tabLayout = (TabLayout) findViewById(R.id.view_view_pager_tab_layout);
@@ -29,8 +35,10 @@ public final class ViewPagerPresenterView extends PresenterView {
         final StaticFragmentAdapter.Item[] items = fragment.getViewPagerItems();
 
         // ViewPager
-        final StaticFragmentAdapter adapter = new StaticFragmentAdapter(fragment.getFragmentManager(), items);
-        this.viewPager.setAdapter(adapter);
+        this.onPageSelected = onPageSelected;
+        this.adapter = new StaticFragmentAdapter(fragment.getFragmentManager(), items);
+        this.viewPager.setAdapter(this.adapter);
+        this.viewPager.addOnPageChangeListener(this);
 
         // TabLayout
         for (final StaticFragmentAdapter.Item item : items) {
@@ -53,6 +61,7 @@ public final class ViewPagerPresenterView extends PresenterView {
     public void releaseViews() {
         this.tabLayout.removeAllViews();
         this.viewPager.removeAllViews();
+        this.viewPager.removeOnPageChangeListener(this);
     }
 
     @Override
@@ -60,5 +69,28 @@ public final class ViewPagerPresenterView extends PresenterView {
         return true;
     }
     //endregion
+
+    //region OnPageChangeListener
+    @Override
+    public void onPageScrolled(final int position,
+                               final float positionOffset,
+                               final int positionOffsetPixels) {
+        // do nothing
+    }
+
+    @Override
+    public void onPageSelected(final int position) {
+        onPageSelected.onPageSelected(position);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(final int state) {
+        // do nothing
+    }
+    //endregion
+
+    public interface OnPageSelected {
+        void onPageSelected(final int position);
+    }
 }
 
