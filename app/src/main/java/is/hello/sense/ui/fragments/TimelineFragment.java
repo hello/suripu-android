@@ -46,7 +46,6 @@ import is.hello.sense.interactors.TimelineInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.rating.LocalUsageTracker;
-import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.UserSupport;
@@ -105,8 +104,6 @@ public class TimelineFragment extends InjectionFragment
     @Inject
     LocalUsageTracker localUsageTracker;
 
-    private HomeActivity homeActivity;
-
     private boolean firstTimeline;
     private boolean hasCreatedView = false;
     private boolean animationEnabled = true;
@@ -132,7 +129,7 @@ public class TimelineFragment extends InjectionFragment
 
     private TimelineInfoOverlay infoOverlay;
     private final ExternalStoragePermission externalStoragePermission = new ExternalStoragePermission(this);
-
+    private Parent parent;
 
     //region Lifecycle
 
@@ -150,11 +147,18 @@ public class TimelineFragment extends InjectionFragment
         return fragment;
     }
 
-    @Override
-    public void onAttach(final Activity activity) {
-        super.onAttach(activity);
+    public void setParent(@Nullable final Parent parent){
+        this.parent = parent;
+    }
 
-        this.homeActivity = (HomeActivity) activity;
+    @Override
+    public void onAttach(@NonNull final Activity activity) {
+        super.onAttach(activity);
+        if(activity instanceof Parent && parent == null){
+            setParent((Parent) activity);
+            //cannot retain instance of nested fragments
+            //setRetainInstance(true);
+        }
     }
 
     @Override
@@ -169,7 +173,6 @@ public class TimelineFragment extends InjectionFragment
 
         timelinePresenter.setDateWithTimeline(date, getCachedTimeline());
         addPresenter(timelinePresenter);
-        setRetainInstance(true);
     }
 
     @Nullable
@@ -189,18 +192,19 @@ public class TimelineFragment extends InjectionFragment
         this.layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        this.animationEnabled = (!hasCreatedView && !homeActivity.isBacksideOpen());
+        this.animationEnabled = (!hasCreatedView && !parent.isBacksideOpen());
 
-        final boolean overflowOpen = getUserVisibleHint() && homeActivity.isBacksideOpen();
+        final boolean overflowOpen = getUserVisibleHint() && parent.isBacksideOpen();
         this.toolbar = new TimelineToolbar(getActivity());
-        toolbar.setOverflowOnClickListener(ignored -> homeActivity.toggleBacksideOpen());
+        //todo once Timeline Fragment no longer used by Home Activity modify overflow click listener functionality
+        toolbar.setOverflowOnClickListener(ignored -> parent.toggleBacksideOpen());
         toolbar.setOverflowOpen(overflowOpen);
 
         toolbar.setTitleOnClickListener(ignored -> {
             if (infoOverlay != null) {
                 infoOverlay.dismiss(false);
             }
-            homeActivity.showTimelineNavigator(getDate(), getCachedTimeline());
+            parent.showTimelineNavigator(getDate(), getCachedTimeline());
         });
 
         toolbar.setTitleDimmed(overflowOpen);
@@ -271,7 +275,6 @@ public class TimelineFragment extends InjectionFragment
 
     private void bindIfNeeded() {
         if (getView() != null && getUserVisibleHint() && !hasSubscriptions()) {
-            homeActivity.showAlarmShortcut();
             timelinePresenter.updateIfEmpty();
 
             stateSafeExecutor.execute(headerView::startPulsing);
@@ -287,12 +290,6 @@ public class TimelineFragment extends InjectionFragment
             bindAndSubscribe(unreadStatePresenter.hasUnreadItems,
                              toolbar::setUnreadVisible,
                              Functions.LOG_ERROR);
-        } else if (getUserVisibleHint() && layoutManager != null) {
-            if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
-                homeActivity.showAlarmShortcut();
-            } else {
-                homeActivity.hideAlarmShortcut();
-            }
         }
     }
 
@@ -319,7 +316,7 @@ public class TimelineFragment extends InjectionFragment
         if (timeline != null && timeline.getScore() != null && timeline.getScore() > 0) {
             backgroundFill.setColor(ContextCompat.getColor(getActivity(), R.color.timeline_background_fill));
             headerView.bindTimeline(timeline);
-            toolbar.setShareVisible(!homeActivity.isBacksideOpen());
+            toolbar.setShareVisible(true);
             adapter.bindEvents(timeline.getEvents());
         }
     }
@@ -371,8 +368,7 @@ public class TimelineFragment extends InjectionFragment
     @Override
     public void onDetach() {
         super.onDetach();
-
-        this.homeActivity = null;
+        parent = null;
     }
 
     @Override
@@ -517,17 +513,17 @@ public class TimelineFragment extends InjectionFragment
     }
 
     private void showHandholdingIfAppropriate() {
-        if (homeActivity == null ||
-                homeActivity.isBacksideOpen() ||
-                WelcomeDialogFragment.isAnyVisible(homeActivity) ||
+        if (parent == null ||
+                parent.isBacksideOpen() ||
+                WelcomeDialogFragment.isAnyVisible(getActivity()) ||
                 getFragmentManager().findFragmentByTag(TimelineInfoFragment.TAG) != null) {
             return;
         }
 
-        boolean showZoomOutTutorial = Tutorial.ZOOM_OUT_TIMELINE.shouldShow(homeActivity);
+        boolean showZoomOutTutorial = Tutorial.ZOOM_OUT_TIMELINE.shouldShow(getActivity());
         if (firstTimeline && showZoomOutTutorial) {
             final SharedPreferences preferences =
-                    homeActivity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+                    getActivity().getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
             final int numberTimelinesShown =
                     preferences.getInt(Constants.HANDHOLDING_NUMBER_TIMELINES_SHOWN, 0);
             if (numberTimelinesShown < 5) {
@@ -543,9 +539,9 @@ public class TimelineFragment extends InjectionFragment
             }
         }
 
-        if (!homeActivity.isBacksideOpen()) {
-            if (WelcomeDialogFragment.shouldShow(homeActivity, R.xml.welcome_dialog_timeline)) {
-                WelcomeDialogFragment.show(homeActivity, R.xml.welcome_dialog_timeline, false);
+        if (!parent.isBacksideOpen()) {
+            if (WelcomeDialogFragment.shouldShow(getActivity(), R.xml.welcome_dialog_timeline)) {
+                WelcomeDialogFragment.show(getActivity(), R.xml.welcome_dialog_timeline, false);
             } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
                 showTutorial(Tutorial.SWIPE_TIMELINE);
             } else if (showZoomOutTutorial) {
@@ -638,7 +634,7 @@ public class TimelineFragment extends InjectionFragment
                 final Animator backgroundFade = backgroundFill.colorAnimator(targetColor);
                 backgroundFade.start();
 
-                toolbar.setShareVisible(!homeActivity.isBacksideOpen());
+                toolbar.setShareVisible(!parent.isBacksideOpen());
             });
             final Runnable adapterAnimations = stateSafeExecutor.bind(() -> {
                 if (animationEnabled) {
@@ -676,12 +672,12 @@ public class TimelineFragment extends InjectionFragment
                     header.setDiagramResource(R.drawable.timeline_state_not_enough_data);
                     header.setTitle(R.string.title_timeline_not_enough_data);
                     header.setMessage(getString(R.string.title_timeline_not_enough_data_message));
-                    header.setAction(R.string.action_timeline_bad_data_support, ignored -> UserSupport.showForDeviceIssue(homeActivity, UserSupport.DeviceIssue.TIMELINE_NOT_ENOUGH_SLEEP_DATA));
+                    header.setAction(R.string.action_timeline_bad_data_support, ignored -> UserSupport.showForDeviceIssue(getActivity(), UserSupport.DeviceIssue.TIMELINE_NOT_ENOUGH_SLEEP_DATA));
                 } else {
                     header.setDiagramResource(R.drawable.timeline_state_no_data);
                     header.setTitle(R.string.title_timeline_no_data);
                     header.setMessage(getString(R.string.title_timeline_no_data_message));
-                    header.setAction(R.string.action_timeline_bad_data_support, ignored -> UserSupport.showForDeviceIssue(homeActivity, UserSupport.DeviceIssue.TIMELINE_NO_SLEEP_DATA));
+                    header.setAction(R.string.action_timeline_bad_data_support, ignored -> UserSupport.showForDeviceIssue(getActivity(), UserSupport.DeviceIssue.TIMELINE_NO_SLEEP_DATA));
                 }
             });
         }
@@ -693,9 +689,9 @@ public class TimelineFragment extends InjectionFragment
         Analytics.trackError(e, "Loading Timeline");
         final CharSequence message = getString(R.string.timeline_error_message);
         if (adapter.hasEvents()) {
-            final Toast toast = new Toast(homeActivity.getApplicationContext());
+            final Toast toast = new Toast(getActivity().getApplicationContext());
             @SuppressLint("InflateParams")
-            final TextView text = (TextView) homeActivity.getLayoutInflater()
+            final TextView text = (TextView) getActivity().getLayoutInflater()
                                                          .inflate(R.layout.toast_text, null);
             text.setText(message);
             toast.setView(text);
@@ -783,8 +779,7 @@ public class TimelineFragment extends InjectionFragment
     }
 
     private void showAvailableActions(@NonNull final TimelineEvent event) {
-        final SharedPreferences preferences =
-                homeActivity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        final SharedPreferences preferences = getActivity().getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
 
         final SenseBottomSheet actions = new SenseBottomSheet(getActivity());
         if (!preferences.getBoolean(Constants.HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO, false)) {
@@ -886,8 +881,8 @@ public class TimelineFragment extends InjectionFragment
     }
 
     private void doEventAction(@NonNull final SenseBottomSheet bottomSheet, @NonNull final Observable<Void> action) {
-        if (homeActivity != null) {
-            Dialogs.disableOrientationChangesUntilDismissed(bottomSheet, homeActivity);
+        if (getActivity() != null) {
+            Dialogs.disableOrientationChangesUntilDismissed(bottomSheet, getActivity());
         }
 
         final LoadingView loadingView = new LoadingView(getActivity());
@@ -937,14 +932,6 @@ public class TimelineFragment extends InjectionFragment
                     }
                 }
             }
-
-            if (getUserVisibleHint()) {
-                if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
-                    homeActivity.showAlarmShortcut();
-                } else {
-                    homeActivity.hideAlarmShortcut();
-                }
-            }
         }
     }
 
@@ -964,5 +951,17 @@ public class TimelineFragment extends InjectionFragment
                 outRect.bottom = bottomPadding;
             }
         }
+    }
+
+    public interface Parent {
+
+        boolean isBacksideOpen();
+
+        //todo remove this method once no longer used by HomeActivity
+        void toggleBacksideOpen();
+
+        void showTimelineNavigator(@NonNull final LocalDate date,
+                                   @Nullable final Timeline timeline);
+
     }
 }
