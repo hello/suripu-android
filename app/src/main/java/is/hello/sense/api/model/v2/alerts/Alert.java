@@ -59,4 +59,8 @@ public class Alert extends ApiResponse {
                          Constants.EMPTY_STRING,
                          Category.UNKNOWN);
     }
+
+    public interface ActionHandler {
+        void unMuteSense();
+    }
 }
