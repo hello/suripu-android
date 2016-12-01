@@ -13,19 +13,20 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
      */
     private int overrideCount = -1;
 
-    public StaticFragmentAdapter(@NonNull FragmentManager fm,
-                                 @NonNull Item... items) {
+    public StaticFragmentAdapter(@NonNull final FragmentManager fm,
+                                 @NonNull final Item... items) {
         super(fm);
 
         this.items = items;
     }
+
     @Override
-    public Fragment getItem(int position) {
+    public Fragment getItem(final int position) {
         return items[position].newInstance();
     }
 
     @Override
-    public CharSequence getPageTitle(int position) {
+    public CharSequence getPageTitle(final int position) {
         return items[position].title;
     }
 
@@ -49,24 +50,22 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
     }
 
 
-
     public static class Item {
         public final Class<? extends Fragment> fragmentClass;
         public final String title;
 
-        public Item(@NonNull Class<? extends Fragment> fragmentClass,
-                    @NonNull String title) {
+        public Item(@NonNull final Class<? extends Fragment> fragmentClass,
+                    @NonNull final String title) {
             this.fragmentClass = fragmentClass;
             this.title = title;
         }
 
 
-        public
         @NonNull
-        Fragment newInstance() {
+        public Fragment newInstance() {
             try {
                 return fragmentClass.newInstance();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         }
