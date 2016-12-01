@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.voice.SenseVoiceSettings;
@@ -25,6 +27,7 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
 
     public InteractorSubject<SenseVoiceSettings> settingsSubject = this.subject;
 
+    @Inject
     public VoiceSettingsInteractor(@NonNull final ApiService apiService) {
         this.apiService = apiService;
     }
@@ -82,6 +85,9 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
      * @return Observable Boolean true if new settings has updated {@link this#settingsSubject}
      */
     private Observable<SenseVoiceSettings> setAndPoll(@NonNull final SenseVoiceSettings newSettings) {
+        if (EMPTY_ID.equals(senseId)) {
+            return Observable.error(new SenseNotFoundError()); //todo handle better
+        }
         return apiService.setVoiceSettings(senseId, newSettings)
                          .flatMap(ignore -> provideUpdateObservable()
                                  .doOnNext(responseSettings -> {

@@ -774,4 +774,5 @@
     <string name="voice_settings_update_error_message">Sense did not accept the changes.</string>
 
     <string name="sensor_calibrating">Calibrating</string>
+    <string name="action_unmute">Unmute</string>
 </resources>

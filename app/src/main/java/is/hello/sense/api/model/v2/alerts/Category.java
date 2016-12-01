@@ -5,5 +5,6 @@ package is.hello.sense.api.model.v2.alerts;
  */
 public enum Category {
     EXPANSION_UNREACHABLE,
+    SENSE_MUTED,
     UNKNOWN
 }
