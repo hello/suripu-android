@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -498,21 +499,20 @@ public class TimelineFragment extends InjectionFragment
     //region Handholding
 
     private void showTutorial(@NonNull final Tutorial tutorial) {
-        if (tutorialOverlay != null) {
+        if (tutorialOverlay != null && parent != null) {
             return;
         }
 
         this.tutorialOverlay = new TutorialOverlayView(getActivity(), tutorial);
         tutorialOverlay.setOnDismiss(() -> this.tutorialOverlay = null);
         tutorialOverlay.setAnchorContainer(getView());
-        tutorialOverlay.show(R.id.activity_home_container);
+        tutorialOverlay.show(parent.getTutorialContainerIdRes());
     }
 
     private void showHandholdingIfAppropriate() {
         if (parent == null ||
                 parent.isBacksideOpen() ||
-                WelcomeDialogFragment.isAnyVisible(getActivity()) ||
-                getFragmentManager().findFragmentByTag(TimelineInfoFragment.TAG) != null) {
+                WelcomeDialogFragment.isAnyVisible(getActivity())) {
             return;
         }
 
@@ -959,5 +959,7 @@ public class TimelineFragment extends InjectionFragment
         void showTimelineNavigator(@NonNull final LocalDate date,
                                    @Nullable final Timeline timeline);
 
+        @IdRes
+        int getTutorialContainerIdRes();
     }
 }
