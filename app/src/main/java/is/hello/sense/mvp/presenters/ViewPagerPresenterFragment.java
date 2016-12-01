@@ -1,12 +1,15 @@
 package is.hello.sense.mvp.presenters;
 
 
+import android.app.Fragment;
 import android.support.annotation.NonNull;
 
+import is.hello.sense.R;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.mvp.util.ViewPagerPresenter;
 import is.hello.sense.mvp.view.ViewPagerPresenterView;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
+import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.util.NotTested;
 
 /**
@@ -23,13 +26,13 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     public final void initializePresenterView() {
         if (presenterView == null) {
             viewPagerDelegate = newViewPagerDelegateInstance();
-            presenterView = new ViewPagerPresenterView(this);
+            presenterView = new ViewPagerPresenterView(this,
+                                                       this::onPageSelected);
         }
     }
     //endregion
 
     //region ViewPagePresenter
-
     @NonNull
     @Override
     public StaticFragmentAdapter.Item[] getViewPagerItems() {
@@ -52,6 +55,12 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
 
 
     //region methods
+    private void onPageSelected(final int position) {
+        final Fragment fragment = getActivity().getFragmentManager().findFragmentByTag("android:switcher:" + R.id.view_view_pager_extended_view_pager + ":" + position);
+        if (fragment instanceof SenseFragment) {
+            ((SenseFragment) fragment).updateForPageSelected();
+        }
+    }
 
     /**
      * Override this with your own view pager delegate.

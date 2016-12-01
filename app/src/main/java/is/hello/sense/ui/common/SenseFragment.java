@@ -99,4 +99,8 @@ public class SenseFragment extends Fragment {
             fragmentNavigation.flowFinished(this, resultCode, intent);
         }
     }
+
+    public void updateForPageSelected(){
+
+    }
 }

@@ -4,10 +4,10 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 
 import is.hello.sense.R;
+import is.hello.sense.flows.home.ui.fragments.SmartAlarmListFragment;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.fragments.sounds.SleepSoundsFragment;
-import is.hello.sense.ui.fragments.sounds.SmartAlarmListFragment;
 import is.hello.sense.util.NotTested;
 
 @NotTested
