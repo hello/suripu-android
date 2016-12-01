@@ -15,7 +15,7 @@ import is.hello.sense.ui.widget.SelectorView.OnSelectionChangedListener;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-
+@Deprecated
 public class SoundsFragment extends BacksideTabFragment<SoundsView>
         implements OnSelectionChangedListener,
         SwipeRefreshLayout.OnRefreshListener {
