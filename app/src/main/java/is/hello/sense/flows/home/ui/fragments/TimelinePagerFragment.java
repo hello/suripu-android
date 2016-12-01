@@ -86,9 +86,8 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
 
         view.addView(viewPager);
 
-        this.viewPagerAdapter = new TimelineFragmentAdapter(getFragmentManager(),
-                                                            preferences.getAccountCreationDate(),
-                                                            this); //todo maybe better if timeline fragment broadcast intent
+        this.viewPagerAdapter = new TimelineFragmentAdapter(getChildFragmentManager(),
+                                                            preferences.getAccountCreationDate());
 
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.addOnPageChangeListener(this);

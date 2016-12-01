@@ -157,10 +157,14 @@ public class TimelineFragment extends InjectionFragment
     @Override
     public void onAttach(@NonNull final Activity activity) {
         super.onAttach(activity);
-        if(activity instanceof Parent && parent == null){
+        if (activity instanceof Parent && parent == null) {
             setParent((Parent) activity);
             //cannot retain instance of nested fragments
             //setRetainInstance(true);
+        } else if (activity instanceof ParentProvider && parent == null) {
+            setParent(((ParentProvider) activity).get());
+        } else if (parent == null) {
+            throw new IllegalStateException("A parent is required to control TimelineFragment");
         }
     }
 
@@ -961,5 +965,10 @@ public class TimelineFragment extends InjectionFragment
 
         @IdRes
         int getTutorialContainerIdRes();
+    }
+
+    public interface ParentProvider {
+
+        Parent get();
     }
 }
