@@ -146,8 +146,9 @@ import is.hello.sense.zendesk.ZendeskModule;
                 HomeFragment.class,
                 VoiceFragment.class,
                 AppSettingsFragment.class,
-                TestActivity.class,
-                SoundsPresenterFragment.class, // todo erase when done testing
+                TestActivity.class, // todo erase after testing
+                SoundsPresenterFragment.class,
+                is.hello.sense.flows.home.ui.fragments.SmartAlarmListFragment.class,
 
 
         }
