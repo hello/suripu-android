@@ -232,4 +232,9 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
                                                                    timeline),
                                ZOOMED_OUT_TIMELINE_REQUEST);
     }
+
+    @Override
+    public int getTutorialContainerIdRes() {
+        return R.id.activity_fragment_navigation_container;
+    }
 }

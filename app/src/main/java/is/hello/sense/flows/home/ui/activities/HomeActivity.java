@@ -700,6 +700,11 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     @Override
+    public int getTutorialContainerIdRes() {
+        return R.id.activity_home_container;
+    }
+
+    @Override
     public void onTimelineSelected(@NonNull final LocalDate date, @Nullable final Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_OUT, null);
 
