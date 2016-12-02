@@ -58,6 +58,15 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
 
 
     //region methods
+
+    /**
+     * Called when {@link ViewPagerPresenterView#viewPager} selects a new page. This fragment will
+     * track the currently selected page internall with {@link #currentPosition} and call
+     * {@link SenseFragment#pauseFromViewPager()} for that Fragment before
+     * {@link SenseFragment#resumeFromViewPager()} for the Fragment at the new position.
+     *
+     * @param position of new fragment within the view pager and fragment manager.
+     */
     private void onPageSelected(final int position) {
         onPageUnselected(currentPosition);
         currentPosition = position;
@@ -67,6 +76,11 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
         }
     }
 
+    /**
+     * Will call {@link SenseFragment#pauseFromViewPager()} for the Fragment at this position.
+     *
+     * @param position of new fragment withing view pager and fragment manager.
+     */
     private void onPageUnselected(final int position) {
         final Fragment fragment = getActivity().getFragmentManager().findFragmentByTag("android:switcher:" + R.id.view_view_pager_extended_view_pager + ":" + position);
         if (fragment instanceof SenseFragment) {

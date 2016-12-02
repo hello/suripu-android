@@ -34,6 +34,13 @@ public abstract class PresenterView extends FrameLayout {
         this.context = activity;
     }
 
+    /**
+     * To avoid updating the entire application and acitvities themes we can set the theme of individual
+     * views using this.
+     *
+     * @return true will use AppCompat. Should be true for any view that requires
+     * {@link android.support.design.widget.TabLayout}.
+     */
     protected boolean useAppCompat() {
         return false;
     }
@@ -82,8 +89,14 @@ public abstract class PresenterView extends FrameLayout {
         releaseViews();
     }
 
+    /**
+     * Helper function for establishing our standard recycler view decoration.
+     *
+     * @param recyclerView  view to modify.
+     * @param layoutManager layout manager to use.
+     */
     protected final void setUpStandardRecyclerViewDecorations(@NonNull final RecyclerView recyclerView,
-                                                              @NonNull final LinearLayoutManager layoutManager){
+                                                              @NonNull final LinearLayoutManager layoutManager) {
 
         final Resources resources = getResources();
         recyclerView.setLayoutManager(layoutManager);
@@ -91,8 +104,8 @@ public abstract class PresenterView extends FrameLayout {
         decoration.contentInset = new Rect(0, 0, 0, resources.getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
         recyclerView.addItemDecoration(decoration);
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager,
-                                                                          resources,
-                                                                          FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
+                                                                     resources,
+                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
     }
