@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Logger;
 
 /**
  * Instance persists across fragments. Will not be dismissed until clicked.
@@ -45,10 +46,19 @@ public class SenseBottomAlertDialog extends Dialog {
         setCancelable(true);
 
         final Window window = getWindow();
-        window.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
-        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        window.addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
-                                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+        if (window != null) {
+            final WindowManager.LayoutParams attributes;
+            attributes = window.getAttributes();
+            window.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
+            attributes.y = context.getResources().getDimensionPixelSize(R.dimen.x9);
+            window.setAttributes(attributes);
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            window.addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
+                                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+        } else {
+            Logger.error(getClass().getSimpleName(), "window attributes not set");
+        }
+
 
         this.container = (LinearLayout) findViewById(R.id.item_bottom_alert);
 
