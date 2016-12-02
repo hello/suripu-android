@@ -48,7 +48,7 @@ import rx.Observable;
 import static is.hello.sense.ui.adapter.SleepSoundsAdapter.AdapterState;
 import static is.hello.sense.ui.adapter.SleepSoundsAdapter.InteractionListener;
 import static is.hello.sense.ui.adapter.SleepSoundsAdapter.Retry;
-
+@Deprecated
 public class SleepSoundsFragment extends SubFragment implements InteractionListener, Retry {
     private final static int pollingInterval = 500; // ms
     private final static int initialBackOff = 0; // ms

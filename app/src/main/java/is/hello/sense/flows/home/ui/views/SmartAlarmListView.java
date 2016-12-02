@@ -39,17 +39,9 @@ public class SmartAlarmListView extends PresenterView {
         this.adapter = adapter;
 
         //RecyclerView
-        final Resources resources = getResources();
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(activity);
-        recyclerView.setLayoutManager(layoutManager);
-        final CardItemDecoration decoration = new CardItemDecoration(resources);
-        decoration.contentInset = new Rect(0, 0, 0, resources.getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
-        recyclerView.addItemDecoration(decoration);
-        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setItemAnimator(null);
-        recyclerView.setAdapter(adapter);
+        setUpStandardRecyclerViewDecorations(recyclerView,
+                                             new LinearLayoutManager(activity));
+        this.recyclerView.setAdapter(this.adapter);
 
         // AddButton
         Views.setSafeOnClickListener(addButton, addButtonClickListener);
