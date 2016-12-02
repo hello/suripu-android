@@ -9,6 +9,9 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
+import is.hello.commonsense.util.Errors;
+import is.hello.commonsense.util.StringRef;
+import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.voice.SenseVoiceSettings;
 import is.hello.sense.graph.InteractorSubject;
@@ -128,8 +131,19 @@ public class VoiceSettingsInteractor extends ValueInteractor<SenseVoiceSettings>
         this.senseId = id;
     }
 
-    public static class SettingsUpdateThrowable extends Throwable {
+    public static class SettingsUpdateThrowable extends Throwable implements Errors.Reporting{
 
+        @Nullable
+        @Override
+        public String getContextInfo() {
+            return "Voice Settings Update failed";
+        }
+
+        @NonNull
+        @Override
+        public StringRef getDisplayMessage() {
+            return StringRef.from(R.string.voice_settings_update_error_message);
+        }
     }
 
     public static class MuteUpdateThrowable extends SettingsUpdateThrowable {
