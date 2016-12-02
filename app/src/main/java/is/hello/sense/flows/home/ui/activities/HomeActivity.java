@@ -769,15 +769,16 @@ public class HomeActivity extends ScopedInjectionActivity
         showProgressOverlay(true);
         voiceSettingsInteractor.setSenseId(preferences.getString(PreferencesInteractor.PAIRED_SENSE_ID,
                                                                  EMPTY_ID));
-        bind(voiceSettingsInteractor.setMuted(false))
-                .subscribe(Functions.NO_OP,
-                           e -> {
-                               showProgressOverlay(false);
-                               ErrorDialogFragment.presentError(this,
-                                                                e,
-                                                                R.string.voice_settings_update_error_title);
-                           },
-                           () -> showProgressOverlay(false));
+        track(voiceSettingsInteractor.setMuted(false)
+                                     .subscribe(Functions.NO_OP,
+                                                e -> {
+                                                    showProgressOverlay(false);
+                                                    ErrorDialogFragment.presentError(this,
+                                                                                     e,
+                                                                                     R.string.voice_settings_update_error_title);
+                                                },
+                                                () -> showProgressOverlay(false))
+             );
     }
 
     //endregion
