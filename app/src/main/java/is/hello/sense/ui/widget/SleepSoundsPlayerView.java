@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -31,7 +30,7 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.IListObject;
 
 @SuppressLint("ViewConstructor")
-public class SleepSoundsPlayerView extends RelativeLayout implements SleepSoundsAdapter.IDisplayedValues {
+public class SleepSoundsPlayerView extends LinearLayout implements SleepSoundsAdapter.IDisplayedValues {
     private static final float minFadeFactor = Styles.DISABLED_ALPHA_FLOAT;
     private static final float maxFadeFactor = Styles.ENABLED_ALPHA_FLOAT;
 
@@ -48,19 +47,17 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
                                  final @NonNull SleepSoundsState state,
                                  final @NonNull SleepSoundsAdapter.InteractionListener interactionListener) {
         super(context);
-        LayoutInflater.from(context).inflate(R.layout.item_rounded_linearlayout, this);
-        final RoundedLinearLayout view = (RoundedLinearLayout) findViewById(R.id.item_rounded_linearlayout);
-        view.setOrientation(LinearLayout.VERTICAL);
+        setOrientation(VERTICAL);
         this.animatorContext = animatorContext;
         this.currentStatus = state.getStatus();
         this.titleRow = new TitleRow(context);
         this.soundRow = new SleepSoundsPlayerRow(context, state.getSounds());
         this.durationRow = new SleepSoundsPlayerRow(context, state.getDurations());
         this.volumeRow = new VolumePlayerRow(context, state.getStatus());
-        view.addView(titleRow);
-        view.addView(soundRow);
-        view.addView(durationRow);
-        view.addView(volumeRow);
+        addView(titleRow);
+        addView(soundRow);
+        addView(durationRow);
+        addView(volumeRow);
         soundRow.setHolderClickListener(v -> {
             if (!currentStatus.isPlaying() && displayedSound() != null) {
                 interactionListener.onSoundClick(displayedSound().getId(), state.getSounds());
@@ -250,8 +247,7 @@ public class SleepSoundsPlayerView extends RelativeLayout implements SleepSounds
                 listItem = defaultItem;
             } else if (items.isEmpty()) {
                 listItem = null;
-            }
-            else {
+            } else {
                 listItem = items.get(0);
             }
             value.setText(listItem == null ? null : listItem.toString());

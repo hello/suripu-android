@@ -106,7 +106,7 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     }
 
     @Override
-    public void updateForPageSelected() {
+    public void resumeFromViewPager() {
         presenterView.setProgressBarVisible(true);
         smartAlarmInteractor.update();
     }
@@ -231,7 +231,7 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     }
 
     public void retry(@NonNull final View ignored) {
-        updateForPageSelected();
+        resumeFromViewPager();
     }
 
     public void presentError(final Throwable e) {
