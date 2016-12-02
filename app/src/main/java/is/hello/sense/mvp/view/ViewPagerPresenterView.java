@@ -89,6 +89,10 @@ public final class ViewPagerPresenterView extends PresenterView
     }
     //endregion
 
+    /**
+     * Helper interface so we don't need to store a reference to the Fragment. Will also let us
+     * release the page listener on release.
+     */
     public interface OnPageSelected {
         void onPageSelected(final int position);
     }
