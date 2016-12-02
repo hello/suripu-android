@@ -63,7 +63,7 @@ public enum Tutorial {
                                                                   Description.TAP_INSIGHT_CARD)),
     TAP_HAMBURGER(R.string.tutorial_tap_hamburger,
                   Gravity.BOTTOM,
-                  R.id.view_timeline_toolbar_overflow,
+                  R.id.view_timeline_toolbar_history,
                   Interaction.TAP,
                   Analytics.createBreadcrumbTrackingProperties(Source.TIMELINE,
                                                                Description.TAP_HAMBURGER)),

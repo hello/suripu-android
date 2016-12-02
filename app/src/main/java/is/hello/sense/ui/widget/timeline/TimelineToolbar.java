@@ -4,12 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -26,18 +22,14 @@ import is.hello.sense.ui.widget.util.Views;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class TimelineToolbar extends RelativeLayout {
-    private final ImageButton overflow;
+    private final ImageButton history;
     private final ImageButton share;
     private final TextView title;
-
-    private TransitionDrawable overflowFadeDrawable;
-    private boolean overflowOpen;
 
     private @Nullable ValueAnimator titleColorAnimator;
     private boolean titleDimmed;
 
     private boolean shareVisible;
-    private boolean unreadVisible;
 
 
     //region Lifecycle
@@ -58,14 +50,9 @@ public class TimelineToolbar extends RelativeLayout {
         final LayoutInflater inflater = LayoutInflater.from(context);
         inflater.inflate(R.layout.view_timeline_toolbar, this, true);
 
-        this.overflow = (ImageButton) findViewById(R.id.view_timeline_toolbar_overflow);
+        this.history = (ImageButton) findViewById(R.id.view_timeline_toolbar_history);
         this.share = (ImageButton) findViewById(R.id.view_timeline_toolbar_share);
         this.title = (TextView) findViewById(R.id.view_timeline_toolbar_title);
-
-        final Resources resources = getResources();
-        //noinspection ConstantConditions
-        setOverflowDrawables(ResourcesCompat.getDrawable(resources, R.drawable.icon_menu_closed, null),
-                             ResourcesCompat.getDrawable(resources, R.drawable.icon_menu_open, null));
 
         share.setVisibility(INVISIBLE);
     }
@@ -84,16 +71,6 @@ public class TimelineToolbar extends RelativeLayout {
 
     //region Attributes
 
-    private void setOverflowDrawables(@NonNull Drawable closed, @NonNull Drawable open) {
-        final Drawable[] drawables = { closed, open };
-        this.overflowFadeDrawable = new TransitionDrawable(drawables);
-        overflowFadeDrawable.setCrossFadeEnabled(true);
-        overflow.setImageDrawable(overflowFadeDrawable);
-        if (overflowOpen) {
-            overflowFadeDrawable.startTransition(0);
-        }
-    }
-
     @Override
     public void clearAnimation() {
         super.clearAnimation();
@@ -104,60 +81,15 @@ public class TimelineToolbar extends RelativeLayout {
         Anime.cancelAll(share);
     }
 
-    public void setOverflowOnClickListener(@NonNull OnClickListener onClickListener) {
-        Views.setSafeOnClickListener(overflow, onClickListener);
+    public void setHistoryOnClickListener(@NonNull final OnClickListener onClickListener) {
+        Views.setSafeOnClickListener(history, onClickListener);
     }
 
-    public void setOverflowOpen(boolean overflowOpen) {
-        if (overflowOpen == this.overflowOpen) {
-            return;
-        }
-
-        this.overflowOpen = overflowOpen;
-
-        final int duration;
-        if (!ViewCompat.isAttachedToWindow(this)) {
-            duration = 0;
-        } else {
-            duration = Anime.DURATION_FAST;
-        }
-
-        if (overflowOpen) {
-            overflowFadeDrawable.startTransition(duration);
-        } else {
-            overflowFadeDrawable.reverseTransition(duration);
-        }
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    public void setUnreadVisible(boolean unreadVisible) {
-        if (unreadVisible != this.unreadVisible) {
-            final Resources resources = getResources();
-            if (unreadVisible) {
-                setOverflowDrawables(ResourcesCompat.getDrawable(resources,
-                                                                 R.drawable.icon_menu_closed_unread,
-                                                                 null),
-                                     ResourcesCompat.getDrawable(resources,
-                                                                 R.drawable.icon_menu_open,
-                                                                 null));
-            } else {
-                setOverflowDrawables(ResourcesCompat.getDrawable(resources,
-                                                                 R.drawable.icon_menu_closed,
-                                                                 null),
-                                     ResourcesCompat.getDrawable(resources,
-                                                                 R.drawable.icon_menu_open,
-                                                                 null));
-            }
-
-            this.unreadVisible = unreadVisible;
-        }
-    }
-
-    public void setShareOnClickListener(@NonNull OnClickListener onClickListener) {
+    public void setShareOnClickListener(@NonNull final OnClickListener onClickListener) {
         Views.setSafeOnClickListener(share, onClickListener);
     }
 
-    public void setShareVisible(boolean shareVisible) {
+    public void setShareVisible(final boolean shareVisible) {
         if (shareVisible == this.shareVisible) {
             return;
         }
@@ -196,10 +128,6 @@ public class TimelineToolbar extends RelativeLayout {
                     })
                     .start();
         }
-    }
-
-    public void setTitleOnClickListener(@NonNull OnClickListener onClickListener) {
-        Views.setSafeOnClickListener(title, onClickListener);
     }
 
     public void setTitle(@Nullable CharSequence text) {
