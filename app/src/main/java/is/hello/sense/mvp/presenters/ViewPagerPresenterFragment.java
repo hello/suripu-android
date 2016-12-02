@@ -19,6 +19,8 @@ import is.hello.sense.util.NotTested;
 public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewPagerPresenterView>
         implements ViewPagerPresenter {
 
+    private int currentPosition = 0;
+
     private BaseViewPagerPresenterDelegate viewPagerDelegate;
 
     //region PresenterFragment
@@ -26,6 +28,7 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     public final void initializePresenterView() {
         if (presenterView == null) {
             viewPagerDelegate = newViewPagerDelegateInstance();
+            currentPosition = viewPagerDelegate.getStartingItemPosition();
             presenterView = new ViewPagerPresenterView(this,
                                                        this::onPageSelected);
         }
@@ -56,9 +59,18 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
 
     //region methods
     private void onPageSelected(final int position) {
+        onPageUnselected(currentPosition);
+        currentPosition = position;
         final Fragment fragment = getActivity().getFragmentManager().findFragmentByTag("android:switcher:" + R.id.view_view_pager_extended_view_pager + ":" + position);
         if (fragment instanceof SenseFragment) {
-            ((SenseFragment) fragment).updateForPageSelected();
+            ((SenseFragment) fragment).resumeFromViewPager();
+        }
+    }
+
+    private void onPageUnselected(final int position) {
+        final Fragment fragment = getActivity().getFragmentManager().findFragmentByTag("android:switcher:" + R.id.view_view_pager_extended_view_pager + ":" + position);
+        if (fragment instanceof SenseFragment) {
+            ((SenseFragment) fragment).pauseFromViewPager();
         }
     }
 

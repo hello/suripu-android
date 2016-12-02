@@ -100,7 +100,19 @@ public class SenseFragment extends Fragment {
         }
     }
 
-    public void updateForPageSelected(){
+    /**
+     * If the Fragment exists within a ViewPager, this will be called when the view pager has
+     * selected this Fragment. {@link Fragment#onResume()} will not be called.
+     */
+    public void resumeFromViewPager() {
+
+    }
+
+    /**
+     * If the Fragment exists within a ViewPager, this will be called when the view pager has
+     * scrolled away from this fragment. {@link Fragment#onPause()} will not be called.
+     */
+    public void pauseFromViewPager() {
 
     }
 }
