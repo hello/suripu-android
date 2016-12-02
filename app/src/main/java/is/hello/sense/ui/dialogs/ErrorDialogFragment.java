@@ -58,7 +58,7 @@ public class ErrorDialogFragment extends SenseDialogFragment {
         presentError(activity, e, R.string.dialog_error_title);
     }
 
-    public static PresenterBuilder newInstance(@NonNull final Throwable e) {
+    public static PresenterBuilder newInstance(@Nullable final Throwable e) {
         return new PresenterBuilder(e);
     }
 

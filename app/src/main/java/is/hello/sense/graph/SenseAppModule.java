@@ -144,6 +144,8 @@ import is.hello.sense.zendesk.ZendeskModule;
                 HomeFragment.class,
                 VoiceFragment.class,
                 AppSettingsFragment.class,
+                is.hello.sense.flows.home.ui.fragments.SmartAlarmListFragment.class,
+                is.hello.sense.flows.home.ui.fragments.SleepSoundsFragment.class,
 
 
         }
