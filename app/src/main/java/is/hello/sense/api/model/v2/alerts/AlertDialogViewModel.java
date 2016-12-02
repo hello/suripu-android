@@ -18,6 +18,11 @@ public class AlertDialogViewModel extends ApiResponse {
 
     private final Alert alert;
 
+    public static AlertDialogViewModel NewEmptyInstance(@NonNull final Resources resources) {
+        return new AlertDialogViewModel(Alert.NewEmptyInstance(),
+                                        resources);
+    }
+
     public AlertDialogViewModel(@NonNull final Alert alert,
                                 @NonNull final Resources resources){
         this.alert = alert;
@@ -57,10 +62,5 @@ public class AlertDialogViewModel extends ApiResponse {
             default:
                 return resources.getString(R.string.empty);
         }
-    }
-
-    public static AlertDialogViewModel NewEmptyInstance(@NonNull final Resources resources) {
-        return new AlertDialogViewModel(Alert.NewEmptyInstance(),
-                                        resources);
     }
 }

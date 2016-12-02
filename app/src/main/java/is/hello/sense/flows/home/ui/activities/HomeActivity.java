@@ -773,10 +773,9 @@ public class HomeActivity extends ScopedInjectionActivity
                 .subscribe(Functions.NO_OP,
                            e -> {
                                showProgressOverlay(false);
-                               ErrorDialogFragment.newInstance(e)
-                                                   .build()
-                                                   .showAllowingStateLoss(getFragmentManager(),
-                                                                          ErrorDialogFragment.TAG);
+                               ErrorDialogFragment.presentError(this,
+                                                                e,
+                                                                R.string.voice_settings_update_error_title);
                            },
                            () -> showProgressOverlay(false));
     }
