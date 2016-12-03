@@ -16,10 +16,11 @@ import com.zendesk.logger.Logger;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
+import is.hello.sense.flows.home.ui.fragments.HomeFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
-import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
+import is.hello.sense.mvp.presenters.HomePresenterFragment;
 import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -191,7 +192,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
         // heavy dependence on fragment.class.getSimpleName()
         private final String TIMELINE_TAG = RoomConditionsFragment.class.getSimpleName();
         private final String TRENDS_TAG = TrendsFragment.class.getSimpleName();
-        private final String HOME_TAG = VoiceFragment.class.getSimpleName();
+        private final String HOME_TAG = HomePresenterFragment.class.getSimpleName();
         private final String SOUNDS_TAG = SoundsPresenterFragment.class.getSimpleName();
         private final String CONDITIONS_TAG = AppSettingsFragment.class.getSimpleName();
 
@@ -211,7 +212,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
             map.put(TRENDS_TAG, RoomConditionsFragment::new);
             map.put(SOUNDS_TAG, SoundsPresenterFragment::new);
             map.put(CONDITIONS_TAG, AppSettingsFragment::new);
-            map.put(HOME_TAG, VoiceFragment::new);
+            map.put(HOME_TAG, HomePresenterFragment::new);
         }
 
         Fragment getFragmentFromTag(@NonNull final String tag){
