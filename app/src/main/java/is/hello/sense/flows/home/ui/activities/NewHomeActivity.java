@@ -16,10 +16,8 @@ import com.zendesk.logger.Logger;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
-import is.hello.sense.flows.home.ui.fragments.HomeFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
-import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
 import is.hello.sense.mvp.presenters.HomePresenterFragment;
 import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
 import is.hello.sense.ui.common.FragmentNavigation;

@@ -70,7 +70,7 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     private void onPageSelected(final int position) {
         onPageUnselected(currentPosition);
         currentPosition = position;
-        final Fragment fragment = getActivity().getFragmentManager().findFragmentByTag("android:switcher:" + R.id.view_view_pager_extended_view_pager + ":" + position);
+        final Fragment fragment = getChildFragmentManager().findFragmentByTag("android:switcher:" + R.id.view_view_pager_extended_view_pager + ":" + position);
         if (fragment instanceof SenseFragment) {
             ((SenseFragment) fragment).resumeFromViewPager();
         }
@@ -82,7 +82,7 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
      * @param position of new fragment withing view pager and fragment manager.
      */
     private void onPageUnselected(final int position) {
-        final Fragment fragment = getActivity().getFragmentManager().findFragmentByTag("android:switcher:" + R.id.view_view_pager_extended_view_pager + ":" + position);
+        final Fragment fragment = getChildFragmentManager().findFragmentByTag("android:switcher:" + R.id.view_view_pager_extended_view_pager + ":" + position);
         if (fragment instanceof SenseFragment) {
             ((SenseFragment) fragment).pauseFromViewPager();
         }

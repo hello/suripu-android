@@ -36,7 +36,7 @@ public final class ViewPagerPresenterView extends PresenterView
 
         // ViewPager
         this.onPageSelected = onPageSelected;
-        this.adapter = new StaticFragmentAdapter(fragment.getFragmentManager(), items);
+        this.adapter = new StaticFragmentAdapter(fragment.getChildFragmentManager(), items);
         this.viewPager.setAdapter(this.adapter);
         this.viewPager.addOnPageChangeListener(this);
 
