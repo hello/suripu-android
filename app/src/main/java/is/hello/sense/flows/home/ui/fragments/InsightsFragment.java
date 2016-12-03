@@ -122,7 +122,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
         addInteractor(deviceIssuesInteractor);
         addInteractor(preferences);
         addInteractor(questionsInteractor);
-        deviceIssuesInteractor.bindScope((Scope)getActivity());
+        deviceIssuesInteractor.bindScope((Scope) getActivity());
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
@@ -192,10 +192,12 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
 
     @OnboardingActivity.Flow
     protected int getOnboardingFlow() {
-        final HomeActivity activity = (HomeActivity) getActivity();
-        return activity != null
-                ? activity.getOnboardingFlow()
-                : OnboardingActivity.FLOW_NONE;
+        final Activity activity = getActivity();
+        if (activity instanceof HomeActivity) {
+            return ((HomeActivity) activity).getOnboardingFlow();
+        } else {
+            return OnboardingActivity.FLOW_NONE;
+        }
     }
 
     @Override
@@ -346,7 +348,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
         stageOne.subscribe(showReview -> {
                                if (showReview) {
                                    final boolean reviewedOnAmazon = preferences.getBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, false);
-                                    // Amazon review links point to the first version of Sense and thus should not be shown for voice
+                                   // Amazon review links point to the first version of Sense and thus should not be shown for voice
                                    if (!reviewedOnAmazon && !preferences.hasVoice()) {
                                        final String country = Locale.getDefault().getCountry();
                                        if (country.equalsIgnoreCase(Locale.US.getCountry())) {
