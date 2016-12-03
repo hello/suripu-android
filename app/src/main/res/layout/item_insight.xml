@@ -86,7 +86,7 @@
             android:contentDescription="@string/action_share"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/share"/>
+            android:src="@drawable/icon_share_24"/>
 
         <TextView
             android:layout_marginStart="@dimen/x2"
