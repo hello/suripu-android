@@ -17,6 +17,7 @@ import android.os.Build;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -33,7 +34,6 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
-import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.util.SafeOnClickListener;
 
@@ -84,32 +84,33 @@ public class TimelineHeaderView extends RelativeLayout {
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         final Resources resources = getResources();
-        this.dividerColor = resources.getColor(R.color.timeline_header_border);
+        this.dividerColor = ContextCompat.getColor(context, R.color.timeline_header_border);
         this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
 
-        this.solidBackgroundColor = resources.getColor(R.color.background_timeline);
+        this.solidBackgroundColor = ContextCompat.getColor(context, R.color.background_timeline);
         final int[] gradientColors = {
                 solidBackgroundColor,
                 solidBackgroundColor,
-                resources.getColor(R.color.timeline_header_gradient_end),
+                ContextCompat.getColor(context, R.color.timeline_header_gradient_end),
         };
         this.gradientBackground = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                                                        gradientColors);
         gradientBackground.setAlpha(0);
 
 
-        LayoutInflater inflater = LayoutInflater.from(context);
+
+        final LayoutInflater inflater = LayoutInflater.from(context);
         inflater.inflate(R.layout.view_timeline_header, this, true);
 
         this.scoreContainer = findViewById(R.id.view_timeline_header_chart);
-        int scoreTranslation = resources.getDimensionPixelSize(R.dimen.gap_xlarge);
+        final int scoreTranslation = resources.getDimensionPixelSize(R.dimen.gap_xlarge);
         scoreContainer.setTranslationY(scoreTranslation);
 
         this.scoreDrawable = new SleepScoreDrawable(getResources(), true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int rippleColor = scoreDrawable.getPressedColor();
-            ShapeDrawable mask = new ShapeDrawable(new OvalShape());
-            RippleDrawable ripple = new RippleDrawable(ColorStateList.valueOf(rippleColor), scoreDrawable, mask);
+            final int rippleColor = scoreDrawable.getPressedColor();
+            final ShapeDrawable mask = new ShapeDrawable(new OvalShape());
+            final RippleDrawable ripple = new RippleDrawable(ColorStateList.valueOf(rippleColor), scoreDrawable, mask);
             scoreContainer.setBackground(ripple);
         } else {
             scoreDrawable.setStateful(true);
@@ -122,9 +123,6 @@ public class TimelineHeaderView extends RelativeLayout {
         this.cardContainer = (ViewGroup) findViewById(R.id.view_timeline_header_card);
         cardContainer.setVisibility(INVISIBLE);
 
-        TextView cardTitle = (TextView) cardContainer.findViewById(R.id.view_timeline_header_card_title);
-        Drawable end = cardTitle.getCompoundDrawablesRelative()[2];
-        Drawables.setTintColor(end, resources.getColor(R.color.light_accent));
         this.cardContents = (TextView) cardContainer.findViewById(R.id.view_timeline_header_card_contents);
 
 
@@ -148,9 +146,9 @@ public class TimelineHeaderView extends RelativeLayout {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        int right = canvas.getWidth(),
-            bottom = canvas.getHeight();
+    protected void onDraw(final Canvas canvas) {
+        final int right = canvas.getWidth();
+        final int bottom = canvas.getHeight();
 
         if (gradientBackgroundAlpha < 255) {
             paint.setColor(solidBackgroundColor);

@@ -694,11 +694,6 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     @Override
-    public void toggleBacksideOpen() {
-        slidingLayersView.toggle();
-    }
-
-    @Override
     public void showTimelineNavigator(@NonNull final LocalDate startDate, @Nullable final Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_IN, null);
 
