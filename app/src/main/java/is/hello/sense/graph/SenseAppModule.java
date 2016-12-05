@@ -27,6 +27,7 @@ import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
+import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
@@ -147,6 +148,7 @@ import is.hello.sense.zendesk.ZendeskModule;
                 VoiceFragment.class,
                 AppSettingsFragment.class,
 
+                VoiceSettingsInteractor.class
 
         }
 )

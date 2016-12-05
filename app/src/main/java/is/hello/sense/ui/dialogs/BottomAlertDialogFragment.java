@@ -1,14 +1,15 @@
 package is.hello.sense.ui.dialogs;
 
 import android.app.Dialog;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.segment.analytics.Properties;
 
-import is.hello.sense.R;
 import is.hello.sense.api.model.v2.alerts.Alert;
+import is.hello.sense.api.model.v2.alerts.AlertDialogViewModel;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomAlertDialog;
 import is.hello.sense.util.Analytics;
@@ -23,12 +24,12 @@ public class BottomAlertDialogFragment extends SenseDialogFragment {
 
     private static final String ARG_ALERT = BottomAlertDialogFragment.class.getName() + "ARG_ALERT";
 
-    private Alert alert;
+    private AlertDialogViewModel alert;
 
-    public static BottomAlertDialogFragment newInstance(@NonNull final Alert alert) {
+    public static BottomAlertDialogFragment newInstance(@NonNull final Alert alert, @NonNull final Resources resources) {
 
         final Bundle args = new Bundle();
-        args.putSerializable(ARG_ALERT, alert);
+        args.putSerializable(ARG_ALERT, new AlertDialogViewModel(alert, resources));
         final BottomAlertDialogFragment fragment = new BottomAlertDialogFragment();
         fragment.setArguments(args);
         return fragment;
@@ -39,14 +40,14 @@ public class BottomAlertDialogFragment extends SenseDialogFragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            setAlert((Alert) getArguments().getSerializable(ARG_ALERT));
+            setAlert((AlertDialogViewModel) getArguments().getSerializable(ARG_ALERT));
 
             final Properties properties = Analytics.createProperties(
                     Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, alert.getCategory());
 
             Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
         } else {
-            setAlert((Alert) savedInstanceState.getSerializable(ARG_ALERT));
+            setAlert((AlertDialogViewModel) savedInstanceState.getSerializable(ARG_ALERT));
         }
     }
 
@@ -56,8 +57,8 @@ public class BottomAlertDialogFragment extends SenseDialogFragment {
 
         alertDialog.setTitle(alert.getTitle());
         alertDialog.setMessage(alert.getBody());
-
-        alertDialog.setPositiveButton(R.string.action_okay, null);
+        alertDialog.setPositiveButton(alert.positiveButtonText, (view, which) -> this.dispatchAlertAction());
+        alertDialog.setNeutralButton(alert.neutralButtonText, null);
 
         return alertDialog;
     }
@@ -68,12 +69,26 @@ public class BottomAlertDialogFragment extends SenseDialogFragment {
         outState.putSerializable(ARG_ALERT, alert);
     }
 
-    private void setAlert(@Nullable final Alert alert) {
+    private void setAlert(@Nullable final AlertDialogViewModel alert) {
         if(alert == null){
-            this.alert = Alert.NewEmptyInstance();
+            this.alert = AlertDialogViewModel.NewEmptyInstance(getResources());
             Logger.error(BottomAlertDialogFragment.TAG, " requires non null Alert object passed in arguments");
         } else {
             this.alert = alert;
+        }
+    }
+
+    private void dispatchAlertAction(){
+        switch (alert.getCategory()){
+            case SENSE_MUTED:
+                if(getActivity() instanceof Alert.ActionHandler){
+                    ((Alert.ActionHandler) getActivity()).unMuteSense();
+                }
+                break;
+            case EXPANSION_UNREACHABLE:
+            case UNKNOWN:
+            default:
+                //do nothing
         }
     }
 }
