@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- end workaround -->
     <attr name="senseTextAppearanceHeading" format="reference"/>
     <attr name="senseTextAppearanceSubheading" format="reference"/>
     <attr name="senseTextAppearanceFieldLabel" format="reference"/>

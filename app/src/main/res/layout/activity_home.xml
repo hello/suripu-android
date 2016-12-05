@@ -33,17 +33,6 @@
                 style="@style/Divider.Horizontal"
                 android:layout_gravity="top"/>
 
-            <ImageButton
-                android:id="@+id/fragment_timeline_smart_alarm"
-                style="@style/AppTheme.Button.Circular"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|bottom"
-                android:layout_margin="@dimen/gap_small"
-                android:contentDescription="@string/action_show_alarms"
-                android:src="@drawable/timeline_smart_alarm"
-                android:visibility="invisible"/>
-
         </FrameLayout>
 
     </is.hello.sense.ui.widget.SlidingLayersView>

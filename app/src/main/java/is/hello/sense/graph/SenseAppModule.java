@@ -25,8 +25,10 @@ import is.hello.sense.flows.home.ui.fragments.HomeFragment;
 import is.hello.sense.flows.home.ui.fragments.InsightsFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
+import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
+import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
@@ -111,6 +113,7 @@ import is.hello.sense.zendesk.ZendeskModule;
                 SenseDetailsFragment.class,
                 PillDetailsFragment.class,
 
+                TimelinePagerFragment.class,
                 TimelineFragment.class,
                 TimelineInteractor.class,
                 TimelineInfoFragment.class,
@@ -153,6 +156,7 @@ import is.hello.sense.zendesk.ZendeskModule;
                 is.hello.sense.flows.home.ui.fragments.SmartAlarmListFragment.class,
                 is.hello.sense.flows.home.ui.fragments.SleepSoundsFragment.class,
 
+                VoiceSettingsInteractor.class
 
         }
 )
