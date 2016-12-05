@@ -5,7 +5,7 @@
                 android:layout_height="match_parent">
 
 
-    <android.support.v4.view.ViewPager
+    <is.hello.sense.ui.widget.ExtendedViewPager
         android:id="@+id/view_view_pager_extended_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -15,12 +15,12 @@
 
         <android.support.design.widget.TabLayout
             android:id="@+id/view_view_pager_tab_layout"
-            android:layout_width="match_parent"
             style="@style/AppTheme.AppCompat.TabLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"/>
 
-    </android.support.v4.view.ViewPager>
+    </is.hello.sense.ui.widget.ExtendedViewPager>
 
 
 </RelativeLayout>

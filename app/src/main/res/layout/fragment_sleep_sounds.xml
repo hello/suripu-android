@@ -8,7 +8,6 @@
         android:id="@+id/fragment_sleep_sounds_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/gap_outer_half"
         />
 
     <ProgressBar
