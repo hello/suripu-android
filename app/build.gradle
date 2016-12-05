@@ -24,8 +24,8 @@ def generateVersionCode() {
 }
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.1"
 
     signingConfigs {
         debug {
@@ -44,9 +44,9 @@ android {
     defaultConfig {
         applicationId "is.hello.sense"
         minSdkVersion 19
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode generateVersionCode()
-        versionName "1.6.2"
+        versionName "2.0.0"
     }
 
     compileOptions {
@@ -168,12 +168,13 @@ dependencies {
 
     compile 'com.segment.analytics.android:analytics:4.1.0'
 
-    compile 'com.android.support:support-v4:24.0.0'
-    compile 'com.android.support:support-v13:24.0.0'
-    compile 'com.android.support:recyclerview-v7:24.0.0'
-    compile 'com.android.support:customtabs:24.0.0'
-    compile 'com.google.android.gms:play-services-gcm:9.6.1'
-    compile 'com.google.android.gms:play-services-location:9.6.1'
+    compile 'com.android.support:support-v4:25.0.1'
+    compile 'com.android.support:support-v13:25.0.1'
+    compile 'com.android.support:recyclerview-v7:25.0.1'
+    compile 'com.android.support:customtabs:25.0.1'
+
+    compile 'com.google.android.gms:play-services-gcm:9.8.0'
+    compile 'com.google.android.gms:play-services-location:9.8.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'me.grantland:autofittextview:0.2.1'
