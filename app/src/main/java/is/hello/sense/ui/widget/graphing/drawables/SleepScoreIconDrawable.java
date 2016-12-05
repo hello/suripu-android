@@ -22,7 +22,9 @@ import is.hello.sense.util.Constants;
  */
 //todo use this with new timeline navigation bar
 public class SleepScoreIconDrawable extends Drawable {
-
+    private static final int MDPI = 24;
+    private static final int XHDPI = 48;
+    private static final int XXHDPI = 72;
     private static final float CIRCLE_THICKNESS_RATIO = .1f;
     private static final float TEXT_MARGIN_RATIO = .5f;
 
@@ -206,13 +208,13 @@ public class SleepScoreIconDrawable extends Drawable {
         switch (density) {
             case DisplayMetrics.DENSITY_LOW:
             case DisplayMetrics.DENSITY_MEDIUM:
-                return 24;
+                return MDPI;
             case DisplayMetrics.DENSITY_HIGH:
             case DisplayMetrics.DENSITY_XHIGH:
-                return 48;
+                return XHDPI;
             case DisplayMetrics.DENSITY_XXHIGH:
             default:
-                return 72;
+                return XXHDPI;
         }
     }
 }
