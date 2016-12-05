@@ -25,8 +25,8 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
 
     //region Lifecycle
 
-    public TimelineFragmentAdapter(@NonNull FragmentManager fragmentManager,
-                                   @NonNull LocalDate oldestDate) {
+    public TimelineFragmentAdapter(@NonNull final FragmentManager fragmentManager,
+                                   @NonNull final LocalDate oldestDate) {
         super(fragmentManager);
 
         final LocalDate today = DateFormatter.todayForTimeline();
@@ -114,9 +114,11 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
             this.cachedTimeline = null;
         }
 
-        return TimelineFragment.newInstance(timelineDate,
-                                            cachedTimeline,
-                                            firstTimeline);
+        final TimelineFragment fragment = TimelineFragment.newInstance(timelineDate,
+                                                                       cachedTimeline,
+                                                                       firstTimeline);
+
+        return fragment;
     }
 
     //endregion

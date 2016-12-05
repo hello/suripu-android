@@ -75,6 +75,12 @@
         </activity>
 
         <activity
+            android:name=".flows.timeline.ui.activities.TimelineActivity"
+            android:label="@string/action_timeline"
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
             android:name=".ui.activities.OnboardingActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
