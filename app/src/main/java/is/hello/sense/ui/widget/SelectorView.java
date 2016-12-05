@@ -335,7 +335,6 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
     }
     //endregion
 
-
     public interface OnSelectionChangedListener {
         void onSelectionChanged(int newSelectionIndex);
     }

@@ -60,6 +60,9 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
             this.title = title;
         }
 
+        public String getTitle() {
+            return title;
+        }
 
         public
         @NonNull

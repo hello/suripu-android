@@ -776,4 +776,5 @@
     <string name="sensor_calibrating">Calibrating</string>
     <string name="action_timeline">Timeline</string>
     <string name="action_timeline_history">Timeline History</string>
+    <string name="action_unmute">Unmute</string>
 </resources>

@@ -41,6 +41,7 @@ import is.hello.sense.flows.home.ui.fragments.BacksideFragment;
 import is.hello.sense.flows.home.ui.fragments.BacksideTabFragment;
 import is.hello.sense.flows.home.ui.fragments.HomeFragment;
 import is.hello.sense.flows.home.ui.views.BacksideView;
+import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.InteractorContainer;
@@ -55,6 +56,7 @@ import is.hello.sense.ui.common.ScopedInjectionActivity;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.dialogs.BottomAlertDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
@@ -71,6 +73,7 @@ import is.hello.sense.util.Logger;
 import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
+import static is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor.EMPTY_ID;
 
 public class HomeActivity extends ScopedInjectionActivity
         implements SlidingLayersView.Listener,
@@ -79,7 +82,8 @@ public class HomeActivity extends ScopedInjectionActivity
         ViewPager.OnPageChangeListener,
         TimelineInfoFragment.AnchorProvider,
         InsightInfoFragment.ParentProvider,
-        TimelineFragment.Parent{
+        TimelineFragment.Parent,
+        Alert.ActionHandler {
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     public static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
 
@@ -97,6 +101,8 @@ public class HomeActivity extends ScopedInjectionActivity
     UnreadStateInteractor unreadStatePresenter;
     @Inject
     LocalUsageTracker localUsageTracker;
+    @Inject
+    VoiceSettingsInteractor voiceSettingsInteractor;
 
     private long lastUpdated = System.currentTimeMillis();
 
@@ -529,7 +535,8 @@ public class HomeActivity extends ScopedInjectionActivity
                 && alerts.get(0).isValid()
                 && getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) == null) {
                 localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
-                BottomAlertDialogFragment.newInstance(alerts.get(0))
+                BottomAlertDialogFragment.newInstance(alerts.get(0),
+                                                      getResources())
                                          .showAllowingStateLoss(getFragmentManager(),
                                                                 BottomAlertDialogFragment.TAG);
         } else if (shouldUpdateDeviceIssues()) {
@@ -721,6 +728,27 @@ public class HomeActivity extends ScopedInjectionActivity
             }
         }
         stateSafeExecutor.execute(getFragmentManager()::popBackStack);
+    }
+
+    //endregion
+
+    //region Alert Action Handler
+
+    @Override
+    public void unMuteSense(){
+        showProgressOverlay(true);
+        voiceSettingsInteractor.setSenseId(preferences.getString(PreferencesInteractor.PAIRED_SENSE_ID,
+                                                                 EMPTY_ID));
+        track(voiceSettingsInteractor.setMuted(false)
+                                     .subscribe(Functions.NO_OP,
+                                                e -> {
+                                                    showProgressOverlay(false);
+                                                    ErrorDialogFragment.presentError(this,
+                                                                                     e,
+                                                                                     R.string.voice_settings_update_error_title);
+                                                },
+                                                () -> showProgressOverlay(false))
+             );
     }
 
     //endregion

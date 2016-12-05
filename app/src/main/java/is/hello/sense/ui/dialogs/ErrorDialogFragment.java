@@ -45,20 +45,18 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
 
     //region Lifecycle
-    @Deprecated
+
     public static void presentError(@NonNull final Activity activity, @Nullable final Throwable e, @StringRes final int titleRes) {
-        final ErrorDialogFragment fragment = new Builder(e, activity)
-                .withTitle(titleRes)
-                .build();
+        final ErrorDialogFragment fragment = newInstance(e).withTitle(titleRes)
+                                                           .build();
         fragment.showAllowingStateLoss(activity.getFragmentManager(), TAG);
     }
 
-    @Deprecated
     public static void presentError(@NonNull final Activity activity, @Nullable final Throwable e) {
         presentError(activity, e, R.string.dialog_error_title);
     }
 
-    public static PresenterBuilder newInstance(@NonNull final Throwable e) {
+    public static PresenterBuilder newInstance(@Nullable final Throwable e) {
         return new PresenterBuilder(e);
     }
 
@@ -207,7 +205,7 @@ public class ErrorDialogFragment extends SenseDialogFragment {
         }
 
 
-        public Builder withTitle(@StringRes final StringRef titleRef) {
+        public Builder withTitle(final StringRef titleRef) {
             arguments.putParcelable(ARG_TITLE_REF, titleRef);
             return this;
         }
@@ -274,7 +272,6 @@ public class ErrorDialogFragment extends SenseDialogFragment {
             return this;
         }
 
-        @Deprecated
         public ErrorDialogFragment build() {
             final ErrorDialogFragment instance = new ErrorDialogFragment();
             instance.setArguments(arguments);
