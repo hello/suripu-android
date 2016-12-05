@@ -9,13 +9,14 @@ import android.support.v4.view.ViewPager;
 import is.hello.sense.R;
 import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
+import is.hello.sense.ui.widget.ExtendedViewPager;
 
 
 @SuppressLint("ViewConstructor")
 public final class ViewPagerPresenterView extends PresenterView
         implements ViewPager.OnPageChangeListener {
 
-    private final ViewPager viewPager;
+    private final ExtendedViewPager viewPager;
     private final TabLayout tabLayout;
     private final StaticFragmentAdapter adapter;
     private final OnPageSelected onPageSelected;
@@ -29,7 +30,7 @@ public final class ViewPagerPresenterView extends PresenterView
     public ViewPagerPresenterView(@NonNull final ViewPagerPresenterFragment fragment,
                                   @NonNull final OnPageSelected onPageSelected) {
         super(fragment.getActivity());
-        this.viewPager = (ViewPager) findViewById(R.id.view_view_pager_extended_view_pager);
+        this.viewPager = (ExtendedViewPager) findViewById(R.id.view_view_pager_extended_view_pager);
         this.tabLayout = (TabLayout) findViewById(R.id.view_view_pager_tab_layout);
 
         final StaticFragmentAdapter.Item[] items = fragment.getViewPagerItems();
@@ -87,6 +88,18 @@ public final class ViewPagerPresenterView extends PresenterView
     public void onPageScrollStateChanged(final int state) {
         // do nothing
     }
+
+    //endregion
+    //region methods
+    public void hideTabLayout() {
+        tabLayout.setVisibility(GONE);
+    }
+
+    public void lockViewPager() {
+        viewPager.setScrollingEnabled(false);
+    }
+
+
     //endregion
 
     /**

@@ -17,26 +17,29 @@ import is.hello.sense.util.Logger;
 /**
  * Works around the open following open issues:
  * <ol>
- *     <li>https://code.google.com/p/android/issues/detail?id=18990</li>
- *     <li>https://code.google.com/p/android/issues/detail?id=66620</li>
+ * <li>https://code.google.com/p/android/issues/detail?id=18990</li>
+ * <li>https://code.google.com/p/android/issues/detail?id=66620</li>
  * </ol>
  */
 public class ExtendedViewPager extends ViewPager {
-    private @Nullable Field mItemsField;
+    private
+    @Nullable
+    Field mItemsField;
     private boolean scrollingEnabled = true;
 
-    public ExtendedViewPager(@NonNull Context context) {
+    public ExtendedViewPager(@NonNull final Context context) {
         super(context);
     }
 
-    public ExtendedViewPager(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public ExtendedViewPager(@NonNull final Context context,
+                             @Nullable final AttributeSet attrs) {
         super(context, attrs);
 
         // See #mItemsIsEmpty()
         try {
             this.mItemsField = ViewPager.class.getDeclaredField("mItems");
             mItemsField.setAccessible(true);
-        } catch (NoSuchFieldException e) {
+        } catch (final NoSuchFieldException e) {
             Logger.error(getClass().getSimpleName(), "Could not get `mItems` field", e);
         }
     }
@@ -51,7 +54,7 @@ public class ExtendedViewPager extends ViewPager {
             try {
                 final ArrayList<?> mItems = (ArrayList<?>) mItemsField.get(this);
                 return Lists.isEmpty(mItems);
-            } catch (IllegalAccessException e) {
+            } catch (final IllegalAccessException e) {
                 Logger.error(getClass().getSimpleName(), "Could not access `mItems` field", e);
                 return false;
             }
@@ -62,46 +65,46 @@ public class ExtendedViewPager extends ViewPager {
 
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
+    public boolean onInterceptTouchEvent(final MotionEvent event) {
         if (event.getActionMasked() == MotionEvent.ACTION_MOVE && mItemsIsEmpty()) {
             return false;
         }
 
         try {
             return scrollingEnabled && super.onInterceptTouchEvent(event);
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             Logger.warn(getClass().getSimpleName(), "Swallowing illegal argument exception", e);
             return false;
         }
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(final MotionEvent event) {
         if (event.getActionMasked() == MotionEvent.ACTION_MOVE && mItemsIsEmpty()) {
             return false;
         }
 
         try {
             return scrollingEnabled && super.onTouchEvent(event);
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             Logger.warn(getClass().getSimpleName(), "Swallowing illegal argument exception", e);
             return false;
         }
     }
 
     @Override
-    public boolean canScrollHorizontally(int direction) {
+    public boolean canScrollHorizontally(final int direction) {
         return scrollingEnabled && super.canScrollHorizontally(direction);
     }
 
-    public void setScrollingEnabled(boolean swipingEnabled) {
+    public void setScrollingEnabled(final boolean swipingEnabled) {
         this.scrollingEnabled = swipingEnabled;
     }
 
     public void setFadePageTransformer(final boolean fade) {
         if (fade) {
             this.setPageTransformer(false, new FadePageTransformer());
-        }else{
+        } else {
             this.setPageTransformer(false, null);
         }
     }
