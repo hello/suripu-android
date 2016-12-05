@@ -10,12 +10,14 @@ import android.support.v4.view.ViewPager;
 import is.hello.sense.R;
 import is.hello.sense.mvp.adapters.StaticSubPresenterFragmentAdapter;
 import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
+import is.hello.sense.ui.adapter.StaticFragmentAdapter;
+import is.hello.sense.ui.widget.ExtendedViewPager;
 
 
 @SuppressLint("ViewConstructor")
 public final class ViewPagerPresenterView extends PresenterView {
 
-    private final ViewPager viewPager;
+    private final ExtendedViewPager viewPager;
     private final TabLayout tabLayout;
     private final StaticSubPresenterFragmentAdapter adapter;
 
@@ -26,7 +28,7 @@ public final class ViewPagerPresenterView extends PresenterView {
     public ViewPagerPresenterView(@NonNull final ViewPagerPresenterFragment fragment,
                                   @NonNull final FragmentManager fragmentManager) {
         super(fragment.getActivity());
-        this.viewPager = (ViewPager) findViewById(R.id.view_view_pager_extended_view_pager);
+        this.viewPager = (ExtendedViewPager) findViewById(R.id.view_view_pager_extended_view_pager);
         this.tabLayout = (TabLayout) findViewById(R.id.view_view_pager_tab_layout);
 
         final StaticSubPresenterFragmentAdapter.Item[] items = fragment.getViewPagerItems();
@@ -64,5 +66,18 @@ public final class ViewPagerPresenterView extends PresenterView {
         return true;
     }
     //endregion
+    
+    //region methods
+    public void hideTabLayout() {
+        tabLayout.setVisibility(GONE);
+    }
+
+    public void lockViewPager() {
+        viewPager.setScrollingEnabled(false);
+    }
+
+
+    //endregion
+
 }
 
