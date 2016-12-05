@@ -45,7 +45,6 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TimelineInteractor;
-import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.TimelineAdapter;
@@ -102,8 +101,6 @@ public class TimelineFragment extends InjectionFragment
     DateFormatter dateFormatter;
     @Inject
     PreferencesInteractor preferences;
-    @Inject
-    UnreadStateInteractor unreadStatePresenter;
     @Inject
     LocalUsageTracker localUsageTracker;
 
@@ -201,20 +198,15 @@ public class TimelineFragment extends InjectionFragment
 
         this.animationEnabled = (!hasCreatedView && !parent.isBacksideOpen());
 
-        final boolean overflowOpen = getUserVisibleHint() && parent.isBacksideOpen();
         this.toolbar = new TimelineToolbar(getActivity());
-        //todo once Timeline Fragment no longer used by Home Activity modify overflow click listener functionality
-        toolbar.setOverflowOnClickListener(ignored -> parent.toggleBacksideOpen());
-        toolbar.setOverflowOpen(overflowOpen);
-
-        toolbar.setTitleOnClickListener(ignored -> {
+        toolbar.setHistoryOnClickListener(ignored -> {
             if (infoOverlay != null) {
                 infoOverlay.dismiss(false);
             }
             parent.showTimelineNavigator(getDate(), getCachedTimeline());
         });
 
-        toolbar.setTitleDimmed(overflowOpen);
+        toolbar.setTitleDimmed(getUserVisibleHint() && parent.isBacksideOpen());
         updateTitle();
 
         toolbar.setShareOnClickListener(this::share);
@@ -292,10 +284,6 @@ public class TimelineFragment extends InjectionFragment
 
             bindAndSubscribe(preferences.observableUse24Time(),
                              adapter::setUse24Time,
-                             Functions.LOG_ERROR);
-
-            bindAndSubscribe(unreadStatePresenter.hasUnreadItems,
-                             toolbar::setUnreadVisible,
                              Functions.LOG_ERROR);
         }
     }
@@ -407,7 +395,6 @@ public class TimelineFragment extends InjectionFragment
         dismissVisibleOverlaysAndDialogs();
 
         if (toolbar != null) {
-            toolbar.setOverflowOpen(true);
             toolbar.setTitleDimmed(true);
             toolbar.setShareVisible(false);
         }
@@ -416,7 +403,6 @@ public class TimelineFragment extends InjectionFragment
     @Override
     public void onTopViewDidSlideUp() {
         if (toolbar != null) {
-            toolbar.setOverflowOpen(false);
             toolbar.setTitleDimmed(false);
             toolbar.setShareVisible(adapter.hasEvents());
         }
@@ -956,9 +942,6 @@ public class TimelineFragment extends InjectionFragment
     public interface Parent {
 
         boolean isBacksideOpen();
-
-        //todo remove this method once no longer used by HomeActivity
-        void toggleBacksideOpen();
 
         void showTimelineNavigator(@NonNull final LocalDate date,
                                    @Nullable final Timeline timeline);

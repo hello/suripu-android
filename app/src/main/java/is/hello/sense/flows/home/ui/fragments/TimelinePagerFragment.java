@@ -219,11 +219,6 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
     }
 
     @Override
-    public void toggleBacksideOpen() {
-        //do nothing for now
-    }
-
-    @Override
     public void showTimelineNavigator(@NonNull final LocalDate date,
                                       @Nullable final Timeline timeline) {
         startActivityForResult(TimelineActivity.getZoomedOutIntent(getActivity(),

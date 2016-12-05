@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/action_bar_height">
+       android:layout_width="match_parent"
+       android:layout_height="@dimen/action_bar_height">
 
     <ImageButton
-        android:id="@+id/view_timeline_toolbar_overflow"
+        android:id="@+id/view_timeline_toolbar_history"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/action_bar_height"
         android:layout_alignParentStart="true"
-        android:src="@drawable/icon_menu_closed"
+        android:src="@drawable/icon_calendar_24"
         android:scaleType="center"
-        tools:ignore="ContentDescription" />
+        android:contentDescription="@string/action_timeline_history"/>
 
     <ImageButton
         android:id="@+id/view_timeline_toolbar_share"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/action_bar_height"
         android:layout_alignParentEnd="true"
-        android:src="@drawable/share_active"
+        android:src="@drawable/icon_share_24"
         android:scaleType="center"
         android:contentDescription="@string/action_share" />
 
@@ -26,7 +25,7 @@
         android:id="@+id/view_timeline_toolbar_title"
         android:layout_width="match_parent"
         android:layout_height="@dimen/action_bar_height"
-        android:layout_toEndOf="@id/view_timeline_toolbar_overflow"
+        android:layout_toEndOf="@id/view_timeline_toolbar_history"
         android:layout_toStartOf="@id/view_timeline_toolbar_share"
         android:gravity="center"
         android:singleLine="true"
