@@ -211,6 +211,11 @@
 
     <!-- Non-generic -->
 
+    <style name="AppTheme.Text.Timeline.Summary.Title" parent="@style/AppTheme.Text.Body.MidSized">
+        <item name="android:textColor">@color/gray4</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
     <style name="AppTheme.Text.Score"/>
 
     <style name="AppTheme.Text.Score.Big">

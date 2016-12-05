@@ -1,6 +1,5 @@
 package is.hello.sense.debug;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,8 +19,8 @@ public class TestActivity extends Activity
     protected boolean isResumed = false;
     protected final StateSafeExecutor stateSafeExecutor = new StateSafeExecutor(() -> isResumed);
     private FragmentNavigationDelegate navigationDelegate;
-
-
+ 
+ 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
