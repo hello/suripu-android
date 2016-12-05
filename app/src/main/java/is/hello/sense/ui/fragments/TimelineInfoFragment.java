@@ -90,7 +90,8 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
     //region Lifecycle
 
-    public static TimelineInfoFragment newInstance(@NonNull Timeline timeline, @IdRes int sourceViewId) {
+    public static TimelineInfoFragment newInstance(@NonNull final Timeline timeline,
+                                                   @IdRes final int sourceViewId) {
         final TimelineInfoFragment fragment = new TimelineInfoFragment();
 
         final Bundle arguments = new Bundle();
@@ -205,6 +206,12 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
         compound.setDuration(Anime.DURATION_NORMAL);
 
         return compound;
+    }
+
+    @Override
+    protected void onExitAnimatorEnd() {
+        super.onExitAnimatorEnd();
+        getActivity().onBackPressed();
     }
 
     /*
@@ -414,8 +421,8 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
             final float amount = (topViewHolder == null) ? 0f : topViewHolder.itemView.getTop() / headerHeight;
             header.setTranslationY(headerHeight * -(1f - amount));
 
-            titleText.setAlpha(amount);
-            summaryText.setAlpha(amount);
+            titleText.setAlpha(Anime.interpolateFloats(amount, 0, 1));
+            summaryText.setAlpha(Anime.interpolateFloats(amount, 0, 1));
         }
     }
     
