@@ -63,7 +63,7 @@ public final class ViewPagerPresenterView extends PresenterView
         this.viewPager.removeAllViews();
         this.viewPager.removeOnPageChangeListener(this);
     }
-
+    
     @Override
     protected boolean useAppCompat() {
         return true;

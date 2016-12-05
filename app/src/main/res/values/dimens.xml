@@ -242,7 +242,7 @@
     <dimen name="button_min_size_small">32dp</dimen>
     <dimen name="button_rounded_min_height">50dp</dimen>
     <dimen name="button_corner_radius">3dp</dimen>
-    <dimen name="button_bottom_alert">72dp</dimen>
+    <dimen name="button_bottom_alert">48dp</dimen>
     <dimen name="button_circular_area">54dp</dimen>
 
     <!-- Switch -->

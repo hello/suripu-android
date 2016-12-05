@@ -18,8 +18,6 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 
 import com.segment.analytics.Properties;
 
@@ -43,6 +41,7 @@ import is.hello.sense.flows.home.ui.fragments.BacksideFragment;
 import is.hello.sense.flows.home.ui.fragments.BacksideTabFragment;
 import is.hello.sense.flows.home.ui.fragments.HomeFragment;
 import is.hello.sense.flows.home.ui.views.BacksideView;
+import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.InteractorContainer;
@@ -57,6 +56,7 @@ import is.hello.sense.ui.common.ScopedInjectionActivity;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.dialogs.BottomAlertDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
@@ -64,7 +64,6 @@ import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.ui.widget.util.InteractiveAnimator;
-import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
@@ -73,8 +72,8 @@ import is.hello.sense.util.InternalPrefManager;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-import static is.hello.go99.Anime.isAnimating;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
+import static is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor.EMPTY_ID;
 
 public class HomeActivity extends ScopedInjectionActivity
         implements SlidingLayersView.Listener,
@@ -82,7 +81,9 @@ public class HomeActivity extends ScopedInjectionActivity
         AnimatorContext.Scene,
         ViewPager.OnPageChangeListener,
         TimelineInfoFragment.AnchorProvider,
-        InsightInfoFragment.ParentProvider {
+        InsightInfoFragment.ParentProvider,
+        TimelineFragment.Parent,
+        Alert.ActionHandler {
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     public static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
 
@@ -100,21 +101,25 @@ public class HomeActivity extends ScopedInjectionActivity
     UnreadStateInteractor unreadStatePresenter;
     @Inject
     LocalUsageTracker localUsageTracker;
+    @Inject
+    VoiceSettingsInteractor voiceSettingsInteractor;
 
     private long lastUpdated = System.currentTimeMillis();
 
-    private RelativeLayout rootContainer;
     private FrameLayout backsideContainer;
+    @Deprecated
     private SlidingLayersView slidingLayersView;
-
+    @Deprecated
     private ViewPager viewPager;
+    @Deprecated
     private TimelineFragmentAdapter viewPagerAdapter;
+    @Deprecated
     private int lastPagerScrollState = ViewPager.SCROLL_STATE_IDLE;
-    private ImageButton smartAlarmButton;
 
     private View progressOverlay;
     private SpinnerImageView spinner;
     private boolean isFirstActivityRun;
+    @Deprecated
     private boolean showBackside;
 
     private final AnimatorContext animatorContext = new AnimatorContext(getClass().getSimpleName());
@@ -183,15 +188,6 @@ public class HomeActivity extends ScopedInjectionActivity
             Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
             stateSafeExecutor.execute(() -> showBacksideWithItem(BacksideView.ITEM_SOUNDS, false));
         }
-
-        //deviceIssuesPresenter.update();
-
-
-        this.rootContainer = (RelativeLayout) findViewById(R.id.activity_home_container);
-
-
-        this.smartAlarmButton = (ImageButton) findViewById(R.id.fragment_timeline_smart_alarm);
-        Views.setSafeOnClickListener(smartAlarmButton, ignored -> showBacksideWithItem(BacksideView.ITEM_SOUNDS, true));
 
         this.viewPager = (ViewPager) findViewById(R.id.activity_home_view_pager);
         viewPager.addOnPageChangeListener(this);
@@ -419,21 +415,18 @@ public class HomeActivity extends ScopedInjectionActivity
         return flow;
     }
 
-    public boolean isBacksideOpen() {
-        return (slidingLayersView.isOpen() ||
-                slidingLayersView.isInMotion());
-    }
-
     public void setChromeTranslationAmount(final float translationAmount) {
         slidingLayersView.setTopExtraTranslationAmount(translationAmount);
     }
 
+    @Deprecated
     public boolean isCurrentFragmentLastNight() {
         final TimelineFragment currentFragment =
                 (TimelineFragment) viewPagerAdapter.getCurrentFragment();
         return (currentFragment != null && DateFormatter.isLastNight(currentFragment.getDate()));
     }
 
+    @Deprecated
     public void jumpToLastNight(final boolean animate) {
         viewPager.setCurrentItem(viewPagerAdapter.getLastNight(), animate);
     }
@@ -525,31 +518,6 @@ public class HomeActivity extends ScopedInjectionActivity
         return null;
     }
 
-    public void hideAlarmShortcut() {
-        if (smartAlarmButton.getVisibility() == View.VISIBLE && !isAnimating(smartAlarmButton)) {
-            final int contentHeight = rootContainer.getMeasuredHeight();
-
-            animatorFor(smartAlarmButton, animatorContext)
-                    .translationY(contentHeight - smartAlarmButton.getTop())
-                    .addOnAnimationCompleted(finished -> {
-                        if (finished) {
-                            smartAlarmButton.setVisibility(View.INVISIBLE);
-                        }
-                    })
-                    .start();
-        }
-    }
-
-    public void showAlarmShortcut() {
-        if (smartAlarmButton.getVisibility() == View.INVISIBLE && !isAnimating(smartAlarmButton)) {
-            smartAlarmButton.setVisibility(View.VISIBLE);
-
-            animatorFor(smartAlarmButton, animatorContext)
-                    .translationY(0f)
-                    .start();
-        }
-    }
-
     //endregion
 
     //region Device Issues and Alerts
@@ -567,7 +535,8 @@ public class HomeActivity extends ScopedInjectionActivity
                 && alerts.get(0).isValid()
                 && getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) == null) {
                 localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
-                BottomAlertDialogFragment.newInstance(alerts.get(0))
+                BottomAlertDialogFragment.newInstance(alerts.get(0),
+                                                      getResources())
                                          .showAllowingStateLoss(getFragmentManager(),
                                                                 BottomAlertDialogFragment.TAG);
         } else if (shouldUpdateDeviceIssues()) {
@@ -658,10 +627,6 @@ public class HomeActivity extends ScopedInjectionActivity
         }
     }
 
-    public void toggleBacksideOpen() {
-        slidingLayersView.toggle();
-    }
-
     private class BacksideAnimator implements InteractiveAnimator {
         private final float MIN_SCALE = 0.85f;
         private final float MAX_SCALE = 1.0f;
@@ -722,6 +687,18 @@ public class HomeActivity extends ScopedInjectionActivity
 
     //region Timeline Navigation
 
+    @Override
+    public boolean isBacksideOpen() {
+        return (slidingLayersView.isOpen() ||
+                slidingLayersView.isInMotion());
+    }
+
+    @Override
+    public void toggleBacksideOpen() {
+        slidingLayersView.toggle();
+    }
+
+    @Override
     public void showTimelineNavigator(@NonNull final LocalDate startDate, @Nullable final Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_IN, null);
 
@@ -733,6 +710,11 @@ public class HomeActivity extends ScopedInjectionActivity
                 .addToBackStack(ZoomedOutTimelineFragment.TAG)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commitAllowingStateLoss();
+    }
+
+    @Override
+    public int getTutorialContainerIdRes() {
+        return R.id.activity_home_container;
     }
 
     @Override
@@ -751,6 +733,27 @@ public class HomeActivity extends ScopedInjectionActivity
             }
         }
         stateSafeExecutor.execute(getFragmentManager()::popBackStack);
+    }
+
+    //endregion
+
+    //region Alert Action Handler
+
+    @Override
+    public void unMuteSense(){
+        showProgressOverlay(true);
+        voiceSettingsInteractor.setSenseId(preferences.getString(PreferencesInteractor.PAIRED_SENSE_ID,
+                                                                 EMPTY_ID));
+        track(voiceSettingsInteractor.setMuted(false)
+                                     .subscribe(Functions.NO_OP,
+                                                e -> {
+                                                    showProgressOverlay(false);
+                                                    ErrorDialogFragment.presentError(this,
+                                                                                     e,
+                                                                                     R.string.voice_settings_update_error_title);
+                                                },
+                                                () -> showProgressOverlay(false))
+             );
     }
 
     //endregion

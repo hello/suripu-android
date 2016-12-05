@@ -1,20 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<is.hello.sense.ui.widget.RoundedLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/item_bottom_alert"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/shadow_size"
-        android:background="@drawable/shadow_bottom_up" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/background_light">
+    android:layout_height="wrap_content"
+    style="@style/AppTheme.LargeCard">
 
         <TextView
             android:id="@+id/dialog_bottom_alert"
@@ -41,15 +32,13 @@
             android:textAppearance="@style/AppTheme.Text.Body"
             android:lineSpacingMultiplier="@dimen/line_multiple_body" />
 
-        <View
-            android:id="@+id/top_divider_horizontal"
-            style="@style/Divider.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/divider_size"/>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/button_bottom_alert"
+            android:layout_marginTop="@dimen/x1"
+            android:layout_marginLeft="@dimen/gap_outer_dialog_buttons"
+            android:layout_marginRight="@dimen/gap_outer_dialog_buttons"
+            android:layout_marginBottom="@dimen/x1"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -61,20 +50,14 @@
                 android:textColor="@color/text_dim"
                 style="@style/AppTheme.Button.Dialog.Positive"/>
 
-            <View
-                android:layout_marginTop="@dimen/x2"
-                android:layout_marginBottom="@dimen/x2"
-                style="@style/Divider.Vertical" />
-
             <Button
                 android:id="@+id/dialog_bottom_alert_positive"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:textColor="@color/blue6"
                 style="@style/AppTheme.Button.Dialog.Positive"/>
 
         </LinearLayout>
 
-    </LinearLayout>
-
-</LinearLayout>
+</is.hello.sense.ui.widget.RoundedLinearLayout>
