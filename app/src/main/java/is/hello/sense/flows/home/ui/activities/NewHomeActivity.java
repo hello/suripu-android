@@ -18,11 +18,13 @@ import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
+import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.ScopedInjectionActivity;
+import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.SelectorView;
 import rx.functions.Func0;
 
@@ -32,7 +34,8 @@ import rx.functions.Func0;
 
 public class NewHomeActivity extends ScopedInjectionActivity
         implements SelectorView.OnSelectionChangedListener,
-        FragmentNavigation{
+        FragmentNavigation,
+        TimelineFragment.ParentProvider{
 
     private static final String KEY_CURRENT_ITEM_INDEX = NewHomeActivity.class.getSimpleName() + "CURRENT_ITEM_INDEX";
     private static final int DEFAULT_ITEM_INDEX = 2;
@@ -134,6 +137,12 @@ public class NewHomeActivity extends ScopedInjectionActivity
         return fragmentNavigationDelegate.getTopFragment();
     }
 
+    @Override
+    public TimelineFragment.Parent get() {
+        return (TimelineFragment.Parent) getFragmentManager()
+                .findFragmentByTag(fragmentMapper.tags[0]);
+    }
+
     private void initSelector(@NonNull final SelectorView selectorView) {
         selectorView.setButtonLayoutParams(new SelectorView.LayoutParams(0, SelectorView.LayoutParams.MATCH_PARENT, 1));
         //todo update icons and order
@@ -188,7 +197,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
 
         //todo these are the tags FragmentNavigationDelegate uses when making transactions
         // heavy dependence on fragment.class.getSimpleName()
-        private final String TIMELINE_TAG = RoomConditionsFragment.class.getSimpleName();
+        private final String TIMELINE_TAG = TimelinePagerFragment.class.getSimpleName();
         private final String TRENDS_TAG = TrendsFragment.class.getSimpleName();
         private final String HOME_TAG = VoiceFragment.class.getSimpleName();
         private final String SOUNDS_TAG = SoundsFragment.class.getSimpleName();
@@ -206,7 +215,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
 
         FragmentMapper(){
             this.map = new ArrayMap<>(tags.length);
-            map.put(TIMELINE_TAG, RoomConditionsFragment::new);
+            map.put(TIMELINE_TAG, TimelinePagerFragment::new);
             map.put(TRENDS_TAG, RoomConditionsFragment::new);
             map.put(SOUNDS_TAG, SoundsFragment::new);
             map.put(CONDITIONS_TAG, AppSettingsFragment::new);
