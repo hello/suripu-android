@@ -37,12 +37,10 @@ public class SleepSoundsInteractor extends ScopedValueInteractor<SleepSoundsStat
     }
 
     public Observable<VoidResponse> play(final @NonNull SleepSoundActionPlay actionPlay) {
-        // todo validate actionPlay
         return latest().flatMap(a -> apiService.playSleepSound(actionPlay));
     }
 
     public Observable<VoidResponse> stop(final @NonNull SleepSoundActionStop actionStop) {
-        // todo validate action stop
         return latest().flatMap(a -> apiService.stopSleepSound(actionStop));
     }
 

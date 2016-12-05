@@ -48,7 +48,8 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 import rx.Observable;
-
+@Deprecated
+//todo delete when we use new home activity
 public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAdapter.InteractionListener {
     private static final int DELETE_REQUEST_CODE = 0x11;
 
@@ -86,11 +87,11 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_smart_alarm_list, container, false);
+        final View view = inflater.inflate(R.layout.view_smart_alarm_list, container, false);
 
-        this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_smart_alarm_list_activity);
+        this.activityIndicator = (ProgressBar) view.findViewById(R.id.view_smart_alarm_list_progress);
 
-        this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_smart_alarm_recycler);
+        this.recyclerView = (RecyclerView) view.findViewById(R.id.view_smart_alarm_list_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
 
@@ -109,7 +110,7 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
                                              expansionCategoryFormatter);
         recyclerView.setAdapter(adapter);
 
-        this.addButton = (ImageButton) view.findViewById(R.id.fragment_smart_alarm_list_add);
+        this.addButton = (ImageButton) view.findViewById(R.id.view_smart_alarm_list_add);
         Views.setSafeOnClickListener(addButton, this::newAlarm);
 
         startLoading();

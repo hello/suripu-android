@@ -21,6 +21,7 @@ import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
+import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.ScopedInjectionActivity;
@@ -200,7 +201,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
         private final String TIMELINE_TAG = TimelinePagerFragment.class.getSimpleName();
         private final String TRENDS_TAG = TrendsFragment.class.getSimpleName();
         private final String HOME_TAG = VoiceFragment.class.getSimpleName();
-        private final String SOUNDS_TAG = SoundsFragment.class.getSimpleName();
+        private final String SOUNDS_TAG = SoundsPresenterFragment.class.getSimpleName();
         private final String CONDITIONS_TAG = AppSettingsFragment.class.getSimpleName();
 
         final String[] tags = {
@@ -213,11 +214,11 @@ public class NewHomeActivity extends ScopedInjectionActivity
 
         private final ArrayMap<String, Func0<Fragment>> map;
 
-        FragmentMapper(){
+        private FragmentMapper(){
             this.map = new ArrayMap<>(tags.length);
             map.put(TIMELINE_TAG, TimelinePagerFragment::new);
             map.put(TRENDS_TAG, RoomConditionsFragment::new);
-            map.put(SOUNDS_TAG, SoundsFragment::new);
+            map.put(SOUNDS_TAG, SoundsPresenterFragment::new);
             map.put(CONDITIONS_TAG, AppSettingsFragment::new);
             map.put(HOME_TAG, VoiceFragment::new);
         }
