@@ -67,7 +67,7 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
      * @return false for {@link #getFragmentManager()} or true for {@link #getChildFragmentManager()}
      */
     protected boolean useChildFragmentManager() {
-        return false;
+        return true;
     }
     //endregion
 }
