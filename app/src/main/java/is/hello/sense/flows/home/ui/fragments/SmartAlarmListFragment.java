@@ -87,7 +87,9 @@ public class SmartAlarmListFragment extends SubPresenterFragment<SmartAlarmListV
         bindAndSubscribe(smartAlarmInteractor.alarms,
                          this::bindAlarms,
                          this::alarmsUnavailable);
+        presenterView.setProgressBarVisible(true);
         smartAlarmInteractor.update();
+
     }
 
     @Override
@@ -108,7 +110,7 @@ public class SmartAlarmListFragment extends SubPresenterFragment<SmartAlarmListV
 
     @Override
     public void onUserVisible() {
-        retry(null);
+        updateAlarms(null);
     }
 
     @Override
@@ -209,7 +211,7 @@ public class SmartAlarmListFragment extends SubPresenterFragment<SmartAlarmListV
             message = new SmartAlarmAdapter.Message(0,
                                                     StringRef.from(R.string.error_smart_alarms_unavailable));
             message.actionRes = R.string.action_retry;
-            message.onClickListener = this::retry;
+            message.onClickListener = this::updateAlarms;
         } else if (ApiException.statusEquals(e, 412)) {
             message = new SmartAlarmAdapter.Message(0,
                                                     StringRef.from(R.string.error_smart_alarm_requires_device));
@@ -228,15 +230,14 @@ public class SmartAlarmListFragment extends SubPresenterFragment<SmartAlarmListV
             }
             message = new SmartAlarmAdapter.Message(0, errorMessage);
             message.actionRes = R.string.action_retry;
-            message.onClickListener = this::retry;
+            message.onClickListener = this::updateAlarms;
         }
         presenterView.bindAdapterMessage(message);
         presenterView.setAddButtonVisible(false);
         presenterView.setProgressBarVisible(false);
     }
 
-    public void retry(@Nullable final View ignored) {
-        presenterView.setProgressBarVisible(true);
+    public void updateAlarms(@Nullable final View ignored) {
         smartAlarmInteractor.update();
     }
 
