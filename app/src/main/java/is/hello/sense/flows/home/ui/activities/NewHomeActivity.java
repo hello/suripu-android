@@ -18,7 +18,6 @@ import com.zendesk.logger.Logger;
 import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
-import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
@@ -243,7 +242,6 @@ public class NewHomeActivity extends ScopedInjectionActivity
         private final ArrayMap<String, Func0<Fragment>> map;
 
         private FragmentMapper(){
-        FragmentMapper() {
             this.map = new ArrayMap<>(tags.length);
             map.put(TIMELINE_TAG, TimelinePagerFragment::new);
             map.put(TRENDS_TAG, RoomConditionsFragment::new);
