@@ -1,24 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:orientation="vertical"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent">
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/fragment_timeline_pager_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <is.hello.sense.ui.widget.timeline.TimelineToolbar
-            android:id="@+id/fragment_timeline_pager_toolbar"
+        <is.hello.sense.ui.widget.ExtendedViewPager
+            android:id="@id/fragment_timeline_view_pager"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/action_bar_height"/>
 
-        <FrameLayout
-            android:id="@+id/fragment_timeline_pager_container"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <is.hello.sense.ui.widget.ExtendedViewPager
-                android:id="@id/fragment_timeline_view_pager"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="top">
+            <is.hello.sense.ui.widget.timeline.TimelineToolbar
+                android:id="@+id/fragment_timeline_pager_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-        </FrameLayout>
-
-    </LinearLayout>
+                android:layout_height="@dimen/action_bar_height"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/shadow_size"
+                android:background="@drawable/shadow_top_down"/>
+        </LinearLayout>
+    </FrameLayout>
 </layout>

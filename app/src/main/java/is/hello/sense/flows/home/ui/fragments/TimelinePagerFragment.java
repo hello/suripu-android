@@ -244,7 +244,7 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
 
     @Override
     public int getTutorialContainerIdRes() {
-        return R.id.activity_fragment_navigation_container;
+        return R.id.fragment_timeline_pager_container;
     }
 
     @Override

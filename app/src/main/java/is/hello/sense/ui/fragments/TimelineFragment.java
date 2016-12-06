@@ -291,9 +291,6 @@ public class TimelineFragment extends InjectionFragment
         if (timelinePresenter.hasValidTimeline()) {
             backgroundFill.setColor(ContextCompat.getColor(getActivity(), R.color.timeline_background_fill));
             headerView.bindTimeline(timeline);
-
-            //parent.setShareVisible(true);
-
             adapter.bindEvents(timeline.getEvents());
         }
     }
@@ -457,7 +454,7 @@ public class TimelineFragment extends InjectionFragment
 
         this.tutorialOverlay = new TutorialOverlayView(getActivity(), tutorial);
         tutorialOverlay.setOnDismiss(() -> this.tutorialOverlay = null);
-        tutorialOverlay.setAnchorContainer(getView());
+        tutorialOverlay.setAnchorContainer(getActivity().findViewById(parent.getTutorialContainerIdRes()));
         tutorialOverlay.show(parent.getTutorialContainerIdRes());
     }
 
@@ -614,11 +611,6 @@ public class TimelineFragment extends InjectionFragment
                     header.setMessage(R.string.message_timeline_first_night);
                     header.setAction(R.string.action_timeline_bad_data_support, null);
 
-                    final Activity activity = getActivity();
-                    if (firstTimeline && Tutorial.TAP_HAMBURGER.shouldShow(activity) &&
-                            !WelcomeDialogFragment.isAnyVisible(activity)) {
-                        showTutorial(Tutorial.TAP_HAMBURGER);
-                    }
                 } else if (timeline.getScoreCondition() == ScoreCondition.INCOMPLETE) {
                     header.setDiagramResource(R.drawable.timeline_state_not_enough_data);
                     header.setTitle(R.string.title_timeline_not_enough_data);
