@@ -139,12 +139,6 @@ public class HomeActivity extends ScopedInjectionActivity
                 viewPager.setCurrentItem(viewPagerAdapter.getLastNight(), false);
             } else {
                 viewPagerAdapter.setLatestDate(newToday);
-
-                final TimelineFragment currentFragment =
-                        (TimelineFragment) viewPagerAdapter.getCurrentFragment();
-                if (currentFragment != null) {
-                    currentFragment.updateTitle();
-                }
             }
         }
     };
@@ -697,7 +691,6 @@ public class HomeActivity extends ScopedInjectionActivity
                 slidingLayersView.isInMotion());
     }
 
-    @Override
     public void showTimelineNavigator(@NonNull final LocalDate startDate, @Nullable final Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_IN, null);
 
@@ -714,6 +707,16 @@ public class HomeActivity extends ScopedInjectionActivity
     @Override
     public int getTutorialContainerIdRes() {
         return R.id.activity_home_container;
+    }
+
+    @Override
+    public void updateTitle(@NonNull final String title) {
+        //do nothing
+    }
+
+    @Override
+    public void setShareVisible(final boolean visible) {
+        //do nothing
     }
 
     @Override

@@ -76,4 +76,11 @@ public class TimelineInteractor extends ValueInteractor<Timeline> {
                     .map(ignored -> null);
         });
     }
+
+    public boolean hasValidTimeline() {
+        final Timeline t = timeline.getValue();
+        return t != null
+                && t.getScore() != null
+                && t.getScore() > 0;
+    }
 }

@@ -26,7 +26,9 @@ public class TimelineToolbar extends RelativeLayout {
     private final ImageButton share;
     private final TextView title;
 
+    @Deprecated
     private @Nullable ValueAnimator titleColorAnimator;
+    @Deprecated
     private boolean titleDimmed;
 
     private boolean shareVisible;
@@ -64,6 +66,13 @@ public class TimelineToolbar extends RelativeLayout {
         if (visibility != VISIBLE) {
             clearAnimation();
         }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        history.setOnClickListener(null);
+        share.setOnClickListener(null);
     }
 
     //endregion
@@ -134,6 +143,7 @@ public class TimelineToolbar extends RelativeLayout {
         title.setText(text);
     }
 
+    @Deprecated
     public void setTitleDimmed(boolean titleDimmed) {
         if (titleDimmed == this.titleDimmed) {
             return;

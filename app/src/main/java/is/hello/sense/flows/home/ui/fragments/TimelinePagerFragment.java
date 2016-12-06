@@ -26,13 +26,15 @@ import is.hello.sense.mvp.presenters.ScopedInjectionFragment;
 import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
+import is.hello.sense.ui.widget.timeline.TimelineToolbar;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 
 public class TimelinePagerFragment extends ScopedInjectionFragment
-        implements ViewPager.OnPageChangeListener, TimelineFragment.Parent {
+        implements ViewPager.OnPageChangeListener,
+        TimelineFragment.Parent {
 
     @Inject
     PreferencesInteractor preferences;
@@ -40,6 +42,7 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
     private static final String KEY_LAST_UPDATED = TimelinePagerFragment.class.getSimpleName() + "KEY_LAST_UPDATED";
 
     private static final int ZOOMED_OUT_TIMELINE_REQUEST = 101;
+    private TimelineToolbar toolbar;
     private ViewPager viewPager;
     private TimelineFragmentAdapter viewPagerAdapter;
     private final BroadcastReceiver onTimeChanged = new BroadcastReceiver() {
@@ -58,10 +61,9 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
             } else {
                 viewPagerAdapter.setLatestDate(newToday);
 
-                final TimelineFragment currentFragment =
-                        (TimelineFragment) viewPagerAdapter.getCurrentFragment();
+                final TimelineFragment currentFragment = viewPagerAdapter.getCurrentTimeline();
                 if (currentFragment != null) {
-                    currentFragment.updateTitle();
+                    TimelinePagerFragment.this.updateTitle(currentFragment.getTitle());
                 }
             }
         }
@@ -78,6 +80,12 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
 
         final ViewGroup view = (ViewGroup) inflater.inflate(R.layout.fragment_timeline_pager, container, false);
 
+        toolbar = (TimelineToolbar) view.findViewById(R.id.fragment_timeline_pager_toolbar);
+        toolbar.setTitleDimmed(getUserVisibleHint() && isBacksideOpen());
+        toolbar.setShareVisible(false);
+        toolbar.setHistoryOnClickListener(this::onHistoryIconClicked);
+        toolbar.setShareOnClickListener(this::onShareIconClicked);
+
         viewPager = (ExtendedViewPager) view.findViewById(R.id.fragment_timeline_view_pager);
 
         this.viewPagerAdapter = new TimelineFragmentAdapter(getChildFragmentManager(),
@@ -92,6 +100,21 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
 
         getActivity().registerReceiver(onTimeChanged, new IntentFilter(Intent.ACTION_TIME_CHANGED));
         return view;
+    }
+
+    private void onShareIconClicked(final View ignored) {
+        final TimelineFragment current =  viewPagerAdapter.getCurrentTimeline();
+        if(current != null){
+            current.share();
+        }
+    }
+
+    private void onHistoryIconClicked(final View ignored) {
+        final TimelineFragment current =  viewPagerAdapter.getCurrentTimeline();
+        if(current != null){
+            current.dismissVisibleOverlaysAndDialogs();
+            showTimelineNavigator(current.getDate(), current.getCachedTimeline());
+        }
     }
 
     @Override
@@ -199,8 +222,7 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
             viewPagerAdapter.setCachedTimeline(timeline);
             viewPager.setCurrentItem(datePosition, false);
         } else {
-            final TimelineFragment currentFragment =
-                    (TimelineFragment) viewPagerAdapter.getCurrentFragment();
+            final TimelineFragment currentFragment = viewPagerAdapter.getCurrentTimeline();
             if (currentFragment != null) {
                 currentFragment.scrollToTop();
             }
@@ -212,7 +234,6 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
         return false;
     }
 
-    @Override
     public void showTimelineNavigator(@NonNull final LocalDate date,
                                       @Nullable final Timeline timeline) {
         startActivityForResult(TimelineActivity.getZoomedOutIntent(getActivity(),
@@ -224,5 +245,19 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
     @Override
     public int getTutorialContainerIdRes() {
         return R.id.activity_fragment_navigation_container;
+    }
+
+    @Override
+    public void updateTitle(@NonNull final String title) {
+        if (toolbar != null) {
+            toolbar.setTitle(title);
+        }
+    }
+
+    @Override
+    public void setShareVisible(final boolean visible) {
+        if (toolbar != null) {
+            toolbar.setShareVisible(visible);
+        }
     }
 }

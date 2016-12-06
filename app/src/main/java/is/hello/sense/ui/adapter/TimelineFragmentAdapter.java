@@ -114,11 +114,14 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
             this.cachedTimeline = null;
         }
 
-        final TimelineFragment fragment = TimelineFragment.newInstance(timelineDate,
-                                                                       cachedTimeline,
-                                                                       firstTimeline);
+        return TimelineFragment.newInstance(timelineDate,
+                                            cachedTimeline,
+                                            firstTimeline);
+    }
 
-        return fragment;
+    @Nullable
+    public TimelineFragment getCurrentTimeline(){
+        return (TimelineFragment) getCurrentFragment();
     }
 
     //endregion
