@@ -2,6 +2,7 @@ package is.hello.sense.mvp.view;
 
 
 import android.annotation.SuppressLint;
+import android.app.FragmentManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -22,7 +23,8 @@ public final class ViewPagerPresenterView extends PresenterView {
      * @param fragment - Fragment providing initialization settings and callbacks.
      *                 Don't keep a reference to this.
      */
-    public ViewPagerPresenterView(@NonNull final ViewPagerPresenterFragment fragment) {
+    public ViewPagerPresenterView(@NonNull final ViewPagerPresenterFragment fragment,
+                                  @NonNull final FragmentManager fragmentManager) {
         super(fragment.getActivity());
         this.viewPager = (ViewPager) findViewById(R.id.view_view_pager_extended_view_pager);
         this.tabLayout = (TabLayout) findViewById(R.id.view_view_pager_tab_layout);
@@ -30,7 +32,7 @@ public final class ViewPagerPresenterView extends PresenterView {
         final StaticSubPresenterFragmentAdapter.Item[] items = fragment.getViewPagerItems();
 
         // ViewPager
-        this.adapter = new StaticSubPresenterFragmentAdapter(fragment.getFragmentManager(), items);
+        this.adapter = new StaticSubPresenterFragmentAdapter(fragmentManager, items);
         this.viewPager.setOffscreenPageLimit(0);
         this.viewPager.setAdapter(this.adapter);
 

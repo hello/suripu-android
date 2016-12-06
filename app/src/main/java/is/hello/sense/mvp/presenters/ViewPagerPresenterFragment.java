@@ -23,7 +23,8 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     public final void initializePresenterView() {
         if (presenterView == null) {
             viewPagerDelegate = newViewPagerDelegateInstance();
-            presenterView = new ViewPagerPresenterView(this);
+            presenterView = new ViewPagerPresenterView(this,
+                                                       useChildFragmentManager() ? getChildFragmentManager() : getFragmentManager());
         }
     }
     //endregion
@@ -59,5 +60,14 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
      */
     @NonNull
     protected abstract BaseViewPagerPresenterDelegate newViewPagerDelegateInstance();
+
+    /**
+     * Override this to use a different fragment manager
+     *
+     * @return false for {@link #getFragmentManager()} or true for {@link #getChildFragmentManager()}
+     */
+    protected boolean useChildFragmentManager() {
+        return false;
+    }
     //endregion
 }
