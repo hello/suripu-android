@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Handler;
+import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -98,21 +99,5 @@ public class SenseFragment extends Fragment {
         if (fragmentNavigation != null) {
             fragmentNavigation.flowFinished(this, resultCode, intent);
         }
-    }
-
-    /**
-     * If the Fragment exists within a ViewPager, this will be called when the view pager has
-     * selected this Fragment. {@link Fragment#onResume()} will not be called.
-     */
-    public void resumeFromViewPager() {
-
-    }
-
-    /**
-     * If the Fragment exists within a ViewPager, this will be called when the view pager has
-     * scrolled away from this fragment. {@link Fragment#onPause()} will not be called.
-     */
-    public void pauseFromViewPager() {
-
     }
 }

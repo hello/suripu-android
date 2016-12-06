@@ -5,19 +5,19 @@
     android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/fragment_sleep_sounds_recycler"
+        android:id="@+id/view_sleep_sounds_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
 
     <ProgressBar
-        android:id="@+id/fragment_sleep_sounds_progressbar"
+        android:id="@+id/view_sleep_sounds_progressbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"/>
 
     <FrameLayout
-        android:id="@+id/fragment_sleep_sounds_buttonLayout"
+        android:id="@+id/view_sleep_sounds_buttonLayout"
         style="@style/AppTheme.Button.Circular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
         android:visibility="invisible">
 
         <is.hello.sense.ui.widget.SpinnerImageView
-            android:id="@+id/fragment_sleep_sounds_playbutton"
+            android:id="@+id/view_sleep_sounds_playbutton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"

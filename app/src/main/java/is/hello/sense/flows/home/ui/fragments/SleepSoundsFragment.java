@@ -24,7 +24,7 @@ import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.flows.home.ui.views.SleepSoundsView;
 import is.hello.sense.interactors.SleepSoundsInteractor;
 import is.hello.sense.interactors.SleepSoundsStatusInteractor;
-import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.presenters.SubPresenterFragment;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -37,7 +37,7 @@ import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
 @NotTested
-public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
+public class SleepSoundsFragment extends SubPresenterFragment<SleepSoundsView>
         implements
         SleepSoundsAdapter.InteractionListener,
         SleepSoundsAdapter.Retry {
@@ -95,24 +95,21 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         super.onViewCreated(view, savedInstanceState);
         bindAndSubscribe(sleepSoundsStatusInteractor.state, this::bindStatus, this::presentStatusError);
         bindAndSubscribe(sleepSoundsInteractor.sub, this::bind, this::presentError);
-    }
-
-    @Override
-    public void resumeFromViewPager() {
-        if (getActivity() != null) {
-            final boolean flickerWorkAround = true;
-            WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_sleep_sounds, flickerWorkAround);
-        }
-        sleepSoundsStatusInteractor.startAndUpdate();
         sleepSoundsInteractor.update();
     }
 
     @Override
-    public void pauseFromViewPager() {
-        super.pauseFromViewPager();
-        sleepSoundsStatusInteractor.stop();
+    public void onUserVisible() {
+        final boolean flickerWorkAround = true;
+        WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_sleep_sounds, flickerWorkAround);
+        sleepSoundsStatusInteractor.resetBackOffIfNeeded();
+        sleepSoundsStatusInteractor.startPolling();
     }
 
+    @Override
+    public void onUserInvisible() {
+        sleepSoundsStatusInteractor.stopPolling();
+    }
 
     //endregion
 
@@ -162,6 +159,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     //endregion
 
     //region methods
+
     private void bindStatus(final @NonNull SleepSoundStatus status) {
         presenterView.setProgressBarVisible(false);
         if (presenterView.isShowingPlayer()) {
@@ -189,8 +187,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
             presenterView.setButtonVisible(false);
         }
         presenterView.adapterBindStatus(status);
-        sleepSoundsStatusInteractor.resetBackOff();
-        sleepSoundsStatusInteractor.startAndUpdate();
+        sleepSoundsStatusInteractor.resetBackOffIfNeeded();
     }
 
     private void bind(final @NonNull SleepSoundsStateDevice stateDevice) {
@@ -243,7 +240,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         stopOperationSubscriber.unsubscribe();
         saveOperationSubscriber.unsubscribe();
         userWants = UserWants.NONE;
-        sleepSoundsStatusInteractor.startAndUpdate();
+        //  sleepSoundsStatusInteractor.startAndUpdate();
         final ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(error);
         builder.withMessage(StringRef.from(R.string.sleep_sounds_error_commanding));
         showErrorDialog(builder);
@@ -254,19 +251,20 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
             //do nothing
             return;
         }
-        if (userWants != UserWants.NONE) {
-
-            sleepSoundsStatusInteractor.incrementBackoff();
-            if (sleepSoundsStatusInteractor.isBackOffMaxed()) {
-                final ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(error);
-                builder.withMessage(StringRef.from(R.string.sleep_sounds_error_communicating_with_sense));
-                showErrorDialog(builder);
-                userWants = UserWants.NONE;
-                sleepSoundsStatusInteractor.stop();
-                presenterView.displayPlayButton();
-            }
-        } else {
+        sleepSoundsStatusInteractor.incrementBackoff();
+        if (userWants == UserWants.NONE) {
             presenterView.setProgressBarVisible(false);
+        }
+        if (sleepSoundsStatusInteractor.isBackOffMaxed()) {
+            final ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(error);
+            builder.withMessage(StringRef.from(R.string.sleep_sounds_error_communicating_with_sense));
+            showErrorDialog(builder);
+            userWants = UserWants.NONE;
+            sleepSoundsStatusInteractor.stopPolling();
+            presenterView.displayPlayButton();
+        } else {
+            // Call this to use the new back off interval
+            sleepSoundsStatusInteractor.startPolling();
         }
     }
 
@@ -305,7 +303,9 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         saveOperationSubscriber.unsubscribe();
         saveOperationSubscriber = saveOperation.subscribe(voidResponse -> {
                                                               // incase we were in a failed state
-                                                              sleepSoundsStatusInteractor.startAndUpdate();
+                                                              if (isVisibleToUserAndResumed()) {
+                                                                  sleepSoundsStatusInteractor.startPolling();
+                                                              }
                                                               saveOperationSubscriber.unsubscribe();
                                                           },
                                                           e -> {
@@ -325,7 +325,9 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         stopOperationSubscriber.unsubscribe();
         stopOperationSubscriber = saveOperation.subscribe(voidResponse -> {
                                                               // incase we were in a failed state
-                                                              sleepSoundsStatusInteractor.startAndUpdate();
+                                                              if (isVisibleToUserAndResumed()) {
+                                                                  sleepSoundsStatusInteractor.startPolling();
+                                                              }
                                                               stopOperationSubscriber.unsubscribe();
                                                           },
                                                           e -> {

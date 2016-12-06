@@ -101,7 +101,7 @@ public abstract class PresenterView extends FrameLayout {
         final Resources resources = getResources();
         recyclerView.setLayoutManager(layoutManager);
         final CardItemDecoration decoration = new CardItemDecoration(resources);
-        decoration.contentInset = new Rect(0, 0, 0, resources.getDimensionPixelSize(R.dimen.gap_smart_alarm_list_bottom));
+        decoration.contentInset = new Rect(0, 0, 0, resources.getDimensionPixelSize(R.dimen.x12));
         recyclerView.addItemDecoration(decoration);
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager,
                                                                      resources,

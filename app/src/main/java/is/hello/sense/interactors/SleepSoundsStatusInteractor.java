@@ -10,7 +10,9 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.SleepSoundStatus;
 import is.hello.sense.graph.InteractorSubject;
 import rx.Observable;
+import rx.Subscription;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.Subscriptions;
 
 public class SleepSoundsStatusInteractor extends ScopedValueInteractor<SleepSoundStatus> {
     public final static int OFFLINE_MINUTES = 30;
@@ -24,8 +26,9 @@ public class SleepSoundsStatusInteractor extends ScopedValueInteractor<SleepSoun
 
     private int backOff = INITIAL_BACK_OFF_MS;
 
-    private boolean resume = false;
     private long timeSent = 0;
+
+    private Subscription updateSubscription = Subscriptions.empty();
 
     @Inject
     ApiService apiService;
@@ -44,55 +47,60 @@ public class SleepSoundsStatusInteractor extends ScopedValueInteractor<SleepSoun
 
     @Override
     protected Observable<SleepSoundStatus> provideUpdateObservable() {
-        return Observable.interval(getBackOffInterval(), TimeUnit.MILLISECONDS, Schedulers.io())
-                         .flatMap(longTimeInterval -> {
-                             if (resume) {
-                                 return apiService.getSleepSoundStatus();
-                             }
-                             return Observable.error(new ObservableEndThrowable());
-                         });
-    }
-
-    public void startAndUpdate() {
-        this.resume = true;
-        update();
-    }
-
-    public void stop() {
-        this.resume = false;
+        return apiService.getSleepSoundStatus();
     }
 
     /**
      * its important to update the observable so it uses the new interval.
      */
-    public void resetBackOff() {
-        this.backOff = INITIAL_BACK_OFF_MS;
-        update();
+    public synchronized void resetBackOffIfNeeded() {
+        if (this.backOff != INITIAL_BACK_OFF_MS) {
+            this.backOff = INITIAL_BACK_OFF_MS;
+            this.startPolling();
+        }
     }
 
-
     /**
-     * its important to update the observable so it uses the new interval.
+     * Remember to start polling to use the new value.
      */
-    public void incrementBackoff() {
+    public synchronized void incrementBackoff() {
         this.backOff += BACK_OFF_INCREMENTS_MS;
-        update();
     }
 
-    public int getBackOffInterval() {
+    public synchronized int getBackOffInterval() {
         return POLLING_INTERVAL_MS + this.backOff;
     }
 
-    public void resetTimeSent() {
+    public synchronized void resetTimeSent() {
         this.timeSent = System.currentTimeMillis();
     }
 
-    public boolean isBackOffMaxed() {
+    public synchronized boolean isBackOffMaxed() {
         return backOff > MAX_BACK_OFF_MS;
     }
 
-    public boolean isTimedOut() {
+    public synchronized boolean isTimedOut() {
         return System.currentTimeMillis() - timeSent > MAX_TIME_OUT_MS;
+    }
+
+    public synchronized void stopPolling() {
+        updateSubscription.unsubscribe();
+    }
+
+    public synchronized void startPolling() {
+        updateSubscription.unsubscribe();
+        updateSubscription = Observable.interval(getBackOffInterval(), TimeUnit.MILLISECONDS)
+                                       .subscribeOn(Schedulers.newThread())
+                                       .observeOn(Schedulers.newThread())
+                                       .subscribe(o -> {
+                                           update();
+                                       });
+    }
+
+    @Override
+    public void onContainerDestroyed() {
+        super.onContainerDestroyed();
+        updateSubscription.unsubscribe();
     }
 
     public class ObservableEndThrowable extends Throwable {

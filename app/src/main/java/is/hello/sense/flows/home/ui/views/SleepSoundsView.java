@@ -39,10 +39,10 @@ public class SleepSoundsView extends PresenterView {
                            @NonNull final OnClickListener onPlayClickListener,
                            @NonNull final OnClickListener onStopClickListener) {
         super(activity);
-        this.recyclerView = (RecyclerView) findViewById(R.id.fragment_sleep_sounds_recycler);
-        this.progressBar = (ProgressBar) findViewById(R.id.fragment_sleep_sounds_progressbar);
-        this.playButton = (SpinnerImageView) findViewById(R.id.fragment_sleep_sounds_playbutton);
-        this.buttonLayout = (FrameLayout) findViewById(R.id.fragment_sleep_sounds_buttonLayout);
+        this.recyclerView = (RecyclerView) findViewById(R.id.view_sleep_sounds_recycler);
+        this.progressBar = (ProgressBar) findViewById(R.id.view_sleep_sounds_progressbar);
+        this.playButton = (SpinnerImageView) findViewById(R.id.view_sleep_sounds_playbutton);
+        this.buttonLayout = (FrameLayout) findViewById(R.id.view_sleep_sounds_buttonLayout);
         this.adapter = adapter;
 
         //RecyclerView
@@ -58,7 +58,7 @@ public class SleepSoundsView extends PresenterView {
     //region PresenterView
     @Override
     protected int getLayoutRes() {
-        return R.layout.fragment_sleep_sounds; // todo rename to view
+        return R.layout.view_sleep_sounds;
     }
 
     @Override

@@ -169,12 +169,12 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_sleep_sounds, container, false);
-        progressBar = (ProgressBar) view.findViewById(R.id.fragment_sleep_sounds_progressbar);
-        playButton = (SpinnerImageView) view.findViewById(R.id.fragment_sleep_sounds_playbutton);
-        buttonLayout = (FrameLayout) view.findViewById(R.id.fragment_sleep_sounds_buttonLayout);
+        final View view = inflater.inflate(R.layout.view_sleep_sounds, container, false);
+        progressBar = (ProgressBar) view.findViewById(R.id.view_sleep_sounds_progressbar);
+        playButton = (SpinnerImageView) view.findViewById(R.id.view_sleep_sounds_playbutton);
+        buttonLayout = (FrameLayout) view.findViewById(R.id.view_sleep_sounds_buttonLayout);
         preferences = getActivity().getSharedPreferences(Constants.SLEEP_SOUNDS_PREFS, 0);
-        this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_sleep_sounds_recycler);
+        this.recyclerView = (RecyclerView) view.findViewById(R.id.view_sleep_sounds_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
         final Resources resources = getResources();

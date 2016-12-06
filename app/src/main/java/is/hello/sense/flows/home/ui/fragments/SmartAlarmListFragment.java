@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -26,7 +27,7 @@ import is.hello.sense.flows.smartalarm.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
-import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.presenters.SubPresenterFragment;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
 import is.hello.sense.ui.common.SenseDialogFragment;
@@ -40,7 +41,7 @@ import is.hello.sense.util.NotTested;
 import rx.Observable;
 
 @NotTested
-public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView>
+public class SmartAlarmListFragment extends SubPresenterFragment<SmartAlarmListView>
         implements SmartAlarmAdapter.InteractionListener {
     private static final int DELETE_REQUEST_CODE = 117;
 
@@ -106,9 +107,13 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     }
 
     @Override
-    public void resumeFromViewPager() {
-        presenterView.setProgressBarVisible(true);
-        smartAlarmInteractor.update();
+    public void onUserVisible() {
+        retry(null);
+    }
+
+    @Override
+    public void onUserInvisible() {
+
     }
     //endregion
 
@@ -230,8 +235,9 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
         presenterView.setProgressBarVisible(false);
     }
 
-    public void retry(@NonNull final View ignored) {
-        resumeFromViewPager();
+    public void retry(@Nullable final View ignored) {
+        presenterView.setProgressBarVisible(true);
+        smartAlarmInteractor.update();
     }
 
     public void presentError(final Throwable e) {
