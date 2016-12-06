@@ -149,6 +149,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
+
         super.setUserVisibleHint(isVisibleToUser);
         statusPollingHelper.setViewVisible(isVisibleToUser);
         // This method is called before onCreateView, when not visible to the user.
