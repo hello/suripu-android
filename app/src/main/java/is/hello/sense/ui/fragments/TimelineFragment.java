@@ -111,6 +111,7 @@ public class TimelineFragment extends InjectionFragment
     private RecyclerView recyclerView;
 
     private LinearLayoutManager layoutManager;
+    @Nullable
     private TimelineToolbar toolbar;
     private TimelineHeaderView headerView;
     private TimelineAdapter adapter;
@@ -156,8 +157,6 @@ public class TimelineFragment extends InjectionFragment
         super.onAttach(activity);
         if (activity instanceof Parent && parent == null) {
             setParent((Parent) activity);
-            //cannot retain instance of nested fragments
-            //setRetainInstance(true);
         } else if (activity instanceof ParentProvider && parent == null) {
             setParent(((ParentProvider) activity).get());
         } else if (parent == null) {
@@ -198,20 +197,23 @@ public class TimelineFragment extends InjectionFragment
 
         this.animationEnabled = (!hasCreatedView && !parent.isBacksideOpen());
 
-        this.toolbar = new TimelineToolbar(getActivity());
-        toolbar.setHistoryOnClickListener(ignored -> {
-            if (infoOverlay != null) {
-                infoOverlay.dismiss(false);
-            }
-            parent.showTimelineNavigator(getDate(), getCachedTimeline());
-        });
 
-        toolbar.setTitleDimmed(getUserVisibleHint() && parent.isBacksideOpen());
-        updateTitle();
+        //todo to support existing use in old HomeActivity and will remove once needed
+        if (false) {
+            this.toolbar = new TimelineToolbar(getActivity());
+            toolbar.setHistoryOnClickListener(ignored -> {
+                if (infoOverlay != null) {
+                    infoOverlay.dismiss(false);
+                }
+                parent.showTimelineNavigator(getDate(), getCachedTimeline());
+            });
 
-        toolbar.setShareOnClickListener(this::share);
-        toolbar.setShareVisible(false);
+            toolbar.setTitleDimmed(getUserVisibleHint() && parent.isBacksideOpen());
+            updateTitle();
 
+            toolbar.setShareOnClickListener(this::share);
+            toolbar.setShareVisible(false);
+        }
 
         this.headerView = new TimelineHeaderView(getActivity());
         headerView.setAnimatorContext(getAnimatorContext());
@@ -227,7 +229,7 @@ public class TimelineFragment extends InjectionFragment
         recyclerView.setBackground(backgroundFill);
 
         this.adapter = new TimelineAdapter(getActivity(), dateFormatter);
-        adapter.addHeader(toolbar);
+
         adapter.addHeader(headerView);
         adapter.setOnItemClickListener(stateSafeExecutor, this);
         recyclerView.setAdapter(adapter);
@@ -311,7 +313,9 @@ public class TimelineFragment extends InjectionFragment
         if (timeline != null && timeline.getScore() != null && timeline.getScore() > 0) {
             backgroundFill.setColor(ContextCompat.getColor(getActivity(), R.color.timeline_background_fill));
             headerView.bindTimeline(timeline);
-            toolbar.setShareVisible(true);
+            if(toolbar != null) {
+                toolbar.setShareVisible(true);
+            }
             adapter.bindEvents(timeline.getEvents());
         }
     }
@@ -348,7 +352,6 @@ public class TimelineFragment extends InjectionFragment
             recyclerView.setAdapter(null);
         }
 
-        this.toolbar = null;
         this.headerView = null;
         this.recyclerView = null;
         this.layoutManager = null;
@@ -586,13 +589,20 @@ public class TimelineFragment extends InjectionFragment
             backgroundFill.setColor(ContextCompat.getColor(getActivity(), R.color.background_timeline));
         }
 
-        toolbar.setShareVisible(false);
+        if(toolbar != null) {
+            toolbar.setShareVisible(false);
+        }
         headerView.stopPulsing();
-        adapter.replaceHeader(1, newHeader);
+        if(headerView == adapter.getHeaderAt(0)){
+            adapter.replaceHeader(0, newHeader);
+        } else {
+            adapter.replaceHeader(1, newHeader);
+        }
     }
 
     private void transitionOutOfNoDataState() {
-        if (adapter.getHeaderAt(1) == headerView) {
+        if (adapter.getHeaderAt(0) == headerView
+                || adapter.getHeaderAt(1) == headerView) {
             return;
         }
 
@@ -601,7 +611,11 @@ public class TimelineFragment extends InjectionFragment
         itemAnimator.setTemplate(itemAnimator.getTemplate()
                                              .withDuration(Anime.DURATION_NORMAL));
 
-        adapter.replaceHeader(1, headerView);
+        if(headerView == adapter.getHeaderAt(0)){
+            adapter.replaceHeader(0, headerView);
+        } else {
+            adapter.replaceHeader(1, headerView);
+        }
         headerView.setBackgroundSolid(false, 0);
         headerView.startPulsing();
 
@@ -619,8 +633,9 @@ public class TimelineFragment extends InjectionFragment
                 final int targetColor = ContextCompat.getColor(getActivity(), R.color.timeline_background_fill);
                 final Animator backgroundFade = backgroundFill.colorAnimator(targetColor);
                 backgroundFade.start();
-
-                toolbar.setShareVisible(!parent.isBacksideOpen());
+                if(toolbar != null) {
+                    toolbar.setShareVisible(!parent.isBacksideOpen());
+                }
             });
             final Runnable adapterAnimations = stateSafeExecutor.bind(() -> {
                 if (animationEnabled) {

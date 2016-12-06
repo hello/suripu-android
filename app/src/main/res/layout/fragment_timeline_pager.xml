@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:orientation="vertical"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent">
+
+        <is.hello.sense.ui.widget.timeline.TimelineToolbar
+            android:id="@+id/fragment_timeline_pager_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <FrameLayout
+            android:id="@+id/fragment_timeline_pager_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <is.hello.sense.ui.widget.ExtendedViewPager
+                android:id="@id/fragment_timeline_view_pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </FrameLayout>
+
+    </LinearLayout>
+</layout>

@@ -12,7 +12,6 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import org.joda.time.LocalDate;
 
@@ -77,14 +76,9 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
                              final ViewGroup container,
                              final Bundle savedInstanceState) {
 
-        final ViewGroup view = (ViewGroup) inflater.inflate(R.layout.activity_fragment_navigation, container, false);
+        final ViewGroup view = (ViewGroup) inflater.inflate(R.layout.fragment_timeline_pager, container, false);
 
-        viewPager = new ExtendedViewPager(getActivity());
-        viewPager.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                               ViewGroup.LayoutParams.MATCH_PARENT));
-        viewPager.setId(R.id.fragment_timeline_view_pager);
-
-        view.addView(viewPager);
+        viewPager = (ExtendedViewPager) view.findViewById(R.id.fragment_timeline_view_pager);
 
         this.viewPagerAdapter = new TimelineFragmentAdapter(getChildFragmentManager(),
                                                             preferences.getAccountCreationDate());
