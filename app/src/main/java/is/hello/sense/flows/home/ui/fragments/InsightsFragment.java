@@ -35,7 +35,7 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.QuestionsInteractor;
 import is.hello.sense.interactors.questions.ReviewQuestionProvider;
 import is.hello.sense.flows.home.ui.views.InsightsView;
-import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.presenters.SubPresenterFragment;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -55,7 +55,7 @@ import is.hello.sense.util.Share;
 import rx.Observable;
 
 
-public class InsightsFragment extends PresenterFragment<InsightsView> implements
+public class InsightsFragment extends SubPresenterFragment<InsightsView> implements
         SwipeRefreshLayout.OnRefreshListener,
         InsightsAdapter.InteractionListener,
         InsightInfoFragment.Parent,
@@ -103,14 +103,14 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     }
 
     @Override
-    public final void setUserVisibleHint(final boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            Analytics.trackEvent(Analytics.Backside.EVENT_MAIN_VIEW, null);
-            if (presenterView != null) {
-                presenterView.updateWhatsNewState();
-            }
-        }
+    public void onUserVisible() {
+        Analytics.trackEvent(Analytics.Backside.EVENT_MAIN_VIEW, null);
+        presenterView.updateWhatsNewState();
+    }
+
+    @Override
+    public void onUserInvisible() {
+
     }
 
     @Override

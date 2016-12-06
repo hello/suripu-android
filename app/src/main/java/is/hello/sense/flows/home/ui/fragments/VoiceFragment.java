@@ -11,10 +11,10 @@ import is.hello.sense.flows.home.ui.views.VoiceView;
 import is.hello.sense.flows.voicecommands.ui.activities.VoiceCommandActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountPreferencesInteractor;
-import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.presenters.SubPresenterFragment;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 
-public class VoiceFragment extends PresenterFragment<VoiceView> implements ArrayRecyclerAdapter.OnItemClickedListener<VoiceCommandsAdapter.VoiceCommand> {
+public class VoiceFragment extends SubPresenterFragment<VoiceView> implements ArrayRecyclerAdapter.OnItemClickedListener<VoiceCommandsAdapter.VoiceCommand> {
 
     private VoiceCommandsAdapter adapter;
     AccountPreferencesInteractor sharedPreferences;
@@ -42,6 +42,16 @@ public class VoiceFragment extends PresenterFragment<VoiceView> implements Array
         bindAndSubscribe(sharedPreferences.observableBoolean(AccountPreferencesInteractor.VOICE_WELCOME_CARD, false),
                          this::showWelcomeCard,
                          Functions.LOG_ERROR);
+    }
+
+    @Override
+    public void onUserInvisible() {
+
+    }
+
+    @Override
+    public void onUserVisible() {
+
     }
 
     private void showWelcomeCard(final boolean wasShown) {
