@@ -14,7 +14,8 @@ import is.hello.sense.graph.InteractorSubject;
 import rx.Observable;
 
 public class InsightsInteractor extends ScopedValueInteractor<ArrayList<Insight>> {
-    @Inject ApiService apiService;
+    @Inject
+    ApiService apiService;
     @Inject
     UnreadStateInteractor unreadStatePresenter;
 

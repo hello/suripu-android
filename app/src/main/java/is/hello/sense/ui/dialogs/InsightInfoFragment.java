@@ -38,8 +38,8 @@ import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.api.model.v2.ShareUrl;
+import is.hello.sense.flows.home.ui.activities.NewHomeActivity;
 import is.hello.sense.interactors.InsightInfoInteractor;
-import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.ui.common.AnimatedInjectionFragment;
 import is.hello.sense.ui.widget.ExtendedScrollView;
 import is.hello.sense.ui.widget.ParallaxImageView;
@@ -188,11 +188,11 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         if (insightId == null) {
             //hide share button
             bottomContainer.hideRightButton();
-        } else if (getActivity() != null && getActivity() instanceof HomeActivity) {
+        } else if (getActivity() != null && getActivity() instanceof NewHomeActivity) {
             bottomContainer.setRightButtonOnClickListener((v) -> {
-                ((HomeActivity) getActivity()).showProgressOverlay(true);
+                ((NewHomeActivity) getActivity()).showProgressOverlay(true);
                 apiService.shareInsight(new InsightType(insightId))
-                          .doOnTerminate(() -> shareInsightTerminate((HomeActivity) getActivity()))
+                          .doOnTerminate(() -> shareInsightTerminate((NewHomeActivity) getActivity()))
                           .subscribe(this::shareInsightSuccess,
                                      this::shareInsightError);
             });
@@ -537,6 +537,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         titleText.setText(info.getTitle());
         messageText.setText(info.getText());
         category = info.getCategory();
+        this.titleText.setVisibility(View.VISIBLE);
+        this.messageText.setVisibility(View.VISIBLE);
     }
 
     public void insightInfoUnavailable(final Throwable e) {
@@ -579,7 +581,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
-    private void shareInsightTerminate(@Nullable final HomeActivity activity) {
+    private void shareInsightTerminate(@Nullable final NewHomeActivity activity) {
         if (activity == null) {
             return;
         }
