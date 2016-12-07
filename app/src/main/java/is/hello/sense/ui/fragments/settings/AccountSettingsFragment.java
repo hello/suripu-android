@@ -161,6 +161,9 @@ public class AccountSettingsFragment extends InjectionFragment
                                                        this::changePassword);
         passwordItem.setIcon(R.drawable.icon_settings_lock, R.string.label_password);
         adapter.add(passwordItem);
+
+        adapter.add(new SettingsRecyclerAdapter.EmptyItem(resources.getDimensionPixelSize(R.dimen.x3), null));
+
         birthdayItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_birthday), this::changeBirthDate);
         birthdayItem.setIcon(R.drawable.icon_settings_calendar, R.string.label_birthday);
 

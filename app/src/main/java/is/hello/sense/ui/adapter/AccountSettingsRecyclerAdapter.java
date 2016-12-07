@@ -23,13 +23,6 @@ public class AccountSettingsRecyclerAdapter extends SettingsRecyclerAdapter {
     }
 
     @Override
-    public int getItemViewType(int position) {
-        if(getItem(position) instanceof CircleItem)
-            return CircleItem.ID;
-        return super.getItemViewType(position);
-    }
-
-    @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if(viewType == CircleItem.ID) {
             final View view = inflater.inflate(R.layout.item_settings_profile_picture, parent, false);
@@ -70,9 +63,13 @@ public class AccountSettingsRecyclerAdapter extends SettingsRecyclerAdapter {
     }
 
     public static class CircleItem extends Item<String> {
-        static final int ID = 4;
+        static final int ID = 5;
         public CircleItem(@Nullable Runnable onClick) {
             super(onClick);
+        }
+        @Override
+        public int getId() {
+            return ID;
         }
     }
 }
