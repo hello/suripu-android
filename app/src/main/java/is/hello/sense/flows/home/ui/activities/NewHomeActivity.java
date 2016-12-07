@@ -2,6 +2,7 @@ package is.hello.sense.flows.home.ui.activities;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -10,23 +11,44 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
 import android.util.ArrayMap;
+import android.view.View;
 import android.widget.ToggleButton;
 
 import com.zendesk.logger.Logger;
 
+import javax.inject.Inject;
+
+import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.alerts.Alert;
+import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
 import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
+import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
+import is.hello.sense.functional.Functions;
+import is.hello.sense.interactors.DeviceIssuesInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.rating.LocalUsageTracker;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.ScopedInjectionActivity;
+import is.hello.sense.ui.dialogs.BottomAlertDialogFragment;
+import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.SelectorView;
+import is.hello.sense.ui.widget.SpinnerImageView;
+import rx.Observable;
 import rx.functions.Func0;
+
+import static is.hello.sense.flows.home.ui.activities.HomeActivity.EXTRA_ONBOARDING_FLOW;
+import static is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor.EMPTY_ID;
 
 /**
  * Will eventually replace {@link HomeActivity}
@@ -35,7 +57,19 @@ import rx.functions.Func0;
 public class NewHomeActivity extends ScopedInjectionActivity
         implements SelectorView.OnSelectionChangedListener,
         FragmentNavigation,
-        TimelineFragment.ParentProvider{
+        TimelineFragment.ParentProvider,
+        Alert.ActionHandler {
+
+    @Inject
+    AlertsInteractor alertsInteractor;
+    @Inject
+    DeviceIssuesInteractor deviceIssuesPresenter;
+    @Inject
+    PreferencesInteractor preferences;
+    @Inject
+    LocalUsageTracker localUsageTracker;
+    @Inject
+    VoiceSettingsInteractor voiceSettingsInteractor;
 
     private static final String KEY_CURRENT_ITEM_INDEX = NewHomeActivity.class.getSimpleName() + "CURRENT_ITEM_INDEX";
     private static final int DEFAULT_ITEM_INDEX = 2;
@@ -43,13 +77,22 @@ public class NewHomeActivity extends ScopedInjectionActivity
     private FragmentNavigationDelegate fragmentNavigationDelegate;
     private final FragmentMapper fragmentMapper = new FragmentMapper();
     private int currentItemIndex;
+    private boolean isFirstActivityRun;
+    private View progressOverlay;
+    private SpinnerImageView spinner;
 
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        deviceIssuesPresenter.bindScope(this);
+        addInteractor(deviceIssuesPresenter);
+        addInteractor(alertsInteractor);
+
         setContentView(R.layout.activity_new_home);
         restoreState(savedInstanceState);
+        this.progressOverlay = findViewById(R.id.activity_new_home_progress_overlay);
+        this.spinner = (SpinnerImageView) progressOverlay.findViewById(R.id.activity_new_home_spinner);
         this.fragmentNavigationDelegate = new FragmentNavigationDelegate(this,
                                                                          R.id.activity_new_home_backside_container,
                                                                          stateSafeExecutor);
@@ -58,6 +101,32 @@ public class NewHomeActivity extends ScopedInjectionActivity
         }
         this.bottomSelectorView = (SelectorView) findViewById(R.id.activity_new_home_bottom_selector_view);
         initSelector(bottomSelectorView);
+
+    }
+
+    @Override
+    protected void onPostCreate(final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        final IntentFilter loggedOutIntent = new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT);
+        final Observable<Intent> onLogOut = Rx.fromLocalBroadcast(getApplicationContext(), loggedOutIntent);
+        bindAndSubscribe(onLogOut,
+                         ignored -> finish(),
+                         Functions.LOG_ERROR);
+        if (shouldUpdateDeviceIssues()) {
+            bindAndSubscribe(deviceIssuesPresenter.topIssue,
+                             this::bindDeviceIssue,
+                             Functions.LOG_ERROR);
+        }
+
+        if(shouldUpdateAlerts()) {
+            bindAndSubscribe(alertsInteractor.alert,
+                             this::bindAlert,
+                             Functions.LOG_ERROR);
+
+            alertsInteractor.update();
+        }
+
 
     }
 
@@ -82,6 +151,14 @@ public class NewHomeActivity extends ScopedInjectionActivity
     }
 
     @Override
+    public void onBackPressed() {
+        if (progressOverlay.getVisibility() == View.VISIBLE) {
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    @Override
     public void onSelectionChanged(final int newSelectionIndex) {
 
         setCurrentItemIndex(newSelectionIndex);
@@ -98,6 +175,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
     }
 
     private void restoreState(@Nullable final Bundle savedInstanceState) {
+        this.isFirstActivityRun = (savedInstanceState == null);
         if(savedInstanceState != null){
             this.currentItemIndex = savedInstanceState.getInt(KEY_CURRENT_ITEM_INDEX, DEFAULT_ITEM_INDEX);
         } else {
@@ -191,6 +269,91 @@ public class NewHomeActivity extends ScopedInjectionActivity
 
     public void setCurrentItemIndex(final int currentItemIndex) {
         this.currentItemIndex = currentItemIndex;
+    }
+
+    @OnboardingActivity.Flow
+    public int getOnboardingFlow() {
+        @OnboardingActivity.Flow
+        final int flow =
+                getIntent().getIntExtra(EXTRA_ONBOARDING_FLOW,
+                                        OnboardingActivity.FLOW_NONE);
+        return flow;
+    }
+
+    //region Device Issues and Alerts
+
+    private boolean shouldUpdateAlerts() {
+        return isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
+    }
+
+    private boolean shouldUpdateDeviceIssues() {
+        return isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
+    }
+
+    public void bindAlert(@NonNull final Alert alert){
+        if (alert.isValid()
+                && getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) == null) {
+            localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
+            BottomAlertDialogFragment.newInstance(alert,
+                                                  getResources())
+                                     .showAllowingStateLoss(getFragmentManager(),
+                                                            BottomAlertDialogFragment.TAG);
+        } else if (shouldUpdateDeviceIssues()) {
+            deviceIssuesPresenter.update();
+        }
+    }
+
+    public void bindDeviceIssue(@NonNull final DeviceIssuesInteractor.Issue issue) {
+        if (issue == DeviceIssuesInteractor.Issue.NONE
+                || getFragmentManager().findFragmentByTag(DeviceIssueDialogFragment.TAG) != null
+                || getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) != null) {
+            return;
+        }
+
+        localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
+
+        final DeviceIssueDialogFragment deviceIssueDialogFragment =
+                DeviceIssueDialogFragment.newInstance(issue);
+        deviceIssueDialogFragment.showAllowingStateLoss(getFragmentManager(),
+                                                        DeviceIssueDialogFragment.TAG);
+
+        deviceIssuesPresenter.updateLastShown(issue);
+    }
+
+    //endregion
+
+    //region Alert Action Handler
+
+    @Override
+    public void unMuteSense(){
+        showProgressOverlay(true);
+        voiceSettingsInteractor.setSenseId(preferences.getString(PreferencesInteractor.PAIRED_SENSE_ID,
+                                                                 EMPTY_ID));
+        track(voiceSettingsInteractor.setMuted(false)
+                                     .subscribe(Functions.NO_OP,
+                                                e -> {
+                                                    showProgressOverlay(false);
+                                                    ErrorDialogFragment.presentError(this,
+                                                                                     e,
+                                                                                     R.string.voice_settings_update_error_title);
+                                                },
+                                                () -> showProgressOverlay(false))
+             );
+    }
+
+    //endregion
+
+    public void showProgressOverlay(final boolean show) {
+        progressOverlay.post(() -> {
+            if (show) {
+                progressOverlay.bringToFront();
+                spinner.startSpinning();
+                progressOverlay.setVisibility(View.VISIBLE);
+            } else {
+                spinner.stopSpinning();
+                progressOverlay.setVisibility(View.GONE);
+            }
+        });
     }
 
     private static class FragmentMapper {
