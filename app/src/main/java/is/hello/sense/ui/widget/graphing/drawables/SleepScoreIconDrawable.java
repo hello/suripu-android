@@ -10,6 +10,8 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
+import android.util.DisplayMetrics;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import is.hello.sense.R;
@@ -20,7 +22,9 @@ import is.hello.sense.util.Constants;
  */
 //todo use this with new timeline navigation bar
 public class SleepScoreIconDrawable extends Drawable {
-
+    private static final int MDPI = 24;
+    private static final int XHDPI = 48;
+    private static final int XXHDPI = 72;
     private static final float CIRCLE_THICKNESS_RATIO = .1f;
     private static final float TEXT_MARGIN_RATIO = .5f;
 
@@ -39,7 +43,7 @@ public class SleepScoreIconDrawable extends Drawable {
         final int selectedColor = ContextCompat.getColor(context, R.color.blue6);
         final int unselectedColor = ContextCompat.getColor(context, R.color.gray4);
         final int fillColor = ContextCompat.getColor(context, R.color.blue2);
-        final int backgroundColor = ContextCompat.getColor(context, R.color.background);
+        final int backgroundColor = ContextCompat.getColor(context, R.color.background_light);
 
         this.backgroundPaint.setColor(backgroundColor);
         this.width = builder.width;
@@ -176,8 +180,16 @@ public class SleepScoreIconDrawable extends Drawable {
             return this;
         }
 
+        public Builder withSize(@NonNull final WindowManager windowManager) {
+            final int size = getIconSize(windowManager);
+            this.width = size;
+            this.height = size;
+            return this;
+        }
+
         public Builder withSize(final int width,
                                 final int height) {
+
             this.width = width;
             this.height = height;
             return this;
@@ -187,5 +199,22 @@ public class SleepScoreIconDrawable extends Drawable {
             return new SleepScoreIconDrawable(this);
         }
 
+    }
+
+    public static int getIconSize(@NonNull final WindowManager windowManager) {
+        final DisplayMetrics metrics = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(metrics);
+        final int density = metrics.densityDpi;
+        switch (density) {
+            case DisplayMetrics.DENSITY_LOW:
+            case DisplayMetrics.DENSITY_MEDIUM:
+                return MDPI;
+            case DisplayMetrics.DENSITY_HIGH:
+            case DisplayMetrics.DENSITY_XHIGH:
+                return XHDPI;
+            case DisplayMetrics.DENSITY_XXHIGH:
+            default:
+                return XXHDPI;
+        }
     }
 }

@@ -2,6 +2,7 @@ package is.hello.sense.flows.home.ui.activities;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
@@ -43,6 +44,8 @@ import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.SelectorView;
+import is.hello.sense.ui.widget.graphing.drawables.SleepScoreIconDrawable;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.SpinnerImageView;
 import rx.Observable;
 import rx.functions.Func0;
@@ -96,10 +99,11 @@ public class NewHomeActivity extends ScopedInjectionActivity
         this.fragmentNavigationDelegate = new FragmentNavigationDelegate(this,
                                                                          R.id.activity_new_home_backside_container,
                                                                          stateSafeExecutor);
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             this.fragmentNavigationDelegate.onRestoreInstanceState(savedInstanceState);
         }
         this.bottomSelectorView = (SelectorView) findViewById(R.id.activity_new_home_bottom_selector_view);
+
         initSelector(bottomSelectorView);
 
     }
@@ -134,7 +138,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
     protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_CURRENT_ITEM_INDEX, currentItemIndex);
-        if(fragmentNavigationDelegate != null){
+        if (fragmentNavigationDelegate != null) {
             fragmentNavigationDelegate.onSaveInstanceState(outState);
         }
     }
@@ -142,10 +146,10 @@ public class NewHomeActivity extends ScopedInjectionActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(this.bottomSelectorView != null){
+        if (this.bottomSelectorView != null) {
             this.bottomSelectorView.setOnSelectionChangedListener(null);
         }
-        if(fragmentNavigationDelegate != null) {
+        if (fragmentNavigationDelegate != null) {
             fragmentNavigationDelegate.onDestroy();
         }
     }
@@ -176,7 +180,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
 
     private void restoreState(@Nullable final Bundle savedInstanceState) {
         this.isFirstActivityRun = (savedInstanceState == null);
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             this.currentItemIndex = savedInstanceState.getInt(KEY_CURRENT_ITEM_INDEX, DEFAULT_ITEM_INDEX);
         } else {
             this.currentItemIndex = DEFAULT_ITEM_INDEX;
@@ -223,21 +227,36 @@ public class NewHomeActivity extends ScopedInjectionActivity
 
     private void initSelector(@NonNull final SelectorView selectorView) {
         selectorView.setButtonLayoutParams(new SelectorView.LayoutParams(0, SelectorView.LayoutParams.MATCH_PARENT, 1));
+        final Drawable sleepScoreIconUnSelected = new SleepScoreIconDrawable.Builder(NewHomeActivity.this)
+                .withSize(getWindowManager())
+                .withText("82") // todo set this.
+                .build();
+        final Drawable sleepScoreIconSelected = new SleepScoreIconDrawable.Builder(NewHomeActivity.this)
+                .withSize(getWindowManager())
+                .withText("82")  // todo set this.
+                .withSelected(true)
+                .build();
+
         //todo update icons and order
         final @DrawableRes int[] inactiveIcons = {
-                R.drawable.backside_icon_currently,
                 R.drawable.icon_trends_24,
                 R.drawable.icon_insight_24,
                 R.drawable.icon_sound_24,
                 R.drawable.icon_sense_24,
         };
         final @DrawableRes int[] activeIcons = {
-                R.drawable.backside_icon_currently_active,
                 R.drawable.icon_trends_active_24,
                 R.drawable.icon_insight_active_24,
                 R.drawable.icon_sound_active_24,
                 R.drawable.icon_sense_active_24,
         };
+
+        final SpannableString inactive = createIconSpan("empty", sleepScoreIconUnSelected);
+        final SpannableString active = createIconSpan("empty", sleepScoreIconSelected);
+        final ToggleButton toggleButton = selectorView.addOption(active,
+                                                                 inactive,
+                                                                 false);
+        toggleButton.setPadding(0, 0, 0, 0);
 
         for (int i = 0; i < inactiveIcons.length; i++) {
             final SpannableString inactiveContent = createIconSpan("empty",
@@ -250,15 +269,24 @@ public class NewHomeActivity extends ScopedInjectionActivity
             button.setPadding(0, 0, 0, 0);
         }
         selectorView.setButtonTags((Object[]) fragmentMapper.tags);
-        selectorView.setOnSelectionChangedListener(this);
+        selectorView.setOnSelectionChangedListener(NewHomeActivity.this);
         selectorView.setSelectedIndex(getCurrentItemIndex());
         onSelectionChanged(getCurrentItemIndex());
+
     }
 
     private SpannableString createIconSpan(@NonNull final String title,
                                            @DrawableRes final int icon) {
         final SpannableString spannableString = new SpannableString(title);
         final ImageSpan imageSpan = new ImageSpan(this, icon);
+        spannableString.setSpan(imageSpan, 0, title.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+        return spannableString;
+    }
+
+    private SpannableString createIconSpan(@NonNull final String title,
+                                           final Drawable icon) {
+        final SpannableString spannableString = new SpannableString(title);
+        final ImageSpan imageSpan = new ImageSpan(this, Styles.drawableToBitmap(icon));
         spannableString.setSpan(imageSpan, 0, title.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
         return spannableString;
     }
@@ -376,7 +404,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
 
         private final ArrayMap<String, Func0<Fragment>> map;
 
-        FragmentMapper(){
+        FragmentMapper() {
             this.map = new ArrayMap<>(tags.length);
             map.put(TIMELINE_TAG, TimelinePagerFragment::new);
             map.put(TRENDS_TAG, RoomConditionsFragment::new);
@@ -385,8 +413,8 @@ public class NewHomeActivity extends ScopedInjectionActivity
             map.put(HOME_TAG, VoiceFragment::new);
         }
 
-        Fragment getFragmentFromTag(@NonNull final String tag){
-            if(map.containsKey(tag)){
+        Fragment getFragmentFromTag(@NonNull final String tag) {
+            if (map.containsKey(tag)) {
                 return map.get(tag)
                           .call();
             } else {
