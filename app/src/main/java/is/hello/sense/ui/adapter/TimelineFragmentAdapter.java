@@ -101,7 +101,7 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
 
     @NonNull
     @Override
-    public Fragment createFragment(int position) {
+    public TimelineFragment createFragment(int position) {
         final LocalDate timelineDate = getItemDate(position);
         final boolean firstTimeline = this.firstTimeline;
         this.firstTimeline = false;
