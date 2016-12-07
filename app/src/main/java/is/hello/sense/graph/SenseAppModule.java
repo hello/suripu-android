@@ -15,7 +15,6 @@ import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
-import is.hello.sense.debug.TestActivity;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.activities.NewHomeActivity;
@@ -46,7 +45,7 @@ import is.hello.sense.interactors.TrendsInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
-import is.hello.sense.mvp.presenters.TestViewPagerPresenterFragment;
+import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.pill.PillModule;
@@ -149,8 +148,9 @@ import is.hello.sense.zendesk.ZendeskModule;
                 HomeFragment.class,
                 VoiceFragment.class,
                 AppSettingsFragment.class,
-                TestActivity.class,
-                TestViewPagerPresenterFragment.class, // todo erase when done testing
+                SoundsPresenterFragment.class,
+                is.hello.sense.flows.home.ui.fragments.SmartAlarmListFragment.class,
+                is.hello.sense.flows.home.ui.fragments.SleepSoundsFragment.class,
 
                 VoiceSettingsInteractor.class
 

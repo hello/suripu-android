@@ -3,10 +3,10 @@ package is.hello.sense.mvp.presenters;
 
 import android.support.annotation.NonNull;
 
+import is.hello.sense.mvp.adapters.StaticSubPresenterFragmentAdapter;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.mvp.util.ViewPagerPresenter;
 import is.hello.sense.mvp.view.ViewPagerPresenterView;
-import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.util.NotTested;
 
 /**
@@ -23,19 +23,19 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     public final void initializePresenterView() {
         if (presenterView == null) {
             viewPagerDelegate = newViewPagerDelegateInstance();
-            presenterView = new ViewPagerPresenterView(this);
+            presenterView = new ViewPagerPresenterView(this,
+                                                       useChildFragmentManager() ? getChildFragmentManager() : getFragmentManager());
         }
     }
     //endregion
 
     //region ViewPagePresenter
-
     @NonNull
     @Override
-    public StaticFragmentAdapter.Item[] getViewPagerItems() {
+    public StaticSubPresenterFragmentAdapter.Item[] getViewPagerItems() {
         // should never happen but lets be safe.
         if (viewPagerDelegate == null) {
-            return new StaticFragmentAdapter.Item[0];
+            return new StaticSubPresenterFragmentAdapter.Item[0];
         }
         return viewPagerDelegate.getViewPagerItems();
     }
@@ -60,5 +60,14 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
      */
     @NonNull
     protected abstract BaseViewPagerPresenterDelegate newViewPagerDelegateInstance();
+
+    /**
+     * Override this to use a different fragment manager
+     *
+     * @return false for {@link #getFragmentManager()} or true for {@link #getChildFragmentManager()}
+     */
+    protected boolean useChildFragmentManager() {
+        return true;
+    }
     //endregion
 }

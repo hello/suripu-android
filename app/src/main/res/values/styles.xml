@@ -562,6 +562,8 @@
         <item name="tabTextColor">@color/dim</item>
         <item name="tabIndicatorColor">@color/primary</item>
         <item name="tabPaddingStart">@dimen/x1</item>
+        <item name="tabGravity">fill</item>
+        <item name="tabMaxWidth">0dp</item>
     </style>
 
 </resources>

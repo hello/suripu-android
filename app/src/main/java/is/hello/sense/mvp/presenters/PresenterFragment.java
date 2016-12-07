@@ -83,7 +83,7 @@ public abstract class PresenterFragment<T extends PresenterView>
     @NonNull
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        initializePresenterView();
+        initializePresenterView(); // todo force this to return a new instance
         return presenterView;
     }
 
@@ -91,14 +91,18 @@ public abstract class PresenterFragment<T extends PresenterView>
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        presenterView.viewCreated();
+        if (presenterView != null) { //todo remove check after forcing new instance
+            presenterView.viewCreated();
+        }
     }
 
     @CallSuper
     @Override
     public void onResume() {
         super.onResume();
-        presenterView.resume();
+        if (presenterView != null) {//todo remove check after forcing new instance
+            presenterView.resume();
+        }
     }
 
     @CallSuper

@@ -1,11 +1,12 @@
-package is.hello.sense.ui.adapter;
+package is.hello.sense.mvp.adapters;
 
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentPagerAdapter;
 
-public class StaticFragmentAdapter extends FragmentPagerAdapter {
+import is.hello.sense.mvp.presenters.SubPresenterFragment;
+
+public class StaticSubPresenterFragmentAdapter extends FragmentPagerAdapter {
     private final Item[] items;
 
     /**
@@ -13,15 +14,15 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
      */
     private int overrideCount = -1;
 
-    public StaticFragmentAdapter(@NonNull final FragmentManager fm,
-                                 @NonNull final Item... items) {
+    public StaticSubPresenterFragmentAdapter(@NonNull final FragmentManager fm,
+                                             @NonNull final Item... items) {
         super(fm);
 
         this.items = items;
     }
 
     @Override
-    public Fragment getItem(final int position) {
+    public SubPresenterFragment getItem(final int position) {
         return items[position].newInstance();
     }
 
@@ -51,10 +52,10 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
 
 
     public static class Item {
-        public final Class<? extends Fragment> fragmentClass;
+        public final Class<? extends SubPresenterFragment> fragmentClass;
         public final String title;
 
-        public Item(@NonNull final Class<? extends Fragment> fragmentClass,
+        public Item(@NonNull final Class<? extends SubPresenterFragment> fragmentClass,
                     @NonNull final String title) {
             this.fragmentClass = fragmentClass;
             this.title = title;
@@ -65,7 +66,7 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
         }
 
         @NonNull
-        public Fragment newInstance() {
+        public SubPresenterFragment newInstance() {
             try {
                 return fragmentClass.newInstance();
             } catch (final Exception e) {
