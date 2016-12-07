@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
@@ -202,7 +205,7 @@ public final class Styles {
             case UNIT_STYLE_SUBSCRIPT:
                 builder.append(createUnitSubscriptSpan(suffix));
                 break;
-    }
+        }
 
         return builder;
     }
@@ -481,7 +484,7 @@ public final class Styles {
      * @return int value between 0 - 255 based on enabled state.
      * Used when setting {@link android.widget.ImageView#setImageAlpha(int)}
      */
-    public static int getImageViewAlpha(final boolean isEnabled){
+    public static int getImageViewAlpha(final boolean isEnabled) {
         return isEnabled ? Styles.ENABLED_ALPHA_INT : Styles.DISABLED_ALPHA_INT;
     }
 
@@ -489,7 +492,28 @@ public final class Styles {
      * @return float value between 0f - 1.0f based on enabled state.
      * Used when setting {@link View#setAlpha(float)}
      */
-    public static float getViewAlpha(final boolean isEnabled){
+    public static float getViewAlpha(final boolean isEnabled) {
         return isEnabled ? Styles.ENABLED_ALPHA_FLOAT : Styles.DISABLED_ALPHA_FLOAT;
+    }
+
+    public static Bitmap drawableToBitmap(@NonNull final Drawable drawable) {
+        Bitmap bitmap = null;
+
+        if (drawable instanceof BitmapDrawable) {
+            final BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            if (bitmapDrawable.getBitmap() != null) {
+                return bitmapDrawable.getBitmap();
+            }
+        }
+        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
+        } else {
+            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        }
+
+        final Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
     }
 }
