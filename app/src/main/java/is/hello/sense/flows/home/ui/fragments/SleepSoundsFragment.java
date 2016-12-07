@@ -1,6 +1,8 @@
 package is.hello.sense.flows.home.ui.fragments;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,6 +24,7 @@ import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.SleepSoundsStateDevice;
 import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.flows.home.ui.views.SleepSoundsView;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SleepSoundsInteractor;
 import is.hello.sense.interactors.SleepSoundsStatusInteractor;
 import is.hello.sense.mvp.presenters.SubPresenterFragment;
@@ -50,6 +53,8 @@ public class SleepSoundsFragment extends SubPresenterFragment<SleepSoundsView>
 
     @Inject
     SleepSoundsInteractor sleepSoundsInteractor;
+    @Inject
+    PreferencesInteractor preferencesInteractor;
 
     private Subscription saveOperationSubscriber = Subscriptions.empty();
     private Subscription stopOperationSubscriber = Subscriptions.empty();
@@ -80,7 +85,7 @@ public class SleepSoundsFragment extends SubPresenterFragment<SleepSoundsView>
             this.presenterView = new SleepSoundsView(getActivity(),
                                                      new SleepSoundsAdapter(
                                                              getActivity(),
-                                                             getActivity().getSharedPreferences(Constants.SLEEP_SOUNDS_PREFS, Context.MODE_PRIVATE),
+                                                             preferencesInteractor,
                                                              this,
                                                              getAnimatorContext(),
                                                              this),
@@ -109,6 +114,29 @@ public class SleepSoundsFragment extends SubPresenterFragment<SleepSoundsView>
     @Override
     public void onUserInvisible() {
         sleepSoundsStatusInteractor.stopPolling();
+    }
+
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            final int value = data.getIntExtra(ListActivity.VALUE_ID, -1);
+            if (value == -1) {
+                return;
+            }
+            final String constant;
+            if (requestCode == SOUNDS_REQUEST_CODE) {
+                constant = Constants.SLEEP_SOUNDS_SOUND_ID;
+            } else if (requestCode == DURATION_REQUEST_CODE) {
+                constant = Constants.SLEEP_SOUNDS_DURATION_ID;
+            } else {
+                constant = Constants.SLEEP_SOUNDS_VOLUME_ID;
+            }
+            preferencesInteractor.edit()
+                       .putInt(constant, value)
+                       .apply();
+            presenterView.notifyAdapter();
+        }
     }
 
     //endregion

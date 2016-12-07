@@ -146,6 +146,10 @@ public class SleepSoundsView extends PresenterView {
         }
     }
 
+    public void notifyAdapter(){
+        this.adapter.notifyDataSetChanged();
+    }
+
 
     //endregion
 }

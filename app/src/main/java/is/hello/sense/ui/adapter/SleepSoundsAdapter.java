@@ -23,13 +23,14 @@ import is.hello.sense.api.model.v2.SleepSoundStatus;
 import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Sound;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
 import is.hello.sense.util.Constants;
 
 public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.BaseViewHolder> {
 
     private final LayoutInflater inflater;
-    private final SharedPreferences preferences;
+    private final PreferencesInteractor preferences;
     private final InteractionListener interactionListener;
     private final AnimatorContext animatorContext;
     private SleepSoundsState combinedSleepState;
@@ -42,7 +43,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
 
     public SleepSoundsAdapter(final @NonNull Context context,
-                              final @NonNull SharedPreferences preferences,
+                              final @NonNull PreferencesInteractor preferences,
                               final @NonNull InteractionListener interactionListener,
                               final @NonNull AnimatorContext animatorContext,
                               final @NonNull Retry retry) {
