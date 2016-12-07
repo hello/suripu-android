@@ -74,6 +74,7 @@ public class SleepSoundsFragment extends SubPresenterFragment<SleepSoundsView>
         super.onCreate(savedInstanceState);
         addInteractor(sleepSoundsInteractor);
         addInteractor(sleepSoundsStatusInteractor);
+        addInteractor(preferencesInteractor);
         if (savedInstanceState == null) {
             Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS, null);
         }
