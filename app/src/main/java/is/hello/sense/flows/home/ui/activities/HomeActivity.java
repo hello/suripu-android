@@ -23,8 +23,6 @@ import com.segment.analytics.Properties;
 
 import org.joda.time.LocalDate;
 
-import java.util.ArrayList;
-
 import javax.inject.Inject;
 
 import is.hello.buruberi.util.Rx;
@@ -44,7 +42,6 @@ import is.hello.sense.flows.home.ui.views.BacksideView;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
-import is.hello.sense.interactors.InteractorContainer;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.notifications.Notification;
@@ -88,7 +85,7 @@ public class HomeActivity extends ScopedInjectionActivity
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     public static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
 
-    private final InteractorContainer interactorContainer = new InteractorContainer();
+
 
     @Inject
     ApiService apiService;
@@ -119,6 +116,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
     private View progressOverlay;
     private SpinnerImageView spinner;
+    @Deprecated
     private boolean isFirstActivityRun;
     @Deprecated
     private boolean showBackside;
@@ -152,14 +150,13 @@ public class HomeActivity extends ScopedInjectionActivity
         setContentView(R.layout.activity_home);
 
         deviceIssuesPresenter.bindScope(this);
-        interactorContainer.addInteractor(deviceIssuesPresenter);
-        interactorContainer.addInteractor(alertsInteractor);
+        addInteractor(deviceIssuesPresenter);
+        addInteractor(alertsInteractor);
 
         this.isFirstActivityRun = (savedInstanceState == null);
         if (savedInstanceState != null) {
             this.showBackside = false;
             this.lastUpdated = savedInstanceState.getLong("lastUpdated");
-            interactorContainer.onRestoreState(savedInstanceState);
         } else {
             this.showBackside = (getOnboardingFlow() == OnboardingActivity.FLOW_SIGN_IN);
 
@@ -253,7 +250,7 @@ public class HomeActivity extends ScopedInjectionActivity
         }
 
         if(shouldUpdateAlerts()) {
-            bindAndSubscribe(alertsInteractor.alerts,
+            bindAndSubscribe(alertsInteractor.alert,
                              this::bindAlerts,
                              Functions.LOG_ERROR);
 
@@ -268,7 +265,6 @@ public class HomeActivity extends ScopedInjectionActivity
         super.onSaveInstanceState(outState);
 
         outState.putLong("lastUpdated", lastUpdated);
-        interactorContainer.onSaveState(outState);
     }
 
     @Override
@@ -305,15 +301,6 @@ public class HomeActivity extends ScopedInjectionActivity
 
             unreadStatePresenter.update();
         }
-
-        interactorContainer.onContainerResumed();
-    }
-
-    @Override
-    public void onTrimMemory(final int level) {
-        super.onTrimMemory(level);
-
-        interactorContainer.onTrimMemory(level);
     }
 
     @Override
@@ -322,10 +309,6 @@ public class HomeActivity extends ScopedInjectionActivity
 
         unregisterReceiver(onTimeChanged);
         viewPager.removeOnPageChangeListener(this);
-
-        if (isFinishing()) {
-            interactorContainer.onContainerDestroyed();
-        }
     }
 
     //endregion
@@ -520,20 +503,22 @@ public class HomeActivity extends ScopedInjectionActivity
 
     //region Device Issues and Alerts
 
+    @Deprecated
     private boolean shouldUpdateAlerts() {
         return isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
     }
 
+    @Deprecated
     private boolean shouldUpdateDeviceIssues() {
         return isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
     }
 
-    public void bindAlerts(@NonNull final ArrayList<Alert> alerts){
-        if ( ! alerts.isEmpty()
-                && alerts.get(0).isValid()
+    @Deprecated
+    public void bindAlerts(@NonNull final Alert alert){
+        if (alert.isValid()
                 && getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) == null) {
                 localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
-                BottomAlertDialogFragment.newInstance(alerts.get(0),
+                BottomAlertDialogFragment.newInstance(alert,
                                                       getResources())
                                          .showAllowingStateLoss(getFragmentManager(),
                                                                 BottomAlertDialogFragment.TAG);
@@ -542,6 +527,7 @@ public class HomeActivity extends ScopedInjectionActivity
         }
     }
 
+    @Deprecated
     public void bindDeviceIssue(@NonNull final DeviceIssuesInteractor.Issue issue) {
         if (issue == DeviceIssuesInteractor.Issue.NONE
                 || getFragmentManager().findFragmentByTag(DeviceIssueDialogFragment.TAG) != null
@@ -740,7 +726,7 @@ public class HomeActivity extends ScopedInjectionActivity
     //endregion
 
     //region Alert Action Handler
-
+    @Deprecated
     @Override
     public void unMuteSense(){
         showProgressOverlay(true);
@@ -759,7 +745,7 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     //endregion
-
+    @Deprecated
     public void showProgressOverlay(final boolean show) {
         progressOverlay.post(() -> {
             if (show) {
