@@ -6,7 +6,6 @@ import android.app.Fragment;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import is.hello.sense.BuildConfig;
@@ -21,7 +20,6 @@ import is.hello.sense.util.Distribution;
 
 @SuppressLint("ViewConstructor")
 public class AppSettingsView extends PresenterView {
-    private final ImageView breadcrumb;
     private final View accountItem;
     private final View devicesItem;
     private final View notificationsItem;
@@ -40,8 +38,6 @@ public class AppSettingsView extends PresenterView {
                            @NonNull final View.OnClickListener expansionsListener,
                            @NonNull final View.OnClickListener voiceListener) {
         super(activity);
-
-        this.breadcrumb = (ImageView) findViewById(R.id.fragment_app_settings_breadcrumb);
 
         this.accountItem = findViewById(R.id.fragment_app_settings_account);
         Views.setSafeOnClickListener(this.accountItem, generator.create(AccountSettingsFragment.class, R.string.label_account, true));
@@ -82,12 +78,6 @@ public class AppSettingsView extends PresenterView {
         return R.layout.fragment_app_settings;
     }
 
-
-    @Override
-    public final void pause() {
-        this.breadcrumb.setVisibility(View.GONE);
-    }
-
     @Override
     public final void releaseViews() {
         accountItem.setOnClickListener(null);
@@ -99,10 +89,6 @@ public class AppSettingsView extends PresenterView {
         tellAFriendItem.setOnClickListener(null);
         version.setOnClickListener(null);
         voiceItem.setOnClickListener(null);
-    }
-
-    public void setBreadcrumbVisible(final boolean visible) {
-        this.breadcrumb.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     public final void showVoiceEnabledRows(final boolean show) {
