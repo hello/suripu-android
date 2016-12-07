@@ -45,7 +45,7 @@ public enum Tutorial {
                                                                 Description.SWIPE_TIMELINE)),
     ZOOM_OUT_TIMELINE(R.string.tutorial_zoom_out_timeline,
                       Gravity.BOTTOM,
-                      R.id.view_timeline_toolbar_title,
+                      R.id.view_timeline_toolbar_history,
                       Interaction.TAP,
                       Analytics.createBreadcrumbTrackingProperties(Source.TIMELINE,
                                                                    Description.ZOOM_OUT_TIMELINE)),
@@ -60,14 +60,7 @@ public enum Tutorial {
                      R.id.item_insight_card,
                      Interaction.TAP,
                      Analytics.createBreadcrumbTrackingProperties(Source.INSIGHTS,
-                                                                  Description.TAP_INSIGHT_CARD)),
-    TAP_HAMBURGER(R.string.tutorial_tap_hamburger,
-                  Gravity.BOTTOM,
-                  R.id.view_timeline_toolbar_history,
-                  Interaction.TAP,
-                  Analytics.createBreadcrumbTrackingProperties(Source.TIMELINE,
-                                                               Description.TAP_HAMBURGER));
-
+                                                                  Description.TAP_INSIGHT_CARD));
 
     public final
     @StringRes
