@@ -34,10 +34,6 @@ public abstract class PresenterView extends FrameLayout {
         this.context = activity;
     }
 
-    protected boolean useAppCompat() {
-        return false;
-    }
-
     /**
      * To avoid updating the entire application and acitvities themes we can set the theme of individual
      * views using this.
