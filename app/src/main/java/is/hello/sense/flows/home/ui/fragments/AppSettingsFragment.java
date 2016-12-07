@@ -6,32 +6,25 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.support.annotation.VisibleForTesting;
 import android.view.View;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.Account;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.flows.home.ui.views.AppSettingsView;
 import is.hello.sense.flows.voice.ui.activities.VoiceSettingsActivity;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.interactors.HasVoiceInteractor;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
-import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.Share;
 
 public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> implements
         AppSettingsView.ClickListenerGenerator {
 
-    @Inject
-    AccountInteractor accountInteractor;
     @Inject
     HasVoiceInteractor hasVoiceInteractor;
 
@@ -59,23 +52,18 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addInteractor(accountInteractor);
         addInteractor(hasVoiceInteractor);
     }
 
     @Override
     public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bindAndSubscribe(accountInteractor.account,
-                         this::bindAccount,
-                         Functions.LOG_ERROR);
 
         bindAndSubscribe(hasVoiceInteractor.hasVoice,
                          this.presenterView::showVoiceEnabledRows,
                          Functions.LOG_ERROR);
 
         hasVoiceInteractor.update();
-        accountInteractor.update();
     }
 
     @Override
@@ -84,12 +72,6 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
 
     @Override
     public final void onUpdate() {
-    }
-
-    @Override
-    public final void onResume() {
-        super.onResume();
-        accountInteractor.update();
     }
 
     @Override
@@ -108,12 +90,6 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
         };
 
     }
-
-    @VisibleForTesting
-    public void bindAccount(@NonNull final Account account) {
-        presenterView.setBreadcrumbVisible(Tutorial.TAP_NAME.shouldShow(getActivity()) && account.getCreated().isBefore(Constants.RELEASE_DATE_FOR_LAST_NAME));
-    }
-
 
     private void onDeviceListClick(final View ignored) {
         final FragmentNavigationActivity.Builder builder =

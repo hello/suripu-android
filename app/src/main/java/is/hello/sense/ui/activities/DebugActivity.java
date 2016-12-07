@@ -17,7 +17,6 @@ import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.debug.TestActivity;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.flows.home.ui.activities.NewHomeActivity;
 import is.hello.sense.functional.Functions;
@@ -77,7 +76,6 @@ public class DebugActivity extends InjectionActivity {
             // Do nothing.
         }
     // todo remove when done testing
-        adapter.add(new DetailItem("Test Activity", () -> startActivity(new Intent(this, TestActivity.class))));
         adapter.add(new DetailItem("View Log", this::viewLog));
         adapter.add(new DetailItem("Clear Log", this::clearLog));
 

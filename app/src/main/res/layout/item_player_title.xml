@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<is.hello.sense.ui.widget.RoundedLinearLayout
-    style="@style/AppTheme.Card"
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light"
     android:clipChildren="true"
-    android:orientation="vertical"
-    app:senseCornerRadius="@dimen/card_large_corner_radius">
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -62,4 +58,4 @@
 
     <View style="@style/Divider.Horizontal"/>
 
-</is.hello.sense.ui.widget.RoundedLinearLayout>
+</LinearLayout>

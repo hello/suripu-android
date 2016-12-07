@@ -32,6 +32,7 @@ import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.SleepSoundsStateDevice;
 import is.hello.sense.api.model.v2.Sound;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SleepSoundsInteractor;
 import is.hello.sense.interactors.SleepSoundsStatusInteractor;
 import is.hello.sense.ui.activities.ListActivity;
@@ -48,7 +49,7 @@ import rx.Observable;
 import static is.hello.sense.ui.adapter.SleepSoundsAdapter.AdapterState;
 import static is.hello.sense.ui.adapter.SleepSoundsAdapter.InteractionListener;
 import static is.hello.sense.ui.adapter.SleepSoundsAdapter.Retry;
-
+@Deprecated
 public class SleepSoundsFragment extends SubFragment implements InteractionListener, Retry {
     private final static int pollingInterval = 500; // ms
     private final static int initialBackOff = 0; // ms
@@ -65,6 +66,8 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
 
     @Inject
     SleepSoundsInteractor sleepSoundsPresenter;
+    @Inject
+    PreferencesInteractor preferences;
 
 
     private SpinnerImageView playButton;
@@ -72,7 +75,6 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
     private SleepSoundsAdapter adapter;
-    private SharedPreferences preferences;
     private UserWants userWants = UserWants.NONE;
     private final StatusPollingHelper statusPollingHelper = new StatusPollingHelper();
     private int backOff = initialBackOff;
@@ -149,6 +151,7 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
+
         super.setUserVisibleHint(isVisibleToUser);
         statusPollingHelper.setViewVisible(isVisibleToUser);
         // This method is called before onCreateView, when not visible to the user.
@@ -169,12 +172,11 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_sleep_sounds, container, false);
-        progressBar = (ProgressBar) view.findViewById(R.id.fragment_sleep_sounds_progressbar);
-        playButton = (SpinnerImageView) view.findViewById(R.id.fragment_sleep_sounds_playbutton);
-        buttonLayout = (FrameLayout) view.findViewById(R.id.fragment_sleep_sounds_buttonLayout);
-        preferences = getActivity().getSharedPreferences(Constants.SLEEP_SOUNDS_PREFS, 0);
-        this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_sleep_sounds_recycler);
+        final View view = inflater.inflate(R.layout.view_sleep_sounds, container, false);
+        progressBar = (ProgressBar) view.findViewById(R.id.view_sleep_sounds_progressbar);
+        playButton = (SpinnerImageView) view.findViewById(R.id.view_sleep_sounds_playbutton);
+        buttonLayout = (FrameLayout) view.findViewById(R.id.view_sleep_sounds_buttonLayout);
+        this.recyclerView = (RecyclerView) view.findViewById(R.id.view_sleep_sounds_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
         final Resources resources = getResources();

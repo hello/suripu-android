@@ -66,7 +66,6 @@ import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
 import is.hello.sense.ui.widget.timeline.TimelineImageGenerator;
 import is.hello.sense.ui.widget.timeline.TimelineInfoOverlay;
 import is.hello.sense.ui.widget.timeline.TimelineNoDataHeaderView;
-import is.hello.sense.ui.widget.timeline.TimelineToolbar;
 import is.hello.sense.ui.widget.util.Dialogs;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -111,7 +110,7 @@ public class TimelineFragment extends InjectionFragment
     private RecyclerView recyclerView;
 
     private LinearLayoutManager layoutManager;
-    private TimelineToolbar toolbar;
+
     private TimelineHeaderView headerView;
     private TimelineAdapter adapter;
     private StaggeredFadeItemAnimator itemAnimator;
@@ -156,8 +155,6 @@ public class TimelineFragment extends InjectionFragment
         super.onAttach(activity);
         if (activity instanceof Parent && parent == null) {
             setParent((Parent) activity);
-            //cannot retain instance of nested fragments
-            //setRetainInstance(true);
         } else if (activity instanceof ParentProvider && parent == null) {
             setParent(((ParentProvider) activity).get());
         } else if (parent == null) {
@@ -198,21 +195,6 @@ public class TimelineFragment extends InjectionFragment
 
         this.animationEnabled = (!hasCreatedView && !parent.isBacksideOpen());
 
-        this.toolbar = new TimelineToolbar(getActivity());
-        toolbar.setHistoryOnClickListener(ignored -> {
-            if (infoOverlay != null) {
-                infoOverlay.dismiss(false);
-            }
-            parent.showTimelineNavigator(getDate(), getCachedTimeline());
-        });
-
-        toolbar.setTitleDimmed(getUserVisibleHint() && parent.isBacksideOpen());
-        updateTitle();
-
-        toolbar.setShareOnClickListener(this::share);
-        toolbar.setShareVisible(false);
-
-
         this.headerView = new TimelineHeaderView(getActivity());
         headerView.setAnimatorContext(getAnimatorContext());
         headerView.setAnimationEnabled(animationEnabled);
@@ -227,7 +209,7 @@ public class TimelineFragment extends InjectionFragment
         recyclerView.setBackground(backgroundFill);
 
         this.adapter = new TimelineAdapter(getActivity(), dateFormatter);
-        adapter.addHeader(toolbar);
+
         adapter.addHeader(headerView);
         adapter.setOnItemClickListener(stateSafeExecutor, this);
         recyclerView.setAdapter(adapter);
@@ -251,8 +233,9 @@ public class TimelineFragment extends InjectionFragment
 
         if (isVisibleToUser) {
             // For all subsequent fragments
+            this.parent.setShareVisible(timelinePresenter.hasValidTimeline());
             bindIfNeeded();
-
+            this.parent.updateTitle(getTitle());
             if (itemAnimator != null) {
                 itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, animationEnabled);
             }
@@ -265,9 +248,6 @@ public class TimelineFragment extends InjectionFragment
             dismissVisibleOverlaysAndDialogs();
             if (headerView != null) {
                 headerView.clearAnimation();
-            }
-            if (toolbar != null) {
-                toolbar.clearAnimation();
             }
         }
     }
@@ -308,15 +288,14 @@ public class TimelineFragment extends InjectionFragment
 
         adapter.stopSoundPlayer();
         final Timeline timeline = timelinePresenter.timeline.getValue();
-        if (timeline != null && timeline.getScore() != null && timeline.getScore() > 0) {
+        if (timelinePresenter.hasValidTimeline()) {
             backgroundFill.setColor(ContextCompat.getColor(getActivity(), R.color.timeline_background_fill));
             headerView.bindTimeline(timeline);
-            toolbar.setShareVisible(true);
             adapter.bindEvents(timeline.getEvents());
         }
     }
 
-    private void dismissVisibleOverlaysAndDialogs() {
+    public void dismissVisibleOverlaysAndDialogs() {
         if (infoOverlay != null) {
             infoOverlay.dismiss(false);
         }
@@ -348,7 +327,6 @@ public class TimelineFragment extends InjectionFragment
             recyclerView.setAdapter(null);
         }
 
-        this.toolbar = null;
         this.headerView = null;
         this.recyclerView = null;
         this.layoutManager = null;
@@ -393,29 +371,10 @@ public class TimelineFragment extends InjectionFragment
     @Override
     public void onTopViewWillSlideDown() {
         dismissVisibleOverlaysAndDialogs();
-
-        if (toolbar != null) {
-            toolbar.setTitleDimmed(true);
-            toolbar.setShareVisible(false);
-        }
     }
 
     @Override
     public void onTopViewDidSlideUp() {
-        if (toolbar != null) {
-            toolbar.setTitleDimmed(false);
-            toolbar.setShareVisible(adapter.hasEvents());
-        }
-    }
-
-    public void updateTitle() {
-        if (toolbar != null) {
-            toolbar.setTitle(getTitle());
-        }
-    }
-
-    public void share(@NonNull final View sender) {
-        share();
     }
 
     public void share() {
@@ -495,7 +454,7 @@ public class TimelineFragment extends InjectionFragment
 
         this.tutorialOverlay = new TutorialOverlayView(getActivity(), tutorial);
         tutorialOverlay.setOnDismiss(() -> this.tutorialOverlay = null);
-        tutorialOverlay.setAnchorContainer(getView());
+        tutorialOverlay.setAnchorContainer(getActivity().findViewById(parent.getTutorialContainerIdRes()));
         tutorialOverlay.show(parent.getTutorialContainerIdRes());
     }
 
@@ -586,13 +545,15 @@ public class TimelineFragment extends InjectionFragment
             backgroundFill.setColor(ContextCompat.getColor(getActivity(), R.color.background_timeline));
         }
 
-        toolbar.setShareVisible(false);
+        parent.setShareVisible(false);
+
         headerView.stopPulsing();
-        adapter.replaceHeader(1, newHeader);
+
+        adapter.replaceHeader(0, newHeader);
     }
 
     private void transitionOutOfNoDataState() {
-        if (adapter.getHeaderAt(1) == headerView) {
+        if (adapter.getHeaderAt(0) == headerView){
             return;
         }
 
@@ -601,7 +562,9 @@ public class TimelineFragment extends InjectionFragment
         itemAnimator.setTemplate(itemAnimator.getTemplate()
                                              .withDuration(Anime.DURATION_NORMAL));
 
-        adapter.replaceHeader(1, headerView);
+
+        adapter.replaceHeader(0, headerView);
+
         headerView.setBackgroundSolid(false, 0);
         headerView.startPulsing();
 
@@ -619,8 +582,7 @@ public class TimelineFragment extends InjectionFragment
                 final int targetColor = ContextCompat.getColor(getActivity(), R.color.timeline_background_fill);
                 final Animator backgroundFade = backgroundFill.colorAnimator(targetColor);
                 backgroundFade.start();
-
-                toolbar.setShareVisible(!parent.isBacksideOpen());
+                parent.setShareVisible(true);
             });
             final Runnable adapterAnimations = stateSafeExecutor.bind(() -> {
                 if (animationEnabled) {
@@ -649,11 +611,6 @@ public class TimelineFragment extends InjectionFragment
                     header.setMessage(R.string.message_timeline_first_night);
                     header.setAction(R.string.action_timeline_bad_data_support, null);
 
-                    final Activity activity = getActivity();
-                    if (firstTimeline && Tutorial.TAP_HAMBURGER.shouldShow(activity) &&
-                            !WelcomeDialogFragment.isAnyVisible(activity)) {
-                        showTutorial(Tutorial.TAP_HAMBURGER);
-                    }
                 } else if (timeline.getScoreCondition() == ScoreCondition.INCOMPLETE) {
                     header.setDiagramResource(R.drawable.timeline_state_not_enough_data);
                     header.setTitle(R.string.title_timeline_not_enough_data);
@@ -943,11 +900,12 @@ public class TimelineFragment extends InjectionFragment
 
         boolean isBacksideOpen();
 
-        void showTimelineNavigator(@NonNull final LocalDate date,
-                                   @Nullable final Timeline timeline);
-
         @IdRes
         int getTutorialContainerIdRes();
+
+        void updateTitle(@NonNull String title);
+
+        void setShareVisible(boolean visible);
     }
 
     public interface ParentProvider {

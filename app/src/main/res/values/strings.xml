@@ -13,7 +13,7 @@
     <string name="label_gender">Gender</string>
     <string name="label_height">Height</string>
     <string name="label_weight">Weight</string>
-    <string name="label_dob">Date of Birth</string>
+    <string name="label_birthday">Birthday</string>
 
     <string name="action_log_in">Log in</string>
     <string name="action_set_up_sense">Set up Sense</string>
@@ -436,11 +436,9 @@
     <string name="info_have_sense_ready">You‘ll need Sense and Sleep Pill handy to continue. If you‘re not ready now, you can always come back later.</string>
 
     <string name="tutorial_swipe_timeline">Swipe left or right to navigate between days.</string>
-    <string name="tutorial_zoom_out_timeline">Tap the date to navigate quickly between days.</string>
+    <string name="tutorial_zoom_out_timeline">Tap the calendar icon to navigate quickly between days.</string>
     <string name="tutorial_scrub_sensor_history">Press and hold graphs to see historical data.</string>
     <string name="tutorial_tap_insight_card">Tap on a card to learn more.</string>
-    <string name="tutorial_tap_hamburger">To explore more now, tap the menu icon.</string>
-    <string name="tutorial_tap_name">Verify your name and add a profile photo.</string>
 
     <string name="action_save">Save</string>
     <string name="action_show_alarms">Alarms</string>

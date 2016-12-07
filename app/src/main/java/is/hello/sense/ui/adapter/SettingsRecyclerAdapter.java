@@ -51,17 +51,9 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
     }
 
     @Override
-    public int getItemViewType(int position) {
+    public int getItemViewType(final int position) {
         final Item item = getItem(position);
-        if (item instanceof DetailItem) {
-            return DetailItem.ID;
-        } else if (item instanceof ToggleItem) {
-            return ToggleItem.ID;
-        } else if (item instanceof TextItem){
-            return TextItem.ID;
-        } else{
-            return Item.ID;
-        }
+        return item.getId();
     }
 
     @Override
@@ -78,6 +70,10 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
             case TextItem.ID: {
                 final View view = inflater.inflate(R.layout.item_settings_text, parent, false);
                 return new TextViewHolder(view);
+            }
+            case EmptyItem.ID: {
+                final View view = new View(parent.getContext());
+                return new EmptyViewHolder(view);
             }
             default: {
                 throw new IllegalArgumentException("Unknown view type " + viewType);
@@ -198,6 +194,22 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         }
     }
 
+    class EmptyViewHolder extends ViewHolder<EmptyItem> {
+
+        EmptyViewHolder(View view) {
+            super(view);
+            itemView.setClickable(false);
+            itemView.setFocusable(false);
+        }
+
+        @Override
+        void bind(EmptyItem item) {
+            itemView.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,
+                                                                   item.getValue())
+                                );
+        }
+    }
+
     //endregion
 
 
@@ -238,6 +250,10 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
                 adapter.notifyItemChanged(position);
             }
         }
+
+        public int getId() {
+            return ID;
+        }
     }
 
     public static class TextItem<T> extends Item<T>{
@@ -254,6 +270,11 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         public void setText(String text) {
             this.text = text;
             notifyChanged();
+        }
+
+        @Override
+        public int getId() {
+            return ID;
         }
     }
 
@@ -279,6 +300,11 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
             this.icon = icon;
             this.iconContentDescription = iconContentDescription;
         }
+
+        @Override
+        public int getId() {
+            return ID;
+        }
     }
 
     public static class ToggleItem extends TextItem<Boolean> {
@@ -288,6 +314,25 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
             super(title, onClick);
 
             setValue(false);
+        }
+
+        @Override
+        public int getId() {
+            return ID;
+        }
+    }
+
+    public static class EmptyItem extends Item<Integer> {
+        static final int ID = 4;
+
+        public EmptyItem(final int gapPixelHeight, @Nullable final Runnable runnable) {
+            super(runnable);
+            setValue(gapPixelHeight);
+        }
+
+        @Override
+        public int getId() {
+            return ID;
         }
     }
 

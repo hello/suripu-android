@@ -60,6 +60,7 @@ import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.SpinnerImageView;
+import is.hello.sense.ui.widget.timeline.TimelineToolbar;
 import is.hello.sense.ui.widget.util.InteractiveAnimator;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -136,12 +137,6 @@ public class HomeActivity extends ScopedInjectionActivity
                 viewPager.setCurrentItem(viewPagerAdapter.getLastNight(), false);
             } else {
                 viewPagerAdapter.setLatestDate(newToday);
-
-                final TimelineFragment currentFragment =
-                        (TimelineFragment) viewPagerAdapter.getCurrentFragment();
-                if (currentFragment != null) {
-                    currentFragment.updateTitle();
-                }
             }
         }
     };
@@ -219,6 +214,9 @@ public class HomeActivity extends ScopedInjectionActivity
         registerReceiver(onTimeChanged, new IntentFilter(Intent.ACTION_TIME_CHANGED));
         this.progressOverlay = findViewById(R.id.activity_home_progress_overlay);
         this.spinner = (SpinnerImageView) findViewById(R.id.activity_home_spinner);
+
+        final TimelineToolbar toolbar =  (TimelineToolbar) findViewById(R.id.activity_home_timeline_toolbar);
+        toolbar.setOnClickListener(ignore -> this.onTopViewWillSlideDown());
     }
 
     @Override
@@ -679,7 +677,6 @@ public class HomeActivity extends ScopedInjectionActivity
                 slidingLayersView.isInMotion());
     }
 
-    @Override
     public void showTimelineNavigator(@NonNull final LocalDate startDate, @Nullable final Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_IN, null);
 
@@ -696,6 +693,16 @@ public class HomeActivity extends ScopedInjectionActivity
     @Override
     public int getTutorialContainerIdRes() {
         return R.id.activity_home_container;
+    }
+
+    @Override
+    public void updateTitle(@NonNull final String title) {
+        //do nothing
+    }
+
+    @Override
+    public void setShareVisible(final boolean visible) {
+        //do nothing
     }
 
     @Override
