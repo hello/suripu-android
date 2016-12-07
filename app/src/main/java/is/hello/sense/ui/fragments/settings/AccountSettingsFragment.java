@@ -161,8 +161,12 @@ public class AccountSettingsFragment extends InjectionFragment
                                                        this::changePassword);
         passwordItem.setIcon(R.drawable.icon_settings_lock, R.string.label_password);
         adapter.add(passwordItem);
-        birthdayItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_dob), this::changeBirthDate);
-        birthdayItem.setIcon(R.drawable.icon_settings_calendar, R.string.label_dob);
+
+        adapter.add(new SettingsRecyclerAdapter.EmptyItem(resources.getDimensionPixelSize(R.dimen.x3), null));
+
+        birthdayItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_birthday), this::changeBirthDate);
+        birthdayItem.setIcon(R.drawable.icon_settings_calendar, R.string.label_birthday);
+
         adapter.add(birthdayItem);
         this.genderItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_gender),
                                                                  this::changeGender);
@@ -377,7 +381,7 @@ public class AccountSettingsFragment extends InjectionFragment
         final OnboardingRegisterBirthdayFragment fragment = new OnboardingRegisterBirthdayFragment();
         AccountEditor.setWantsSkipButton(fragment, false);
         fragment.setTargetFragment(this, 0x00);
-        getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_dob), true);
+        getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_birthday), true);
     }
 
     public void changeGender() {
