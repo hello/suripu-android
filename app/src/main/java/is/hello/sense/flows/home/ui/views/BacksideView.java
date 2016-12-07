@@ -165,20 +165,6 @@ public class BacksideView extends PresenterView {
         }
     }
 
-    public final void setHasUnreadAccountItems(final boolean hasUnreadAccountItems) {
-        final @DrawableRes int iconRes = hasUnreadAccountItems
-                ? R.drawable.backside_icon_settings_unread
-                : R.drawable.backside_icon_settings;
-
-        final ToggleButton button = tabSelector.getButtonAt(ITEM_APP_SETTINGS);
-        final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(ITEM_APP_SETTINGS),
-                                                               iconRes);
-        button.setTextOff(inactiveContent);
-        if (!button.isChecked()) {
-            button.setText(inactiveContent);
-        }
-    }
-
     private String getItemTag(int position) {
         if (position < 0 || position > adapter.getCount() - 1) {
             position = pager.getCurrentItem();

@@ -66,13 +66,8 @@ public enum Tutorial {
                   R.id.view_timeline_toolbar_history,
                   Interaction.TAP,
                   Analytics.createBreadcrumbTrackingProperties(Source.TIMELINE,
-                                                               Description.TAP_HAMBURGER)),
-    TAP_NAME(R.string.tutorial_tap_name,
-             Gravity.BOTTOM,
-             R.id.fragment_account_settings_name,
-             Interaction.TAP,
-             Analytics.createBreadcrumbTrackingProperties(Source.ACCOUNT,
-                                                          Description.TAP_NAME));
+                                                               Description.TAP_HAMBURGER));
+
 
     public final
     @StringRes
