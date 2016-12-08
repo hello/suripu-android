@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 
 import java.util.List;
@@ -88,6 +90,14 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
         addInteractor(this.unitFormatter);
         addInteractor(this.preferencesInteractor);
         addInteractor(this.sensorResponseInteractor);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(final Menu menu,
+                                    final MenuInflater inflater) {
+        inflater.inflate(R.menu.activity_support_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override

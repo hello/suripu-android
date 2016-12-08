@@ -6,6 +6,11 @@ import is.hello.sense.flows.home.util.TrendsViewPagerPresenterDelegate;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 
 public class TrendsPresenterFragment extends ViewPagerPresenterFragment {
+    @Override
+    protected boolean setUpActionBar() {
+        return false;
+    }
+
     @NonNull
     @Override
     protected BaseViewPagerPresenterDelegate newViewPagerDelegateInstance() {

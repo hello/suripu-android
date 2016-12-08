@@ -77,6 +77,7 @@ public abstract class PresenterFragment<T extends PresenterView>
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setUpActionBar();
     }
 
     @CallSuper
@@ -228,5 +229,20 @@ public abstract class PresenterFragment<T extends PresenterView>
 
     public void finishActivity() {
         getActivity().finish();
+    }
+
+    protected final void showActionBar() {
+        if (getActivity().getActionBar() == null) {
+            return;
+        }
+        if (setUpActionBar()) {
+            getActivity().getActionBar().show();
+        } else {
+            getActivity().getActionBar().hide();
+        }
+    }
+
+    protected boolean setUpActionBar() {
+        return true;
     }
 }
