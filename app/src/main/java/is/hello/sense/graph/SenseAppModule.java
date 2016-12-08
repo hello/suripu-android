@@ -47,6 +47,7 @@ import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.mvp.presenters.HomePresenterFragment;
 import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
+import is.hello.sense.mvp.presenters.TrendsPresenterFragment;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.pill.PillModule;
@@ -153,6 +154,10 @@ import is.hello.sense.zendesk.ZendeskModule;
                 HomePresenterFragment.class,
                 is.hello.sense.flows.home.ui.fragments.SmartAlarmListFragment.class,
                 is.hello.sense.flows.home.ui.fragments.SleepSoundsFragment.class,
+                is.hello.sense.flows.home.ui.fragments.WeekTrendsFragment.class,
+                is.hello.sense.flows.home.ui.fragments.MonthTrendsFragment.class,
+                is.hello.sense.flows.home.ui.fragments.QuarterTrendsFragment.class,
+                TrendsPresenterFragment.class,
 
                 VoiceSettingsInteractor.class
 
