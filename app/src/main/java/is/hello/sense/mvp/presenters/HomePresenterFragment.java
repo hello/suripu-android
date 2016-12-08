@@ -34,16 +34,21 @@ public class HomePresenterFragment extends ViewPagerPresenterFragment {
                               final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bindAndSubscribe(hasVoiceInteractor.hasVoice,
-                         hasVoice -> {
-                             if (hasVoice) {
-                                 presenterView.createTabsAndPager(this);
-                             } else {
-                                 presenterView.hideTabsAfter(0);
-                                 presenterView.lockViewPager(0);
-                             }
-                         },
+                         this::bindVoiceSettings,
                          Functions.LOG_ERROR);
         hasVoiceInteractor.update();
+    }
+    //endRegion
+
+    //region methods
+    public void bindVoiceSettings(final boolean hasVoice) {
+        if (hasVoice) {
+            presenterView.createTabsAndPager(this);
+        } else {
+            presenterView.hideTabsAfter(0);
+            presenterView.lockViewPager(0);
+        }
+
     }
     //endRegion
 }
