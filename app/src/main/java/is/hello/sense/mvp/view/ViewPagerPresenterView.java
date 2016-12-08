@@ -10,7 +10,6 @@ import android.support.v4.view.ViewPager;
 import is.hello.sense.R;
 import is.hello.sense.mvp.adapters.StaticSubPresenterFragmentAdapter;
 import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
-import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 
 
@@ -19,34 +18,17 @@ public final class ViewPagerPresenterView extends PresenterView {
 
     private final ExtendedViewPager viewPager;
     private final TabLayout tabLayout;
-    private final StaticSubPresenterFragmentAdapter adapter;
 
     /**
      * @param fragment - Fragment providing initialization settings and callbacks.
      *                 Don't keep a reference to this.
      */
-    public ViewPagerPresenterView(@NonNull final ViewPagerPresenterFragment fragment,
-                                  @NonNull final FragmentManager fragmentManager) {
+    public ViewPagerPresenterView(@NonNull final ViewPagerPresenterFragment fragment) {
         super(fragment.getActivity());
         this.viewPager = (ExtendedViewPager) findViewById(R.id.view_view_pager_extended_view_pager);
         this.tabLayout = (TabLayout) findViewById(R.id.view_view_pager_tab_layout);
-
-        final StaticSubPresenterFragmentAdapter.Item[] items = fragment.getViewPagerItems();
-
-        // ViewPager
-        this.adapter = new StaticSubPresenterFragmentAdapter(fragmentManager, items);
-        this.viewPager.setOffscreenPageLimit(0);
-        this.viewPager.setAdapter(this.adapter);
-
-        // TabLayout
-        for (final StaticSubPresenterFragmentAdapter.Item item : items) {
-            this.tabLayout.addTab(this.tabLayout.newTab().setText(item.getTitle()));
-        }
-        final TabLayout.Tab firstTab = this.tabLayout.getTabAt(fragment.getStartingItemPosition());
-        if (firstTab != null) {
-            firstTab.select();
-        }
         this.tabLayout.setupWithViewPager(this.viewPager);
+        createTabsAndPager(fragment);
     }
 
     //region PresenterView
@@ -66,16 +48,52 @@ public final class ViewPagerPresenterView extends PresenterView {
         return true;
     }
     //endregion
-    
+
     //region methods
+
+    public void createTabsAndPager(@NonNull final ViewPagerPresenterFragment fragment) {
+        final StaticSubPresenterFragmentAdapter.Item[] items = fragment.getViewPagerItems();
+
+        // ViewPager
+        final StaticSubPresenterFragmentAdapter adapter =
+                new StaticSubPresenterFragmentAdapter(fragment.getDesiredFragmentManager(),
+                                                      items);
+        this.viewPager.setOffscreenPageLimit(0);
+        this.viewPager.setAdapter(adapter);
+        this.viewPager.setEnabled(true);
+
+        // TabLayout
+        tabLayout.removeAllTabs();
+        for (final StaticSubPresenterFragmentAdapter.Item item : items) {
+            this.tabLayout.addTab(this.tabLayout.newTab().setText(item.getTitle()));
+        }
+        final TabLayout.Tab firstTab = this.tabLayout.getTabAt(fragment.getStartingItemPosition());
+        if (firstTab != null) {
+            firstTab.select();
+        }
+    }
+
     public void hideTabLayout() {
         tabLayout.setVisibility(GONE);
     }
 
-    public void lockViewPager() {
+    public void lockViewPager(final int position) {
         viewPager.setScrollingEnabled(false);
+        viewPager.setCurrentItem(position);
     }
 
+    public void unlockViewPager() {
+        viewPager.setScrollingEnabled(true);
+    }
+
+    public void hideTabsAfter(final int position) {
+        if (position < 0) {
+            return;
+        }
+        for (int i = position + 1; i < tabLayout.getTabCount(); i++) {
+            tabLayout.removeTabAt(position);
+        }
+    }
 
     //endregion
 
