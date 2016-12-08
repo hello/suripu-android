@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 
 import is.hello.go99.animators.AnimatorContext;
-import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.GraphSection;
 import is.hello.sense.api.model.v2.Trends;
@@ -163,24 +162,6 @@ public class TrendFeedView extends LinearLayout {
                 cardViewsIterator.remove();
             }
         }
-        if (getChildCount() > 0) {
-            ((LayoutParams) getChildAt(getChildCount() - 1).getLayoutParams()).bottomMargin = getResources().getDimensionPixelSize(R.dimen.gap_outer_half);
-        }
-    }
-
-    public boolean isAnimating() {
-        if (welcomeCard != null || errorCard != null) {
-            return false;
-        }
-        for (int i = 0; i < getChildCount(); i++) {
-            final View child = getChildAt(i);
-            if (child instanceof TrendFeedViewItem) {
-                if (((TrendFeedViewItem) child).isAnimating()) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     private TrendFeedViewItem createTrendCard(@NonNull final Graph graph) {

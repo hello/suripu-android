@@ -35,24 +35,25 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
     private final ShimmerDividerDrawable dividerDrawable;
     private final OnBindGraph graphBinder;
 
-    public static ErrorCardView createErrorCard(@NonNull Context context,
-                                                @NonNull OnRetry onRetry) {
+    public static ErrorCardView createErrorCard(@NonNull final Context context,
+                                                @NonNull final OnRetry onRetry) {
         return new ErrorCardView(context, onRetry);
     }
 
-    public static WelcomeCardView createWelcomeCard(@NonNull Context context) {
+    public static WelcomeCardView createWelcomeCard(@NonNull final Context context) {
         return new WelcomeCardView(context);
     }
 
-    public static WelcomeBackCardView createWelcomeBackCard(@NonNull Context context) {
+    public static WelcomeBackCardView createWelcomeBackCard(@NonNull final Context context) {
         return new WelcomeBackCardView(context);
     }
 
-    public static ComingSoonCardView createComingSoonCard(@NonNull Context context, int days) {
+    public static ComingSoonCardView createComingSoonCard(@NonNull final Context context,
+                                                          final int days) {
         return new ComingSoonCardView(context, days);
     }
 
-    public TrendFeedViewItem(@NonNull TrendGraphLayout layout) {
+    public TrendFeedViewItem(@NonNull final TrendGraphLayout layout) {
         super(layout.getContext());
 
         LayoutInflater.from(getContext()).inflate(R.layout.item_trend, this);
@@ -66,7 +67,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
 
         final LayoutParams myLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
                                                              LayoutParams.WRAP_CONTENT);
-        myLayoutParams.topMargin = resources.getDimensionPixelSize(R.dimen.gap_outer_half);
+        myLayoutParams.bottomMargin = resources.getDimensionPixelSize(R.dimen.x1);
         setLayoutParams(myLayoutParams);
 
         final float cornerRadius = resources.getDimension(R.dimen.raised_item_corner_radius);
@@ -99,7 +100,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
         return graphBinder.isAnimating();
     }
 
-    public void setLoading(boolean loading) {
+    public void setLoading(final boolean loading) {
         if (loading) {
             dividerDrawable.start();
         } else {
@@ -107,23 +108,23 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
         }
     }
 
-    public void setTitle(String titleText) {
+    public void setTitle(final String titleText) {
         title.setText(titleText);
     }
 
-    public void bindGraph(@NonNull Graph graph) {
+    public void bindGraph(@NonNull final Graph graph) {
         graphBinder.bindGraph(graph);
         populateAnnotations(graph.getDataType(),
                             graph.getAnnotations());
     }
 
-    private void populateAnnotations(@NonNull Graph.DataType dataType,
-                                     @Nullable List<Annotation> annotations) {
+    private void populateAnnotations(@NonNull final Graph.DataType dataType,
+                                     @Nullable final List<Annotation> annotations) {
         if (!Lists.isEmpty(annotations)) {
             annotationsLayout.removeAllViews();
 
             final LayoutInflater inflater = LayoutInflater.from(getContext());
-            for (Annotation annotation : annotations) {
+            for (final Annotation annotation : annotations) {
                 inflater.inflate(R.layout.item_bargraph_annotation, annotationsLayout);
                 final View annotationView = annotationsLayout.getChildAt(annotationsLayout.getChildCount() - 1);
 
@@ -164,7 +165,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
         protected final TextView message;
         protected final Button action;
 
-        StaticCardLayout(@NonNull Context context) {
+        StaticCardLayout(@NonNull final Context context) {
             super(context);
 
             final View view = LayoutInflater.from(getContext()).inflate(R.layout.item_message_card, this);
@@ -177,7 +178,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
     }
 
     static class ErrorCardView extends StaticCardLayout {
-        ErrorCardView(@NonNull Context context, @NonNull OnRetry onRetry) {
+        ErrorCardView(@NonNull final Context context, @NonNull final OnRetry onRetry) {
             super(context);
 
             title.setVisibility(View.GONE);
@@ -191,7 +192,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
     }
 
     static class WelcomeCardView extends StaticCardLayout {
-        WelcomeCardView(@NonNull Context context) {
+        WelcomeCardView(@NonNull final Context context) {
             super(context);
 
             title.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -212,7 +213,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
     }
 
     static class WelcomeBackCardView extends WelcomeCardView {
-        WelcomeBackCardView(@NonNull Context context) {
+        WelcomeBackCardView(@NonNull final Context context) {
             super(context);
             title.setText(getResources().getString(R.string.title_trends_welcome_back));
             message.setText(getResources().getString(R.string.message_trends_welcome_back));
@@ -220,7 +221,8 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
     }
 
     static class ComingSoonCardView extends WelcomeCardView {
-        ComingSoonCardView(@NonNull Context context, int days) {
+        ComingSoonCardView(@NonNull final Context context,
+                           final int days) {
             super(context);
             title.setText(getResources().getString(R.string.title_trends_coming_soon));
             final CharSequence styledText = Html.fromHtml(getResources().getQuantityString(R.plurals.message_trends_coming_soon, days, days + ""));
