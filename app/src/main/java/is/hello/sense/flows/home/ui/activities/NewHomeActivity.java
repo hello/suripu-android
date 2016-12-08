@@ -34,6 +34,7 @@ import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.mvp.presenters.TrendsPresenterFragment;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
@@ -389,7 +390,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
         //todo these are the tags FragmentNavigationDelegate uses when making transactions
         // heavy dependence on fragment.class.getSimpleName()
         private final String TIMELINE_TAG = TimelinePagerFragment.class.getSimpleName();
-        private final String TRENDS_TAG = TrendsFragment.class.getSimpleName();
+        private final String TRENDS_TAG = TrendsPresenterFragment.class.getSimpleName();
         private final String HOME_TAG = HomePresenterFragment.class.getSimpleName();
         private final String SOUNDS_TAG = SoundsPresenterFragment.class.getSimpleName();
         private final String CONDITIONS_TAG = AppSettingsFragment.class.getSimpleName();
@@ -407,7 +408,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
         private FragmentMapper(){
             this.map = new ArrayMap<>(tags.length);
             map.put(TIMELINE_TAG, TimelinePagerFragment::new);
-            map.put(TRENDS_TAG, RoomConditionsFragment::new);
+            map.put(TRENDS_TAG, TrendsPresenterFragment::new);
             map.put(SOUNDS_TAG, SoundsPresenterFragment::new);
             map.put(CONDITIONS_TAG, AppSettingsFragment::new);
             map.put(HOME_TAG, HomePresenterFragment::new);
