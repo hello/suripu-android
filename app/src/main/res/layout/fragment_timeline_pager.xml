@@ -21,10 +21,6 @@
                 android:id="@+id/fragment_timeline_pager_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/action_bar_height"/>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/shadow_size"
-                android:background="@drawable/shadow_top_down"/>
         </LinearLayout>
     </FrameLayout>
 </layout>
