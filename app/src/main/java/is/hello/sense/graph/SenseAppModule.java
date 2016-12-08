@@ -22,7 +22,7 @@ import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.home.ui.fragments.BacksideFragment;
 import is.hello.sense.flows.home.ui.fragments.HomeFragment;
 import is.hello.sense.flows.home.ui.fragments.InsightsFragment;
-import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
+import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
@@ -143,7 +143,7 @@ import is.hello.sense.zendesk.ZendeskModule;
                 OnboardingSenseColorsFragment.class,
                 OnboardingPairPill.class,
                 BacksideFragment.class,
-                RoomConditionsFragment.class,
+                RoomConditionsPresenterFragment.class,
                 TrendsFragment.class,
                 InsightsFragment.class,
                 SoundsFragment.class,

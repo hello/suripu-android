@@ -21,26 +21,14 @@ import is.hello.sense.ui.widget.util.Views;
 public final class RoomConditionsView extends PresenterView {
     final RecyclerView recyclerView;
     final ProgressBar progressBar;
-    final ImageButton settingsButton;
 
     public RoomConditionsView(@NonNull final Activity activity,
                               @NonNull final SensorResponseAdapter adapter) {
         super(activity);
-        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.fragment_room_conditions_refresh_container);
-        swipeRefreshLayout.setEnabled(false);
-        settingsButton = (ImageButton) findViewById(R.id.fragment_room_conditions_settings_button);
-        progressBar = (ProgressBar) findViewById(R.id.fragment_room_conditions_loading);
+         progressBar = (ProgressBar) findViewById(R.id.fragment_room_conditions_loading);
         recyclerView = (RecyclerView) findViewById(R.id.fragment_room_conditions_recycler);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setItemAnimator(null);
 
-        final Resources resources = context.getResources();
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new CardItemDecoration(resources));
-        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
-
+        setUpStandardRecyclerViewDecorations(recyclerView, new LinearLayoutManager(context));
         recyclerView.setAdapter(adapter);
     }
 
@@ -58,7 +46,7 @@ public final class RoomConditionsView extends PresenterView {
         progressBar.setVisibility(show ? VISIBLE : INVISIBLE);
     }
 
-    public void setSettingsButtonClickListener(@NonNull final OnClickListener listener){
-        Views.setSafeOnClickListener(settingsButton, listener);
+    public void setSettingsButtonClickListener(@NonNull final OnClickListener listener) {
+        //   Views.setSafeOnClickListener(settingsButton, listener);
     }
 }

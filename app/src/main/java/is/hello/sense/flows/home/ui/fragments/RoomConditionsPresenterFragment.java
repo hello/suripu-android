@@ -27,6 +27,7 @@ import is.hello.sense.flows.home.ui.views.RoomConditionsView;
 import is.hello.sense.flows.sensordetails.ui.activities.SensorDetailActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
@@ -38,7 +39,7 @@ import is.hello.sense.util.Logger;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsView>
+public class RoomConditionsPresenterFragment extends PresenterFragment<RoomConditionsView>
         implements ArrayRecyclerAdapter.OnItemClickedListener<Sensor>,
         SensorResponseAdapter.ErrorItemClickListener {
     private final static long WELCOME_CARD_TIMES_SHOWN_LIMIT = 2;
@@ -57,7 +58,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     private UpdateTimer updateTimer;
     private boolean checkRoomConditions = false;
     @NonNull
-    private Subscription postSensorSubscription = Subscriptions.empty();;
+    private Subscription postSensorSubscription = Subscriptions.empty();
 
     @Override
     public final void initializePresenterView() {
@@ -97,9 +98,13 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
         bindAndSubscribe(this.unitFormatter.unitPreferenceChanges(),
                          ignored -> this.adapter.notifyDataSetChanged(),
                          Functions.LOG_ERROR);
+
         bindAndSubscribe(this.sensorResponseInteractor.sensors,
                          this::bindConditions,
                          this::conditionsUnavailable);
+
+        checkRoomConditions = true; // todo support this again.
+        this.sensorResponseInteractor.update();
     }
 
     @Override
@@ -135,16 +140,6 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
 
         this.adapter = null;
         this.updateTimer = null;
-    }
-
-    @Override
-    public final void onSwipeInteractionDidFinish() {
-    }
-
-    @Override
-    public final void onUpdate() {
-        checkRoomConditions = true;
-        this.sensorResponseInteractor.update();
     }
 
     //endregion
@@ -183,7 +178,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
                 final List<Sensor> sensors = currentConditions.getSensors();
                 postSensorSubscription.unsubscribe();
                 postSensorSubscription = bind(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)))
-                        .subscribe(sensorsDataResponse -> RoomConditionsFragment.this.bindDataResponse(sensorsDataResponse, sensors),
+                        .subscribe(sensorsDataResponse -> RoomConditionsPresenterFragment.this.bindDataResponse(sensorsDataResponse, sensors),
                                    this::conditionsUnavailable);
                 break;
             case NO_SENSE:
@@ -204,7 +199,7 @@ public class RoomConditionsFragment extends BacksideTabFragment<RoomConditionsVi
     public final void conditionsUnavailable(@NonNull final Throwable e) {
         presenterView.showProgress(false);
 
-        Logger.error(RoomConditionsFragment.class.getSimpleName(), "Could not load conditions", e);
+        Logger.error(RoomConditionsPresenterFragment.class.getSimpleName(), "Could not load conditions", e);
         if (ApiException.isNetworkError(e)) {
             this.adapter.displayMessage(false, 0, getString(R.string.error_room_conditions_unavailable),
                                         R.string.action_retry,
