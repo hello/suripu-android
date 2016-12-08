@@ -75,6 +75,11 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
         }
     }
 
+    public void add(T item, int position) {
+        storage.add(position, item);
+        notifyItemInserted(position);
+    }
+
     public T remove(int location) {
         T removed = storage.remove(location);
         notifyItemRemoved(location);

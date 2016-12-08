@@ -32,9 +32,12 @@ public class AppSettingsView extends PresenterView {
     private final TextView version;
     private final SettingsRecyclerAdapter.TextItem expansionItem;
     private final SettingsRecyclerAdapter.TextItem voiceItem;
+    private final SettingsRecyclerAdapter.TextItem supportItem;
     private final RecyclerView recyclerView;
+    private final InsetItemDecoration insetDecoration;
     private final SettingsRecyclerAdapter adapter;
     private final ProgressBar progressBar;
+    private final int sectionPadding;
 
     public AppSettingsView(@NonNull final Activity activity,
                            @NonNull final RunnableGenerator generator,
@@ -52,15 +55,15 @@ public class AppSettingsView extends PresenterView {
         recyclerView.setItemAnimator(null);
         final Resources resources = getResources();
         final int verticalPadding = resources.getDimensionPixelSize(R.dimen.x1);
-        final int sectionPadding = resources.getDimensionPixelSize(R.dimen.x4);
-        final InsetItemDecoration decoration = new InsetItemDecoration();
-        recyclerView.addItemDecoration(decoration);
+        this.sectionPadding = resources.getDimensionPixelSize(R.dimen.x4);
+        this.insetDecoration = new InsetItemDecoration();
+        recyclerView.addItemDecoration(insetDecoration);
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager,
                                                                      resources,
                                                                      FadingEdgesItemDecoration.Style.STRAIGHT));
         show(false);
         adapter = new SettingsRecyclerAdapter(activity);
-        decoration.addTopInset(adapter.getItemCount(), verticalPadding);
+        insetDecoration.addTopInset(0, verticalPadding);
 
         this.adapter.add(new SettingsRecyclerAdapter.TextItem(context.getString(R.string.label_account),
                                                               generator.create(AccountSettingsFragment.class, R.string.label_account, true)));
@@ -76,18 +79,14 @@ public class AppSettingsView extends PresenterView {
 
         this.expansionItem = new SettingsRecyclerAdapter.TextItem(context.getString(R.string.action_expansions),
                                                                   () -> expansionsListener.onClick(null));
-        this.adapter.add(expansionItem);
-
-        decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
 
         this.voiceItem = new SettingsRecyclerAdapter.TextItem(context.getString(R.string.label_voice),
                                                               () -> voiceListener.onClick(null));
-        this.adapter.add(voiceItem);
 
-        showVoiceEnabledRows(false);
+        this.supportItem = new SettingsRecyclerAdapter.TextItem(context.getString(R.string.action_support),
+                                                                generator.create(SupportFragment.class, R.string.action_support, false));
 
-        this.adapter.add(new SettingsRecyclerAdapter.TextItem(context.getString(R.string.action_support),
-                                                              generator.create(SupportFragment.class, R.string.action_support, false)));
+        this.adapter.add(supportItem);
 
         this.adapter.add(new SettingsRecyclerAdapter.TextItem(context.getString(R.string.label_tell_a_friend),
                                                               () -> tellAFriendListener.onClick(null)));
@@ -114,19 +113,37 @@ public class AppSettingsView extends PresenterView {
     }
 
     public final void showVoiceEnabledRows(final boolean show) {
-        show(true);
+        final int expansionIndex = adapter.indexOf(expansionItem);
+        final int voiceIndex = adapter.indexOf(voiceItem);
+        final int oldSupportIndex = adapter.indexOf(supportItem);
+        insetDecoration.addTopInset(oldSupportIndex, 0);
         if (show) {
-            expansionItem.setVisible(true);
-            voiceItem.setVisible(true);
+            if(RecyclerView.NO_POSITION == expansionIndex){
+                adapter.add(expansionItem, adapter.indexOf(supportItem));
+            }
+
+            if(RecyclerView.NO_POSITION == voiceIndex){
+                adapter.add(voiceItem, adapter.indexOf(supportItem));
+            }
         } else {
-            expansionItem.setVisible(false);
-            voiceItem.setVisible(false);
+            if(RecyclerView.NO_POSITION != voiceIndex){
+                adapter.remove(voiceIndex);
+            }
+
+            if(RecyclerView.NO_POSITION != expansionIndex){
+                adapter.remove(expansionIndex);
+            }
         }
+        final int newSupportIndex = adapter.indexOf(supportItem);
+        insetDecoration.addTopInset(newSupportIndex, sectionPadding);
+        adapter.notifyItemChanged(newSupportIndex);
+
+        show(true);
     }
 
     public void show(final boolean isVisible){
         if(isVisible){
-            this.progressBar.setVisibility(INVISIBLE);
+            this.progressBar.setVisibility(GONE);
             this.recyclerView.setVisibility(VISIBLE);
         } else {
             this.recyclerView.setVisibility(INVISIBLE);

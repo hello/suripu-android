@@ -41,6 +41,12 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
     //region Binding
 
     @Override
+    public void add(final Item item, final int position){
+        super.add(item, position);
+        item.bind(this, position);
+    }
+
+    @Override
     public boolean add(Item item) {
         if (super.add(item)) {
             item.bind(this, getItemCount() - 1);
@@ -132,7 +138,6 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
 
         @Override
         void bind(@NonNull final TextItem item) {
-            itemView.setVisibility(item.visible ? View.VISIBLE : View.GONE);
             text.setText(item.text);
         }
     }
@@ -245,22 +250,15 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         static final int ID = 1;
 
         String text;
-        boolean visible;
 
         public TextItem(@NonNull String text,
                         @Nullable Runnable onClick) {
             super(onClick);
             this.text = text;
-            this.visible = true;
         }
 
         public void setText(String text) {
             this.text = text;
-            notifyChanged();
-        }
-
-        public void setVisible(final boolean visible){
-            this.visible = visible;
             notifyChanged();
         }
 

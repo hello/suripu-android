@@ -59,8 +59,8 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
         super.onViewCreated(view, savedInstanceState);
 
         bindAndSubscribe(hasVoiceInteractor.hasVoice,
-                         ignore -> this.presenterView.showVoiceEnabledRows(false),
-                         e -> this.presenterView.show(true));
+                         this.presenterView::showVoiceEnabledRows,
+                         e -> this.presenterView.showVoiceEnabledRows(false));
 
         hasVoiceInteractor.update();
     }
