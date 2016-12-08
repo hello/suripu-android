@@ -43,7 +43,6 @@ public class RoomConditionsFragmentTests extends InjectionTestCase {
     @Test
     public void hasAllViews() {
         assertNotNull(fragment.getView());
-        assertNotNull(fragment.getView().findViewById(R.id.fragment_room_conditions_refresh_container));
         assertNotNull(fragment.getView().findViewById(R.id.fragment_room_conditions_recycler));
         assertNotNull(fragment.getView().findViewById(R.id.fragment_room_conditions_loading));
     }
