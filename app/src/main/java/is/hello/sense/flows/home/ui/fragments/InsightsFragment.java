@@ -28,6 +28,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightType;
+import is.hello.sense.flows.home.ui.activities.NewHomeActivity;
 import is.hello.sense.graph.Scope;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
@@ -35,9 +36,8 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.QuestionsInteractor;
 import is.hello.sense.interactors.questions.ReviewQuestionProvider;
 import is.hello.sense.flows.home.ui.views.InsightsView;
-import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.presenters.SubPresenterFragment;
 import is.hello.sense.rating.LocalUsageTracker;
-import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.common.UserSupport;
@@ -55,7 +55,7 @@ import is.hello.sense.util.Share;
 import rx.Observable;
 
 
-public class InsightsFragment extends PresenterFragment<InsightsView> implements
+public class InsightsFragment extends SubPresenterFragment<InsightsView> implements
         SwipeRefreshLayout.OnRefreshListener,
         InsightsAdapter.InteractionListener,
         InsightInfoFragment.Parent,
@@ -70,7 +70,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     @Inject
     DeviceIssuesInteractor deviceIssuesInteractor;
     @Inject
-    PreferencesInteractor preferences;
+    PreferencesInteractor preferencesInteractor;
     @Inject
     QuestionsInteractor questionsInteractor;
     @Inject
@@ -93,7 +93,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
 
     private boolean questionLoaded = false;
     private boolean insightsLoaded = false;
-    private HomeActivity activity;
+    private NewHomeActivity activity;
 
     @Override
     public final void initializePresenterView() {
@@ -103,31 +103,28 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     }
 
     @Override
-    public final void setUserVisibleHint(final boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            Analytics.trackEvent(Analytics.Backside.EVENT_MAIN_VIEW, null);
-            if (presenterView != null) {
-                presenterView.updateWhatsNewState();
-            }
-        }
+    public void onUserVisible() {
+        Analytics.trackEvent(Analytics.Backside.EVENT_MAIN_VIEW, null);
+        presenterView.updateWhatsNewState();
+    }
+
+    @Override
+    public void onUserInvisible() {
+
     }
 
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(insightsInteractor);
-        addInteractor(dateFormatter);
-        addInteractor(localUsageTracker);
         addInteractor(deviceIssuesInteractor);
-        addInteractor(preferences);
         addInteractor(questionsInteractor);
-        deviceIssuesInteractor.bindScope((Scope)getActivity());
+        deviceIssuesInteractor.bindScope((Scope) getActivity());
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
-        if (getActivity() instanceof HomeActivity) {
-            activity = (HomeActivity) getActivity();
+        if (getActivity() instanceof NewHomeActivity) {
+            activity = (NewHomeActivity) getActivity();
         }
 
     }
@@ -192,10 +189,12 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
 
     @OnboardingActivity.Flow
     protected int getOnboardingFlow() {
-        final HomeActivity activity = (HomeActivity) getActivity();
-        return activity != null
-                ? activity.getOnboardingFlow()
-                : OnboardingActivity.FLOW_NONE;
+        final Activity activity = getActivity();
+        if (activity instanceof NewHomeActivity) {
+            return ((NewHomeActivity) activity).getOnboardingFlow();
+        } else {
+            return OnboardingActivity.FLOW_NONE;
+        }
     }
 
     @Override
@@ -303,7 +302,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
         final InsightInfoFragment infoFragment = InsightInfoFragment.newInstance(insight,
                                                                                  getResources());
         infoFragment.show(fragmentManager,
-                          R.id.activity_home_container,
+                          R.id.activity_new_home_container,
                           InsightInfoFragment.TAG);
 
         this.selectedInsightHolder = viewHolder;
@@ -342,12 +341,12 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     public final void updateQuestion() {
         final Observable<Boolean> stageOne = deviceIssuesInteractor.latest().map(issue -> (issue == DeviceIssuesInteractor.Issue.NONE &&
                 localUsageTracker.isUsageAcceptableForRatingPrompt() &&
-                !preferences.getBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, false)));
+                !preferencesInteractor.getBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, false)));
         stageOne.subscribe(showReview -> {
                                if (showReview) {
-                                   final boolean reviewedOnAmazon = preferences.getBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, false);
-                                    // Amazon review links point to the first version of Sense and thus should not be shown for voice
-                                   if (!reviewedOnAmazon && !preferences.hasVoice()) {
+                                   final boolean reviewedOnAmazon = preferencesInteractor.getBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, false);
+                                   // Amazon review links point to the first version of Sense and thus should not be shown for voice
+                                   if (!reviewedOnAmazon && !preferencesInteractor.hasVoice()) {
                                        final String country = Locale.getDefault().getCountry();
                                        if (country.equalsIgnoreCase(Locale.US.getCountry())) {
                                            questionsInteractor.setSource(QuestionsInteractor.Source.REVIEW_AMAZON);
@@ -413,7 +412,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
             switch (response) {
                 case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW:
                     stateSafeExecutor.execute(() -> UserSupport.showProductPage(getActivity()));
-                    preferences.edit()
+                    preferencesInteractor.edit()
                                .putBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, true)
                                .apply();
                     break;
@@ -421,7 +420,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
                 case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW_AMAZON:
                     stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity(), "www.amazon.com"));
                     localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
-                    preferences.edit()
+                    preferencesInteractor.edit()
                                .putBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, true)
                                .apply();
                     break;
@@ -429,7 +428,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
                 case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW_AMAZON_UK:
                     stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity(), "www.amazon.co.uk"));
                     localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
-                    preferences.edit()
+                    preferencesInteractor.edit()
                                .putBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, true)
                                .apply();
                     break;
@@ -450,7 +449,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
 
                 case ReviewQuestionProvider.RESPONSE_SUPPRESS_PERMANENTLY:
                     localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
-                    preferences.edit()
+                    preferencesInteractor.edit()
                                .putBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, true)
                                .apply();
                     break;

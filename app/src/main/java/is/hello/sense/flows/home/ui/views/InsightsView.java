@@ -1,6 +1,7 @@
 package is.hello.sense.flows.home.ui.views;
 
 import android.animation.Animator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -30,6 +31,7 @@ import is.hello.sense.util.DateFormatter;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
+@SuppressLint("ViewConstructor")
 public final class InsightsView extends PresenterView {
 
     private static final float UNFOCUSED_CONTENT_SCALE = 0.90f;
@@ -51,19 +53,11 @@ public final class InsightsView extends PresenterView {
         Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
 
         this.progressBar = (ProgressBar) findViewById(R.id.fragment_insights_progress);
-
-        final Resources resources = context.getResources();
         this.recyclerView = (RecyclerView) findViewById(R.id.fragment_insights_recycler);
         recyclerView.setHasFixedSize(false);
+        setUpStandardRecyclerViewDecorations(recyclerView,
+                                             new LinearLayoutManager(context));
         recyclerView.addOnScrollListener(new ParallaxRecyclerScrollListener());
-        recyclerView.setItemAnimator(null);
-        recyclerView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
-        recyclerView.addItemDecoration(new BottomInsetDecoration(resources));
         this.insightsAdapter = new InsightsAdapter(context, dateFormatter, listener, picasso);
         recyclerView.setAdapter(insightsAdapter);
     }

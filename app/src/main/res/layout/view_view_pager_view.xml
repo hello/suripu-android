@@ -5,7 +5,7 @@
                 android:layout_height="match_parent">
 
 
-    <android.support.v4.view.ViewPager
+    <is.hello.sense.ui.widget.ExtendedViewPager
         android:id="@+id/view_view_pager_extended_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -13,14 +13,16 @@
         android:scrollbars="none"
         app:senseFadingEdgeStyle="rounded">
 
+        <!-- using tabMaxWidth fixes bug with single tabs not filling width -->
         <android.support.design.widget.TabLayout
             android:id="@+id/view_view_pager_tab_layout"
             style="@style/AppTheme.AppCompat.TabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="top"/>
+            android:layout_gravity="top"
+            app:tabMaxWidth="500dp"/>
 
-    </android.support.v4.view.ViewPager>
+    </is.hello.sense.ui.widget.ExtendedViewPager>
 
 
 </RelativeLayout>

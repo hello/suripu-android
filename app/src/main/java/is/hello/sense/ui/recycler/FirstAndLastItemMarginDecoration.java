@@ -8,11 +8,12 @@ import android.view.View;
 
 import is.hello.sense.R;
 
-public final class LastItemInsetDecoration extends RecyclerView.ItemDecoration {
-    private final int inset;
+public class FirstAndLastItemMarginDecoration extends RecyclerView.ItemDecoration {
 
-    public LastItemInsetDecoration(@NonNull final Resources resources) {
-        this.inset = resources.getDimensionPixelSize(R.dimen.x1);
+    private final int margin;
+
+    public FirstAndLastItemMarginDecoration(@NonNull final Resources resources) {
+        this.margin = resources.getDimensionPixelSize(R.dimen.x1);
     }
 
     @Override
@@ -22,17 +23,13 @@ public final class LastItemInsetDecoration extends RecyclerView.ItemDecoration {
                                final RecyclerView.State state) {
         final int lastPosition = (parent.getAdapter().getItemCount() - 1);
         final int position = parent.getChildAdapterPosition(view);
-
-
-        if (position == lastPosition) {
-            outRect.bottom = inset;
-        }
         if (position == 0) {
-            outRect.top = inset;
+            outRect.top = margin;
+        } else if (position == lastPosition) {
+            outRect.bottom = margin;
         }
-
-        outRect.left = inset;
-        outRect.right = inset;
+        outRect.left = margin;
+        outRect.right = margin;
 
     }
 }

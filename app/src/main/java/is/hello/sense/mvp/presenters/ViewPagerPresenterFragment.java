@@ -1,6 +1,7 @@
 package is.hello.sense.mvp.presenters;
 
 
+import android.app.FragmentManager;
 import android.support.annotation.NonNull;
 
 import is.hello.sense.mvp.adapters.StaticSubPresenterFragmentAdapter;
@@ -23,8 +24,7 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     public final void initializePresenterView() {
         if (presenterView == null) {
             viewPagerDelegate = newViewPagerDelegateInstance();
-            presenterView = new ViewPagerPresenterView(this,
-                                                       useChildFragmentManager() ? getChildFragmentManager() : getFragmentManager());
+            presenterView = new ViewPagerPresenterView(this);
         }
     }
     //endregion
@@ -68,6 +68,10 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
      */
     protected boolean useChildFragmentManager() {
         return true;
+    }
+
+    public FragmentManager getDesiredFragmentManager() {
+        return useChildFragmentManager() ? getChildFragmentManager() : getFragmentManager();
     }
     //endregion
 }

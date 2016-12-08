@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+<RelativeLayout
+    android:id="@+id/activity_new_home_container"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <is.hello.sense.ui.widget.SelectorView
         android:id="@+id/activity_new_home_bottom_selector_view"
@@ -14,8 +16,8 @@
         android:id="@+id/activity_new_home_backside_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background"
-        android:layout_above="@id/activity_new_home_bottom_selector_view"/>
+        android:layout_above="@id/activity_new_home_bottom_selector_view"
+        android:background="@color/background"/>
 
     <RelativeLayout
         android:id="@+id/activity_new_home_progress_overlay"
@@ -28,10 +30,10 @@
 
         <is.hello.sense.ui.widget.SpinnerImageView
             android:id="@+id/activity_new_home_spinner"
-            android:background="@drawable/animated_progress_bar_white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"/>
+            android:layout_centerInParent="true"
+            android:background="@drawable/animated_progress_bar_white"/>
 
     </RelativeLayout>
 
