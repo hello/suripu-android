@@ -14,7 +14,6 @@ import is.hello.sense.R;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.flows.home.ui.views.AppSettingsView;
 import is.hello.sense.flows.voice.ui.activities.VoiceSettingsActivity;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.HasVoiceInteractor;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
@@ -23,7 +22,7 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Share;
 
 public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> implements
-        AppSettingsView.ClickListenerGenerator {
+        AppSettingsView.RunnableGenerator {
 
     @Inject
     HasVoiceInteractor hasVoiceInteractor;
@@ -60,8 +59,8 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
         super.onViewCreated(view, savedInstanceState);
 
         bindAndSubscribe(hasVoiceInteractor.hasVoice,
-                         this.presenterView::showVoiceEnabledRows,
-                         Functions.LOG_ERROR);
+                         ignore -> this.presenterView.showVoiceEnabledRows(false),
+                         e -> this.presenterView.show(true));
 
         hasVoiceInteractor.update();
     }
@@ -75,10 +74,10 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
     }
 
     @Override
-    public final View.OnClickListener create(@NonNull final Class<? extends Fragment> fragmentClass,
+    public final Runnable create(@NonNull final Class<? extends Fragment> fragmentClass,
                                              @StringRes final int titleRes,
                                              final boolean lockOrientation) {
-        return v -> {
+        return () -> {
             final FragmentNavigationActivity.Builder builder =
                     new FragmentNavigationActivity.Builder(getActivity(), HardwareFragmentActivity.class);
             builder.setDefaultTitle(titleRes);

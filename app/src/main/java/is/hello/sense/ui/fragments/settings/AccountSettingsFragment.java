@@ -135,8 +135,8 @@ public class AccountSettingsFragment extends InjectionFragment
 
         final AccountSettingsRecyclerAdapter adapter = new AccountSettingsRecyclerAdapter(getActivity(), picasso);
 
-        final int verticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
-        final int sectionPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
+        final int verticalPadding = resources.getDimensionPixelSize(R.dimen.x2);
+        final int sectionPadding = resources.getDimensionPixelSize(R.dimen.x4);
         final InsetItemDecoration decoration = new InsetItemDecoration();
         recyclerView.addItemDecoration(decoration);
 
@@ -156,8 +156,6 @@ public class AccountSettingsFragment extends InjectionFragment
                                                        this::changePassword);
         passwordItem.setIcon(R.drawable.icon_settings_lock, R.string.label_password);
         adapter.add(passwordItem);
-
-        adapter.add(new SettingsRecyclerAdapter.EmptyItem(resources.getDimensionPixelSize(R.dimen.x3), null));
 
         birthdayItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_birthday), this::changeBirthDate);
         birthdayItem.setIcon(R.drawable.icon_settings_calendar, R.string.label_birthday);
@@ -183,7 +181,7 @@ public class AccountSettingsFragment extends InjectionFragment
                                                                         this::changeEnhancedAudio);
         adapter.add(enhancedAudioItem);
 
-        adapter.add(new SettingsRecyclerAdapter.TextItem(getString(R.string.info_enhanced_audio), null));
+        adapter.add(new SettingsRecyclerAdapter.CheckBoxItem<>(getString(R.string.info_enhanced_audio), null));
 
         decoration.addItemInset(adapter.getItemCount(), new Rect(0, sectionPadding, 0, verticalPadding));
         final SettingsRecyclerAdapter.DetailItem signOutItem =
