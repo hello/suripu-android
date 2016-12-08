@@ -118,6 +118,7 @@ public class InsightsFragment extends SubPresenterFragment<InsightsView> impleme
         super.onCreate(savedInstanceState);
         addInteractor(insightsInteractor);
         addInteractor(deviceIssuesInteractor);
+        addInteractor(questionsInteractor);
         deviceIssuesInteractor.bindScope((Scope) getActivity());
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
