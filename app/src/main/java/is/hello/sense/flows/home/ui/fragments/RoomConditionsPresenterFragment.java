@@ -90,14 +90,6 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
         addInteractor(this.unitFormatter);
         addInteractor(this.preferencesInteractor);
         addInteractor(this.sensorResponseInteractor);
-        setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(final Menu menu,
-                                    final MenuInflater inflater) {
-        inflater.inflate(R.menu.activity_support_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
