@@ -56,8 +56,8 @@ public class FadingEdgesItemDecoration extends PaddingItemDecoration {
             final boolean wantsTopEdge = edges.contains(ScrollEdge.TOP);
             final boolean wantsBottomEdge = edges.contains(ScrollEdge.BOTTOM);
             final int width = c.getWidth();
-
-            if (wantsTopEdge && layoutManager.findFirstCompletelyVisibleItemPosition() != 0) {
+            if (wantsTopEdge
+                    && parent.computeVerticalScrollOffset() > 0) {
                 topEdge.setBounds(insets.left, insets.top,
                                   width - insets.right,
                                   insets.top + topEdge.getIntrinsicHeight());
