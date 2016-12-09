@@ -22,8 +22,9 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.flows.timeline.ui.activities.TimelineActivity;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.mvp.presenters.ScopedInjectionFragment;
+import is.hello.sense.interactors.TimelineInteractor;
 import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
+import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.timeline.TimelineToolbar;
@@ -32,7 +33,7 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 
-public class TimelinePagerFragment extends ScopedInjectionFragment
+public class TimelinePagerFragment extends InjectionFragment
         implements ViewPager.OnPageChangeListener,
         TimelineFragment.Parent {
 
@@ -40,6 +41,9 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
     PreferencesInteractor preferences;
     @Inject
     DateFormatter dateFormatter;
+    @Inject
+    TimelineInteractor timelineInteractor;
+
 
     private static final String KEY_LAST_UPDATED = TimelinePagerFragment.class.getSimpleName() + "KEY_LAST_UPDATED";
 
@@ -155,6 +159,7 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
 
         getActivity().unregisterReceiver(onTimeChanged);
         viewPager.removeOnPageChangeListener(this);
+        timelineInteractor.clearCache();
     }
 
     //region Fragment Adapter
@@ -167,6 +172,8 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
     public void onPageSelected(final int position) {
         final LocalDate localDate = viewPagerAdapter.getItemDate(position);
         updateTitle(localDate);
+        setShareVisible(timelineInteractor.hasValidTimeline(localDate));
+
     }
 
     @Override

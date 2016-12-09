@@ -8,6 +8,7 @@ import android.content.ComponentCallbacks2;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
@@ -287,8 +288,8 @@ public class TimelineFragment extends InjectionFragment
         }
 
         adapter.stopSoundPlayer();
-        final Timeline timeline = timelinePresenter.timeline.getValue();
         if (timelinePresenter.hasValidTimeline()) {
+            final Timeline timeline = timelinePresenter.timeline.getValue();
             backgroundFill.setColor(ContextCompat.getColor(getActivity(), R.color.timeline_background_fill));
             headerView.bindTimeline(timeline);
             adapter.bindEvents(timeline.getEvents());
@@ -385,10 +386,14 @@ public class TimelineFragment extends InjectionFragment
         }
 
         bindAndSubscribe(timelinePresenter.latest(),
-                         timeline -> Share.image(
-                                 TimelineImageGenerator
-                                         .createShareableTimeline(getActivity(), timeline))
-                                          .send(this),
+                         timeline -> {
+                             final Bitmap screenShot = TimelineImageGenerator.createShareableTimeline(getActivity(), timeline);
+                             if (screenShot == null) {
+                                 return;
+                             }
+                             Share.image(screenShot)
+                                  .send(this);
+                         },
                          e -> Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e));
     }
 

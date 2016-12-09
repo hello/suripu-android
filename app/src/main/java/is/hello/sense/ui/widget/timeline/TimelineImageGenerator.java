@@ -12,13 +12,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
@@ -31,11 +29,12 @@ import is.hello.sense.ui.widget.util.Styles;
 
 public class TimelineImageGenerator {
 
+    @Nullable
     public static Bitmap createShareableTimeline(@NonNull final Activity activity, @Nullable final Timeline timeline) {
         if (timeline == null) {
             return null;
         }
-        Resources resources = activity.getResources();
+        final Resources resources = activity.getResources();
         final SensorImage[] sensors = new SensorImage[]{
                 SensorImage.TEMPERATURE,
                 SensorImage.HUMIDITY,
