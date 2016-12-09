@@ -8,6 +8,7 @@ import android.content.ComponentCallbacks2;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
@@ -56,6 +57,7 @@ import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.ExtendedItemAnimator;
+import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.recycler.StaggeredFadeItemAnimator;
 import is.hello.sense.ui.widget.LoadingView;
 import is.hello.sense.ui.widget.RotaryTimePickerDialog;
@@ -192,6 +194,7 @@ public class TimelineFragment extends InjectionFragment
 
         this.layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources, FadingEdgesItemDecoration.Style.STRAIGHT));
 
         this.animationEnabled = (!hasCreatedView && !parent.isBacksideOpen());
 
@@ -222,7 +225,6 @@ public class TimelineFragment extends InjectionFragment
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         // For the first fragment
         bindIfNeeded();
     }
@@ -232,10 +234,11 @@ public class TimelineFragment extends InjectionFragment
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser) {
-            // For all subsequent fragments
-            this.parent.setShareVisible(timelinePresenter.hasValidTimeline());
+            // For all subsequent fragments running below Nougat
+            // setUserVisibleHint called before attached to activity
+            // not a reliable way to determine current view pager fragment
             bindIfNeeded();
-            this.parent.updateTitle(getTitle());
+
             if (itemAnimator != null) {
                 itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, animationEnabled);
             }
@@ -287,8 +290,8 @@ public class TimelineFragment extends InjectionFragment
         }
 
         adapter.stopSoundPlayer();
-        final Timeline timeline = timelinePresenter.timeline.getValue();
         if (timelinePresenter.hasValidTimeline()) {
+            final Timeline timeline = timelinePresenter.timeline.getValue();
             backgroundFill.setColor(ContextCompat.getColor(getActivity(), R.color.timeline_background_fill));
             headerView.bindTimeline(timeline);
             adapter.bindEvents(timeline.getEvents());
@@ -385,10 +388,14 @@ public class TimelineFragment extends InjectionFragment
         }
 
         bindAndSubscribe(timelinePresenter.latest(),
-                         timeline -> Share.image(
-                                 TimelineImageGenerator
-                                         .createShareableTimeline(getActivity(), timeline))
-                                          .send(this),
+                         timeline -> {
+                             final Bitmap screenShot = TimelineImageGenerator.createShareableTimeline(getActivity(), timeline);
+                             if (screenShot == null) {
+                                 return;
+                             }
+                             Share.image(screenShot)
+                                  .send(this);
+                         },
                          e -> Logger.error(getClass().getSimpleName(), "Cannot bind for sharing", e));
     }
 
@@ -421,12 +428,6 @@ public class TimelineFragment extends InjectionFragment
     @Nullable
     Timeline getCachedTimeline() {
         return (Timeline) getArguments().getSerializable(ARG_CACHED_TIMELINE);
-    }
-
-    public
-    @NonNull
-    String getTitle() {
-        return dateFormatter.formatAsTimelineDate(getDate());
     }
 
     public void onSwipeBetweenDatesStarted() {
@@ -545,8 +546,6 @@ public class TimelineFragment extends InjectionFragment
             backgroundFill.setColor(ContextCompat.getColor(getActivity(), R.color.background_timeline));
         }
 
-        parent.setShareVisible(false);
-
         headerView.stopPulsing();
 
         adapter.replaceHeader(0, newHeader);
@@ -600,6 +599,7 @@ public class TimelineFragment extends InjectionFragment
             }
         } else {
             transitionIntoNoDataState(header -> {
+                parent.setShareVisible(false);
                 // Indicates on-boarding just ended
                 final LocalDate creationDate =
                         preferences.getLocalDate(PreferencesInteractor.ACCOUNT_CREATION_DATE);
@@ -902,8 +902,6 @@ public class TimelineFragment extends InjectionFragment
 
         @IdRes
         int getTutorialContainerIdRes();
-
-        void updateTitle(@NonNull String title);
 
         void setShareVisible(boolean visible);
     }

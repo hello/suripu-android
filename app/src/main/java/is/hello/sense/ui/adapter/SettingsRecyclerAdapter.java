@@ -41,6 +41,12 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
     //region Binding
 
     @Override
+    public void add(final Item item, final int position){
+        super.add(item, position);
+        item.bind(this, position);
+    }
+
+    @Override
     public boolean add(Item item) {
         if (super.add(item)) {
             item.bind(this, getItemCount() - 1);
@@ -67,13 +73,13 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
                 final View view = inflater.inflate(R.layout.item_settings_toggle, parent, false);
                 return new ToggleViewHolder(view);
             }
+            case CheckBoxItem.ID: {
+                final View view = inflater.inflate(R.layout.item_settings_checkbox, parent, false);
+                return new TextViewHolder(view);
+            }
             case TextItem.ID: {
                 final View view = inflater.inflate(R.layout.item_settings_text, parent, false);
                 return new TextViewHolder(view);
-            }
-            case EmptyItem.ID: {
-                final View view = new View(parent.getContext());
-                return new EmptyViewHolder(view);
             }
             default: {
                 throw new IllegalArgumentException("Unknown view type " + viewType);
@@ -124,14 +130,14 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
     class TextViewHolder extends ViewHolder<TextItem> {
         final TextView text;
 
-        TextViewHolder(@NonNull View itemView) {
+        TextViewHolder(@NonNull final View itemView) {
             super(itemView);
 
             this.text = (TextView) itemView.findViewById(R.id.item_text);
         }
 
         @Override
-        void bind(@NonNull TextItem item) {
+        void bind(@NonNull final TextItem item) {
             text.setText(item.text);
         }
     }
@@ -191,22 +197,6 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         void bind(@NonNull ToggleItem item) {
             title.setText(item.text);
             toggle.setChecked(item.value);
-        }
-    }
-
-    class EmptyViewHolder extends ViewHolder<EmptyItem> {
-
-        EmptyViewHolder(View view) {
-            super(view);
-            itemView.setClickable(false);
-            itemView.setFocusable(false);
-        }
-
-        @Override
-        void bind(EmptyItem item) {
-            itemView.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,
-                                                                   item.getValue())
-                                );
         }
     }
 
@@ -322,18 +312,16 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         }
     }
 
-    public static class EmptyItem extends Item<Integer> {
+    public static class CheckBoxItem<T> extends TextItem<T> {
         static final int ID = 4;
 
-        public EmptyItem(final int gapPixelHeight, @Nullable final Runnable runnable) {
-            super(runnable);
-            setValue(gapPixelHeight);
+        public CheckBoxItem(@NonNull final String text,
+                            @Nullable final Runnable onClick) {
+            super(text, onClick);
         }
 
         @Override
-        public int getId() {
-            return ID;
-        }
+        public int getId() { return ID; }
     }
 
     //endregion
