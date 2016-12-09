@@ -1,33 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="center_vertical"
-              android:orientation="horizontal">
-
-    <CheckBox
-        android:id="@+id/item_settings_place_holder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/gap_small"
-        android:layout_marginEnd="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="@dimen/gap_small"
-        android:clickable="false"
-        android:focusable="false"
-        android:visibility="invisible"/>
+              android:layout_height="@dimen/x7"
+              android:paddingStart="@dimen/x3"
+              tools:ignore="RtlSymmetry">
 
     <TextView
-        android:id="@+id/item_text"
-        android:layout_width="0dp"
+        android:id="@id/item_text"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginBottom="@dimen/gap_small"
-        android:layout_marginEnd="@dimen/gap_outer"
-        android:layout_marginTop="@dimen/gap_small"
-        android:layout_weight="1"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"
-        android:textAppearance="@style/AppTheme.Text.Body.Small"
-        android:textColor="@color/text_dim"/>
+        android:textAppearance="@style/AppTheme.Text.Body"/>
 
-</LinearLayout>
+    <View
+        android:id="@+id/item_settings_text_divider"
+        style="@style/Divider.Horizontal"
+        android:layout_gravity="bottom"/>
+
+</FrameLayout>
