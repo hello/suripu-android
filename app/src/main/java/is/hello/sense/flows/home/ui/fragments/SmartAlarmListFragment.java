@@ -58,7 +58,7 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     @Inject
     ExpansionCategoryFormatter expansionCategoryFormatter;
     private ArrayList<Alarm> currentAlarms = new ArrayList<>();
-    private ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
+    private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
 
 
     //region PresenterFragment
@@ -73,12 +73,6 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
                                                         this::onAddButtonClicked);
             this.presenterChildDelegate.onViewInitialized();
         }
-    }
-
-    @Override
-    protected void onRelease() {
-        super.onRelease();
-        this.presenterChildDelegate = null;
     }
 
     @Override
