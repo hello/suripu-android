@@ -2,7 +2,6 @@ package is.hello.sense.flows.home.ui.activities;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -677,27 +676,9 @@ public class HomeActivity extends ScopedInjectionActivity
                 slidingLayersView.isInMotion());
     }
 
-    public void showTimelineNavigator(@NonNull final LocalDate startDate, @Nullable final Timeline timeline) {
-        Analytics.trackEvent(Analytics.Timeline.EVENT_ZOOMED_IN, null);
-
-        final ZoomedOutTimelineFragment navigatorFragment =
-                ZoomedOutTimelineFragment.newInstance(startDate, timeline);
-        getFragmentManager()
-                .beginTransaction()
-                .add(R.id.activity_home_container, navigatorFragment, ZoomedOutTimelineFragment.TAG)
-                .addToBackStack(ZoomedOutTimelineFragment.TAG)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .commitAllowingStateLoss();
-    }
-
     @Override
     public int getTutorialContainerIdRes() {
         return R.id.activity_home_container;
-    }
-
-    @Override
-    public void updateTitle(@NonNull final String title) {
-        //do nothing
     }
 
     @Override

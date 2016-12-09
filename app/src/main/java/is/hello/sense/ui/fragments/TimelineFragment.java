@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -222,7 +223,6 @@ public class TimelineFragment extends InjectionFragment
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         // For the first fragment
         bindIfNeeded();
     }
@@ -232,10 +232,13 @@ public class TimelineFragment extends InjectionFragment
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser) {
-            // For all subsequent fragments
-            this.parent.setShareVisible(timelinePresenter.hasValidTimeline());
-            bindIfNeeded();
-            this.parent.updateTitle(getTitle());
+            // For all subsequent fragments running below Nougat
+            // setUserVisibleHint called before attached to activity
+            // not a reliable way to determine current view pager fragment
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                bindIfNeeded();
+            }
+
             if (itemAnimator != null) {
                 itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, animationEnabled);
             }
@@ -423,12 +426,6 @@ public class TimelineFragment extends InjectionFragment
         return (Timeline) getArguments().getSerializable(ARG_CACHED_TIMELINE);
     }
 
-    public
-    @NonNull
-    String getTitle() {
-        return dateFormatter.formatAsTimelineDate(getDate());
-    }
-
     public void onSwipeBetweenDatesStarted() {
         dismissVisibleOverlaysAndDialogs();
     }
@@ -582,7 +579,7 @@ public class TimelineFragment extends InjectionFragment
                 final int targetColor = ContextCompat.getColor(getActivity(), R.color.timeline_background_fill);
                 final Animator backgroundFade = backgroundFill.colorAnimator(targetColor);
                 backgroundFade.start();
-                parent.setShareVisible(true);
+                //parent.setShareVisible(true);
             });
             final Runnable adapterAnimations = stateSafeExecutor.bind(() -> {
                 if (animationEnabled) {
@@ -902,8 +899,6 @@ public class TimelineFragment extends InjectionFragment
 
         @IdRes
         int getTutorialContainerIdRes();
-
-        void updateTitle(@NonNull String title);
 
         void setShareVisible(boolean visible);
     }

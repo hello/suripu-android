@@ -38,6 +38,8 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
 
     @Inject
     PreferencesInteractor preferences;
+    @Inject
+    DateFormatter dateFormatter;
 
     private static final String KEY_LAST_UPDATED = TimelinePagerFragment.class.getSimpleName() + "KEY_LAST_UPDATED";
 
@@ -60,11 +62,7 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
                 viewPager.setCurrentItem(viewPagerAdapter.getLastNight(), false);
             } else {
                 viewPagerAdapter.setLatestDate(newToday);
-
-                final TimelineFragment currentFragment = viewPagerAdapter.getCurrentTimeline();
-                if (currentFragment != null) {
-                    TimelinePagerFragment.this.updateTitle(currentFragment.getTitle());
-                }
+                TimelinePagerFragment.this.updateTitle(newToday);
             }
         }
     };
@@ -100,21 +98,6 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
 
         getActivity().registerReceiver(onTimeChanged, new IntentFilter(Intent.ACTION_TIME_CHANGED));
         return view;
-    }
-
-    private void onShareIconClicked(final View ignored) {
-        final TimelineFragment current =  viewPagerAdapter.getCurrentTimeline();
-        if(current != null){
-            current.share();
-        }
-    }
-
-    private void onHistoryIconClicked(final View ignored) {
-        final TimelineFragment current =  viewPagerAdapter.getCurrentTimeline();
-        if(current != null){
-            current.dismissVisibleOverlaysAndDialogs();
-            showTimelineNavigator(current.getDate(), current.getCachedTimeline());
-        }
     }
 
     @Override
@@ -182,6 +165,8 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
 
     @Override
     public void onPageSelected(final int position) {
+        final LocalDate localDate = viewPagerAdapter.getItemDate(position);
+        updateTitle(localDate);
     }
 
     @Override
@@ -229,11 +214,6 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
         }
     }
 
-    @Override
-    public boolean isBacksideOpen() {
-        return false;
-    }
-
     public void showTimelineNavigator(@NonNull final LocalDate date,
                                       @Nullable final Timeline timeline) {
         startActivityForResult(TimelineActivity.getZoomedOutIntent(getActivity(),
@@ -242,16 +222,44 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
                                ZOOMED_OUT_TIMELINE_REQUEST);
     }
 
+    private void onShareIconClicked(final View ignored) {
+        final TimelineFragment current =  viewPagerAdapter.getCurrentTimeline();
+        if(current != null){
+            current.share();
+        }
+    }
+
+    private void onHistoryIconClicked(final View ignored) {
+        final TimelineFragment current =  viewPagerAdapter.getCurrentTimeline();
+        if(current != null){
+            current.dismissVisibleOverlaysAndDialogs();
+            showTimelineNavigator(current.getDate(), current.getCachedTimeline());
+        }
+    }
+
+    private String getTitle(@Nullable final LocalDate date){
+        return dateFormatter.formatAsTimelineDate(date);
+    }
+
+    /**
+     * @param date to use and update toolbar title display
+     */
+    public void updateTitle(@Nullable final LocalDate date) {
+        if (toolbar != null) {
+            toolbar.setTitle(getTitle(date));
+        }
+    }
+
+    //region Timeline parent
+
     @Override
-    public int getTutorialContainerIdRes() {
-        return R.id.fragment_timeline_pager_container;
+    public boolean isBacksideOpen() {
+        return false;
     }
 
     @Override
-    public void updateTitle(@NonNull final String title) {
-        if (toolbar != null) {
-            toolbar.setTitle(title);
-        }
+    public int getTutorialContainerIdRes() {
+        return R.id.fragment_timeline_pager_container;
     }
 
     @Override
@@ -260,4 +268,6 @@ public class TimelinePagerFragment extends ScopedInjectionFragment
             toolbar.setShareVisible(visible);
         }
     }
+
+    //endregion
 }
