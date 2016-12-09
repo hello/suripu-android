@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -235,9 +234,7 @@ public class TimelineFragment extends InjectionFragment
             // For all subsequent fragments running below Nougat
             // setUserVisibleHint called before attached to activity
             // not a reliable way to determine current view pager fragment
-            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                bindIfNeeded();
-            }
+            bindIfNeeded();
 
             if (itemAnimator != null) {
                 itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, animationEnabled);
@@ -542,8 +539,6 @@ public class TimelineFragment extends InjectionFragment
             backgroundFill.setColor(ContextCompat.getColor(getActivity(), R.color.background_timeline));
         }
 
-        parent.setShareVisible(false);
-
         headerView.stopPulsing();
 
         adapter.replaceHeader(0, newHeader);
@@ -579,7 +574,7 @@ public class TimelineFragment extends InjectionFragment
                 final int targetColor = ContextCompat.getColor(getActivity(), R.color.timeline_background_fill);
                 final Animator backgroundFade = backgroundFill.colorAnimator(targetColor);
                 backgroundFade.start();
-                //parent.setShareVisible(true);
+                parent.setShareVisible(true);
             });
             final Runnable adapterAnimations = stateSafeExecutor.bind(() -> {
                 if (animationEnabled) {
@@ -597,6 +592,7 @@ public class TimelineFragment extends InjectionFragment
             }
         } else {
             transitionIntoNoDataState(header -> {
+                parent.setShareVisible(false);
                 // Indicates on-boarding just ended
                 final LocalDate creationDate =
                         preferences.getLocalDate(PreferencesInteractor.ACCOUNT_CREATION_DATE);
