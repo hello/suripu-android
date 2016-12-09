@@ -21,6 +21,7 @@ import is.hello.sense.api.model.v2.alerts.Alert;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
+import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
 import is.hello.sense.mvp.presenters.HomePresenterFragment;
 import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
@@ -36,8 +37,10 @@ import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.dialogs.BottomAlertDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SpinnerImageView;
+import is.hello.sense.ui.widget.graphing.drawables.SleepScoreIconDrawable;
 import rx.Observable;
 
 import static is.hello.sense.flows.home.ui.activities.HomeActivity.EXTRA_ONBOARDING_FLOW;
@@ -50,6 +53,7 @@ import static is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor.EMP
 public class NewHomeActivity extends ScopedInjectionActivity
         implements
         Alert.ActionHandler,
+        TimelineFragment.ParentProvider,
         ViewPagerPresenter {
 
     @Inject
@@ -116,6 +120,10 @@ public class NewHomeActivity extends ScopedInjectionActivity
         extendedViewPager.setAdapter(new StaticFragmentAdapter(getFragmentManager(), getViewPagerItems()));
         //todo organize this better after design review
         tabLayout.removeAllTabs();
+        tabLayout.addTab(tabLayout.newTab().setIcon(new SleepScoreIconDrawable.Builder(this)
+                                                            .withSize(getWindowManager())
+                                                            .withText("82")
+                                                            .build()));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_trends_24));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_insight_24));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_sound_24));
@@ -267,6 +275,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
     @Override
     public StaticFragmentAdapter.Item[] getViewPagerItems() {
         return new StaticFragmentAdapter.Item[]{
+                new StaticFragmentAdapter.Item(TimelinePagerFragment.class, TimelinePagerFragment.class.getSimpleName()),
                 new StaticFragmentAdapter.Item(TrendsPresenterFragment.class, TrendsPresenterFragment.class.getSimpleName()),
                 new StaticFragmentAdapter.Item(HomePresenterFragment.class, HomePresenterFragment.class.getSimpleName()),
                 new StaticFragmentAdapter.Item(SoundsPresenterFragment.class, SoundsPresenterFragment.class.getSimpleName()),
@@ -277,5 +286,11 @@ public class NewHomeActivity extends ScopedInjectionActivity
     @Override
     public int getStartingItemPosition() {
         return 4;
+    }
+
+    @Override
+    public TimelineFragment.Parent get() {
+        return (TimelineFragment.Parent) getFragmentManager()
+                .findFragmentByTag("android:switcher:" + R.id.activity_new_home_extended_view_pager + ":0");
     }
 }
