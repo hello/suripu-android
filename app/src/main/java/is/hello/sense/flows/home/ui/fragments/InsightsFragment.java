@@ -175,7 +175,14 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     @Override
     public void onResume() {
         super.onResume();
+        this.presenterChildDelegate.onResume();
         update();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        this.presenterChildDelegate.onPause();
     }
 
     @Override

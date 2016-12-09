@@ -70,6 +70,18 @@ public class VoiceFragment extends PresenterFragment<VoiceView>
     @Override
     public void onUserVisible() {
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        this.presenterChildDelegate.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        this.presenterChildDelegate.onPause();
+    }
+
     //endregion
 
     //region  ArrayRecyclerAdapter.OnItemClickedListener

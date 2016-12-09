@@ -94,6 +94,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
                                                              this),
                                                      this::onPlayClickListener,
                                                      this::onStopClickListener);
+            this.presenterChildDelegate.onViewInitialized();
         }
     }
 
@@ -109,6 +110,18 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         bindAndSubscribe(sleepSoundsStatusInteractor.state, this::bindStatus, this::presentStatusError);
         bindAndSubscribe(sleepSoundsInteractor.sub, this::bind, this::presentError);
         sleepSoundsInteractor.update();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        this.presenterChildDelegate.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        this.presenterChildDelegate.onPause();
     }
 
     @Override

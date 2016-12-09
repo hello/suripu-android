@@ -127,6 +127,18 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        this.presenterChildDelegate.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        this.presenterChildDelegate.onPause();
+    }
+
+    @Override
     public void onUserVisible() {
         updateAlarms(null);
     }
