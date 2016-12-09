@@ -7,8 +7,8 @@ import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.fragments.MonthTrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.QuarterTrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.WeekTrendsFragment;
-import is.hello.sense.mvp.adapters.StaticSubPresenterFragmentAdapter;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
+import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 
 public class TrendsViewPagerPresenterDelegate extends BaseViewPagerPresenterDelegate {
     private final Resources resources;
@@ -19,14 +19,14 @@ public class TrendsViewPagerPresenterDelegate extends BaseViewPagerPresenterDele
 
     @NonNull
     @Override
-    public StaticSubPresenterFragmentAdapter.Item[] getViewPagerItems() {
-        return new StaticSubPresenterFragmentAdapter.Item[]{
-                new StaticSubPresenterFragmentAdapter.Item(WeekTrendsFragment.class,
-                                                           resources.getString(R.string.trend_time_scale_week)),
-                new StaticSubPresenterFragmentAdapter.Item(MonthTrendsFragment.class,
-                                                           resources.getString(R.string.trend_time_scale_month)),
-                new StaticSubPresenterFragmentAdapter.Item(QuarterTrendsFragment.class,
-                                                           resources.getString(R.string.trend_time_scale_quarter))
+    public StaticFragmentAdapter.Item[] getViewPagerItems() {
+        return new StaticFragmentAdapter.Item[]{
+                new StaticFragmentAdapter.Item(WeekTrendsFragment.class,
+                                               resources.getString(R.string.trend_time_scale_week)),
+                new StaticFragmentAdapter.Item(MonthTrendsFragment.class,
+                                               resources.getString(R.string.trend_time_scale_month)),
+                new StaticFragmentAdapter.Item(QuarterTrendsFragment.class,
+                                               resources.getString(R.string.trend_time_scale_quarter))
         };
     }
 }

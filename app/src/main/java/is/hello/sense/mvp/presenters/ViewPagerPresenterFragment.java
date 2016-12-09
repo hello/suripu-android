@@ -4,10 +4,10 @@ package is.hello.sense.mvp.presenters;
 import android.app.FragmentManager;
 import android.support.annotation.NonNull;
 
-import is.hello.sense.mvp.adapters.StaticSubPresenterFragmentAdapter;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.mvp.util.ViewPagerPresenter;
 import is.hello.sense.mvp.view.ViewPagerPresenterView;
+import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.util.NotTested;
 
 /**
@@ -32,10 +32,10 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     //region ViewPagePresenter
     @NonNull
     @Override
-    public StaticSubPresenterFragmentAdapter.Item[] getViewPagerItems() {
+    public StaticFragmentAdapter.Item[] getViewPagerItems() {
         // should never happen but lets be safe.
         if (viewPagerDelegate == null) {
-            return new StaticSubPresenterFragmentAdapter.Item[0];
+            return new StaticFragmentAdapter.Item[0];
         }
         return viewPagerDelegate.getViewPagerItems();
     }

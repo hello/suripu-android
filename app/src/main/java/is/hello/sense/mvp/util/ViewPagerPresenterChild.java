@@ -12,7 +12,4 @@ public interface ViewPagerPresenterChild {
 
     void onUserInvisible();
 
-    void onViewInitialized();
-
-    void releaseDelegateReference();
 }

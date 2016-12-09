@@ -3,50 +3,38 @@ package is.hello.sense.flows.home.ui.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
-import android.widget.ToggleButton;
-
-import com.segment.analytics.Properties;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.api.model.v2.Trends.TimeScale;
 import is.hello.sense.flows.home.ui.views.TrendsView;
-import is.hello.sense.interactors.ScopedValueInteractor.BindResult;
 import is.hello.sense.interactors.TrendsInteractor;
-import is.hello.sense.mvp.presenters.SubPresenterFragment;
-import is.hello.sense.ui.widget.SelectorView;
+import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.util.ViewPagerPresenterChild;
+import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
 import is.hello.sense.ui.widget.graphing.trends.TrendFeedViewItem;
 import is.hello.sense.ui.widget.graphing.trends.TrendGraphView;
 import is.hello.sense.util.Analytics;
 
-//todo this class and its view need to be rethought.
-public class TrendsFragment extends SubPresenterFragment<TrendsView> implements
+public abstract class TrendsFragment extends PresenterFragment<TrendsView>
+        implements
         TrendFeedViewItem.OnRetry,
-        TrendGraphView.AnimationCallback {
+        TrendGraphView.AnimationCallback,
+        ViewPagerPresenterChild {
 
     @Inject
     TrendsInteractor trendsInteractor;
 
+    private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
 
+    //region PresenterFragment
     @Override
     public final void initializePresenterView() {
         if (presenterView == null) {
             presenterView = new TrendsView(getActivity(), getAnimatorContext());
+            presenterChildDelegate.onViewInitialized();
         }
-    }
-
-
-    @Override
-    public void onUserVisible() {
-        fetchTrends();
-    }
-
-    @Override
-    public void onUserInvisible() {
-
     }
 
     @Override
@@ -64,21 +52,46 @@ public class TrendsFragment extends SubPresenterFragment<TrendsView> implements
         bindAndSubscribe(trendsInteractor.trends, this::bindTrends, this::presentError);
     }
 
-    public final void bindTrends(@NonNull final Trends trends) {
-        presenterView.updateTrends(trends);
-        isFinished();
+
+    @Override
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
     }
 
-    public final void presentError(final Throwable e) {
-        presenterView.showError(this);
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        presenterChildDelegate.onResume();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        presenterChildDelegate.onPause();
+    }
+
+    //endregion
+    //region ViewPagerPresenterChild
+    @Override
+    public void onUserVisible() {
+        fetchTrends();
+    }
+
+    @Override
+    public void onUserInvisible() {
+
+    }
+    //endregion
+
+    //region onRetry
     @Override
     public final void fetchTrends() {
         trendsInteractor.setTimeScale(getTimeScale());
         trendsInteractor.update();
     }
+    //endregion
+
     /* todo support analytics again
     @Override
     public final void onSelectionChanged(final int newSelectionIndex) {
@@ -90,18 +103,26 @@ public class TrendsFragment extends SubPresenterFragment<TrendsView> implements
         Analytics.trackEvent(Analytics.Backside.EVENT_CHANGE_TRENDS_TIMESCALE, properties);
 
     }*/
-
+    //region AnimationCallback
     @Override
     public final void isFinished() {
         if (presenterView != null) {
             presenterView.isFinished();
         }
     }
+    //endregion
 
-    @NonNull
-    protected TimeScale getTimeScale() {
-        return TimeScale.LAST_WEEK;
+
+    //region methods
+    protected abstract TimeScale getTimeScale();
+
+    public final void bindTrends(@NonNull final Trends trends) {
+        presenterView.updateTrends(trends);
+        isFinished();
     }
 
-    ;
+    public final void presentError(final Throwable e) {
+        presenterView.showError(this);
+    }
+    //endregion
 }

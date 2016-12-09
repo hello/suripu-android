@@ -92,7 +92,7 @@ public class ViewPagerPresenterChildDelegate implements ViewPagerPresenterChild 
      */
     @Override
     public void onUserVisible() {
-        host.onUserInvisible();
+        host.onUserVisible();
     }
 
     /**
@@ -111,16 +111,12 @@ public class ViewPagerPresenterChildDelegate implements ViewPagerPresenterChild 
      * Should be called from the {@link #host} during
      * {@link is.hello.sense.mvp.presenters.PresenterFragment#onViewCreated(View, Bundle)}
      */
-    @Override
     public void onViewInitialized() {
         this.isViewInitialized = true;
     }
 
-    /**
-     * Reminder to release this reference.
-     */
-    @Override
-    public void releaseDelegateReference() {
-        host.releaseDelegateReference();
+    public boolean isVisibleToUser(){
+        return isVisibleToUser;
     }
+
 }

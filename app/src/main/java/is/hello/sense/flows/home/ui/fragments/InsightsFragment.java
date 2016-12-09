@@ -36,7 +36,9 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.QuestionsInteractor;
 import is.hello.sense.interactors.questions.ReviewQuestionProvider;
 import is.hello.sense.flows.home.ui.views.InsightsView;
-import is.hello.sense.mvp.presenters.SubPresenterFragment;
+import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.util.ViewPagerPresenterChild;
+import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
@@ -51,15 +53,17 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.NotTested;
 import is.hello.sense.util.Share;
 import rx.Observable;
 
-
-public class InsightsFragment extends SubPresenterFragment<InsightsView> implements
+@NotTested //enough
+public class InsightsFragment extends PresenterFragment<InsightsView> implements
         SwipeRefreshLayout.OnRefreshListener,
         InsightsAdapter.InteractionListener,
         InsightInfoFragment.Parent,
-        InsightsAdapter.OnRetry {
+        InsightsAdapter.OnRetry,
+        ViewPagerPresenterChild {
 
     @Inject
     InsightsInteractor insightsInteractor;
@@ -77,6 +81,8 @@ public class InsightsFragment extends SubPresenterFragment<InsightsView> impleme
     Picasso picasso;
     @Inject
     ApiService apiService;
+
+    private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
 
 
     @Nullable
@@ -99,7 +105,14 @@ public class InsightsFragment extends SubPresenterFragment<InsightsView> impleme
     public final void initializePresenterView() {
         if (presenterView == null) {
             presenterView = new InsightsView(getActivity(), dateFormatter, picasso, this);
+            this.presenterChildDelegate.onViewInitialized();
         }
+    }
+
+    @Override
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        this.presenterChildDelegate.onViewInitialized();
     }
 
     @Override
@@ -413,24 +426,24 @@ public class InsightsFragment extends SubPresenterFragment<InsightsView> impleme
                 case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW:
                     stateSafeExecutor.execute(() -> UserSupport.showProductPage(getActivity()));
                     preferencesInteractor.edit()
-                               .putBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, true)
-                               .apply();
+                                         .putBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, true)
+                                         .apply();
                     break;
 
                 case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW_AMAZON:
                     stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity(), "www.amazon.com"));
                     localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
                     preferencesInteractor.edit()
-                               .putBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, true)
-                               .apply();
+                                         .putBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, true)
+                                         .apply();
                     break;
 
                 case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW_AMAZON_UK:
                     stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity(), "www.amazon.co.uk"));
                     localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
                     preferencesInteractor.edit()
-                               .putBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, true)
-                               .apply();
+                                         .putBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, true)
+                                         .apply();
                     break;
 
                 case ReviewQuestionProvider.RESPONSE_SEND_FEEDBACK:
@@ -450,8 +463,8 @@ public class InsightsFragment extends SubPresenterFragment<InsightsView> impleme
                 case ReviewQuestionProvider.RESPONSE_SUPPRESS_PERMANENTLY:
                     localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
                     preferencesInteractor.edit()
-                               .putBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, true)
-                               .apply();
+                                         .putBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, true)
+                                         .apply();
                     break;
             }
         }

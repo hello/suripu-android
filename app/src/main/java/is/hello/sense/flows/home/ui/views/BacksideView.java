@@ -20,7 +20,6 @@ import is.hello.sense.flows.home.ui.fragments.BacksideTabFragment;
 import is.hello.sense.flows.home.ui.fragments.HomeFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
-import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.widget.ExtendedViewPager;
@@ -28,7 +27,6 @@ import is.hello.sense.ui.widget.SelectorView;
 
 public class BacksideView extends PresenterView {
     public static final int ITEM_ROOM_CONDITIONS = 0;
-    public static final int ITEM_TRENDS = 1;
     public static final int ITEM_INSIGHTS = 2;
     public static final int ITEM_SOUNDS = 3;
     public static final int ITEM_APP_SETTINGS = 4;
@@ -54,7 +52,6 @@ public class BacksideView extends PresenterView {
 
         this.adapter = new StaticFragmentAdapter(fragmentManager,
                                                  new StaticFragmentAdapter.Item(RoomConditionsPresenterFragment.class, getString(R.string.title_current_conditions)),
-                                                 new StaticFragmentAdapter.Item(TrendsFragment.class, getString(R.string.title_trends)),
                                                  new StaticFragmentAdapter.Item(HomeFragment.class, getString(R.string.action_insights)),
                                                  new StaticFragmentAdapter.Item(SoundsFragment.class, getString(R.string.action_alarm)),
                                                  new StaticFragmentAdapter.Item(AppSettingsFragment.class, getString(R.string.action_settings)));
@@ -62,14 +59,12 @@ public class BacksideView extends PresenterView {
 
         final @DrawableRes int[] inactiveIcons = {
                 R.drawable.icon_sense_24,
-                R.drawable.icon_trends_24,
                 R.drawable.icon_insight_24,
                 R.drawable.icon_sound_24,
                 R.drawable.backside_icon_settings,
         };
         final @DrawableRes int[] activeIcons = {
                 R.drawable.icon_sense_active_24,
-                R.drawable.icon_trends_active_24,
                 R.drawable.icon_insight_active_24,
                 R.drawable.icon_sound_active_24,
                 R.drawable.backside_icon_settings_active,

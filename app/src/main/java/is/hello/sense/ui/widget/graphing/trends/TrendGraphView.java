@@ -11,7 +11,9 @@ import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.ui.widget.graphing.drawables.TrendGraphDrawable;
+import is.hello.sense.util.NotTested;
 
+@NotTested
 public abstract class TrendGraphView extends View implements TrendFeedViewItem.OnBindGraph {
     protected TrendGraphDrawable drawable;
     protected AnimatorContext animatorContext;
@@ -23,7 +25,7 @@ public abstract class TrendGraphView extends View implements TrendFeedViewItem.O
 
     protected TrendGraphView(@NonNull final Context context,
                              @NonNull final AnimatorContext animatorContext,
-                             @NonNull final AnimationCallback animationCallback) {
+                             @Nullable final AnimationCallback animationCallback) {
         super(context);
         this.animatorContext = animatorContext;
         this.animationCallback = animationCallback;
@@ -33,7 +35,7 @@ public abstract class TrendGraphView extends View implements TrendFeedViewItem.O
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if(animationCallback != null){
+        if (animationCallback != null) {
             animationCallback = null;
         }
     }
@@ -53,7 +55,7 @@ public abstract class TrendGraphView extends View implements TrendFeedViewItem.O
 
     protected void finishedAnimating() {
         isAnimating = false;
-        if(animationCallback != null) {
+        if (animationCallback != null) {
             animationCallback.isFinished();
         }
     }

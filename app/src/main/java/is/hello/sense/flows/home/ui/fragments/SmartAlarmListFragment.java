@@ -27,7 +27,9 @@ import is.hello.sense.flows.smartalarm.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
-import is.hello.sense.mvp.presenters.SubPresenterFragment;
+import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.util.ViewPagerPresenterChild;
+import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
 import is.hello.sense.ui.common.SenseDialogFragment;
@@ -41,8 +43,10 @@ import is.hello.sense.util.NotTested;
 import rx.Observable;
 
 @NotTested
-public class SmartAlarmListFragment extends SubPresenterFragment<SmartAlarmListView>
-        implements SmartAlarmAdapter.InteractionListener {
+public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView>
+        implements
+        SmartAlarmAdapter.InteractionListener,
+        ViewPagerPresenterChild {
     private static final int DELETE_REQUEST_CODE = 117;
 
     @Inject
@@ -54,6 +58,7 @@ public class SmartAlarmListFragment extends SubPresenterFragment<SmartAlarmListV
     @Inject
     ExpansionCategoryFormatter expansionCategoryFormatter;
     private ArrayList<Alarm> currentAlarms = new ArrayList<>();
+    private ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
 
 
     //region PresenterFragment
@@ -66,7 +71,20 @@ public class SmartAlarmListFragment extends SubPresenterFragment<SmartAlarmListV
                                                                               dateFormatter,
                                                                               expansionCategoryFormatter),
                                                         this::onAddButtonClicked);
+            this.presenterChildDelegate.onViewInitialized();
         }
+    }
+
+    @Override
+    protected void onRelease() {
+        super.onRelease();
+        this.presenterChildDelegate = null;
+    }
+
+    @Override
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        this.presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
     }
 
     @Override

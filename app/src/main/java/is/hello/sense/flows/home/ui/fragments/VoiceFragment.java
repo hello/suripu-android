@@ -11,14 +11,23 @@ import is.hello.sense.flows.home.ui.views.VoiceView;
 import is.hello.sense.flows.voicecommands.ui.activities.VoiceCommandActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountPreferencesInteractor;
-import is.hello.sense.mvp.presenters.SubPresenterFragment;
+import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.util.ViewPagerPresenterChild;
+import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
+import is.hello.sense.util.NotTested;
 
-public class VoiceFragment extends SubPresenterFragment<VoiceView> implements ArrayRecyclerAdapter.OnItemClickedListener<VoiceCommandsAdapter.VoiceCommand> {
+@NotTested // enough
+public class VoiceFragment extends PresenterFragment<VoiceView>
+        implements
+        ArrayRecyclerAdapter.OnItemClickedListener<VoiceCommandsAdapter.VoiceCommand>,
+        ViewPagerPresenterChild {
 
+    private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
     private VoiceCommandsAdapter adapter;
-    AccountPreferencesInteractor sharedPreferences;
+    private AccountPreferencesInteractor sharedPreferences;
 
+    //region PresenterFragment
     @Override
     public void initializePresenterView() {
         if (this.presenterView == null) {
@@ -26,6 +35,7 @@ public class VoiceFragment extends SubPresenterFragment<VoiceView> implements Ar
             this.adapter.setOnItemClickedListener(this);
             this.presenterView = new VoiceView(getActivity(),
                                                this.adapter);
+            this.presenterChildDelegate.onViewInitialized();
         }
     }
 
@@ -45,15 +55,34 @@ public class VoiceFragment extends SubPresenterFragment<VoiceView> implements Ar
     }
 
     @Override
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        this.presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
+    }
+
+    //endRegion
+    //region ViewPagerPresenterChild
+    @Override
     public void onUserInvisible() {
 
     }
 
     @Override
     public void onUserVisible() {
-
     }
+    //endregion
 
+    //region  ArrayRecyclerAdapter.OnItemClickedListener
+    @Override
+    public void onItemClicked(final int position,
+                              @NonNull final VoiceCommandsAdapter.VoiceCommand item) {
+        final Intent intent = new Intent(getActivity(), VoiceCommandActivity.class);
+        intent.putExtra(VoiceCommandActivity.ITEM_KEY, item.name());
+        startActivity(intent); //todo undo this one day
+    }
+    //endregion
+
+    //region methods
     private void showWelcomeCard(final boolean wasShown) {
         if (wasShown) {
             this.adapter.showWelcomeCard(null);
@@ -69,13 +98,6 @@ public class VoiceFragment extends SubPresenterFragment<VoiceView> implements Ar
                          .apply();
         showWelcomeCard(true);
     }
+    //endregion
 
-
-    @Override
-    public void onItemClicked(final int position,
-                              @NonNull final VoiceCommandsAdapter.VoiceCommand item) {
-        final Intent intent = new Intent(getActivity(), VoiceCommandActivity.class);
-        intent.putExtra(VoiceCommandActivity.ITEM_KEY, item.name());
-        startActivity(intent); //todo undo this one day
-    }
 }
