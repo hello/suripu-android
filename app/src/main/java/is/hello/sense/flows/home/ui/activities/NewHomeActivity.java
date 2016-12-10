@@ -91,6 +91,11 @@ public class NewHomeActivity extends ScopedInjectionActivity
         this.extendedViewPager = (ExtendedViewPager) findViewById(R.id.activity_new_home_extended_view_pager);
         this.tabLayout = (TabLayout) findViewById(R.id.activity_new_home_tab_layout);
         this.tabLayout.setupWithViewPager(this.extendedViewPager);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setIcon(R.drawable.backside_icon_settings);
+        }
 
     }
 

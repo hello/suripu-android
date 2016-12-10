@@ -10,6 +10,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -48,7 +50,6 @@ public class TimelinePagerFragment extends InjectionFragment
     private static final String KEY_LAST_UPDATED = TimelinePagerFragment.class.getSimpleName() + "KEY_LAST_UPDATED";
 
     private static final int ZOOMED_OUT_TIMELINE_REQUEST = 101;
-    private TimelineToolbar toolbar;
     private ViewPager viewPager;
     private TimelineFragmentAdapter viewPagerAdapter;
     private final BroadcastReceiver onTimeChanged = new BroadcastReceiver() {
@@ -74,6 +75,19 @@ public class TimelinePagerFragment extends InjectionFragment
     private final AnimatorContext animatorContext = new AnimatorContext(getClass().getName());
     private long lastUpdated = System.currentTimeMillis();
 
+    @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(final Menu menu,
+                                    final MenuInflater inflater) {
+        inflater.inflate(R.menu.timeline_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater,
@@ -81,12 +95,6 @@ public class TimelinePagerFragment extends InjectionFragment
                              final Bundle savedInstanceState) {
 
         final ViewGroup view = (ViewGroup) inflater.inflate(R.layout.fragment_timeline_pager, container, false);
-
-        toolbar = (TimelineToolbar) view.findViewById(R.id.fragment_timeline_pager_toolbar);
-        toolbar.setTitleDimmed(getUserVisibleHint() && isBacksideOpen());
-        toolbar.setShareVisible(false);
-        toolbar.setHistoryOnClickListener(this::onHistoryIconClicked);
-        toolbar.setShareOnClickListener(this::onShareIconClicked);
 
         viewPager = (ExtendedViewPager) view.findViewById(R.id.fragment_timeline_view_pager);
 
@@ -96,7 +104,7 @@ public class TimelinePagerFragment extends InjectionFragment
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.addOnPageChangeListener(this);
 
-        if(viewPager.getCurrentItem() == 0){
+        if (viewPager.getCurrentItem() == 0) {
             jumpToLastNight(false);
         }
 
@@ -107,7 +115,7 @@ public class TimelinePagerFragment extends InjectionFragment
     @Override
     public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             this.lastUpdated = savedInstanceState.getLong(KEY_LAST_UPDATED);
         }
     }
@@ -144,8 +152,8 @@ public class TimelinePagerFragment extends InjectionFragment
                                  final int resultCode,
                                  final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(Activity.RESULT_OK == resultCode){
-            if(ZOOMED_OUT_TIMELINE_REQUEST == requestCode){
+        if (Activity.RESULT_OK == resultCode) {
+            if (ZOOMED_OUT_TIMELINE_REQUEST == requestCode) {
                 final LocalDate date = (LocalDate) data.getSerializableExtra(TimelineActivity.EXTRA_LOCAL_DATE);
                 final Timeline timeline = (Timeline) data.getSerializableExtra(TimelineActivity.EXTRA_TIMELINE);
                 onTimelineSelected(date, timeline);
@@ -230,21 +238,21 @@ public class TimelinePagerFragment extends InjectionFragment
     }
 
     private void onShareIconClicked(final View ignored) {
-        final TimelineFragment current =  viewPagerAdapter.getCurrentTimeline();
-        if(current != null){
+        final TimelineFragment current = viewPagerAdapter.getCurrentTimeline();
+        if (current != null) {
             current.share();
         }
     }
 
     private void onHistoryIconClicked(final View ignored) {
-        final TimelineFragment current =  viewPagerAdapter.getCurrentTimeline();
-        if(current != null){
+        final TimelineFragment current = viewPagerAdapter.getCurrentTimeline();
+        if (current != null) {
             current.dismissVisibleOverlaysAndDialogs();
             showTimelineNavigator(current.getDate(), current.getCachedTimeline());
         }
     }
 
-    private String getTitle(@Nullable final LocalDate date){
+    private String getTitle(@Nullable final LocalDate date) {
         return dateFormatter.formatAsTimelineDate(date);
     }
 
@@ -252,9 +260,6 @@ public class TimelinePagerFragment extends InjectionFragment
      * @param date to use and update toolbar title display
      */
     public void updateTitle(@Nullable final LocalDate date) {
-        if (toolbar != null) {
-            toolbar.setTitle(getTitle(date));
-        }
     }
 
     //region Timeline parent
@@ -271,9 +276,6 @@ public class TimelinePagerFragment extends InjectionFragment
 
     @Override
     public void setShareVisible(final boolean visible) {
-        if (toolbar != null) {
-            toolbar.setShareVisible(visible);
-        }
     }
 
     //endregion
