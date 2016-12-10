@@ -2,10 +2,8 @@ package is.hello.sense.mvp.view;
 
 
 import android.annotation.SuppressLint;
-import android.app.FragmentManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
 
 import is.hello.sense.R;
 import is.hello.sense.mvp.adapters.StaticSubPresenterFragmentAdapter;
@@ -90,8 +88,8 @@ public final class ViewPagerPresenterView extends PresenterView {
         if (position < 0) {
             return;
         }
-        for (int i = position + 1; i < tabLayout.getTabCount(); i++) {
-            tabLayout.removeTabAt(position);
+        for (int i = tabLayout.getTabCount() - 1; i > position; i--) {
+            tabLayout.removeTabAt(i);
         }
     }
 
