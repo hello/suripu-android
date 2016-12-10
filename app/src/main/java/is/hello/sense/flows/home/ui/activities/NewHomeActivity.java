@@ -102,7 +102,9 @@ public class NewHomeActivity extends ScopedInjectionActivity
             this.fragmentNavigationDelegate.onRestoreInstanceState(savedInstanceState);
         }
         this.bottomSelectorView = (SelectorView) findViewById(R.id.activity_new_home_bottom_selector_view);
-
+        if (getActionBar() != null){
+            getActionBar().hide();
+        }
         initSelector(bottomSelectorView);
 
     }

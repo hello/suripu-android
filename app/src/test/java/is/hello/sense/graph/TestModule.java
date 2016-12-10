@@ -63,7 +63,7 @@ import is.hello.sense.interactors.settings.SettingsPairSenseInteractorTests;
 import is.hello.sense.interactors.upgrade.UpgradePairSenseInteractorTests;
 import is.hello.sense.rating.LocalUsageTrackerTests;
 import is.hello.sense.ui.adapter.SmartAlarmAdapterTests;
-import is.hello.sense.ui.fragments.RoomConditionsFragmentTests;
+import is.hello.sense.ui.fragments.RoomConditionsPresenterFragmentTests;
 import is.hello.sense.units.UnitFormatterTests;
 import is.hello.sense.util.BatteryUtil;
 import is.hello.sense.util.DateFormatterTests;
@@ -131,7 +131,7 @@ import static org.mockito.Mockito.mock;
             SwapSenseInteractorTests.class,
 
             RoomConditionsPresenterFragment.class,
-            RoomConditionsFragmentTests.class,
+            RoomConditionsPresenterFragmentTests.class,
 
             SensorLabelInteractorTest.class,
 

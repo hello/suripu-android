@@ -23,7 +23,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.robolectric.util.FragmentTestUtil.startFragment;
 
-public class RoomConditionsFragmentTests extends InjectionTestCase {
+public class RoomConditionsPresenterFragmentTests extends InjectionTestCase {
     //todo modifying preferencesInteractor has no effect because fragment doesn't use test module provided interactors
     @Inject
     PreferencesInteractor preferencesInteractor;
