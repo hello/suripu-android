@@ -238,6 +238,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     }
 
     private void onSkip(final View view) {
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_VOICE_TUTORIAL_SKIP, null);
         onFinish(false);
     }
 
