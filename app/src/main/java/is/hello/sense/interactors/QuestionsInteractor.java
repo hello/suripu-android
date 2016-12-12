@@ -224,21 +224,6 @@ import rx.Scheduler;
                                                   apiService,
                                                   ReviewQuestionProvider.Destination.Amazon);
             }
-        },
-        REVIEW_AMAZON_UK {
-            @Override
-            String getName() {
-                return "AmazonUKReviewQuestionProvider";
-            }
-
-            @Override
-            QuestionProvider createQuestionProvider(@NonNull final ApiService apiService,
-                                                    @NonNull final Context context,
-                                                    @NonNull final Scheduler scheduler) {
-                return new ReviewQuestionProvider(context,
-                                                  apiService,
-                                                  ReviewQuestionProvider.Destination.AmazonUK);
-            }
         };
 
         /**

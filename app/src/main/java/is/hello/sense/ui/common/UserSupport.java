@@ -15,6 +15,8 @@ import android.support.v4.content.ContextCompat;
 
 import com.segment.analytics.Properties;
 
+import java.util.Locale;
+
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
@@ -81,13 +83,17 @@ public class UserSupport {
         }
     }
 
-    public static void showAmazonReviewPage(@NonNull final Activity from, @NonNull final String authority) {
+    public static void showAmazonReviewPage(@NonNull final Activity from,
+                                            @NonNull final Locale locale,
+                                            final boolean hasVoice) {
+        final String authorityParam = Locale.US.equals(locale) ? "www.amazon.com" : "www.amazon.co.uk";
+        final String asinParam = hasVoice ? "B01M9F2WLE" : "B016XBL2RE";
         final Uri amazonReviewUri = new Uri.Builder()
                 .scheme("https")
-                .authority(authority)
+                .authority(authorityParam)
                 .appendPath("review")
                 .appendPath("create-review")
-                .appendQueryParameter("asin", "B016XBL2RE")
+                .appendQueryParameter("asin", asinParam)
                 .build();
         openUri(from, amazonReviewUri);
     }
