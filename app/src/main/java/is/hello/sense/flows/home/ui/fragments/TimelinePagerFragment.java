@@ -64,9 +64,7 @@ public class TimelinePagerFragment extends InjectionFragment
                 viewPagerAdapter.setLatestDate(newToday);
                 viewPager.setAdapter(viewPagerAdapter);
                 viewPager.setCurrentItem(viewPagerAdapter.getLastNight(), false);
-                senseBar.setText(getTitle(selectedDate));
             } else {
-                senseBar.setText(R.string.action_last_night);
                 viewPagerAdapter.setLatestDate(newToday);
                 TimelinePagerFragment.this.updateTitle(newToday);
             }

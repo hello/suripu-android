@@ -53,11 +53,11 @@ public class SenseBar extends FrameLayout {
     }
 
     public void showLeftImage(final boolean show) {
-        this.leftImage.setVisibility(show ? VISIBLE : GONE);
+        this.leftImage.setVisibility(show ? VISIBLE : INVISIBLE);
     }
 
     public void showRightImage(final boolean show) {
-        this.rightImage.setVisibility(show ? VISIBLE : GONE);
+        this.rightImage.setVisibility(show ? VISIBLE : INVISIBLE);
     }
 
     public void setLeftImageOnClickListener(@Nullable final OnClickListener onClickListener) {
