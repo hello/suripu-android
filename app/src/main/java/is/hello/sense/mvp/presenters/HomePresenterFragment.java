@@ -17,6 +17,7 @@ public class HomePresenterFragment extends ViewPagerPresenterFragment {
     HasVoiceInteractor hasVoiceInteractor;
 
     //region ViewPagerPresenterFragment
+
     @NonNull
     @Override
     protected BaseViewPagerPresenterDelegate newViewPagerDelegateInstance() {

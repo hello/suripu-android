@@ -338,10 +338,6 @@ public class HomeActivity extends ScopedInjectionActivity
 
                     break;
                 }
-                case TRENDS: {
-                    showBacksideWithItem(BacksideView.ITEM_TRENDS, animate);
-                    break;
-                }
                 case ALARM: {
                     showBacksideWithItem(BacksideView.ITEM_SOUNDS, animate);
                     break;

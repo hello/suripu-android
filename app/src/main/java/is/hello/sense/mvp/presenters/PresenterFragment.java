@@ -229,4 +229,16 @@ public abstract class PresenterFragment<T extends PresenterView>
     public void finishActivity() {
         getActivity().finish();
     }
+
+    protected final void showActionBar(final boolean show) {
+        if (getActivity().getActionBar() == null) {
+            return;
+        }
+        if (show) {
+            getActivity().getActionBar().show();
+        } else {
+            getActivity().getActionBar().hide();
+        }
+    }
+
 }

@@ -8,6 +8,7 @@ import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 //todo move to is.hello.sense.flows.home.ui.fragments and replace SoundsFragment
 public class SoundsPresenterFragment extends ViewPagerPresenterFragment {
     //region ViewPagerPresenterFragment
+
     @NonNull
     @Override
     protected BaseViewPagerPresenterDelegate newViewPagerDelegateInstance() {

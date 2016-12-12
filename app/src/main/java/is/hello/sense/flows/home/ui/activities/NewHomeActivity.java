@@ -24,10 +24,8 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.alerts.Alert;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
-import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
-import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
+import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
-import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.mvp.presenters.HomePresenterFragment;
 import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
@@ -104,7 +102,9 @@ public class NewHomeActivity extends ScopedInjectionActivity
             this.fragmentNavigationDelegate.onRestoreInstanceState(savedInstanceState);
         }
         this.bottomSelectorView = (SelectorView) findViewById(R.id.activity_new_home_bottom_selector_view);
-
+        if (getActionBar() != null){
+            getActionBar().hide();
+        }
         initSelector(bottomSelectorView);
 
     }
@@ -393,7 +393,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
         private final String TRENDS_TAG = TrendsPresenterFragment.class.getSimpleName();
         private final String HOME_TAG = HomePresenterFragment.class.getSimpleName();
         private final String SOUNDS_TAG = SoundsPresenterFragment.class.getSimpleName();
-        private final String CONDITIONS_TAG = AppSettingsFragment.class.getSimpleName();
+        private final String CONDITIONS_TAG = RoomConditionsPresenterFragment.class.getSimpleName();
 
         final String[] tags = {
                 TIMELINE_TAG,
@@ -410,7 +410,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
             map.put(TIMELINE_TAG, TimelinePagerFragment::new);
             map.put(TRENDS_TAG, TrendsPresenterFragment::new);
             map.put(SOUNDS_TAG, SoundsPresenterFragment::new);
-            map.put(CONDITIONS_TAG, AppSettingsFragment::new);
+            map.put(CONDITIONS_TAG, RoomConditionsPresenterFragment::new);
             map.put(HOME_TAG, HomePresenterFragment::new);
         }
 

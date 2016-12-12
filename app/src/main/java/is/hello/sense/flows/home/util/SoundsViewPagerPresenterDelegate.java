@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.fragments.SleepSoundsFragment;
 import is.hello.sense.flows.home.ui.fragments.SmartAlarmListFragment;
-import is.hello.sense.mvp.adapters.StaticSubPresenterFragmentAdapter;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.util.NotTested;
@@ -21,11 +20,11 @@ public class SoundsViewPagerPresenterDelegate extends BaseViewPagerPresenterDele
 
     @NonNull
     @Override
-    public StaticSubPresenterFragmentAdapter.Item[] getViewPagerItems() {
-        return new StaticSubPresenterFragmentAdapter.Item[]{
-                new StaticSubPresenterFragmentAdapter.Item(SmartAlarmListFragment.class,
+    public StaticFragmentAdapter.Item[] getViewPagerItems() {
+        return new StaticFragmentAdapter.Item[]{
+                new StaticFragmentAdapter.Item(SmartAlarmListFragment.class,
                                                resources.getString(R.string.alarm_subnavbar_alarm_list)),
-                new StaticSubPresenterFragmentAdapter.Item(SleepSoundsFragment.class,
+                new StaticFragmentAdapter.Item(SleepSoundsFragment.class,
                                                resources.getString(R.string.alarm_subnavbar_sounds_list))
         };
     }

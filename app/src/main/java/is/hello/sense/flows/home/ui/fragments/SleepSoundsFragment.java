@@ -1,7 +1,6 @@
 package is.hello.sense.flows.home.ui.fragments;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,7 +26,9 @@ import is.hello.sense.flows.home.ui.views.SleepSoundsView;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SleepSoundsInteractor;
 import is.hello.sense.interactors.SleepSoundsStatusInteractor;
-import is.hello.sense.mvp.presenters.SubPresenterFragment;
+import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.util.ViewPagerPresenterChild;
+import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -40,10 +41,11 @@ import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
 @NotTested
-public class SleepSoundsFragment extends SubPresenterFragment<SleepSoundsView>
+public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         implements
         SleepSoundsAdapter.InteractionListener,
-        SleepSoundsAdapter.Retry {
+        SleepSoundsAdapter.Retry,
+        ViewPagerPresenterChild {
     private static final int SOUNDS_REQUEST_CODE = 123;
     private static final int DURATION_REQUEST_CODE = 231;
     private static final int VOLUME_REQUEST_CODE = 312;
@@ -59,7 +61,7 @@ public class SleepSoundsFragment extends SubPresenterFragment<SleepSoundsView>
     private Subscription saveOperationSubscriber = Subscriptions.empty();
     private Subscription stopOperationSubscriber = Subscriptions.empty();
 
-
+    private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
     private UserWants userWants = UserWants.NONE;
 
     enum UserWants {
@@ -92,9 +94,15 @@ public class SleepSoundsFragment extends SubPresenterFragment<SleepSoundsView>
                                                              this),
                                                      this::onPlayClickListener,
                                                      this::onStopClickListener);
+            this.presenterChildDelegate.onViewInitialized();
         }
     }
 
+    @Override
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        this.presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
+    }
 
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
@@ -102,6 +110,18 @@ public class SleepSoundsFragment extends SubPresenterFragment<SleepSoundsView>
         bindAndSubscribe(sleepSoundsStatusInteractor.state, this::bindStatus, this::presentStatusError);
         bindAndSubscribe(sleepSoundsInteractor.sub, this::bind, this::presentError);
         sleepSoundsInteractor.update();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        this.presenterChildDelegate.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        this.presenterChildDelegate.onPause();
     }
 
     @Override
@@ -134,8 +154,8 @@ public class SleepSoundsFragment extends SubPresenterFragment<SleepSoundsView>
                 constant = Constants.SLEEP_SOUNDS_VOLUME_ID;
             }
             preferencesInteractor.edit()
-                       .putInt(constant, value)
-                       .apply();
+                                 .putInt(constant, value)
+                                 .apply();
             presenterView.notifyAdapter();
         }
     }
@@ -363,9 +383,11 @@ public class SleepSoundsFragment extends SubPresenterFragment<SleepSoundsView>
                                                               presentCommandError(e);
                                                               presenterView.displayStopButton();
                                                           });
-        ;
     }
 
+    private boolean isVisibleToUserAndResumed() {
+        return presenterChildDelegate.isVisibleToUser() && isResumed();
+    }
     //endregion
 
 }

@@ -2,14 +2,12 @@ package is.hello.sense.mvp.view;
 
 
 import android.annotation.SuppressLint;
-import android.app.FragmentManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
 
 import is.hello.sense.R;
-import is.hello.sense.mvp.adapters.StaticSubPresenterFragmentAdapter;
 import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
+import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 
 
@@ -52,11 +50,11 @@ public final class ViewPagerPresenterView extends PresenterView {
     //region methods
 
     public void createTabsAndPager(@NonNull final ViewPagerPresenterFragment fragment) {
-        final StaticSubPresenterFragmentAdapter.Item[] items = fragment.getViewPagerItems();
+        final StaticFragmentAdapter.Item[] items = fragment.getViewPagerItems();
 
         // ViewPager
-        final StaticSubPresenterFragmentAdapter adapter =
-                new StaticSubPresenterFragmentAdapter(fragment.getDesiredFragmentManager(),
+        final StaticFragmentAdapter adapter =
+                new StaticFragmentAdapter(fragment.getDesiredFragmentManager(),
                                                       items);
         this.viewPager.setOffscreenPageLimit(0);
         this.viewPager.setAdapter(adapter);
@@ -64,7 +62,7 @@ public final class ViewPagerPresenterView extends PresenterView {
 
         // TabLayout
         tabLayout.removeAllTabs();
-        for (final StaticSubPresenterFragmentAdapter.Item item : items) {
+        for (final StaticFragmentAdapter.Item item : items) {
             this.tabLayout.addTab(this.tabLayout.newTab().setText(item.getTitle()));
         }
         final TabLayout.Tab firstTab = this.tabLayout.getTabAt(fragment.getStartingItemPosition());

@@ -2,7 +2,7 @@ package is.hello.sense.mvp.util;
 
 import android.support.annotation.NonNull;
 
-import is.hello.sense.mvp.adapters.StaticSubPresenterFragmentAdapter;
+import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.util.NotTested;
 
 /**
@@ -14,8 +14,8 @@ public abstract class BaseViewPagerPresenterDelegate implements ViewPagerPresent
 
     @NonNull
     @Override
-    public StaticSubPresenterFragmentAdapter.Item[] getViewPagerItems() {
-        return new StaticSubPresenterFragmentAdapter.Item[0];
+    public StaticFragmentAdapter.Item[] getViewPagerItems() {
+        return new StaticFragmentAdapter.Item[0];
     }
 
     @Override
