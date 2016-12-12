@@ -28,10 +28,6 @@
                 style="@style/Divider.Horizontal"
                 android:layout_gravity="top"/>
 
-            <is.hello.sense.ui.widget.timeline.TimelineToolbar
-                android:id="@+id/activity_home_timeline_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
 
             <is.hello.sense.ui.widget.ExtendedViewPager
                 android:id="@+id/activity_home_view_pager"

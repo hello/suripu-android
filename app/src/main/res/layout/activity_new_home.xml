@@ -14,14 +14,14 @@
         android:scrollbars="none"
         app:senseFadingEdgeStyle="rounded">
 
-        <!-- using tabMaxWidth fixes bug with single tabs not filling width -->
         <android.support.design.widget.TabLayout
             android:id="@+id/activity_new_home_tab_layout"
             style="@style/AppTheme.AppCompat.NoActionBar.TabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            app:tabMaxWidth="500dp"/>
+            app:tabIndicatorColor="@color/background_light"
+            app:tabIndicatorHeight="0dp"
+            android:layout_gravity="bottom"/>
 
     </is.hello.sense.ui.widget.ExtendedViewPager>
 
