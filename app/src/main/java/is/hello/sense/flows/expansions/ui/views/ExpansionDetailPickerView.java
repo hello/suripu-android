@@ -80,6 +80,7 @@ public class ExpansionDetailPickerView extends PresenterView {
         this.configurationLoading.setVisibility(GONE);
         this.configurationSelectedTextView.setVisibility(GONE);
         this.configurationErrorImageView.setVisibility(VISIBLE);
+        hidePickerSpinner();
     }
 
     public void showConfigurationSpinner() {
@@ -123,7 +124,7 @@ public class ExpansionDetailPickerView extends PresenterView {
      */
     public void showExpansionRangePicker(final Pair<Integer, Integer> initialValues) {
         post(() -> this.expansionRangePicker.initPickers(initialValues.first,
-                                              initialValues.second));
+                                                         initialValues.second));
     }
 
     //region switch
