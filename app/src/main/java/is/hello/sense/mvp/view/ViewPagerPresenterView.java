@@ -69,10 +69,11 @@ public final class ViewPagerPresenterView extends PresenterView {
         if (firstTab != null) {
             firstTab.select();
         }
+        setTabLayoutVisible(true);
     }
 
-    public void hideTabLayout() {
-        tabLayout.setVisibility(GONE);
+    public void setTabLayoutVisible(final boolean visible) {
+        tabLayout.setVisibility(visible ? VISIBLE : GONE);
     }
 
     public void lockViewPager(final int position) {
@@ -84,13 +85,9 @@ public final class ViewPagerPresenterView extends PresenterView {
         viewPager.setScrollingEnabled(true);
     }
 
-    public void hideTabsAfter(final int position) {
-        if (position < 0) {
-            return;
-        }
-        for (int i = position + 1; i < tabLayout.getTabCount(); i++) {
-            tabLayout.removeTabAt(position);
-        }
+    public void removeTabs() {
+        tabLayout.removeAllTabs();
+        setTabLayoutVisible(false);
     }
 
     //endregion

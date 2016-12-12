@@ -45,9 +45,10 @@ public class HomePresenterFragment extends ViewPagerPresenterFragment {
     public void bindVoiceSettings(final boolean hasVoice) {
         if (hasVoice) {
             presenterView.createTabsAndPager(this);
+            presenterView.unlockViewPager();
         } else {
-            presenterView.hideTabsAfter(0);
-            presenterView.lockViewPager(0);
+            presenterView.removeTabs();
+            presenterView.lockViewPager(getStartingItemPosition());
         }
 
     }
