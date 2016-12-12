@@ -554,8 +554,12 @@
     <style name="AppTheme.AppCompat" parent="Theme.AppCompat">
         <item name="android:windowBackground">@color/background</item>
     </style>
+    <style name="AppTheme.AppCompat.NoActionBar" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@color/background</item>
+        <item name="windowActionBar">false</item>
+    </style>
 
-    <style name="AppTheme.AppCompat.TabLayout" parent="Widget.Design.TabLayout">
+    <style name="AppTheme.AppCompat.NoActionBar.TabLayout" parent="Widget.Design.TabLayout">
         <item name="tabBackground">@color/background_light</item>
         <item name="android:textAllCaps">true</item>
         <item name="tabSelectedTextColor">@color/primary</item>

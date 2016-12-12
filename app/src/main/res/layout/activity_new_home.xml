@@ -17,7 +17,7 @@
         <!-- using tabMaxWidth fixes bug with single tabs not filling width -->
         <android.support.design.widget.TabLayout
             android:id="@+id/activity_new_home_tab_layout"
-            style="@style/AppTheme.AppCompat.TabLayout"
+            style="@style/AppTheme.AppCompat.NoActionBar.TabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"

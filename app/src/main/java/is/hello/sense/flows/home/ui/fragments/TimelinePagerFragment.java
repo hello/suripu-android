@@ -10,8 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -29,7 +27,7 @@ import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
-import is.hello.sense.ui.widget.timeline.TimelineToolbar;
+import is.hello.sense.ui.widget.SenseBar;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
@@ -51,6 +49,7 @@ public class TimelinePagerFragment extends InjectionFragment
 
     private static final int ZOOMED_OUT_TIMELINE_REQUEST = 101;
     private ViewPager viewPager;
+    private SenseBar senseBar;
     private TimelineFragmentAdapter viewPagerAdapter;
     private final BroadcastReceiver onTimeChanged = new BroadcastReceiver() {
         @Override
@@ -65,7 +64,9 @@ public class TimelinePagerFragment extends InjectionFragment
                 viewPagerAdapter.setLatestDate(newToday);
                 viewPager.setAdapter(viewPagerAdapter);
                 viewPager.setCurrentItem(viewPagerAdapter.getLastNight(), false);
+                senseBar.setText(getTitle(selectedDate));
             } else {
+                senseBar.setText(R.string.action_last_night);
                 viewPagerAdapter.setLatestDate(newToday);
                 TimelinePagerFragment.this.updateTitle(newToday);
             }
@@ -75,18 +76,6 @@ public class TimelinePagerFragment extends InjectionFragment
     private final AnimatorContext animatorContext = new AnimatorContext(getClass().getName());
     private long lastUpdated = System.currentTimeMillis();
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(final Menu menu,
-                                    final MenuInflater inflater) {
-        inflater.inflate(R.menu.timeline_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
 
     @Nullable
     @Override
@@ -98,12 +87,17 @@ public class TimelinePagerFragment extends InjectionFragment
 
         viewPager = (ExtendedViewPager) view.findViewById(R.id.fragment_timeline_view_pager);
 
+        senseBar = (SenseBar) view.findViewById(R.id.fragment_timeline_pager_sensebar);
+
         this.viewPagerAdapter = new TimelineFragmentAdapter(getChildFragmentManager(),
                                                             preferences.getAccountCreationDate());
 
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.addOnPageChangeListener(this);
-
+        senseBar.setLeftImage(R.drawable.icon_calendar_24);
+        senseBar.setRightImage(R.drawable.icon_share_24);
+        senseBar.setLeftImageOnClickListener(this::onHistoryIconClicked);
+        senseBar.setRightImageOnClickListener(this::onShareIconClicked);
         if (viewPager.getCurrentItem() == 0) {
             jumpToLastNight(false);
         }
@@ -181,6 +175,7 @@ public class TimelinePagerFragment extends InjectionFragment
         final LocalDate localDate = viewPagerAdapter.getItemDate(position);
         updateTitle(localDate);
         setShareVisible(timelineInteractor.hasValidTimeline(localDate));
+        senseBar.setText(getTitle(localDate));
 
     }
 
