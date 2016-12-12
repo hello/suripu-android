@@ -2,7 +2,6 @@ package is.hello.sense.ui.fragments.sounds;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,7 +38,6 @@ import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
 import is.hello.sense.ui.common.SubFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.util.Analytics;
@@ -160,10 +158,6 @@ public class SleepSoundsFragment extends SubFragment implements InteractionListe
         if (isVisibleToUser) {
             Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS, null);
             update();
-            if (getActivity() != null) {
-                final boolean flickerWorkAround = true;
-                WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_sleep_sounds, flickerWorkAround);
-            }
             statusPollingHelper.poll();
         } else {
             statusPollingHelper.cancelLastPoll();
