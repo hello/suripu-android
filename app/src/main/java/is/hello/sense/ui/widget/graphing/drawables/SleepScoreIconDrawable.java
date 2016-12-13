@@ -175,6 +175,11 @@ public class SleepScoreIconDrawable extends Drawable {
             return this;
         }
 
+        public Builder withText(final int score) {
+            this.text = String.valueOf(score);
+            return this;
+        }
+
         public Builder withSelected(final boolean isSelected) {
             this.isSelected = isSelected;
             return this;

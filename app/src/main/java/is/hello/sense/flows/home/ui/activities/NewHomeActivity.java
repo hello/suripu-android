@@ -17,9 +17,12 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
+import is.hello.sense.api.model.v2.ScoreCondition;
+import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.alerts.Alert;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
+import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
 import is.hello.sense.mvp.presenters.HomePresenterFragment;
@@ -66,6 +69,8 @@ public class NewHomeActivity extends ScopedInjectionActivity
     LocalUsageTracker localUsageTracker;
     @Inject
     VoiceSettingsInteractor voiceSettingsInteractor;
+    @Inject
+    LastNightInteractor lastNightInteractor;
 
     private static final String KEY_CURRENT_ITEM_INDEX = NewHomeActivity.class.getSimpleName() + "CURRENT_ITEM_INDEX";
     private static final int DEFAULT_ITEM_INDEX = 2;
@@ -91,12 +96,13 @@ public class NewHomeActivity extends ScopedInjectionActivity
         this.extendedViewPager = (ExtendedViewPager) findViewById(R.id.activity_new_home_extended_view_pager);
         this.tabLayout = (TabLayout) findViewById(R.id.activity_new_home_tab_layout);
         this.tabLayout.setupWithViewPager(this.extendedViewPager);
+        extendedViewPager.setAdapter(new StaticFragmentAdapter(getFragmentManager(), getViewPagerItems()));
+        setUpTabs();
     }
 
     @Override
     protected void onPostCreate(final Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
         final IntentFilter loggedOutIntent = new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT);
         final Observable<Intent> onLogOut = Rx.fromLocalBroadcast(getApplicationContext(), loggedOutIntent);
         bindAndSubscribe(onLogOut,
@@ -116,48 +122,11 @@ public class NewHomeActivity extends ScopedInjectionActivity
             alertsInteractor.update();
         }
 
-        extendedViewPager.setAdapter(new StaticFragmentAdapter(getFragmentManager(), getViewPagerItems()));
-        //todo organize this better after design review
-        tabLayout.removeAllTabs();
-        tabLayout.addTab(tabLayout.newTab().setIcon(new SleepScoreIconDrawable.Builder(this)
-                                                            .withSize(getWindowManager())
-                                                            .withText("82")
-                                                            .build()));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_trends_24));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_insight_24));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_sound_24));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_sense_24));
-        tabLayout.getTabAt(currentItemIndex);
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(final TabLayout.Tab tab) {
-                if (tab == null) {
-                    return;
-                }
-                final Drawable drawable = tab.getIcon();
-                if (drawable == null) {
-                    return;
-                }
-                drawable.setColorFilter(ContextCompat.getColor(NewHomeActivity.this, R.color.blue5), PorterDuff.Mode.MULTIPLY);
-            }
+        bindAndSubscribe(lastNightInteractor.timeline,
+                         this::updateSleepScoreTab,
+                         Functions.LOG_ERROR);
+        lastNightInteractor.update();
 
-            @Override
-            public void onTabUnselected(final TabLayout.Tab tab) {
-                if (tab == null) {
-                    return;
-                }
-                final Drawable drawable = tab.getIcon();
-                if (drawable == null) {
-                    return;
-                }
-                drawable.setColorFilter(ContextCompat.getColor(NewHomeActivity.this, R.color.gray3), PorterDuff.Mode.MULTIPLY);
-            }
-
-            @Override
-            public void onTabReselected(final TabLayout.Tab tab) {
-
-            }
-        });
 
     }
 
@@ -268,6 +237,67 @@ public class NewHomeActivity extends ScopedInjectionActivity
                 progressOverlay.setVisibility(View.GONE);
             }
         });
+    }
+
+    public void setUpTabs() {
+        final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(this);
+        drawableBuilder.withSize(getWindowManager());
+        tabLayout.removeAllTabs();
+        tabLayout.addTab(tabLayout.newTab().setIcon(drawableBuilder.build()));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_trends_24));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_insight_24));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_sound_24));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_sense_24));
+        tabLayout.getTabAt(currentItemIndex);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(final TabLayout.Tab tab) {
+                if (tab == null) {
+                    return;
+                }
+                final Drawable drawable = tab.getIcon();
+                if (drawable == null) {
+                    return;
+                }
+                drawable.setColorFilter(ContextCompat.getColor(NewHomeActivity.this, R.color.blue5), PorterDuff.Mode.MULTIPLY);
+            }
+
+            @Override
+            public void onTabUnselected(final TabLayout.Tab tab) {
+                if (tab == null) {
+                    return;
+                }
+                final Drawable drawable = tab.getIcon();
+                if (drawable == null) {
+                    return;
+                }
+                drawable.setColorFilter(ContextCompat.getColor(NewHomeActivity.this, R.color.gray3), PorterDuff.Mode.MULTIPLY);
+            }
+
+            @Override
+            public void onTabReselected(final TabLayout.Tab tab) {
+
+            }
+        });
+    }
+
+    public void updateSleepScoreTab(@Nullable final Timeline timeline) {
+        final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(this);
+        drawableBuilder.withSize(getWindowManager());
+        if (timeline != null &&
+                timeline.getScoreCondition() != ScoreCondition.UNAVAILABLE &&
+                timeline.getScore() != null) {
+            drawableBuilder.withText(timeline.getScore());
+        }
+        if (tabLayout == null) {
+            return;
+        }
+        final TabLayout.Tab tab = tabLayout.getTabAt(0);
+        if (tab == null) {
+            return;
+        }
+        drawableBuilder.withSelected(tab.isSelected());
+        tab.setIcon(drawableBuilder.build());
     }
 
     @NonNull
