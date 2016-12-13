@@ -97,21 +97,30 @@ public class TrendFeedView extends LinearLayout {
 
     }
 
-    public void showWelcomeCard() {
-        if (welcomeCard == null) {
-            if (trends == null || trends.getAvailableTimeScales().isEmpty()) {
-                this.welcomeCard = TrendFeedViewItem.createWelcomeCard(getContext());
-            } else {
-                this.welcomeCard = TrendFeedViewItem.createWelcomeBackCard(getContext());
-            }
-            addView(welcomeCard);
+    public boolean hasTrends() {
+        return trends != null;
+    }
+
+    public void showWelcomeCard(final boolean useWelcomeBack) {
+        if (useWelcomeBack) {
+            this.welcomeCard = TrendFeedViewItem.createWelcomeBackCard(getContext());
+        } else {
+            this.welcomeCard = TrendFeedViewItem.createWelcomeCard(getContext());
         }
+        addView(welcomeCard);
     }
 
     private void populate() {
         final List<Graph> graphs = trends.getGraphs();
         if (graphs.isEmpty()) {
-            showWelcomeCard();
+            if (welcomeCard == null) {
+                if (trends.getAvailableTimeScales().isEmpty()) {
+                    this.welcomeCard = TrendFeedViewItem.createWelcomeCard(getContext());
+                } else {
+                    this.welcomeCard = TrendFeedViewItem.createWelcomeBackCard(getContext());
+                }
+                addView(welcomeCard);
+            }
         } else if (graphs.size() == 1) {
             final Graph graph = graphs.get(0);
             if (graph.isGrid() && welcomeCard == null) {
