@@ -173,7 +173,6 @@ public class TimelinePagerFragment extends InjectionFragment
         final LocalDate localDate = viewPagerAdapter.getItemDate(position);
         updateTitle(localDate);
         setShareVisible(timelineInteractor.hasValidTimeline(localDate));
-        senseBar.setText(getTitle(localDate));
 
     }
 
@@ -253,6 +252,7 @@ public class TimelinePagerFragment extends InjectionFragment
      * @param date to use and update toolbar title display
      */
     public void updateTitle(@Nullable final LocalDate date) {
+        senseBar.setText(getTitle(date));
     }
 
     //region Timeline parent
@@ -269,6 +269,7 @@ public class TimelinePagerFragment extends InjectionFragment
 
     @Override
     public void setShareVisible(final boolean visible) {
+        senseBar.showRightImage(visible);
     }
 
     //endregion
