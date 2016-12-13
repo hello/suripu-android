@@ -180,11 +180,17 @@ public class TrendFeedView extends LinearLayout {
         final Context context = getContext();
         switch (graph.getGraphType()) {
             case BAR:
-                return new TrendFeedViewItem(new TrendGraphLayout(context, new BarTrendGraphView(context, graph, animatorContext, animationCallback)));
+                return new TrendFeedViewItem(new TrendGraphLayout(context, new BarTrendGraphView(context, graph, animatorContext, animationCallback)),
+                                             false,
+                                             false);
             case BUBBLES:
-                return new TrendFeedViewItem(new TrendGraphLayout(context, new BubbleTrendGraphView(context, graph, animatorContext, animationCallback)));
+                return new TrendFeedViewItem(new TrendGraphLayout(context, new BubbleTrendGraphView(context, graph, animatorContext, animationCallback)),
+                                             true,
+                                             true);
             case GRID:
-                return new TrendFeedViewItem(new TrendGraphLayout(context, new GridTrendGraphView(context, graph, animatorContext, animationCallback)));
+                return new TrendFeedViewItem(new TrendGraphLayout(context, new GridTrendGraphView(context, graph, animatorContext, animationCallback)),
+                                             true,
+                                             true);
 
             default:
                 throw new IllegalArgumentException("Unknown graph type " + graph.getGraphType());

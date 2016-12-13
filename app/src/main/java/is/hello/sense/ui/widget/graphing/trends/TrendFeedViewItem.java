@@ -53,7 +53,9 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
         return new ComingSoonCardView(context, days);
     }
 
-    public TrendFeedViewItem(@NonNull final TrendGraphLayout layout) {
+    public TrendFeedViewItem(@NonNull final TrendGraphLayout layout,
+                             final boolean topMargin,
+                             final boolean bottomMargin) {
         super(layout.getContext());
 
         LayoutInflater.from(getContext()).inflate(R.layout.item_trend, this);
@@ -67,7 +69,13 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
 
         final LayoutParams myLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
                                                              LayoutParams.WRAP_CONTENT);
-        myLayoutParams.bottomMargin = resources.getDimensionPixelSize(R.dimen.x1);
+        final int margin = resources.getDimensionPixelSize(R.dimen.x1);
+        if (topMargin) {
+            myLayoutParams.topMargin = margin;
+        }
+        if (bottomMargin) {
+            myLayoutParams.bottomMargin = margin;
+        }
         setLayoutParams(myLayoutParams);
 
         final float cornerRadius = resources.getDimension(R.dimen.raised_item_corner_radius);
