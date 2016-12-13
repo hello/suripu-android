@@ -13,12 +13,13 @@
         android:layout_marginStart="@dimen/x3"/>
 
     <TextView
-
         android:id="@+id/view_sense_bar_text"
         style="@style/AppTheme.Text.Header.H6"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:paddingEnd="@dimen/x2"
+        android:paddingStart="@dimen/x2"/>
 
     <ImageView
         android:id="@+id/view_sense_bar_right_image"

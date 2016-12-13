@@ -2,22 +2,16 @@ package is.hello.sense.flows.home.ui.views;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.adapters.SensorResponseAdapter;
 import is.hello.sense.mvp.view.PresenterView;
-import is.hello.sense.ui.recycler.CardItemDecoration;
-import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.SenseBar;
-import is.hello.sense.ui.widget.util.Views;
 
 @SuppressLint("ViewConstructor")
 public final class RoomConditionsView extends PresenterView {
@@ -33,9 +27,10 @@ public final class RoomConditionsView extends PresenterView {
         this.senseBar = (SenseBar) findViewById(R.id.fragment_room_conditions_sense_bar);
         setUpStandardRecyclerViewDecorations(recyclerView, new LinearLayoutManager(context));
         recyclerView.setAdapter(adapter);
-        senseBar.setText(R.string.app_name);
+        senseBar.setText(R.string.title_room_conditions);
         senseBar.showLeftImage(false);
         senseBar.setRightImage(R.drawable.backside_icon_settings);
+        senseBar.alignTextLeft();
     }
 
     @Override
