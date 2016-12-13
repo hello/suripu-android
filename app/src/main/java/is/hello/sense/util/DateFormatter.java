@@ -143,6 +143,16 @@ import is.hello.sense.ui.widget.util.Styles;
         return interval.contains(instant.toDateTimeAtStartOfDay());
     }
 
+
+    /**
+     * Returns whether or not a given date is considered to
+     * be within two weeks before the present day.
+     */
+    public static boolean isInLast2Weeks(@NonNull final LocalDate instant) {
+        final Interval interval = new Interval(Weeks.TWO, nowDateTime().withTimeAtStartOfDay());
+        return interval.contains(instant.toDateTimeAtStartOfDay());
+    }
+
     //endregion
 
     //region Week Periods
