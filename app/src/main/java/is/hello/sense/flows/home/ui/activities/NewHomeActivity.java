@@ -296,6 +296,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
         if (tab == null) {
             return;
         }
+        drawableBuilder.withSelected(tab.isSelected());
         tab.setIcon(drawableBuilder.build());
     }
 
