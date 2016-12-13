@@ -167,13 +167,11 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
 
         StaticCardLayout(@NonNull final Context context) {
             super(context);
-
-            final View view = LayoutInflater.from(getContext()).inflate(R.layout.item_message_card, this);
+            LayoutInflater.from(getContext()).inflate(R.layout.item_message_card, this);
             this.image = (ImageView) findViewById(R.id.item_message_card_image);
             this.title = (TextView) findViewById(R.id.item_message_card_title);
             this.message = (TextView) findViewById(R.id.item_message_card_message);
             this.action = (Button) findViewById(R.id.item_message_card_action);
-            view.setPadding(0, getContext().getResources().getDimensionPixelSize(R.dimen.gap_card_vertical), 0, 0);
         }
     }
 
