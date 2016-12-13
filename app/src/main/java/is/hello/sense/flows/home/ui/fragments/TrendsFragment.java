@@ -70,6 +70,7 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     public void onResume() {
         super.onResume();
         presenterChildDelegate.onResume();
+        fetchTrends();
     }
 
     @Override
@@ -82,7 +83,6 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     //region ViewPagerPresenterChild
     @Override
     public void onUserVisible() {
-        fetchTrends();
     }
 
     @Override
