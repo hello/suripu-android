@@ -97,7 +97,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
         this.tabLayout = (TabLayout) findViewById(R.id.activity_new_home_tab_layout);
         this.tabLayout.setupWithViewPager(this.extendedViewPager);
         extendedViewPager.setAdapter(new StaticFragmentAdapter(getFragmentManager(), getViewPagerItems()));
-        setUpTabs(null);
+        setUpTabs();
     }
 
     @Override
@@ -123,7 +123,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
         }
 
         bindAndSubscribe(lastNightInteractor.timeline,
-                         this::setUpTabs,
+                         this::updateSleepScoreTab,
                          Functions.LOG_ERROR);
         lastNightInteractor.update();
 
@@ -239,16 +239,9 @@ public class NewHomeActivity extends ScopedInjectionActivity
         });
     }
 
-    public void setUpTabs(@Nullable final Timeline timeline) {
+    public void setUpTabs() {
         final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(this);
         drawableBuilder.withSize(getWindowManager());
-        if (timeline != null &&
-                timeline.getScoreCondition() != ScoreCondition.UNAVAILABLE &&
-                timeline.getScore() != null) {
-            drawableBuilder.withText(timeline.getScore());
-        }
-
-
         tabLayout.removeAllTabs();
         tabLayout.addTab(tabLayout.newTab().setIcon(drawableBuilder.build()));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_trends_24));
@@ -286,6 +279,24 @@ public class NewHomeActivity extends ScopedInjectionActivity
 
             }
         });
+    }
+
+    public void updateSleepScoreTab(@Nullable final Timeline timeline) {
+        final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(this);
+        drawableBuilder.withSize(getWindowManager());
+        if (timeline != null &&
+                timeline.getScoreCondition() != ScoreCondition.UNAVAILABLE &&
+                timeline.getScore() != null) {
+            drawableBuilder.withText(timeline.getScore());
+        }
+        if (tabLayout == null) {
+            return;
+        }
+        final TabLayout.Tab tab = tabLayout.getTabAt(0);
+        if (tab == null) {
+            return;
+        }
+        tab.setIcon(drawableBuilder.build());
     }
 
     @NonNull
