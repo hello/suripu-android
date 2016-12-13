@@ -565,5 +565,9 @@
         <item name="tabGravity">fill</item>
         <item name="tabMaxWidth">0dp</item>
     </style>
+    
+    <style name="AppTheme.AppCompat.Fab" parent="Widget.Design.FloatingActionButton">
+        <item name="backgroundTint">@color/light_accent</item>
+    </style>
 
 </resources>

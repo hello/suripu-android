@@ -2,9 +2,13 @@ package is.hello.sense.mvp.presenters;
 
 
 import android.app.FragmentManager;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.view.View;
 
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
+import is.hello.sense.mvp.util.FabPresenter;
 import is.hello.sense.mvp.util.ViewPagerPresenter;
 import is.hello.sense.mvp.view.ViewPagerPresenterView;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
@@ -15,7 +19,7 @@ import is.hello.sense.util.NotTested;
  */
 @NotTested
 public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewPagerPresenterView>
-        implements ViewPagerPresenter {
+        implements ViewPagerPresenter, FabPresenter {
 
     private BaseViewPagerPresenterDelegate viewPagerDelegate;
 
@@ -72,6 +76,26 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
 
     public FragmentManager getDesiredFragmentManager() {
         return useChildFragmentManager() ? getChildFragmentManager() : getFragmentManager();
+    }
+    //endregion
+
+    //region FabPresenter
+    @Override
+    public void setFabVisible(final boolean visible){
+        if(presenterView != null){
+            presenterView.setFabVisible(visible);
+        }
+    }
+
+    @Override
+    public void updateFab(@DrawableRes final int iconRes,
+                   @Nullable final View.OnClickListener listener,
+                   final boolean enabled){
+        if(presenterView != null){
+            presenterView.updateFab(iconRes,
+                                    listener,
+                                    enabled);
+        }
     }
     //endregion
 }

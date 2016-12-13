@@ -2,8 +2,8 @@ package is.hello.sense.flows.home.ui.activities;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.content.IntentFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -26,13 +26,15 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
-import is.hello.sense.mvp.presenters.HomePresenterFragment;
-import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.mvp.presenters.HomePresenterFragment;
+import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
 import is.hello.sense.mvp.presenters.TrendsPresenterFragment;
+import is.hello.sense.mvp.util.FabPresenter;
+import is.hello.sense.mvp.util.FabPresenterProvider;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
@@ -43,9 +45,9 @@ import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.SelectorView;
+import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.ui.widget.graphing.drawables.SleepScoreIconDrawable;
 import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.ui.widget.SpinnerImageView;
 import rx.Observable;
 import rx.functions.Func0;
 
@@ -60,6 +62,7 @@ public class NewHomeActivity extends ScopedInjectionActivity
         implements SelectorView.OnSelectionChangedListener,
         FragmentNavigation,
         TimelineFragment.ParentProvider,
+        FabPresenterProvider,
         Alert.ActionHandler {
 
     @Inject
@@ -224,6 +227,11 @@ public class NewHomeActivity extends ScopedInjectionActivity
     public TimelineFragment.Parent get() {
         return (TimelineFragment.Parent) getFragmentManager()
                 .findFragmentByTag(fragmentMapper.tags[0]);
+    }
+
+    @Override
+    public FabPresenter getFabPresenter(){
+        return (FabPresenter) getFragmentManager().findFragmentByTag(fragmentMapper.tags[3]);
     }
 
     private void initSelector(@NonNull final SelectorView selectorView) {

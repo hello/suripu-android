@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import is.hello.sense.R;
@@ -26,7 +25,6 @@ import is.hello.sense.util.NotTested;
 public class SleepSoundsView extends PresenterView {
 
     private final SpinnerImageView playButton;
-    private final FrameLayout buttonLayout;
     private final ProgressBar progressBar;
     private final RecyclerView recyclerView;
     private final SleepSoundsAdapter adapter;
@@ -42,7 +40,6 @@ public class SleepSoundsView extends PresenterView {
         this.recyclerView = (RecyclerView) findViewById(R.id.view_sleep_sounds_recycler);
         this.progressBar = (ProgressBar) findViewById(R.id.view_sleep_sounds_progressbar);
         this.playButton = (SpinnerImageView) findViewById(R.id.view_sleep_sounds_playbutton);
-        this.buttonLayout = (FrameLayout) findViewById(R.id.view_sleep_sounds_buttonLayout);
         this.adapter = adapter;
 
         //RecyclerView
@@ -80,10 +77,8 @@ public class SleepSoundsView extends PresenterView {
 
     public void setButtonVisible(final boolean visible) {
         if (visible) {
-            this.buttonLayout.setVisibility(View.VISIBLE);
             this.playButton.setVisibility(View.VISIBLE);
         } else {
-            this.buttonLayout.setVisibility(View.GONE);
             this.playButton.setVisibility(View.GONE);
         }
     }
@@ -134,7 +129,6 @@ public class SleepSoundsView extends PresenterView {
     public void displayButton(final @DrawableRes int resource,
                               final @Nullable View.OnClickListener listener,
                               final boolean enabled) {
-        buttonLayout.setVisibility(View.VISIBLE);
         playButton.setRotation(0);
         playButton.setImageResource(resource);
         playButton.setOnClickListener(listener);

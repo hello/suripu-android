@@ -28,6 +28,8 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.util.FabPresenter;
+import is.hello.sense.mvp.util.FabPresenterProvider;
 import is.hello.sense.mvp.util.ViewPagerPresenterChild;
 import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -59,6 +61,8 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     ExpansionCategoryFormatter expansionCategoryFormatter;
     private ArrayList<Alarm> currentAlarms = new ArrayList<>();
     private ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
+    @Nullable
+    private FabPresenter fabPresenter;
 
 
     //region PresenterFragment
@@ -69,9 +73,15 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
                                                         new SmartAlarmAdapter(getActivity(),
                                                                               this,
                                                                               dateFormatter,
-                                                                              expansionCategoryFormatter),
-                                                        this::onAddButtonClicked);
+                                                                              expansionCategoryFormatter));
             this.presenterChildDelegate.onViewInitialized();
+            this.fabPresenter = ((FabPresenterProvider) getActivity()).getFabPresenter();
+            if(fabPresenter != null){
+                fabPresenter.setFabVisible(true);
+                fabPresenter.updateFab(R.drawable.icon_plus,
+                                       this::onAddButtonClicked,
+                                       true);
+            }
         }
     }
 
@@ -79,6 +89,7 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     protected void onRelease() {
         super.onRelease();
         this.presenterChildDelegate = null;
+        this.fabPresenter = null;
     }
 
     @Override
@@ -226,9 +237,9 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
             message.titleIconRes = R.drawable.illustration_no_alarm;
             message.onClickListener = this::onAddButtonClicked;
             presenterView.bindAdapterMessage(message);
-            presenterView.setAddButtonVisible(false);
-        } else {
-            presenterView.setAddButtonVisible(true);
+        }
+        if (fabPresenter != null) {
+            fabPresenter.setFabVisible(alarms.isEmpty());
         }
         presenterView.setProgressBarVisible(false);
     }
@@ -263,7 +274,9 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
             message.onClickListener = this::updateAlarms;
         }
         presenterView.bindAdapterMessage(message);
-        presenterView.setAddButtonVisible(false);
+        if (fabPresenter != null) {
+            fabPresenter.setFabVisible(false);
+        }
         presenterView.setProgressBarVisible(false);
     }
 

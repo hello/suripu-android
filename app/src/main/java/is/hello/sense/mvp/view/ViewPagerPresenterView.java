@@ -2,8 +2,13 @@ package is.hello.sense.mvp.view;
 
 
 import android.annotation.SuppressLint;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
+import android.view.View;
 
 import is.hello.sense.R;
 import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
@@ -16,6 +21,7 @@ public final class ViewPagerPresenterView extends PresenterView {
 
     private final ExtendedViewPager viewPager;
     private final TabLayout tabLayout;
+    private final FloatingActionButton fab;
 
     /**
      * @param fragment - Fragment providing initialization settings and callbacks.
@@ -26,6 +32,7 @@ public final class ViewPagerPresenterView extends PresenterView {
         this.viewPager = (ExtendedViewPager) findViewById(R.id.view_view_pager_extended_view_pager);
         this.tabLayout = (TabLayout) findViewById(R.id.view_view_pager_tab_layout);
         this.tabLayout.setupWithViewPager(this.viewPager);
+        this.fab = (FloatingActionButton) findViewById(R.id.view_view_pager_fab);
         createTabsAndPager(fragment);
     }
 
@@ -39,6 +46,7 @@ public final class ViewPagerPresenterView extends PresenterView {
     public void releaseViews() {
         this.tabLayout.removeAllViews();
         this.viewPager.removeAllViews();
+        this.fab.setOnClickListener(null);
     }
 
     @Override
@@ -90,6 +98,41 @@ public final class ViewPagerPresenterView extends PresenterView {
         setTabLayoutVisible(false);
     }
 
+    public void addViewPagerListener(final ViewPager.OnPageChangeListener listener) {
+        viewPager.addOnPageChangeListener(listener);
+    }
+
+    public void removeViewPagerListener(final ViewPager.OnPageChangeListener listener) {
+        viewPager.removeOnPageChangeListener(listener);
+    }
+
+    //endregion
+
+    //region fab methods
+
+    public void setFabVisible(final boolean visible) {
+        if (visible) {
+            this.fab.setVisibility(View.VISIBLE);
+        } else {
+            this.fab.setVisibility(View.GONE);
+        }
+    }
+
+    public void updateFab(final @DrawableRes int resource,
+                          final @Nullable View.OnClickListener listener,
+                          final boolean enabled) {
+        //playButton.setRotation(0);
+        fab.setImageResource(resource);
+        fab.setOnClickListener(listener);
+        // setting fab to disabled removes elevation as well
+        fab.setEnabled(enabled);
+        //todo handle spinning animation
+        if (enabled) {
+            //playButton.stopSpinning();
+        } else {
+            //playButton.startSpinning();
+        }
+    }
     //endregion
 
 }
