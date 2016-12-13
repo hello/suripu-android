@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.view.View;
 
 
+import org.joda.time.LocalDate;
+
 import javax.inject.Inject;
 
 import is.hello.sense.api.model.v2.Trends;
@@ -118,10 +120,10 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     //region methods
     public void showLoadingState() {
         if (!presenterView.hasTrends()) {
-            presenterView.showWelcomeCard(!DateFormatter.isInLast2Weeks(
-                    preferencesInteractor.getAccountCreationDate()));
+            final LocalDate creationDate = preferencesInteractor.getAccountCreationDate();
+            final boolean showWelcomeBack = !DateFormatter.isInLast2Weeks(creationDate) && !DateFormatter.isTodayForTimeline(creationDate);
+            presenterView.showWelcomeCard(showWelcomeBack);
         }
-
     }
 
     protected abstract TimeScale getTimeScale();

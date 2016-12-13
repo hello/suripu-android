@@ -149,7 +149,7 @@ import is.hello.sense.ui.widget.util.Styles;
      * be within two weeks before the present day.
      */
     public static boolean isInLast2Weeks(@NonNull final LocalDate instant) {
-        Interval interval = new Interval(Weeks.TWO, nowDateTime().withTimeAtStartOfDay());
+        final Interval interval = new Interval(Weeks.TWO, nowDateTime().withTimeAtStartOfDay());
         return interval.contains(instant.toDateTimeAtStartOfDay());
     }
 
