@@ -466,32 +466,12 @@ public class TimelineFragment extends InjectionFragment
             return;
         }
 
-        boolean showZoomOutTutorial = Tutorial.ZOOM_OUT_TIMELINE.shouldShow(getActivity());
-        if (firstTimeline && showZoomOutTutorial) {
-            final SharedPreferences preferences =
-                    getActivity().getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
-            final int numberTimelinesShown =
-                    preferences.getInt(Constants.HANDHOLDING_NUMBER_TIMELINES_SHOWN, 0);
-            if (numberTimelinesShown < 5) {
-                Logger.debug(getClass().getSimpleName(),
-                             "Incrementing timelines shown to " + (numberTimelinesShown + 1));
-
-                preferences.edit()
-                           .putInt(Constants.HANDHOLDING_NUMBER_TIMELINES_SHOWN,
-                                   numberTimelinesShown + 1)
-                           .apply();
-
-                showZoomOutTutorial = false;
-            }
-        }
 
         if (!parent.isBacksideOpen()) {
             if (WelcomeDialogFragment.shouldShow(getActivity(), R.xml.welcome_dialog_timeline)) {
                 WelcomeDialogFragment.show(getActivity(), R.xml.welcome_dialog_timeline, false);
             } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
                 showTutorial(Tutorial.SWIPE_TIMELINE);
-            } else if (showZoomOutTutorial) {
-                showTutorial(Tutorial.ZOOM_OUT_TIMELINE);
             }
         }
     }

@@ -24,25 +24,8 @@ public abstract class PresenterView extends FrameLayout {
 
     public PresenterView(@NonNull final Activity activity) {
         super(activity);
-        if (useAppCompat()) {
-            final Context contextThemeWrapper = new ContextThemeWrapper(activity, R.style.AppTheme_AppCompat);
-            final LayoutInflater localInflater = activity.getLayoutInflater().cloneInContext(contextThemeWrapper);
-            localInflater.inflate(getLayoutRes(), this);
-        } else {
-            activity.getLayoutInflater().inflate(getLayoutRes(), this);
-        }
+        activity.getLayoutInflater().inflate(getLayoutRes(), this);
         this.context = activity;
-    }
-
-    /**
-     * To avoid updating the entire application and acitvities themes we can set the theme of individual
-     * views using this.
-     *
-     * @return true will use AppCompat. Should be true for any view that requires
-     * {@link android.support.design.widget.TabLayout}.
-     */
-    protected boolean useAppCompat() {
-        return false;
     }
 
     protected final String getString(@StringRes final int res) {

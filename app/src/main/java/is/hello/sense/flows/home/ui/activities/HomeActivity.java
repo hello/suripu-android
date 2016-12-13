@@ -59,7 +59,6 @@ import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.SpinnerImageView;
-import is.hello.sense.ui.widget.timeline.TimelineToolbar;
 import is.hello.sense.ui.widget.util.InteractiveAnimator;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -214,8 +213,6 @@ public class HomeActivity extends ScopedInjectionActivity
         this.progressOverlay = findViewById(R.id.activity_home_progress_overlay);
         this.spinner = (SpinnerImageView) findViewById(R.id.activity_home_spinner);
 
-        final TimelineToolbar toolbar =  (TimelineToolbar) findViewById(R.id.activity_home_timeline_toolbar);
-        toolbar.setOnClickListener(ignore -> this.onTopViewWillSlideDown());
     }
 
     @Override
