@@ -35,6 +35,7 @@ public final class TrendsView extends PresenterView {
 
         this.trendFeedView = (TrendFeedView) findViewById(R.id.fragment_trends_trendgraph);
         this.trendFeedView.setAnimatorContext(animatorContext);
+        this.trendFeedView.showWelcomeCard();
     }
 
     @Override
