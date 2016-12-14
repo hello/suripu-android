@@ -76,12 +76,6 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
                                                                               expansionCategoryFormatter));
             this.presenterChildDelegate.onViewInitialized();
             this.fabPresenter = ((FabPresenterProvider) getActivity()).getFabPresenter();
-            if(fabPresenter != null){
-                fabPresenter.setFabVisible(true);
-                fabPresenter.updateFab(R.drawable.icon_plus,
-                                       this::onAddButtonClicked,
-                                       true);
-            }
         }
     }
 
@@ -150,6 +144,12 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
 
     @Override
     public void onUserVisible() {
+        if(fabPresenter != null){
+            fabPresenter.setFabVisible(currentAlarms != null && !currentAlarms.isEmpty());
+            fabPresenter.updateFab(R.drawable.icon_plus,
+                                   this::onAddButtonClicked,
+                                   true);
+        }
         updateAlarms(null);
     }
 
