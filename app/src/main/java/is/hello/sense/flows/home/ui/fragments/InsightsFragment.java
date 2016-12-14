@@ -29,13 +29,13 @@ import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.flows.home.ui.activities.NewHomeActivity;
+import is.hello.sense.flows.home.ui.views.InsightsView;
 import is.hello.sense.graph.Scope;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.QuestionsInteractor;
 import is.hello.sense.interactors.questions.ReviewQuestionProvider;
-import is.hello.sense.flows.home.ui.views.InsightsView;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.mvp.util.ViewPagerPresenterChild;
 import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
@@ -359,20 +359,19 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     //region Questions
 
     public final void updateQuestion() {
-        final Observable<Boolean> stageOne = deviceIssuesInteractor.latest().map(issue -> (issue == DeviceIssuesInteractor.Issue.NONE &&
-                localUsageTracker.isUsageAcceptableForRatingPrompt() &&
-                !preferencesInteractor.getBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, false)));
+        final Observable<Boolean> stageOne = deviceIssuesInteractor.latest().map(issue -> (
+                issue == DeviceIssuesInteractor.Issue.NONE
+                && localUsageTracker.isUsageAcceptableForRatingPrompt()
+                && !preferencesInteractor.getBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, false)));
         stageOne.subscribe(showReview -> {
                                if (showReview) {
                                    final boolean reviewedOnAmazon = preferencesInteractor.getBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, false);
-                                   // Amazon review links point to the first version of Sense and thus should not be shown for voice
-                                   if (!reviewedOnAmazon && !preferencesInteractor.hasVoice()) {
-                                       final String country = Locale.getDefault().getCountry();
-                                       if (country.equalsIgnoreCase(Locale.US.getCountry())) {
+                                   if (!reviewedOnAmazon) {
+                                       final Locale country = Locale.getDefault();
+                                       if (country.equals(Locale.US) || country.equals(Locale.UK)) {
                                            questionsInteractor.setSource(QuestionsInteractor.Source.REVIEW_AMAZON);
-                                       } else if (country.equalsIgnoreCase(Locale.UK.getCountry())) {
-                                           questionsInteractor.setSource(QuestionsInteractor.Source.REVIEW_AMAZON_UK);
-                                       } // else, default source is API
+                                       }
+                                       // else, default source is API
                                    } else {
                                        questionsInteractor.setSource(QuestionsInteractor.Source.REVIEW);
                                    }
@@ -438,15 +437,9 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
                     break;
 
                 case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW_AMAZON:
-                    stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity(), "www.amazon.com"));
-                    localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
-                    preferencesInteractor.edit()
-                                         .putBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, true)
-                                         .apply();
-                    break;
-
-                case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW_AMAZON_UK:
-                    stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity(), "www.amazon.co.uk"));
+                    stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity(),
+                                                                                     Locale.getDefault(),
+                                                                                     preferencesInteractor.hasVoice()));
                     localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
                     preferencesInteractor.edit()
                                          .putBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, true)

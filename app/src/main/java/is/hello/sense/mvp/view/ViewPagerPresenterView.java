@@ -48,11 +48,6 @@ public final class ViewPagerPresenterView extends PresenterView {
         this.viewPager.removeAllViews();
         this.fab.setOnClickListener(null);
     }
-
-    @Override
-    protected boolean useAppCompat() {
-        return true;
-    }
     //endregion
 
     //region methods

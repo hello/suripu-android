@@ -374,6 +374,11 @@ public class Analytics {
         String EVENT_VOICE_TUTORIAL = "Onboarding Voice Tutorial";
 
         /**
+         * When user has voice feature and presses skip button
+         */
+        String EVENT_VOICE_TUTORIAL_SKIP = "Onboarding Voice Tutorial Skip";
+
+        /**
          * Status of voice command returned
          */
         String EVENT_VOICE_COMMAND = "Onboarding Voice Command";

@@ -196,6 +196,28 @@ public class DateFormatterTests extends InjectionTestCase {
     }
 
     @Test
+    public void isInLast2Weeks() {
+        final LocalDate now = DateFormatter.nowLocalDate();
+        assertThat(DateFormatter.isInLast2Weeks(now.plusDays(1)), is(false));
+        assertThat(DateFormatter.isInLast2Weeks(now), is(false));
+        assertThat(DateFormatter.isInLast2Weeks(now.minusDays(1)), is(true));
+        assertThat(DateFormatter.isInLast2Weeks(now.minusDays(2)), is(true));
+        assertThat(DateFormatter.isInLast2Weeks(now.minusDays(3)), is(true));
+        assertThat(DateFormatter.isInLast2Weeks(now.minusDays(4)), is(true));
+        assertThat(DateFormatter.isInLast2Weeks(now.minusDays(5)), is(true));
+        assertThat(DateFormatter.isInLast2Weeks(now.minusDays(6)), is(true));
+        assertThat(DateFormatter.isInLast2Weeks(now.minusDays(7)), is(true));
+        assertThat(DateFormatter.isInLast2Weeks(now.minusDays(8)), is(true));
+        assertThat(DateFormatter.isInLast2Weeks(now.minusDays(9)), is(true));
+        assertThat(DateFormatter.isInLast2Weeks(now.minusDays(10)), is(true));
+        assertThat(DateFormatter.isInLast2Weeks(now.minusDays(11)), is(true));
+        assertThat(DateFormatter.isInLast2Weeks(now.minusDays(12)), is(true));
+        assertThat(DateFormatter.isInLast2Weeks(now.minusDays(13)), is(true));
+        assertThat(DateFormatter.isInLast2Weeks(now.minusDays(14)), is(true));
+        assertThat(DateFormatter.isInLast2Weeks(now.minusDays(15)), is(false));
+    }
+
+    @Test
     public void formatAsTimelineDate() {
         String lastNightString = getString(R.string.format_date_last_night);
         assertThat(formatter.formatAsTimelineDate(DateFormatter.lastNight()),
@@ -383,6 +405,7 @@ public class DateFormatterTests extends InjectionTestCase {
         assertThat(DateFormatter.nextJodaTimeDay(DateTimeConstants.SUNDAY),
                    is(equalTo(DateTimeConstants.MONDAY)));
     }
+
     @Test
     public void getDaysOfWeek() {
         assertThat(DateFormatter.getDaysOfWeek(DateTimeConstants.MONDAY),

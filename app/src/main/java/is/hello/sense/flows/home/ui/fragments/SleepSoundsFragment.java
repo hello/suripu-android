@@ -32,7 +32,6 @@ import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
-import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.NotTested;
@@ -126,8 +125,6 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
 
     @Override
     public void onUserVisible() {
-        final boolean flickerWorkAround = true;
-        WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_sleep_sounds, flickerWorkAround);
         sleepSoundsStatusInteractor.resetBackOffIfNeeded();
         sleepSoundsStatusInteractor.startPolling();
     }

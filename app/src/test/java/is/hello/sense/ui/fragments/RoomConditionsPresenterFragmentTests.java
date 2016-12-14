@@ -23,7 +23,7 @@ import is.hello.sense.flows.home.ui.adapters.SensorResponseAdapter;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.robolectric.util.FragmentTestUtil.startFragment;
-
+@Ignore
 public class RoomConditionsPresenterFragmentTests extends InjectionTestCase {
     //todo modifying preferencesInteractor has no effect because fragment doesn't use test module provided interactors
     @Inject

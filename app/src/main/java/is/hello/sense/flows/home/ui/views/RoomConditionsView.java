@@ -2,34 +2,35 @@ package is.hello.sense.flows.home.ui.views;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.res.Resources;
 import android.support.annotation.NonNull;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.adapters.SensorResponseAdapter;
 import is.hello.sense.mvp.view.PresenterView;
-import is.hello.sense.ui.recycler.CardItemDecoration;
-import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
-import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.ui.widget.SenseBar;
 
 @SuppressLint("ViewConstructor")
 public final class RoomConditionsView extends PresenterView {
-    final RecyclerView recyclerView;
-    final ProgressBar progressBar;
+    private final RecyclerView recyclerView;
+    private final ProgressBar progressBar;
+    private final SenseBar senseBar;
 
     public RoomConditionsView(@NonNull final Activity activity,
                               @NonNull final SensorResponseAdapter adapter) {
         super(activity);
-         progressBar = (ProgressBar) findViewById(R.id.fragment_room_conditions_loading);
+        progressBar = (ProgressBar) findViewById(R.id.fragment_room_conditions_loading);
         recyclerView = (RecyclerView) findViewById(R.id.fragment_room_conditions_recycler);
-
+        this.senseBar = (SenseBar) findViewById(R.id.fragment_room_conditions_sense_bar);
         setUpStandardRecyclerViewDecorations(recyclerView, new LinearLayoutManager(context));
         recyclerView.setAdapter(adapter);
+        senseBar.setText(R.string.title_room_conditions);
+        senseBar.showLeftImage(false);
+        senseBar.setRightImage(R.drawable.backside_icon_settings);
+        senseBar.alignTextLeft();
     }
 
     @Override
@@ -46,7 +47,7 @@ public final class RoomConditionsView extends PresenterView {
         progressBar.setVisibility(show ? VISIBLE : INVISIBLE);
     }
 
-    public void setSettingsButtonClickListener(@NonNull final OnClickListener listener) {
-        //   Views.setSafeOnClickListener(settingsButton, listener);
+    public void setSettingsButtonClickListener(@Nullable final OnClickListener listener) {
+        senseBar.setRightImageOnClickListener(listener);
     }
 }

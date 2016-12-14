@@ -2,22 +2,28 @@
 <RelativeLayout
     android:id="@+id/activity_new_home_container"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <is.hello.sense.ui.widget.SelectorView
-        android:id="@+id/activity_new_home_bottom_selector_view"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_bar_height"
-        android:layout_alignParentBottom="true"
-        />
-
-    <FrameLayout
-        android:id="@+id/activity_new_home_backside_container"
+    <is.hello.sense.ui.widget.ExtendedViewPager
+        android:id="@+id/activity_new_home_extended_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/activity_new_home_bottom_selector_view"
-        android:background="@color/background"/>
+        android:fillViewport="true"
+        android:scrollbars="none"
+        app:senseFadingEdgeStyle="rounded">
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/activity_new_home_tab_layout"
+            style="@style/AppTheme.AppCompat.NoActionBar.TabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabIndicatorColor="@color/background_light"
+            app:tabIndicatorHeight="0dp"
+            android:layout_gravity="bottom"/>
+
+    </is.hello.sense.ui.widget.ExtendedViewPager>
 
     <RelativeLayout
         android:id="@+id/activity_new_home_progress_overlay"

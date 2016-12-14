@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
-    <FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <RelativeLayout
         android:id="@+id/fragment_timeline_pager_container"
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <is.hello.sense.ui.widget.SenseBar
+            android:id="@+id/fragment_timeline_pager_sensebar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"/>
 
         <is.hello.sense.ui.widget.ExtendedViewPager
             android:id="@id/fragment_timeline_view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/action_bar_height"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="top">
-            <is.hello.sense.ui.widget.timeline.TimelineToolbar
-                android:id="@+id/fragment_timeline_pager_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/action_bar_height"/>
-        </LinearLayout>
-    </FrameLayout>
+            android:layout_below="@id/fragment_timeline_pager_sensebar"/>
+    </RelativeLayout>
 </layout>

@@ -315,6 +315,7 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
     @Override
     public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
         if (expansionDetailsInteractor.expansionSubject.hasValue()
+                && configurationsInteractor.configSubject.hasValue()
                 && !lastConfigurationsFetchFailed
                 && initialValueRange != null) {
             final Intent intentWithExpansionAlarm = new Intent();

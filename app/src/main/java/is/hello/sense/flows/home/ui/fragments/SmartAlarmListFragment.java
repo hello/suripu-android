@@ -60,7 +60,7 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     @Inject
     ExpansionCategoryFormatter expansionCategoryFormatter;
     private ArrayList<Alarm> currentAlarms = new ArrayList<>();
-    private ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
+    private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
     @Nullable
     private FabPresenter fabPresenter;
 
@@ -88,7 +88,6 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     @Override
     protected void onRelease() {
         super.onRelease();
-        this.presenterChildDelegate = null;
         this.fabPresenter = null;
     }
 
