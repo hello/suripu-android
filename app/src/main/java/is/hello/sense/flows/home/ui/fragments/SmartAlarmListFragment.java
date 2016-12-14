@@ -238,7 +238,7 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
             presenterView.bindAdapterMessage(message);
         }
         if (fabPresenter != null) {
-            fabPresenter.setFabVisible(alarms.isEmpty());
+            fabPresenter.setFabVisible(!alarms.isEmpty());
         }
         presenterView.setProgressBarVisible(false);
     }

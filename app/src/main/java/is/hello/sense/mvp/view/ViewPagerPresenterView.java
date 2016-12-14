@@ -107,9 +107,11 @@ public final class ViewPagerPresenterView extends PresenterView {
 
     public void setFabVisible(final boolean visible) {
         if (visible) {
-            this.fab.setVisibility(View.VISIBLE);
-        } else {
-            this.fab.setVisibility(View.GONE);
+            if(fab.getVisibility() != VISIBLE) {
+                this.fab.show();
+            }
+        } else if(this.fab.getVisibility() == VISIBLE) {
+            this.fab.hide();
         }
     }
 
