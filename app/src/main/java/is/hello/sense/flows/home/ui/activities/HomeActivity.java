@@ -260,6 +260,7 @@ public class HomeActivity extends ScopedInjectionActivity
                 if (tab == null) {
                     return;
                 }
+                currentItemIndex = tab.getPosition();
                 final Drawable drawable = tab.getIcon();
                 if (drawable == null) {
                     return;
