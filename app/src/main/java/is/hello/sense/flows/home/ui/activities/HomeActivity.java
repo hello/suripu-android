@@ -53,6 +53,7 @@ public class HomeActivity extends ScopedInjectionActivity
         TimelineFragment.ParentProvider,
         ViewPagerPresenter {
 
+    public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     public static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
     private static final String KEY_CURRENT_ITEM_INDEX = HomeActivity.class.getSimpleName() + "CURRENT_ITEM_INDEX";
     private static final int DEFAULT_ITEM_INDEX = 2;
@@ -76,6 +77,8 @@ public class HomeActivity extends ScopedInjectionActivity
     private SpinnerImageView spinner;
     private ExtendedViewPager extendedViewPager;
     private TabLayout tabLayout;
+    private Drawable sleepScoreIcon;
+    private Drawable sleepScoreIconActive;
 
 
     @Override
@@ -238,8 +241,10 @@ public class HomeActivity extends ScopedInjectionActivity
     public void setUpTabs() {
         final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(this);
         drawableBuilder.withSize(getWindowManager());
+        sleepScoreIcon = drawableBuilder.build();
+        sleepScoreIconActive = drawableBuilder.withSelected(true).build();
         tabLayout.removeAllTabs();
-        tabLayout.addTab(tabLayout.newTab().setIcon(drawableBuilder.build()));
+        tabLayout.addTab(tabLayout.newTab().setIcon(sleepScoreIcon));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_trends_24));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_insight_24));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_sound_24));
@@ -256,7 +261,23 @@ public class HomeActivity extends ScopedInjectionActivity
                 if (drawable == null) {
                     return;
                 }
-                drawable.setColorFilter(ContextCompat.getColor(HomeActivity.this, R.color.blue5), PorterDuff.Mode.MULTIPLY);
+                switch (tab.getPosition()) {
+                    case 0:
+                        tab.setIcon(sleepScoreIconActive);
+                        break;
+                    case 1:
+                        tab.setIcon(R.drawable.icon_trends_active_24);
+                        break;
+                    case 2:
+                        tab.setIcon(R.drawable.icon_insight_active_24);
+                        break;
+                    case 3:
+                        tab.setIcon(R.drawable.icon_sound_active_24);
+                        break;
+                    case 4:
+                        tab.setIcon(R.drawable.icon_sense_active_24);
+                        break;
+                }
             }
 
             @Override
@@ -268,7 +289,23 @@ public class HomeActivity extends ScopedInjectionActivity
                 if (drawable == null) {
                     return;
                 }
-                drawable.setColorFilter(ContextCompat.getColor(HomeActivity.this, R.color.gray3), PorterDuff.Mode.MULTIPLY);
+                switch (tab.getPosition()) {
+                    case 0:
+                        tab.setIcon(sleepScoreIcon);
+                        break;
+                    case 1:
+                        tab.setIcon(R.drawable.icon_trends_24);
+                        break;
+                    case 2:
+                        tab.setIcon(R.drawable.icon_insight_24);
+                        break;
+                    case 3:
+                        tab.setIcon(R.drawable.icon_sound_24);
+                        break;
+                    case 4:
+                        tab.setIcon(R.drawable.icon_sense_24);
+                        break;
+                }
             }
 
             @Override
@@ -286,6 +323,8 @@ public class HomeActivity extends ScopedInjectionActivity
                 timeline.getScore() != null) {
             drawableBuilder.withText(timeline.getScore());
         }
+        sleepScoreIcon = drawableBuilder.build();
+        sleepScoreIconActive = drawableBuilder.withSelected(true).build();
         if (tabLayout == null) {
             return;
         }
