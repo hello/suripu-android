@@ -38,7 +38,7 @@ import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.api.model.v2.ShareUrl;
-import is.hello.sense.flows.home.ui.activities.NewHomeActivity;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.interactors.InsightInfoInteractor;
 import is.hello.sense.ui.common.AnimatedInjectionFragment;
 import is.hello.sense.ui.widget.ExtendedScrollView;
@@ -188,11 +188,11 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         if (insightId == null) {
             //hide share button
             bottomContainer.hideRightButton();
-        } else if (getActivity() != null && getActivity() instanceof NewHomeActivity) {
+        } else if (getActivity() != null && getActivity() instanceof HomeActivity) {
             bottomContainer.setRightButtonOnClickListener((v) -> {
-                ((NewHomeActivity) getActivity()).showProgressOverlay(true);
+                ((HomeActivity) getActivity()).showProgressOverlay(true);
                 apiService.shareInsight(new InsightType(insightId))
-                          .doOnTerminate(() -> shareInsightTerminate((NewHomeActivity) getActivity()))
+                          .doOnTerminate(() -> shareInsightTerminate((HomeActivity) getActivity()))
                           .subscribe(this::shareInsightSuccess,
                                      this::shareInsightError);
             });
@@ -581,7 +581,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
-    private void shareInsightTerminate(@Nullable final NewHomeActivity activity) {
+    private void shareInsightTerminate(@Nullable final HomeActivity activity) {
         if (activity == null) {
             return;
         }
