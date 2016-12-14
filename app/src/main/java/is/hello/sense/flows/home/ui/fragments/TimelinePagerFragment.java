@@ -82,14 +82,10 @@ public class TimelinePagerFragment extends InjectionFragment
                              final Bundle savedInstanceState) {
 
         final ViewGroup view = (ViewGroup) inflater.inflate(R.layout.fragment_timeline_pager, container, false);
-
         viewPager = (ExtendedViewPager) view.findViewById(R.id.fragment_timeline_view_pager);
-
         senseBar = (SenseBar) view.findViewById(R.id.fragment_timeline_pager_sensebar);
-
         this.viewPagerAdapter = new TimelineFragmentAdapter(getChildFragmentManager(),
                                                             preferences.getAccountCreationDate());
-
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.addOnPageChangeListener(this);
         senseBar.setLeftImage(R.drawable.icon_calendar_24);
@@ -256,6 +252,12 @@ public class TimelinePagerFragment extends InjectionFragment
     }
 
     //region Timeline parent
+
+
+    @Override
+    public void updateTitle(@NonNull final String title) {
+        senseBar.setText(title);
+    }
 
     @Override
     public boolean isBacksideOpen() {

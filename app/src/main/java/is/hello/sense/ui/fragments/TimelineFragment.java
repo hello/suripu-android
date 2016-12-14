@@ -148,7 +148,7 @@ public class TimelineFragment extends InjectionFragment
         return fragment;
     }
 
-    public void setParent(@Nullable final Parent parent){
+    public void setParent(@Nullable final Parent parent) {
         this.parent = parent;
     }
 
@@ -411,7 +411,7 @@ public class TimelineFragment extends InjectionFragment
     //endregion
 
     @NotTested
-    public void showBreakDown(@NonNull final Timeline timeline){
+    public void showBreakDown(@NonNull final Timeline timeline) {
         startActivity(TimelineActivity.getInfoIntent(getActivity(), timeline));
     }
 
@@ -532,7 +532,7 @@ public class TimelineFragment extends InjectionFragment
     }
 
     private void transitionOutOfNoDataState() {
-        if (adapter.getHeaderAt(0) == headerView){
+        if (adapter.getHeaderAt(0) == headerView) {
             return;
         }
 
@@ -583,13 +583,14 @@ public class TimelineFragment extends InjectionFragment
                 // Indicates on-boarding just ended
                 final LocalDate creationDate =
                         preferences.getLocalDate(PreferencesInteractor.ACCOUNT_CREATION_DATE);
-                final boolean isAccountNew = (creationDate == null ||
+                final boolean isAccountNew = firstTimeline || (creationDate == null ||
                         creationDate.equals(LocalDate.now()));
                 if (isAccountNew) {
                     header.setDiagramResource(R.drawable.timeline_state_first_night);
                     header.setTitle(R.string.title_timeline_first_night);
                     header.setMessage(R.string.message_timeline_first_night);
                     header.setAction(R.string.action_timeline_bad_data_support, null);
+                    parent.updateTitle(getString(R.string.action_last_night));
 
                 } else if (timeline.getScoreCondition() == ScoreCondition.INCOMPLETE) {
                     header.setDiagramResource(R.drawable.timeline_state_not_enough_data);
@@ -615,7 +616,7 @@ public class TimelineFragment extends InjectionFragment
             final Toast toast = new Toast(getActivity().getApplicationContext());
             @SuppressLint("InflateParams")
             final TextView text = (TextView) getActivity().getLayoutInflater()
-                                                         .inflate(R.layout.toast_text, null);
+                                                          .inflate(R.layout.toast_text, null);
             text.setText(message);
             toast.setView(text);
             toast.setDuration(Toast.LENGTH_SHORT);
@@ -877,6 +878,7 @@ public class TimelineFragment extends InjectionFragment
     }
 
     public interface Parent {
+        void updateTitle(@NonNull final String title);
 
         boolean isBacksideOpen();
 
