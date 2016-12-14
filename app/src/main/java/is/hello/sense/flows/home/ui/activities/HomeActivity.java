@@ -90,6 +90,7 @@ public class HomeActivity extends ScopedInjectionActivity
         this.deviceIssuesPresenter.bindScope(this);
         addInteractor(this.deviceIssuesPresenter);
         addInteractor(this.alertsInteractor);
+        addInteractor(this.lastNightInteractor);
 
         setContentView(R.layout.activity_new_home);
         restoreState(savedInstanceState);
@@ -243,8 +244,12 @@ public class HomeActivity extends ScopedInjectionActivity
     public void setUpTabs() {
         final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(this);
         drawableBuilder.withSize(getWindowManager());
-        drawables[SLEEP_ICON_KEY] = drawableBuilder.build();
-        drawablesActive[SLEEP_ICON_KEY] = drawableBuilder.withSelected(true).build();
+        if (lastNightInteractor.timeline.hasValue()) {
+            updateSleepScoreTab(lastNightInteractor.timeline.getValue());
+        } else {
+            drawables[SLEEP_ICON_KEY] = drawableBuilder.build();
+            drawablesActive[SLEEP_ICON_KEY] = drawableBuilder.withSelected(true).build();
+        }
         drawables[TRENDS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_trends_24);
         drawablesActive[TRENDS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_trends_active_24);
         drawables[INSIGHTS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_insight_24);
@@ -259,7 +264,6 @@ public class HomeActivity extends ScopedInjectionActivity
         tabLayout.addTab(tabLayout.newTab().setIcon(drawables[INSIGHTS_ICON_KEY]));
         tabLayout.addTab(tabLayout.newTab().setIcon(drawables[SOUNDS_ICON_KEY]));
         tabLayout.addTab(tabLayout.newTab().setIcon(drawables[CONDITIONS_ICON_KEY]));
-        tabLayout.getTabAt(currentItemIndex);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(final TabLayout.Tab tab) {
@@ -291,6 +295,10 @@ public class HomeActivity extends ScopedInjectionActivity
 
             }
         });
+        final TabLayout.Tab tab = tabLayout.getTabAt(currentItemIndex);
+        if (tab != null) {
+            tab.select();
+        }
     }
 
     public void updateSleepScoreTab(@Nullable final Timeline timeline) {

@@ -2,6 +2,7 @@ package is.hello.sense.flows.home.interactors;
 
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.Timeline;
@@ -10,6 +11,7 @@ import is.hello.sense.interactors.ValueInteractor;
 import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
+@Singleton
 public class LastNightInteractor extends ValueInteractor<Timeline> {
     @Inject
     ApiService apiService;
