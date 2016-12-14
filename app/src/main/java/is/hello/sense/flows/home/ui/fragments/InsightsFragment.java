@@ -28,7 +28,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightType;
-import is.hello.sense.flows.home.ui.activities.NewHomeActivity;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.views.InsightsView;
 import is.hello.sense.graph.Scope;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
@@ -99,7 +99,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
 
     private boolean questionLoaded = false;
     private boolean insightsLoaded = false;
-    private NewHomeActivity activity;
+    private HomeActivity activity;
 
     @Override
     public final void initializePresenterView() {
@@ -136,8 +136,8 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
-        if (getActivity() instanceof NewHomeActivity) {
-            activity = (NewHomeActivity) getActivity();
+        if (getActivity() instanceof HomeActivity) {
+            activity = (HomeActivity) getActivity();
         }
 
     }
@@ -210,8 +210,8 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     @OnboardingActivity.Flow
     protected int getOnboardingFlow() {
         final Activity activity = getActivity();
-        if (activity instanceof NewHomeActivity) {
-            return ((NewHomeActivity) activity).getOnboardingFlow();
+        if (activity instanceof HomeActivity) {
+            return ((HomeActivity) activity).getOnboardingFlow();
         } else {
             return OnboardingActivity.FLOW_NONE;
         }
