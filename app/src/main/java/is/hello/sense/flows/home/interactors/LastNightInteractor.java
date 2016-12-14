@@ -28,7 +28,8 @@ public class LastNightInteractor extends ValueInteractor<Timeline> {
 
     @Override
     protected Observable<Timeline> provideUpdateObservable() {
-        return apiService.timelineForDate(DateFormatter.todayForTimeline().toString(ApiService.DATE_FORMAT));
+        // todo this is a temporary fix
+        return apiService.timelineForDate(DateFormatter.todayForTimeline().minusDays(1).toString(ApiService.DATE_FORMAT));
     }
 
 }
