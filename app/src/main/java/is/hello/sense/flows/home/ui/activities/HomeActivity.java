@@ -52,10 +52,10 @@ public class HomeActivity extends ScopedInjectionActivity
         Alert.ActionHandler,
         TimelineFragment.ParentProvider,
         ViewPagerPresenter {
-    public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
+
     public static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
-
-
+    private static final String KEY_CURRENT_ITEM_INDEX = HomeActivity.class.getSimpleName() + "CURRENT_ITEM_INDEX";
+    private static final int DEFAULT_ITEM_INDEX = 2;
 
     @Inject
     AlertsInteractor alertsInteractor;
@@ -70,8 +70,6 @@ public class HomeActivity extends ScopedInjectionActivity
     @Inject
     LastNightInteractor lastNightInteractor;
 
-    private static final String KEY_CURRENT_ITEM_INDEX = HomeActivity.class.getSimpleName() + "CURRENT_ITEM_INDEX";
-    private static final int DEFAULT_ITEM_INDEX = 2;
     private int currentItemIndex;
     private boolean isFirstActivityRun;
     private View progressOverlay;
@@ -95,7 +93,7 @@ public class HomeActivity extends ScopedInjectionActivity
         this.tabLayout = (TabLayout) findViewById(R.id.activity_new_home_tab_layout);
         this.tabLayout.setupWithViewPager(this.extendedViewPager);
         extendedViewPager.setAdapter(new StaticFragmentAdapter(getFragmentManager(), getViewPagerItems()));
-        setUpTabs(null);
+        setUpTabs();
     }
 
     @Override
@@ -121,7 +119,7 @@ public class HomeActivity extends ScopedInjectionActivity
         }
 
         bindAndSubscribe(lastNightInteractor.timeline,
-                         this::setUpTabs,
+                         this::updateSleepScoreTab,
                          Functions.LOG_ERROR);
         lastNightInteractor.update();
 
@@ -237,16 +235,9 @@ public class HomeActivity extends ScopedInjectionActivity
         });
     }
 
-    public void setUpTabs(@Nullable final Timeline timeline) {
+    public void setUpTabs() {
         final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(this);
         drawableBuilder.withSize(getWindowManager());
-        if (timeline != null &&
-                timeline.getScoreCondition() != ScoreCondition.UNAVAILABLE &&
-                timeline.getScore() != null) {
-            drawableBuilder.withText(timeline.getScore());
-        }
-
-
         tabLayout.removeAllTabs();
         tabLayout.addTab(tabLayout.newTab().setIcon(drawableBuilder.build()));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_trends_24));
@@ -285,6 +276,25 @@ public class HomeActivity extends ScopedInjectionActivity
 
             }
         });
+    }
+
+    public void updateSleepScoreTab(@Nullable final Timeline timeline) {
+        final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(this);
+        drawableBuilder.withSize(getWindowManager());
+        if (timeline != null &&
+                timeline.getScoreCondition() != ScoreCondition.UNAVAILABLE &&
+                timeline.getScore() != null) {
+            drawableBuilder.withText(timeline.getScore());
+        }
+        if (tabLayout == null) {
+            return;
+        }
+        final TabLayout.Tab tab = tabLayout.getTabAt(0);
+        if (tab == null) {
+            return;
+        }
+        drawableBuilder.withSelected(tab.isSelected());
+        tab.setIcon(drawableBuilder.build());
     }
 
     @NonNull
