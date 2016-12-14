@@ -42,8 +42,7 @@ public class SoundsPresenterFragment extends ViewPagerPresenterFragment
 
     @Override
     public void onPageSelected(final int position) {
-        //todo update to support sleep sounds too
-        setFabVisible(position == getStartingItemPosition());
+        setFabVisible(false);
     }
 
     @Override

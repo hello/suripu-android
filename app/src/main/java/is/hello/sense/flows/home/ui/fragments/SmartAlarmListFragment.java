@@ -75,14 +75,7 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
                                                                               dateFormatter,
                                                                               expansionCategoryFormatter));
             this.presenterChildDelegate.onViewInitialized();
-            this.fabPresenter = ((FabPresenterProvider) getActivity()).getFabPresenter();
         }
-    }
-
-    @Override
-    protected void onRelease() {
-        super.onRelease();
-        this.fabPresenter = null;
     }
 
     @Override
@@ -102,7 +95,7 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        this.fabPresenter = ((FabPresenterProvider) getActivity()).getFabPresenter();
         final Observable<Boolean> use24Time = preferences.observableUse24Time();
         bindAndSubscribe(use24Time, presenterView::updateAdapterTime, Functions.LOG_ERROR);
         smartAlarmInteractor.alarms.forget();
@@ -112,6 +105,12 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
         presenterView.setProgressBarVisible(true);
         smartAlarmInteractor.update();
 
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.fabPresenter = null;
     }
 
     @Override
@@ -145,7 +144,6 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     @Override
     public void onUserVisible() {
         if(fabPresenter != null){
-            fabPresenter.setFabVisible(currentAlarms != null && !currentAlarms.isEmpty());
             fabPresenter.updateFab(R.drawable.icon_plus,
                                    this::onAddButtonClicked,
                                    true);

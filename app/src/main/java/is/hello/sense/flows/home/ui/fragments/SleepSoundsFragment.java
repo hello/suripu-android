@@ -138,6 +138,8 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     public void onUserVisible() {
         sleepSoundsStatusInteractor.resetBackOffIfNeeded();
         sleepSoundsStatusInteractor.startPolling();
+        setFabVisible(presenterView.isShowingPlayer());
+        displayLoadingButton();
     }
 
     @Override
@@ -262,7 +264,6 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     private void bindStatus(final @NonNull SleepSoundStatus status) {
         presenterView.setProgressBarVisible(false);
         if (presenterView.isShowingPlayer()) {
-            setFabVisible(true);
             if (status.isPlaying()) {
                 if (userWants != UserWants.STOP) {
                     displayStopButton();
