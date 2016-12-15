@@ -143,10 +143,6 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
 
     @Override
     public void onUserVisible() {
-        if(fabPresenter != null){
-            fabPresenter.updateFab(R.drawable.icon_plus,
-                                   this::onAddButtonClicked);
-        }
         updateAlarms(null);
     }
 
@@ -203,6 +199,17 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     //endregion
 
     //region methods
+    private void updateAlarmFab(final boolean isVisible){
+        if(fabPresenter != null){
+            if(isVisible) {
+                fabPresenter.updateFab(R.drawable.icon_plus,
+                                       this::onAddButtonClicked);
+            }
+            fabPresenter.setFabVisible(isVisible);
+        }
+    }
+
+
     public void onAddButtonClicked(@NonNull final View ignored) {
         if (this.currentAlarms.size() >= 30) {
             showAlertDialog(new SenseAlertDialog.Builder()
@@ -234,9 +241,7 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
             message.onClickListener = this::onAddButtonClicked;
             presenterView.bindAdapterMessage(message);
         }
-        if (fabPresenter != null) {
-            fabPresenter.setFabVisible(!alarms.isEmpty());
-        }
+        this.updateAlarmFab(!alarms.isEmpty());
         presenterView.setProgressBarVisible(false);
     }
 
@@ -270,9 +275,7 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
             message.onClickListener = this::updateAlarms;
         }
         presenterView.bindAdapterMessage(message);
-        if (fabPresenter != null) {
-            fabPresenter.setFabVisible(false);
-        }
+        this.updateAlarmFab(false);
         presenterView.setProgressBarVisible(false);
     }
 

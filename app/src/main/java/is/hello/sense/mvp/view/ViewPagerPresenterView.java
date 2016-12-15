@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
@@ -107,6 +108,16 @@ public final class ViewPagerPresenterView extends PresenterView {
 
     //region fab methods
 
+    public void setFabSize(final float size) {
+        if(size >= 0.5) {
+            this.fab.setScaleX(size);
+            this.fab.setScaleY(size);
+            this.fab.setAlpha(Anime.interpolateFloats(size, 0, 2) - 1);
+        } else {
+            this.fab.setAlpha(0f);
+        }
+    }
+
     public void setFabVisible(final boolean visible) {
         if (visible) {
             this.fab.show();
@@ -123,9 +134,9 @@ public final class ViewPagerPresenterView extends PresenterView {
     }
 
     public void setFabLoading(final boolean loading){
-        fab.setClickable(loading);
-        fab.setLongClickable(loading);
-        fab.setFocusable(loading);
+        fab.setClickable(!loading);
+        fab.setLongClickable(!loading);
+        fab.setFocusable(!loading);
         if(loading) {
             fab.setOnClickListener(null);
             fab.setImageResource(R.drawable.sound_loading_icon);

@@ -80,6 +80,13 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     //endregion
 
     //region FabPresenter
+    //@Override
+    public void setFabSize( final float size){
+        if(presenterView != null){
+            presenterView.setFabSize(size);
+        }
+    }
+
     @Override
     public void setFabVisible(final boolean visible){
         if(presenterView != null){

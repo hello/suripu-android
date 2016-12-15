@@ -31,6 +31,7 @@
         android:layout_marginEnd="@dimen/x2"
         android:layout_marginBottom="@dimen/x2"
         android:visibility="gone"
+        android:scaleType="center"
         style="@style/AppTheme.AppCompat.Fab"/>
 
 </RelativeLayout>
