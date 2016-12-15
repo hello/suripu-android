@@ -236,24 +236,20 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     private void displayPlayButton() {
         if(canUpdateFab()){
             fabPresenter.updateFab(R.drawable.sound_play_icon,
-                                   this::onPlayClickListener,
-                                   true);
+                                   this::onPlayClickListener);
         }
     }
 
     public void displayStopButton() {
         if(canUpdateFab()){
             fabPresenter.updateFab(R.drawable.sound_stop_icon,
-                                   this::onStopClickListener,
-                                   true);
+                                   this::onStopClickListener);
         }
     }
 
     public void displayLoadingButton() {
         if(canUpdateFab()){
-            fabPresenter.updateFab(R.drawable.sound_loading_icon,
-                                   null,
-                                   false);
+            fabPresenter.setFabLoading(true);
         }
     }
 

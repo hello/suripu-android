@@ -9,6 +9,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import is.hello.sense.R;
 import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
@@ -114,18 +116,24 @@ public final class ViewPagerPresenterView extends PresenterView {
     }
 
     public void updateFab(final @DrawableRes int resource,
-                          final @Nullable View.OnClickListener listener,
-                          final boolean enabled) {
-        //playButton.setRotation(0);
-        fab.setImageResource(resource);
+                          final @Nullable View.OnClickListener listener) {
+        this.setFabLoading(false);
         fab.setOnClickListener(listener);
-        // setting fab to disabled removes elevation as well
-        fab.setEnabled(enabled);
-        //todo handle spinning animation
-        if (enabled) {
-            //playButton.stopSpinning();
+        fab.setImageResource(resource);
+    }
+
+    public void setFabLoading(final boolean loading){
+        fab.setClickable(loading);
+        fab.setLongClickable(loading);
+        fab.setFocusable(loading);
+        if(loading) {
+            fab.setOnClickListener(null);
+            fab.setImageResource(R.drawable.sound_loading_icon);
+            final Animation animation = AnimationUtils.loadAnimation(context, R.anim.rotate_360);
+            animation.setRepeatCount(Animation.INFINITE);
+            fab.startAnimation(animation);
         } else {
-            //playButton.startSpinning();
+            fab.clearAnimation();
         }
     }
     //endregion

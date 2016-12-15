@@ -145,8 +145,7 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     public void onUserVisible() {
         if(fabPresenter != null){
             fabPresenter.updateFab(R.drawable.icon_plus,
-                                   this::onAddButtonClicked,
-                                   true);
+                                   this::onAddButtonClicked);
         }
         updateAlarms(null);
     }

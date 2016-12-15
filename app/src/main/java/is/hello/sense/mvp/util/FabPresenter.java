@@ -14,6 +14,7 @@ public interface FabPresenter {
     void setFabVisible(final boolean visible);
 
     void updateFab(@DrawableRes final int iconRes,
-                   @Nullable final View.OnClickListener listener,
-                   final boolean enabled);
+                   @Nullable final View.OnClickListener listener);
+
+    void setFabLoading(final boolean loading);
 }

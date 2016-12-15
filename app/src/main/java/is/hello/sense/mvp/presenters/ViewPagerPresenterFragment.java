@@ -89,12 +89,17 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
 
     @Override
     public void updateFab(@DrawableRes final int iconRes,
-                   @Nullable final View.OnClickListener listener,
-                   final boolean enabled){
+                   @Nullable final View.OnClickListener listener){
         if(presenterView != null){
             presenterView.updateFab(iconRes,
-                                    listener,
-                                    enabled);
+                                    listener);
+        }
+    }
+
+    @Override
+    public void setFabLoading(final boolean loading){
+        if(presenterView != null){
+            presenterView.setFabLoading(loading);
         }
     }
     //endregion
