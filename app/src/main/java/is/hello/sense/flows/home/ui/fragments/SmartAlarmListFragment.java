@@ -28,6 +28,8 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.util.FabPresenter;
+import is.hello.sense.mvp.util.FabPresenterProvider;
 import is.hello.sense.mvp.util.ViewPagerPresenterChild;
 import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -59,6 +61,8 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     ExpansionCategoryFormatter expansionCategoryFormatter;
     private ArrayList<Alarm> currentAlarms = new ArrayList<>();
     private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
+    @Nullable
+    private FabPresenter fabPresenter;
 
 
     //region PresenterFragment
@@ -69,8 +73,7 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
                                                         new SmartAlarmAdapter(getActivity(),
                                                                               this,
                                                                               dateFormatter,
-                                                                              expansionCategoryFormatter),
-                                                        this::onAddButtonClicked);
+                                                                              expansionCategoryFormatter));
             this.presenterChildDelegate.onViewInitialized();
         }
     }
@@ -92,7 +95,7 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        this.fabPresenter = ((FabPresenterProvider) getActivity()).getFabPresenter();
         final Observable<Boolean> use24Time = preferences.observableUse24Time();
         bindAndSubscribe(use24Time, presenterView::updateAdapterTime, Functions.LOG_ERROR);
         smartAlarmInteractor.alarms.forget();
@@ -102,6 +105,12 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
         presenterView.setProgressBarVisible(true);
         smartAlarmInteractor.update();
 
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.fabPresenter = null;
     }
 
     @Override
@@ -134,6 +143,10 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
 
     @Override
     public void onUserVisible() {
+        if(fabPresenter != null){
+            fabPresenter.updateFab(R.drawable.icon_plus,
+                                   this::onAddButtonClicked);
+        }
         updateAlarms(null);
     }
 
@@ -220,9 +233,9 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
             message.titleIconRes = R.drawable.illustration_no_alarm;
             message.onClickListener = this::onAddButtonClicked;
             presenterView.bindAdapterMessage(message);
-            presenterView.setAddButtonVisible(false);
-        } else {
-            presenterView.setAddButtonVisible(true);
+        }
+        if (fabPresenter != null) {
+            fabPresenter.setFabVisible(!alarms.isEmpty());
         }
         presenterView.setProgressBarVisible(false);
     }
@@ -257,7 +270,9 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
             message.onClickListener = this::updateAlarms;
         }
         presenterView.bindAdapterMessage(message);
-        presenterView.setAddButtonVisible(false);
+        if (fabPresenter != null) {
+            fabPresenter.setFabVisible(false);
+        }
         presenterView.setProgressBarVisible(false);
     }
 

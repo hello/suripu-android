@@ -2,13 +2,9 @@ package is.hello.sense.flows.home.ui.views;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import is.hello.sense.R;
@@ -26,32 +22,23 @@ import is.hello.sense.util.NotTested;
 public class SleepSoundsView extends PresenterView {
 
     private final SpinnerImageView playButton;
-    private final FrameLayout buttonLayout;
     private final ProgressBar progressBar;
     private final RecyclerView recyclerView;
     private final SleepSoundsAdapter adapter;
-    private final OnClickListener onPlayClickListener;
-    private final OnClickListener onStopClickListener;
 
 
     public SleepSoundsView(@NonNull final Activity activity,
-                           @NonNull final SleepSoundsAdapter adapter,
-                           @NonNull final OnClickListener onPlayClickListener,
-                           @NonNull final OnClickListener onStopClickListener) {
+                           @NonNull final SleepSoundsAdapter adapter) {
         super(activity);
         this.recyclerView = (RecyclerView) findViewById(R.id.view_sleep_sounds_recycler);
         this.progressBar = (ProgressBar) findViewById(R.id.view_sleep_sounds_progressbar);
         this.playButton = (SpinnerImageView) findViewById(R.id.view_sleep_sounds_playbutton);
-        this.buttonLayout = (FrameLayout) findViewById(R.id.view_sleep_sounds_buttonLayout);
         this.adapter = adapter;
 
         //RecyclerView
         setUpStandardRecyclerViewDecorations(recyclerView,
                                              new LinearLayoutManager(activity));
         this.recyclerView.setAdapter(this.adapter);
-
-        this.onPlayClickListener = onPlayClickListener;
-        this.onStopClickListener = onStopClickListener;
     }
 
 
@@ -78,16 +65,6 @@ public class SleepSoundsView extends PresenterView {
         return this.adapter.isShowingPlayer();
     }
 
-    public void setButtonVisible(final boolean visible) {
-        if (visible) {
-            this.buttonLayout.setVisibility(View.VISIBLE);
-            this.playButton.setVisibility(View.VISIBLE);
-        } else {
-            this.buttonLayout.setVisibility(View.GONE);
-            this.playButton.setVisibility(View.GONE);
-        }
-    }
-
     public void adapterBindStatus(@NonNull final SleepSoundStatus status) {
         this.adapter.bind(status);
     }
@@ -98,7 +75,6 @@ public class SleepSoundsView extends PresenterView {
 
     public void adapterSetState(@NonNull final SleepSoundsAdapter.AdapterState state) {
         this.adapter.setState(state, null);
-        setButtonVisible(false);
     }
 
     public Sound getDisplayedSound() {
@@ -111,39 +87,6 @@ public class SleepSoundsView extends PresenterView {
 
     public SleepSoundStatus.Volume getDisplayedVolume() {
         return adapter.getDisplayedVolume();
-    }
-
-    public void displayPlayButton() {
-        displayButton(R.drawable.sound_play_icon,
-                      onPlayClickListener,
-                      true);
-    }
-
-    public void displayStopButton() {
-        displayButton(R.drawable.sound_stop_icon,
-                      onStopClickListener,
-                      true);
-    }
-
-    public void displayLoadingButton() {
-        displayButton(R.drawable.sound_loading_icon,
-                      null,
-                      false);
-    }
-
-    public void displayButton(final @DrawableRes int resource,
-                              final @Nullable View.OnClickListener listener,
-                              final boolean enabled) {
-        buttonLayout.setVisibility(View.VISIBLE);
-        playButton.setRotation(0);
-        playButton.setImageResource(resource);
-        playButton.setOnClickListener(listener);
-        playButton.setEnabled(enabled);
-        if (enabled) {
-            playButton.stopSpinning();
-        } else {
-            playButton.startSpinning();
-        }
     }
 
     public void notifyAdapter(){

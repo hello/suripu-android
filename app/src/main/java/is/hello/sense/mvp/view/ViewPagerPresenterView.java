@@ -2,8 +2,15 @@ package is.hello.sense.mvp.view;
 
 
 import android.annotation.SuppressLint;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import is.hello.sense.R;
 import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
@@ -16,6 +23,7 @@ public final class ViewPagerPresenterView extends PresenterView {
 
     private final ExtendedViewPager viewPager;
     private final TabLayout tabLayout;
+    private final FloatingActionButton fab;
 
     /**
      * @param fragment - Fragment providing initialization settings and callbacks.
@@ -26,6 +34,7 @@ public final class ViewPagerPresenterView extends PresenterView {
         this.viewPager = (ExtendedViewPager) findViewById(R.id.view_view_pager_extended_view_pager);
         this.tabLayout = (TabLayout) findViewById(R.id.view_view_pager_tab_layout);
         this.tabLayout.setupWithViewPager(this.viewPager);
+        this.fab = (FloatingActionButton) findViewById(R.id.view_view_pager_fab);
         createTabsAndPager(fragment);
     }
 
@@ -39,6 +48,7 @@ public final class ViewPagerPresenterView extends PresenterView {
     public void releaseViews() {
         this.tabLayout.removeAllViews();
         this.viewPager.removeAllViews();
+        this.fab.setOnClickListener(null);
     }
     //endregion
 
@@ -85,6 +95,47 @@ public final class ViewPagerPresenterView extends PresenterView {
         setTabLayoutVisible(false);
     }
 
+    public void addViewPagerListener(final ViewPager.OnPageChangeListener listener) {
+        viewPager.addOnPageChangeListener(listener);
+    }
+
+    public void removeViewPagerListener(final ViewPager.OnPageChangeListener listener) {
+        viewPager.removeOnPageChangeListener(listener);
+    }
+
+    //endregion
+
+    //region fab methods
+
+    public void setFabVisible(final boolean visible) {
+        if (visible) {
+            this.fab.show();
+        } else if(this.fab.getVisibility() == VISIBLE) {
+            this.fab.hide();
+        }
+    }
+
+    public void updateFab(final @DrawableRes int resource,
+                          final @Nullable View.OnClickListener listener) {
+        this.setFabLoading(false);
+        fab.setOnClickListener(listener);
+        fab.setImageResource(resource);
+    }
+
+    public void setFabLoading(final boolean loading){
+        fab.setClickable(loading);
+        fab.setLongClickable(loading);
+        fab.setFocusable(loading);
+        if(loading) {
+            fab.setOnClickListener(null);
+            fab.setImageResource(R.drawable.sound_loading_icon);
+            final Animation animation = AnimationUtils.loadAnimation(context, R.anim.rotate_360);
+            animation.setRepeatCount(Animation.INFINITE);
+            fab.startAnimation(animation);
+        } else {
+            fab.clearAnimation();
+        }
+    }
     //endregion
 
 }

@@ -1,8 +1,10 @@
 package is.hello.sense.flows.home.ui.activities;
 
+import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.content.IntentFilter;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
@@ -23,13 +25,15 @@ import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
-import is.hello.sense.mvp.presenters.HomePresenterFragment;
-import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.mvp.presenters.HomePresenterFragment;
+import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
 import is.hello.sense.mvp.presenters.TrendsPresenterFragment;
+import is.hello.sense.mvp.util.FabPresenter;
+import is.hello.sense.mvp.util.FabPresenterProvider;
 import is.hello.sense.mvp.util.ViewPagerPresenter;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -49,6 +53,7 @@ public class HomeActivity extends ScopedInjectionActivity
         implements
         Alert.ActionHandler,
         TimelineFragment.ParentProvider,
+        FabPresenterProvider,
         ViewPagerPresenter {
 
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
@@ -306,7 +311,7 @@ public class HomeActivity extends ScopedInjectionActivity
         if (tabLayout == null) {
             return;
         }
-        final TabLayout.Tab tab = tabLayout.getTabAt(0);
+        final TabLayout.Tab tab = tabLayout.getTabAt(SLEEP_ICON_KEY);
         if (tab == null) {
             return;
         }
@@ -333,7 +338,17 @@ public class HomeActivity extends ScopedInjectionActivity
 
     @Override
     public TimelineFragment.Parent get() {
-        return (TimelineFragment.Parent) getFragmentManager()
-                .findFragmentByTag("android:switcher:" + R.id.activity_new_home_extended_view_pager + ":0");
+        return (TimelineFragment.Parent) getFragmentWithIndex(SLEEP_ICON_KEY);
+    }
+
+    @Override
+    public FabPresenter getFabPresenter(){
+        return (FabPresenter) getFragmentWithIndex(SOUNDS_ICON_KEY);
+    }
+
+    @Nullable
+    private Fragment getFragmentWithIndex(final int index){
+        return getFragmentManager()
+                .findFragmentByTag("android:switcher:" + R.id.activity_new_home_extended_view_pager + ":"+index);
     }
 }
