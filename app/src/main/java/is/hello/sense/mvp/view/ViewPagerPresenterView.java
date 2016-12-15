@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
@@ -111,10 +112,9 @@ public final class ViewPagerPresenterView extends PresenterView {
         if(size >= 0.5) {
             this.fab.setScaleX(size);
             this.fab.setScaleY(size);
-            this.fab.setAlpha(size);
-            this.fab.setVisibility(VISIBLE);
+            this.fab.setAlpha(Anime.interpolateFloats(size, 0, 2) - 1);
         } else {
-            setFabVisible(false);
+            this.fab.setAlpha(0f);
         }
     }
 
