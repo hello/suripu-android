@@ -2,6 +2,7 @@ package is.hello.sense.flows.home.ui.views;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -41,6 +42,10 @@ public class SleepSoundsView extends PresenterView {
         this.recyclerView.setAdapter(this.adapter);
     }
 
+    @Override
+    public Rect contentInset() {
+        return new Rect(0, 0, 0, getResources().getDimensionPixelSize(R.dimen.x12));
+    }
 
     //region PresenterView
     @Override
@@ -89,7 +94,7 @@ public class SleepSoundsView extends PresenterView {
         return adapter.getDisplayedVolume();
     }
 
-    public void notifyAdapter(){
+    public void notifyAdapter() {
         this.adapter.notifyDataSetChanged();
     }
 
