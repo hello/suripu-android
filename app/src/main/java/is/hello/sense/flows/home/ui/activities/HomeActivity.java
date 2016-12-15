@@ -55,17 +55,24 @@ public class HomeActivity extends ScopedInjectionActivity
         TimelineFragment.ParentProvider,
         FabPresenterProvider,
         ViewPagerPresenter {
+
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     public static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
-
-
+    private static final String KEY_CURRENT_ITEM_INDEX = HomeActivity.class.getSimpleName() + "CURRENT_ITEM_INDEX";
+    private static final int DEFAULT_ITEM_INDEX = 2;
+    private static final int NUMBER_OF_ITEMS = 5;
+    private static final int SLEEP_ICON_KEY = 0;
+    private static final int TRENDS_ICON_KEY = 1;
+    private static final int INSIGHTS_ICON_KEY = 2;
+    private static final int SOUNDS_ICON_KEY = 3;
+    private static final int CONDITIONS_ICON_KEY = 4;
 
     @Inject
     AlertsInteractor alertsInteractor;
     @Inject
     DeviceIssuesInteractor deviceIssuesPresenter;
     @Inject
-    PreferencesInteractor preferences;
+    PreferencesInteractor preferencesInteractor;
     @Inject
     LocalUsageTracker localUsageTracker;
     @Inject
@@ -73,15 +80,14 @@ public class HomeActivity extends ScopedInjectionActivity
     @Inject
     LastNightInteractor lastNightInteractor;
 
-    private static final String KEY_CURRENT_ITEM_INDEX = HomeActivity.class.getSimpleName() + "CURRENT_ITEM_INDEX";
-    private static final int DEFAULT_ITEM_INDEX = 2;
+    private final Drawable[] drawables = new Drawable[NUMBER_OF_ITEMS];
+    private final Drawable[] drawablesActive = new Drawable[NUMBER_OF_ITEMS];
     private int currentItemIndex;
     private boolean isFirstActivityRun;
     private View progressOverlay;
     private SpinnerImageView spinner;
     private ExtendedViewPager extendedViewPager;
     private TabLayout tabLayout;
-
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -98,7 +104,7 @@ public class HomeActivity extends ScopedInjectionActivity
         this.tabLayout = (TabLayout) findViewById(R.id.activity_new_home_tab_layout);
         this.tabLayout.setupWithViewPager(this.extendedViewPager);
         extendedViewPager.setAdapter(new StaticFragmentAdapter(getFragmentManager(), getViewPagerItems()));
-        setUpTabs(null);
+        setUpTabs();
     }
 
     @Override
@@ -124,10 +130,9 @@ public class HomeActivity extends ScopedInjectionActivity
         }
 
         bindAndSubscribe(lastNightInteractor.timeline,
-                         this::setUpTabs,
+                         this::updateSleepScoreTab,
                          Functions.LOG_ERROR);
         lastNightInteractor.update();
-
 
     }
 
@@ -211,8 +216,8 @@ public class HomeActivity extends ScopedInjectionActivity
     @Override
     public void unMuteSense() {
         showProgressOverlay(true);
-        voiceSettingsInteractor.setSenseId(preferences.getString(PreferencesInteractor.PAIRED_SENSE_ID,
-                                                                 VoiceSettingsInteractor.EMPTY_ID));
+        voiceSettingsInteractor.setSenseId(preferencesInteractor.getString(PreferencesInteractor.PAIRED_SENSE_ID,
+                                                                           VoiceSettingsInteractor.EMPTY_ID));
         track(voiceSettingsInteractor.setMuted(false)
                                      .subscribe(Functions.NO_OP,
                                                 e -> {
@@ -240,22 +245,25 @@ public class HomeActivity extends ScopedInjectionActivity
         });
     }
 
-    public void setUpTabs(@Nullable final Timeline timeline) {
+    public void setUpTabs() {
         final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(this);
         drawableBuilder.withSize(getWindowManager());
-        if (timeline != null &&
-                timeline.getScoreCondition() != ScoreCondition.UNAVAILABLE &&
-                timeline.getScore() != null) {
-            drawableBuilder.withText(timeline.getScore());
-        }
-
-
+        drawables[SLEEP_ICON_KEY] = drawableBuilder.build();
+        drawablesActive[SLEEP_ICON_KEY] = drawableBuilder.withSelected(true).build();
+        drawables[TRENDS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_trends_24);
+        drawablesActive[TRENDS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_trends_active_24);
+        drawables[INSIGHTS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_insight_24);
+        drawablesActive[INSIGHTS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_insight_active_24);
+        drawables[SOUNDS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_sound_24);
+        drawablesActive[SOUNDS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_sound_active_24);
+        drawables[CONDITIONS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_sense_24);
+        drawablesActive[CONDITIONS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_sense_active_24);
         tabLayout.removeAllTabs();
-        tabLayout.addTab(tabLayout.newTab().setIcon(drawableBuilder.build()));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_trends_24));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_insight_24));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_sound_24));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.icon_sense_24));
+        tabLayout.addTab(tabLayout.newTab().setIcon(drawables[SLEEP_ICON_KEY]));
+        tabLayout.addTab(tabLayout.newTab().setIcon(drawables[TRENDS_ICON_KEY]));
+        tabLayout.addTab(tabLayout.newTab().setIcon(drawables[INSIGHTS_ICON_KEY]));
+        tabLayout.addTab(tabLayout.newTab().setIcon(drawables[SOUNDS_ICON_KEY]));
+        tabLayout.addTab(tabLayout.newTab().setIcon(drawables[CONDITIONS_ICON_KEY]));
         tabLayout.getTabAt(currentItemIndex);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -268,7 +276,7 @@ public class HomeActivity extends ScopedInjectionActivity
                 if (drawable == null) {
                     return;
                 }
-                drawable.setColorFilter(ContextCompat.getColor(HomeActivity.this, R.color.blue5), PorterDuff.Mode.MULTIPLY);
+                tab.setIcon(drawablesActive[tab.getPosition()]);
             }
 
             @Override
@@ -280,7 +288,7 @@ public class HomeActivity extends ScopedInjectionActivity
                 if (drawable == null) {
                     return;
                 }
-                drawable.setColorFilter(ContextCompat.getColor(HomeActivity.this, R.color.gray3), PorterDuff.Mode.MULTIPLY);
+                tab.setIcon(drawables[tab.getPosition()]);
             }
 
             @Override
@@ -288,6 +296,27 @@ public class HomeActivity extends ScopedInjectionActivity
 
             }
         });
+    }
+
+    public void updateSleepScoreTab(@Nullable final Timeline timeline) {
+        final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(this);
+        drawableBuilder.withSize(getWindowManager());
+        if (timeline != null &&
+                timeline.getScoreCondition() != ScoreCondition.UNAVAILABLE &&
+                timeline.getScore() != null) {
+            drawableBuilder.withText(timeline.getScore());
+        }
+        drawables[SLEEP_ICON_KEY] = drawableBuilder.build();
+        drawablesActive[SLEEP_ICON_KEY] = drawableBuilder.withSelected(true).build();
+        if (tabLayout == null) {
+            return;
+        }
+        final TabLayout.Tab tab = tabLayout.getTabAt(SLEEP_ICON_KEY);
+        if (tab == null) {
+            return;
+        }
+        drawableBuilder.withSelected(tab.isSelected());
+        tab.setIcon(drawableBuilder.build());
     }
 
     @NonNull
@@ -309,12 +338,12 @@ public class HomeActivity extends ScopedInjectionActivity
 
     @Override
     public TimelineFragment.Parent get() {
-        return (TimelineFragment.Parent) getFragmentWithIndex(0);
+        return (TimelineFragment.Parent) getFragmentWithIndex(SLEEP_ICON_KEY);
     }
 
     @Override
     public FabPresenter getFabPresenter(){
-        return (FabPresenter) getFragmentWithIndex(3);
+        return (FabPresenter) getFragmentWithIndex(SOUNDS_ICON_KEY);
     }
 
     @Nullable

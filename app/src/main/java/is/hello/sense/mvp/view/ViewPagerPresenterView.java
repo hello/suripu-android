@@ -61,7 +61,7 @@ public final class ViewPagerPresenterView extends PresenterView {
         final StaticFragmentAdapter adapter =
                 new StaticFragmentAdapter(fragment.getDesiredFragmentManager(),
                                                       items);
-        this.viewPager.setOffscreenPageLimit(0);
+        this.viewPager.setOffscreenPageLimit(2);
         this.viewPager.setAdapter(adapter);
         this.viewPager.setEnabled(true);
 
