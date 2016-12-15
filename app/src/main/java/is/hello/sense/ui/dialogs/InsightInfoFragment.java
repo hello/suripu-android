@@ -263,6 +263,13 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
 //region Animation
 
+    private void setContentViewAlpha(final float alpha){
+        for (final View contentView : contentViews) {
+            contentView.setVisibility(View.VISIBLE);
+            contentView.setAlpha(alpha);
+        }
+    }
+
     @Override
     protected Animator onProvideEnterAnimator() {
         final AnimatorSet scene = new AnimatorSet();
@@ -298,21 +305,13 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             final Window window = getActivity().getWindow();
             Windows.setStatusBarColor(window, getTargetStatusBarColor());
         }
-
-        for (final View contentView : contentViews) {
-            contentView.setVisibility(View.VISIBLE);
-            contentView.setAlpha(1f);
-        }
-
+        setContentViewAlpha(1f);
         scrollView.setOnScrollListener(this);
     }
 
     @Override
     protected void onEnterAnimatorEnd() {
-        for (final View contentView : contentViews) {
-            contentView.setVisibility(View.VISIBLE);
-            contentView.setAlpha(1f);
-        }
+        setContentViewAlpha(1f);
         scrollView.setOnScrollListener(this);
     }
 
@@ -380,19 +379,11 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         subscene.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(final Animator animation) {
-                for (final View contentView : contentViews) {
-                    contentView.setVisibility(View.VISIBLE);
-                    contentView.setAlpha(0f);
-                }
+                InsightInfoFragment.this.setContentViewAlpha(0f);
             }
         });
 
-        final Animator[] animators = new Animator[contentViews.length];
-        for (int i = 0, length = contentViews.length; i < length; i++) {
-            final View contentView = contentViews[i];
-            contentView.setAlpha(0f);
-            animators[i] = animatorFor(contentView).alpha(1f);
-        }
+        final Animator[] animators = createContentViewAnimators(0f, 1f);
         subscene.playTogether(animators);
         return subscene;
     }
@@ -403,6 +394,16 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
                         insightCardRect.right, insightCardRect.bottom);
 
         return Views.createFrameAnimator(fillView, insightCardRect, fillRect);
+    }
+
+    private Animator[] createContentViewAnimators(final float startAlpha, final float endAlpha){
+        final Animator[] animators = new Animator[contentViews.length];
+        for (int i = 0, length = contentViews.length; i < length; i++) {
+            final View contentView = contentViews[i];
+            contentView.setAlpha(startAlpha);
+            animators[i] = animatorFor(contentView).alpha(endAlpha);
+        }
+        return animators;
     }
 
     private Animator createStatusBarEnter() {
@@ -461,10 +462,11 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     private Animator createContentExit() {
         final AnimatorSet subscene = new AnimatorSet();
 
-        final Animator[] animators = new Animator[contentViews.length];
-        for (int i = 0, length = contentViews.length; i < length; i++) {
+        final Animator[] animators = createContentViewAnimators(1f, 0f);
+
+        /*for (int i = 0, length = contentViews.length; i < length; i++) {
             animators[i] = animatorFor(contentViews[i]).alpha(0f);
-        }
+        }*/
 
         subscene.playTogether(animators);
         return subscene;
