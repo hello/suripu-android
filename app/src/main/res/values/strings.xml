@@ -501,7 +501,7 @@
     <string name="title_timeline_no_data">No sleep data recorded</string>
     <string name="title_timeline_no_data_message">This is normal if you were out of town, or away from your bed. \n\nOtherwise, you may want to check your Sleep Pill’s battery level, and make sure that Sense is connected to the internet.</string>
     <string name="title_timeline_first_night">Have a good night</string>
-    <string name="message_timeline_first_night">In the morning, you'll see your first Sleep Timeline here.\n\nYou don't need to do anything to let Sense know that you're ready for bed. All you need to do now is sleep.</string>
+    <string name="message_timeline_first_night">In the morning, you\'ll see your first Sleep Timeline here.\n\nYou don\'t need to do anything to let Sense know that you\'re ready for bed. All you need to do now is sleep.</string>
     <string name="action_timeline_bad_data_support">Learn more</string>
 
     <string name="dialog_title_unsupported_os">Unsupported Device</string>
