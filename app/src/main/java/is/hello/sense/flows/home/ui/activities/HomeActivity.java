@@ -175,7 +175,7 @@ public class HomeActivity extends ScopedInjectionActivity
         return isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
     }
 
-    public void bindAlert(@NonNull final Alert alert) {
+    private void bindAlert(@NonNull final Alert alert) {
         if (alert.isValid()
                 && getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) == null) {
             localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
@@ -188,7 +188,7 @@ public class HomeActivity extends ScopedInjectionActivity
         }
     }
 
-    public void bindDeviceIssue(@NonNull final DeviceIssuesInteractor.Issue issue) {
+    private void bindDeviceIssue(@NonNull final DeviceIssuesInteractor.Issue issue) {
         if (issue == DeviceIssuesInteractor.Issue.NONE
                 || getFragmentManager().findFragmentByTag(DeviceIssueDialogFragment.TAG) != null
                 || getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) != null) {
@@ -241,7 +241,7 @@ public class HomeActivity extends ScopedInjectionActivity
         });
     }
 
-    public void setUpTabs() {
+    private void setUpTabs() {
         drawables[TRENDS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_trends_24);
         drawablesActive[TRENDS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_trends_active_24);
         drawables[INSIGHTS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_insight_24);
@@ -302,7 +302,7 @@ public class HomeActivity extends ScopedInjectionActivity
         }
     }
 
-    public void updateSleepScoreTab(@Nullable final Timeline timeline) {
+    private void updateSleepScoreTab(@Nullable final Timeline timeline) {
         final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(this);
         drawableBuilder.withSize(drawables[TRENDS_ICON_KEY].getIntrinsicWidth(), drawables[TRENDS_ICON_KEY].getIntrinsicHeight());
         if (timeline != null &&
@@ -321,6 +321,10 @@ public class HomeActivity extends ScopedInjectionActivity
         }
         drawableBuilder.withSelected(tab.isSelected());
         tab.setIcon(drawableBuilder.build());
+    }
+
+    public void updateSleepScoreTab() {
+        lastNightInteractor.update();
     }
 
     @NonNull

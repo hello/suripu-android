@@ -797,10 +797,13 @@ public class TimelineFragment extends InjectionFragment
                                                                                 LoadingDialogFragment.OPAQUE_BACKGROUND);
         dialogFragment.setDismissMessage(R.string.title_thank_you);
         bindAndSubscribe(timelinePresenter.amendEventTime(event, newTime),
-                         ignored -> LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null),
-                         e -> {
-                             LoadingDialogFragment.close(getFragmentManager());
-                             ErrorDialogFragment.presentError(getActivity(), e);
+                         ignored -> {
+                             parent.timeAdjusted();
+                             LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
+                         },
+                e -> {
+                    LoadingDialogFragment.close(getFragmentManager());
+                    ErrorDialogFragment.presentError(getActivity(), e);
                          });
     }
 
@@ -886,6 +889,7 @@ public class TimelineFragment extends InjectionFragment
         int getTutorialContainerIdRes();
 
         void setShareVisible(boolean visible);
+        void timeAdjusted();
     }
 
     public interface ParentProvider {

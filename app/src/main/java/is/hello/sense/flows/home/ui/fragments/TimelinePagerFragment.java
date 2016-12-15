@@ -20,6 +20,7 @@ import javax.inject.Inject;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.timeline.ui.activities.TimelineActivity;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TimelineInteractor;
@@ -272,6 +273,14 @@ public class TimelinePagerFragment extends InjectionFragment
     @Override
     public void setShareVisible(final boolean visible) {
         senseBar.showRightImage(visible);
+    }
+
+    @Override
+    public void timeAdjusted() {
+        final Activity activity = getActivity();
+        if (activity instanceof HomeActivity){
+            ((HomeActivity) getActivity()).updateSleepScoreTab();
+        }
     }
 
     //endregion
