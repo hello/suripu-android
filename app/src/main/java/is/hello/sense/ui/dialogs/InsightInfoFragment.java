@@ -309,6 +309,10 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
     @Override
     protected void onEnterAnimatorEnd() {
+        for (final View contentView : contentViews) {
+            contentView.setVisibility(View.VISIBLE);
+            contentView.setAlpha(1f);
+        }
         scrollView.setOnScrollListener(this);
     }
 
