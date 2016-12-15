@@ -242,14 +242,6 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     public void setUpTabs() {
-        final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(this);
-        drawableBuilder.withSize(getWindowManager());
-        if (lastNightInteractor.timeline.hasValue()) {
-            updateSleepScoreTab(lastNightInteractor.timeline.getValue());
-        } else {
-            drawables[SLEEP_ICON_KEY] = drawableBuilder.build();
-            drawablesActive[SLEEP_ICON_KEY] = drawableBuilder.withSelected(true).build();
-        }
         drawables[TRENDS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_trends_24);
         drawablesActive[TRENDS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_trends_active_24);
         drawables[INSIGHTS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_insight_24);
@@ -258,6 +250,15 @@ public class HomeActivity extends ScopedInjectionActivity
         drawablesActive[SOUNDS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_sound_active_24);
         drawables[CONDITIONS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_sense_24);
         drawablesActive[CONDITIONS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_sense_active_24);
+
+        final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(this);
+        drawableBuilder.withSize(drawables[TRENDS_ICON_KEY].getIntrinsicWidth(), drawables[TRENDS_ICON_KEY].getIntrinsicHeight());
+        if (lastNightInteractor.timeline.hasValue()) {
+            updateSleepScoreTab(lastNightInteractor.timeline.getValue());
+        } else {
+            drawables[SLEEP_ICON_KEY] = drawableBuilder.build();
+            drawablesActive[SLEEP_ICON_KEY] = drawableBuilder.withSelected(true).build();
+        }
         tabLayout.removeAllTabs();
         tabLayout.addTab(tabLayout.newTab().setIcon(drawables[SLEEP_ICON_KEY]));
         tabLayout.addTab(tabLayout.newTab().setIcon(drawables[TRENDS_ICON_KEY]));
@@ -303,7 +304,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
     public void updateSleepScoreTab(@Nullable final Timeline timeline) {
         final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(this);
-        drawableBuilder.withSize(getWindowManager());
+        drawableBuilder.withSize(drawables[TRENDS_ICON_KEY].getIntrinsicWidth(), drawables[TRENDS_ICON_KEY].getIntrinsicHeight());
         if (timeline != null &&
                 timeline.getScoreCondition() != ScoreCondition.UNAVAILABLE &&
                 timeline.getScore() != null) {
