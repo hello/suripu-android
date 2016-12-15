@@ -27,6 +27,8 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SleepSoundsInteractor;
 import is.hello.sense.interactors.SleepSoundsStatusInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.util.FabPresenter;
+import is.hello.sense.mvp.util.FabPresenterProvider;
 import is.hello.sense.mvp.util.ViewPagerPresenterChild;
 import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
 import is.hello.sense.ui.activities.ListActivity;
@@ -68,6 +70,9 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         STOP,
         NONE
     }
+
+    @Nullable
+    private FabPresenter fabPresenter;
     //region PresenterFragment
 
     @Override
@@ -90,9 +95,8 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
                                                              preferencesInteractor,
                                                              this,
                                                              getAnimatorContext(),
-                                                             this),
-                                                     this::onPlayClickListener,
-                                                     this::onStopClickListener);
+                                                             this)
+            );
             this.presenterChildDelegate.onViewInitialized();
         }
     }
@@ -106,9 +110,16 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        this.fabPresenter = ((FabPresenterProvider) getActivity()).getFabPresenter();
         bindAndSubscribe(sleepSoundsStatusInteractor.state, this::bindStatus, this::presentStatusError);
         bindAndSubscribe(sleepSoundsInteractor.sub, this::bind, this::presentError);
         sleepSoundsInteractor.update();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        this.fabPresenter = null;
     }
 
     @Override
@@ -127,6 +138,8 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     public void onUserVisible() {
         sleepSoundsStatusInteractor.resetBackOffIfNeeded();
         sleepSoundsStatusInteractor.startPolling();
+        setFabVisible(presenterView.isShowingPlayer());
+        displayLoadingButton();
     }
 
     @Override
@@ -204,33 +217,70 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     }
     //endregion
 
+    //region FabPresenter helpers
+    private boolean canUpdateFab(){
+        return fabPresenter != null && isVisibleToUserAndResumed();
+    }
+
+    public void setFabVisible(final boolean visible){
+        if (canUpdateFab()) {
+            fabPresenter.setFabVisible(visible);
+        }
+    }
+
+    public void adapterSetState(final SleepSoundsAdapter.AdapterState state){
+        presenterView.adapterSetState(state);
+        setFabVisible(false);
+    }
+
+    private void displayPlayButton() {
+        if(canUpdateFab()){
+            fabPresenter.updateFab(R.drawable.sound_play_icon,
+                                   this::onPlayClickListener);
+        }
+    }
+
+    public void displayStopButton() {
+        if(canUpdateFab()){
+            fabPresenter.updateFab(R.drawable.sound_stop_icon,
+                                   this::onStopClickListener);
+        }
+    }
+
+    public void displayLoadingButton() {
+        if(canUpdateFab()){
+            fabPresenter.setFabLoading(true);
+        }
+    }
+
+    //endregion
+
     //region methods
 
     private void bindStatus(final @NonNull SleepSoundStatus status) {
         presenterView.setProgressBarVisible(false);
         if (presenterView.isShowingPlayer()) {
-            presenterView.setButtonVisible(true);
             if (status.isPlaying()) {
                 if (userWants != UserWants.STOP) {
-                    presenterView.displayStopButton();
+                    displayStopButton();
                     userWants = UserWants.NONE;
                 } else if (sleepSoundsStatusInteractor.isTimedOut()) {
                     presentCommandError(null);
-                    presenterView.displayStopButton();
+                    displayStopButton();
                     userWants = UserWants.NONE;
                 }
             } else {
                 if (userWants != UserWants.PLAY) {
-                    presenterView.displayPlayButton();
+                    displayPlayButton();
                     userWants = UserWants.NONE;
                 } else if (sleepSoundsStatusInteractor.isTimedOut()) {
                     presentCommandError(null);
-                    presenterView.displayPlayButton();
+                    displayPlayButton();
                     userWants = UserWants.NONE;
                 }
             }
         } else {
-            presenterView.setButtonVisible(false);
+            setFabVisible(false);
         }
         presenterView.adapterBindStatus(status);
         sleepSoundsStatusInteractor.resetBackOffIfNeeded();
@@ -241,20 +291,20 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         final SleepSoundsState combinedState = stateDevice.getSleepSoundsState();
         if (devices == null || combinedState == null || devices.getSense() == null) {
             // Error. Should never happen (Parent fragment should be hiding this fragment if it does).
-            presenterView.adapterSetState(SleepSoundsAdapter.AdapterState.ERROR);
+            adapterSetState(SleepSoundsAdapter.AdapterState.ERROR);
             return;
         }
 
         if (devices.getSense().getMinutesSinceLastUpdated() >= SleepSoundsStatusInteractor.OFFLINE_MINUTES) {
             // Sense Offline error.
-            presenterView.adapterSetState(SleepSoundsAdapter.AdapterState.OFFLINE);
+            adapterSetState(SleepSoundsAdapter.AdapterState.OFFLINE);
             return;
         }
 
         if (combinedState.getSounds() != null) {
             //setState download sounds if combined state sounds is empty
             if (combinedState.getSounds().getSounds().isEmpty()) {
-                presenterView.adapterSetState(SleepSoundsAdapter.AdapterState.SOUNDS_DOWNLOAD);
+                adapterSetState(SleepSoundsAdapter.AdapterState.SOUNDS_DOWNLOAD);
                 return;
             }
 
@@ -262,22 +312,22 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
             final SleepSounds.State currentState = combinedState.getSounds().getState();
             switch (currentState) {
                 case SENSE_UPDATE_REQUIRED:
-                    presenterView.adapterSetState(SleepSoundsAdapter.AdapterState.FIRMWARE_UPDATE);
+                    adapterSetState(SleepSoundsAdapter.AdapterState.FIRMWARE_UPDATE);
                     return;
                 case SOUNDS_NOT_DOWNLOADED:
-                    presenterView.adapterSetState(SleepSoundsAdapter.AdapterState.SOUNDS_DOWNLOAD);
+                    adapterSetState(SleepSoundsAdapter.AdapterState.SOUNDS_DOWNLOAD);
                     return;
                 case OK:
                     presenterView.adapterBindState(combinedState);
-                    presenterView.displayLoadingButton();
-                    presenterView.setButtonVisible(true);
+                    displayLoadingButton();
+                    setFabVisible(true);
                     return;
                 default:
-                    presenterView.adapterSetState(SleepSoundsAdapter.AdapterState.ERROR);
+                    adapterSetState(SleepSoundsAdapter.AdapterState.ERROR);
                     return;
             }
         }
-        presenterView.adapterSetState(SleepSoundsAdapter.AdapterState.NONE);
+        adapterSetState(SleepSoundsAdapter.AdapterState.NONE);
 
     }
 
@@ -307,7 +357,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
             showErrorDialog(builder);
             userWants = UserWants.NONE;
             sleepSoundsStatusInteractor.stopPolling();
-            presenterView.displayPlayButton();
+            displayPlayButton();
         } else {
             // Call this to use the new back off interval
             sleepSoundsStatusInteractor.startPolling();
@@ -315,16 +365,16 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     }
 
     private void presentError(@NonNull final Throwable error) {
-        presenterView.adapterSetState(SleepSoundsAdapter.AdapterState.ERROR);
+        adapterSetState(SleepSoundsAdapter.AdapterState.ERROR);
         presenterView.setProgressBarVisible(false);
     }
 
 
     private void onPlayClickListener(@NonNull final View ignored) {
-        presenterView.displayLoadingButton();
+        displayLoadingButton();
         userWants = UserWants.PLAY;
         if (!presenterView.isShowingPlayer()) {
-            presenterView.displayPlayButton();
+            displayPlayButton();
             return;
         }
 
@@ -332,7 +382,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         final Duration duration = presenterView.getDisplayedDuration();
         final SleepSoundStatus.Volume volume = presenterView.getDisplayedVolume();
         if (sound == null || duration == null || volume == null) {
-            presenterView.displayPlayButton();
+            displayPlayButton();
             return;
         }
 
@@ -357,12 +407,12 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
                                                           e -> {
                                                               // Failed to send
                                                               presentCommandError(e);
-                                                              presenterView.displayPlayButton();
+                                                              displayPlayButton();
                                                           });
     }
 
     private void onStopClickListener(@NonNull final View ignored) {
-        presenterView.displayLoadingButton();
+        displayLoadingButton();
         userWants = UserWants.STOP;
         Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS_STOP, null);
 
@@ -378,7 +428,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
                                                           },
                                                           e -> {
                                                               presentCommandError(e);
-                                                              presenterView.displayStopButton();
+                                                              displayStopButton();
                                                           });
     }
 

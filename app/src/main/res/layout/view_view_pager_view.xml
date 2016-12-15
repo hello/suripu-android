@@ -22,5 +22,15 @@
 
     </is.hello.sense.ui.widget.ExtendedViewPager>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/view_view_pager_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="@dimen/x2"
+        android:layout_marginBottom="@dimen/x2"
+        android:visibility="gone"
+        style="@style/AppTheme.AppCompat.Fab"/>
 
 </RelativeLayout>
