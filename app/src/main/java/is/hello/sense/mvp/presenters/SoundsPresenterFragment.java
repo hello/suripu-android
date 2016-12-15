@@ -37,16 +37,15 @@ public class SoundsPresenterFragment extends ViewPagerPresenterFragment
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+        final float size = Math.min(1f, Math.abs(1f - positionOffset * 2));
+        setFabSize(size);
     }
 
     @Override
     public void onPageSelected(final int position) {
-        setFabVisible(false);
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
-
     }
 }

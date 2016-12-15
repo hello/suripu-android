@@ -107,6 +107,17 @@ public final class ViewPagerPresenterView extends PresenterView {
 
     //region fab methods
 
+    public void setFabSize(final float size) {
+        if(size >= 0.5) {
+            this.fab.setScaleX(size);
+            this.fab.setScaleY(size);
+            this.fab.setAlpha(size);
+            this.fab.setVisibility(VISIBLE);
+        } else {
+            setFabVisible(false);
+        }
+    }
+
     public void setFabVisible(final boolean visible) {
         if (visible) {
             this.fab.show();
@@ -123,9 +134,9 @@ public final class ViewPagerPresenterView extends PresenterView {
     }
 
     public void setFabLoading(final boolean loading){
-        fab.setClickable(loading);
-        fab.setLongClickable(loading);
-        fab.setFocusable(loading);
+        fab.setClickable(!loading);
+        fab.setLongClickable(!loading);
+        fab.setFocusable(!loading);
         if(loading) {
             fab.setOnClickListener(null);
             fab.setImageResource(R.drawable.sound_loading_icon);
