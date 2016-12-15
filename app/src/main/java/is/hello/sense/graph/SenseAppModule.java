@@ -26,6 +26,7 @@ import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
+import is.hello.sense.flows.settings.ui.activities.AppSettingsActivity;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
@@ -157,8 +158,8 @@ import is.hello.sense.zendesk.ZendeskModule;
                 is.hello.sense.flows.home.ui.fragments.QuarterTrendsFragment.class,
                 TrendsPresenterFragment.class,
 
-                VoiceSettingsInteractor.class
-
+                VoiceSettingsInteractor.class,
+                AppSettingsActivity.class
         }
 )
 @SuppressWarnings("UnusedDeclaration")
@@ -196,7 +197,7 @@ public class SenseAppModule {
 
     @Provides
     @Singleton
-    public AlertsInteractor providesAlertsInteractor(@NonNull final ApiService apiService){
+    public AlertsInteractor providesAlertsInteractor(@NonNull final ApiService apiService) {
         return new AlertsInteractor(apiService);
     }
 
