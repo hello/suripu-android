@@ -194,7 +194,7 @@ public class TimelineFragment extends InjectionFragment
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources, FadingEdgesItemDecoration.Style.STRAIGHT));
 
-        this.animationEnabled = (!hasCreatedView && !parent.isBacksideOpen());
+        this.animationEnabled = (!hasCreatedView);
 
         this.headerView = new TimelineHeaderView(getActivity());
         headerView.setAnimatorContext(getAnimatorContext());
@@ -459,18 +459,15 @@ public class TimelineFragment extends InjectionFragment
 
     private void showHandholdingIfAppropriate() {
         if (parent == null ||
-                parent.isBacksideOpen() ||
                 WelcomeDialogFragment.isAnyVisible(getActivity())) {
             return;
         }
 
 
-        if (!parent.isBacksideOpen()) {
-            if (WelcomeDialogFragment.shouldShow(getActivity(), R.xml.welcome_dialog_timeline)) {
-                WelcomeDialogFragment.show(getActivity(), R.xml.welcome_dialog_timeline, false);
-            } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
-                showTutorial(Tutorial.SWIPE_TIMELINE);
-            }
+        if (WelcomeDialogFragment.shouldShow(getActivity(), R.xml.welcome_dialog_timeline)) {
+            WelcomeDialogFragment.show(getActivity(), R.xml.welcome_dialog_timeline, false);
+        } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
+            showTutorial(Tutorial.SWIPE_TIMELINE);
         }
     }
 
@@ -880,8 +877,6 @@ public class TimelineFragment extends InjectionFragment
 
     public interface Parent {
         void updateTitle(@NonNull final String title);
-
-        boolean isBacksideOpen();
 
         @IdRes
         int getTutorialContainerIdRes();

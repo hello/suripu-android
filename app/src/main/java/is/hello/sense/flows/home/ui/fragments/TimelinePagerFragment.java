@@ -264,11 +264,6 @@ public class TimelinePagerFragment extends InjectionFragment
     }
 
     @Override
-    public boolean isBacksideOpen() {
-        return false;
-    }
-
-    @Override
     public int getTutorialContainerIdRes() {
         return R.id.fragment_timeline_pager_container;
     }

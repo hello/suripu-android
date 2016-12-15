@@ -23,6 +23,7 @@ import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
+import is.hello.sense.interactors.TimelineInteractor;
 import is.hello.sense.mvp.presenters.HomePresenterFragment;
 import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
@@ -313,8 +314,7 @@ public class HomeActivity extends ScopedInjectionActivity
         drawableBuilder.withSize(drawables[TRENDS_ICON_KEY].getIntrinsicWidth(), drawables[TRENDS_ICON_KEY].getIntrinsicHeight());
         if (timeline != null &&
                 timeline.getScore() != null) {
-            if (timeline.getScoreCondition() != ScoreCondition.UNAVAILABLE &&
-                    timeline.getScoreCondition() != ScoreCondition.INCOMPLETE) {
+            if (TimelineInteractor.hasValidCondition(timeline)) {
                 drawableBuilder.withText(timeline.getScore());
             }
         }
