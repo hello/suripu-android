@@ -86,7 +86,6 @@ public class TimelineFragment extends InjectionFragment
 
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
-    private static final String ARG_IS_FIRST_TIMELINE = TimelineFragment.class.getName() + ".ARG_IS_FIRST_TIMELINE";
 
     private static final int REQUEST_CODE_CHANGE_SRC = 0x50;
 
@@ -108,7 +107,6 @@ public class TimelineFragment extends InjectionFragment
     @Inject
     LastNightInteractor lastNightInteractor;
 
-    private boolean firstTimeline;
     private boolean hasCreatedView = false;
     private boolean animationEnabled = true;
 
@@ -138,14 +136,12 @@ public class TimelineFragment extends InjectionFragment
     //region Lifecycle
 
     public static TimelineFragment newInstance(@NonNull final LocalDate date,
-                                               @Nullable final Timeline cachedTimeline,
-                                               final boolean isFirstTimeline) {
+                                               @Nullable final Timeline cachedTimeline) {
         final TimelineFragment fragment = new TimelineFragment();
 
         final Bundle arguments = new Bundle();
         arguments.putSerializable(ARG_DATE, date);
         arguments.putSerializable(ARG_CACHED_TIMELINE, cachedTimeline);
-        arguments.putBoolean(ARG_IS_FIRST_TIMELINE, isFirstTimeline);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -175,7 +171,6 @@ public class TimelineFragment extends InjectionFragment
                                                                  date.toString());
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE, properties);
 
-        this.firstTimeline = getArguments().getBoolean(ARG_IS_FIRST_TIMELINE, false);
 
         timelinePresenter.setDateWithTimeline(date, getCachedTimeline());
         addPresenter(timelinePresenter);
@@ -586,7 +581,7 @@ public class TimelineFragment extends InjectionFragment
                 // Indicates on-boarding just ended
                 final LocalDate creationDate =
                         preferences.getLocalDate(PreferencesInteractor.ACCOUNT_CREATION_DATE);
-                final boolean isAccountNew = firstTimeline || (creationDate == null ||
+                final boolean isAccountNew = (creationDate == null ||
                         creationDate.equals(LocalDate.now()));
                 if (isAccountNew) {
                     header.setDiagramResource(R.drawable.timeline_state_first_night);
