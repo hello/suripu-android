@@ -10,6 +10,7 @@ import org.joda.time.LocalTime;
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.graph.InteractorSubject;
@@ -91,6 +92,11 @@ public class TimelineInteractor extends ValueInteractor<Timeline> {
     public synchronized boolean hasValidTimeline(@NonNull final LocalDate localDate) {
         final Boolean isValid = validTimelineCache.get(localDate);
         return isValid == null ? false : isValid;
+    }
+
+    public static boolean hasValidCondition(@NonNull final Timeline timeline){
+        return timeline.getScoreCondition() != ScoreCondition.UNAVAILABLE &&
+                timeline.getScoreCondition() != ScoreCondition.INCOMPLETE;
     }
 
     public synchronized void clearCache(){

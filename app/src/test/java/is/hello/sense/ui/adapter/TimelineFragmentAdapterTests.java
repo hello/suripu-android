@@ -53,17 +53,6 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
     }
 
     @Test
-    public void saveState() {
-        adapter.firstTimeline = false;
-
-        final Parcelable savedState = adapter.saveState();
-        adapter.firstTimeline = true;
-        adapter.restoreState(savedState, Bundle.class.getClassLoader());
-
-        assertThat(adapter.firstTimeline, is(false));
-    }
-
-    @Test
     public void oldestDateAsToday() {
         final long currentTime = Constants.TIMELINE_EPOCH.toDateTime(new LocalTime(7, 30, 0)).getMillis();
         DateTimeUtils.setCurrentMillisFixed(currentTime);

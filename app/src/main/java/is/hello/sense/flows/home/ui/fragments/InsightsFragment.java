@@ -244,7 +244,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
             tutorialOverlayView.setAnchorContainer(getView());
             getAnimatorContext().runWhenIdle(() -> {
                 if (tutorialOverlayView != null && getUserVisibleHint()) {
-                    tutorialOverlayView.postShow(R.id.activity_home_container);
+                    tutorialOverlayView.postShow(R.id.activity_new_home_extended_view_pager);
                 }
             });
         }

@@ -20,6 +20,7 @@ import javax.inject.Inject;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.timeline.ui.activities.TimelineActivity;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TimelineInteractor;
@@ -82,14 +83,10 @@ public class TimelinePagerFragment extends InjectionFragment
                              final Bundle savedInstanceState) {
 
         final ViewGroup view = (ViewGroup) inflater.inflate(R.layout.fragment_timeline_pager, container, false);
-
         viewPager = (ExtendedViewPager) view.findViewById(R.id.fragment_timeline_view_pager);
-
         senseBar = (SenseBar) view.findViewById(R.id.fragment_timeline_pager_sensebar);
-
         this.viewPagerAdapter = new TimelineFragmentAdapter(getChildFragmentManager(),
                                                             preferences.getAccountCreationDate());
-
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.addOnPageChangeListener(this);
         senseBar.setLeftImage(R.drawable.icon_calendar_24);
@@ -252,14 +249,18 @@ public class TimelinePagerFragment extends InjectionFragment
      * @param date to use and update toolbar title display
      */
     public void updateTitle(@Nullable final LocalDate date) {
-        senseBar.setText(getTitle(date));
+        updateTitle(getTitle(date));
     }
 
     //region Timeline parent
 
+
     @Override
-    public boolean isBacksideOpen() {
-        return false;
+    public void updateTitle(@NonNull final String title) {
+        if (senseBar == null) {
+            return;
+        }
+        senseBar.setText(title);
     }
 
     @Override

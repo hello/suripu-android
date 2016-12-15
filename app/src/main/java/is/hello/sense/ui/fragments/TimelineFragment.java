@@ -41,6 +41,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
+import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.timeline.ui.activities.TimelineActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
@@ -85,7 +86,6 @@ public class TimelineFragment extends InjectionFragment
 
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
-    private static final String ARG_IS_FIRST_TIMELINE = TimelineFragment.class.getName() + ".ARG_IS_FIRST_TIMELINE";
 
     private static final int REQUEST_CODE_CHANGE_SRC = 0x50;
 
@@ -104,8 +104,9 @@ public class TimelineFragment extends InjectionFragment
     PreferencesInteractor preferences;
     @Inject
     LocalUsageTracker localUsageTracker;
+    @Inject
+    LastNightInteractor lastNightInteractor;
 
-    private boolean firstTimeline;
     private boolean hasCreatedView = false;
     private boolean animationEnabled = true;
 
@@ -135,20 +136,18 @@ public class TimelineFragment extends InjectionFragment
     //region Lifecycle
 
     public static TimelineFragment newInstance(@NonNull final LocalDate date,
-                                               @Nullable final Timeline cachedTimeline,
-                                               final boolean isFirstTimeline) {
+                                               @Nullable final Timeline cachedTimeline) {
         final TimelineFragment fragment = new TimelineFragment();
 
         final Bundle arguments = new Bundle();
         arguments.putSerializable(ARG_DATE, date);
         arguments.putSerializable(ARG_CACHED_TIMELINE, cachedTimeline);
-        arguments.putBoolean(ARG_IS_FIRST_TIMELINE, isFirstTimeline);
         fragment.setArguments(arguments);
 
         return fragment;
     }
 
-    public void setParent(@Nullable final Parent parent){
+    public void setParent(@Nullable final Parent parent) {
         this.parent = parent;
     }
 
@@ -172,7 +171,6 @@ public class TimelineFragment extends InjectionFragment
                                                                  date.toString());
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE, properties);
 
-        this.firstTimeline = getArguments().getBoolean(ARG_IS_FIRST_TIMELINE, false);
 
         timelinePresenter.setDateWithTimeline(date, getCachedTimeline());
         addPresenter(timelinePresenter);
@@ -196,7 +194,7 @@ public class TimelineFragment extends InjectionFragment
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources, FadingEdgesItemDecoration.Style.STRAIGHT));
 
-        this.animationEnabled = (!hasCreatedView && !parent.isBacksideOpen());
+        this.animationEnabled = (!hasCreatedView);
 
         this.headerView = new TimelineHeaderView(getActivity());
         headerView.setAnimatorContext(getAnimatorContext());
@@ -411,7 +409,7 @@ public class TimelineFragment extends InjectionFragment
     //endregion
 
     @NotTested
-    public void showBreakDown(@NonNull final Timeline timeline){
+    public void showBreakDown(@NonNull final Timeline timeline) {
         startActivity(TimelineActivity.getInfoIntent(getActivity(), timeline));
     }
 
@@ -461,18 +459,15 @@ public class TimelineFragment extends InjectionFragment
 
     private void showHandholdingIfAppropriate() {
         if (parent == null ||
-                parent.isBacksideOpen() ||
                 WelcomeDialogFragment.isAnyVisible(getActivity())) {
             return;
         }
 
 
-        if (!parent.isBacksideOpen()) {
-            if (WelcomeDialogFragment.shouldShow(getActivity(), R.xml.welcome_dialog_timeline)) {
-                WelcomeDialogFragment.show(getActivity(), R.xml.welcome_dialog_timeline, false);
-            } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
-                showTutorial(Tutorial.SWIPE_TIMELINE);
-            }
+        if (WelcomeDialogFragment.shouldShow(getActivity(), R.xml.welcome_dialog_timeline)) {
+            WelcomeDialogFragment.show(getActivity(), R.xml.welcome_dialog_timeline, false);
+        } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
+            showTutorial(Tutorial.SWIPE_TIMELINE);
         }
     }
 
@@ -532,7 +527,7 @@ public class TimelineFragment extends InjectionFragment
     }
 
     private void transitionOutOfNoDataState() {
-        if (adapter.getHeaderAt(0) == headerView){
+        if (adapter.getHeaderAt(0) == headerView) {
             return;
         }
 
@@ -590,6 +585,7 @@ public class TimelineFragment extends InjectionFragment
                     header.setTitle(R.string.title_timeline_first_night);
                     header.setMessage(R.string.message_timeline_first_night);
                     header.setAction(R.string.action_timeline_bad_data_support, null);
+                    parent.updateTitle(getString(R.string.action_last_night));
 
                 } else if (timeline.getScoreCondition() == ScoreCondition.INCOMPLETE) {
                     header.setDiagramResource(R.drawable.timeline_state_not_enough_data);
@@ -615,7 +611,7 @@ public class TimelineFragment extends InjectionFragment
             final Toast toast = new Toast(getActivity().getApplicationContext());
             @SuppressLint("InflateParams")
             final TextView text = (TextView) getActivity().getLayoutInflater()
-                                                         .inflate(R.layout.toast_text, null);
+                                                          .inflate(R.layout.toast_text, null);
             text.setText(message);
             toast.setView(text);
             toast.setDuration(Toast.LENGTH_SHORT);
@@ -796,7 +792,10 @@ public class TimelineFragment extends InjectionFragment
                                                                                 LoadingDialogFragment.OPAQUE_BACKGROUND);
         dialogFragment.setDismissMessage(R.string.title_thank_you);
         bindAndSubscribe(timelinePresenter.amendEventTime(event, newTime),
-                         ignored -> LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null),
+                         ignored -> {
+                             lastNightInteractor.update();
+                             LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
+                         },
                          e -> {
                              LoadingDialogFragment.close(getFragmentManager());
                              ErrorDialogFragment.presentError(getActivity(), e);
@@ -877,13 +876,13 @@ public class TimelineFragment extends InjectionFragment
     }
 
     public interface Parent {
-
-        boolean isBacksideOpen();
+        void updateTitle(@NonNull final String title);
 
         @IdRes
         int getTutorialContainerIdRes();
 
         void setShareVisible(boolean visible);
+
     }
 
     public interface ParentProvider {

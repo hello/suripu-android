@@ -30,6 +30,9 @@ import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
+import is.hello.sense.interactors.TimelineInteractor;
+import is.hello.sense.mvp.presenters.HomePresenterFragment;
+import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
@@ -109,6 +112,7 @@ public class HomeActivity extends ScopedInjectionActivity
         this.deviceIssuesPresenter.bindScope(this);
         addInteractor(this.deviceIssuesPresenter);
         addInteractor(this.alertsInteractor);
+        addInteractor(this.lastNightInteractor);
 
         setContentView(R.layout.activity_new_home);
         restoreState(savedInstanceState);
@@ -163,6 +167,12 @@ public class HomeActivity extends ScopedInjectionActivity
     public void onSaveInstanceState(final Bundle outState, final PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
         outState.putInt(KEY_CURRENT_ITEM_INDEX, tabLayout.getSelectedTabPosition());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        lastNightInteractor.update();
     }
 
     @Override
@@ -232,7 +242,7 @@ public class HomeActivity extends ScopedInjectionActivity
         return isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
     }
 
-    public void bindAlert(@NonNull final Alert alert) {
+    private void bindAlert(@NonNull final Alert alert) {
         if (alert.isValid()
                 && getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) == null) {
             localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
@@ -245,7 +255,7 @@ public class HomeActivity extends ScopedInjectionActivity
         }
     }
 
-    public void bindDeviceIssue(@NonNull final DeviceIssuesInteractor.Issue issue) {
+    private void bindDeviceIssue(@NonNull final DeviceIssuesInteractor.Issue issue) {
         if (issue == DeviceIssuesInteractor.Issue.NONE
                 || getFragmentManager().findFragmentByTag(DeviceIssueDialogFragment.TAG) != null
                 || getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) != null) {
@@ -298,11 +308,7 @@ public class HomeActivity extends ScopedInjectionActivity
         });
     }
 
-    public void setUpTabs() {
-        final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(this);
-        drawableBuilder.withSize(getWindowManager());
-        drawables[SLEEP_ICON_KEY] = drawableBuilder.build();
-        drawablesActive[SLEEP_ICON_KEY] = drawableBuilder.withSelected(true).build();
+    private void setUpTabs() {
         drawables[TRENDS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_trends_24);
         drawablesActive[TRENDS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_trends_active_24);
         drawables[INSIGHTS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_insight_24);
@@ -311,13 +317,21 @@ public class HomeActivity extends ScopedInjectionActivity
         drawablesActive[SOUNDS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_sound_active_24);
         drawables[CONDITIONS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_sense_24);
         drawablesActive[CONDITIONS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_sense_active_24);
+
+        final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(this);
+        drawableBuilder.withSize(drawables[TRENDS_ICON_KEY].getIntrinsicWidth(), drawables[TRENDS_ICON_KEY].getIntrinsicHeight());
+        if (lastNightInteractor.timeline.hasValue()) {
+            updateSleepScoreTab(lastNightInteractor.timeline.getValue());
+        } else {
+            drawables[SLEEP_ICON_KEY] = drawableBuilder.build();
+            drawablesActive[SLEEP_ICON_KEY] = drawableBuilder.withSelected(true).build();
+        }
         tabLayout.removeAllTabs();
         tabLayout.addTab(tabLayout.newTab().setIcon(drawables[SLEEP_ICON_KEY]));
         tabLayout.addTab(tabLayout.newTab().setIcon(drawables[TRENDS_ICON_KEY]));
         tabLayout.addTab(tabLayout.newTab().setIcon(drawables[INSIGHTS_ICON_KEY]));
         tabLayout.addTab(tabLayout.newTab().setIcon(drawables[SOUNDS_ICON_KEY]));
         tabLayout.addTab(tabLayout.newTab().setIcon(drawables[CONDITIONS_ICON_KEY]));
-        tabLayout.getTabAt(currentItemIndex);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(final TabLayout.Tab tab) {
@@ -349,15 +363,20 @@ public class HomeActivity extends ScopedInjectionActivity
 
             }
         });
+        final TabLayout.Tab tab = tabLayout.getTabAt(currentItemIndex);
+        if (tab != null) {
+            tab.select();
+        }
     }
 
-    public void updateSleepScoreTab(@Nullable final Timeline timeline) {
+    private void updateSleepScoreTab(@Nullable final Timeline timeline) {
         final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(this);
-        drawableBuilder.withSize(getWindowManager());
+        drawableBuilder.withSize(drawables[TRENDS_ICON_KEY].getIntrinsicWidth(), drawables[TRENDS_ICON_KEY].getIntrinsicHeight());
         if (timeline != null &&
-                timeline.getScoreCondition() != ScoreCondition.UNAVAILABLE &&
                 timeline.getScore() != null) {
-            drawableBuilder.withText(timeline.getScore());
+            if (TimelineInteractor.hasValidCondition(timeline)) {
+                drawableBuilder.withText(timeline.getScore());
+            }
         }
         drawables[SLEEP_ICON_KEY] = drawableBuilder.build();
         drawablesActive[SLEEP_ICON_KEY] = drawableBuilder.withSelected(true).build();
