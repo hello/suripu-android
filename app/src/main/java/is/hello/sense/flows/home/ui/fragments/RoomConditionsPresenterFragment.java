@@ -121,8 +121,8 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
         super.onPause();
         if (this.updateTimer != null) {
             this.updateTimer.unschedule();
-            viewPagerPresenterChildDelegate.onPause();
         }
+        viewPagerPresenterChildDelegate.onPause();
     }
 
     @Override
