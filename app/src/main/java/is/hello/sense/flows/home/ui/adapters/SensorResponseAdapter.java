@@ -251,7 +251,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             if (SensorResponseAdapter.this.showSenseMissingCard) {
                 this.imageView.setImageResource(R.drawable.illustration_no_sense);
                 this.messageTextView.setText(R.string.error_room_conditions_no_sense);
-                this.button.setText(R.string.action_pair_new_sense);
+                this.button.setText(R.string.action_pair_sense);
                 this.button.setOnClickListener(v -> SensorResponseAdapter.this.dispatchErrorItemClicked());
 
             }

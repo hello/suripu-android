@@ -204,7 +204,7 @@ public class SmartAlarmListFragment extends SubFragment implements SmartAlarmAda
             message = new SmartAlarmAdapter.Message(0,
                                                     StringRef.from(R.string.error_smart_alarm_requires_device));
             message.titleIconRes = R.drawable.illustration_no_sense;
-            message.actionRes = R.string.action_pair_new_sense;
+            message.actionRes = R.string.action_pair_sense;
             message.onClickListener = ignored -> {
                 Intent intent = new Intent(getActivity(), OnboardingActivity.class);
                 intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);

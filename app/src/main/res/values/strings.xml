@@ -198,7 +198,7 @@
     <string name="dialog_message_confirm_delete_alarm">Are you sure you want to delete this alarm?</string>
     <string name="action_rescan">Scan again</string>
     <string name="action_pair_new_pill">Pair New Pill</string>
-    <string name="action_pair_new_sense">Pair New Sense</string>
+    <string name="action_pair_sense">Pair Sense</string>
     <string name="action_select_wifi_network">Edit Wi-Fi</string>
     <string name="title_scanning_for_sense">Looking for Sense</string>
     <string name="title_waiting_for_sense">Waiting for Sense</string>
