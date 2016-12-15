@@ -20,7 +20,8 @@ public enum Notification {
     TRENDS,
     ALARM,
     SETTINGS,
-    INSIGHTS;
+    INSIGHTS,
+    CONDITIONS;
 
     //region Creation
 

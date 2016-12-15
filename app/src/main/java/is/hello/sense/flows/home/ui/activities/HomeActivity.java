@@ -11,10 +11,15 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 
+import com.segment.analytics.Properties;
+
+
 import javax.inject.Inject;
 
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
+import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.alerts.Alert;
@@ -31,10 +36,12 @@ import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.mvp.presenters.TrendsPresenterFragment;
 import is.hello.sense.mvp.util.ViewPagerPresenter;
+import is.hello.sense.notifications.Notification;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.appcompat.ScopedInjectionActivity;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
+import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.dialogs.BottomAlertDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -42,7 +49,12 @@ import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.ui.widget.graphing.drawables.SleepScoreIconDrawable;
+import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Logger;
 import rx.Observable;
+
+import static android.provider.AlarmClock.*;
+import static is.hello.sense.util.Logger.*;
 
 
 public class HomeActivity extends ScopedInjectionActivity
@@ -62,6 +74,8 @@ public class HomeActivity extends ScopedInjectionActivity
     private static final int SOUNDS_ICON_KEY = 3;
     private static final int CONDITIONS_ICON_KEY = 4;
 
+    @Inject
+    ApiService apiService;
     @Inject
     AlertsInteractor alertsInteractor;
     @Inject
@@ -128,6 +142,7 @@ public class HomeActivity extends ScopedInjectionActivity
                          this::updateSleepScoreTab,
                          Functions.LOG_ERROR);
         lastNightInteractor.update();
+        checkInForUpdates();
 
     }
 
@@ -143,6 +158,44 @@ public class HomeActivity extends ScopedInjectionActivity
     public void onSaveInstanceState(final Bundle outState, final PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
         outState.putInt(KEY_CURRENT_ITEM_INDEX, tabLayout.getSelectedTabPosition());
+    }
+
+    @Override
+    protected void onNewIntent(final Intent intent) {
+        super.onNewIntent(intent);
+        if (ACTION_SHOW_ALARMS.equals(intent.getAction())) {
+            final Properties properties =
+                    Analytics.createProperties(Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME,
+                                               "ACTION_SHOW_ALARMS");
+            Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
+            selectTab(SOUNDS_ICON_KEY);
+        } else if (intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
+            dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
+        }
+
+    }
+
+    public void checkInForUpdates() {
+        bindAndSubscribe(apiService.checkInForUpdates(new UpdateCheckIn()),
+                         response -> {
+                             if (response.isNewVersion()) {
+                                 final AppUpdateDialogFragment dialogFragment =
+                                         AppUpdateDialogFragment.newInstance(response);
+                                 dialogFragment.show(getFragmentManager(), AppUpdateDialogFragment.TAG);
+                             }
+                         },
+                         e -> Logger.error(HomeActivity.class.getSimpleName(), "Could not run update check in", e));
+    }
+
+    private void selectTab(final int position) {
+        if (tabLayout == null) {
+            return;
+        }
+        final TabLayout.Tab tab = tabLayout.getTabAt(position);
+        if (tab == null) {
+            return;
+        }
+        tab.select();
     }
 
     private void restoreState(@Nullable final Bundle savedInstanceState) {
@@ -336,4 +389,50 @@ public class HomeActivity extends ScopedInjectionActivity
         return (TimelineFragment.Parent) getFragmentManager()
                 .findFragmentByTag("android:switcher:" + R.id.activity_new_home_extended_view_pager + ":0");
     }
+
+    //region Notifications
+
+    private void dispatchNotification(@NonNull final Bundle notification) {
+        stateSafeExecutor.execute(() -> {
+            info(getClass().getSimpleName(), "dispatchNotification(" + notification + ")");
+
+            final Notification target = Notification.fromBundle(notification);
+            switch (target) {
+                case TIMELINE: {
+                    selectTab(SLEEP_ICON_KEY);
+                    //todo support scrolling to date.
+
+                    break;
+                }
+                case SENSOR: {
+                    selectTab(SLEEP_ICON_KEY);
+                    break;
+                }
+                case TRENDS: {
+                    selectTab(TRENDS_ICON_KEY);
+                    break;
+                }
+                case ALARM: {
+                    selectTab(SOUNDS_ICON_KEY);
+                    break;
+                }
+                case SETTINGS: {
+                    //todo start AppSettingsActivity after merging.
+                    break;
+                }
+                case INSIGHTS: {
+                    selectTab(INSIGHTS_ICON_KEY);
+                    break;
+                }
+                case CONDITIONS: {
+                    selectTab(CONDITIONS_ICON_KEY);
+                    break;
+                }
+            }
+        });
+    }
+
+    //endregion
+
+
 }
