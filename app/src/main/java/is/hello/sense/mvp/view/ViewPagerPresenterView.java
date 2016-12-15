@@ -2,6 +2,7 @@ package is.hello.sense.mvp.view;
 
 
 import android.annotation.SuppressLint;
+import android.app.Fragment;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -48,6 +49,7 @@ public final class ViewPagerPresenterView extends PresenterView {
     @Override
     public void releaseViews() {
         this.tabLayout.removeAllViews();
+        this.tabLayout.removeAllTabs();
         this.viewPager.removeAllViews();
         this.fab.setOnClickListener(null);
     }
@@ -56,12 +58,13 @@ public final class ViewPagerPresenterView extends PresenterView {
     //region methods
 
     public void createTabsAndPager(@NonNull final ViewPagerPresenterFragment fragment) {
+
         final StaticFragmentAdapter.Item[] items = fragment.getViewPagerItems();
 
         // ViewPager
         final StaticFragmentAdapter adapter =
                 new StaticFragmentAdapter(fragment.getDesiredFragmentManager(),
-                                                      items);
+                                          items);
         this.viewPager.setOffscreenPageLimit(2);
         this.viewPager.setAdapter(adapter);
         this.viewPager.setEnabled(true);
@@ -104,12 +107,15 @@ public final class ViewPagerPresenterView extends PresenterView {
         viewPager.removeOnPageChangeListener(listener);
     }
 
+    public int getCurrentFragmentPosition() {
+        return viewPager.getCurrentItem();
+    }
     //endregion
 
     //region fab methods
 
     public void setFabSize(final float size) {
-        if(size >= 0.5) {
+        if (size >= 0.5) {
             this.fab.setScaleX(size);
             this.fab.setScaleY(size);
             this.fab.setAlpha(Anime.interpolateFloats(size, 0, 2) - 1);
@@ -121,7 +127,7 @@ public final class ViewPagerPresenterView extends PresenterView {
     public void setFabVisible(final boolean visible) {
         if (visible) {
             this.fab.show();
-        } else if(this.fab.getVisibility() == VISIBLE) {
+        } else if (this.fab.getVisibility() == VISIBLE) {
             this.fab.hide();
         }
     }
@@ -133,11 +139,11 @@ public final class ViewPagerPresenterView extends PresenterView {
         fab.setImageResource(resource);
     }
 
-    public void setFabLoading(final boolean loading){
+    public void setFabLoading(final boolean loading) {
         fab.setClickable(!loading);
         fab.setLongClickable(!loading);
         fab.setFocusable(!loading);
-        if(loading) {
+        if (loading) {
             fab.setOnClickListener(null);
             fab.setImageResource(R.drawable.sound_loading_icon);
             final Animation animation = AnimationUtils.loadAnimation(context, R.anim.rotate_360);

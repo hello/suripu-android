@@ -36,7 +36,8 @@ import is.hello.sense.util.Logger;
 
 public class TimelinePagerFragment extends InjectionFragment
         implements ViewPager.OnPageChangeListener,
-        TimelineFragment.Parent {
+        TimelineFragment.Parent,
+        HomeActivity.ScrollUp {
 
     @Inject
     PreferencesInteractor preferences;
@@ -202,6 +203,9 @@ public class TimelinePagerFragment extends InjectionFragment
     }
 
     public void jumpToLastNight(final boolean animate) {
+        if (viewPager == null || viewPagerAdapter == null) {
+            return;
+        }
         viewPager.setCurrentItem(viewPagerAdapter.getLastNight(), animate);
     }
 
@@ -271,6 +275,13 @@ public class TimelinePagerFragment extends InjectionFragment
     @Override
     public void setShareVisible(final boolean visible) {
         senseBar.showRightImage(visible);
+    }
+
+    //endregion
+    //region ScrollUp
+    @Override
+    public void scrollUp() {
+        jumpToLastNight(true);
     }
 
     //endregion

@@ -35,6 +35,7 @@ public class ViewPagerPresenterChildDelegate implements ViewPagerPresenterChild 
      * has been initialized.
      */
     private boolean isViewInitialized = false;
+    private boolean resumed = false;
 
     /**
      * @param host the {@link is.hello.sense.mvp.presenters.PresenterFragment} holding a reference
@@ -56,7 +57,7 @@ public class ViewPagerPresenterChildDelegate implements ViewPagerPresenterChild 
         if (!isViewInitialized) {
             return;
         }
-        if (isVisibleToUser) {
+        if (isVisibleToUser && resumed) {
             onUserVisible();
         } else {
             onUserInvisible();
@@ -65,6 +66,7 @@ public class ViewPagerPresenterChildDelegate implements ViewPagerPresenterChild 
 
     @Override
     public void onResume() {
+        this.resumed =true;
         if (isVisibleToUser) {
             onUserVisible();
         }
@@ -77,6 +79,7 @@ public class ViewPagerPresenterChildDelegate implements ViewPagerPresenterChild 
      */
     @Override
     public void onPause() {
+        this.resumed =false;
         // If the phone is being rotated a lot there is a chance presenterView won't be initialized.
         if (isViewInitialized) {
             onUserInvisible();

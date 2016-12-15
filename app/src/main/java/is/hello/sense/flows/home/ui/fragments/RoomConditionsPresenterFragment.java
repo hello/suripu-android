@@ -22,6 +22,7 @@ import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
 import is.hello.sense.flows.home.interactors.SensorResponseInteractor;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.adapters.SensorResponseAdapter;
 import is.hello.sense.flows.home.ui.views.RoomConditionsView;
 import is.hello.sense.flows.sensordetails.ui.activities.SensorDetailActivity;
@@ -41,7 +42,8 @@ import rx.subscriptions.Subscriptions;
 
 public class RoomConditionsPresenterFragment extends PresenterFragment<RoomConditionsView>
         implements ArrayRecyclerAdapter.OnItemClickedListener<Sensor>,
-        SensorResponseAdapter.ErrorItemClickListener {
+        SensorResponseAdapter.ErrorItemClickListener,
+        HomeActivity.ScrollUp{
     private final static long WELCOME_CARD_TIMES_SHOWN_LIMIT = 2;
 
     @Inject
@@ -216,6 +218,16 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
 
     //endregion
 
+
+    //region scrollup
+    @Override
+    public void scrollUp() {
+        if (presenterView == null) {
+            return;
+        }
+        presenterView.scrollUp();
+    }
+    //endregion
 
     @Override
     public final void onItemClicked(final int position, final Sensor sensor) {
