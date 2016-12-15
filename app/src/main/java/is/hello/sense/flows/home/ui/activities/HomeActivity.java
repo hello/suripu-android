@@ -146,6 +146,12 @@ public class HomeActivity extends ScopedInjectionActivity
         outState.putInt(KEY_CURRENT_ITEM_INDEX, tabLayout.getSelectedTabPosition());
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        lastNightInteractor.update();
+    }
+
     private void restoreState(@Nullable final Bundle savedInstanceState) {
         this.isFirstActivityRun = (savedInstanceState == null);
         if (savedInstanceState != null) {
@@ -306,9 +312,11 @@ public class HomeActivity extends ScopedInjectionActivity
         final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(this);
         drawableBuilder.withSize(drawables[TRENDS_ICON_KEY].getIntrinsicWidth(), drawables[TRENDS_ICON_KEY].getIntrinsicHeight());
         if (timeline != null &&
-                timeline.getScoreCondition() != ScoreCondition.UNAVAILABLE &&
                 timeline.getScore() != null) {
-            drawableBuilder.withText(timeline.getScore());
+            if (timeline.getScoreCondition() != ScoreCondition.UNAVAILABLE &&
+                    timeline.getScoreCondition() != ScoreCondition.INCOMPLETE) {
+                drawableBuilder.withText(timeline.getScore());
+            }
         }
         drawables[SLEEP_ICON_KEY] = drawableBuilder.build();
         drawablesActive[SLEEP_ICON_KEY] = drawableBuilder.withSelected(true).build();
