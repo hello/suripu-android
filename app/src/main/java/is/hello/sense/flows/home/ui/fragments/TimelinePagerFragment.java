@@ -249,7 +249,7 @@ public class TimelinePagerFragment extends InjectionFragment
      * @param date to use and update toolbar title display
      */
     public void updateTitle(@Nullable final LocalDate date) {
-        senseBar.setText(getTitle(date));
+        updateTitle(getTitle(date));
     }
 
     //region Timeline parent
@@ -257,6 +257,9 @@ public class TimelinePagerFragment extends InjectionFragment
 
     @Override
     public void updateTitle(@NonNull final String title) {
+        if (senseBar == null) {
+            return;
+        }
         senseBar.setText(title);
     }
 
@@ -273,14 +276,6 @@ public class TimelinePagerFragment extends InjectionFragment
     @Override
     public void setShareVisible(final boolean visible) {
         senseBar.showRightImage(visible);
-    }
-
-    @Override
-    public void timeAdjusted() {
-        final Activity activity = getActivity();
-        if (activity instanceof HomeActivity){
-            ((HomeActivity) getActivity()).updateSleepScoreTab();
-        }
     }
 
     //endregion

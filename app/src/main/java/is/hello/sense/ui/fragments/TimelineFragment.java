@@ -41,6 +41,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
+import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.timeline.ui.activities.TimelineActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
@@ -104,6 +105,8 @@ public class TimelineFragment extends InjectionFragment
     PreferencesInteractor preferences;
     @Inject
     LocalUsageTracker localUsageTracker;
+    @Inject
+    LastNightInteractor lastNightInteractor;
 
     private boolean firstTimeline;
     private boolean hasCreatedView = false;
@@ -798,12 +801,12 @@ public class TimelineFragment extends InjectionFragment
         dialogFragment.setDismissMessage(R.string.title_thank_you);
         bindAndSubscribe(timelinePresenter.amendEventTime(event, newTime),
                          ignored -> {
-                             parent.timeAdjusted();
+                             lastNightInteractor.update();
                              LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
                          },
-                e -> {
-                    LoadingDialogFragment.close(getFragmentManager());
-                    ErrorDialogFragment.presentError(getActivity(), e);
+                         e -> {
+                             LoadingDialogFragment.close(getFragmentManager());
+                             ErrorDialogFragment.presentError(getActivity(), e);
                          });
     }
 
@@ -889,7 +892,7 @@ public class TimelineFragment extends InjectionFragment
         int getTutorialContainerIdRes();
 
         void setShareVisible(boolean visible);
-        void timeAdjusted();
+
     }
 
     public interface ParentProvider {

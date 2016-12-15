@@ -331,10 +331,6 @@ public class HomeActivity extends ScopedInjectionActivity
         tab.setIcon(drawableBuilder.build());
     }
 
-    public void updateSleepScoreTab() {
-        lastNightInteractor.update();
-    }
-
     @NonNull
     @Override
     public StaticFragmentAdapter.Item[] getViewPagerItems() {
