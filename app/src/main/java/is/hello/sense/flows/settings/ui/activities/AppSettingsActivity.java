@@ -23,7 +23,11 @@ public class AppSettingsActivity extends ScopedInjectionActivity
         this.navigationDelegate = new FragmentNavigationDelegate(this,
                                                                  R.id.activity_navigation_container,
                                                                  stateSafeExecutor);
-        showAppSettingsFragment();
+        if (savedInstanceState != null) {
+            navigationDelegate.onRestoreInstanceState(savedInstanceState);
+        }else {
+            showAppSettingsFragment();
+        }
     }
 
     @Override
