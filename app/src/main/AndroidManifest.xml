@@ -129,8 +129,12 @@
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
 
         <activity
-            android:name=".ui.activities.HardwareFragmentActivity"
+            android:name=".flows.settings.ui.activities.AppSettingsActivity"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+
+        <activity
+            android:name=".ui.activities.HardwareFragmentActivity"
+            android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"/>
 
         <activity
             android:name=".ui.activities.ListActivity"

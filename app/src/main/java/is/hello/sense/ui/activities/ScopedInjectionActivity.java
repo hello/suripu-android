@@ -2,33 +2,36 @@ package is.hello.sense.ui.activities;
 
 import android.os.Bundle;
 
+import java.util.Collections;
 import java.util.List;
 
 import dagger.ObjectGraph;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.ui.common.InjectionActivity;
 
-public abstract class ScopedInjectionActivity extends InjectionActivity{
+public abstract class ScopedInjectionActivity extends InjectionActivity {
 
     private ObjectGraph scopedObjectGraph;
 
-    public ScopedInjectionActivity(){
+    public ScopedInjectionActivity() {
         //do nothing here
     }
 
-    public void injectScopedGraph(){
+    public void injectScopedGraph() {
         this.scopedObjectGraph = SenseApplication.getInstance()
                                                  .createScopedObjectGraph(getModules());
         scopedObjectGraph.inject(this);
     }
 
-    protected abstract List<Object> getModules();
+    protected List<Object> getModules() {
+        return Collections.emptyList();
+    }
 
-    public void destroyScopedGraph(){
+    public void destroyScopedGraph() {
         scopedObjectGraph = null;
     }
 
-    public <T> void injectToScopedGraph(final T object){
+    public <T> void injectToScopedGraph(final T object) {
         scopedObjectGraph.inject(object);
     }
 

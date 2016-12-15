@@ -15,13 +15,14 @@ import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.flows.home.ui.views.AppSettingsView;
 import is.hello.sense.flows.voice.ui.activities.VoiceSettingsActivity;
 import is.hello.sense.interactors.HasVoiceInteractor;
+import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Share;
 
-public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> implements
+public class AppSettingsFragment extends PresenterFragment<AppSettingsView> implements
         AppSettingsView.RunnableGenerator {
 
     @Inject
@@ -63,14 +64,6 @@ public class AppSettingsFragment extends BacksideTabFragment<AppSettingsView> im
                          e -> this.presenterView.showVoiceEnabledRows(false));
 
         hasVoiceInteractor.update();
-    }
-
-    @Override
-    public final void onSwipeInteractionDidFinish() {
-    }
-
-    @Override
-    public final void onUpdate() {
     }
 
     @Override
