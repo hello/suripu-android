@@ -80,8 +80,8 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView>
 
         sleepSoundsSubscription.unsubscribe();
         sleepSoundsSubscription =
-                bind(sleepSoundsInteractor.showSleepSoundsTab()).subscribe(this::bind,
-                                                                           this::presentError);
+                bind(sleepSoundsInteractor.hasSensePaired()).subscribe(this::bind,
+                                                                       this::presentError);
     }
 
     @Override

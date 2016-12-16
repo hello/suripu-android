@@ -73,6 +73,14 @@ public abstract class PresenterView extends FrameLayout {
     }
 
     /**
+     * Override to change recycler view padding from an edge.
+     * @return distance recycler view should be from edge
+     */
+    public Rect contentInset() {
+        return new Rect(0, 0, 0, 0);
+    }
+
+    /**
      * Helper function for establishing our standard recycler view decoration.
      *
      * @param recyclerView  view to modify.
@@ -84,7 +92,7 @@ public abstract class PresenterView extends FrameLayout {
         final Resources resources = getResources();
         recyclerView.setLayoutManager(layoutManager);
         final CardItemDecoration decoration = new CardItemDecoration(resources);
-        decoration.contentInset = new Rect(0, 0, 0, resources.getDimensionPixelSize(R.dimen.x12));
+        decoration.contentInset = contentInset();
         recyclerView.addItemDecoration(decoration);
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager,
                                                                      resources,

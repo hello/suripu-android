@@ -14,7 +14,6 @@ import android.view.View;
 
 import com.segment.analytics.Properties;
 
-
 import javax.inject.Inject;
 
 import is.hello.buruberi.util.Rx;
@@ -28,13 +27,13 @@ import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
-import is.hello.sense.interactors.TimelineInteractor;
-import is.hello.sense.mvp.presenters.HomePresenterFragment;
-import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.interactors.TimelineInteractor;
+import is.hello.sense.mvp.presenters.HomePresenterFragment;
+import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
 import is.hello.sense.mvp.presenters.TrendsPresenterFragment;
 import is.hello.sense.mvp.util.FabPresenter;
 import is.hello.sense.mvp.util.FabPresenterProvider;
@@ -49,6 +48,7 @@ import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.dialogs.BottomAlertDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SpinnerImageView;
@@ -57,13 +57,14 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-import static android.provider.AlarmClock.*;
-import static is.hello.sense.util.Logger.*;
+import static android.provider.AlarmClock.ACTION_SHOW_ALARMS;
+import static is.hello.sense.util.Logger.info;
 
 
 public class HomeActivity extends ScopedInjectionActivity
         implements
         Alert.ActionHandler,
+        InsightInfoFragment.ParentProvider,
         TimelineFragment.ParentProvider,
         FabPresenterProvider,
         ViewPagerPresenter {
@@ -422,6 +423,17 @@ public class HomeActivity extends ScopedInjectionActivity
     @Override
     public FabPresenter getFabPresenter() {
         return (FabPresenter) getFragmentWithIndex(SOUNDS_ICON_KEY);
+    }
+
+    @Nullable
+    @Override
+    public InsightInfoFragment.Parent provideInsightInfoParent() {
+        final Fragment parentProvider = getFragmentWithIndex(INSIGHTS_ICON_KEY);
+        if (parentProvider instanceof InsightInfoFragment.ParentProvider) {
+            return ((InsightInfoFragment.ParentProvider) parentProvider).provideInsightInfoParent();
+        } else {
+            return null;
+        }
     }
 
     @Nullable

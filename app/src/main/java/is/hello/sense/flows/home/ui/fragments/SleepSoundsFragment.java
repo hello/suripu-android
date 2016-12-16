@@ -22,6 +22,7 @@ import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.SleepSoundsStateDevice;
 import is.hello.sense.api.model.v2.Sound;
+import is.hello.sense.bluetooth.exceptions.SenseRequiredException;
 import is.hello.sense.flows.home.ui.views.SleepSoundsView;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SleepSoundsInteractor;
@@ -39,6 +40,7 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.NotTested;
 import rx.Observable;
 import rx.Subscription;
+import rx.functions.Action0;
 import rx.subscriptions.Subscriptions;
 
 @NotTested
@@ -61,6 +63,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
 
     private Subscription saveOperationSubscriber = Subscriptions.empty();
     private Subscription stopOperationSubscriber = Subscriptions.empty();
+    private Subscription hasSensePairedSubscription = Subscriptions.empty();
 
     private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
     private UserWants userWants = UserWants.NONE;
@@ -113,13 +116,14 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         this.fabPresenter = ((FabPresenterProvider) getActivity()).getFabPresenter();
         bindAndSubscribe(sleepSoundsStatusInteractor.state, this::bindStatus, this::presentStatusError);
         bindAndSubscribe(sleepSoundsInteractor.sub, this::bind, this::presentError);
-        sleepSoundsInteractor.update();
+        this.updateSensePairedSubscription( () -> sleepSoundsInteractor.update());
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         this.fabPresenter = null;
+        updateSensePairedSubscription(null);
     }
 
     @Override
@@ -136,10 +140,12 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
 
     @Override
     public void onUserVisible() {
-        sleepSoundsStatusInteractor.resetBackOffIfNeeded();
-        sleepSoundsStatusInteractor.startPolling();
-        setFabVisible(presenterView.isShowingPlayer());
         displayLoadingButton();
+        setFabVisible(presenterView.isShowingPlayer());
+        updateSensePairedSubscription( () -> {
+            sleepSoundsStatusInteractor.resetBackOffIfNeeded();
+            sleepSoundsStatusInteractor.startPolling();
+        });
     }
 
     @Override
@@ -256,6 +262,18 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     //endregion
 
     //region methods
+    private void updateSensePairedSubscription(@Nullable final Action0 onNextAction) {
+
+        this.hasSensePairedSubscription.unsubscribe();
+        if (onNextAction == null) {
+            return;
+        }
+        this.hasSensePairedSubscription =
+                bind(sleepSoundsInteractor.hasSensePaired())
+                        .subscribe(ignore -> {
+                            onNextAction.call();
+                        }, this::presentError);
+    }
 
     private void bindStatus(final @NonNull SleepSoundStatus status) {
         presenterView.setProgressBarVisible(false);
@@ -365,8 +383,12 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     }
 
     private void presentError(@NonNull final Throwable error) {
-        adapterSetState(SleepSoundsAdapter.AdapterState.ERROR);
         presenterView.setProgressBarVisible(false);
+        if (error instanceof SenseRequiredException) {
+            adapterSetState(SleepSoundsAdapter.AdapterState.SENSE_NOT_PAIRED);
+        } else {
+            adapterSetState(SleepSoundsAdapter.AdapterState.ERROR);
+        }
     }
 
 

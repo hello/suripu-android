@@ -250,7 +250,7 @@ public class DevicesAdapterTests extends SenseTestCase {
                 fakeParent, adapter.getItemViewType(0), 0);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sense")));
-        assertThat(holder.actionButton.getText().toString(), is(equalTo("Pair New Sense")));
+        assertThat(holder.actionButton.getText().toString(), is(equalTo("Pair Sense")));
         assertThat(holder.actionButton.isEnabled(), is(true));
 
         // For SafeOnClickListener to function properly

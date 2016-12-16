@@ -29,7 +29,7 @@ public final class RoomConditionsView extends PresenterView {
         recyclerView.setAdapter(adapter);
         senseBar.setText(R.string.title_room_conditions);
         senseBar.showLeftImage(false);
-        senseBar.setRightImage(R.drawable.backside_icon_settings);
+        senseBar.setRightImage(R.drawable.icon_settings_24);
         senseBar.alignTextLeft();
     }
 

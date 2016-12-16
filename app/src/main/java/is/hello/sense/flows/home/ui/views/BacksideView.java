@@ -15,7 +15,6 @@ import android.widget.ToggleButton;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.home.ui.fragments.BacksideTabFragment;
 import is.hello.sense.flows.home.ui.fragments.HomeFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
@@ -53,21 +52,18 @@ public class BacksideView extends PresenterView {
         this.adapter = new StaticFragmentAdapter(fragmentManager,
                                                  new StaticFragmentAdapter.Item(RoomConditionsPresenterFragment.class, getString(R.string.title_current_conditions)),
                                                  new StaticFragmentAdapter.Item(HomeFragment.class, getString(R.string.action_insights)),
-                                                 new StaticFragmentAdapter.Item(SoundsFragment.class, getString(R.string.action_alarm)),
-                                                 new StaticFragmentAdapter.Item(AppSettingsFragment.class, getString(R.string.action_settings)));
+                                                 new StaticFragmentAdapter.Item(SoundsFragment.class, getString(R.string.action_alarm)));
         pager.setAdapter(adapter);
 
         final @DrawableRes int[] inactiveIcons = {
                 R.drawable.icon_sense_24,
                 R.drawable.icon_insight_24,
-                R.drawable.icon_sound_24,
-                R.drawable.backside_icon_settings,
+                R.drawable.icon_sound_24
         };
         final @DrawableRes int[] activeIcons = {
                 R.drawable.icon_sense_active_24,
                 R.drawable.icon_insight_active_24,
-                R.drawable.icon_sound_active_24,
-                R.drawable.backside_icon_settings_active,
+                R.drawable.icon_sound_active_24
         };
         for (int i = 0, count = adapter.getCount(); i < count; i++) {
             final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(i),

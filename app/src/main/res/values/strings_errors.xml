@@ -103,6 +103,7 @@
 
     <string name="error_smart_alarms_unavailable">There was a problem displaying your alarms. Please try again.</string>
     <string name="error_smart_alarm_day_overlap">You cannot set more than one Smart Alarm per day of the week.</string>
+    <string name="error_sleep_sounds_requires_device">You don‘t currently have a Sense connected to your account. Please pair with Sense to play Sleep Sounds.</string>
     <string name="error_smart_alarm_requires_device">You don‘t currently have a Sense connected to your account. Please pair with Sense to set alarms.</string>
     <string name="error_no_smart_alarm_tone">Please select a tone for this alarm.</string>
     <string name="error_failed_to_play_alarm_tone">Could not play preview.</string>

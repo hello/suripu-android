@@ -58,6 +58,18 @@ public class ExpansionSettingsActivity extends ScopedInjectionActivity
 
     }
 
+    @Override
+    protected void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        navigationDelegate.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.navigationDelegate.onDestroy();
+    }
+
     public static Intent getExpansionDetailIntent(@NonNull final Context context, final long expansionId) {
         return new Intent(context, ExpansionSettingsActivity.class)
                 .putExtra(EXTRA_EXPANSION_DETAIL_ID, expansionId);
