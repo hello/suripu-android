@@ -26,6 +26,10 @@ public class ExtendedViewPager extends ViewPager {
     @Nullable
     Field mItemsField;
     private boolean scrollingEnabled = true;
+    /**
+     * Determines if view pager will animate between children when different child selected
+     */
+    private boolean smoothScroll = true;
 
     public ExtendedViewPager(@NonNull final Context context) {
         super(context);
@@ -97,8 +101,26 @@ public class ExtendedViewPager extends ViewPager {
         return scrollingEnabled && super.canScrollHorizontally(direction);
     }
 
+    @Override
+    public void setCurrentItem(final int item) {
+        super.setCurrentItem(item, this.smoothScroll);
+    }
+
+    @Override
+    public void setCurrentItem(final int item, final boolean ignoredSmoothScroll) {
+        super.setCurrentItem(item, this.smoothScroll);
+    }
+
     public void setScrollingEnabled(final boolean swipingEnabled) {
         this.scrollingEnabled = swipingEnabled;
+    }
+
+    /**
+     * @param smoothScroll setting to false prevents using any animation between pages entirely.
+     *                     However, this breaks using {@link FadePageTransformer}
+     */
+    public void setSmoothScroll(final boolean smoothScroll){
+        this.smoothScroll = smoothScroll;
     }
 
     public void setFadePageTransformer(final boolean fade) {
@@ -114,6 +136,7 @@ public class ExtendedViewPager extends ViewPager {
         public FadePageTransformer() {
         }
 
+        @Override
         public void transformPage(final View view, final float position) {
             view.setTranslationX(view.getWidth() * -position);
 

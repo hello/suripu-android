@@ -16,12 +16,9 @@
 
         <android.support.design.widget.TabLayout
             android:id="@+id/activity_new_home_tab_layout"
-            style="@style/AppTheme.AppCompat.NoActionBar.TabLayout"
+            style="@style/AppTheme.AppCompat.BottomBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabIndicatorColor="@color/background_light"
-            app:tabIndicatorHeight="0dp"
-            android:layout_gravity="bottom"/>
+            android:layout_height="wrap_content"/>
 
     </is.hello.sense.ui.widget.ExtendedViewPager>
 

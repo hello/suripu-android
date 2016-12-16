@@ -569,6 +569,13 @@
         <item name="tabGravity">fill</item>
         <item name="tabMaxWidth">0dp</item>
     </style>
+
+    <style name="AppTheme.AppCompat.BottomBar" parent="AppTheme.AppCompat.NoActionBar.TabLayout">
+        <item name="android:minHeight">@dimen/bottom_bar_height</item>
+        <item name="tabIndicatorColor">@color/background_light</item>
+        <item name="tabIndicatorHeight">0dp</item>
+        <item name="android:layout_gravity">bottom</item>
+    </style>
     
     <style name="AppTheme.AppCompat.Fab" parent="Widget.Design.FloatingActionButton">
         <item name="backgroundTint">@color/light_accent</item>
