@@ -13,8 +13,10 @@
         <item name="android:actionDropDownStyle">@style/AppTheme.DropDownNav</item>
         <item name="android:actionBarStyle">@style/AppTheme.ActionBar.Solid</item>
         <item name="android:actionModeBackground">@drawable/app_theme_cab_background_top</item>
-        <item name="android:actionModeSplitBackground">@drawable/app_theme_cab_background_bottom</item>
-        <item name="android:actionModeCloseButtonStyle">@style/AppTheme.ActionButton.CloseMode</item>
+        <item name="android:actionModeSplitBackground">@drawable/app_theme_cab_background_bottom
+        </item>
+        <item name="android:actionModeCloseButtonStyle">@style/AppTheme.ActionButton.CloseMode
+        </item>
         <item name="android:actionOverflowButtonStyle">@style/ActionOverflow</item>
         <item name="android:actionMenuTextAppearance">@style/AppTheme.Text.ActionMenu</item>
         <item name="android:actionMenuTextColor">@color/white</item>
@@ -62,7 +64,7 @@
 
     <!-- Action Bar -->
 
-    <style name="AppTheme.ActionBar" parent="Platform.ActionBar" />
+    <style name="AppTheme.ActionBar" parent="Platform.ActionBar"/>
 
     <style name="AppTheme.ActionBar.Solid">
         <item name="android:background">@color/light_accent</item>
@@ -157,7 +159,9 @@
 
     <style name="AppTheme.Dialog.FullScreen.Insight">
         <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_illustration</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">
+            @color/status_bar_illustration
+        </item>
     </style>
 
     <style name="AppTheme.Dialog.Loading" parent="AppTheme.Dialog.FullScreen">
@@ -185,7 +189,7 @@
         <item name="android:paddingBottom">0dp</item>
     </style>
 
-    <style name="WindowAnimations" parent="android:style/Animation" />
+    <style name="WindowAnimations" parent="android:style/Animation"/>
 
     <style name="WindowAnimations.FadeOut">
         <item name="android:windowEnterAnimation">@null</item>
@@ -451,11 +455,15 @@
 
     <!-- Specific Tinting -->
 
-    <style name="TintOverride" />
-    <style name="TintOverride.SleepScore" />
-    <style name="TintOverride.SleepScore.Ideal" />
-    <style name="TintOverride.SleepScore.Warning" />
-    <style name="TintOverride.SleepScore.Alert" />
+    <style name="TintOverride"/>
+
+    <style name="TintOverride.SleepScore"/>
+
+    <style name="TintOverride.SleepScore.Ideal"/>
+
+    <style name="TintOverride.SleepScore.Warning"/>
+
+    <style name="TintOverride.SleepScore.Alert"/>
 
     <!-- Other -->
 
@@ -551,12 +559,44 @@
 
     <!-- AppCompat Themes
     (mainly for use with https://developer.android.com/topic/libraries/support-library/features.html#design) -->
-    <style name="AppTheme.AppCompat" parent="Theme.AppCompat">
+    <style name="AppTheme.AppCompat"/>
+
+    <style name="AppTheme.AppCompat.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- The primary branding color for the app. By default, this is the color applied to the
+   action bar background. -->
+        <item name="colorPrimary">@color/primary</item>
+        <!-- Dark variant of the primary branding color. By default, this is the color applied to
+         the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
+        <item name="colorPrimaryDark">@color/primary</item>
+        <!-- Bright complement to the primary branding color. By default, this is the color applied
+         to framework controls (via colorControlActivated). -->
+        <item name="colorAccent">@color/light_accent</item>
+        <!-- The color applied to framework controls in their normal state. -->
+        <item name="colorControlNormal">@color/primary</item>
+        <!-- The color applied to framework controls in their activated (ex. checked) state. -->
+        <item name="colorControlActivated">@color/primary</item>
+        <!-- The color applied to framework control highlights (ex. ripples, list selectors). -->
+        <item name="colorControlHighlight">@color/primary</item>
+        <!-- The color applied to framework buttons in their normal state. -->
+        <item name="colorButtonNormal">@color/primary</item>
+        <!-- The color applied to framework switch thumbs in their normal state. -->
+        <item name="colorSwitchThumbNormal">@color/primary</item>
+        <!-- Inactive track color(75% transparency) -->
         <item name="android:windowBackground">@color/background</item>
+        <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
+        <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading.New</item>
+        <item name="senseTextAppearanceSubheading">@style/AppTheme.Text.Body.MidSized.Dim</item>
+        <item name="senseTextAppearanceFieldLabel">@style/AppTheme.Text.Body.Small.New</item>
     </style>
-    <style name="AppTheme.AppCompat.NoActionBar" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowBackground">@color/background</item>
-        <item name="windowActionBar">false</item>
+
+    <style name="AppTheme.AppCompat.ProgressBar" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminateOnly">true</item>
+        <item name="android:indeterminateDrawable">@drawable/animated_progress_bar</item>
+        <item name="android:indeterminateDuration">1000</item>
+        <item name="android:minWidth">55dp</item>
+        <item name="android:maxWidth">55dp</item>
+        <item name="android:minHeight">55dp</item>
+        <item name="android:maxHeight">55dp</item>
     </style>
 
     <style name="AppTheme.AppCompat.NoActionBar.TabLayout" parent="Widget.Design.TabLayout">
@@ -569,9 +609,10 @@
         <item name="tabGravity">fill</item>
         <item name="tabMaxWidth">0dp</item>
     </style>
-    
+
     <style name="AppTheme.AppCompat.Fab" parent="Widget.Design.FloatingActionButton">
         <item name="backgroundTint">@color/light_accent</item>
     </style>
+
 
 </resources>
