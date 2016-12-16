@@ -581,9 +581,10 @@
         <item name="colorSwitchThumbNormal">@color/primary</item>
         <!-- Inactive track color(75% transparency) -->
         <item name="android:windowBackground">@color/background</item>
+        <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
     </style>
 
-    <style name="AppTheme.AppCompat.NoActionBar" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppTheme.AppCompat.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- The primary branding color for the app. By default, this is the color applied to the
    action bar background. -->
         <item name="colorPrimary">@color/primary</item>
@@ -605,6 +606,17 @@
         <item name="colorSwitchThumbNormal">@color/primary</item>
         <!-- Inactive track color(75% transparency) -->
         <item name="android:windowBackground">@color/background</item>
+        <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
+    </style>
+
+    <style name="AppTheme.AppCompat.ProgressBar" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminateOnly">true</item>
+        <item name="android:indeterminateDrawable">@drawable/animated_progress_bar</item>
+        <item name="android:indeterminateDuration">1000</item>
+        <item name="android:minWidth">55dp</item>
+        <item name="android:maxWidth">55dp</item>
+        <item name="android:minHeight">55dp</item>
+        <item name="android:maxHeight">55dp</item>
     </style>
 
     <style name="AppTheme.AppCompat.NoActionBar.TabLayout" parent="Widget.Design.TabLayout">
