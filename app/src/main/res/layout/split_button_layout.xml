@@ -14,39 +14,43 @@
         android:layout_height="@dimen/divider_size"
         android:layout_alignParentTop="true"/>
 
-    <Button
-        android:id="@+id/button_left"
-        style="@style/Body"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_below="@id/top_divider_horizontal"
-        android:layout_toStartOf="@+id/center_divider_vertical"
-        android:gravity="center"
-        android:text="@string/action_close"
-        android:textAllCaps="true"
-        android:textColor="@color/split_button_left_text_color"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button_left"
+            style="@style/Body"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/action_close"
+            android:textAllCaps="true"
+            android:textColor="@color/split_button_left_text_color"/>
+
+        <Button
+            android:id="@+id/button_right"
+            style="@style/Body.Link"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/action_ok"
+            android:textAllCaps="true"
+            android:textColor="@color/split_button_right_text_color"/>
+
+    </LinearLayout>
 
     <View
         android:id="@+id/center_divider_vertical"
-        style="@style/Divider.Vertical"
-        android:layout_width="@dimen/divider_size"
+        android:layout_width="1dp"
         android:layout_height="match_parent"
         android:layout_below="@id/top_divider_horizontal"
         android:layout_centerInParent="true"
-        android:layout_margin="@dimen/x1"/>
+        android:layout_margin="@dimen/x1"
+        android:background="@color/border"/>
 
-    <Button
-        android:id="@+id/button_right"
-        style="@style/Body.Link"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@id/top_divider_horizontal"
-        android:layout_toEndOf="@+id/center_divider_vertical"
-        android:gravity="center"
-        android:text="@string/action_ok"
-        android:textAllCaps="true"
-        android:textColor="@color/split_button_right_text_color"/>
 
 </RelativeLayout>
