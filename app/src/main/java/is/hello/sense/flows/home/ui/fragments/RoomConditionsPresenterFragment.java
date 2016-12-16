@@ -46,7 +46,7 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
         implements ArrayRecyclerAdapter.OnItemClickedListener<Sensor>,
         SensorResponseAdapter.ErrorItemClickListener,
         HomeActivity.ScrollUp,
-        ViewPagerPresenterChild{
+        ViewPagerPresenterChild {
     private final static long WELCOME_CARD_TIMES_SHOWN_LIMIT = 2;
 
     @Inject
@@ -61,7 +61,6 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
     @VisibleForTesting
     public SensorResponseAdapter adapter;
     private UpdateTimer updateTimer;
-    private boolean checkRoomConditions = false;
     @NonNull
     private Subscription postSensorSubscription = Subscriptions.empty();
     private final ViewPagerPresenterChildDelegate viewPagerPresenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
@@ -107,8 +106,6 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
         bindAndSubscribe(this.sensorResponseInteractor.sensors,
                          this::bindConditions,
                          this::conditionsUnavailable);
-
-        checkRoomConditions = true; // todo support this again.
     }
 
     @Override
@@ -170,16 +167,13 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
     //region Displaying Data
 
     private void showWelcomeCardIfNeeded() {
-        if (checkRoomConditions) {
-            checkRoomConditions = false;
-            final int timesShown = preferencesInteractor.getInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, 1);
-            if (timesShown <= WELCOME_CARD_TIMES_SHOWN_LIMIT) {
-                preferencesInteractor.edit().putInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN,
-                                                    timesShown + 1).apply();
-                adapter.showWelcomeCard(true);
-            } else {
-                adapter.showWelcomeCard(false);
-            }
+        final int timesShown = preferencesInteractor.getInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, 1);
+        if (timesShown <= WELCOME_CARD_TIMES_SHOWN_LIMIT) {
+            preferencesInteractor.edit().putInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN,
+                                                timesShown + 1).apply();
+            adapter.showWelcomeCard(true);
+        } else {
+            adapter.showWelcomeCard(false);
         }
     }
 
