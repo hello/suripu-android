@@ -63,10 +63,10 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
 
     private Subscription saveOperationSubscriber = Subscriptions.empty();
     private Subscription stopOperationSubscriber = Subscriptions.empty();
+    private Subscription hasSensePairedSubscription = Subscriptions.empty();
 
     private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
     private UserWants userWants = UserWants.NONE;
-    private Subscription hasSensePairedSubscription;
 
     enum UserWants {
         PLAY,
@@ -263,9 +263,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
 
     //region methods
     private void updateSensePairedSubscription(@Nullable final Action0 onNextAction) {
-        if(this.hasSensePairedSubscription == null) {
-            this.hasSensePairedSubscription = Subscriptions.empty();
-        }
+
         this.hasSensePairedSubscription.unsubscribe();
         if (onNextAction == null) {
             return;
