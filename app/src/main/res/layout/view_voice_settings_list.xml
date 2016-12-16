@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:divider="@drawable/divider_horizontal_inset"
+              android:orientation="vertical"
               android:showDividers="middle|end">
 
     <FrameLayout
         android:id="@+id/view_voice_settings_list_volume_container"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/smart_alarm_details_row_height"
+        android:layout_height="wrap_content"
         android:background="@drawable/selectable_dark_bounded"
         android:padding="@dimen/x2">
 
@@ -29,20 +29,19 @@
             android:layout_gravity="end|center_vertical"
             android:drawableEnd="@drawable/disclosure_chevron_small"
             android:drawablePadding="@dimen/x1"
-            android:visibility="visible"
-            android:text="@string/missing_data_placeholder"/>
+            android:text="@string/missing_data_placeholder"
+            android:visibility="visible"/>
 
     </FrameLayout>
 
     <LinearLayout
         android:id="@+id/view_voice_settings_list_mute_container"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/smart_alarm_details_row_height"
+        android:layout_height="wrap_content"
+        android:background="@drawable/selectable_dark_bounded"
         android:gravity="center_vertical"
-        android:paddingLeft="@dimen/x2"
-        android:paddingRight="@dimen/x2"
         android:orientation="horizontal"
-        android:background="@drawable/selectable_dark_bounded">
+        android:padding="@dimen/x2">
 
         <TextView
             android:layout_width="wrap_content"
@@ -57,35 +56,49 @@
 
         <include
             android:id="@+id/view_voice_settings_mute_switch"
-            layout="@layout/widget_switch" />
+            layout="@layout/widget_switch"/>
 
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/view_voice_settings_list_primary_user_container"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/smart_alarm_details_row_height"
-        android:background="@drawable/selectable_dark_bounded"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:padding="@dimen/x2">
 
+        <FrameLayout
+            android:id="@+id/view_voice_settings_list_primary_user_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/selectable_dark_bounded">
+
+            <TextView
+                android:id="@+id/view_voice_settings_list_primary_user_tv"
+                style="@style/AppTheme.Text.Body.New"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:text="@string/voice_settings_primary_user"/>
+
+            <TextView
+                android:id="@+id/view_voice_settings_list_primary_user_value_tv"
+                style="@style/AppTheme.Text.Body.Link"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:drawablePadding="@dimen/x1"
+                android:text="@string/missing_data_placeholder"
+                android:visibility="visible"/>
+
+        </FrameLayout>
+
         <TextView
-            android:id="@+id/view_voice_settings_list_primary_user_tv"
-            style="@style/AppTheme.Text.Body.New"
+            style="@style/Label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start|center_vertical"
-            android:text="@string/voice_settings_primary_user"/>
-
-        <TextView
-            android:id="@+id/view_voice_settings_list_primary_user_value_tv"
-            style="@style/AppTheme.Text.Body.Link"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:drawablePadding="@dimen/x1"
-            android:visibility="visible"
-            android:text="@string/missing_data_placeholder"/>
-
-    </FrameLayout>
+            android:layout_marginTop="@dimen/x1"
+            android:text="@string/voice_settings_primary_user_about"/>
+    </LinearLayout>
 
 </LinearLayout>
