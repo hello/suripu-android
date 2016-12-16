@@ -57,6 +57,6 @@ public class AppSettingsActivity extends ScopedInjectionActivity
     }
 
     public void showAppSettingsFragment() {
-        pushFragment(new AppSettingsFragment(), null, true);
+        pushFragment(new AppSettingsFragment(), null, false);
     }
 }
