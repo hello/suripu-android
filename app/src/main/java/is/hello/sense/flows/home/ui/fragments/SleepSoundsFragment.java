@@ -23,6 +23,7 @@ import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.SleepSoundsStateDevice;
 import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.bluetooth.exceptions.SenseRequiredException;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.views.SleepSoundsView;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SleepSoundsInteractor;
@@ -48,7 +49,8 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         implements
         SleepSoundsAdapter.InteractionListener,
         SleepSoundsAdapter.Retry,
-        ViewPagerPresenterChild {
+        ViewPagerPresenterChild,
+        HomeActivity.ScrollUp {
     private static final int SOUNDS_REQUEST_CODE = 123;
     private static final int DURATION_REQUEST_CODE = 231;
     private static final int VOLUME_REQUEST_CODE = 312;
@@ -116,7 +118,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         this.fabPresenter = ((FabPresenterProvider) getActivity()).getFabPresenter();
         bindAndSubscribe(sleepSoundsStatusInteractor.state, this::bindStatus, this::presentStatusError);
         bindAndSubscribe(sleepSoundsInteractor.sub, this::bind, this::presentError);
-        this.updateSensePairedSubscription( () -> sleepSoundsInteractor.update());
+        this.updateSensePairedSubscription(() -> sleepSoundsInteractor.update());
     }
 
     @Override
@@ -142,7 +144,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     public void onUserVisible() {
         displayLoadingButton();
         setFabVisible(presenterView.isShowingPlayer());
-        updateSensePairedSubscription( () -> {
+        updateSensePairedSubscription(() -> {
             sleepSoundsStatusInteractor.resetBackOffIfNeeded();
             sleepSoundsStatusInteractor.startPolling();
         });
@@ -223,38 +225,47 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     }
     //endregion
 
+
+    @Override
+    public void scrollUp() {
+        if (presenterView == null) {
+            return;
+        }
+        presenterView.scrollUp();
+    }
+
     //region FabPresenter helpers
-    private boolean canUpdateFab(){
+    private boolean canUpdateFab() {
         return fabPresenter != null && isVisibleToUserAndResumed();
     }
 
-    public void setFabVisible(final boolean visible){
+    public void setFabVisible(final boolean visible) {
         if (canUpdateFab()) {
             fabPresenter.setFabVisible(visible);
         }
     }
 
-    public void adapterSetState(final SleepSoundsAdapter.AdapterState state){
+    public void adapterSetState(final SleepSoundsAdapter.AdapterState state) {
         presenterView.adapterSetState(state);
         setFabVisible(false);
     }
 
     private void displayPlayButton() {
-        if(canUpdateFab()){
+        if (canUpdateFab()) {
             fabPresenter.updateFab(R.drawable.sound_play_icon,
                                    this::onPlayClickListener);
         }
     }
 
     public void displayStopButton() {
-        if(canUpdateFab()){
+        if (canUpdateFab()) {
             fabPresenter.updateFab(R.drawable.sound_stop_icon,
                                    this::onStopClickListener);
         }
     }
 
     public void displayLoadingButton() {
-        if(canUpdateFab()){
+        if (canUpdateFab()) {
             fabPresenter.setFabLoading(true);
         }
     }
