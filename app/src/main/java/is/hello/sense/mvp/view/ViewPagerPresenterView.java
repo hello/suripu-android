@@ -2,6 +2,8 @@ package is.hello.sense.mvp.view;
 
 
 import android.annotation.SuppressLint;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -102,6 +104,12 @@ public final class ViewPagerPresenterView extends PresenterView {
 
     public void removeViewPagerListener(final ViewPager.OnPageChangeListener listener) {
         viewPager.removeOnPageChangeListener(listener);
+    }
+
+    @Nullable
+    public Fragment getFragmentWithIndex(@NonNull final FragmentManager fragmentManager,
+                                         final int index){
+        return fragmentManager.findFragmentByTag("android:switcher:" + R.id.view_view_pager_extended_view_pager + ":"+index);
     }
 
     //endregion
