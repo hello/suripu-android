@@ -1,7 +1,6 @@
 package is.hello.sense.ui.adapter;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,6 +23,7 @@ import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
 import is.hello.sense.util.Constants;
 
@@ -125,6 +125,8 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             return new NoSoundsStateViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         } else if (viewType == AdapterState.OFFLINE.ordinal()) {
             return new OfflineViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
+        } else if (viewType == AdapterState.SENSE_NOT_PAIRED.ordinal()) {
+            return new SenseNotPairedViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         }
         return new ErrorViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
     }
@@ -244,8 +246,8 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     //region error
 
     public class ErrorViewHolder extends BaseViewHolder implements View.OnClickListener {
-        private final TextView message;
-        private final Button action;
+        protected final TextView message;
+        protected final Button action;
 
         ErrorViewHolder(final @NonNull View view) {
             super(view);
@@ -271,13 +273,34 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     }
 
+    public class SenseNotPairedViewHolder extends ErrorViewHolder {
+        protected final ImageView image;
+        SenseNotPairedViewHolder(final @NonNull View view) {
+            super(view);
+            this.image = (ImageView) view.findViewById(R.id.item_message_card_image);
+        }
+
+        @Override
+        void bind(final int position) {
+            this.image.setImageResource(R.drawable.illustration_no_sense);
+            this.message.setText(R.string.error_sleep_sounds_requires_device);
+            action.setText(R.string.action_pair_sense);
+        }
+
+        @Override
+        public void onClick(final View ignored) {
+            context.startActivity(OnboardingActivity.getPairOnlyIntent(context));
+        }
+    }
+
     public enum AdapterState {
         NONE,
         PLAYER,
         FIRMWARE_UPDATE,
         SOUNDS_DOWNLOAD,
         ERROR,
-        OFFLINE
+        OFFLINE,
+        SENSE_NOT_PAIRED
     }
 
     //endregion

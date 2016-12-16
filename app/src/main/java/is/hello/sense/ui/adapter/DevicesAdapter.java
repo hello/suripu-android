@@ -20,7 +20,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.model.BaseDevice;
 import is.hello.sense.api.model.Devices;
@@ -368,7 +367,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 case SENSE: {
                     title.setText(R.string.device_sense);
                     message.setText(R.string.info_no_sense_connected);
-                    actionButton.setText(R.string.action_pair_new_sense);
+                    actionButton.setText(R.string.action_pair_sense);
                     actionButton.setEnabled(true);
                     break;
                 }
@@ -376,7 +375,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 case SENSE_WITH_VOICE: {
                     title.setText(R.string.device_hardware_version_sense_with_voice);
                     message.setText(R.string.info_no_sense_connected);
-                    actionButton.setText(R.string.action_pair_new_sense);
+                    actionButton.setText(R.string.action_pair_sense);
                     actionButton.setEnabled(true);
                     break;
                 }
