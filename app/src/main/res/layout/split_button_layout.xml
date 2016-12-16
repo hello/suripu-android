@@ -15,15 +15,17 @@
         android:layout_alignParentTop="true"/>
 
     <LinearLayout
+        android:id="@+id/split_button_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/top_divider_horizontal"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/button_left"
             style="@style/Body"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="@dimen/x7"
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/action_close"
@@ -34,7 +36,7 @@
             android:id="@+id/button_right"
             style="@style/Body.Link"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="@dimen/x7"
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/action_ok"
@@ -48,9 +50,8 @@
         android:id="@+id/center_divider_vertical"
         style="@style/Divider.Vertical"
         android:layout_width="@dimen/divider_size"
-        android:layout_height="match_parent"
+        android:layout_height="@dimen/x7"
         android:layout_below="@id/top_divider_horizontal"
-        android:layout_centerInParent="true"
-        android:layout_margin="@dimen/x1"/>
+        android:layout_centerInParent="true"/>
 
 </RelativeLayout>

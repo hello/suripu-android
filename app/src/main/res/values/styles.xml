@@ -559,33 +559,7 @@
 
     <!-- AppCompat Themes
     (mainly for use with https://developer.android.com/topic/libraries/support-library/features.html#design) -->
-    <style name="AppTheme.AppCompat" parent="@style/Theme.AppCompat.Light">
-        <!-- The primary branding color for the app. By default, this is the color applied to the
-   action bar background. -->
-        <item name="colorPrimary">@color/primary</item>
-        <!-- Dark variant of the primary branding color. By default, this is the color applied to
-         the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
-        <item name="colorPrimaryDark">@color/primary</item>
-        <!-- Bright complement to the primary branding color. By default, this is the color applied
-         to framework controls (via colorControlActivated). -->
-        <item name="colorAccent">@color/light_accent</item>
-        <!-- The color applied to framework controls in their normal state. -->
-        <item name="colorControlNormal">@color/primary</item>
-        <!-- The color applied to framework controls in their activated (ex. checked) state. -->
-        <item name="colorControlActivated">@color/primary</item>
-        <!-- The color applied to framework control highlights (ex. ripples, list selectors). -->
-        <item name="colorControlHighlight">@color/primary</item>
-        <!-- The color applied to framework buttons in their normal state. -->
-        <item name="colorButtonNormal">@color/primary</item>
-        <!-- The color applied to framework switch thumbs in their normal state. -->
-        <item name="colorSwitchThumbNormal">@color/primary</item>
-        <!-- Inactive track color(75% transparency) -->
-        <item name="android:windowBackground">@color/background</item>
-        <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
-        <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading.New</item>
-        <item name="senseTextAppearanceSubheading">@style/AppTheme.Text.Body.MidSized.Dim</item>
-        <item name="senseTextAppearanceFieldLabel">@style/AppTheme.Text.Body.Small.New</item>
-    </style>
+    <style name="AppTheme.AppCompat"/>
 
     <style name="AppTheme.AppCompat.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- The primary branding color for the app. By default, this is the color applied to the
