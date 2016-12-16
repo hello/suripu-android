@@ -582,6 +582,9 @@
         <!-- Inactive track color(75% transparency) -->
         <item name="android:windowBackground">@color/background</item>
         <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
+        <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading.New</item>
+        <item name="senseTextAppearanceSubheading">@style/AppTheme.Text.Body.MidSized.Dim</item>
+        <item name="senseTextAppearanceFieldLabel">@style/AppTheme.Text.Body.Small.New</item>
     </style>
 
     <style name="AppTheme.AppCompat.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
@@ -607,6 +610,9 @@
         <!-- Inactive track color(75% transparency) -->
         <item name="android:windowBackground">@color/background</item>
         <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
+        <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading.New</item>
+        <item name="senseTextAppearanceSubheading">@style/AppTheme.Text.Body.MidSized.Dim</item>
+        <item name="senseTextAppearanceFieldLabel">@style/AppTheme.Text.Body.Small.New</item>
     </style>
 
     <style name="AppTheme.AppCompat.ProgressBar" parent="Widget.AppCompat.ProgressBar">

@@ -43,14 +43,14 @@
 
     </LinearLayout>
 
+
     <View
         android:id="@+id/center_divider_vertical"
-        android:layout_width="1dp"
+        style="@style/Divider.Vertical"
+        android:layout_width="@dimen/divider_size"
         android:layout_height="match_parent"
         android:layout_below="@id/top_divider_horizontal"
         android:layout_centerInParent="true"
-        android:layout_margin="@dimen/x1"
-        android:background="@color/border"/>
-
+        android:layout_margin="@dimen/x1"/>
 
 </RelativeLayout>
