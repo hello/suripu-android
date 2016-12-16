@@ -48,6 +48,18 @@ public class VoiceSettingsActivity extends ScopedInjectionActivity
     }
 
     @Override
+    protected void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        navigationDelegate.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.navigationDelegate.onDestroy();
+    }
+
+    @Override
     public final void pushFragment(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
         navigationDelegate.pushFragment(fragment, title, wantsBackStackEntry);
     }
