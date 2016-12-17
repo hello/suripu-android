@@ -41,6 +41,12 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
     //region Binding
 
     @Override
+    public void add(final Item item, final int position){
+        super.add(item, position);
+        item.bind(this, position);
+    }
+
+    @Override
     public boolean add(Item item) {
         if (super.add(item)) {
             item.bind(this, getItemCount() - 1);
@@ -51,17 +57,9 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
     }
 
     @Override
-    public int getItemViewType(int position) {
+    public int getItemViewType(final int position) {
         final Item item = getItem(position);
-        if (item instanceof DetailItem) {
-            return DetailItem.ID;
-        } else if (item instanceof ToggleItem) {
-            return ToggleItem.ID;
-        } else if (item instanceof TextItem){
-            return TextItem.ID;
-        } else{
-            return Item.ID;
-        }
+        return item.getId();
     }
 
     @Override
@@ -74,6 +72,10 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
             case ToggleItem.ID: {
                 final View view = inflater.inflate(R.layout.item_settings_toggle, parent, false);
                 return new ToggleViewHolder(view);
+            }
+            case CheckBoxItem.ID: {
+                final View view = inflater.inflate(R.layout.item_settings_checkbox, parent, false);
+                return new TextViewHolder(view);
             }
             case TextItem.ID: {
                 final View view = inflater.inflate(R.layout.item_settings_text, parent, false);
@@ -128,14 +130,14 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
     class TextViewHolder extends ViewHolder<TextItem> {
         final TextView text;
 
-        TextViewHolder(@NonNull View itemView) {
+        TextViewHolder(@NonNull final View itemView) {
             super(itemView);
 
             this.text = (TextView) itemView.findViewById(R.id.item_text);
         }
 
         @Override
-        void bind(@NonNull TextItem item) {
+        void bind(@NonNull final TextItem item) {
             text.setText(item.text);
         }
     }
@@ -238,6 +240,10 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
                 adapter.notifyItemChanged(position);
             }
         }
+
+        public int getId() {
+            return ID;
+        }
     }
 
     public static class TextItem<T> extends Item<T>{
@@ -254,6 +260,11 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         public void setText(String text) {
             this.text = text;
             notifyChanged();
+        }
+
+        @Override
+        public int getId() {
+            return ID;
         }
     }
 
@@ -279,6 +290,11 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
             this.icon = icon;
             this.iconContentDescription = iconContentDescription;
         }
+
+        @Override
+        public int getId() {
+            return ID;
+        }
     }
 
     public static class ToggleItem extends TextItem<Boolean> {
@@ -289,6 +305,23 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
 
             setValue(false);
         }
+
+        @Override
+        public int getId() {
+            return ID;
+        }
+    }
+
+    public static class CheckBoxItem<T> extends TextItem<T> {
+        static final int ID = 4;
+
+        public CheckBoxItem(@NonNull final String text,
+                            @Nullable final Runnable onClick) {
+            super(text, onClick);
+        }
+
+        @Override
+        public int getId() { return ID; }
     }
 
     //endregion

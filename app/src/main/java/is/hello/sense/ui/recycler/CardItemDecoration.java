@@ -14,18 +14,22 @@ public final class CardItemDecoration extends RecyclerView.ItemDecoration {
     private final int outerVertical;
     private final int inter;
 
-    public @Nullable Rect contentInset;
+    @Nullable
+    public Rect contentInset;
 
-    public CardItemDecoration(@NonNull Resources resources) {
-        this.outerHorizontal = resources.getDimensionPixelSize(R.dimen.gap_card_horizontal);
-        this.outerVertical = resources.getDimensionPixelSize(R.dimen.gap_card_vertical);
-        this.inter = resources.getDimensionPixelSize(R.dimen.gap_card_inter);
+    public CardItemDecoration(@NonNull final Resources resources) {
+        this.outerHorizontal = resources.getDimensionPixelSize(R.dimen.x1);
+        this.outerVertical = resources.getDimensionPixelSize(R.dimen.x1);
+        this.inter = resources.getDimensionPixelSize(R.dimen.x1);
     }
 
     @Override
-    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-        int lastPosition = (parent.getAdapter().getItemCount() - 1);
-        int position = parent.getChildAdapterPosition(view);
+    public void getItemOffsets(final Rect outRect,
+                               final View view,
+                               final RecyclerView parent,
+                               final RecyclerView.State state) {
+        final int lastPosition = (parent.getAdapter().getItemCount() - 1);
+        final int position = parent.getChildAdapterPosition(view);
 
         if (position == 0) {
             outRect.top = outerVertical;

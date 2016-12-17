@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="is.hello.sense"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+    package="is.hello.sense"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -27,7 +28,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="false"
-        android:theme="@style/AppTheme">>
+        android:theme="@style/AppTheme">
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -59,12 +60,18 @@
             android:name=".flows.home.ui.activities.HomeActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.SHOW_ALARMS"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".flows.timeline.ui.activities.TimelineActivity"
+            android:label="@string/action_timeline"
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name=".ui.activities.OnboardingActivity"
@@ -122,8 +129,12 @@
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
 
         <activity
-            android:name=".ui.activities.HardwareFragmentActivity"
+            android:name=".flows.settings.ui.activities.AppSettingsActivity"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+
+        <activity
+            android:name=".ui.activities.HardwareFragmentActivity"
+            android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"/>
 
         <activity
             android:name=".ui.activities.ListActivity"

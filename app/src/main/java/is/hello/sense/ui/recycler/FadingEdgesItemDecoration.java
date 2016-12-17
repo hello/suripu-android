@@ -48,13 +48,16 @@ public class FadingEdgesItemDecoration extends PaddingItemDecoration {
 
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
+        if(parent == null || parent.getAdapter() == null){
+            return;
+        }
         final int itemCount = parent.getAdapter().getItemCount();
         if (itemCount > 0 && layoutManager.canScrollVertically()) {
             final boolean wantsTopEdge = edges.contains(ScrollEdge.TOP);
             final boolean wantsBottomEdge = edges.contains(ScrollEdge.BOTTOM);
             final int width = c.getWidth();
-
-            if (wantsTopEdge && layoutManager.findFirstCompletelyVisibleItemPosition() != 0) {
+            if (wantsTopEdge
+                    && parent.computeVerticalScrollOffset() > 0) {
                 topEdge.setBounds(insets.left, insets.top,
                                   width - insets.right,
                                   insets.top + topEdge.getIntrinsicHeight());

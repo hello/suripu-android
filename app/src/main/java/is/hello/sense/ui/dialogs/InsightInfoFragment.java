@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -38,8 +39,8 @@ import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.api.model.v2.ShareUrl;
-import is.hello.sense.interactors.InsightInfoInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.interactors.InsightInfoInteractor;
 import is.hello.sense.ui.common.AnimatedInjectionFragment;
 import is.hello.sense.ui.widget.ExtendedScrollView;
 import is.hello.sense.ui.widget.ParallaxImageView;
@@ -83,6 +84,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     private CharSequence summary;
     private String insightId = null;
     private String category = null;
+    private ProgressBar progress;
 
     @UsedInTransition
     private View rootView;
@@ -164,7 +166,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         this.rootView = inflater.inflate(R.layout.fragment_insight_info, container, false);
         this.fillView = rootView.findViewById(R.id.fragment_insight_info_fill);
-
+        this.progress = (ProgressBar) rootView.findViewById(R.id.fragment_insight_info_progress);
         this.illustrationImage =
                 (ParallaxImageView) rootView.findViewById(R.id.fragment_insight_info_illustration);
         illustrationImage.setPicassoListener(this);
@@ -263,6 +265,13 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
 //region Animation
 
+    private void setContentViewAlpha(final float alpha){
+        for (final View contentView : contentViews) {
+            contentView.setVisibility(View.VISIBLE);
+            contentView.setAlpha(alpha);
+        }
+    }
+
     @Override
     protected Animator onProvideEnterAnimator() {
         final AnimatorSet scene = new AnimatorSet();
@@ -298,17 +307,13 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             final Window window = getActivity().getWindow();
             Windows.setStatusBarColor(window, getTargetStatusBarColor());
         }
-
-        for (final View contentView : contentViews) {
-            contentView.setVisibility(View.VISIBLE);
-            contentView.setAlpha(1f);
-        }
-
+        setContentViewAlpha(1f);
         scrollView.setOnScrollListener(this);
     }
 
     @Override
     protected void onEnterAnimatorEnd() {
+        setContentViewAlpha(1f);
         scrollView.setOnScrollListener(this);
     }
 
@@ -376,19 +381,11 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         subscene.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(final Animator animation) {
-                for (final View contentView : contentViews) {
-                    contentView.setVisibility(View.VISIBLE);
-                    contentView.setAlpha(0f);
-                }
+                InsightInfoFragment.this.setContentViewAlpha(0f);
             }
         });
 
-        final Animator[] animators = new Animator[contentViews.length];
-        for (int i = 0, length = contentViews.length; i < length; i++) {
-            final View contentView = contentViews[i];
-            contentView.setAlpha(0f);
-            animators[i] = animatorFor(contentView).alpha(1f);
-        }
+        final Animator[] animators = createContentViewAnimators(0f, 1f);
         subscene.playTogether(animators);
         return subscene;
     }
@@ -399,6 +396,16 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
                         insightCardRect.right, insightCardRect.bottom);
 
         return Views.createFrameAnimator(fillView, insightCardRect, fillRect);
+    }
+
+    private Animator[] createContentViewAnimators(final float startAlpha, final float endAlpha){
+        final Animator[] animators = new Animator[contentViews.length];
+        for (int i = 0, length = contentViews.length; i < length; i++) {
+            final View contentView = contentViews[i];
+            contentView.setAlpha(startAlpha);
+            animators[i] = animatorFor(contentView).alpha(endAlpha);
+        }
+        return animators;
     }
 
     private Animator createStatusBarEnter() {
@@ -457,10 +464,11 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     private Animator createContentExit() {
         final AnimatorSet subscene = new AnimatorSet();
 
-        final Animator[] animators = new Animator[contentViews.length];
-        for (int i = 0, length = contentViews.length; i < length; i++) {
+        final Animator[] animators = createContentViewAnimators(1f, 0f);
+
+        /*for (int i = 0, length = contentViews.length; i < length; i++) {
             animators[i] = animatorFor(contentViews[i]).alpha(0f);
-        }
+        }*/
 
         subscene.playTogether(animators);
         return subscene;
@@ -534,13 +542,18 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 //region Data Bindings
 
     public void bindInsightInfo(@NonNull final InsightInfo info) {
+        progress.setVisibility(View.GONE);
         titleText.setText(info.getTitle());
         messageText.setText(info.getText());
         category = info.getCategory();
+        this.titleText.setVisibility(View.VISIBLE);
+        this.messageText.setVisibility(View.VISIBLE);
     }
 
     public void insightInfoUnavailable(final Throwable e) {
+        progress.setVisibility(View.GONE);
         final StringRef errorMessage = Errors.getDisplayMessage(e);
+        messageText.setVisibility(View.VISIBLE);
         if (errorMessage != null) {
             messageText.setText(errorMessage.resolve(getActivity()));
         } else {

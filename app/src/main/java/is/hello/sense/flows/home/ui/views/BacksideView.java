@@ -15,13 +15,10 @@ import android.widget.ToggleButton;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.home.ui.fragments.BacksideTabFragment;
 import is.hello.sense.flows.home.ui.fragments.HomeFragment;
-import is.hello.sense.flows.home.ui.fragments.InsightsFragment;
-import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
+import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
-import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.widget.ExtendedViewPager;
@@ -29,7 +26,6 @@ import is.hello.sense.ui.widget.SelectorView;
 
 public class BacksideView extends PresenterView {
     public static final int ITEM_ROOM_CONDITIONS = 0;
-    public static final int ITEM_TRENDS = 1;
     public static final int ITEM_INSIGHTS = 2;
     public static final int ITEM_SOUNDS = 3;
     public static final int ITEM_APP_SETTINGS = 4;
@@ -54,26 +50,20 @@ public class BacksideView extends PresenterView {
         tabSelector.setButtonLayoutParams(new SelectorView.LayoutParams(0, SelectorView.LayoutParams.MATCH_PARENT, 1));
 
         this.adapter = new StaticFragmentAdapter(fragmentManager,
-                                                 new StaticFragmentAdapter.Item(RoomConditionsFragment.class, getString(R.string.title_current_conditions)),
-                                                 new StaticFragmentAdapter.Item(TrendsFragment.class, getString(R.string.title_trends)),
+                                                 new StaticFragmentAdapter.Item(RoomConditionsPresenterFragment.class, getString(R.string.title_current_conditions)),
                                                  new StaticFragmentAdapter.Item(HomeFragment.class, getString(R.string.action_insights)),
-                                                 new StaticFragmentAdapter.Item(SoundsFragment.class, getString(R.string.action_alarm)),
-                                                 new StaticFragmentAdapter.Item(AppSettingsFragment.class, getString(R.string.action_settings)));
+                                                 new StaticFragmentAdapter.Item(SoundsFragment.class, getString(R.string.action_alarm)));
         pager.setAdapter(adapter);
 
         final @DrawableRes int[] inactiveIcons = {
-                R.drawable.backside_icon_currently,
-                R.drawable.backside_icon_trends,
-                R.drawable.backside_icon_insights,
-                R.drawable.backside_icon_sounds,
-                R.drawable.backside_icon_settings,
+                R.drawable.icon_sense_24,
+                R.drawable.icon_insight_24,
+                R.drawable.icon_sound_24
         };
         final @DrawableRes int[] activeIcons = {
-                R.drawable.backside_icon_currently_active,
-                R.drawable.backside_icon_trends_active,
-                R.drawable.backside_icon_insights_active,
-                R.drawable.backside_icon_sounds_active,
-                R.drawable.backside_icon_settings_active,
+                R.drawable.icon_sense_active_24,
+                R.drawable.icon_insight_active_24,
+                R.drawable.icon_sound_active_24
         };
         for (int i = 0, count = adapter.getCount(); i < count; i++) {
             final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(i),
@@ -159,20 +149,6 @@ public class BacksideView extends PresenterView {
 
         final ToggleButton button = tabSelector.getButtonAt(ITEM_INSIGHTS);
         final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(ITEM_INSIGHTS),
-                                                               iconRes);
-        button.setTextOff(inactiveContent);
-        if (!button.isChecked()) {
-            button.setText(inactiveContent);
-        }
-    }
-
-    public final void setHasUnreadAccountItems(final boolean hasUnreadAccountItems) {
-        final @DrawableRes int iconRes = hasUnreadAccountItems
-                ? R.drawable.backside_icon_settings_unread
-                : R.drawable.backside_icon_settings;
-
-        final ToggleButton button = tabSelector.getButtonAt(ITEM_APP_SETTINGS);
-        final SpannableString inactiveContent = createIconSpan(adapter.getPageTitle(ITEM_APP_SETTINGS),
                                                                iconRes);
         button.setTextOff(inactiveContent);
         if (!button.isChecked()) {

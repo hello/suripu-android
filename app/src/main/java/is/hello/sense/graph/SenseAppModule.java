@@ -21,10 +21,13 @@ import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.home.ui.fragments.BacksideFragment;
 import is.hello.sense.flows.home.ui.fragments.HomeFragment;
 import is.hello.sense.flows.home.ui.fragments.InsightsFragment;
-import is.hello.sense.flows.home.ui.fragments.RoomConditionsFragment;
+import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
+import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
+import is.hello.sense.flows.settings.ui.activities.AppSettingsActivity;
+import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
@@ -42,6 +45,9 @@ import is.hello.sense.interactors.TrendsInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
+import is.hello.sense.mvp.presenters.HomePresenterFragment;
+import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
+import is.hello.sense.mvp.presenters.TrendsPresenterFragment;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.pill.PillModule;
@@ -106,6 +112,7 @@ import is.hello.sense.zendesk.ZendeskModule;
                 SenseDetailsFragment.class,
                 PillDetailsFragment.class,
 
+                TimelinePagerFragment.class,
                 TimelineFragment.class,
                 TimelineInteractor.class,
                 TimelineInfoFragment.class,
@@ -135,15 +142,24 @@ import is.hello.sense.zendesk.ZendeskModule;
                 OnboardingSenseColorsFragment.class,
                 OnboardingPairPill.class,
                 BacksideFragment.class,
-                RoomConditionsFragment.class,
+                RoomConditionsPresenterFragment.class,
                 TrendsFragment.class,
                 InsightsFragment.class,
                 SoundsFragment.class,
                 HomeFragment.class,
                 VoiceFragment.class,
                 AppSettingsFragment.class,
+                SoundsPresenterFragment.class,
+                HomePresenterFragment.class,
+                is.hello.sense.flows.home.ui.fragments.SmartAlarmListFragment.class,
+                is.hello.sense.flows.home.ui.fragments.SleepSoundsFragment.class,
+                is.hello.sense.flows.home.ui.fragments.WeekTrendsFragment.class,
+                is.hello.sense.flows.home.ui.fragments.MonthTrendsFragment.class,
+                is.hello.sense.flows.home.ui.fragments.QuarterTrendsFragment.class,
+                TrendsPresenterFragment.class,
 
-
+                VoiceSettingsInteractor.class,
+                AppSettingsActivity.class
         }
 )
 @SuppressWarnings("UnusedDeclaration")
@@ -181,7 +197,7 @@ public class SenseAppModule {
 
     @Provides
     @Singleton
-    public AlertsInteractor providesAlertsInteractor(@NonNull final ApiService apiService){
+    public AlertsInteractor providesAlertsInteractor(@NonNull final ApiService apiService) {
         return new AlertsInteractor(apiService);
     }
 

@@ -15,8 +15,10 @@ import is.hello.sense.ui.widget.SelectorView.OnSelectionChangedListener;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-
-public class SoundsFragment extends BacksideTabFragment<SoundsView> implements OnSelectionChangedListener, SwipeRefreshLayout.OnRefreshListener {
+@Deprecated
+public class SoundsFragment extends BacksideTabFragment<SoundsView>
+        implements OnSelectionChangedListener,
+        SwipeRefreshLayout.OnRefreshListener {
 
     @Inject
     PreferencesInteractor preferencesInteractor;
@@ -78,8 +80,8 @@ public class SoundsFragment extends BacksideTabFragment<SoundsView> implements O
 
         sleepSoundsSubscription.unsubscribe();
         sleepSoundsSubscription =
-                bind(sleepSoundsInteractor.showSleepSoundsTab()).subscribe(this::bind,
-                                                                           this::presentError);
+                bind(sleepSoundsInteractor.hasSensePaired()).subscribe(this::bind,
+                                                                       this::presentError);
     }
 
     @Override

@@ -2,6 +2,7 @@ package is.hello.sense.ui.activities;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
@@ -119,6 +120,13 @@ public class OnboardingActivity extends ScopedInjectionActivity
     private
     @Nullable
     Account account;
+
+    public static Intent getPairOnlyIntent(@NonNull final Context context) {
+        final Intent intent = new Intent(context, OnboardingActivity.class);
+        intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
+        intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
+        return intent;
+    }
 
     @Override
     protected List<Object> getModules() {

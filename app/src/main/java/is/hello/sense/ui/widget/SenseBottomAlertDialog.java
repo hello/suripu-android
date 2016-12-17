@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.Logger;
 
 /**
  * Instance persists across fragments. Will not be dismissed until clicked.
@@ -34,21 +35,30 @@ public class SenseBottomAlertDialog extends Dialog {
     private final Button neutralButton;
     private final Button positiveButton;
 
-    public SenseBottomAlertDialog(@NonNull Context context) {
+    public SenseBottomAlertDialog(@NonNull final Context context) {
         this(context,R.style.AppTheme_Dialog_BottomAlert);
     }
 
-    public SenseBottomAlertDialog(@NonNull Context context, final int style){
+    public SenseBottomAlertDialog(@NonNull final Context context, final int style){
         super(context, style);
 
         setContentView(R.layout.dialog_bottom_alert);
         setCancelable(true);
 
-        Window window = getWindow();
-        window.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
-        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        window.addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
-                                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+        final Window window = getWindow();
+        if (window != null) {
+            final WindowManager.LayoutParams attributes;
+            attributes = window.getAttributes();
+            window.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
+            attributes.y = context.getResources().getDimensionPixelSize(R.dimen.x9);
+            window.setAttributes(attributes);
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            window.addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
+                                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+        } else {
+            Logger.error(getClass().getSimpleName(), "window attributes not set");
+        }
+
 
         this.container = (LinearLayout) findViewById(R.id.item_bottom_alert);
 
@@ -70,7 +80,7 @@ public class SenseBottomAlertDialog extends Dialog {
 
                  final Resources resources = getContext().getResources();
 
-                 final int padding = resources.getDimensionPixelSize(R.dimen.gap_outer);
+                 final int padding = resources.getDimensionPixelSize(R.dimen.x3);
                  final int paddedScreenHeight = metrics.heightPixels - (padding * 2);
                  final int maxDialogHeight = resources.getDimensionPixelSize(R.dimen.dialog_bottom_max_height);
                  final int maxHeight = Math.min(paddedScreenHeight, maxDialogHeight);

@@ -208,7 +208,6 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
                                        null, LoadingDialogFragment.DEFAULTS);
         } else {
             LoadingDialogFragment.close(getFragmentManager());
-            WelcomeDialogFragment.showIfNeeded(getActivity(), R.xml.welcome_dialog_alarm, false);
         }
     }
 

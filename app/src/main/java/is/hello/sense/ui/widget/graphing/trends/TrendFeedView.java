@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 
 import is.hello.go99.animators.AnimatorContext;
-import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.api.model.v2.GraphSection;
 import is.hello.sense.api.model.v2.Trends;
@@ -98,6 +97,19 @@ public class TrendFeedView extends LinearLayout {
 
     }
 
+    public boolean hasTrends() {
+        return trends != null;
+    }
+
+    public void showWelcomeCard(final boolean useWelcomeBack) {
+        if (useWelcomeBack) {
+            this.welcomeCard = TrendFeedViewItem.createWelcomeBackCard(getContext());
+        } else {
+            this.welcomeCard = TrendFeedViewItem.createWelcomeCard(getContext());
+        }
+        addView(welcomeCard);
+    }
+
     private void populate() {
         final List<Graph> graphs = trends.getGraphs();
         if (graphs.isEmpty()) {
@@ -108,7 +120,6 @@ public class TrendFeedView extends LinearLayout {
                     this.welcomeCard = TrendFeedViewItem.createWelcomeBackCard(getContext());
                 }
                 addView(welcomeCard);
-
             }
         } else if (graphs.size() == 1) {
             final Graph graph = graphs.get(0);
@@ -163,35 +174,23 @@ public class TrendFeedView extends LinearLayout {
                 cardViewsIterator.remove();
             }
         }
-        if (getChildCount() > 0) {
-            ((LayoutParams) getChildAt(getChildCount() - 1).getLayoutParams()).bottomMargin = getResources().getDimensionPixelSize(R.dimen.gap_outer_half);
-        }
-    }
-
-    public boolean isAnimating() {
-        if (welcomeCard != null || errorCard != null) {
-            return false;
-        }
-        for (int i = 0; i < getChildCount(); i++) {
-            final View child = getChildAt(i);
-            if (child instanceof TrendFeedViewItem) {
-                if (((TrendFeedViewItem) child).isAnimating()) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     private TrendFeedViewItem createTrendCard(@NonNull final Graph graph) {
         final Context context = getContext();
         switch (graph.getGraphType()) {
             case BAR:
-                return new TrendFeedViewItem(new TrendGraphLayout(context, new BarTrendGraphView(context, graph, animatorContext, animationCallback)));
+                return new TrendFeedViewItem(new TrendGraphLayout(context, new BarTrendGraphView(context, graph, animatorContext, animationCallback)),
+                                             false,
+                                             false);
             case BUBBLES:
-                return new TrendFeedViewItem(new TrendGraphLayout(context, new BubbleTrendGraphView(context, graph, animatorContext, animationCallback)));
+                return new TrendFeedViewItem(new TrendGraphLayout(context, new BubbleTrendGraphView(context, graph, animatorContext, animationCallback)),
+                                             true,
+                                             true);
             case GRID:
-                return new TrendFeedViewItem(new TrendGraphLayout(context, new GridTrendGraphView(context, graph, animatorContext, animationCallback)));
+                return new TrendFeedViewItem(new TrendGraphLayout(context, new GridTrendGraphView(context, graph, animatorContext, animationCallback)),
+                                             true,
+                                             true);
 
             default:
                 throw new IllegalArgumentException("Unknown graph type " + graph.getGraphType());

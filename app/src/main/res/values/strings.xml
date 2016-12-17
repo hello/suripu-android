@@ -13,7 +13,7 @@
     <string name="label_gender">Gender</string>
     <string name="label_height">Height</string>
     <string name="label_weight">Weight</string>
-    <string name="label_dob">Date of Birth</string>
+    <string name="label_birthday">Birthday</string>
 
     <string name="action_log_in">Log in</string>
     <string name="action_set_up_sense">Set up Sense</string>
@@ -198,7 +198,7 @@
     <string name="dialog_message_confirm_delete_alarm">Are you sure you want to delete this alarm?</string>
     <string name="action_rescan">Scan again</string>
     <string name="action_pair_new_pill">Pair New Pill</string>
-    <string name="action_pair_new_sense">Pair New Sense</string>
+    <string name="action_pair_sense">Pair Sense</string>
     <string name="action_select_wifi_network">Edit Wi-Fi</string>
     <string name="title_scanning_for_sense">Looking for Sense</string>
     <string name="title_waiting_for_sense">Waiting for Sense</string>
@@ -436,11 +436,9 @@
     <string name="info_have_sense_ready">You‘ll need Sense and Sleep Pill handy to continue. If you‘re not ready now, you can always come back later.</string>
 
     <string name="tutorial_swipe_timeline">Swipe left or right to navigate between days.</string>
-    <string name="tutorial_zoom_out_timeline">Tap the date to navigate quickly between days.</string>
+    <string name="tutorial_zoom_out_timeline">Tap the calendar icon to navigate quickly between days.</string>
     <string name="tutorial_scrub_sensor_history">Press and hold graphs to see historical data.</string>
     <string name="tutorial_tap_insight_card">Tap on a card to learn more.</string>
-    <string name="tutorial_tap_hamburger">To explore more now, tap the menu icon.</string>
-    <string name="tutorial_tap_name">Verify your name and add a profile photo.</string>
 
     <string name="action_save">Save</string>
     <string name="action_show_alarms">Alarms</string>
@@ -502,8 +500,8 @@
     <string name="title_timeline_not_enough_data_message">If your Sleep Pill is not attached properly, it may not register enough motion data to generate a Timeline. \n\nTap below for instructions on how to clip your Sleep Pill to your pillow.</string>
     <string name="title_timeline_no_data">No sleep data recorded</string>
     <string name="title_timeline_no_data_message">This is normal if you were out of town, or away from your bed. \n\nOtherwise, you may want to check your Sleep Pill’s battery level, and make sure that Sense is connected to the internet.</string>
-    <string name="title_timeline_first_night">See you in the morning</string>
-    <string name="message_timeline_first_night">In the morning, you‘ll see your first Sleep Timeline here. There are no modes to set - Sense will automatically know when you go to bed. All you need to do is sleep.</string>
+    <string name="title_timeline_first_night">Have a good night</string>
+    <string name="message_timeline_first_night">In the morning, you\'ll see your first Sleep Timeline here.\n\nYou don\'t need to do anything to let Sense know that you\'re ready for bed. All you need to do now is sleep.</string>
     <string name="action_timeline_bad_data_support">Learn more</string>
 
     <string name="dialog_title_unsupported_os">Unsupported Device</string>
@@ -676,6 +674,7 @@
     <string name="sensor_about_uv_light"> A sunny day can be enjoyable, but too much sunlight can be dangerous. The sun’s rays give off ultraviolet (UV) radiation, and it’s this radiation that makes overexposure to sunlight damaging to your skin, causing sunburns and putting you at higher risk for skin cancer. Seasonal weather conditions combined with ozone depletion can cause different amounts of UV radiation to reach different regions at different times. The UV Index exists to provide a daily forecast of the severity of UV radiation in your area.</string>
     <string name="sensor_about_light_temp">Light temperatures over 4,500 K are described as cool colors (or blue light) and temperatures between 2,000–3,000 K described as warm colors (or red light). As daylight is a cool color (starting at around 2,000 K during sunrise and sunset and peaking at around 10,000 on a clear blue day), your body uses blue light as a primary signal for your circadian rhythm, suppressing melatonin and keeping you alert during the day. Personal electronics and televisions also generally give off blue light, which means that using these devices before bed can adversely affect your sleep schedule, keeping you awake when you’re trying to get to sleep.</string>
     <string name="air_quality">Air Quality</string>
+    <string name="title_room_conditions">Room Conditions</string>
     <string name="room_conditions_welcome_title">Your current conditions</string>
     <string name="room_conditions_welcome_message">Recent changes to room conditions may take a few moments to be reflected here. Tap a card for more detail.</string>
     <string name="temperature_celsius">C</string>
@@ -729,6 +728,8 @@
     <string name="voice_settings_list_mute">Mute</string>
     <string name="voice_settings_volume">Volume</string>
     <string name="voice_settings_primary_user">Primary User</string>
+    <string name="voice_settings_primary_user_about">Tell Sense whose information to respond with when asked questions like \"What\'s my Sleep Score?\" by setting primary user. Only the primary user will be able to access the Nest Expansion when released.
+</string>
     <string name="voice_settings_title">Voice</string>
     <string name="voice_select_volume">Select volume</string>
     <string name="voice_volume_description">Drag your finger across the volume bars to adjust the volume for Voice.</string>
@@ -774,4 +775,7 @@
     <string name="voice_settings_update_error_message">Sense did not accept the changes.</string>
 
     <string name="sensor_calibrating">Calibrating</string>
+    <string name="action_timeline">Timeline</string>
+    <string name="action_timeline_history">Timeline History</string>
+    <string name="action_unmute">Unmute</string>
 </resources>

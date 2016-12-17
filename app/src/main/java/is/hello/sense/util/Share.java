@@ -185,7 +185,7 @@ public abstract class Share {
             values.put(MediaStore.Images.Media.DESCRIPTION, intent.getStringExtra(Intent.EXTRA_TEXT));
             values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
             final Uri imageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-
+            //todo unsafe usage of Observable.create needs refactoring to use Observable.defer
             final Observable<Void> writeImage = Observable.create(s -> {
                 OutputStream imageOut = null;
                 try {

@@ -374,6 +374,11 @@ public class Analytics {
         String EVENT_VOICE_TUTORIAL = "Onboarding Voice Tutorial";
 
         /**
+         * When user has voice feature and presses skip button
+         */
+        String EVENT_VOICE_TUTORIAL_SKIP = "Onboarding Voice Tutorial Skip";
+
+        /**
          * Status of voice command returned
          */
         String EVENT_VOICE_COMMAND = "Onboarding Voice Command";
@@ -600,7 +605,6 @@ public class Analytics {
             ZOOM_OUT_TIMELINE("zoom out timeline"),
             SCRUB_SENSOR_HISTORY("scrub sensor history"),
             TAP_INSIGHT_CARD("tap insight card"),
-            TAP_HAMBURGER("tap hamburger"),
             TAP_NAME("tap name");
             private final String desc;
             Description(@NonNull final String desc){

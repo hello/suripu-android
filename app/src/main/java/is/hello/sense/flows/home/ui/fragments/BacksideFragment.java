@@ -9,12 +9,10 @@ import android.view.View;
 
 import javax.inject.Inject;
 
+import is.hello.sense.flows.home.ui.views.BacksideView;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
-import is.hello.sense.flows.home.ui.views.BacksideView;
-import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -34,11 +32,6 @@ public class BacksideFragment extends PresenterFragment<BacksideView>
     @Inject
     public UnreadStateInteractor unreadStateInteractor;
 
-    @VisibleForTesting
-    @Inject
-    public AccountInteractor accountInteractor;
-
-
     private boolean suppressNextSwipeEvent = false;
     private int lastState = ViewPager.SCROLL_STATE_IDLE;
 
@@ -54,7 +47,6 @@ public class BacksideFragment extends PresenterFragment<BacksideView>
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.internalPreferences = InternalPrefManager.getInternalPrefs(getActivity());
-        addInteractor(accountInteractor);
         addInteractor(unreadStateInteractor);
         if (savedInstanceState == null) {
             Analytics.trackEvent(Analytics.Backside.EVENT_SHOWN, null);
@@ -68,7 +60,6 @@ public class BacksideFragment extends PresenterFragment<BacksideView>
         if (fragment != null) {
             fragment.onUpdate();
         }
-        accountInteractor.update();
     }
 
     @Override
@@ -89,19 +80,6 @@ public class BacksideFragment extends PresenterFragment<BacksideView>
         bindAndSubscribe(unreadStateInteractor.hasUnreadItems,
                          presenterView::setHasUnreadInsightItems,
                          Functions.LOG_ERROR);
-
-        bindAndSubscribe(accountInteractor.account,
-                         (a) -> {
-                             if (presenterView.isShowingAppSettings()
-                                     && Tutorial.TAP_NAME.shouldShow(getActivity())
-                                     && a.getCreated().isBefore(Constants.RELEASE_DATE_FOR_LAST_NAME)) {
-                                 presenterView.setHasUnreadAccountItems(true);
-                             } else {
-                                 presenterView.setHasUnreadAccountItems(false);
-                             }
-                         },
-                         Functions.LOG_ERROR);
-        accountInteractor.update();
     }
 
     public final boolean onBackPressed() {

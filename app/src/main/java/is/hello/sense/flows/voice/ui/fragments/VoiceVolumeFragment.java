@@ -82,7 +82,6 @@ implements OnBackPressedInterceptor{
         if (e instanceof VoiceSettingsInteractor.SettingsUpdateThrowable) {
             final ErrorDialogFragment.PresenterBuilder builder = new ErrorDialogFragment.PresenterBuilder(e);
             builder.withTitle(StringRef.from(R.string.voice_settings_update_error_title));
-            builder.withMessage(StringRef.from(R.string.voice_settings_update_error_message));
             showErrorDialog(builder);
         } else {
             showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e));

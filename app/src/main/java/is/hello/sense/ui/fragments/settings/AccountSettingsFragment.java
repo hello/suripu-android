@@ -20,8 +20,6 @@ import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
 
-import org.joda.time.LocalDate;
-
 import java.util.EnumSet;
 
 import javax.inject.Inject;
@@ -49,14 +47,11 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterWeightFragment;
-import is.hello.sense.ui.handholding.Tutorial;
-import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import retrofit.mime.TypedFile;
 
@@ -140,8 +135,8 @@ public class AccountSettingsFragment extends InjectionFragment
 
         final AccountSettingsRecyclerAdapter adapter = new AccountSettingsRecyclerAdapter(getActivity(), picasso);
 
-        final int verticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
-        final int sectionPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
+        final int verticalPadding = resources.getDimensionPixelSize(R.dimen.x2);
+        final int sectionPadding = resources.getDimensionPixelSize(R.dimen.x4);
         final InsetItemDecoration decoration = new InsetItemDecoration();
         recyclerView.addItemDecoration(decoration);
 
@@ -161,8 +156,10 @@ public class AccountSettingsFragment extends InjectionFragment
                                                        this::changePassword);
         passwordItem.setIcon(R.drawable.icon_settings_lock, R.string.label_password);
         adapter.add(passwordItem);
-        birthdayItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_dob), this::changeBirthDate);
-        birthdayItem.setIcon(R.drawable.icon_settings_calendar, R.string.label_dob);
+
+        birthdayItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_birthday), this::changeBirthDate);
+        birthdayItem.setIcon(R.drawable.icon_settings_calendar, R.string.label_birthday);
+
         adapter.add(birthdayItem);
         this.genderItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_gender),
                                                                  this::changeGender);
@@ -184,7 +181,7 @@ public class AccountSettingsFragment extends InjectionFragment
                                                                         this::changeEnhancedAudio);
         adapter.add(enhancedAudioItem);
 
-        adapter.add(new SettingsRecyclerAdapter.TextItem(getString(R.string.info_enhanced_audio), null));
+        adapter.add(new SettingsRecyclerAdapter.CheckBoxItem<>(getString(R.string.info_enhanced_audio), null));
 
         decoration.addItemInset(adapter.getItemCount(), new Rect(0, sectionPadding, 0, verticalPadding));
         final SettingsRecyclerAdapter.DetailItem signOutItem =
@@ -315,9 +312,6 @@ public class AccountSettingsFragment extends InjectionFragment
         this.currentAccount = account;
 
         hideLoadingIndicator();
-
-        showTutorialHelperIfNeeded(account.getCreated());
-
     }
 
     public void accountUnavailable(final Throwable e) {
@@ -330,15 +324,6 @@ public class AccountSettingsFragment extends InjectionFragment
     public void bindAccountPreferences(@NonNull final Account.Preferences preferences) {
         this.accountPreferences = preferences;
         enhancedAudioItem.setValue(preferences.enhancedAudioEnabled);
-    }
-
-    private void showTutorialHelperIfNeeded(@NonNull final LocalDate createdAt) {
-        if (Tutorial.TAP_NAME.shouldShow(getActivity()) && createdAt.isBefore(Constants.RELEASE_DATE_FOR_LAST_NAME)) {
-            final TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.TAP_NAME);
-            overlayView.setAnchorContainer(getView());
-            getAnimatorContext().runWhenIdle(() -> overlayView.postShow(R.id.static_recycler_container)
-                                            );
-        }
     }
 
     //endregion
@@ -377,7 +362,7 @@ public class AccountSettingsFragment extends InjectionFragment
         final OnboardingRegisterBirthdayFragment fragment = new OnboardingRegisterBirthdayFragment();
         AccountEditor.setWantsSkipButton(fragment, false);
         fragment.setTargetFragment(this, 0x00);
-        getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_dob), true);
+        getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_birthday), true);
     }
 
     public void changeGender() {

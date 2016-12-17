@@ -3,46 +3,45 @@ package is.hello.sense.flows.home.ui.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
-import android.widget.ToggleButton;
 
-import com.segment.analytics.Properties;
 
-import java.util.List;
+import org.joda.time.LocalDate;
 
 import javax.inject.Inject;
 
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.api.model.v2.Trends.TimeScale;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.views.TrendsView;
-import is.hello.sense.interactors.ScopedValueInteractor.BindResult;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TrendsInteractor;
-import is.hello.sense.ui.widget.SelectorView;
+import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.util.ViewPagerPresenterChild;
+import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
 import is.hello.sense.ui.widget.graphing.trends.TrendFeedViewItem;
 import is.hello.sense.ui.widget.graphing.trends.TrendGraphView;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.DateFormatter;
 
-//todo this class and its view need to be rethought.
-public class TrendsFragment extends BacksideTabFragment<TrendsView> implements
+public abstract class TrendsFragment extends PresenterFragment<TrendsView>
+        implements
         TrendFeedViewItem.OnRetry,
-        SelectorView.OnSelectionChangedListener,
-        TrendGraphView.AnimationCallback {
+        TrendGraphView.AnimationCallback,
+        ViewPagerPresenterChild,
+        HomeActivity.ScrollUp {
 
     @Inject
     TrendsInteractor trendsInteractor;
+    @Inject
+    PreferencesInteractor preferencesInteractor;
+    private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
 
-
+    //region PresenterFragment
     @Override
     public final void initializePresenterView() {
         if (presenterView == null) {
-            presenterView= new TrendsView(getActivity(), getAnimatorContext());
-        }
-    }
-
-    @Override
-    public final void setUserVisibleHint(final boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
+            presenterView = new TrendsView(getActivity(), getAnimatorContext());
+            presenterChildDelegate.onViewInitialized();
         }
     }
 
@@ -56,65 +55,55 @@ public class TrendsFragment extends BacksideTabFragment<TrendsView> implements
     @Override
     public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        presenterView.setTimeScaleSelectOnSelectionChangedListener(this);
-        presenterView.setSwipeRefreshLayoutRefreshListener(this::fetchTrends);
         presenterView.setTrendFeedViewAnimationCallback(this);
+        showLoadingState();
         bindAndSubscribe(trendsInteractor.trends, this::bindTrends, this::presentError);
-        presenterView.setTimeScaleButton(trendsInteractor.getTimeScale());
+    }
+
+
+    @Override
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
+        presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
     }
 
     @Override
-    public final void onSwipeInteractionDidFinish() {
+    public void onResume() {
+        super.onResume();
+        presenterChildDelegate.onResume();
+        fetchTrends();
     }
 
     @Override
-    public final void onUpdate() {
-        if (trendsInteractor.bindScope(getScope()) == BindResult.WAITING_FOR_VALUE) {
-            fetchTrends();
-        }
+    public void onPause() {
+        super.onPause();
+        presenterChildDelegate.onPause();
     }
 
-    public final void bindTrends(@NonNull final Trends trends) {
-        presenterView.updateTrends(trends);
-        final List<TimeScale> availableTimeScales = trends.getAvailableTimeScales();
-        if (availableTimeScales.size() > 1) {
-            if (availableTimeScales.size() != presenterView.getTimeScaleButtonCount()) {
-                presenterView.removeAllTimeScaleButtons();
-                for (final TimeScale timeScale : availableTimeScales) {
-                    final ToggleButton button = presenterView.addTimeScaleButton(timeScale.titleRes, false);
-                    if (timeScale == trendsInteractor.getTimeScale()) {
-                        presenterView.setSelectedTimeScaleButton(button);
-                        fetchTrends();
-                    }
-                }
-                presenterView.setTimeScaleButtonTags(trends.getAvailableTimeScaleTags());
-            }
-            if (!presenterView.isTimeScaleVisible()) {
-                presenterView.transitionInTimeScaleSelector(stateSafeExecutor);
-            }
-        } else if (presenterView.isTimeScaleVisible()) {
-            presenterView.transitionOutTimeScaleSelector();
-        } else {
-            presenterView.hideTimeScaleSelector();
-        }
-        isFinished();
+    //endregion
+    //region ViewPagerPresenterChild
+    @Override
+    public void onUserVisible() {
     }
 
-    public final void presentError(final Throwable e) {
-        presenterView.showError(this);
+    @Override
+    public void onUserInvisible() {
 
     }
+    //endregion
 
+    //region onRetry
     @Override
     public final void fetchTrends() {
-        presenterView.setRefreshing(true);
+        trendsInteractor.setTimeScale(getTimeScale());
         trendsInteractor.update();
     }
+    //endregion
 
+    /* todo support analytics again
     @Override
     public final void onSelectionChanged(final int newSelectionIndex) {
-        final Trends.TimeScale newTimeScale = presenterView.setSelectionChanged(newSelectionIndex);
-        trendsInteractor.setTimeScale(newTimeScale);
 
         final String eventProperty = newTimeScale == TimeScale.LAST_3_MONTHS ? Analytics.Backside.EVENT_TIMESCALE_QUARTER :
                 (newTimeScale == TimeScale.LAST_MONTH ? Analytics.Backside.EVENT_TIMESCALE_MONTH : Analytics.Backside.EVENT_TIMESCALE_WEEK);
@@ -122,12 +111,39 @@ public class TrendsFragment extends BacksideTabFragment<TrendsView> implements
         properties.put(Analytics.Backside.EVENT_TIMESCALE, eventProperty);
         Analytics.trackEvent(Analytics.Backside.EVENT_CHANGE_TRENDS_TIMESCALE, properties);
 
-    }
-
+    }*/
+    //region AnimationCallback
     @Override
     public final void isFinished() {
-        if(presenterView != null) {
-            presenterView.isFinished();
+    }
+    //endregion
+
+    @Override
+    public void scrollUp() {
+        if (presenterView == null){
+            return;
+        }
+        presenterView.scrollUp();
+    }
+
+    //region methods
+    public void showLoadingState() {
+        if (!presenterView.hasTrends()) {
+            final LocalDate creationDate = preferencesInteractor.getAccountCreationDate();
+            final boolean showWelcomeBack = !DateFormatter.isInLast2Weeks(creationDate) && !DateFormatter.isTodayForTimeline(creationDate);
+            presenterView.showWelcomeCard(showWelcomeBack);
         }
     }
+
+    protected abstract TimeScale getTimeScale();
+
+    public final void bindTrends(@NonNull final Trends trends) {
+        presenterView.updateTrends(trends);
+        isFinished();
+    }
+
+    public final void presentError(final Throwable e) {
+        presenterView.showError(this);
+    }
+    //endregion
 }

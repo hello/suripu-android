@@ -28,16 +28,18 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightType;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.flows.home.ui.views.InsightsView;
 import is.hello.sense.graph.Scope;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.QuestionsInteractor;
 import is.hello.sense.interactors.questions.ReviewQuestionProvider;
-import is.hello.sense.flows.home.ui.views.InsightsView;
 import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.util.ViewPagerPresenterChild;
+import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
 import is.hello.sense.rating.LocalUsageTracker;
-import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.common.UserSupport;
@@ -51,15 +53,17 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
+import is.hello.sense.util.NotTested;
 import is.hello.sense.util.Share;
 import rx.Observable;
 
-
+@NotTested //enough
 public class InsightsFragment extends PresenterFragment<InsightsView> implements
-        SwipeRefreshLayout.OnRefreshListener,
         InsightsAdapter.InteractionListener,
         InsightInfoFragment.Parent,
-        InsightsAdapter.OnRetry {
+        InsightsAdapter.OnRetry,
+        ViewPagerPresenterChild,
+        HomeActivity.ScrollUp {
 
     @Inject
     InsightsInteractor insightsInteractor;
@@ -70,13 +74,15 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     @Inject
     DeviceIssuesInteractor deviceIssuesInteractor;
     @Inject
-    PreferencesInteractor preferences;
+    PreferencesInteractor preferencesInteractor;
     @Inject
     QuestionsInteractor questionsInteractor;
     @Inject
     Picasso picasso;
     @Inject
     ApiService apiService;
+
+    private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
 
 
     @Nullable
@@ -99,30 +105,35 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     public final void initializePresenterView() {
         if (presenterView == null) {
             presenterView = new InsightsView(getActivity(), dateFormatter, picasso, this);
+            this.presenterChildDelegate.onViewInitialized();
         }
     }
 
     @Override
-    public final void setUserVisibleHint(final boolean isVisibleToUser) {
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            Analytics.trackEvent(Analytics.Backside.EVENT_MAIN_VIEW, null);
-            if (presenterView != null) {
-                presenterView.updateWhatsNewState();
-            }
-        }
+        this.presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
+    }
+
+    @Override
+    public void onUserVisible() {
+        Analytics.trackEvent(Analytics.Backside.EVENT_MAIN_VIEW, null);
+        presenterView.updateWhatsNewState();
+        fetchInsights();
+    }
+
+    @Override
+    public void onUserInvisible() {
+
     }
 
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(insightsInteractor);
-        addInteractor(dateFormatter);
-        addInteractor(localUsageTracker);
         addInteractor(deviceIssuesInteractor);
-        addInteractor(preferences);
         addInteractor(questionsInteractor);
-        deviceIssuesInteractor.bindScope((Scope)getActivity());
+        deviceIssuesInteractor.bindScope((Scope) getActivity());
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
@@ -135,8 +146,6 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     @Override
     public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        presenterView.setSwipeRefreshLayoutRefreshListener(this);
-
         // Combining these into a single Observable results in error
         // handling more or less breaking. Keep them separate until
         // we actually merge the endpoints on the backend.
@@ -165,7 +174,14 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     @Override
     public void onResume() {
         super.onResume();
+        this.presenterChildDelegate.onResume();
         update();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        this.presenterChildDelegate.onPause();
     }
 
     @Override
@@ -178,9 +194,6 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
 
 
     public final void update() {
-        if (insightsInteractor.updateIfEmpty()) {
-            presenterView.setRefreshing(true);
-        }
 
         if (!questionsInteractor.hasQuestion()) {
             updateQuestion();
@@ -192,16 +205,14 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
 
     @OnboardingActivity.Flow
     protected int getOnboardingFlow() {
-        final HomeActivity activity = (HomeActivity) getActivity();
-        return activity != null
-                ? activity.getOnboardingFlow()
-                : OnboardingActivity.FLOW_NONE;
+        final Activity activity = getActivity();
+        if (activity instanceof HomeActivity) {
+            return ((HomeActivity) activity).getOnboardingFlow();
+        } else {
+            return OnboardingActivity.FLOW_NONE;
+        }
     }
 
-    @Override
-    public final void onRefresh() {
-        fetchInsights();
-    }
 
     /**
      * Pushes data into the adapter once both questions and insights have loaded.
@@ -225,7 +236,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
             tutorialOverlayView.setAnchorContainer(getView());
             getAnimatorContext().runWhenIdle(() -> {
                 if (tutorialOverlayView != null && getUserVisibleHint()) {
-                    tutorialOverlayView.postShow(R.id.activity_home_container);
+                    tutorialOverlayView.postShow(R.id.activity_new_home_extended_view_pager);
                 }
             });
         }
@@ -303,7 +314,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
         final InsightInfoFragment infoFragment = InsightInfoFragment.newInstance(insight,
                                                                                  getResources());
         infoFragment.show(fragmentManager,
-                          R.id.activity_home_container,
+                          R.id.activity_new_home_container,
                           InsightInfoFragment.TAG);
 
         this.selectedInsightHolder = viewHolder;
@@ -340,20 +351,19 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     //region Questions
 
     public final void updateQuestion() {
-        final Observable<Boolean> stageOne = deviceIssuesInteractor.latest().map(issue -> (issue == DeviceIssuesInteractor.Issue.NONE &&
-                localUsageTracker.isUsageAcceptableForRatingPrompt() &&
-                !preferences.getBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, false)));
+        final Observable<Boolean> stageOne = deviceIssuesInteractor.latest().map(issue -> (
+                issue == DeviceIssuesInteractor.Issue.NONE
+                        && localUsageTracker.isUsageAcceptableForRatingPrompt()
+                        && !preferencesInteractor.getBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, false)));
         stageOne.subscribe(showReview -> {
                                if (showReview) {
-                                   final boolean reviewedOnAmazon = preferences.getBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, false);
-                                    // Amazon review links point to the first version of Sense and thus should not be shown for voice
-                                   if (!reviewedOnAmazon && !preferences.hasVoice()) {
-                                       final String country = Locale.getDefault().getCountry();
-                                       if (country.equalsIgnoreCase(Locale.US.getCountry())) {
+                                   final boolean reviewedOnAmazon = preferencesInteractor.getBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, false);
+                                   if (!reviewedOnAmazon) {
+                                       final Locale country = Locale.getDefault();
+                                       if (country.equals(Locale.US) || country.equals(Locale.UK)) {
                                            questionsInteractor.setSource(QuestionsInteractor.Source.REVIEW_AMAZON);
-                                       } else if (country.equalsIgnoreCase(Locale.UK.getCountry())) {
-                                           questionsInteractor.setSource(QuestionsInteractor.Source.REVIEW_AMAZON_UK);
-                                       } // else, default source is API
+                                       }
+                                       // else, default source is API
                                    } else {
                                        questionsInteractor.setSource(QuestionsInteractor.Source.REVIEW);
                                    }
@@ -368,8 +378,8 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     }
 
     @Override
-    public final void onDismissLoadingIndicator() {
-        presenterView.setRefreshing(false);
+    public void onDismissLoadingIndicator() {
+
     }
 
     @Override
@@ -393,14 +403,22 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
 
     //endregion
 
+    //region scrollup
+    @Override
+    public void scrollUp() {
+        if (presenterView == null) {
+            return;
+        }
+        presenterView.scrollUp();
+    }
+    //endregion
+
     @Override
     public final void fetchInsights() {
         this.insights = Collections.emptyList();
         this.insightsLoaded = false;
         this.currentQuestion = null;
         this.questionLoaded = false;
-
-        presenterView.setRefreshing(true);
         insightsInteractor.update();
         updateQuestion();
     }
@@ -413,25 +431,19 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
             switch (response) {
                 case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW:
                     stateSafeExecutor.execute(() -> UserSupport.showProductPage(getActivity()));
-                    preferences.edit()
-                               .putBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, true)
-                               .apply();
+                    preferencesInteractor.edit()
+                                         .putBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, true)
+                                         .apply();
                     break;
 
                 case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW_AMAZON:
-                    stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity(), "www.amazon.com"));
+                    stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity(),
+                                                                                     Locale.getDefault(),
+                                                                                     preferencesInteractor.hasVoice()));
                     localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
-                    preferences.edit()
-                               .putBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, true)
-                               .apply();
-                    break;
-
-                case ReviewQuestionProvider.RESPONSE_WRITE_REVIEW_AMAZON_UK:
-                    stateSafeExecutor.execute(() -> UserSupport.showAmazonReviewPage(getActivity(), "www.amazon.co.uk"));
-                    localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
-                    preferences.edit()
-                               .putBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, true)
-                               .apply();
+                    preferencesInteractor.edit()
+                                         .putBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, true)
+                                         .apply();
                     break;
 
                 case ReviewQuestionProvider.RESPONSE_SEND_FEEDBACK:
@@ -450,12 +462,11 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
 
                 case ReviewQuestionProvider.RESPONSE_SUPPRESS_PERMANENTLY:
                     localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
-                    preferences.edit()
-                               .putBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, true)
-                               .apply();
+                    preferencesInteractor.edit()
+                                         .putBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, true)
+                                         .apply();
                     break;
             }
         }
     };
-
 }

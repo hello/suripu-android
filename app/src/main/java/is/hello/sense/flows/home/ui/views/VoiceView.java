@@ -11,9 +11,8 @@ import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.adapters.VoiceCommandsAdapter;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
-import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
+import is.hello.sense.ui.recycler.FirstAndLastItemMarginDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
-import is.hello.sense.ui.recycler.LastItemInsetDecoration;
 
 @SuppressLint("ViewConstructor")
 public class VoiceView extends PresenterView {
@@ -31,10 +30,7 @@ public class VoiceView extends PresenterView {
         this.recyclerView.setItemAnimator(null);
         this.recyclerView.setLayoutManager(layoutManager);
         this.recyclerView.addItemDecoration(new DividerItemDecoration(activity));
-        this.recyclerView.addItemDecoration(new LastItemInsetDecoration(activity.getResources()));
-        this.recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager,
-                                                                          resources,
-                                                                          FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
+        this.recyclerView.addItemDecoration(new FirstAndLastItemMarginDecoration(getResources()));
         this.recyclerView.setAdapter(adapter);
 
     }
@@ -56,6 +52,10 @@ public class VoiceView extends PresenterView {
         } else {
             this.recyclerView.removeItemDecoration(insetItemDecorationForWelcome);
         }
+    }
+
+    public void scrollUp() {
+        recyclerView.smoothScrollToPosition(0);
     }
 
 }
