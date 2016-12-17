@@ -1,6 +1,7 @@
 package is.hello.sense.flows.home.ui.fragments;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -52,9 +53,11 @@ public class TimelinePagerFragment extends InjectionFragment
     private final ViewPagerPresenterChildDelegate viewPagerPresenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
 
     private static final String KEY_LAST_UPDATED = TimelinePagerFragment.class.getSimpleName() + "KEY_LAST_UPDATED";
+    private static final String KEY_LAST_ITEM = TimelinePagerFragment.class.getSimpleName() + "KEY_LAST_ITEM";
 
     private static final int ZOOMED_OUT_TIMELINE_REQUEST = 101;
     private ViewPager viewPager;
+    public boolean shouldJumpToLastNightOnUserVisible = false;
     private SenseBar senseBar;
     private TimelineFragmentAdapter viewPagerAdapter;
     private final BroadcastReceiver onTimeChanged = new BroadcastReceiver() {
@@ -98,8 +101,10 @@ public class TimelinePagerFragment extends InjectionFragment
         senseBar.setRightImage(R.drawable.icon_share_24);
         senseBar.setLeftImageOnClickListener(this::onHistoryIconClicked);
         senseBar.setRightImageOnClickListener(this::onShareIconClicked);
-        if (viewPager.getCurrentItem() == 0) {
+        if (savedInstanceState == null) {
             jumpToLastNight(false);
+        } else {
+            viewPager.setCurrentItem(savedInstanceState.getInt(KEY_LAST_ITEM), false);
         }
 
         getActivity().registerReceiver(onTimeChanged, new IntentFilter(Intent.ACTION_TIME_CHANGED));
@@ -119,6 +124,7 @@ public class TimelinePagerFragment extends InjectionFragment
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putLong(KEY_LAST_UPDATED, lastUpdated);
+        outState.putInt(KEY_LAST_ITEM, viewPager == null ? 0 : viewPager.getCurrentItem());
     }
 
     @Override
@@ -151,7 +157,10 @@ public class TimelinePagerFragment extends InjectionFragment
 
     @Override
     public void onUserVisible() {
-        jumpToLastNight(true);
+        if (shouldJumpToLastNightOnUserVisible) {
+            shouldJumpToLastNightOnUserVisible = false;
+            jumpToLastNight(false);
+        }
     }
 
     @Override
@@ -305,11 +314,26 @@ public class TimelinePagerFragment extends InjectionFragment
         senseBar.showRightImage(visible);
     }
 
+    @Override
+    public void jumpToLastNight() {
+        shouldJumpToLastNightOnUserVisible = true;
+    }
+
     //endregion
     //region ScrollUp
     @Override
     public void scrollUp() {
-        jumpToLastNight(true);
+        if (viewPager == null || viewPagerAdapter == null){
+            return;
+        }
+        if (viewPager.getCurrentItem() == viewPagerAdapter.getLastNight()) {
+            final Fragment fragment = viewPagerAdapter.getCurrentFragment();
+            if (fragment instanceof TimelineFragment) {
+                ((TimelineFragment) fragment).scrollUp();
+            }
+        } else {
+            jumpToLastNight(true);
+        }
     }
 
     //endregion
