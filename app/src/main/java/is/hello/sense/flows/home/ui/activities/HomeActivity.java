@@ -117,6 +117,8 @@ public class HomeActivity extends ScopedInjectionActivity
         this.progressOverlay = findViewById(R.id.activity_new_home_progress_overlay);
         this.spinner = (SpinnerImageView) progressOverlay.findViewById(R.id.activity_new_home_spinner);
         this.extendedViewPager = (ExtendedViewPager) findViewById(R.id.activity_new_home_extended_view_pager);
+        this.extendedViewPager.setScrollingEnabled(false);
+        this.extendedViewPager.setFadePageTransformer(true);
         this.tabLayout = (TabLayout) findViewById(R.id.activity_new_home_tab_layout);
         this.tabLayout.setupWithViewPager(this.extendedViewPager);
         extendedViewPager.setAdapter(new StaticFragmentAdapter(getFragmentManager(), getViewPagerItems()));
