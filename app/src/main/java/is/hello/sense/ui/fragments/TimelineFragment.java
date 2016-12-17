@@ -819,6 +819,15 @@ public class TimelineFragment extends InjectionFragment
     }
 
     //endregion
+
+
+    public void scrollUp() {
+        if (recyclerView == null){
+            return;
+        }
+        recyclerView.smoothScrollToPosition(0);
+    }
+
     private class ScrollListener extends RecyclerView.OnScrollListener {
         @Override
         public void onScrollStateChanged(final RecyclerView recyclerView, final int newState) {

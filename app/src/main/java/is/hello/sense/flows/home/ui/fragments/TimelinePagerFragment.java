@@ -1,6 +1,7 @@
 package is.hello.sense.flows.home.ui.fragments;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -321,7 +322,17 @@ public class TimelinePagerFragment extends InjectionFragment
     //region ScrollUp
     @Override
     public void scrollUp() {
-        jumpToLastNight(true);
+        if (viewPager == null || viewPagerAdapter == null){
+            return;
+        }
+        if (viewPager.getCurrentItem() == viewPagerAdapter.getLastNight()) {
+            final Fragment fragment = viewPagerAdapter.getCurrentFragment();
+            if (fragment instanceof TimelineFragment) {
+                ((TimelineFragment) fragment).scrollUp();
+            }
+        } else {
+            jumpToLastNight(true);
+        }
     }
 
     //endregion
