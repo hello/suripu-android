@@ -59,11 +59,11 @@ import rx.Observable;
 
 @NotTested //enough
 public class InsightsFragment extends PresenterFragment<InsightsView> implements
-        SwipeRefreshLayout.OnRefreshListener,
         InsightsAdapter.InteractionListener,
         InsightInfoFragment.Parent,
         InsightsAdapter.OnRetry,
-        ViewPagerPresenterChild {
+        ViewPagerPresenterChild,
+        HomeActivity.ScrollUp {
 
     @Inject
     InsightsInteractor insightsInteractor;
@@ -112,13 +112,14 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     @Override
     public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        this.presenterChildDelegate.onViewInitialized();
+        this.presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
     }
 
     @Override
     public void onUserVisible() {
         Analytics.trackEvent(Analytics.Backside.EVENT_MAIN_VIEW, null);
         presenterView.updateWhatsNewState();
+        fetchInsights();
     }
 
     @Override
@@ -145,8 +146,6 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     @Override
     public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        presenterView.setSwipeRefreshLayoutRefreshListener(this);
-
         // Combining these into a single Observable results in error
         // handling more or less breaking. Keep them separate until
         // we actually merge the endpoints on the backend.
@@ -195,9 +194,6 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
 
 
     public final void update() {
-        if (insightsInteractor.updateIfEmpty()) {
-            presenterView.setRefreshing(true);
-        }
 
         if (!questionsInteractor.hasQuestion()) {
             updateQuestion();
@@ -217,10 +213,6 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
         }
     }
 
-    @Override
-    public final void onRefresh() {
-        fetchInsights();
-    }
 
     /**
      * Pushes data into the adapter once both questions and insights have loaded.
@@ -361,8 +353,8 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     public final void updateQuestion() {
         final Observable<Boolean> stageOne = deviceIssuesInteractor.latest().map(issue -> (
                 issue == DeviceIssuesInteractor.Issue.NONE
-                && localUsageTracker.isUsageAcceptableForRatingPrompt()
-                && !preferencesInteractor.getBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, false)));
+                        && localUsageTracker.isUsageAcceptableForRatingPrompt()
+                        && !preferencesInteractor.getBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, false)));
         stageOne.subscribe(showReview -> {
                                if (showReview) {
                                    final boolean reviewedOnAmazon = preferencesInteractor.getBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, false);
@@ -386,8 +378,8 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     }
 
     @Override
-    public final void onDismissLoadingIndicator() {
-        presenterView.setRefreshing(false);
+    public void onDismissLoadingIndicator() {
+
     }
 
     @Override
@@ -411,14 +403,22 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
 
     //endregion
 
+    //region scrollup
+    @Override
+    public void scrollUp() {
+        if (presenterView == null) {
+            return;
+        }
+        presenterView.scrollUp();
+    }
+    //endregion
+
     @Override
     public final void fetchInsights() {
         this.insights = Collections.emptyList();
         this.insightsLoaded = false;
         this.currentQuestion = null;
         this.questionLoaded = false;
-
-        presenterView.setRefreshing(true);
         insightsInteractor.update();
         updateQuestion();
     }
@@ -469,5 +469,4 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
             }
         }
     };
-
 }

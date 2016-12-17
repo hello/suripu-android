@@ -79,5 +79,9 @@ public class SmartAlarmListView extends PresenterView {
         adapter.notifyDataSetChanged();
     }
 
+    public void scrollUp() {
+        this.recyclerView.smoothScrollToPosition(0);
+    }
+
     //endregion
 }

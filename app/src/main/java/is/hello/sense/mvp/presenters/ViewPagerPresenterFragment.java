@@ -1,12 +1,14 @@
 package is.hello.sense.mvp.presenters;
 
 
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.mvp.util.FabPresenter;
 import is.hello.sense.mvp.util.ViewPagerPresenter;
@@ -19,7 +21,9 @@ import is.hello.sense.util.NotTested;
  */
 @NotTested
 public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewPagerPresenterView>
-        implements ViewPagerPresenter, FabPresenter {
+        implements ViewPagerPresenter,
+        FabPresenter,
+        HomeActivity.ScrollUp {
 
     private BaseViewPagerPresenterDelegate viewPagerDelegate;
 
@@ -54,6 +58,15 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     }
     //endregion
 
+    //region scollup
+    @Override
+    public void scrollUp() {
+        final Fragment fragment = getCurrentFragment();
+        if (fragment instanceof HomeActivity.ScrollUp) {
+            ((HomeActivity.ScrollUp) fragment).scrollUp();
+        }
+    }
+    //endregion
 
     //region methods
 
@@ -77,37 +90,48 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     public FragmentManager getDesiredFragmentManager() {
         return useChildFragmentManager() ? getChildFragmentManager() : getFragmentManager();
     }
+
+    @Nullable
+    public Fragment getCurrentFragment() {
+        if (presenterView == null) {
+            return null;
+        }
+        return presenterView.getFragmentWithIndex(getDesiredFragmentManager(),
+                                                  presenterView.getCurrentFragmentPosition());
+    }
+
     //endregion
 
     //region FabPresenter
     //@Override
-    public void setFabSize( final float size){
-        if(presenterView != null){
+    public void setFabSize(final float size) {
+        if (presenterView != null) {
             presenterView.setFabSize(size);
         }
     }
 
     @Override
-    public void setFabVisible(final boolean visible){
-        if(presenterView != null){
+    public void setFabVisible(final boolean visible) {
+        if (presenterView != null) {
             presenterView.setFabVisible(visible);
         }
     }
 
     @Override
     public void updateFab(@DrawableRes final int iconRes,
-                   @Nullable final View.OnClickListener listener){
-        if(presenterView != null){
+                          @Nullable final View.OnClickListener listener) {
+        if (presenterView != null) {
             presenterView.updateFab(iconRes,
                                     listener);
         }
     }
 
     @Override
-    public void setFabLoading(final boolean loading){
-        if(presenterView != null){
+    public void setFabLoading(final boolean loading) {
+        if (presenterView != null) {
             presenterView.setFabLoading(loading);
         }
     }
     //endregion
+
 }

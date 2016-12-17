@@ -22,6 +22,7 @@ import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
 import is.hello.sense.flows.home.interactors.SensorResponseInteractor;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.adapters.SensorResponseAdapter;
 import is.hello.sense.flows.home.ui.views.RoomConditionsView;
 import is.hello.sense.flows.sensordetails.ui.activities.SensorDetailActivity;
@@ -44,7 +45,8 @@ import rx.subscriptions.Subscriptions;
 public class RoomConditionsPresenterFragment extends PresenterFragment<RoomConditionsView>
         implements ArrayRecyclerAdapter.OnItemClickedListener<Sensor>,
         SensorResponseAdapter.ErrorItemClickListener,
-        ViewPagerPresenterChild{
+        HomeActivity.ScrollUp,
+        ViewPagerPresenterChild {
     private final static long WELCOME_CARD_TIMES_SHOWN_LIMIT = 2;
 
     @Inject
@@ -59,7 +61,6 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
     @VisibleForTesting
     public SensorResponseAdapter adapter;
     private UpdateTimer updateTimer;
-    private boolean checkRoomConditions = false;
     @NonNull
     private Subscription postSensorSubscription = Subscriptions.empty();
     private final ViewPagerPresenterChildDelegate viewPagerPresenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
@@ -105,8 +106,6 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
         bindAndSubscribe(this.sensorResponseInteractor.sensors,
                          this::bindConditions,
                          this::conditionsUnavailable);
-
-        checkRoomConditions = true; // todo support this again.
     }
 
     @Override
@@ -168,16 +167,13 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
     //region Displaying Data
 
     private void showWelcomeCardIfNeeded() {
-        if (checkRoomConditions) {
-            checkRoomConditions = false;
-            final int timesShown = preferencesInteractor.getInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, 1);
-            if (timesShown <= WELCOME_CARD_TIMES_SHOWN_LIMIT) {
-                preferencesInteractor.edit().putInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN,
-                                                    timesShown + 1).apply();
-                adapter.showWelcomeCard(true);
-            } else {
-                adapter.showWelcomeCard(false);
-            }
+        final int timesShown = preferencesInteractor.getInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, 1);
+        if (timesShown <= WELCOME_CARD_TIMES_SHOWN_LIMIT) {
+            preferencesInteractor.edit().putInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN,
+                                                timesShown + 1).apply();
+            adapter.showWelcomeCard(true);
+        } else {
+            adapter.showWelcomeCard(false);
         }
     }
 
@@ -232,6 +228,16 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
 
     //endregion
 
+
+    //region scrollup
+    @Override
+    public void scrollUp() {
+        if (presenterView == null) {
+            return;
+        }
+        presenterView.scrollUp();
+    }
+    //endregion
 
     @Override
     public final void onItemClicked(final int position, final Sensor sensor) {

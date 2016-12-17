@@ -4,17 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <is.hello.sense.ui.widget.FixedSwipeRefreshLayout
-        android:id="@+id/fragment_insights_refresh_container"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/fragment_insights_recycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"/>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/fragment_insights_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-    </is.hello.sense.ui.widget.FixedSwipeRefreshLayout>
 
     <ProgressBar
         android:id="@+id/fragment_insights_progress"

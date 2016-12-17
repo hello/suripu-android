@@ -98,6 +98,9 @@ public class SleepSoundsView extends PresenterView {
         this.adapter.notifyDataSetChanged();
     }
 
+    public void scrollUp() {
+        this.recyclerView.smoothScrollToPosition(0);
+    }
 
     //endregion
 }
