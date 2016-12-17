@@ -239,10 +239,6 @@ public class TimelinePagerFragment extends InjectionFragment
         return (currentFragment != null && DateFormatter.isLastNight(currentFragment.getDate()));
     }
 
-    public void queueJumpToLastNight() {
-        shouldJumpToLastNightOnUserVisible = true;
-    }
-
     public void jumpToLastNight(final boolean animate) {
         if (viewPager == null || viewPagerAdapter == null) {
             return;
@@ -316,6 +312,11 @@ public class TimelinePagerFragment extends InjectionFragment
     @Override
     public void setShareVisible(final boolean visible) {
         senseBar.showRightImage(visible);
+    }
+
+    @Override
+    public void jumpToLastNight() {
+        shouldJumpToLastNightOnUserVisible = true;
     }
 
     //endregion

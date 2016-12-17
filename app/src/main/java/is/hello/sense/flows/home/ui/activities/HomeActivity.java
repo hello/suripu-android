@@ -400,9 +400,9 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     private void jumpToLastNight() {
-        final Fragment fragment = getFragmentWithIndex(SLEEP_ICON_KEY);
-        if (fragment instanceof TimelinePagerFragment) {
-            ((TimelinePagerFragment) fragment).queueJumpToLastNight();
+        final TimelineFragment.Parent parent = getTimelineParent();
+        if (parent != null) {
+            parent.jumpToLastNight();
         }
     }
 
@@ -424,7 +424,7 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     @Override
-    public TimelineFragment.Parent get() {
+    public TimelineFragment.Parent getTimelineParent() {
         return (TimelineFragment.Parent) getFragmentWithIndex(SLEEP_ICON_KEY);
     }
 

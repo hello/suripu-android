@@ -157,7 +157,7 @@ public class TimelineFragment extends InjectionFragment
         if (activity instanceof Parent && parent == null) {
             setParent((Parent) activity);
         } else if (activity instanceof ParentProvider && parent == null) {
-            setParent(((ParentProvider) activity).get());
+            setParent(((ParentProvider) activity).getTimelineParent());
         } else if (parent == null) {
             throw new IllegalStateException("A parent is required to control TimelineFragment");
         }
@@ -892,10 +892,15 @@ public class TimelineFragment extends InjectionFragment
 
         void setShareVisible(boolean visible);
 
+        /**
+         * Used to return to Last Night timeline when needed
+         */
+        void jumpToLastNight();
+
     }
 
     public interface ParentProvider {
 
-        Parent get();
+        Parent getTimelineParent();
     }
 }
