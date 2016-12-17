@@ -86,9 +86,6 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         addInteractor(sleepSoundsInteractor);
         addInteractor(sleepSoundsStatusInteractor);
         addInteractor(preferencesInteractor);
-        if (savedInstanceState == null) {
-            Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS, null);
-        }
     }
 
     @Override
@@ -142,6 +139,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
 
     @Override
     public void onUserVisible() {
+        Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS, null);
         displayLoadingButton();
         setFabVisible(presenterView.isShowingPlayer());
         updateSensePairedSubscription(() -> {

@@ -145,6 +145,7 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
 
     @Override
     public void onUserVisible() {
+        Analytics.trackEvent(Analytics.Backside.EVENT_ALARMS, null);
         updateAlarms(null);
     }
 
