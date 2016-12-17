@@ -38,7 +38,6 @@ import is.hello.sense.mvp.presenters.TrendsPresenterFragment;
 import is.hello.sense.mvp.util.FabPresenter;
 import is.hello.sense.mvp.util.FabPresenterProvider;
 import is.hello.sense.mvp.util.ViewPagerPresenter;
-import is.hello.sense.mvp.util.ViewPagerPresenterChild;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -120,7 +119,7 @@ public class HomeActivity extends ScopedInjectionActivity
         this.tabLayout = (TabLayout) findViewById(R.id.activity_new_home_tab_layout);
         this.tabLayout.setupWithViewPager(this.extendedViewPager);
         extendedViewPager.setAdapter(new StaticFragmentAdapter(getFragmentManager(), getViewPagerItems()));
-        setUpTabs();
+        setUpTabs(savedInstanceState == null);
     }
 
     @Override
@@ -306,7 +305,7 @@ public class HomeActivity extends ScopedInjectionActivity
         });
     }
 
-    private void setUpTabs() {
+    private void setUpTabs(final boolean shouldSelect) {
         drawables[TRENDS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_trends_24);
         drawablesActive[TRENDS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_trends_active_24);
         drawables[INSIGHTS_ICON_KEY] = ContextCompat.getDrawable(this, R.drawable.icon_insight_24);
@@ -341,8 +340,10 @@ public class HomeActivity extends ScopedInjectionActivity
                 if (drawable == null) {
                     return;
                 }
-                tab.setIcon(drawablesActive[tab.getPosition()]);
-
+                tab.setIcon(drawablesActive[currentItemIndex]);
+                if (currentItemIndex == 0){
+                    jumpToLastNight();
+                }
             }
 
             @Override
@@ -371,7 +372,7 @@ public class HomeActivity extends ScopedInjectionActivity
             }
         });
         final TabLayout.Tab tab = tabLayout.getTabAt(currentItemIndex);
-        if (tab != null) {
+        if (shouldSelect && tab != null) {
             tab.select();
         }
     }
@@ -396,6 +397,13 @@ public class HomeActivity extends ScopedInjectionActivity
         }
         drawableBuilder.withSelected(tab.isSelected());
         tab.setIcon(drawableBuilder.build());
+    }
+
+    private void jumpToLastNight() {
+        final Fragment fragment = getFragmentWithIndex(SLEEP_ICON_KEY);
+        if (fragment instanceof TimelinePagerFragment) {
+            ((TimelinePagerFragment) fragment).queueJumpToLastNight();
+        }
     }
 
     @NonNull
@@ -485,6 +493,7 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     //endregion
+
 
     public interface ScrollUp {
         void scrollUp();
