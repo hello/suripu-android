@@ -54,4 +54,8 @@ public class VoiceView extends PresenterView {
         }
     }
 
+    public void scrollUp() {
+        recyclerView.smoothScrollToPosition(0);
+    }
+
 }

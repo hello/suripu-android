@@ -38,7 +38,6 @@ public final class InsightsView extends PresenterView {
     private static final float FOCUSED_CONTENT_SCALE = 1f;
     private static final float UNFOCUSED_CONTENT_ALPHA = 0.95f;
     private static final float FOCUSED_CONTENT_ALPHA = 1f;
-    private final SwipeRefreshLayout swipeRefreshLayout;
     private final RecyclerView recyclerView;
     private final ProgressBar progressBar;
     private final InsightsAdapter insightsAdapter;
@@ -49,8 +48,6 @@ public final class InsightsView extends PresenterView {
                         @NonNull final Picasso picasso,
                         @NonNull final InsightsAdapter.InteractionListener listener) {
         super(activity);
-        this.swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.fragment_insights_refresh_container);
-        Styles.applyRefreshLayoutStyle(swipeRefreshLayout);
 
         this.progressBar = (ProgressBar) findViewById(R.id.fragment_insights_progress);
         this.recyclerView = (RecyclerView) findViewById(R.id.fragment_insights_recycler);
@@ -69,24 +66,16 @@ public final class InsightsView extends PresenterView {
 
     @Override
     public final void releaseViews() {
-        if (swipeRefreshLayout != null) {
-            this.swipeRefreshLayout.setOnRefreshListener(null);
-        }
     }
 
+    public void scrollUp() {
+        recyclerView.smoothScrollToPosition(0);
+    }
 
     public final void updateWhatsNewState() {
         if (insightsAdapter != null) {
             insightsAdapter.updateWhatsNewState();
         }
-    }
-
-    public final void setSwipeRefreshLayoutRefreshListener(@NonNull final SwipeRefreshLayout.OnRefreshListener listener) {
-        swipeRefreshLayout.setOnRefreshListener(listener);
-    }
-
-    public final void setRefreshing(final boolean refreshing) {
-        swipeRefreshLayout.setRefreshing(refreshing);
     }
 
     public final void showCards(@Nullable final Question question,
@@ -145,22 +134,5 @@ public final class InsightsView extends PresenterView {
                 })
                 .scale(FOCUSED_CONTENT_SCALE)
                 .alpha(FOCUSED_CONTENT_ALPHA);
-    }
-
-
-    static final class BottomInsetDecoration extends RecyclerView.ItemDecoration {
-        private final int bottomPadding;
-
-        public BottomInsetDecoration(@NonNull final Resources resources) {
-            this.bottomPadding = resources.getDimensionPixelSize(R.dimen.x1);
-        }
-
-        @Override
-        public void getItemOffsets(final Rect outRect, final View view, final RecyclerView parent, final RecyclerView.State state) {
-            final int position = parent.getChildAdapterPosition(view);
-            if (position == parent.getAdapter().getItemCount() - 1) {
-                outRect.bottom = bottomPadding;
-            }
-        }
     }
 }

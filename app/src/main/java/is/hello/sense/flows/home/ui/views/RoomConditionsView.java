@@ -50,4 +50,8 @@ public final class RoomConditionsView extends PresenterView {
     public void setSettingsButtonClickListener(@Nullable final OnClickListener listener) {
         senseBar.setRightImageOnClickListener(listener);
     }
+
+    public void scrollUp() {
+        recyclerView.smoothScrollToPosition(0);
+    }
 }

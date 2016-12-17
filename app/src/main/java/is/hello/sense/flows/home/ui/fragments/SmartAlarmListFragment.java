@@ -22,6 +22,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.views.SmartAlarmListView;
 import is.hello.sense.flows.smartalarm.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.functional.Functions;
@@ -48,7 +49,8 @@ import rx.Observable;
 public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView>
         implements
         SmartAlarmAdapter.InteractionListener,
-        ViewPagerPresenterChild {
+        ViewPagerPresenterChild,
+        HomeActivity.ScrollUp {
     private static final int DELETE_REQUEST_CODE = 117;
 
     @Inject
@@ -198,10 +200,19 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     }
     //endregion
 
+
+    @Override
+    public void scrollUp() {
+        if (presenterView == null) {
+            return;
+        }
+        presenterView.scrollUp();
+    }
+
     //region methods
-    private void updateAlarmFab(final boolean isVisible){
-        if(fabPresenter != null){
-            if(isVisible) {
+    private void updateAlarmFab(final boolean isVisible) {
+        if (fabPresenter != null) {
+            if (isVisible) {
                 fabPresenter.updateFab(R.drawable.icon_plus,
                                        this::onAddButtonClicked);
             }

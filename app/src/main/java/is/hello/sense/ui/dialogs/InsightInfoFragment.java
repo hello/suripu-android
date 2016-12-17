@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -83,6 +84,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     private CharSequence summary;
     private String insightId = null;
     private String category = null;
+    private ProgressBar progress;
 
     @UsedInTransition
     private View rootView;
@@ -164,7 +166,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         this.rootView = inflater.inflate(R.layout.fragment_insight_info, container, false);
         this.fillView = rootView.findViewById(R.id.fragment_insight_info_fill);
-
+        this.progress = (ProgressBar) rootView.findViewById(R.id.fragment_insight_info_progress);
         this.illustrationImage =
                 (ParallaxImageView) rootView.findViewById(R.id.fragment_insight_info_illustration);
         illustrationImage.setPicassoListener(this);
@@ -540,6 +542,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 //region Data Bindings
 
     public void bindInsightInfo(@NonNull final InsightInfo info) {
+        progress.setVisibility(View.GONE);
         titleText.setText(info.getTitle());
         messageText.setText(info.getText());
         category = info.getCategory();
@@ -548,7 +551,9 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     }
 
     public void insightInfoUnavailable(final Throwable e) {
+        progress.setVisibility(View.GONE);
         final StringRef errorMessage = Errors.getDisplayMessage(e);
+        messageText.setVisibility(View.VISIBLE);
         if (errorMessage != null) {
             messageText.setText(errorMessage.resolve(getActivity()));
         } else {

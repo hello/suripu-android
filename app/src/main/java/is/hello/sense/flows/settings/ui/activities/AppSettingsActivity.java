@@ -31,6 +31,18 @@ public class AppSettingsActivity extends ScopedInjectionActivity
     }
 
     @Override
+    protected void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        navigationDelegate.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.navigationDelegate.onDestroy();
+    }
+
+    @Override
     public final void pushFragment(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
         navigationDelegate.pushFragment(fragment, title, wantsBackStackEntry);
     }
@@ -57,6 +69,6 @@ public class AppSettingsActivity extends ScopedInjectionActivity
     }
 
     public void showAppSettingsFragment() {
-        pushFragment(new AppSettingsFragment(), null, true);
+        pushFragment(new AppSettingsFragment(), null, false);
     }
 }

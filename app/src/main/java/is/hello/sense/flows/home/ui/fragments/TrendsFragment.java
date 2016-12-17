@@ -11,6 +11,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.api.model.v2.Trends.TimeScale;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.views.TrendsView;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TrendsInteractor;
@@ -26,7 +27,8 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
         implements
         TrendFeedViewItem.OnRetry,
         TrendGraphView.AnimationCallback,
-        ViewPagerPresenterChild {
+        ViewPagerPresenterChild,
+        HomeActivity.ScrollUp {
 
     @Inject
     TrendsInteractor trendsInteractor;
@@ -116,6 +118,13 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     }
     //endregion
 
+    @Override
+    public void scrollUp() {
+        if (presenterView == null){
+            return;
+        }
+        presenterView.scrollUp();
+    }
 
     //region methods
     public void showLoadingState() {

@@ -38,6 +38,7 @@ import is.hello.sense.mvp.presenters.TrendsPresenterFragment;
 import is.hello.sense.mvp.util.FabPresenter;
 import is.hello.sense.mvp.util.FabPresenterProvider;
 import is.hello.sense.mvp.util.ViewPagerPresenter;
+import is.hello.sense.mvp.util.ViewPagerPresenterChild;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -343,6 +344,7 @@ public class HomeActivity extends ScopedInjectionActivity
                     return;
                 }
                 tab.setIcon(drawablesActive[tab.getPosition()]);
+
             }
 
             @Override
@@ -359,6 +361,14 @@ public class HomeActivity extends ScopedInjectionActivity
 
             @Override
             public void onTabReselected(final TabLayout.Tab tab) {
+                if (tab == null) {
+                    return;
+                }
+                final int position = tab.getPosition();
+                final Fragment fragment = getFragmentWithIndex(position);
+                if (fragment instanceof ScrollUp) {
+                    ((ScrollUp) fragment).scrollUp();
+                }
 
             }
         });
@@ -413,7 +423,7 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     @Override
-    public FabPresenter getFabPresenter(){
+    public FabPresenter getFabPresenter() {
         return (FabPresenter) getFragmentWithIndex(SOUNDS_ICON_KEY);
     }
 
@@ -429,9 +439,9 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     @Nullable
-    private Fragment getFragmentWithIndex(final int index){
+    private Fragment getFragmentWithIndex(final int index) {
         return getFragmentManager()
-                .findFragmentByTag("android:switcher:" + R.id.activity_new_home_extended_view_pager + ":"+index);
+                .findFragmentByTag("android:switcher:" + R.id.activity_new_home_extended_view_pager + ":" + index);
     }
 
     //region Notifications
@@ -477,6 +487,10 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     //endregion
+
+    public interface ScrollUp {
+        void scrollUp();
+    }
 
 
 }

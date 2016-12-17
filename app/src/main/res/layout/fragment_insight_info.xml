@@ -10,6 +10,12 @@
         android:layout_height="match_parent"
         android:background="@color/background_light"/>
 
+    <ProgressBar
+        android:id="@+id/fragment_insight_info_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
     <is.hello.sense.ui.widget.ExtendedScrollView
         android:id="@+id/fragment_insight_info_scroll"
         android:layout_width="match_parent"

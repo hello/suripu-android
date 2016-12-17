@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.view.View;
 
 
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.adapters.VoiceCommandsAdapter;
 import is.hello.sense.flows.home.ui.views.VoiceView;
 import is.hello.sense.flows.voicecommands.ui.activities.VoiceCommandActivity;
@@ -21,7 +22,8 @@ import is.hello.sense.util.NotTested;
 public class VoiceFragment extends PresenterFragment<VoiceView>
         implements
         ArrayRecyclerAdapter.OnItemClickedListener<VoiceCommandsAdapter.VoiceCommand>,
-        ViewPagerPresenterChild {
+        ViewPagerPresenterChild,
+        HomeActivity.ScrollUp{
 
     private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
     private VoiceCommandsAdapter adapter;
@@ -94,6 +96,16 @@ public class VoiceFragment extends PresenterFragment<VoiceView>
     }
     //endregion
 
+    //region scrollup
+    @Override
+    public void scrollUp() {
+        if (presenterView == null) {
+            return;
+        }
+        presenterView.scrollUp();
+    }
+    //endregion
+
     //region methods
     private void showWelcomeCard(final boolean wasShown) {
         if (wasShown) {
@@ -110,6 +122,7 @@ public class VoiceFragment extends PresenterFragment<VoiceView>
                          .apply();
         showWelcomeCard(true);
     }
+
     //endregion
 
 }
