@@ -115,7 +115,6 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         this.fabPresenter = ((FabPresenterProvider) getActivity()).getFabPresenter();
         bindAndSubscribe(sleepSoundsStatusInteractor.state, this::bindStatus, this::presentStatusError);
         bindAndSubscribe(sleepSoundsInteractor.sub, this::bind, this::presentError);
-        this.updateSensePairedSubscription(() -> sleepSoundsInteractor.update());
     }
 
     @Override
@@ -145,6 +144,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         updateSensePairedSubscription(() -> {
             sleepSoundsStatusInteractor.resetBackOffIfNeeded();
             sleepSoundsStatusInteractor.startPolling();
+            sleepSoundsInteractor.update();
         });
     }
 

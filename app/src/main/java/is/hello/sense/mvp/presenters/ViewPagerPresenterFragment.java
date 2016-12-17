@@ -35,6 +35,17 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
             presenterView = new ViewPagerPresenterView(this);
         }
     }
+
+
+    @Override
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (getCurrentFragment() == null){
+            return;
+        }
+        getCurrentFragment().setUserVisibleHint(isVisibleToUser);
+    }
+
     //endregion
 
     //region ViewPagePresenter

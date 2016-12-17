@@ -19,8 +19,6 @@ public class SoundsPresenterFragment extends ViewPagerPresenterFragment
         return new SoundsViewPagerPresenterDelegate(getResources());
     }
     //endRegion
-
-
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
