@@ -48,7 +48,6 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
         addInteractor(trendsInteractor);
         setHasOptionsMenu(true);
     }
@@ -65,6 +64,7 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     @Override
     public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
+        Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
         presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
     }
 
