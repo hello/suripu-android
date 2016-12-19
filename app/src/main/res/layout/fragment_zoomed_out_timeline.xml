@@ -7,14 +7,13 @@
     <TextView
         android:id="@+id/fragment_zoomed_out_timeline_month"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/action_bar_height"
+        android:layout_height="@dimen/action_bar_height_compact"
         android:layout_alignParentTop="true"
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.ScreenTitle"
         android:text="@string/format_date_last_night"
-        android:singleLine="true"
         android:ellipsize="end"
-        android:background="@drawable/selectable_dark_bounded" />
+        android:maxLines="1"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/fragment_zoomed_out_timeline_recycler_view"
