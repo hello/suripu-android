@@ -71,7 +71,7 @@ public class HomeActivity extends ScopedInjectionActivity
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     public static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
     private static final String KEY_CURRENT_ITEM_INDEX = HomeActivity.class.getSimpleName() + "CURRENT_ITEM_INDEX";
-    private static final int DEFAULT_ITEM_INDEX = 2;
+    private static final int DEFAULT_ITEM_INDEX = 0;
     private static final int NUMBER_OF_ITEMS = 5;
     private static final int SLEEP_ICON_KEY = 0;
     private static final int TRENDS_ICON_KEY = 1;
@@ -187,6 +187,14 @@ public class HomeActivity extends ScopedInjectionActivity
             dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
         }
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(tabLayout != null){
+            tabLayout.clearOnTabSelectedListeners();
+        }
     }
 
     public void checkInForUpdates() {
@@ -331,48 +339,7 @@ public class HomeActivity extends ScopedInjectionActivity
         tabLayout.addTab(tabLayout.newTab().setIcon(drawables[INSIGHTS_ICON_KEY]));
         tabLayout.addTab(tabLayout.newTab().setIcon(drawables[SOUNDS_ICON_KEY]));
         tabLayout.addTab(tabLayout.newTab().setIcon(drawables[CONDITIONS_ICON_KEY]));
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(final TabLayout.Tab tab) {
-                if (tab == null) {
-                    return;
-                }
-                currentItemIndex = tab.getPosition();
-                final Drawable drawable = tab.getIcon();
-                if (drawable == null) {
-                    return;
-                }
-                tab.setIcon(drawablesActive[currentItemIndex]);
-                if (currentItemIndex == 0){
-                    jumpToLastNight();
-                }
-            }
-
-            @Override
-            public void onTabUnselected(final TabLayout.Tab tab) {
-                if (tab == null) {
-                    return;
-                }
-                final Drawable drawable = tab.getIcon();
-                if (drawable == null) {
-                    return;
-                }
-                tab.setIcon(drawables[tab.getPosition()]);
-            }
-
-            @Override
-            public void onTabReselected(final TabLayout.Tab tab) {
-                if (tab == null) {
-                    return;
-                }
-                final int position = tab.getPosition();
-                final Fragment fragment = getFragmentWithIndex(position);
-                if (fragment instanceof ScrollUp) {
-                    ((ScrollUp) fragment).scrollUp();
-                }
-
-            }
-        });
+        tabLayout.addOnTabSelectedListener(new HomeTabListener());
         final TabLayout.Tab tab = tabLayout.getTabAt(currentItemIndex);
         if (shouldSelect && tab != null) {
             tab.select();
@@ -499,6 +466,43 @@ public class HomeActivity extends ScopedInjectionActivity
 
     public interface ScrollUp {
         void scrollUp();
+    }
+
+    private class HomeTabListener implements TabLayout.OnTabSelectedListener {
+
+        @Override
+        public void onTabSelected(final TabLayout.Tab tab) {
+            if (tab == null) {
+                return;
+            }
+            currentItemIndex = tab.getPosition();
+            tab.setIcon(drawablesActive[currentItemIndex]);
+            if (currentItemIndex == SLEEP_ICON_KEY){
+                jumpToLastNight();
+            }
+        }
+
+        @Override
+        public void onTabUnselected(final TabLayout.Tab tab) {
+            if (tab == null) {
+                return;
+            }
+            tab.setIcon(drawables[tab.getPosition()]);
+        }
+
+        @Override
+        public void onTabReselected(final TabLayout.Tab tab) {
+            if (tab == null) {
+                return;
+            }
+            final int position = tab.getPosition();
+            final Fragment fragment = getFragmentWithIndex(position);
+            if (fragment instanceof ScrollUp) {
+                ((ScrollUp) fragment).scrollUp();
+            }
+
+        }
+
     }
 
 
