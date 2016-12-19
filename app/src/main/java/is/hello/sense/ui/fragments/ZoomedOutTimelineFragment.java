@@ -24,7 +24,6 @@ import is.hello.sense.ui.adapter.ZoomedOutTimelineAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.ZoomedOutTimelineLayoutManager;
 import is.hello.sense.ui.widget.timeline.ZoomedOutTimelineDecoration;
-import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.DateFormatter;
 
 public class ZoomedOutTimelineFragment extends InjectionFragment implements ZoomedOutTimelineAdapter.OnItemClickedListener {
@@ -83,7 +82,6 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
 
         this.monthText = (TextView) view.findViewById(R.id.fragment_zoomed_out_timeline_month);
         monthText.setText(dateFormatter.formatAsTimelineNavigatorDate(startDate));
-        Views.setSafeOnClickListener(monthText, ignored -> getFragmentManager().popBackStack());
 
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_zoomed_out_timeline_recycler_view);
         recyclerView.addItemDecoration(new ZoomedOutTimelineDecoration(getResources()));
