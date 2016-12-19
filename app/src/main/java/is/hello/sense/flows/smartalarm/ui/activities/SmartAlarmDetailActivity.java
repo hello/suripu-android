@@ -219,7 +219,7 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
      * activity.
      *
      * @param alarm  should be provided with {@link SmartAlarmDetailActivity#startActivity(Context, Alarm, int)}
-     * @param index  position of alarm in list from {@link is.hello.sense.ui.fragments.sounds.SmartAlarmListFragment}.
+     * @param index  position of alarm in list from {@link is.hello.sense.flows.home.ui.fragments.SmartAlarmListFragment}.
      *               Should be {@link Constants#NONE} if the user is creating a new one.
      * @param skipUI true if from another app saving an alarm and we should not show any UI while
      *               saving it.
