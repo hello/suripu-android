@@ -138,14 +138,9 @@ public class HomeActivity extends ScopedInjectionActivity
                              Functions.LOG_ERROR);
         }
 
-        if (shouldUpdateAlerts()) {
-            bindAndSubscribe(alertsInteractor.alert,
-                             this::bindAlert,
-                             Functions.LOG_ERROR);
-
-            alertsInteractor.update();
-        }
-
+        bindAndSubscribe(alertsInteractor.alert,
+                         this::bindAlert,
+                         Functions.LOG_ERROR);
         bindAndSubscribe(lastNightInteractor.timeline,
                          this::updateSleepScoreTab,
                          Functions.LOG_ERROR);
@@ -172,6 +167,9 @@ public class HomeActivity extends ScopedInjectionActivity
     protected void onResume() {
         super.onResume();
         lastNightInteractor.update();
+        if (shouldUpdateAlerts()) {
+            alertsInteractor.update();
+        }
     }
 
     @Override
@@ -242,16 +240,27 @@ public class HomeActivity extends ScopedInjectionActivity
     //region Device Issues and Alerts
 
     private boolean shouldUpdateAlerts() {
-        return isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
+        return getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
     }
 
     private boolean shouldUpdateDeviceIssues() {
         return isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
     }
 
+    private boolean shouldShow(@NonNull final Alert alert) {
+        final boolean valid = alert.isValid();
+        final boolean existingAlert = getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) != null;
+        switch (alert.getCategory()) {
+            case EXPANSION_UNREACHABLE:
+                return valid && !existingAlert; // always show valid unreacahable alerts whenever we get them
+            case SENSE_MUTED:
+            default:
+                return valid && !existingAlert && isFirstActivityRun;
+        }
+    }
+
     private void bindAlert(@NonNull final Alert alert) {
-        if (alert.isValid()
-                && getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) == null) {
+        if (shouldShow(alert)) {
             localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
             BottomAlertDialogFragment.newInstance(alert,
                                                   getResources())
