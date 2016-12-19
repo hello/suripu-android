@@ -249,11 +249,11 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     private boolean shouldUpdateAlerts() {
-        return getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
+        return getOnboardingFlow() != OnboardingActivity.FLOW_REGISTER;
     }
 
     private boolean shouldUpdateDeviceIssues() {
-        return isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
+        return isFirstActivityRun && getOnboardingFlow() != OnboardingActivity.FLOW_REGISTER;
     }
 
     private boolean shouldShow(@NonNull final Alert alert) {
@@ -281,9 +281,7 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     private void bindDeviceIssue(@NonNull final DeviceIssuesInteractor.Issue issue) {
-        if (issue == DeviceIssuesInteractor.Issue.NONE
-                || getFragmentManager().findFragmentByTag(DeviceIssueDialogFragment.TAG) != null
-                || getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) != null) {
+        if (issue == DeviceIssuesInteractor.Issue.NONE || this.isShowingAlert()) {
             return;
         }
 
