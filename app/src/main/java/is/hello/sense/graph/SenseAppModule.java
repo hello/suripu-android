@@ -18,14 +18,16 @@ import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
-import is.hello.sense.flows.home.ui.fragments.BacksideFragment;
-import is.hello.sense.flows.home.ui.fragments.HomeFragment;
 import is.hello.sense.flows.home.ui.fragments.InsightsFragment;
+import is.hello.sense.flows.home.ui.fragments.MonthTrendsFragment;
+import is.hello.sense.flows.home.ui.fragments.QuarterTrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
-import is.hello.sense.flows.home.ui.fragments.SoundsFragment;
+import is.hello.sense.flows.home.ui.fragments.SleepSoundsFragment;
+import is.hello.sense.flows.home.ui.fragments.SmartAlarmListFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
+import is.hello.sense.flows.home.ui.fragments.WeekTrendsFragment;
 import is.hello.sense.flows.settings.ui.activities.AppSettingsActivity;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
@@ -70,8 +72,6 @@ import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.fragments.settings.PillDetailsFragment;
 import is.hello.sense.ui.fragments.settings.SenseDetailsFragment;
-import is.hello.sense.ui.fragments.sounds.SleepSoundsFragment;
-import is.hello.sense.ui.fragments.sounds.SmartAlarmListFragment;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.UtilityModule;
@@ -128,8 +128,6 @@ import is.hello.sense.zendesk.ZendeskModule;
                 RoomConditionsInteractor.class,
 
                 TrendsInteractor.class,
-                SmartAlarmListFragment.class,
-                SleepSoundsFragment.class,
                 SmartAlarmSoundDialogFragment.class,
                 SmartAlarmInteractor.class,
                 SleepSoundsInteractor.class,
@@ -141,21 +139,18 @@ import is.hello.sense.zendesk.ZendeskModule;
                 //todo remove when fragments use presenters
                 OnboardingSenseColorsFragment.class,
                 OnboardingPairPill.class,
-                BacksideFragment.class,
                 RoomConditionsPresenterFragment.class,
                 TrendsFragment.class,
                 InsightsFragment.class,
-                SoundsFragment.class,
-                HomeFragment.class,
                 VoiceFragment.class,
                 AppSettingsFragment.class,
                 SoundsPresenterFragment.class,
                 HomePresenterFragment.class,
-                is.hello.sense.flows.home.ui.fragments.SmartAlarmListFragment.class,
-                is.hello.sense.flows.home.ui.fragments.SleepSoundsFragment.class,
-                is.hello.sense.flows.home.ui.fragments.WeekTrendsFragment.class,
-                is.hello.sense.flows.home.ui.fragments.MonthTrendsFragment.class,
-                is.hello.sense.flows.home.ui.fragments.QuarterTrendsFragment.class,
+                SmartAlarmListFragment.class,
+                SleepSoundsFragment.class,
+                WeekTrendsFragment.class,
+                MonthTrendsFragment.class,
+                QuarterTrendsFragment.class,
                 TrendsPresenterFragment.class,
 
                 VoiceSettingsInteractor.class,

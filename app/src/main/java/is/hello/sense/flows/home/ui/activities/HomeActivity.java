@@ -71,13 +71,15 @@ public class HomeActivity extends ScopedInjectionActivity
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     public static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
     private static final String KEY_CURRENT_ITEM_INDEX = HomeActivity.class.getSimpleName() + "CURRENT_ITEM_INDEX";
-    private static final int DEFAULT_ITEM_INDEX = 2;
+    private static final int DEFAULT_ITEM_INDEX = 0;
     private static final int NUMBER_OF_ITEMS = 5;
     private static final int SLEEP_ICON_KEY = 0;
     private static final int TRENDS_ICON_KEY = 1;
     private static final int INSIGHTS_ICON_KEY = 2;
     private static final int SOUNDS_ICON_KEY = 3;
     private static final int CONDITIONS_ICON_KEY = 4;
+
+    private static boolean isFirstActivityRun = true; // changed when paused
 
     @Inject
     ApiService apiService;
@@ -97,7 +99,6 @@ public class HomeActivity extends ScopedInjectionActivity
     private final Drawable[] drawables = new Drawable[NUMBER_OF_ITEMS];
     private final Drawable[] drawablesActive = new Drawable[NUMBER_OF_ITEMS];
     private int currentItemIndex;
-    private boolean isFirstActivityRun;
     private View progressOverlay;
     private SpinnerImageView spinner;
     private ExtendedViewPager extendedViewPager;
@@ -138,20 +139,14 @@ public class HomeActivity extends ScopedInjectionActivity
                              Functions.LOG_ERROR);
         }
 
-        if (shouldUpdateAlerts()) {
-            bindAndSubscribe(alertsInteractor.alert,
-                             this::bindAlert,
-                             Functions.LOG_ERROR);
-
-            alertsInteractor.update();
-        }
-
+        bindAndSubscribe(alertsInteractor.alert,
+                         this::bindAlert,
+                         Functions.LOG_ERROR);
         bindAndSubscribe(lastNightInteractor.timeline,
                          this::updateSleepScoreTab,
                          Functions.LOG_ERROR);
         lastNightInteractor.update();
         checkInForUpdates();
-
     }
 
     @Override
@@ -172,6 +167,15 @@ public class HomeActivity extends ScopedInjectionActivity
     protected void onResume() {
         super.onResume();
         lastNightInteractor.update();
+        if (shouldUpdateAlerts()) {
+            alertsInteractor.update();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isFirstActivityRun = false;
     }
 
     @Override
@@ -187,6 +191,14 @@ public class HomeActivity extends ScopedInjectionActivity
             dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
         }
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(tabLayout != null){
+            tabLayout.clearOnTabSelectedListeners();
+        }
     }
 
     public void checkInForUpdates() {
@@ -213,14 +225,12 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     private void restoreState(@Nullable final Bundle savedInstanceState) {
-        this.isFirstActivityRun = (savedInstanceState == null);
         if (savedInstanceState != null) {
             this.currentItemIndex = savedInstanceState.getInt(KEY_CURRENT_ITEM_INDEX, DEFAULT_ITEM_INDEX);
         } else {
             this.currentItemIndex = DEFAULT_ITEM_INDEX;
         }
     }
-
 
     @OnboardingActivity.Flow
     public int getOnboardingFlow() {
@@ -233,17 +243,33 @@ public class HomeActivity extends ScopedInjectionActivity
 
     //region Device Issues and Alerts
 
+    private boolean isShowingAlert() {
+        return getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) != null
+                || getFragmentManager().findFragmentByTag(DeviceIssueDialogFragment.TAG) != null;
+    }
+
     private boolean shouldUpdateAlerts() {
-        return isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
+        return getOnboardingFlow() != OnboardingActivity.FLOW_REGISTER;
     }
 
     private boolean shouldUpdateDeviceIssues() {
-        return isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
+        return isFirstActivityRun && getOnboardingFlow() != OnboardingActivity.FLOW_REGISTER;
+    }
+
+    private boolean shouldShow(@NonNull final Alert alert) {
+        final boolean valid = alert.isValid();
+        final boolean existingAlert = this.isShowingAlert();
+        switch (alert.getCategory()) {
+            case EXPANSION_UNREACHABLE:
+                return valid && !existingAlert; // always show valid unreacahable alerts whenever we get them
+            case SENSE_MUTED:
+            default:
+                return valid && !existingAlert && isFirstActivityRun;
+        }
     }
 
     private void bindAlert(@NonNull final Alert alert) {
-        if (alert.isValid()
-                && getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) == null) {
+        if (shouldShow(alert)) {
             localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
             BottomAlertDialogFragment.newInstance(alert,
                                                   getResources())
@@ -255,9 +281,7 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     private void bindDeviceIssue(@NonNull final DeviceIssuesInteractor.Issue issue) {
-        if (issue == DeviceIssuesInteractor.Issue.NONE
-                || getFragmentManager().findFragmentByTag(DeviceIssueDialogFragment.TAG) != null
-                || getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) != null) {
+        if (issue == DeviceIssuesInteractor.Issue.NONE || this.isShowingAlert()) {
             return;
         }
 
@@ -331,48 +355,7 @@ public class HomeActivity extends ScopedInjectionActivity
         tabLayout.addTab(tabLayout.newTab().setIcon(drawables[INSIGHTS_ICON_KEY]));
         tabLayout.addTab(tabLayout.newTab().setIcon(drawables[SOUNDS_ICON_KEY]));
         tabLayout.addTab(tabLayout.newTab().setIcon(drawables[CONDITIONS_ICON_KEY]));
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(final TabLayout.Tab tab) {
-                if (tab == null) {
-                    return;
-                }
-                currentItemIndex = tab.getPosition();
-                final Drawable drawable = tab.getIcon();
-                if (drawable == null) {
-                    return;
-                }
-                tab.setIcon(drawablesActive[currentItemIndex]);
-                if (currentItemIndex == 0){
-                    jumpToLastNight();
-                }
-            }
-
-            @Override
-            public void onTabUnselected(final TabLayout.Tab tab) {
-                if (tab == null) {
-                    return;
-                }
-                final Drawable drawable = tab.getIcon();
-                if (drawable == null) {
-                    return;
-                }
-                tab.setIcon(drawables[tab.getPosition()]);
-            }
-
-            @Override
-            public void onTabReselected(final TabLayout.Tab tab) {
-                if (tab == null) {
-                    return;
-                }
-                final int position = tab.getPosition();
-                final Fragment fragment = getFragmentWithIndex(position);
-                if (fragment instanceof ScrollUp) {
-                    ((ScrollUp) fragment).scrollUp();
-                }
-
-            }
-        });
+        tabLayout.addOnTabSelectedListener(new HomeTabListener());
         final TabLayout.Tab tab = tabLayout.getTabAt(currentItemIndex);
         if (shouldSelect && tab != null) {
             tab.select();
@@ -499,6 +482,43 @@ public class HomeActivity extends ScopedInjectionActivity
 
     public interface ScrollUp {
         void scrollUp();
+    }
+
+    private class HomeTabListener implements TabLayout.OnTabSelectedListener {
+
+        @Override
+        public void onTabSelected(final TabLayout.Tab tab) {
+            if (tab == null) {
+                return;
+            }
+            currentItemIndex = tab.getPosition();
+            tab.setIcon(drawablesActive[currentItemIndex]);
+            if (currentItemIndex == SLEEP_ICON_KEY){
+                jumpToLastNight();
+            }
+        }
+
+        @Override
+        public void onTabUnselected(final TabLayout.Tab tab) {
+            if (tab == null) {
+                return;
+            }
+            tab.setIcon(drawables[tab.getPosition()]);
+        }
+
+        @Override
+        public void onTabReselected(final TabLayout.Tab tab) {
+            if (tab == null) {
+                return;
+            }
+            final int position = tab.getPosition();
+            final Fragment fragment = getFragmentWithIndex(position);
+            if (fragment instanceof ScrollUp) {
+                ((ScrollUp) fragment).scrollUp();
+            }
+
+        }
+
     }
 
 

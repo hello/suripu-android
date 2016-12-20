@@ -10,7 +10,7 @@
     android:paddingBottom="@dimen/x2"
     android:paddingLeft="@dimen/x2"
     android:paddingRight="@dimen/x2"
-    android:layout_gravity="bottom|left"
-    android:layout_marginLeft="@dimen/timeline_event_popup_left_inset"
+    android:layout_gravity="bottom|start"
+    android:layout_marginStart="@dimen/timeline_event_popup_left_inset"
     android:layout_marginBottom="@dimen/timeline_event_popup_bottom_inset"
     />

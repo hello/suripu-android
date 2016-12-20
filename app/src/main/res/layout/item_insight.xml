@@ -53,7 +53,7 @@
 
     <TextView
         android:id="@+id/item_insight_body"
-        style="@style/Body"
+        style="@style/AppTheme.Text.Body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/item_insight_category"
