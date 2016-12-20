@@ -103,12 +103,20 @@ public class ExtendedViewPager extends ViewPager {
 
     @Override
     public void setCurrentItem(final int item) {
-        super.setCurrentItem(item, this.smoothScroll);
+        if (smoothScroll) {
+            super.setCurrentItem(item);
+        } else {
+            super.setCurrentItem(item, false);
+        }
     }
 
     @Override
-    public void setCurrentItem(final int item, final boolean ignoredSmoothScroll) {
-        super.setCurrentItem(item, this.smoothScroll);
+    public void setCurrentItem(final int item, final boolean defaultSmoothScroll) {
+        if (smoothScroll) {
+            super.setCurrentItem(item, defaultSmoothScroll);
+        } else {
+            super.setCurrentItem(item, false);
+        }
     }
 
     public void setScrollingEnabled(final boolean swipingEnabled) {
@@ -117,7 +125,8 @@ public class ExtendedViewPager extends ViewPager {
 
     /**
      * @param smoothScroll setting to false prevents using any animation between pages entirely.
-     *                     However, this breaks using {@link FadePageTransformer}
+     *                     However, this breaks using {@link FadePageTransformer}.
+     *                     Default is true and uses default view pager behavior.
      */
     public void setSmoothScroll(final boolean smoothScroll){
         this.smoothScroll = smoothScroll;
