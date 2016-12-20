@@ -14,13 +14,13 @@ import android.graphics.drawable.shapes.PathShape;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableStringBuilder;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
@@ -101,7 +101,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
         final Path backgroundPath = new Path();
 
         final int contentRight = Math.round(screenSize.x * maxBackgroundWidthFraction);
-
+        //from top of screen to top of view
         backgroundPath.addRect(0, 0,
                                screenSize.x, viewTop,
                                Path.Direction.CW);
@@ -142,20 +142,25 @@ public class TimelineInfoOverlay implements Handler.Callback {
         }
     }
 
-    public void show(@NonNull final View fromView, final boolean animate) {
+    public void show(@NonNull final View fromView,
+                     @IdRes final int contentRootResId,
+                     final boolean animate) {
         if (dialog.isShowing()) {
             return;
         }
 
+        final int statusBarHeight = resources.getDimensionPixelSize(R.dimen.x3);
         final Rect viewFrame = new Rect();
         fromView.getGlobalVisibleRect(viewFrame);
         final Point screenSize = new Point();
-        final View contentRoot = activity.findViewById(Window.ID_ANDROID_CONTENT);
-        screenSize.x = contentRoot.getWidth();
-        screenSize.y = contentRoot.getHeight();
+        final View contentRoot = activity.findViewById(contentRootResId);
+        //something is changing based on scroll Y position.
+        // when timeline event clicked is near center of screen it overlays well
+        screenSize.x = contentRoot.getRight();
+        screenSize.y = contentRoot.getBottom() + statusBarHeight;
 
-        viewFrame.top -= contentRoot.getTop();
-        viewFrame.bottom -= contentRoot.getTop();
+        viewFrame.top -= contentRoot.getY();
+        viewFrame.bottom -= contentRoot.getY();
 
         contents.setBackground(createBackground(screenSize, viewFrame.top, viewFrame.bottom));
 

@@ -63,7 +63,6 @@ import is.hello.sense.ui.recycler.StaggeredFadeItemAnimator;
 import is.hello.sense.ui.widget.LoadingView;
 import is.hello.sense.ui.widget.RotaryTimePickerDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
-import is.hello.sense.ui.widget.SlidingLayersView;
 import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
 import is.hello.sense.ui.widget.timeline.TimelineImageGenerator;
@@ -80,7 +79,7 @@ import rx.Observable;
 import rx.functions.Action1;
 
 public class TimelineFragment extends InjectionFragment
-        implements TimelineAdapter.OnItemClickListener, SlidingLayersView.Listener {
+        implements TimelineAdapter.OnItemClickListener {
     // !! Important: Do not use setTargetFragment on TimelineFragment.
     // It is not guaranteed to exist at the time of state restoration.
 
@@ -368,15 +367,6 @@ public class TimelineFragment extends InjectionFragment
 
 
     //region Actions
-
-    @Override
-    public void onTopViewWillSlideDown() {
-        dismissVisibleOverlaysAndDialogs();
-    }
-
-    @Override
-    public void onTopViewDidSlideUp() {
-    }
 
     public void share() {
         Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
@@ -666,7 +656,9 @@ public class TimelineFragment extends InjectionFragment
             }
         });
         infoOverlay.bindEvent(event);
-        infoOverlay.show(view, animateShow);
+        infoOverlay.show(view,
+                         parent.getTooltipOverlayContainerIdRes(),
+                         animateShow);
 
         Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
         Analytics.trackEvent(Analytics.Timeline.EVENT_LONG_PRESS_EVENT, null);
@@ -889,6 +881,9 @@ public class TimelineFragment extends InjectionFragment
 
         @IdRes
         int getTutorialContainerIdRes();
+
+        @IdRes
+        int getTooltipOverlayContainerIdRes();
 
         void setShareVisible(boolean visible);
 
