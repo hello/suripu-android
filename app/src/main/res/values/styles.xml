@@ -582,6 +582,7 @@
         <!-- The color applied to framework switch thumbs in their normal state. -->
         <item name="colorSwitchThumbNormal">@color/primary</item>
         <!-- Inactive track color(75% transparency) -->
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
         <item name="android:windowBackground">@color/background</item>
         <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
         <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading.New</item>
