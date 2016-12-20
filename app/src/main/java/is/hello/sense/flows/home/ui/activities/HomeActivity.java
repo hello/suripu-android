@@ -79,6 +79,8 @@ public class HomeActivity extends ScopedInjectionActivity
     private static final int SOUNDS_ICON_KEY = 3;
     private static final int CONDITIONS_ICON_KEY = 4;
 
+    private static boolean isFirstActivityRun = true; // changed when paused
+
     @Inject
     ApiService apiService;
     @Inject
@@ -97,7 +99,6 @@ public class HomeActivity extends ScopedInjectionActivity
     private final Drawable[] drawables = new Drawable[NUMBER_OF_ITEMS];
     private final Drawable[] drawablesActive = new Drawable[NUMBER_OF_ITEMS];
     private int currentItemIndex;
-    private boolean isFirstActivityRun;
     private View progressOverlay;
     private SpinnerImageView spinner;
     private ExtendedViewPager extendedViewPager;
@@ -138,20 +139,14 @@ public class HomeActivity extends ScopedInjectionActivity
                              Functions.LOG_ERROR);
         }
 
-        if (shouldUpdateAlerts()) {
-            bindAndSubscribe(alertsInteractor.alert,
-                             this::bindAlert,
-                             Functions.LOG_ERROR);
-
-            alertsInteractor.update();
-        }
-
+        bindAndSubscribe(alertsInteractor.alert,
+                         this::bindAlert,
+                         Functions.LOG_ERROR);
         bindAndSubscribe(lastNightInteractor.timeline,
                          this::updateSleepScoreTab,
                          Functions.LOG_ERROR);
         lastNightInteractor.update();
         checkInForUpdates();
-
     }
 
     @Override
@@ -172,6 +167,15 @@ public class HomeActivity extends ScopedInjectionActivity
     protected void onResume() {
         super.onResume();
         lastNightInteractor.update();
+        if (shouldUpdateAlerts()) {
+            alertsInteractor.update();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isFirstActivityRun = false;
     }
 
     @Override
@@ -221,14 +225,12 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     private void restoreState(@Nullable final Bundle savedInstanceState) {
-        this.isFirstActivityRun = (savedInstanceState == null);
         if (savedInstanceState != null) {
             this.currentItemIndex = savedInstanceState.getInt(KEY_CURRENT_ITEM_INDEX, DEFAULT_ITEM_INDEX);
         } else {
             this.currentItemIndex = DEFAULT_ITEM_INDEX;
         }
     }
-
 
     @OnboardingActivity.Flow
     public int getOnboardingFlow() {
@@ -241,17 +243,33 @@ public class HomeActivity extends ScopedInjectionActivity
 
     //region Device Issues and Alerts
 
+    private boolean isShowingAlert() {
+        return getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) != null
+                || getFragmentManager().findFragmentByTag(DeviceIssueDialogFragment.TAG) != null;
+    }
+
     private boolean shouldUpdateAlerts() {
-        return isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
+        return getOnboardingFlow() != OnboardingActivity.FLOW_REGISTER;
     }
 
     private boolean shouldUpdateDeviceIssues() {
-        return isFirstActivityRun && getOnboardingFlow() == OnboardingActivity.FLOW_NONE;
+        return isFirstActivityRun && getOnboardingFlow() != OnboardingActivity.FLOW_REGISTER;
+    }
+
+    private boolean shouldShow(@NonNull final Alert alert) {
+        final boolean valid = alert.isValid();
+        final boolean existingAlert = this.isShowingAlert();
+        switch (alert.getCategory()) {
+            case EXPANSION_UNREACHABLE:
+                return valid && !existingAlert; // always show valid unreacahable alerts whenever we get them
+            case SENSE_MUTED:
+            default:
+                return valid && !existingAlert && isFirstActivityRun;
+        }
     }
 
     private void bindAlert(@NonNull final Alert alert) {
-        if (alert.isValid()
-                && getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) == null) {
+        if (shouldShow(alert)) {
             localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
             BottomAlertDialogFragment.newInstance(alert,
                                                   getResources())
@@ -263,9 +281,7 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     private void bindDeviceIssue(@NonNull final DeviceIssuesInteractor.Issue issue) {
-        if (issue == DeviceIssuesInteractor.Issue.NONE
-                || getFragmentManager().findFragmentByTag(DeviceIssueDialogFragment.TAG) != null
-                || getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) != null) {
+        if (issue == DeviceIssuesInteractor.Issue.NONE || this.isShowingAlert()) {
             return;
         }
 

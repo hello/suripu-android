@@ -51,7 +51,7 @@ public class Alert extends ApiResponse {
     }
 
     public boolean isValid() {
-        return !Category.UNKNOWN.equals(category);
+        return !Constants.EMPTY_STRING.equals(body);
     }
 
     public static Alert NewEmptyInstance() {
