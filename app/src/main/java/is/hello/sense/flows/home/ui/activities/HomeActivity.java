@@ -1,6 +1,7 @@
 package is.hello.sense.flows.home.ui.activities;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
@@ -27,6 +28,7 @@ import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
+import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
@@ -66,10 +68,11 @@ public class HomeActivity extends ScopedInjectionActivity
         InsightInfoFragment.ParentProvider,
         TimelineFragment.ParentProvider,
         FabPresenterProvider,
-        ViewPagerPresenter {
+        ViewPagerPresenter,
+        OnboardingFlowProvider {
 
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
-    public static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
+    private static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
     private static final String KEY_CURRENT_ITEM_INDEX = HomeActivity.class.getSimpleName() + "CURRENT_ITEM_INDEX";
     private static final int DEFAULT_ITEM_INDEX = 0;
     private static final int NUMBER_OF_ITEMS = 5;
@@ -103,6 +106,14 @@ public class HomeActivity extends ScopedInjectionActivity
     private SpinnerImageView spinner;
     private ExtendedViewPager extendedViewPager;
     private TabLayout tabLayout;
+
+    public static Intent getIntent(@NonNull final Context context,
+                                   @OnboardingActivity.Flow final int fromFlow) {
+        final Intent intent = new Intent(context, HomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra(HomeActivity.EXTRA_ONBOARDING_FLOW, fromFlow);
+        return intent;
+    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -232,6 +243,8 @@ public class HomeActivity extends ScopedInjectionActivity
         }
     }
 
+    //region Onboarding flow provider
+
     @OnboardingActivity.Flow
     public int getOnboardingFlow() {
         @OnboardingActivity.Flow
@@ -240,6 +253,8 @@ public class HomeActivity extends ScopedInjectionActivity
                                         OnboardingActivity.FLOW_NONE);
         return flow;
     }
+
+    //end region
 
     //region Device Issues and Alerts
 

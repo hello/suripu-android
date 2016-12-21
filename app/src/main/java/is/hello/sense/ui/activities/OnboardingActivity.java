@@ -648,10 +648,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
 
         hardwarePresenter.reset();
 
-        final Intent intent = new Intent(this, HomeActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra(HomeActivity.EXTRA_ONBOARDING_FLOW, fromFlow);
-        startActivity(intent);
+        startActivity(HomeActivity.getIntent(this, fromFlow));
         finish();
     }
 
