@@ -36,7 +36,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         Idle, Loading, Playing
     }
 
-    private static final int NONE = -1;
+    public static final int NONE = -1;
     private static final int VIEW_TITLE = 1;
     private static final int VIEW_NOT_TITLE = 2;
     private static final String ARG_TITLE = ListActivity.class.getName() + ".ARG_TITLE";
@@ -121,7 +121,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
             return;
         }
 
-        titleRes = intent.getIntExtra(ARG_TITLE, -1);
+        titleRes = intent.getIntExtra(ARG_TITLE, NONE);
         final IListObject IListObject = (IListObject) intent.getSerializableExtra(ARG_LIST_OBJECT);
         final boolean wantsPlayer = intent.getBooleanExtra(ARG_WANTS_PLAYER, false);
         final boolean multipleOptions = intent.getBooleanExtra(ARG_MULTIPLE_OPTIONS, false);
@@ -130,7 +130,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         if (multipleOptions) {
             selectionTracker.trackSelection(intent.getIntegerArrayListExtra(ARG_SELECTED_IDS));
         } else {
-            selectionTracker.trackSelection(intent.getIntExtra(ARG_SELECTED_ID, -1));
+            selectionTracker.trackSelection(intent.getIntExtra(ARG_SELECTED_ID, NONE));
         }
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(ARG_SELECTED_ID)) {

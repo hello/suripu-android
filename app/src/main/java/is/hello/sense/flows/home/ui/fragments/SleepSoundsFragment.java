@@ -44,6 +44,8 @@ import rx.Subscription;
 import rx.functions.Action0;
 import rx.subscriptions.Subscriptions;
 
+import static is.hello.sense.util.Constants.EMPTY_STRING;
+
 @NotTested
 public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         implements
@@ -85,7 +87,6 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         super.onCreate(savedInstanceState);
         addInteractor(sleepSoundsInteractor);
         addInteractor(sleepSoundsStatusInteractor);
-        addInteractor(preferencesInteractor);
     }
 
     @Override
@@ -157,17 +158,26 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            final int value = data.getIntExtra(ListActivity.VALUE_ID, -1);
-            if (value == -1) {
+            final int value = data.getIntExtra(ListActivity.VALUE_ID, ListActivity.NONE);
+            if (value == ListActivity.NONE) {
                 return;
             }
             final String constant;
-            if (requestCode == SOUNDS_REQUEST_CODE) {
-                constant = Constants.SLEEP_SOUNDS_SOUND_ID;
-            } else if (requestCode == DURATION_REQUEST_CODE) {
-                constant = Constants.SLEEP_SOUNDS_DURATION_ID;
-            } else {
-                constant = Constants.SLEEP_SOUNDS_VOLUME_ID;
+            switch (requestCode) {
+                case SOUNDS_REQUEST_CODE:
+                    constant = Constants.SLEEP_SOUNDS_SOUND_ID;
+                    break;
+                case DURATION_REQUEST_CODE:
+                    constant = Constants.SLEEP_SOUNDS_DURATION_ID;
+                    break;
+                case VOLUME_REQUEST_CODE:
+                    constant = Constants.SLEEP_SOUNDS_VOLUME_ID;
+                    break;
+                default:
+                    constant = EMPTY_STRING;
+            }
+            if (EMPTY_STRING.equals(constant)) {
+                return;
             }
             preferencesInteractor.edit()
                                  .putInt(constant, value)
