@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 
 import com.squareup.picasso.Picasso;
@@ -30,6 +29,7 @@ import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.views.InsightsView;
+import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.graph.Scope;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
@@ -204,10 +204,9 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     //region Data Binding
 
     @OnboardingActivity.Flow
-    protected int getOnboardingFlow() {
-        final Activity activity = getActivity();
-        if (activity instanceof HomeActivity) {
-            return ((HomeActivity) activity).getOnboardingFlow();
+    protected int getOnboardingFlow(@Nullable final Activity activity) {
+        if (activity instanceof OnboardingFlowProvider) {
+            return ((OnboardingFlowProvider) activity).getOnboardingFlow();
         } else {
             return OnboardingActivity.FLOW_NONE;
         }
@@ -228,7 +227,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
         presenterView.showCards(currentQuestion, insights);
 
         final Activity activity = getActivity();
-        if (getOnboardingFlow() == OnboardingActivity.FLOW_NONE &&
+        if (getOnboardingFlow(activity) == OnboardingActivity.FLOW_NONE &&
                 tutorialOverlayView == null && Tutorial.TAP_INSIGHT_CARD.shouldShow(activity)) {
             this.tutorialOverlayView = new TutorialOverlayView(activity,
                                                                Tutorial.TAP_INSIGHT_CARD);
