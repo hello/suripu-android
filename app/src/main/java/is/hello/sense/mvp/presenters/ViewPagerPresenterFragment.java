@@ -67,6 +67,14 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
         }
         return viewPagerDelegate.getStartingItemPosition();
     }
+
+    @Override
+    public int getOffscreenPageLimit() {
+        if(viewPagerDelegate == null) {
+            return BaseViewPagerPresenterDelegate.DEFAULT_OFFSCREEN_PAGE_LIMIT;
+        }
+        return viewPagerDelegate.getOffscreenPageLimit();
+    }
     //endregion
 
     //region scollup

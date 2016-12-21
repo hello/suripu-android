@@ -11,6 +11,7 @@ import is.hello.sense.util.NotTested;
 @NotTested
 public abstract class BaseViewPagerPresenterDelegate implements ViewPagerPresenter {
 
+    public final static int DEFAULT_OFFSCREEN_PAGE_LIMIT = 2;
 
     @NonNull
     @Override
@@ -21,5 +22,10 @@ public abstract class BaseViewPagerPresenterDelegate implements ViewPagerPresent
     @Override
     public int getStartingItemPosition() {
         return 0;
+    }
+
+    @Override
+    public int getOffscreenPageLimit() {
+        return DEFAULT_OFFSCREEN_PAGE_LIMIT;
     }
 }

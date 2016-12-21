@@ -3,7 +3,6 @@ package is.hello.sense.mvp.view;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -67,7 +66,7 @@ public final class ViewPagerPresenterView extends PresenterView {
         final StaticFragmentAdapter adapter =
                 new StaticFragmentAdapter(fragment.getDesiredFragmentManager(),
                                           items);
-        this.viewPager.setOffscreenPageLimit(2);
+        this.viewPager.setOffscreenPageLimit(fragment.getOffscreenPageLimit());
         this.viewPager.setAdapter(adapter);
         this.viewPager.setEnabled(true);
 
