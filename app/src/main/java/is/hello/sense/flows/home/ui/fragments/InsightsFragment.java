@@ -232,6 +232,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
             this.tutorialOverlayView = new TutorialOverlayView(activity,
                                                                Tutorial.TAP_INSIGHT_CARD);
             tutorialOverlayView.setOnDismiss(() -> this.tutorialOverlayView = null);
+            //fixme Tutorial never displays despite passing checks. Needs to adjust layout containers used
             tutorialOverlayView.setAnchorContainer(getView());
             getAnimatorContext().runWhenIdle(() -> {
                 if (tutorialOverlayView != null && getUserVisibleHint()) {
