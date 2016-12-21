@@ -23,9 +23,9 @@ import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
-import is.hello.sense.util.Constants;
 
 public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.BaseViewHolder> {
 
@@ -95,15 +95,21 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     }
 
     private Sound getSavedSound() {
-        return combinedSleepState.getSounds().getSoundWithId(preferences.getInt(Constants.SLEEP_SOUNDS_SOUND_ID, -1));
+        return combinedSleepState.getSounds()
+                                 .getSoundWithId(preferences.getInt(PreferencesInteractor.SLEEP_SOUNDS_SOUND_ID,
+                                                                    ListActivity.NONE));
     }
 
     private Duration getSavedDuration() {
-        return combinedSleepState.getDurations().getDurationWithId(preferences.getInt(Constants.SLEEP_SOUNDS_DURATION_ID, -1));
+        return combinedSleepState.getDurations()
+                                 .getDurationWithId(preferences.getInt(PreferencesInteractor.SLEEP_SOUNDS_DURATION_ID,
+                                                                       ListActivity.NONE));
     }
 
     private SleepSoundStatus.Volume getSavedVolume() {
-        return combinedSleepState.getStatus().getVolumeWithValue(preferences.getInt(Constants.SLEEP_SOUNDS_VOLUME_ID, -1));
+        return combinedSleepState.getStatus()
+                                 .getVolumeWithValue(preferences.getInt(PreferencesInteractor.SLEEP_SOUNDS_VOLUME_ID,
+                                                                        ListActivity.NONE));
     }
 
 

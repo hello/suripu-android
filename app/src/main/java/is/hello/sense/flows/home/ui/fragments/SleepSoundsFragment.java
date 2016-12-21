@@ -25,6 +25,7 @@ import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.bluetooth.exceptions.SenseRequiredException;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.views.SleepSoundsView;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SleepSoundsInteractor;
 import is.hello.sense.interactors.SleepSoundsStatusInteractor;
@@ -37,7 +38,6 @@ import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.NotTested;
 import rx.Observable;
 import rx.Subscription;
@@ -116,6 +116,15 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         this.fabPresenter = ((FabPresenterProvider) getActivity()).getFabPresenter();
         bindAndSubscribe(sleepSoundsStatusInteractor.state, this::bindStatus, this::presentStatusError);
         bindAndSubscribe(sleepSoundsInteractor.sub, this::bind, this::presentError);
+        bindAndSubscribe(preferencesInteractor.observeChangesOn(PreferencesInteractor.SLEEP_SOUNDS_SOUND_ID,
+                                                                PreferencesInteractor.SLEEP_SOUNDS_VOLUME_ID,
+                                                                PreferencesInteractor.SLEEP_SOUNDS_DURATION_ID),
+                         changedKey -> {
+                             if(presenterView != null) {
+                                 presenterView.notifyAdapter();
+                             }
+                         },
+                         Functions.LOG_ERROR);
     }
 
     @Override
@@ -165,13 +174,13 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
             final String constant;
             switch (requestCode) {
                 case SOUNDS_REQUEST_CODE:
-                    constant = Constants.SLEEP_SOUNDS_SOUND_ID;
+                    constant = PreferencesInteractor.SLEEP_SOUNDS_SOUND_ID;
                     break;
                 case DURATION_REQUEST_CODE:
-                    constant = Constants.SLEEP_SOUNDS_DURATION_ID;
+                    constant = PreferencesInteractor.SLEEP_SOUNDS_DURATION_ID;
                     break;
                 case VOLUME_REQUEST_CODE:
-                    constant = Constants.SLEEP_SOUNDS_VOLUME_ID;
+                    constant = PreferencesInteractor.SLEEP_SOUNDS_VOLUME_ID;
                     break;
                 default:
                     constant = EMPTY_STRING;
@@ -182,7 +191,6 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
             preferencesInteractor.edit()
                                  .putInt(constant, value)
                                  .apply();
-            presenterView.notifyAdapter();
         }
     }
 
