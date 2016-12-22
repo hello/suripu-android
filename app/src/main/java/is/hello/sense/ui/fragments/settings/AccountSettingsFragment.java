@@ -212,8 +212,7 @@ public class AccountSettingsFragment extends InjectionFragment
                          this::bindAccountPreferences,
                          Functions.LOG_ERROR);
 
-        profileImageManager = builder.setFragmentListener(this)
-                                     .build();
+        profileImageManager = builder.build(this);
     }
 
     @Override

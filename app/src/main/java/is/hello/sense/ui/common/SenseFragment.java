@@ -5,15 +5,23 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Handler;
-import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import is.hello.sense.SenseApplication;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class SenseFragment extends Fragment {
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        SenseApplication.getRefWatcher()
+                        .watch(this);
+    }
 
     /**
      * Shows the fragment using a fragment manager within a given container.
