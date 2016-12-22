@@ -43,12 +43,6 @@ public enum Tutorial {
                    Interaction.SWIPE_RIGHT,
                    Analytics.createBreadcrumbTrackingProperties(Source.TIMELINE,
                                                                 Description.SWIPE_TIMELINE)),
-    ZOOM_OUT_TIMELINE(R.string.tutorial_zoom_out_timeline,
-                      Gravity.BOTTOM,
-                      R.id.view_timeline_toolbar_title,
-                      Interaction.TAP,
-                      Analytics.createBreadcrumbTrackingProperties(Source.TIMELINE,
-                                                                   Description.ZOOM_OUT_TIMELINE)),
     SCRUB_SENSOR_HISTORY(R.string.tutorial_scrub_sensor_history,
                          Gravity.TOP,
                          R.id.fragment_sensor_history_graph,
@@ -60,19 +54,7 @@ public enum Tutorial {
                      R.id.item_insight_card,
                      Interaction.TAP,
                      Analytics.createBreadcrumbTrackingProperties(Source.INSIGHTS,
-                                                                  Description.TAP_INSIGHT_CARD)),
-    TAP_HAMBURGER(R.string.tutorial_tap_hamburger,
-                  Gravity.BOTTOM,
-                  R.id.view_timeline_toolbar_overflow,
-                  Interaction.TAP,
-                  Analytics.createBreadcrumbTrackingProperties(Source.TIMELINE,
-                                                               Description.TAP_HAMBURGER)),
-    TAP_NAME(R.string.tutorial_tap_name,
-             Gravity.BOTTOM,
-             R.id.fragment_account_settings_name,
-             Interaction.TAP,
-             Analytics.createBreadcrumbTrackingProperties(Source.ACCOUNT,
-                                                          Description.TAP_NAME));
+                                                                  Description.TAP_INSIGHT_CARD));
 
     public final
     @StringRes
@@ -102,6 +84,21 @@ public enum Tutorial {
     }
 
     public boolean shouldShow(@NonNull final Activity activity) {
+        // Check if this device has ever seen the desired tutorial. If so mark it as seen for the user
+        // and reset the pref so another account on the device will not suppress the breadcrumb too.
+        final SharedPreferences genericPreferences = activity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
+        if (genericPreferences.getBoolean(getShownKey(), false)){
+            genericPreferences
+                    .edit()
+                    .putBoolean(getShownKey(), false)
+                    .apply();
+
+            // Mark shown for this user and don't show the breadcrumb.
+            markShown(activity, false);
+            return false;
+        }
+
+
         final SharedPreferences preferences =
                 activity.getSharedPreferences(getPrefName(activity), 0);
         return (!preferences.getBoolean(getShownKey(), false) &&
@@ -109,11 +106,13 @@ public enum Tutorial {
     }
 
     public void wasDismissed(@NonNull final Context context) {
-        markShown(context);
-        Analytics.trackEvent(EVENT_NAME, properties);
+        markShown(context, true);
     }
 
-    public void markShown(@NonNull final Context context) {
+    public void markShown(@NonNull final Context context, final boolean track) {
+       if (track){
+           Analytics.trackEvent(EVENT_NAME, properties);
+       }
         final SharedPreferences preferences =
                 context.getSharedPreferences(getPrefName(context), 0);
         preferences.edit()

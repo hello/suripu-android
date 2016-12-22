@@ -26,6 +26,7 @@
     <color name="gray4">#8B95A4</color>
     <color name="gray4_70">#b38b95a4</color>
     <color name="gray3">#B9BFC8</color>
+    <color name="gray3_50">#80B9BFC8</color>
     <color name="gray2">#E8EAED</color>
     <color name="gray2_00">#00e8eaed</color>
     <color name="gray2_10">#1ae8eaed</color>

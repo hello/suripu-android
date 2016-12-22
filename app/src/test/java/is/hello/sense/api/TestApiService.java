@@ -24,6 +24,7 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AppStats;
 import is.hello.sense.api.model.AppUnreadStats;
+import is.hello.sense.api.model.DeviceOTAState;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.model.PasswordUpdate;
@@ -31,16 +32,19 @@ import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
+import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SenseTimeZone;
-import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.StoreReview;
 import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.UpdateCheckIn;
+import is.hello.sense.api.model.VoiceResponse;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
+import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.api.model.v2.ScoreCondition;
+import is.hello.sense.api.model.v2.ShareUrl;
 import is.hello.sense.api.model.v2.SleepDurations;
 import is.hello.sense.api.model.v2.SleepSoundActionPlay;
 import is.hello.sense.api.model.v2.SleepSoundActionStop;
@@ -52,6 +56,15 @@ import is.hello.sense.api.model.v2.TimelineBuilder;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.TimelineEventBuilder;
 import is.hello.sense.api.model.v2.Trends;
+import is.hello.sense.api.model.v2.alarms.AlarmGroups;
+import is.hello.sense.api.model.v2.alerts.Alert;
+import is.hello.sense.api.model.v2.expansions.Configuration;
+import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.api.model.v2.expansions.State;
+import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
+import is.hello.sense.api.model.v2.sensors.SensorResponse;
+import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
+import is.hello.sense.api.model.v2.voice.SenseVoiceSettings;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.util.Logger;
@@ -111,8 +124,9 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<Account> getAccount(@Query("photo") Boolean includePhoto) {
-        return loadResponse("account", new TypeToken<Account>() {
+    public Observable<Account> getAccount(@Query("photo") final Boolean includePhoto) {
+        final String accountJson = includePhoto ? "account_with_photo" : "account";
+        return loadResponse(accountJson, new TypeToken<Account>() {
         }.getType());
     }
 
@@ -122,7 +136,7 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<Account> updateAccount(@NonNull @Body Account account, @Query("photo") Boolean includePhoto) {
+    public Observable<Account> updateAccount(@NonNull @Body Account account, @Query("photo") final Boolean includePhoto) {
         return safeJust(account);
     }
 
@@ -159,12 +173,13 @@ public final class TestApiService implements ApiService {
     @Multipart
     @Override
     public Observable<MultiDensityImage> uploadProfilePhoto(@NonNull @Part("photo") TypedFile profilePhoto) {
-        return unimplemented();
+        return loadResponse("profile_photo", new TypeToken<MultiDensityImage>(){}
+                .getType());
     }
 
     @Override
     public Observable<VoidResponse> deleteProfilePhoto(){
-        return unimplemented();
+        return safeJust(new VoidResponse());
     }
 
     @Override
@@ -241,18 +256,6 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ArrayList<SensorGraphSample>> sensorHistoryForDay(@Path("sensor") String sensor,
-                                                               @Query("timestamp_millis") long timestamp) {
-        return unimplemented();
-    }
-
-    @Override
-    public Observable<ArrayList<SensorGraphSample>> sensorHistoryForWeek(@Path("sensor") String sensor,
-                                                                @Query("timestamp_millis") long timestamp) {
-        return unimplemented();
-    }
-
-    @Override
     public Observable<ArrayList<Question>> questions(@NonNull @Query("date") String timestamp) {
         return loadResponse("questions", new TypeToken<ArrayList<Question>>() {
         }.getType());
@@ -297,15 +300,15 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<ArrayList<Alarm>> smartAlarms() {
-        return loadResponse("smart_alarms", new TypeToken<ArrayList<Alarm>>() {
+    public Observable<AlarmGroups> smartAlarms() {
+        return loadResponse("smart_alarms", new TypeToken<AlarmGroups>() {
         }.getType());
     }
 
     @Override
-    public Observable<VoidResponse> saveSmartAlarms(@Query("client_time_utc") long timestamp,
-                                                   @NonNull @Body List<Alarm> alarms) {
-        return safeJust(new VoidResponse());
+    public Observable<AlarmGroups> saveSmartAlarms(@Path("client_time_utc") final long timestamp,
+                                                   @NonNull @Body final AlarmGroups alarmGroups) {
+        return safeJust(new AlarmGroups());
     }
 
     @Override
@@ -398,5 +401,84 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<Void> trackStoreReview(@NonNull @Body StoreReview review) {
         return safeJust(null);
+    }
+
+    @Override
+    public Observable<ShareUrl> shareInsight(@NonNull @Body InsightType insightType) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<DeviceOTAState> getSenseUpdateStatus() {
+        return loadResponse("sense_ota_required", new TypeToken<DeviceOTAState>(){}.getType());
+    }
+
+    @Override
+    public Observable<VoidResponse> requestSenseUpdate(@Body final String empty) {
+        return Observable.just(new VoidResponse());
+    }
+
+    @Override
+    public Observable<ArrayList<VoiceResponse>> getOnboardingVoiceResponse() {
+        return loadResponse("sense_voice_onboarding", new TypeToken<ArrayList<VoiceResponse>>(){}.getType());
+    }
+
+    @Override
+    public Observable<ArrayList<Expansion>> getExpansions() {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<List<Expansion>> getExpansionDetail(@Path("id") final long expansionId) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<Void> setExpansionState(@Path("id") final long expansionId,
+                                              @Body @NonNull State.Request stateRequest) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<ArrayList<Configuration>> getConfigurations(@Path("id") final long expansionId) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<Configuration> setConfigurations(@Path("id") final long expansionId,
+                                                       @Body @NonNull final Configuration configuration) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<SenseDevice.SwapResponse> swapDevices(@NonNull @Body final SenseDevice.SwapRequest oldSenseId) {
+        return loadResponse("swap_sense_"+oldSenseId.senseId, new TypeToken<SenseDevice.SwapResponse>(){}.getType());
+    }
+
+    @Override
+    public Observable<SenseVoiceSettings> getVoiceSettings(@Path("id") @NonNull final String senseId) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<VoidResponse> setVoiceSettings(@Path("id") @NonNull final String senseId,
+                                                           @Body final SenseVoiceSettings settings) {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<SensorResponse> getSensors() {
+        return loadResponse("get_sensors_v2", new TypeToken<SensorResponse>(){}.getType());
+    }
+
+    @Override
+    public Observable<SensorsDataResponse> postSensors(@NonNull @Body final SensorDataRequest request) {
+        //todo missing different queryScopes except LAST_3H_5_MINUTE
+        return loadResponse("post_sensors_v2_"+request.queryScope.name(), new TypeToken<SensorsDataResponse>(){}.getType());
+    }
+
+    @Override
+    public Observable<ArrayList<Alert>> getAlerts() {
+        return unimplemented();
     }
 }

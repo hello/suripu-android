@@ -31,6 +31,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
+//todo uncommment tests when we use whatsnewlayout in production
 public class InsightsAdapterTests extends SenseTestCase {
     private final FrameLayout fakeParent = new FrameLayout(getContext());
     private final FakeInteractionListener listener = new FakeInteractionListener();
@@ -65,13 +66,13 @@ public class InsightsAdapterTests extends SenseTestCase {
                    is(true));
     }
 
+/*
     @Test
     public void whatsNewCardRendering() throws Exception {
         final InsightsAdapter.WhatsNewViewHolder holder =
                 RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 0);
         assertNotNull(holder);
     }
-
     @Test
     public void whatsNewCardNotRendering() throws Exception {
         WhatsNewLayout.markClosed(getContext());
@@ -85,7 +86,7 @@ public class InsightsAdapterTests extends SenseTestCase {
             return;
         }
         throw new Exception("This shouldn't happen");
-    }
+    }*/
 
     @Test
     public void questionRendering() throws Exception {
@@ -111,6 +112,7 @@ public class InsightsAdapterTests extends SenseTestCase {
         assertThat(listener.wasCallbackCalled(FakeInteractionListener.Callback.ANSWER_QUESTION),
                    is(true));
     }
+/*
 
     @Test
     public void questionRenderingWithWhatsNewCard() throws Exception {
@@ -134,6 +136,7 @@ public class InsightsAdapterTests extends SenseTestCase {
         assertThat(listener.wasCallbackCalled(FakeInteractionListener.Callback.ANSWER_QUESTION),
                    is(true));
     }
+*/
 
     @Test
     public void insightRendering() throws Exception {
@@ -151,12 +154,12 @@ public class InsightsAdapterTests extends SenseTestCase {
         final InsightsAdapter.InsightViewHolder holder =
                 RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 0);
 
-        assertThat(holder.date.getText().toString(), is(equalTo("5 days ago")));
+        assertThat(holder.date.getText().toString(), is(equalTo("5d ago")));
         assertThat(holder.category.getText().toString(), is(equalTo("Light")));
         assertThat(holder.body.getText().toString(), is(equalTo("You should have less of it")));
     }
 
-    @Test
+    /*@Test
     public void insightRenderingWithWhatsNewCard() throws Exception {
         final Insight insight = Insight.create(1, "Light is bad",
                                                new MarkupString("You should have less of it"),
@@ -174,7 +177,7 @@ public class InsightsAdapterTests extends SenseTestCase {
         assertThat(holder.category.getText().toString(), is(equalTo("Light")));
         assertThat(holder.body.getText().toString(), is(equalTo("You should have less of it")));
     }
-
+*/
     @Test
     public void loadingInsights() throws Exception {
         WhatsNewLayout.markClosed(getContext());
@@ -234,6 +237,12 @@ public class InsightsAdapterTests extends SenseTestCase {
             callbacks.add(Callback.INSIGHT_CLICKED);
         }
 
+        @Override
+        public void shareInsight(@NonNull final Insight insightId) {
+            callbacks.add(Callback.SHARE_INSIGHT);
+        }
+
+
         void clear() {
             callbacks.clear();
         }
@@ -248,6 +257,7 @@ public class InsightsAdapterTests extends SenseTestCase {
             SKIP_QUESTION,
             ANSWER_QUESTION,
             INSIGHT_CLICKED,
+            SHARE_INSIGHT
         }
     }
 }

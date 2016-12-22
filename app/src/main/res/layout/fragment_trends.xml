@@ -4,43 +4,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-    <is.hello.sense.ui.widget.SelectorView
-        android:id="@+id/fragment_trends_time_scale"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/trends_title_height" />
 
-    <is.hello.sense.ui.widget.FixedSwipeRefreshLayout
-        android:id="@+id/fragment_trends_refresh_container"
+    <is.hello.sense.ui.widget.ExtendedScrollView
+        android:id="@+id/fragment_trends_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/fragment_trends_time_scale">
+        android:fillViewport="true"
+        android:paddingLeft="@dimen/x1"
+        android:paddingRight="@dimen/x1"
+        android:requiresFadingEdge="vertical"
+        android:scrollbars="none"
+        app:senseFadingEdgeStyle="rounded">
 
-        <is.hello.sense.ui.widget.ExtendedScrollView
-            android:id="@+id/fragment_trends_scrollview"
+        <is.hello.sense.ui.widget.graphing.trends.TrendFeedView
+            android:id="@+id/fragment_trends_trendgraph"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingLeft="@dimen/gap_card_horizontal"
-            android:paddingRight="@dimen/gap_card_horizontal"
-            android:scrollbars="none"
-            android:fillViewport="true"
-            app:senseFadingEdgeStyle="rounded">
+            android:orientation="vertical"/>
 
-            <is.hello.sense.ui.widget.graphing.TrendFeedView
-                android:id="@+id/fragment_trends_trendgraph"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+    </is.hello.sense.ui.widget.ExtendedScrollView>
 
-            </is.hello.sense.ui.widget.graphing.TrendFeedView>
-
-        </is.hello.sense.ui.widget.ExtendedScrollView>
-
-    </is.hello.sense.ui.widget.FixedSwipeRefreshLayout>
-
-    <ProgressBar
-        android:id="@+id/fragment_trends_loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"/>
 
 </RelativeLayout>

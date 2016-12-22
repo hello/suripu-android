@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/view_expansion_detail_info_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/x2"
+    android:paddingBottom="@dimen/x2"
+    android:paddingStart="@dimen/x2"
+    android:paddingEnd="@dimen/x2"
+    android:visibility="gone"
+    tools:showIn="@layout/view_expansion_detail">
+
+    <ImageView
+        android:id="@+id/view_expansion_detail_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="@dimen/x4"
+        android:minHeight="@dimen/expansion_icon_min_size"
+        android:minWidth="@dimen/expansion_icon_min_size"/>
+
+    <TextView
+        android:id="@+id/view_expansion_detail_device_name"
+        style="@style/AppTheme.Text.Body.Bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/view_expansion_detail_icon"
+        android:padding="@dimen/x1"/>
+
+    <TextView
+        android:id="@+id/view_expansion_detail_device_company_name"
+        style="@style/AppTheme.Text.Body.MidSized.Dim"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/view_expansion_detail_device_name"
+        android:layout_toEndOf="@+id/view_expansion_detail_icon"
+        android:paddingStart="@dimen/x1"/>
+
+    <TextView
+        android:id="@+id/view_expansion_detail_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/view_expansion_detail_icon"/>
+
+    <Button
+        android:id="@+id/view_expansion_detail_connect_button"
+        style="@style/AppTheme.Button.Rounded"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="@string/action_connect"
+        android:visibility="gone"/>
+</RelativeLayout>

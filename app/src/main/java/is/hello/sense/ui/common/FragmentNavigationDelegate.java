@@ -3,6 +3,7 @@ package is.hello.sense.ui.common;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -23,7 +24,7 @@ import is.hello.sense.util.StateSafeExecutor;
 public final class FragmentNavigationDelegate implements FragmentManager.OnBackStackChangedListener {
     public static final String SAVED_STATUS_BAR_COLOR = FragmentNavigationDelegate.class.getName() + "#SAVED_STATUS_BAR_COLOR";
 
-    private final @NonNull SenseActivity activity;
+    private Activity activity;
     private final @IdRes int containerId;
     private final @Nullable StateSafeExecutor stateSafeExecutor;
 
@@ -32,9 +33,9 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
 
     //region Lifecycle
 
-    public FragmentNavigationDelegate(@NonNull SenseActivity activity,
-                                      @IdRes int containerId,
-                                      @Nullable StateSafeExecutor stateSafeExecutor) {
+    public FragmentNavigationDelegate(@NonNull final Activity activity,
+                                      @IdRes final int containerId,
+                                      @Nullable final StateSafeExecutor stateSafeExecutor) {
         this.activity = activity;
         this.containerId = containerId;
         this.stateSafeExecutor = stateSafeExecutor;
@@ -45,11 +46,11 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
         }
     }
 
-    public void onSaveInstanceState(@NonNull Bundle outState) {
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
         outState.putInt(SAVED_STATUS_BAR_COLOR, Windows.getStatusBarColor(activity.getWindow()));
     }
 
-    public void onRestoreInstanceState(@NonNull Bundle inState) {
+    public void onRestoreInstanceState(@NonNull final Bundle inState) {
         final @ColorInt int statusBarColor = inState.getInt(SAVED_STATUS_BAR_COLOR);
         Windows.setStatusBarColor(activity.getWindow(), statusBarColor);
     }
@@ -61,6 +62,7 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
                 statusBarAnimator.cancel();
             }
         }
+        activity = null;
     }
 
     //endregion
@@ -125,16 +127,7 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
         final FragmentTransaction transaction = createTransaction(fragment, title,
                                                                   wantsBackStackEntry);
         if (!wantsBackStackEntry) {
-            // There's no state safe way to pop the back stack to the beginning.
-            // Since state loss is fine inside of this method, we just swallow
-            // any IllegalStateExceptions thrown.
-            try {
-                getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            } catch (IllegalStateException e) {
-                Logger.info(getClass().getSimpleName(),
-                            "Popping back stack is currently impossible. State loss happening.",
-                            e);
-            }
+            clearBackStackAllowingStateLoss();
         }
         transaction.commitAllowingStateLoss();
     }
@@ -146,6 +139,19 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
             getFragmentManager().popBackStackImmediate(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         } else {
             getFragmentManager().popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+    }
+
+    public void clearBackStackAllowingStateLoss(){
+        // There's no state safe way to pop the back stack to the beginning.
+        // Since state loss is fine inside of this method, we just swallow
+        // any IllegalStateExceptions thrown.
+        try {
+            getFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        } catch (IllegalStateException e) {
+            Logger.info(getClass().getSimpleName(),
+                        "Popping back stack is currently impossible. State loss happening.",
+                        e);
         }
     }
 
@@ -172,7 +178,7 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
             provider = (StatusBarColorProvider) topFragment;
             targetColor = provider.getStatusBarColor(activity.getResources());
         } else {
-            provider = null;
+            provider = StatusBarColorProvider.EmptyProvider.newInstance();
             targetColor = defaultStatusBarColor;
         }
 
@@ -185,9 +191,7 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
             statusBarAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationStart(Animator animation) {
-                    if (provider != null) {
-                        provider.onStatusBarTransitionBegan(targetColor);
-                    }
+                    provider.onStatusBarTransitionBegan(targetColor);
                 }
 
                 @Override
@@ -197,9 +201,7 @@ public final class FragmentNavigationDelegate implements FragmentManager.OnBackS
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    if (provider != null) {
-                        provider.onStatusBarTransitionEnded(Windows.getStatusBarColor(window));
-                    }
+                    provider.onStatusBarTransitionEnded(Windows.getStatusBarColor(window));
                 }
             });
             statusBarAnimator.start();

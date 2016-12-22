@@ -7,10 +7,10 @@
         android:id="@+id/dialog_sense_alert_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_medium"
-        android:drawablePadding="@dimen/gap_medium"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
+        android:layout_marginBottom="@dimen/x2"
+        android:drawablePadding="@dimen/x2"
         android:textAppearance="@style/AppTheme.Text.Heading.New"
         android:lineSpacingMultiplier="@dimen/line_multiple_heading"
         android:visibility="gone" />
@@ -22,9 +22,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_medium"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
+        android:layout_marginBottom="@dimen/x2"
         android:scrollbars="vertical"
         android:overScrollMode="ifContentScrolls"
         android:textAppearance="@style/AppTheme.Text.Body.New"
@@ -35,13 +35,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
+        android:layout_marginTop="@dimen/x1"
         android:layout_marginLeft="@dimen/gap_outer_dialog_buttons"
         android:layout_marginRight="@dimen/gap_outer_dialog_buttons"
-        android:layout_marginBottom="@dimen/gap_medium"
+        android:layout_marginBottom="@dimen/x2"
         android:gravity="end|center_vertical"
         android:orientation="horizontal">
 
+        <!-- Todo change style to be gray instead of blue -->
         <Button
             android:id="@+id/dialog_sense_alert_cancel"
             android:layout_width="wrap_content"
@@ -52,7 +53,7 @@
 
         <View
             android:id="@+id/dialog_sense_alert_button_divider"
-            android:layout_width="@dimen/gap_small"
+            android:layout_width="@dimen/x1"
             android:layout_height="match_parent"
             android:visibility="gone" />
 

@@ -1,9 +1,6 @@
 package is.hello.sense.ui.adapter;
 
-import android.app.Fragment;
 import android.app.FragmentManager;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -20,13 +17,12 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
     private int count;
     @VisibleForTesting LocalDate latestDate;
     @VisibleForTesting @Nullable Timeline cachedTimeline;
-    @VisibleForTesting boolean firstTimeline = true;
 
 
     //region Lifecycle
 
-    public TimelineFragmentAdapter(@NonNull FragmentManager fragmentManager,
-                                   @NonNull LocalDate oldestDate) {
+    public TimelineFragmentAdapter(@NonNull final FragmentManager fragmentManager,
+                                   @NonNull final LocalDate oldestDate) {
         super(fragmentManager);
 
         final LocalDate today = DateFormatter.todayForTimeline();
@@ -40,20 +36,6 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
         }
         setLatestDate(today);
     }
-
-    @Override
-    public Parcelable saveState() {
-        final Bundle savedState = new Bundle();
-        savedState.putBoolean("firstTimeline", firstTimeline);
-        return savedState;
-    }
-
-    @Override
-    public void restoreState(Parcelable state, ClassLoader loader) {
-        final Bundle savedState = (Bundle) state;
-        this.firstTimeline = savedState.getBoolean("firstTimeline", false);
-    }
-
     //endregion
 
 
@@ -101,10 +83,8 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
 
     @NonNull
     @Override
-    public Fragment createFragment(int position) {
+    public TimelineFragment createFragment(final int position) {
         final LocalDate timelineDate = getItemDate(position);
-        final boolean firstTimeline = this.firstTimeline;
-        this.firstTimeline = false;
 
         final Timeline cachedTimeline;
         if (this.cachedTimeline == null || !timelineDate.equals(this.cachedTimeline.getDate())) {
@@ -115,8 +95,12 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
         }
 
         return TimelineFragment.newInstance(timelineDate,
-                                            cachedTimeline,
-                                            firstTimeline);
+                                            cachedTimeline);
+    }
+
+    @Nullable
+    public TimelineFragment getCurrentTimeline(){
+        return (TimelineFragment) getCurrentFragment();
     }
 
     //endregion

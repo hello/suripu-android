@@ -30,23 +30,23 @@ import rx.functions.Action1;
 
 @SuppressLint("ViewConstructor") // This is intentional
 public class OnboardingSimpleStepView extends RelativeLayout {
-    public final OnboardingToolbar toolbar;
+    public OnboardingToolbar toolbar;
 
-    public final Button primaryButton;
-    public final Button secondaryButton;
+    public  Button primaryButton;
+    public  Button secondaryButton;
 
-    public final ScrollView contentsScrollView;
-    public final LinearLayout contents;
-    public final TextView headingText;
-    public final TextView subheadingText;
+    public  ScrollView contentsScrollView;
+    public  LinearLayout contents;
+    public  TextView headingText;
+    public  TextView subheadingText;
     public /*lazy*/ ImageView diagramImage;
     public /*lazy*/ DiagramVideoView diagramVideo;
 
 
     //region Lifecycle
 
-    public OnboardingSimpleStepView(@NonNull Fragment fragment,
-                                    @NonNull LayoutInflater inflater) {
+    public OnboardingSimpleStepView(@NonNull final Fragment fragment,
+                                    @NonNull final LayoutInflater inflater) {
         super(fragment.getActivity());
 
         inflater.inflate(R.layout.view_onboarding_simple_step, this, true);
@@ -62,7 +62,7 @@ public class OnboardingSimpleStepView extends RelativeLayout {
         this.subheadingText = (TextView) contents.findViewById(R.id.view_onboarding_simple_step_subheading);
     }
 
-    public OnboardingSimpleStepView configure(@NonNull Action1<OnboardingSimpleStepView> visitor) {
+    public OnboardingSimpleStepView configure(@NonNull final Action1<OnboardingSimpleStepView> visitor) {
         visitor.call(this);
         return this;
     }
@@ -71,6 +71,32 @@ public class OnboardingSimpleStepView extends RelativeLayout {
         if (diagramVideo != null) {
             diagramVideo.destroy();
         }
+
+        if(primaryButton.hasOnClickListeners()){
+            primaryButton.setOnClickListener(null);
+        }
+
+        if(secondaryButton.hasOnClickListeners()){
+            secondaryButton.setOnClickListener(null);
+        }
+
+        if(toolbar != null){
+            toolbar.onDestroyView();
+            toolbar = null;
+        }
+
+        diagramImage = null;
+        if(diagramVideo != null) {
+            diagramVideo.destroy();
+            diagramVideo = null;
+        }
+
+        primaryButton = null;
+        secondaryButton = null;
+        contentsScrollView = null;
+        contents = null;
+        headingText = null;
+        subheadingText = null;
     }
 
     //endregion
@@ -79,7 +105,7 @@ public class OnboardingSimpleStepView extends RelativeLayout {
     //region Toolbar
 
     public OnboardingSimpleStepView hideToolbar() {
-        int newTopPadding = getResources().getDimensionPixelSize(R.dimen.gap_outer);
+        final int newTopPadding = getResources().getDimensionPixelSize(R.dimen.x3);
         headingText.setPadding(headingText.getPaddingLeft(), newTopPadding, headingText.getRight(), headingText.getBottom());
         toolbar.hide();
         return this;
@@ -105,15 +131,15 @@ public class OnboardingSimpleStepView extends RelativeLayout {
         return this;
     }
 
-    public OnboardingSimpleStepView setCompact(boolean compact) {
+    public OnboardingSimpleStepView setCompact(final boolean compact) {
         toolbar.setCompact(compact);
 
-        Resources resources = getResources();
-        int newBottomMargin;
+        final Resources resources = getResources();
+        final int newBottomMargin;
         if (compact) {
-            newBottomMargin = resources.getDimensionPixelSize(R.dimen.gap_small);
+            newBottomMargin = resources.getDimensionPixelSize(R.dimen.x1);
         } else {
-            newBottomMargin = resources.getDimensionPixelSize(R.dimen.gap_outer);
+            newBottomMargin = resources.getDimensionPixelSize(R.dimen.x3);
         }
         ((MarginLayoutParams) primaryButton.getLayoutParams()).bottomMargin = newBottomMargin;
         primaryButton.invalidate();
@@ -293,6 +319,17 @@ public class OnboardingSimpleStepView extends RelativeLayout {
         ensureDiagramVideo();
         diagramVideo.setDataSource(video);
 
+        return this;
+    }
+
+    public OnboardingSimpleStepView setAnimatedView(View animatedView) {
+        if(diagramVideo == null && diagramImage == null){
+            final LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                                               LayoutParams.WRAP_CONTENT);
+            contents.addView(animatedView, contents.getChildCount() - 1, layoutParams);
+        } else{
+            throw new IllegalStateException("Cannot set animated view if diagram image or video is already added.");
+        }
         return this;
     }
 

@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -18,6 +19,7 @@ import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 import is.hello.commonsense.util.Errors;
 import is.hello.commonsense.util.StringRef;
@@ -52,9 +54,8 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
     private OnRetry onRetry;
 
-    private
     @Nullable
-    List<Insight> insights;
+    private List<Insight> insights;
     private Question currentQuestion;
     private int loadingInsightPosition = RecyclerView.NO_POSITION;
 
@@ -391,6 +392,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         final TextView body;
         final TextView date;
         final TextView category;
+        final LinearLayout share;
         public final ParallaxImageView image;
 
         InsightViewHolder(@NonNull final View view) {
@@ -399,6 +401,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             this.date = (TextView) view.findViewById(R.id.item_insight_date);
             this.category = (TextView) view.findViewById(R.id.item_insight_category);
             this.image = (ParallaxImageView) view.findViewById(R.id.item_insight_image);
+            this.share = (LinearLayout) view.findViewById(R.id.item_insight_share);
 
             view.setOnClickListener(this);
         }
@@ -426,6 +429,13 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                 }
                 image.setVisibility(View.VISIBLE);
                 category.setText(insight.getCategoryName());
+                if (insight.isShareable()) {
+                    share.setVisibility(View.VISIBLE);
+                    share.setOnClickListener(v -> interactionListener.shareInsight(insight));
+                } else {
+                    share.setVisibility(View.GONE);
+                    share.setOnClickListener(null);
+                }
             }
 
             body.setText(Styles.darkenEmphasis(resources, insight.getMessage()));
@@ -485,5 +495,8 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         void onAnswerQuestion();
 
         void onInsightClicked(@NonNull InsightViewHolder viewHolder);
+
+        void shareInsight(@NonNull Insight insight);
+
     }
 }

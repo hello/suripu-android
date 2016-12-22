@@ -26,4 +26,12 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
+
+    <style name="AppTheme.ProgressBar.Horizontal" parent="android:Widget.Holo.ProgressBar.Horizontal">
+        <item name="android:minWidth">164dp</item>
+        <item name="android:maxWidth">164dp</item>
+        <item name="android:max">100</item>
+        <item name="android:secondaryProgress">100</item>
+        <item name="android:secondaryProgressTint">@color/gray3</item>
+    </style>
 </resources>

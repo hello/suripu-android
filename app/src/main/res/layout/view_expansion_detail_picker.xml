@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <is.hello.sense.flows.expansions.ui.widget.ExpansionRangePickerView
+        android:id="@+id/view_expansion_detail_picker_value_widget"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/view_expansion_detail_picker_bottom"
+        android:layout_alignParentTop="true"
+        android:background="@color/background_light"/>
+
+    <include
+        android:id="@+id/view_expansion_detail_picker_bottom"
+        layout="@layout/view_expansion_detail_action_rows"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
+</RelativeLayout>

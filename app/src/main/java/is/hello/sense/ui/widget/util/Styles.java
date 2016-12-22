@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
@@ -37,28 +40,39 @@ import android.widget.TextView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 
 import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Trends;
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.SuperscriptSpanAdjuster;
 import is.hello.sense.util.markup.text.MarkupString;
 import is.hello.sense.util.markup.text.MarkupStyleSpan;
 
+import static is.hello.sense.ui.common.UserSupport.DeviceIssue;
+import static is.hello.sense.ui.common.UserSupport.HelpStep;
+import static is.hello.sense.ui.common.UserSupport.showAppSettings;
+import static is.hello.sense.ui.common.UserSupport.showContactForm;
+import static is.hello.sense.ui.common.UserSupport.showForDeviceIssue;
+import static is.hello.sense.ui.common.UserSupport.showForHelpStep;
+import static is.hello.sense.ui.common.UserSupport.showSupportedDevices;
+import static is.hello.sense.ui.common.UserSupport.showUserGuide;
+
 public final class Styles {
-    public static final float LETTER_SPACING_SECTION_HEADING_LARGE = 0.2f;
+
+    public static final float DISABLED_ALPHA_FLOAT = 0.2f;
+    public static final float ENABLED_ALPHA_FLOAT = 1.0f;
 
     public static final boolean UNDERLINE_LINKS = false;
 
     public static final int UNIT_STYLE_SUPERSCRIPT = (1 << 1);
     public static final int UNIT_STYLE_SUBSCRIPT = (1 << 2);
+
+    private static final int ENABLED_ALPHA_INT = 255;
+    private static final int DISABLED_ALPHA_INT = 50;
 
     @IntDef({
             UNIT_STYLE_SUPERSCRIPT,
@@ -95,7 +109,7 @@ public final class Styles {
     int getConnectStatusMessage(@NonNull ConnectProgress status) {
         switch (status) {
             case CONNECTING:
-                return R.string.title_connecting;
+                return R.string.title_connecting_with_sense;
 
             case BONDING:
                 return R.string.title_pairing;
@@ -105,7 +119,7 @@ public final class Styles {
 
             default:
             case CONNECTED:
-                return R.string.title_connecting;
+                return R.string.title_connecting_with_sense;
         }
     }
 
@@ -177,9 +191,9 @@ public final class Styles {
 
     public static
     @NonNull
-    CharSequence assembleReadingAndUnit(@NonNull CharSequence value,
-                                        @NonNull String suffix,
-                                        @UnitStyle int unitStyle) {
+    CharSequence assembleReadingAndUnit(@NonNull final CharSequence value,
+                                        @NonNull final String suffix,
+                                        @UnitStyle final int unitStyle) {
         final SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(value);
 
@@ -198,8 +212,14 @@ public final class Styles {
 
     public static
     @NonNull
-    CharSequence assembleReadingAndUnit(double value, @NonNull String suffix) {
+    CharSequence assembleReadingAndUnit(final double value, @NonNull final String suffix) {
         return assembleReadingAndUnit(String.format("%.0f", value), suffix, UNIT_STYLE_SUPERSCRIPT);
+    }
+
+    public static
+    @NonNull
+    CharSequence assembleReadingAndUnit(final double value, @NonNull final String suffix, final int decimals) {
+        return assembleReadingAndUnit(String.format("%." + decimals + "f", value), suffix, UNIT_STYLE_SUPERSCRIPT);
     }
 
     public static
@@ -275,32 +295,32 @@ public final class Styles {
             final SimpleClickableSpan clickableSpan;
             switch (url) {
                 case "#user-guide": {
-                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showUserGuide(activity));
+                    clickableSpan = new SimpleClickableSpan(v -> showUserGuide(activity));
                     break;
                 }
 
                 case "#contact": {
-                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showContactForm(activity));
+                    clickableSpan = new SimpleClickableSpan(v -> showContactForm(activity));
                     break;
                 }
 
                 case "#second-pill": {
-                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showForDeviceIssue(activity, UserSupport.DeviceIssue.PAIRING_2ND_PILL));
+                    clickableSpan = new SimpleClickableSpan(v -> showForDeviceIssue(activity, DeviceIssue.PAIRING_2ND_PILL));
                     break;
                 }
 
                 case "#supported-devices": {
-                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showSupportedDevices(activity));
+                    clickableSpan = new SimpleClickableSpan(v -> showSupportedDevices(activity));
                     break;
                 }
 
                 case "#settings": {
-                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showAppSettings(activity));
+                    clickableSpan = new SimpleClickableSpan(v -> showAppSettings(activity));
                     break;
                 }
 
-                case "#facebook-autofill":{
-                    clickableSpan = new SimpleClickableSpan(v -> UserSupport.showFacebookAutoFillMoreInfoPage(activity));
+                case "#facebook-autofill": {
+                    clickableSpan = new SimpleClickableSpan(v -> showForHelpStep(activity, HelpStep.AUTO_FILL_FACEBOOK));
                     break;
                 }
 
@@ -452,5 +472,48 @@ public final class Styles {
         }
     }
 
+    public static int dpToPx(final int dp) {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
+    }
 
+    public static int pxToDp(final int px) {
+        return (int) (px / Resources.getSystem().getDisplayMetrics().density);
+    }
+
+    /**
+     * @return int value between 0 - 255 based on enabled state.
+     * Used when setting {@link android.widget.ImageView#setImageAlpha(int)}
+     */
+    public static int getImageViewAlpha(final boolean isEnabled) {
+        return isEnabled ? Styles.ENABLED_ALPHA_INT : Styles.DISABLED_ALPHA_INT;
+    }
+
+    /**
+     * @return float value between 0f - 1.0f based on enabled state.
+     * Used when setting {@link View#setAlpha(float)}
+     */
+    public static float getViewAlpha(final boolean isEnabled) {
+        return isEnabled ? Styles.ENABLED_ALPHA_FLOAT : Styles.DISABLED_ALPHA_FLOAT;
+    }
+
+    public static Bitmap drawableToBitmap(@NonNull final Drawable drawable) {
+        Bitmap bitmap = null;
+
+        if (drawable instanceof BitmapDrawable) {
+            final BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            if (bitmapDrawable.getBitmap() != null) {
+                return bitmapDrawable.getBitmap();
+            }
+        }
+        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
+        } else {
+            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        }
+
+        final Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
+    }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -16,13 +17,10 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
-import org.joda.time.Hours;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
-import org.joda.time.Minutes;
 import org.joda.time.Months;
-import org.joda.time.Seconds;
 import org.joda.time.Weeks;
 import org.joda.time.Years;
 
@@ -43,9 +41,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import is.hello.sense.R;
+import is.hello.sense.interactors.Interactor;
 import is.hello.sense.ui.widget.util.Styles;
 
-@Singleton public class DateFormatter {
+@Singleton public class DateFormatter extends Interactor {
     /**
      * The hour of day when the last night date is considered to roll over.
      * <p />
@@ -141,6 +140,16 @@ import is.hello.sense.ui.widget.util.Styles;
      */
     public static boolean isInLastWeek(@NonNull LocalDate instant) {
         Interval interval = new Interval(Weeks.ONE, nowDateTime().withTimeAtStartOfDay());
+        return interval.contains(instant.toDateTimeAtStartOfDay());
+    }
+
+
+    /**
+     * Returns whether or not a given date is considered to
+     * be within two weeks before the present day.
+     */
+    public static boolean isInLast2Weeks(@NonNull final LocalDate instant) {
+        final Interval interval = new Interval(Weeks.TWO, nowDateTime().withTimeAtStartOfDay());
         return interval.contains(instant.toDateTimeAtStartOfDay());
     }
 
@@ -314,42 +323,39 @@ import is.hello.sense.ui.widget.util.Styles;
      * except supporting a few more time interval types, and omitting
      * support for dates in the future.
      */
-    public @NonNull String formatAsRelativeTime(@Nullable DateTime time) {
+    @NonNull
+    public String formatAsRelativeTime(@Nullable final DateTime time) {
         if (time != null) {
-            DateTime now = DateTime.now(time.getZone()).withMillisOfSecond(0);
-            DateTime roundTime = time.withMillisOfSecond(0);
+            final DateTime now = DateTime.now(time.getZone()).withMillisOfSecond(0);
+            final DateTime roundTime = time.withMillisOfSecond(0);
             if (now.isBefore(roundTime)) {
                 Logger.warn(getClass().getSimpleName(), "formatAsRelativeTime not meant to be used with dates in the past");
                 return formatAsLocalizedDate(roundTime.toLocalDate());
             }
 
-            Interval interval = new Interval(roundTime, now);
-
-            int pluralRes;
-            int count;
-            if (Minutes.minutesIn(interval).isLessThan(Minutes.ONE)) {
-                count = Seconds.secondsIn(interval).getSeconds();
-                pluralRes = R.plurals.format_relative_time_seconds;
-            } else if (Hours.hoursIn(interval).isLessThan(Hours.ONE)) {
-                count = Minutes.minutesIn(interval).getMinutes();
-                pluralRes = R.plurals.format_relative_time_minutes;
-            } else if (Days.daysIn(interval).isLessThan(Days.ONE)) {
-                count = Hours.hoursIn(interval).getHours();
-                pluralRes = R.plurals.format_relative_time_hours;
-            } else if (Weeks.weeksIn(interval).isLessThan(Weeks.ONE)) {
-                count = Days.daysIn(interval).getDays();
-                pluralRes = R.plurals.format_relative_time_days;
-            } else if (Months.monthsIn(interval).isLessThan(Months.ONE)) {
-                count = Weeks.weeksIn(interval).getWeeks();
-                pluralRes = R.plurals.format_relative_time_weeks;
-            } else if (Years.yearsIn(interval).isLessThan(Years.ONE)) {
-                count = Months.monthsIn(interval).getMonths();
-                pluralRes = R.plurals.format_relative_time_months;
-            } else {
-                return formatAsLocalizedDate(roundTime.toLocalDate());
+            final Interval interval = new Interval(roundTime, now);
+            final int count;
+            final @StringRes int typeRes;
+            if (Days.daysIn(interval).isLessThan(Days.ONE)) {
+                return context.getResources().getString(R.string.action_today);
             }
-
-            return context.getResources().getQuantityString(pluralRes, count, count);
+            if (Days.daysIn(interval).isLessThan(Days.TWO)) {
+                return context.getResources().getString(R.string.action_yesterday);
+            }
+            if (Days.daysIn(interval).isLessThan(Days.SEVEN)) {
+                count = Days.daysIn(interval).getDays();
+                typeRes = R.string.format_day;
+            } else if (Weeks.weeksIn(interval).isLessThan(Weeks.weeks(9))) {
+                count = Weeks.weeksIn(interval).getWeeks();
+                typeRes = R.string.format_week;
+            } else if (Months.monthsIn(interval).isLessThan(Months.TWELVE)) {
+                count = Months.monthsIn(interval).getMonths();
+                typeRes = R.string.format_month;
+            } else {
+                count = Years.yearsIn(interval).getYears();
+                typeRes = R.string.format_year;
+            }
+            return context.getResources().getString(R.string.format_ago, count, context.getString(typeRes));
         } else {
             return context.getString(R.string.format_date_placeholder);
         }

@@ -42,11 +42,12 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.AccountPresenter;
-import is.hello.sense.graph.presenters.DevicesPresenter;
-import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.interactors.AccountInteractor;
+import is.hello.sense.interactors.DevicesInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.permissions.LocationPermission;
-import is.hello.sense.ui.common.FragmentNavigationActivity;
+import is.hello.sense.ui.activities.SettingsActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
@@ -54,7 +55,7 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
 import is.hello.sense.ui.dialogs.PromptForHighPowerDialogFragment;
-import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
+import is.hello.sense.ui.fragments.updating.SelectWifiNetworkFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.util.Styles;
@@ -73,10 +74,17 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     private static final int OPTION_ID_REPLACE_SENSE = 0;
     private static final int OPTION_ID_FACTORY_RESET = 1;
 
-    @Inject DevicesPresenter devicesPresenter;
-    @Inject HardwarePresenter hardwarePresenter;
-    @Inject AccountPresenter accountPresenter;
-    @Inject BluetoothStack bluetoothStack;
+    @Inject
+    DevicesInteractor devicesPresenter;
+    @Inject
+    HardwareInteractor hardwarePresenter;
+    @Inject
+    AccountInteractor accountPresenter;
+    @Inject
+    BluetoothStack bluetoothStack;
+    @Inject
+    PreferencesInteractor preferencesInteractor;
+
     private TextView pairingMode;
     private TextView changeWiFi;
 
@@ -141,7 +149,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         addDeviceAction(R.drawable.icon_settings_advanced, R.string.title_advanced, this::showAdvancedOptions);
         showActions();
 
-        IntentFilter fatalErrors = new IntentFilter(HardwarePresenter.ACTION_CONNECTION_LOST);
+        IntentFilter fatalErrors = new IntentFilter(HardwareInteractor.ACTION_CONNECTION_LOST);
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(PERIPHERAL_CLEARED, fatalErrors);
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -440,11 +448,10 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
 
         Analytics.trackEvent(Analytics.Backside.EVENT_EDIT_WIFI, null);
 
-        final FragmentNavigationActivity.Builder builder =
-                new FragmentNavigationActivity.Builder(getActivity());
+        final SettingsActivity.Builder builder =
+                new SettingsActivity.Builder(getActivity());
         builder.setDefaultTitle(R.string.title_edit_wifi);
-        builder.setFragmentClass(SelectWiFiNetworkFragment.class);
-        builder.setArguments(SelectWiFiNetworkFragment.createSettingsArguments());
+        builder.setFragmentClass(SelectWifiNetworkFragment.class);
         builder.setWindowBackgroundColor(ContextCompat.getColor(getActivity(), R.color.background_onboarding));
         builder.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         startActivityForResult(builder.toIntent(), REQUEST_CODE_WIFI);
@@ -581,13 +588,14 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             bindAndSubscribe(hardwarePresenter.factoryReset(device),
                              device -> {
                                  loadingDialogFragment.dismissSafely();
-                                 Analytics.setSenseId("unpaired");
+                                 Analytics.resetSenseTraits();
 
                                  MessageDialogFragment powerCycleDialog = MessageDialogFragment.newInstance(R.string.title_power_cycle_sense_factory_reset,
                                                                                                             R.string.message_power_cycle_sense_factory_reset);
                                  powerCycleDialog.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
 
-                                 hardwarePresenter.clearPeripheral();
+                                 hardwarePresenter.reset();
+                                 preferencesInteractor.resetSenseDependentPrefs();
                                  finishWithResult(RESULT_REPLACED_DEVICE, null);
 
                              },
@@ -612,8 +620,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         dialog.setPositiveButton(R.string.action_replace_device, (d, which) -> {
             bindAndSubscribe(devicesPresenter.unregisterDevice(device),
                              ignored -> {
-                                 Analytics.setSenseId("unpaired");
-                                 hardwarePresenter.clearPeripheral();
+                                 Analytics.resetSenseTraits();
+                                 hardwarePresenter.reset();
+                                 preferencesInteractor.resetSenseDependentPrefs();
                                  finishDeviceReplaced();
                              },
                              this::presentError);

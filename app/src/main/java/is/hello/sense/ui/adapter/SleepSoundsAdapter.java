@@ -1,7 +1,6 @@
 package is.hello.sense.ui.adapter;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import is.hello.go99.animators.AnimatorContext;
@@ -22,13 +22,15 @@ import is.hello.sense.api.model.v2.SleepSoundStatus;
 import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Sound;
+import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
 import is.hello.sense.util.Constants;
 
 public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.BaseViewHolder> {
 
     private final LayoutInflater inflater;
-    private final SharedPreferences preferences;
+    private final PreferencesInteractor preferences;
     private final InteractionListener interactionListener;
     private final AnimatorContext animatorContext;
     private SleepSoundsState combinedSleepState;
@@ -41,7 +43,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
 
     public SleepSoundsAdapter(final @NonNull Context context,
-                              final @NonNull SharedPreferences preferences,
+                              final @NonNull PreferencesInteractor preferences,
                               final @NonNull InteractionListener interactionListener,
                               final @NonNull AnimatorContext animatorContext,
                               final @NonNull Retry retry) {
@@ -93,15 +95,21 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     }
 
     private Sound getSavedSound() {
-        return combinedSleepState.getSounds().getSoundWithId(preferences.getInt(Constants.SLEEP_SOUNDS_SOUND_ID, -1));
+        return combinedSleepState.getSounds()
+                                 .getSoundWithId(preferences.getInt(PreferencesInteractor.SLEEP_SOUNDS_SOUND_ID,
+                                                                    Constants.NONE));
     }
 
     private Duration getSavedDuration() {
-        return combinedSleepState.getDurations().getDurationWithId(preferences.getInt(Constants.SLEEP_SOUNDS_DURATION_ID, -1));
+        return combinedSleepState.getDurations()
+                                 .getDurationWithId(preferences.getInt(PreferencesInteractor.SLEEP_SOUNDS_DURATION_ID,
+                                                                       Constants.NONE));
     }
 
     private SleepSoundStatus.Volume getSavedVolume() {
-        return combinedSleepState.getStatus().getVolumeWithValue(preferences.getInt(Constants.SLEEP_SOUNDS_VOLUME_ID, -1));
+        return combinedSleepState.getStatus()
+                                 .getVolumeWithValue(preferences.getInt(PreferencesInteractor.SLEEP_SOUNDS_VOLUME_ID,
+                                                                        Constants.NONE));
     }
 
 
@@ -115,13 +123,16 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         if (viewType == AdapterState.PLAYER.ordinal()) {
             final SleepSoundsPlayerView playerView = new SleepSoundsPlayerView(context, animatorContext, combinedSleepState, interactionListener);
             displayedValues = playerView;
-            return new SleepSoundsPlayerViewHolder(playerView);
+            return new SleepSoundsPlayerViewHolder(inflater.inflate(R.layout.item_rounded_linearlayout, parent, false),
+                                                   playerView);
         } else if (viewType == AdapterState.FIRMWARE_UPDATE.ordinal()) {
             return new FwUpdateStateViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         } else if (viewType == AdapterState.SOUNDS_DOWNLOAD.ordinal()) {
             return new NoSoundsStateViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         } else if (viewType == AdapterState.OFFLINE.ordinal()) {
             return new OfflineViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
+        } else if (viewType == AdapterState.SENSE_NOT_PAIRED.ordinal()) {
+            return new SenseNotPairedViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         }
         return new ErrorViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
     }
@@ -147,26 +158,28 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     }
 
     public class SleepSoundsPlayerViewHolder extends BaseViewHolder {
-        private final SleepSoundsPlayerView view;
+        private final SleepSoundsPlayerView playerView;
 
-        SleepSoundsPlayerViewHolder(@NonNull SleepSoundsPlayerView playerView) {
-            super(playerView);
-            this.view = playerView;
+        SleepSoundsPlayerViewHolder(@NonNull final View view,
+                                    @NonNull final SleepSoundsPlayerView playerView) {
+            super(view);
+            this.playerView = playerView;
+            ((LinearLayout) view.findViewById(R.id.item_sound_player)).addView(this.playerView);
         }
 
         @Override
-        void bind(int position) {
-            view.bindStatus(sleepSoundStatus,
-                            getSavedSound(),
-                            getSavedDuration(),
-                            getSavedVolume());
+        void bind(final int position) {
+            playerView.bindStatus(sleepSoundStatus,
+                                  getSavedSound(),
+                                  getSavedDuration(),
+                                  getSavedVolume());
         }
     }
 
 
     //region sleep state view holders
 
-    public abstract class SleepStateViewHolder extends BaseViewHolder {
+    public static abstract class SleepStateViewHolder extends BaseViewHolder {
         protected final ImageView image;
         protected final TextView title;
         protected final TextView message;
@@ -192,13 +205,13 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         }
     }
 
-    class OfflineViewHolder extends SleepStateViewHolder {
+    static class OfflineViewHolder extends SleepStateViewHolder {
         OfflineViewHolder(final @NonNull View view) {
             super(view);
         }
 
         @Override
-        void bind(int position) {
+        void bind(final int position) {
             this.title.setText(R.string.sense_offline_title);
             this.image.setImageResource(R.drawable.illustration_sense_offline);
             this.message.setText(R.string.sense_offline_message);
@@ -206,7 +219,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         }
     }
 
-    class NoSoundsStateViewHolder extends SleepStateViewHolder {
+    static class NoSoundsStateViewHolder extends SleepStateViewHolder {
 
         NoSoundsStateViewHolder(final @NonNull View view) {
             super(view);
@@ -220,7 +233,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         }
     }
 
-    class FwUpdateStateViewHolder extends SleepStateViewHolder {
+    static class FwUpdateStateViewHolder extends SleepStateViewHolder {
 
         FwUpdateStateViewHolder(final @NonNull View view) {
             super(view);
@@ -239,8 +252,8 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     //region error
 
     public class ErrorViewHolder extends BaseViewHolder implements View.OnClickListener {
-        private final TextView message;
-        private final Button action;
+        protected final TextView message;
+        protected final Button action;
 
         ErrorViewHolder(final @NonNull View view) {
             super(view);
@@ -266,13 +279,34 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     }
 
+    public class SenseNotPairedViewHolder extends ErrorViewHolder {
+        protected final ImageView image;
+        SenseNotPairedViewHolder(final @NonNull View view) {
+            super(view);
+            this.image = (ImageView) view.findViewById(R.id.item_message_card_image);
+        }
+
+        @Override
+        void bind(final int position) {
+            this.image.setImageResource(R.drawable.illustration_no_sense);
+            this.message.setText(R.string.error_sleep_sounds_requires_device);
+            action.setText(R.string.action_pair_sense);
+        }
+
+        @Override
+        public void onClick(final View ignored) {
+            context.startActivity(OnboardingActivity.getPairOnlyIntent(context));
+        }
+    }
+
     public enum AdapterState {
         NONE,
         PLAYER,
         FIRMWARE_UPDATE,
         SOUNDS_DOWNLOAD,
         ERROR,
-        OFFLINE
+        OFFLINE,
+        SENSE_NOT_PAIRED
     }
 
     //endregion

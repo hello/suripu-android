@@ -28,6 +28,7 @@
     <color name="background_dark_overlay">@color/black_50</color>
     <color name="background_timeline">@color/white</color>
     <color name="background_onboarding">@color/white</color>
+    <color name="background_expansions">@color/white</color>
     <color name="background_insight_illustration">@color/gray3</color>
 
     <color name="background_dark_item_clicked">@color/blue2</color>
@@ -45,6 +46,7 @@
     <color name="text_dark">@color/gray6</color>
     <color name="text_medium">@color/gray5</color>
     <color name="text_light">@color/gray4</color>
+    <color name="text_extra_light">@color/gray3</color>
     <color name="text_dark_disabled">@color/black_27</color>
     <color name="text_dim">@color/black_53</color>
     <color name="text_dim_light">@color/white_75</color>
@@ -114,4 +116,6 @@
     <color name="timeline_share_background_gradient_bottom">@color/white</color>
 
     <color name="facebook_official_color">#3B5998</color>
+    <color name="voice_volume_emphasized_color">@color/blue6</color>
+    <color name="voice_volume_normal_color">@color/gray3</color>
 </resources>

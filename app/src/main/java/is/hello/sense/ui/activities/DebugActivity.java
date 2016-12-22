@@ -17,8 +17,12 @@ import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.interactors.AccountPreferencesInteractor;
+import is.hello.sense.interactors.PersistentPreferencesInteractor;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter.DetailItem;
@@ -32,14 +36,21 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.SessionLogger;
 
 public class DebugActivity extends InjectionActivity {
-    @Inject ApiSessionManager sessionManager;
-    @Inject PreferencesPresenter preferences;
-    @Inject LocalUsageTracker localUsageTracker;
-    @Inject ApiEndpoint apiEndpoint;
+    public static final String EXTRA_DEBUG_CHECKPOINT = "EXTRA_DEBUG_CHECKPOINT" + DebugActivity.class.getName();
+    @Inject
+    ApiSessionManager sessionManager;
+    @Inject
+    PreferencesInteractor preferences;
+    @Inject
+    PersistentPreferencesInteractor persistentPreferences;
+    @Inject
+    LocalUsageTracker localUsageTracker;
+    @Inject
+    ApiEndpoint apiEndpoint;
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.static_recycler);
 
@@ -61,37 +72,44 @@ public class DebugActivity extends InjectionActivity {
             decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
             adapter.add(new DetailItem("Piru-Pea",
                                        () -> startActivity(new Intent(this, activityClass))));
-        } catch (ClassNotFoundException ignored) {
+        } catch (final ClassNotFoundException ignored) {
             // Do nothing.
         }
-
+    // todo remove when done testing
         adapter.add(new DetailItem("View Log", this::viewLog));
         adapter.add(new DetailItem("Clear Log", this::clearLog));
 
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
         adapter.add(new DetailItem("Share Log", this::sendLog));
 
+        adapter.add(new DetailItem("Show New Home Activity", this::showNewHomeActivity));
         adapter.add(new DetailItem("Show Room Check", this::showRoomCheck));
         adapter.add(new DetailItem("Show Onboarding Smart Alarm", this::showOnboardingSmartAlarm));
+        adapter.add(new DetailItem("Show Update Pill", this::showUpdatePill));
+        adapter.add(new DetailItem("Show Sense OTA Update", this::showSenseOTA));
+        adapter.add(new DetailItem("Show New Sense Update", this::showNewSenseUpdate));
+        adapter.add(new DetailItem("Show Sense Voice", this::showSenseVoice));
+        adapter.add(new DetailItem("Show Expansions", this::showExpansion));
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
 
         adapter.add(new DetailItem("Forget welcome dialogs", this::clearHandholdingSettings));
+        adapter.add(new DetailItem("Forget persistent preferences", this::clearPersistentPreferences));
 
         try {
             final Class<?> activityClass = Class.forName("is.hello.sense.debug.WelcomeDialogsActivity");
             decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
             adapter.add(new DetailItem("View welcome dialogs",
                                        () -> startActivity(new Intent(this, activityClass))));
-        } catch (ClassNotFoundException ignored) {
+        } catch (final ClassNotFoundException ignored) {
             // Do nothing.
         }
         adapter.add(new DetailItem("View What's New Card", this::viewWhatsNewCard));
         adapter.add(new DetailItem("Simulate Picasso Low Memory", this::simulatePicassoLowMemory));
         adapter.add(new DetailItem("Re-enable review prompt", this::reEnableReviewPrompt));
-
+        adapter.add(new DetailItem("Re-enable Amazon review prompt", this::reEnableAmazonReviewPrompt));
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
         adapter.add(new DetailItem("Reset app usage stats", this::resetAppUsage));
-
+        adapter.add(new DetailItem("View Room Conditions Welcome Card", this::viewRoomConditionsWelcomeCard));
         adapter.add(new DetailItem("Log Out", this::logOut));
 
         recyclerView.setAdapter(adapter);
@@ -103,16 +121,42 @@ public class DebugActivity extends InjectionActivity {
         }
     }
 
+    private void showNewHomeActivity() {
+        startActivity(new Intent(this, HomeActivity.class));
+    }
+
     public void showRoomCheck() {
-        Intent onboarding = new Intent(this, OnboardingActivity.class);
+        final Intent onboarding = new Intent(this, OnboardingActivity.class);
         onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_PILL);
         startActivity(onboarding);
     }
 
     public void showOnboardingSmartAlarm() {
-        Intent onboarding = new Intent(this, OnboardingActivity.class);
+        final Intent onboarding = new Intent(this, OnboardingActivity.class);
         onboarding.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SMART_ALARM);
         startActivity(onboarding);
+    }
+
+    public void showUpdatePill() {
+        final Intent pillUpdate = new Intent(this, PillUpdateActivity.class);
+        startActivity(pillUpdate);
+    }
+
+    private void showSenseOTA() {
+        final Intent onboarding = new Intent(this, OnboardingActivity.class);
+        onboarding.putExtra(DebugActivity.EXTRA_DEBUG_CHECKPOINT, Constants.DEBUG_CHECKPOINT_SENSE_UPDATE);
+        startActivity(onboarding);
+    }
+
+    private void showSenseVoice() {
+        final Intent onboarding = new Intent(this, OnboardingActivity.class);
+        onboarding.putExtra(DebugActivity.EXTRA_DEBUG_CHECKPOINT, Constants.DEBUG_CHECKPOINT_SENSE_VOICE);
+        startActivity(onboarding);
+    }
+
+    private void showNewSenseUpdate() {
+        final Intent senseUpdate = new Intent(this, SenseUpgradeActivity.class);
+        startActivity(senseUpdate);
     }
 
     public void viewLog() {
@@ -140,16 +184,31 @@ public class DebugActivity extends InjectionActivity {
 
     public void clearHandholdingSettings() {
         WelcomeDialogFragment.clearShownStates(this);
+        AccountPreferencesInteractor.newInstance(this).reset();
         Toast.makeText(getApplicationContext(), "Forgot welcome dialogs", Toast.LENGTH_SHORT).show();
     }
 
     public void reEnableReviewPrompt() {
         preferences.edit()
-                   .putBoolean(PreferencesPresenter.DISABLE_REVIEW_PROMPT, false)
+                   .putBoolean(PreferencesInteractor.DISABLE_REVIEW_PROMPT, false)
                    .apply();
         localUsageTracker.reset(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
         Toast.makeText(getApplicationContext(), "Review prompt re-enabled", Toast.LENGTH_SHORT).show();
     }
+
+    public void reEnableAmazonReviewPrompt() {
+        preferences.edit()
+                   .putBoolean(PreferencesInteractor.HAS_REVIEWED_ON_AMAZON, false)
+                   .apply();
+        localUsageTracker.reset(LocalUsageTracker.Identifier.SKIP_REVIEW_PROMPT);
+        Toast.makeText(getApplicationContext(), "Amazon Review prompt re-enabled", Toast.LENGTH_SHORT).show();
+    }
+
+    public void clearPersistentPreferences() {
+        persistentPreferences.clear();
+        Toast.makeText(getApplicationContext(), "Forgot persistent preferences", Toast.LENGTH_SHORT).show();
+    }
+
 
     public void simulatePicassoLowMemory() {
         SenseApplication.getInstance().onTrimMemory(TRIM_MEMORY_MODERATE);
@@ -157,13 +216,23 @@ public class DebugActivity extends InjectionActivity {
     }
 
     public void viewWhatsNewCard() {
-        WhatsNewLayout.clearState(this);
+        // WhatsNewLayout.clearState(this); todo add back when we support this.
+        WhatsNewLayout.forceShow(this);
         Toast.makeText(getApplicationContext(), "Forgot What's New card", Toast.LENGTH_SHORT).show();
     }
 
     public void resetAppUsage() {
         localUsageTracker.resetAsync();
         Toast.makeText(getApplicationContext(), "Usage Stats Reset", Toast.LENGTH_SHORT).show();
+    }
+
+    public void viewRoomConditionsWelcomeCard() {
+        preferences.edit().putInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN, 1).apply();
+        Toast.makeText(getApplicationContext(), "Forgot Room Conditions Welcome Card", Toast.LENGTH_SHORT).show();
+    }
+
+    public void showExpansion() {
+        startActivity(new Intent(this, ExpansionSettingsActivity.class));
     }
 
     public void logOut() {

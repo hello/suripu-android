@@ -3,6 +3,7 @@ package is.hello.sense.ui.dialogs;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,19 +40,24 @@ public class ErrorDialogFragment extends SenseDialogFragment {
     private static final String ARG_ACTION_RESULT_CODE = ErrorDialogFragment.class.getName() + ".ARG_ACTION_RESULT_CODE";
     private static final String ARG_ACTION_TITLE_RES = ErrorDialogFragment.class.getName() + ".ARG_ACTION_TITLE_RES";
     private static final String ARG_TITLE_RES = ErrorDialogFragment.class.getName() + ".ARG_TITLE_RES";
+    private static final String ARG_TITLE_REF = ErrorDialogFragment.class.getName() + ".ARG_TITLE_REF";
+    private static final String ARG_ACTION_URI_STRING = ErrorDialogFragment.class.getName() + ".ARG_ACTION_URI_STRING";
 
 
     //region Lifecycle
 
     public static void presentError(@NonNull final Activity activity, @Nullable final Throwable e, @StringRes final int titleRes) {
-        final ErrorDialogFragment fragment = new Builder(e, activity)
-                .withTitle(titleRes)
-                .build();
+        final ErrorDialogFragment fragment = newInstance(e).withTitle(titleRes)
+                                                           .build();
         fragment.showAllowingStateLoss(activity.getFragmentManager(), TAG);
     }
 
     public static void presentError(@NonNull final Activity activity, @Nullable final Throwable e) {
         presentError(activity, e, R.string.dialog_error_title);
+    }
+
+    public static PresenterBuilder newInstance(@Nullable final Throwable e) {
+        return new PresenterBuilder(e);
     }
 
     @Override
@@ -74,6 +80,12 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
         final int titleResId = arguments.getInt(ARG_TITLE_RES, R.string.dialog_error_title);
         dialog.setTitle(titleResId);
+        if (arguments.containsKey(ARG_TITLE_REF)){
+            final StringRef title = arguments.getParcelable(ARG_TITLE_REF);
+            if (title != null) {
+                dialog.setTitle(title.resolve(getActivity()));
+            }
+        }
 
 
         final String errorType = arguments.getString(ARG_ERROR_TYPE);
@@ -92,10 +104,16 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
         if (arguments.containsKey(ARG_ACTION_TITLE_RES)) {
             final int titleRes = arguments.getInt(ARG_ACTION_TITLE_RES);
+            dialog.setButtonDeemphasized(DialogInterface.BUTTON_NEGATIVE, true);
             if (arguments.containsKey(ARG_ACTION_INTENT)) {
                 dialog.setNegativeButton(titleRes, (button, which) -> {
                     final Intent intent = arguments.getParcelable(ARG_ACTION_INTENT);
                     startActivity(intent);
+                });
+            } else if (arguments.containsKey(ARG_ACTION_URI_STRING)) {
+                dialog.setNegativeButton(titleRes, (button, which) -> {
+                    final Uri uri = Uri.parse(arguments.getString(ARG_ACTION_URI_STRING));
+                    UserSupport.openUri(getActivity(), uri);
                 });
             } else {
                 dialog.setNegativeButton(titleRes, (button, which) -> {
@@ -159,13 +177,17 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
     //endregion
 
-
     public static class Builder {
         protected final Bundle arguments = new Bundle();
 
+        @Deprecated
+        /**
+         * See {@link is.hello.sense.ui.dialogs.ErrorDialogFragment.PresenterBuilder}
+         */
         public Builder() {
         }
 
+        @Deprecated
         public Builder(@Nullable final Throwable e, @NonNull final Context context) {
             withMessage(Errors.getDisplayMessage(e));
             withErrorType(Errors.getType(e));
@@ -179,6 +201,12 @@ public class ErrorDialogFragment extends SenseDialogFragment {
 
         public Builder withTitle(@StringRes final int titleRes) {
             arguments.putInt(ARG_TITLE_RES, titleRes);
+            return this;
+        }
+
+
+        public Builder withTitle(final StringRef titleRef) {
+            arguments.putParcelable(ARG_TITLE_REF, titleRef);
             return this;
         }
 
@@ -229,6 +257,13 @@ public class ErrorDialogFragment extends SenseDialogFragment {
             return this;
         }
 
+        public Builder withAction(@NonNull final String uriString, @StringRes final int titleRes) {
+            arguments.putString(ARG_ACTION_URI_STRING, uriString);
+            arguments.putInt(ARG_ACTION_TITLE_RES, titleRes);
+            return this;
+        }
+
+        @Deprecated
         public Builder withUnstableBluetoothHelp(@NonNull final Context context) {
             final Uri uri = UserSupport.DeviceIssue.UNSTABLE_BLUETOOTH.getUri();
             final Intent intent = UserSupport.createViewUriIntent(context, uri);
@@ -243,4 +278,26 @@ public class ErrorDialogFragment extends SenseDialogFragment {
             return instance;
         }
     }
+
+    public static class PresenterBuilder extends Builder {
+        public PresenterBuilder(@Nullable final Throwable e) {
+            withMessage(Errors.getDisplayMessage(e));
+            withErrorType(Errors.getType(e));
+            withContextInfo(Errors.getContextInfo(e));
+            withWarning(ApiException.isNetworkError(e));
+            if (BuruberiException.isInstabilityLikely(e)) {
+                withUnstableBluetoothHelp();
+            }
+        }
+
+        public Builder withUnstableBluetoothHelp() {
+            final Uri uri = UserSupport.DeviceIssue.UNSTABLE_BLUETOOTH.getUri();
+            withAction(uri.toString(), R.string.action_more_info);
+            withAddendum(R.string.error_addendum_unstable_stack);
+            return this;
+        }
+
+
+    }
+
 }

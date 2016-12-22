@@ -1,0 +1,9 @@
+[
+  {
+    "datetime_utc": 1469743680000,
+    "text": "what is the temperature",
+    "response_text": "It's currently 71 degrees.",
+    "command": "room_temperature",
+    "result": "rejected"
+  }
+]

@@ -5,21 +5,25 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 
 import java.io.File;
 import java.util.ArrayList;
 
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
-import is.hello.sense.api.model.ProfileImage;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.ui.dialogs.BottomSheetDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomSheet;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Fetch;
 import is.hello.sense.util.FilePathUtil;
 import is.hello.sense.util.ImageUtil;
@@ -28,168 +32,181 @@ import retrofit.mime.TypedFile;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
+import static is.hello.sense.util.Analytics.ProfilePhoto.Source;
 import static is.hello.sense.util.Analytics.ProfilePhoto.Source.CAMERA;
 import static is.hello.sense.util.Analytics.ProfilePhoto.Source.FACEBOOK;
 import static is.hello.sense.util.Analytics.ProfilePhoto.Source.GALLERY;
+import static is.hello.sense.util.Fetch.Image.REQUEST_CODE_CAMERA;
+import static is.hello.sense.util.Fetch.Image.REQUEST_CODE_GALLERY;
 
 /**
  * Must be instantiated by {@link is.hello.sense.ui.common.ProfileImageManager.Builder}
  */
 public class ProfileImageManager {
-    private static final int REQUEST_CODE_PICTURE = 0x30;
+    private static final int REQUEST_CODE_OPTIONS = 5;
     private static final int OPTION_ID_FROM_FACEBOOK = 0;
     private static final int OPTION_ID_FROM_CAMERA = 1;
     private static final int OPTION_ID_FROM_GALLERY = 2;
     private static final int OPTION_ID_REMOVE_PICTURE = 4;
 
-    private final Context context;
+    private static final String PREFS = "profile_image_manager_prefs";
+    private static final String PHOTO_URI_KEY = "PHOTO_URI_KEY";
+    private static final String PHOTO_SOURCE_KEY = "PHOTO_SOURCE_KEY";
+
+    private final int minOptions;
     private final Fragment fragment;
     private final ImageUtil imageUtil;
     private final FilePathUtil filePathUtil;
     private final ExternalStoragePermission permission;
-    private ProfileImage profileImage;
-    private int optionSelectedId;
+    private final ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
+    private final SenseBottomSheet.Option deleteOption;
+    private final SharedPreferences preferences;
+
     private boolean showOptions;
 
     private ProfileImageManager(@NonNull final Fragment fragment,
-                               @NonNull final ImageUtil imageUtil,
-                               @NonNull final FilePathUtil filePathUtil){
-        this.context = fragment.getActivity();
+                                @NonNull final ImageUtil imageUtil,
+                                @NonNull final FilePathUtil filePathUtil) {
+        final Context context = fragment.getActivity();
+        this.preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         this.fragment = fragment;
         this.imageUtil = imageUtil;
         this.filePathUtil = filePathUtil;
         this.permission = new ExternalStoragePermission(fragment);
-        this.profileImage = ProfileImage.createDefault();
-        this.optionSelectedId = -1;
         this.showOptions = true;
-    }
-
-    public void showPictureOptions() {
-        //Todo Analytics.trackEvent(Analytics.Backside.EVENT_PICTURE_OPTIONS, null);
-
-        if(!showOptions){
-            return;
-        }
-
-        final ArrayList<SenseBottomSheet.Option> options = new ArrayList<>(4);
-
-        // User will always have option to import from facebook b/c they may update their picture outside the app
         options.add(
                 new SenseBottomSheet.Option(OPTION_ID_FROM_FACEBOOK)
                         .setTitle(R.string.action_import_from_facebook)
                         .setTitleColor(ContextCompat.getColor(context, R.color.text_dark))
                         .setIcon(R.drawable.facebook_logo)
                    );
-
-        if(imageUtil.hasDeviceCamera()){
+        if (imageUtil.hasDeviceCamera()) {
             options.add(
                     new SenseBottomSheet.Option(OPTION_ID_FROM_CAMERA)
                             .setTitle(R.string.action_take_photo)
                             .setTitleColor(ContextCompat.getColor(context, R.color.text_dark))
                             .setIcon(R.drawable.settings_camera)
                        );
+            minOptions = 3;
+        } else {
+            minOptions = 2;
         }
-
         options.add(
                 new SenseBottomSheet.Option(OPTION_ID_FROM_GALLERY)
                         .setTitle(R.string.action_import_from_gallery)
                         .setTitleColor(ContextCompat.getColor(context, R.color.text_dark))
                         .setIcon(R.drawable.settings_photo_library)
                    );
+        deleteOption = new SenseBottomSheet.Option(OPTION_ID_REMOVE_PICTURE)
+                .setTitle(R.string.action_remove_picture)
+                .setTitleColor(ContextCompat.getColor(context, R.color.destructive_accent))
+                .setIcon(R.drawable.icon_alarm_delete);
+    }
 
-        if(profileImage.hasImageUri()){
-            options.add(
-                    new SenseBottomSheet.Option(OPTION_ID_REMOVE_PICTURE)
-                            .setTitle(R.string.action_remove_picture)
-                            .setTitleColor(ContextCompat.getColor(context, R.color.destructive_accent))
-                            .setIcon(R.drawable.icon_alarm_delete)
-                       );
+    public void showPictureOptions() {
+        if (!showOptions) {
+            return;
         }
+        final BottomSheetDialogFragment options = BottomSheetDialogFragment.newInstance(this.options);
+        options.setTargetFragment(fragment, REQUEST_CODE_OPTIONS);
+        options.showAllowingStateLoss(fragment.getFragmentManager(), BottomSheetDialogFragment.TAG);
+    }
 
-        final BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(options);
-        advancedOptions.setTargetFragment(fragment, REQUEST_CODE_PICTURE);
-        advancedOptions.showAllowingStateLoss(fragment.getFragmentManager(), BottomSheetDialogFragment.TAG);
+    public void hidePictureOptions() {
+        final BottomSheetDialogFragment options = (BottomSheetDialogFragment) fragment.getFragmentManager()
+                                                                                      .findFragmentByTag(BottomSheetDialogFragment.TAG);
+        if (options != null) {
+            options.dismissSafely();
+        }
+    }
+
+    public void addDeleteOption() {
+        if (options.size() == minOptions) {
+            options.add(deleteOption);
+        }
+    }
+
+    public void removeDeleteOption() {
+        if (options.size() == minOptions + 1) {
+            options.remove(deleteOption);
+        }
     }
 
     /**
-     * @return true if requestCode matched and resultCode was Activity.RESULT_OK else false.
+     * @return true if requestCode matched.
      */
     public boolean onActivityResult(final int requestCode, final int resultCode, @NonNull final Intent data) {
-        if(resultCode != Activity.RESULT_OK){
-            return false;
+        if (resultCode != Activity.RESULT_OK) {
+            if (requestCode == REQUEST_CODE_CAMERA || requestCode == REQUEST_CODE_GALLERY) {
+                setShowOptions(true);
+                return true;
+            } else {
+                return false;
+            }
         }
-        boolean wasResultHandled = true;
-        if(requestCode == REQUEST_CODE_PICTURE){
+
+        if (requestCode == REQUEST_CODE_OPTIONS) {
+            setShowOptions(false);
             final int optionID = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, -1);
             handlePictureOptionSelection(optionID);
-        } else if(requestCode == Fetch.Image.REQUEST_CODE_CAMERA) {
-            profileImage.setImageUriWithTemp();
-            profileImage.setImageSource(CAMERA);
-            ((Listener) fragment).onFromCamera(
-                    profileImage.getImageUriString());
-        } else if(requestCode == Fetch.Image.REQUEST_CODE_GALLERY){
+        } else if (requestCode == REQUEST_CODE_CAMERA) {
+            final Uri photoUri = getUri();
+            if (Uri.EMPTY.equals(photoUri)) {
+                setShowOptions(true);
+                //Todo display error that the image uri was lost somehow
+                //getListener().onImageUriFetchError(new Throwable(), R.string.error_account_fetch_image_uri_message, R.string.error_account_fetch_image_uri_title );
+                return true;
+            }
+            saveSource(CAMERA); // in case the user took a few days to return.
+            getListener().onFromCamera(photoUri);
+        } else if (requestCode == REQUEST_CODE_GALLERY) {
+            saveSource(GALLERY);
             final Uri imageUri = data.getData();
-            profileImage.setImageUri(imageUri);
-            profileImage.setImageSource(GALLERY);
-            ((Listener) fragment).onFromGallery(
-                    profileImage.getImageUriString());
-        } else{
-            wasResultHandled = false;
+            getListener().onFromGallery(imageUri);
+        } else {
+            return false;
         }
-        return wasResultHandled;
-    }
-
-    public void setProfileImage(ProfileImage profileImage) {
-        this.profileImage = profileImage;
+        return true;
     }
 
     public void setShowOptions(final boolean showOptions) {
         this.showOptions = showOptions;
     }
 
-    /**
-     *
-     * @param id Id of selected option from bottom sheet. Used so correct option action will be triggered
-     *           after obtaining permission.
-     */
-    private void setOptionSelectedId(final int id){
-        this.optionSelectedId = id;
-    }
-
-    public Observable<ProfileImage.UploadReady> prepareImageUpload() {
-        final String path = filePathUtil.getRealPath(profileImage.getImageUri());
-        return prepareImageUpload(path);
-    }
-
-    public void trimCache(){
-        imageUtil.trimCache();
-    }
-
-    public Observable<ProfileImage.UploadReady> prepareImageUpload(@Nullable final String filePath){
-        if (filePath == null || filePath.isEmpty()) {
-            return Observable.create((subscriber) -> subscriber.onError(new Throwable("No valid filePath given"))
-            );
+    private Observable<TypedFile> compressImageObservable(@Nullable final Uri imageUri) {
+        if (imageUri == null || Uri.EMPTY.equals(imageUri)) {
+            return Observable.error(new Throwable("No valid filePath given"));
         }
-        final boolean mustDownload = !filePathUtil.isFoundOnDevice(filePath);
-        return imageUtil.provideObservableToCompressFile(filePath, mustDownload)
-                .map( file -> {
-                    final TypedFile typedFile = new TypedFile("multipart/form-data", file);
-                    Logger.warn(ProfileImageManager.class.getSimpleName(), " file size in bytes " + typedFile.length());
-                    return new ProfileImage.UploadReady(typedFile, profileImage.getSource());
-                })
-                .doOnError(Functions.LOG_ERROR)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Rx.mainThreadScheduler());
+
+        final String localPath = filePathUtil.getLocalPath(imageUri);
+        final boolean mustDownload = !filePathUtil.isFoundOnDevice(localPath);
+        final String path = mustDownload ? imageUri.toString() : localPath;
+
+        return imageUtil.provideObservableToCompressFile(path, mustDownload)
+                        .map(file -> new TypedFile("multipart/form-data", file))
+                        .doOnError(Functions.LOG_ERROR)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(Rx.mainThreadScheduler());
+    }
+
+    /**
+     * Trim cache and preferences
+     */
+    public void clear() {
+        imageUtil.trimCache();
+        preferences.edit().clear().apply();
     }
 
     //region permission checks
 
-    public void onRequestPermissionResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
+    public void onRequestPermissionResult(final int requestCode,
+                                          @NonNull final String[] permissions,
+                                          @NonNull final int[] grantResults) {
         if (permission.isGrantedFromResult(requestCode, permissions, grantResults)) {
-            handlePictureOptionSelection(optionSelectedId);
-            optionSelectedId = -1;
+            handleGalleryOption();
         } else {
             permission.showEnableInstructionsDialogForGallery();
+            setShowOptions(true);
         }
     }
 
@@ -197,48 +214,123 @@ public class ProfileImageManager {
 
     //region Camera Options
 
-    private void handlePictureOptionSelection(final int optionID){
-        setOptionSelectedId(optionID);
-
-        switch(optionID){
+    private void handlePictureOptionSelection(final int optionID) {
+        switch (optionID) {
             case OPTION_ID_FROM_FACEBOOK:
-                ((Listener) fragment).onImportFromFacebook();
-                profileImage.setImageSource(FACEBOOK);
+                handleFacebookOption();
                 break;
             case OPTION_ID_FROM_CAMERA:
-                final File imageFile = imageUtil.createFile(false);
-                if(imageFile != null){
-                    final Uri imageUri = Uri.fromFile(imageFile);
-                    profileImage.setTempImageUri(imageUri);
-                    Fetch.imageFromCamera().fetch(fragment, imageUri);
-                }
+                handleCameraOption();
                 break;
             case OPTION_ID_FROM_GALLERY:
-                if(permission.isGranted()){
-                    Fetch.imageFromGallery().fetch(fragment);
-                } else{
-                    permission.requestPermission();
-                }
+                handleGalleryOption();
                 break;
             case OPTION_ID_REMOVE_PICTURE:
-                ((Listener) fragment).onRemove();
+                handleRemoveOption();
                 break;
             default:
                 Logger.warn(ProfileImageManager.class.getSimpleName(), "unknown picture option selected");
         }
     }
 
+    private void handleFacebookOption() {
+        saveSource(FACEBOOK);
+        getListener().onImportFromFacebook();
+    }
+
+    private void handleCameraOption() {
+        final File imageFile = imageUtil.createFile(false);
+        if (imageFile == null) {
+            return;
+        }
+        saveSource(CAMERA);
+        final Uri takePhotoUri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // https://inthecheesefactory.com/blog/how-to-share-access-to-file-with-fileprovider-on-android-nougat/en
+            takePhotoUri = FileProvider.getUriForFile(fragment.getActivity(),
+                                                      fragment.getActivity().getApplicationContext().getPackageName() + ".provider",
+                                                      imageFile);
+        } else {
+            takePhotoUri = Uri.fromFile(imageFile);
+        }
+        saveUri(takePhotoUri);
+        Fetch.imageFromCamera().to(fragment, takePhotoUri);
+    }
+
+    private void handleGalleryOption() {
+        if (permission.isGranted()) {
+            saveSource(GALLERY);
+            Fetch.imageFromGallery().to(fragment);
+        } else {
+            permission.requestPermission();
+        }
+    }
+
+    private void handleRemoveOption() {
+        clear();
+        getListener().onRemove();
+    }
+
     //endregion
+
+    private void saveUri(@NonNull final Uri uri) {
+        preferences.edit()
+                   .putString(PHOTO_URI_KEY, uri.toString())
+                   .apply();
+    }
+
+    @NonNull
+    private Uri getUri() {
+        final String photoUriString = preferences.getString(PHOTO_URI_KEY, "");
+        return photoUriString.isEmpty() ? Uri.EMPTY : Uri.parse(photoUriString);
+    }
+
+    public void saveSource(@NonNull final Source source) {
+        preferences.edit()
+                   .putString(PHOTO_SOURCE_KEY, source.name())
+                   .apply();
+    }
+
+    @NonNull
+    private Source getSource() {
+        final String value = preferences.getString(PHOTO_SOURCE_KEY, "");
+        return Source.fromString(value);
+    }
+
+    public void compressImage(@Nullable final Uri imageUri) {
+        compressImageObservable(imageUri)
+                .subscribe(this::compressImageSuccess,
+                           this::compressImageError);
+    }
+
+    private void compressImageSuccess(@NonNull final TypedFile compressedFile) {
+        getListener().onImageCompressedSuccess(compressedFile, getSource());
+
+    }
+
+    private void compressImageError(@NonNull final Throwable e) {
+        setShowOptions(true);
+        getListener().onImageCompressedError(e, R.string.error_account_upload_photo_title, R.string.error_account_upload_photo_message);
+    }
+
+    private Listener getListener() {
+        return ((Listener) fragment);
+    }
 
     public interface Listener {
 
         void onImportFromFacebook();
 
-        void onFromCamera(final String imageUriString);
+        void onFromCamera(@NonNull final Uri imageUri);
 
-        void onFromGallery(final String imageUriString);
+        void onFromGallery(@NonNull final Uri imageUri);
 
         void onRemove();
+
+        void onImageCompressedSuccess(@NonNull TypedFile compressedImage, @NonNull Analytics.ProfilePhoto.Source source);
+
+        void onImageCompressedError(@NonNull Throwable e, @StringRes int titleRes, @StringRes int messageRes);
+
     }
 
     public static class Builder {
@@ -247,18 +339,18 @@ public class ProfileImageManager {
         private final FilePathUtil filePathUtil;
         private Fragment fragmentListener;
 
-        public Builder(@NonNull final ImageUtil imageUtil, @NonNull final FilePathUtil filePathUtil){
+        public Builder(@NonNull final ImageUtil imageUtil, @NonNull final FilePathUtil filePathUtil) {
             this.imageUtil = imageUtil;
             this.filePathUtil = filePathUtil;
         }
 
-        public Builder addFragmentListener(@NonNull final Fragment listener){
+        public Builder setFragmentListener(@NonNull final Fragment listener) {
             checkFragmentInstance(listener);
             this.fragmentListener = listener;
             return this;
         }
 
-        public ProfileImageManager build(){
+        public ProfileImageManager build() {
             return new ProfileImageManager(fragmentListener, imageUtil, filePathUtil);
         }
 

@@ -10,6 +10,8 @@ import com.squareup.picasso.Picasso;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.ProfileImageView;
+import is.hello.sense.ui.widget.util.Views;
+import is.hello.sense.util.TimeOffsetOnClickListener;
 
 public class AccountSettingsRecyclerAdapter extends SettingsRecyclerAdapter {
 
@@ -18,13 +20,6 @@ public class AccountSettingsRecyclerAdapter extends SettingsRecyclerAdapter {
     public AccountSettingsRecyclerAdapter(@NonNull final Context context, @NonNull final Picasso picasso) {
         super(context);
         this.picasso = picasso;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        if(getItem(position) instanceof CircleItem)
-            return CircleItem.ID;
-        return super.getItemViewType(position);
     }
 
     @Override
@@ -42,8 +37,8 @@ public class AccountSettingsRecyclerAdapter extends SettingsRecyclerAdapter {
         CircleViewHolder(@NonNull View itemView) {
             super(itemView);
             this.imageView = (ProfileImageView) itemView.findViewById(R.id.item_profile_picture);
-            this.imageView.addButtonListener(this);
-            this.imageView.setOnClickListener(this);
+            Views.setTimeOffsetOnClickListener(imageView, this);
+            imageView.setButtonClickListener(new TimeOffsetOnClickListener(this));
             itemView.setOnClickListener(null);
             itemView.setClickable(false);
         }
@@ -68,9 +63,13 @@ public class AccountSettingsRecyclerAdapter extends SettingsRecyclerAdapter {
     }
 
     public static class CircleItem extends Item<String> {
-        static final int ID = 4;
+        static final int ID = 5;
         public CircleItem(@Nullable Runnable onClick) {
             super(onClick);
+        }
+        @Override
+        public int getId() {
+            return ID;
         }
     }
 }

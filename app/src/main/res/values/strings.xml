@@ -13,10 +13,11 @@
     <string name="label_gender">Gender</string>
     <string name="label_height">Height</string>
     <string name="label_weight">Weight</string>
-    <string name="label_dob">Date of Birth</string>
+    <string name="label_birthday">Birthday</string>
 
     <string name="action_log_in">Log in</string>
     <string name="action_set_up_sense">Set up Sense</string>
+    <string name="action_set_up">Set up</string>
 
     <string name="device_sense">Sense</string>
     <string name="device_pill">Sleep Pill</string>
@@ -27,12 +28,12 @@
     <string name="device_state_normal">Good</string>
     <string name="device_state_low_battery">Low</string>
     <string name="device_state_unknown">Unknown</string>
-
-    <string name="dialog_error_title">Error</string>
-    <string name="dialog_error_generic_message">An unknown error has occurred.</string>
-    <string name="dialog_loading_message">Loading…</string>
-    <string name="timeline_error_title">There was an error</string>
-    <string name="timeline_error_message">There was a problem retrieving your Sleep Timeline. Please try again in a few moments.</string>
+    <string name="device_ota_state_not_required">Not required</string>
+    <string name="device_ota_state_required">Required</string>
+    <string name="device_ota_state_response_sent">Response sent</string>
+    <string name="device_ota_state_in_progress">In progress</string>
+    <string name="device_ota_state_complete">Complete</string>
+    <string name="device_ota_state_error">Error</string>
 
     <string name="sleep_score">Sleep Score</string>
     <string name="condition_temperature">Temperature</string>
@@ -69,13 +70,22 @@
     <string name="title_demographics">Demographics</string>
 
     <string name="action_ok">OK</string>
+    <string name="action_okay">Okay</string>
+    <string name="action_cancel">Cancel</string>
     <string name="action_deny">Deny</string>
     <string name="action_continue">Continue</string>
     <string name="action_turn_on_ble">Turn on Bluetooth</string>
+    <string name="title_upgrade_sense_voice">Sense with Voice</string>
+    <string name="info_upgrade_sense_voice">The new Sense introduces improved sensors, and Voice — which lets you control Sense just by speaking to it. Buy a Sense with Voice to upgrade.</string>
+    <string name="action_upgrade_sense_voice_help">Buy Sense with Voice</string>
+    <string name="title_upgrade_ready_sense_voice">Sense with Voice is ready</string>
+    <string name="info_upgrade_ready_sense_voice">Your new Sense with Voice is set up and is currently paired with your original Sleep Pill. Next, you’ll pair your new Sleep Pill.</string>
     <string name="title_setup_sense">Setting up Sense</string>
     <string name="info_setup_sense">Make sure Sense is plugged into a wall outlet next to your bed.</string>
     <string name="title_pair_sense">Pairing with Sense</string>
-    <string name="info_pair_sense">Now we’ll pair your phone with Sense. Make sure Sense is plugged in, nearby, and glowing purple. Tap Continue when ready.</string>
+    <string name="info_pair_sense">Sense should be plugged in, nearby, and glowing either blue or purple.</string>
+    <string name="title_pair_new_sense">Pairing your new Sense</string>
+    <string name="info_pair_new_sense">Sense should be plugged in, nearby, and glowing blue or purple.</string>
     <string name="title_pairing">Pairing</string>
     <string name="title_connecting_network">Connecting to WiFi</string>
     <string name="title_connecting_network_wlan_connected">@string/title_connecting_network</string>
@@ -94,6 +104,7 @@
     <string name="wifi_other_network">Other…</string>
     <string name="label_network_name">Network Name</string>
     <string name="action_skip">Skip</string>
+    <string name="action_try_again_later">Try again later</string>
     <string name="action_play_video">Play</string>
     <string name="action_get_started">Get Started</string>
     <string name="action_buy_sense">Order a Sense</string>
@@ -118,18 +129,27 @@
     <string name="info_sense_colors_bad">Sense glows red when the conditions in your bedroom would prevent restful sleep. Check the Sense app for details.</string>
     <string name="title_sense_colors_end">Just wave.</string>
     <string name="info_sense_colors_end">Just wave your hand over Sense and instantly you‘ll know about the conditions in your bedroom. Go ahead, give it a try now.</string>
-    <string name="onboarding_done_message_1">You’re all set up</string>
-    <string name="onboarding_done_message_2">Now, all you need to\ndo is sleep</string>
-    <string name="checking_condition_temperature">Checking Temperature</string>
-    <string name="checking_condition_humidity">Checking Humidity</string>
-    <string name="checking_condition_airquality">Checking Air Quality</string>
-    <string name="checking_condition_sound">Checking Noise</string>
-    <string name="checking_condition_light">Checking Light</string>
-    <string name="error_network_failure_pair_pill">Your Sleep Pill could not be Paired due to connectivity issues. Please try again.</string>
-    <string name="error_pill_already_paired">Your Sleep Pill is already paired to an account.</string>
-    <string name="error_addendum_unstable_stack">\n\n<b>Please turn airplane mode on for a few seconds, turn it off, and then try again. If this problem persists, please visit our support site.</b></string>
-    <string name="error_addendum_support">\n\nHaving trouble? <b><a href="#contact">Contact support</a></b></string>
-    <string name="destructive_action_addendum">\n\nNot sure? <b><a href="#contact">Contact support</a></b></string>
+
+    <string name="title_sense_reset_original">Reset your original Sense</string>
+    <string name="info_sense_reset_original">Reset your original Sense to use with another account or give away. Plug your original Sense into a power outlet and make sure it’s nearby before resetting.</string>
+    <string name="action_reset_sense_original">Factory Reset Sense</string>
+    <string name="dialog_sense_reset_original">Restoring to Factory Settings</string>
+
+    <string name="onboarding_complete_title">You’re all set.</string>
+    <string name="onboarding_voice_complete_title">You’re all set</string>
+    <string name="onboarding_voice_complete_message">Sense is now ready to use. All you need to do now is sleep.</string>
+
+    <string name="checking_condition_temperature">Checking temperature</string>
+    <string name="checking_condition_humidity">Checking humidity</string>
+    <string name="checking_condition_airquality">Checking air quality</string>
+    <string name="checking_condition_sound">Checking noise level</string>
+    <string name="checking_condition_light">Checking light</string>
+    <string name="checking_condition_co2">Checking CO2 level</string>
+    <string name="checking_condition_voc">Checking VOC level</string>
+    <string name="checking_condition_light_temperature">Checking light temperature</string>
+    <string name="checking_condition_uv">Checking UV light</string>
+    <string name="checking_condition_pressure">Checking pressure</string>
+
     <string name="label_firmware_version">Firmware</string>
     <string name="action_enter_pairing_mode">Put Into Pairing Mode</string>
     <string name="action_factory_reset">Factory Reset</string>
@@ -139,6 +159,10 @@
     <string name="dialog_message_put_into_pairing_mode">Are you sure you want to put Sense into Pairing Mode? You should use this option only if you have another mobile device you wish to pair with Sense. If you‘re having trouble, visit <a href="#user-guide">https://support.hello.is/</a> for support.</string>
     <string name="dialog_title_confirm_leave_onboarding">Leave Onboarding?</string>
     <string name="dialog_message_confirm_leave_onboarding">Don\'t worry, you can come back later.</string>
+    <string name="dialog_title_confirm_leave_app">Leaving Sense App</string>
+    <string name="dialog_message_confirm_leave_update_pill">Sleep Pill will continue updating in the background. Please note your Sleep Pill will not function until the update is successful.</string>
+    <string name="dialog_title_skip_update">Update Pill</string>
+    <string name="dialog_message_skip_update">Please note your Sleep Pill will not function until the update is successful.</string>
     <string name="action_retry">Retry</string>
     <string name="action_share">Share</string>
     <string name="action_insights">Insights</string>
@@ -152,8 +176,8 @@
     <string name="day_saturday">Sat</string>
     <string name="day_sunday">Sun</string>
     <string name="alarm_day_separator">", "</string>
-    <string name="smart_alarm_days_repeat_prefix">"Smart Alarm  ―  "</string>
-    <string name="alarm_days_repeat_prefix">"Alarm  ―  "</string>
+    <string name="smart_alarm_days_repeat_format">"Smart Alarm  ―  %1$s"</string>
+    <string name="alarm_days_repeat_format">"Alarm  ―  %1$s"</string>
     <string name="alarm_never">Alarm</string>
     <string name="smart_alarm_never">Smart Alarm</string>
     <string name="alarm_repeat_never">Never</string>
@@ -174,12 +198,14 @@
     <string name="dialog_message_confirm_delete_alarm">Are you sure you want to delete this alarm?</string>
     <string name="action_rescan">Scan again</string>
     <string name="action_pair_new_pill">Pair New Pill</string>
-    <string name="action_pair_new_sense">Pair New Sense</string>
+    <string name="action_pair_sense">Pair Sense</string>
     <string name="action_select_wifi_network">Edit Wi-Fi</string>
     <string name="title_scanning_for_sense">Looking for Sense</string>
     <string name="title_waiting_for_sense">Waiting for Sense</string>
     <string name="title_clearing_bond">Preparing…</string>
-    <string name="title_connecting">Connecting with Sense</string>
+    <string name="title_connecting_with_sense">Connecting with Sense</string>
+    <string name="title_pairing_with_sense">Pairing with Sense</string>
+    <string name="title_paired">Paired</string>
     <string name="title_discovering_services">Pairing</string>
     <string name="title_linking_account">Linking your account</string>
     <string name="label_searching_for_pill">Looking for your Sleep Pill</string>
@@ -195,25 +221,10 @@
     <string name="sec_type_wep">WEP</string>
     <string name="sec_type_open">Open</string>
     <string name="title_smart_alarm">Smart Alarm</string>
-    <string name="error_account_generic">Invalid registration credentials.</string>
-    <string name="error_account_email_taken">An account with the email address %1$s already exists.</string>
-    <string name="error_account_name_too_long">The name you entered is too long.</string>
-    <string name="error_account_name_too_short">The name you entered is too short.</string>
-    <string name="error_account_email_invalid">Please enter a valid email address.</string>
-    <string name="error_account_email_in_use">Email already in use.</string>
-    <string name="error_account_password_insecure">Please enter a stronger password.</string>
-    <string name="error_account_password_too_short">Passwords must be at least 6 characters.</string>
-    <string name="error_account_invalid_credentials">The email address or password you entered is incorrect.</string>
-    <string name="error_account_incomplete_credentials">Please enter your email address and password.</string>
     <string name="title_checking_connectivity">Checking connectivity</string>
-    <string name="error_title_sleep_pill_scan_timeout">Pill Pairing Failed</string>
-    <string name="error_message_sleep_pill_scan_timeout">Sense couldn\'t register your Sleep Pill. Please try pairing again. Try moving your Sleep Pill closer to Sense, and shaking it harder.</string>
-    <string name="error_sense_not_found_title">​Could not connect over Bluetooth</string>
-    <string name="error_sense_not_found">Could not detect a Sense nearby. Make sure Sense is plugged in, nearby, and in pairing mode. Ensure no other devices are connected with Sense over Bluetooth.</string>
-    <string name="error_peripheral_connection_lost_title">Connection lost</string>
-    <string name="error_peripheral_connection_lost">The connection to your Sense was lost.</string>
+
     <string name="onboarding_register_info_explanation">This is used to provide you with more personalized sleep insights.</string>
-    <string name="error_mismatching_new_passwords">The passwords you entered do not match.</string>
+
     <string name="dialog_title_smart_alarm_new_cancel">Discard Alarm</string>
     <string name="dialog_message_smart_alarm_new_cancel">Are you sure you want to discard this alarm?</string>
     <string name="dialog_title_smart_alarm_edit_cancel">Discard Changes</string>
@@ -221,7 +232,7 @@
     <string name="action_discard">Discard</string>
     <string name="action_keep_editing">Keep Editing</string>
     <string name="action_answer">Answer</string>
-    <string name="video_playback_generic_error">Could not play video.</string>
+
     <string name="title_turning_on">Turning On</string>
     <string name="info_turn_on_bluetooth">Sense uses Bluetooth to communicate with your mobile device. Please turn on your Bluetooth to continue.</string>
     <string name="debug_title_confirm_sense_pair">Pair With Sense</string>
@@ -240,11 +251,10 @@
     <string name="condition_light">Light</string>
 
     <string name="onboarding_room_check_title_success">Success!</string>
-    <string name="onboarding_room_check_info_success">Everything looks great.\nNow let’s set your first Smart Alarm.</string>
+    <string name="onboarding_room_check_info_success">Everything looks great. Now let’s set up your first Smart Alarm.</string>
     <string name="onboarding_title_room_check">Room Check</string>
     <string name="onboarding_info_room_check">Sense will now check the conditions in your bedroom.</string>
-    <string name="error_smart_alarm_day_overlap">You cannot set more than one Smart Alarm per day of the week.</string>
-    <string name="error_smart_alarm_requires_device">You don‘t currently have a Sense connected to your account. Please pair with Sense to set alarms.</string>
+
     <string name="action_replace_device">Replace</string>
     <string name="dialog_title_replace_sleep_pill">Replace Sleep Pill</string>
     <string name="dialog_message_replace_sleep_pill">Are you sure you want to remove this Sleep Pill from your account? You will not be able to track your sleep until you pair another Sleep Pill.</string>
@@ -252,19 +262,21 @@
     <string name="dialog_message_replace_sense">Are you sure you want to remove this Sense from your account? Only do this if you are replacing it with a different Sense unit. You will need to pair with another Sense to continue using the application.</string>
     <string name="title_trends">Trends</string>
     <string name="title_current_conditions">Current Conditions</string>
+    <string name="action_last_night">Last Night</string>
     <string name="action_today">Today</string>
+    <string name="action_yesterday">Yesterday</string>
     <string name="title_setting_time_zone">Finishing up</string>
     <string name="title_pushing_data">Finishing up</string>
     <string name="action_change_email">Change Email</string>
     <string name="label_email_address">Email Address</string>
     <string name="title_change_email">Change Email</string>
     <string name="action_change_name">Change Name</string>
-    <string name="error_failed_to_play_alarm_tone">Could not play preview.</string>
-    <string name="error_no_smart_alarm_tone">Please select a tone for this alarm.</string>
+
     <string name="title_turn_off_bluetooth">Turn Off Bluetooth</string>
     <string name="message_turn_off_bluetooth">Sense no longer requires Bluetooth be turned on, would you like to turn it off?</string>
     <string name="action_turn_off">Turn Off</string>
     <string name="title_onboarding_register_location">What\'s your location?</string>
+    <string name="message_onboarding_register_location">Sense uses your location to know sunrise and sunset times, local weather and more.</string>
     <string name="action_set_location">Set Location</string>
     <string name="action_back">Back</string>
     <string name="label_last_seen">Last Seen</string>
@@ -275,28 +287,20 @@
     <string name="info_no_sleep_pill_connected">You don\'t currently have a Sleep Pill connected to your account.</string>
     <string name="action_replace_this_sense">Replace this Sense</string>
     <string name="action_replace_sleep_pill">Replace this Sleep Pill</string>
+    <string name="action_update_firmware">Update Firmware</string>
     <string name="action_replace_battery">Replace Battery</string>
     <string name="action_replace">Replace</string>
     <string name="action_troubleshoot">Troubleshoot</string>
     <string name="info_connecting_to_sense">Connecting with Sense over Bluetooth…</string>
-    <string name="error_no_bluetooth_connectivity_title">Could not connect over Bluetooth</string>
-    <string name="error_no_bluetooth_connectivity">Bluetooth must be turned on to connect to Sense.</string>
-    <string name="error_sense_no_connectivity_title">Sense not connected</string>
-    <string name="error_sense_no_connectivity">Your Sense <b>cannot connect to Wi-Fi</b>. Tap below to troubleshoot.</string>
-    <string name="error_sense_missing_title">Sense not seen recently</string>
-    <string name="error_sense_missing_fmt">Your Sense was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
-    <string name="error_sleep_pill_missing_title">Sleep Pill not seen recently</string>
-    <string name="error_sleep_pill_missing_fmt">Your Sleep Pill was last seen <b>%1$s</b>. Tap below to troubleshoot.</string>
+
     <string name="devices_support_footer">Setting up a <a href="#second-pill">second Sleep Pill</a> for your partner?</string>
-    <string name="action_sense_pairing_mode_help">Sense isn\'t glowing purple?</string>
+    <string name="action_sense_pairing_mode_help">Sense isn\'t glowing blue or purple</string>
     <string name="label_wifi_network_name">"Wi-Fi network: "</string>
-    <string name="onboarding_info_enhanced_audio">With Enhanced Audio enabled, Sense can pick up snoring, sleep talking, and noise disturbances.\n\nWithout Enhanced Audio enabled, Sense only looks at background noise.</string>
-    <string name="onboarding_title_enhanced_audio">Enable Enhanced Audio</string>
-    <string name="action_enable_enhanced_audio">Enable Enhanced Audio</string>
     <string name="title_enabled">Enabled</string>
     <string name="dialog_title_new_version">New version</string>
     <string name="dialog_message_new_version">A new version of Sense is available.</string>
     <string name="action_update">Update</string>
+    <string name="action_update_now">Update now</string>
     <string name="title_smart_alarms">Smart Alarms</string>
     <string name="message_smart_alarm_placeholder">Sense‘s Smart Alarm will wake you up at the lightest point in your natural sleep cycle, so you wake feeling rested. Once set, your alarms will appear here.</string>
     <string name="prompt_set_your_first_alarm">Set your first Smart Alarm</string>
@@ -314,7 +318,7 @@
     <string name="hint_month">MM</string>
     <string name="hint_day">DD</string>
     <string name="hint_year">YYYY</string>
-    <string name="error_message_current_pw_wrong">The current password you entered is incorrect.</string>
+
     <string name="label_notifications">Notifications</string>
     <string name="label_options">Options</string>
     <string name="label_enhanced_audio">Enhanced Audio</string>
@@ -333,6 +337,8 @@
     <string name="issue_message_missing_pill">Sleep Pill has not reported any data recently. Tap ‘Fix Now’ to troubleshoot.</string>
     <string name="issue_title_low_battery">Low Battery</string>
     <string name="issue_message_low_battery">Your Sleep Pill battery is low, and will need to be replaced soon.</string>
+    <string name="issue_title_pill_firmware_update_available">Sleep Pill update</string>
+    <string name="issue_message_pill_firmware_update_available">An update for your Sleep Pill is available. You can update now, or visit settings to update later.</string>
 
     <string name="welcome_dialog_timeline_title_intro">Understanding your sleep</string>
     <string name="welcome_dialog_timeline_intro">Sense monitors the environment in your bedroom and recognizes your movements during the night, giving you a full picture of your sleep.\n\nSense takes all this data and builds a Sleep Timeline of your sleep for each night. Swipe left to learn more.</string>
@@ -343,8 +349,6 @@
     <string name="welcome_dialog_timeline_title_events">Sleep Timeline</string>
     <string name="welcome_dialog_timeline_events">Your Timeline shows you everything that happened during the night, from the moment you go to bed until the time you wake up.\n\nThe blue bars represent your time spent sleeping. The wider the bar, the deeper the sleep. Tap on any bar to view more details.\n\nYour Timeline will also show key events from your night, including time spent tossing and turning, noise disturbances, and more.</string>
     <string name="welcome_dialog_current_conditions_title">Current Conditions</string>
-    <string name="welcome_dialog_current_conditions">Here you‘ll see the current conditions in your bedroom: temperature, humidity, air quality, light, and noise.\n
-\nThese values update as Sense uploads new data. So as the conditions in your room change, it may take a few moments for them to be reflected here.\n\nTap a card to see more details.</string>
     <string name="welcome_dialog_alarm_title">Set An Alarm</string>
     <string name="welcome_dialog_alarm">Sense\'s Smart Alarm will wake you up at the lightest part of your natural sleep cycle - in a 30 minute window before the time you set. When it\'s time to wake up, Sense will glow and play your selected tone. Just wave your hand over Sense to dismiss the alarm.</string>
     <string name="welcome_dialog_sensor_temperature_title">Temperature</string>
@@ -371,7 +375,7 @@
     <string name="onboarding_message_unsupported_device">The device you‘re using has been known to have issues setting up Sense for the first time. If you have a different device available that meets the requirements on our <a href="#supported-devices">Supported Devices</a> list, we recommend you use it to perform the following setup steps.</string>
     <string name="action_continue_anyway">Continue Anyway</string>
     <string name="message_not_enough_data">Not enough data yet, check back later.</string>
-    <string name="sensor_history_message_error">Could not load graph.</string>
+
     <string name="message_no_trends_yet">Your trends will appear here after a week of sleep.</string>
     <string name="title_trends_welcome_back">Welcome Back</string>
     <string name="message_trends_welcome_back">We\’re collecting the data needed to show your Trends. Check back soon for more.</string>
@@ -384,6 +388,20 @@
     </plurals>
     <string name="onboarding_title_sleep_pill_intro">Sleep Pill</string>
     <string name="onboarding_message_sleep_pill_intro">Sleep Pill clips to your pillow and tracks your sleep during the night. Each person using Sense has their own Sleep Pill, so if you\'re using Sense with a partner, they will set up their Pill separately. Next, we\'ll pair your Sleep Pill with Sense.</string>
+    <string name="notification_title_update_sleep_pill">Sleep Pill Update</string>
+    <string name="notification_update_progress">In progress</string>
+    <string name="notification_update_successful">Update successful</string>
+    <string name="notification_update_failed">Update failed. Please try again.</string>
+    <string name="title_checking_phone_battery">Checking Phone battery</string>
+    <string name="title_checking_pill_battery">Checking Sleep Pill battery</string>
+    <string name="title_checking_bluetooth_connectivity">Checking Bluetooth connectivity</string>
+    <string name="title_update_sleep_pill">Updating your Sleep Pill</string>
+    <string name="info_update_sleep_pill">You’ll need to keep the Sense app open for the duration of the update. This process should take less than one minute.</string>
+    <string name="title_connect_sleep_pill">Connect your Sleep Pill</string>
+    <string name="info_connect_sleep_pill">Hold your Sleep Pill near your mobile device, and then quickly shake it for three seconds to begin the update.</string>
+    <string name="message_sleep_pill_connected">Sleep Pill Connected</string>
+    <string name="message_sleep_pill_updating">Sleep Pill updating</string>
+    <string name="message_sleep_pill_updated">Sleep Pill updated</string>
     <string name="timeline_info_label_total_sleep">Total sleep</string>
     <string name="timeline_info_label_times_awake">Times awake</string>
     <string name="timeline_info_label_sound_sleep">Deep sleep</string>
@@ -392,13 +410,9 @@
     <string name="timeline_info_label_wake_up_time">Woke up</string>
     <string name="notification_setting_alert_conditions">Alert Conditions</string>
     <string name="notification_setting_sleep_score">Daily Sleep Score</string>
-    <string name="error_network_unavailable">Check your connection and try again.</string>
-    <string name="error_network_ssl_failure">There was a problem securely connecting to the server. Please check your internet connection and try again.</string>
+
     <string name="action_reconnect">Reconnect</string>
-    <string name="error_no_web_browser">Could not find a web browser.</string>
-    <string name="error_no_settings_app">Could not find app settings.</string>
-    <string name="error_no_email_client">Could not find an email app.</string>
-    <string name="error_alarm_too_soon">Too Soon! The alarm you set is only a couple minutes away. If you want to test the Alarm, please set an alarm for a bit later.</string>
+
     <string name="action_more_info">More info</string>
     <string name="action_submit">Submit</string>
     <string name="action_enable_location">Enable Location Services</string>
@@ -412,16 +426,19 @@
     <string name="device_color_blue">Blue</string>
     <string name="device_color_black">Charcoal</string>
     <string name="device_color_white">Cotton</string>
+    <string name="device_hardware_version_sense">Sense</string>
+    <string name="device_hardware_version_sense_with_voice">Sense with Voice</string>
+    <string name="device_hardware_version_unknown">Unknown</string>
+    <string name="action_upgrade_sense">Set up Sense with voice</string>
+
     <string name="title_thank_you">Thank You</string>
     <string name="title_have_sense_ready">Have Sense ready?</string>
     <string name="info_have_sense_ready">You‘ll need Sense and Sleep Pill handy to continue. If you‘re not ready now, you can always come back later.</string>
 
     <string name="tutorial_swipe_timeline">Swipe left or right to navigate between days.</string>
-    <string name="tutorial_zoom_out_timeline">Tap the date to navigate quickly between days.</string>
+    <string name="tutorial_zoom_out_timeline">Tap the calendar icon to navigate quickly between days.</string>
     <string name="tutorial_scrub_sensor_history">Press and hold graphs to see historical data.</string>
     <string name="tutorial_tap_insight_card">Tap on a card to learn more.</string>
-    <string name="tutorial_tap_hamburger">To explore more now, tap the menu icon.</string>
-    <string name="tutorial_tap_name">Verify your name and add a profile photo.</string>
 
     <string name="action_save">Save</string>
     <string name="action_show_alarms">Alarms</string>
@@ -434,7 +451,7 @@
     <string name="description_factory_reset">If you want to reset Sense to factory settings, and remove it from this account.</string>
     <string name="description_replace_sleep_pill">If you have a new Sleep Pill you want to pair with this account.</string>
     <string name="description_recovery_factory_reset">If you want to reset Sense to factory settings.</string>
-    <string name="error_link_account_failed_multiple_times">Your account could not be linked with Sense. You can try changing the WiFi Sense is configured to.</string>
+
     <string name="title_power_cycle_sense_factory_reset">Power Cycle Sense</string>
     <string name="message_power_cycle_sense_factory_reset">Sense has been successfully restored to factory settings. Please unplug Sense, wait a few seconds, and plug it back in before you continue.</string>
     <string name="title_acknowledgements">Acknowledgements</string>
@@ -456,10 +473,10 @@
     <string name="dialog_message_alarm_sound_volume_low">Your device‘s volume may be too low for you to be able to hear the alarm tone preview. Would you like us to turn it up?</string>
     <string name="dialog_positive_alarm_sound_volume_low">Turn it up</string>
     <string name="dialog_negative_alarm_sound_volume_low">No, thanks</string>
-    <string name="error_timeline_sound_playback_failed">Could not play sound</string>
+
     <string name="timeline_actions_intro_title">Sense Learns</string>
     <string name="timeline_actions_intro_message">Making corrections to your timeline helps improve the algorithms that Sense uses to detect and analyze your sleep.</string>
-    <string name="error_room_conditions_no_sense">You don‘t currently have a Sense connected to your account. Please pair with Sense to view current conditions.</string>
+
     <string name="message_timeline_no_actions_title">No Actions Available</string>
     <string name="message_timeline_no_actions_body">The event you selected does not have any actions available.</string>
     <string name="action_send">Send</string>
@@ -468,8 +485,8 @@
     <string name="action_take_photo">Take photo</string>
     <string name="action_pick_image">Choose photo</string>
     <string name="action_add_attachment">Add Attachment</string>
-    <string name="error_image_capture_failed">Could not start camera.</string>
-    <string name="error_pick_image_failed">Could not start photo picker.</string>
+    <string name="label_having_trouble">I’m having trouble</string>
+
     <string name="title_select_a_topic">Select a topic</string>
     <string name="title_my_tickets">My tickets</string>
     <string name="title_comment">Comment</string>
@@ -483,8 +500,8 @@
     <string name="title_timeline_not_enough_data_message">If your Sleep Pill is not attached properly, it may not register enough motion data to generate a Timeline. \n\nTap below for instructions on how to clip your Sleep Pill to your pillow.</string>
     <string name="title_timeline_no_data">No sleep data recorded</string>
     <string name="title_timeline_no_data_message">This is normal if you were out of town, or away from your bed. \n\nOtherwise, you may want to check your Sleep Pill’s battery level, and make sure that Sense is connected to the internet.</string>
-    <string name="title_timeline_first_night">See you in the morning</string>
-    <string name="message_timeline_first_night">In the morning, you‘ll see your first Sleep Timeline here. There are no modes to set - Sense will automatically know when you go to bed. All you need to do is sleep.</string>
+    <string name="title_timeline_first_night">Have a good night</string>
+    <string name="message_timeline_first_night">In the morning, you\'ll see your first Sleep Timeline here.\n\nYou don\'t need to do anything to let Sense know that you\'re ready for bed. All you need to do now is sleep.</string>
     <string name="action_timeline_bad_data_support">Learn more</string>
 
     <string name="dialog_title_unsupported_os">Unsupported Device</string>
@@ -527,7 +544,7 @@
 
     <string name="request_permission_location_title">We need to ask for your location</string>
     <string name="request_permission_location_title2">Location Services required</string>
-    <string name="request_permission_location_message">"Android requires that Location Services are enabled to scan for Bluetooth Low Energy devices. Please enable Location Services to continue."</string>
+    <string name="request_permission_location_message">"Android requires that Location Services are enabled to scan for Bluetooth Low Energy devices. Please enable Location Services to continue. If you deny this permission, you may be unable to set up."</string>
     <string name="request_permission_location_required_title">Location Services not enabled</string>
     <string name="request_permission_location_required_message">Android requires that Location Services be enabled to scan for Bluetooth Low Energy devices. Please enable Location Services in <a href="#settings">Settings</a> to continue.</string>
     <string name="request_permission_write_external_storage_title">We need to ask for access to your photos</string>
@@ -550,20 +567,22 @@
     <string name="sleep_sounds_state_no_sounds_message">Sleep Sounds will be available once Sense has finished updating. Note that this may take up to an hour.</string>
     <string name="sleep_sounds_state_fw_update_title">Sense needs to update</string>
     <string name="sleep_sounds_state_fw_update_message">Sense will update automatically when plugged in and connected to Wi-Fi. This may take a few moments.</string>
-    <string name="sleep_sounds_error_generic">There was a problem loading Sleep Sounds. Please try again.</string>
+
     <string name="list_activity_sound_title">SELECT A SLEEP SOUND</string>
     <string name="list_activity_duration_title">PLAY A SLEEP SOUND FOR</string>
     <string name="list_activity_volume_title">VOLUME CONTROL</string>
-    <string name="sleep_sounds_error_loading">There was a problem loading Sleep Sounds. Please try again.</string>
-    <string name="sleep_sounds_error_communicating_with_sense">There was a problem communicating with your Sense. Please try again.</string>
-    <string name="sleep_sounds_error_commanding">There was a problem establishing a connection with your Sense. Please ensure your Sense is connected to the internet and try again.</string>
+
     <string name="sense_offline_title">Sense is offline</string>
     <string name="sense_offline_message">We haven\'t received data from your Sense recently. Make sure Sense is connected to Wi-Fi.</string>
     <string name="preview">PREVIEW</string>
     <string name="stop">STOP</string>
-    <string name="invalid_email">Invalid email address</string>
-    <string name="invalid_first_name">Invalid first name</string>
-    <string name="invalid_password">Invalid password</string>
+    <string name="connect_pill_fragment_preparing">Preparing update</string>
+    <string name="connect_pill_fragment_operation">Connect Pill</string>
+    <string name="update_ready_pill_fragment_operation">Update Pill</string>
+    <string name="debug_title_confirm_pill_update">Found Pill</string>
+    <string name="debug_message_confirm_pill_update_fmt">Are you sure you want to update ‘%1$s’?</string>
+
+    <string name="share_text">See how I\'m improving my sleep with Insights from Sense. %1$s #MySense</string>
 
 
     <plurals name="item_support_comment_detail_attachments">
@@ -597,8 +616,166 @@
     <string name="facebook_oauth_description">Connecting your Facebook account allows Sense to autofill your name, email address, and your Facebook profile photo. This does not give Sense permission to post anything to your Facebook.
         \n\n Still have questions? <a href="#facebook-autofill"><bold>Learn more.</bold></a>
     </string>
-    <string name="error_internet_connection_generic_title">Failed to upload photo</string>
-    <string name="error_internet_connection_generic_message">We\'re having trouble connecting to the internet. Please check your connection or try again in a few minutes.</string>
-    <string name="error_account_upload_photo_message">There were issues uploading your profile photo. Please check your connection or try again in a few minutes.</string>
-    <string name="error_account_remove_photo_message">There were issues removing your profile photo. Please check your connection or try again in a few minutes.</string>
+    <string name="message_no_pills">No Pills Found</string>
+
+    <string name="title_sense_voice">Sense with Voice</string>
+    <string name="info_sense_voice_intro">Speak to Sense to set alarms, check the conditions in your room, and more.</string>
+    <string name="try_it_now">Try it now:</string>
+    <string name="sense_voice_wake_phrase">\"Okay Sense…</string>
+    <string name="sense_voice_question_temperature">\"Okay Sense…\nwhat\'s the temperature?\"</string>
+    <string name="title_voice_tip">Voice Tip</string>
+    <string name="info_voice_tip">Always say <bold>\"Okay Sense\"</bold> before each command to activate Voice.\n\nMake sure your room is quiet, and that you’re speaking clearly to Sense and not your mobile device.</string>
+    <string name="title_update_later">Update later</string>
+    <string name="title_sense_update">Update your Sense</string>
+    <string name="subtitle_sense_update">Sense needs an update before use. This will take up to 3 minutes.</string>
+    <string name="title_sense_updating">Updating your Sense</string>
+    <string name="subtitle_sense_updating">Sense is currently updating. This will take up to 3 minutes.</string>
+    <string name="sense_starting_update">Starting update…</string>
+    <string name="sense_downloading_update">Downloading update…</string>
+    <string name="sense_updated">Sense updated</string>
+    <string name="sense_try_later_dialog_message">Sense will try again at a later time. You can begin using Sense, but some features may not be available until the update is complete.</string>
+    <string name="unpair_pill_title">Pair your new Sleep Pill</string>
+    <string name="unpair_pill_message">Your new Sleep Pill has been redesigned with an improved sensor and better battery life.</string>
+    <string name="action_pair_new_sleep_pill">Pair new Sleep Pill</string>
+    <string name="unpairing_sleep_pill">Unpairing Sleep Pill</string>
+    <string name="unpaired">Unpaired</string>
+    <string name="unpair_pill_dialog_title">About the new Sleep Pill</string>
+    <string name="unpair_pill_dialog_message">Using the new Sleep Pill will improve the accuracy of your Sleep Timeline, and provide better battery life over the original Sleep Pill.</string>
+    <string name="action_dont_pair">No, don\'t pair</string>
+    <string name="update_pair_pill_title">Pairing your new Sleep Pill</string>
+    <string name="update_pair_pill_sub_title">Hold the Sleep Pill close to Sense and shake it quickly for three seconds.</string>
+    <string name="sleep_pill_paired">Sleep Pill paired</string>
+    <string name="update_pair_pill_confirmation_title">Attaching Sleep Pill to your pillow</string>
+    <string name="update_pair_pill_confirmation_message">Attach the new Sleep Pill to the side of your pillowcase closest to the edge of your bed. You may need to pull your pillowcase taut between two hands.</string>
+    <string name="voice_result_none">none</string>
+    <string name="voice_result_ok">ok</string>
+    <string name="voice_result_rejected">rejected</string>
+    <string name="voice_result_try_again">try again</string>
+    <string name="voice_result_unknown">unknown</string>
+
+    <string name="sensor_detail_last_day">LAST DAY</string>
+    <string name="sensor_detail_past_week">PAST WEEK</string>
+    <string name="sensor_detail_about_title">About</string>
+    <string name="sensor_scale_list_title">Scale</string>
+    <string name="sensor_scale_list_measured_in">Measured in %1$s</string>
+    <string name="sensor_scale_min_value">0 to %1$s</string>
+    <string name="sensor_scale_mid_value">%1$s to %2$s</string>
+    <string name="sensor_scale_max_value">%1$s+</string>
+    <string name="sensor_scale_negative_max_value">%1$s&lt;</string>
+    <string name="sensor_about_temperature_celsius">At night, your body temperature cools to help induce sleep, and the right external temperature can make this easier. The ideal temperature for this is generally between 15 and 20 degrees Celsius. While cooler temperatures are generally better than warmer ones, be careful not to set your thermostat too low. A bedroom that’s uncomfortably hot or cold can disrupt your sleep cycle, which can negatively impact the quality of your sleep.</string>
+    <string name="sensor_about_temperature_fahrenheit">At night, your body temperature cools to help induce sleep, and the right external temperature can make this easier. The ideal temperature for this is generally between 59 and 68 degrees Fahrenheit. While cooler temperatures are generally better than warmer ones, be careful not to set your thermostat too low. A bedroom that’s uncomfortably hot or cold can disrupt your sleep cycle, which can negatively impact the quality of your sleep.</string>
+    <string name="sensor_about_humidity">The ideal humidity  for a good night’s sleep is around 50%. In addition to affecting the quality of your sleep, low humidity can cause your throat to become irritated and your skin to become dry, while high humidity can make it harder for moisture to evaporate off your body — making you hot, uncomfortable, and sweaty. Damp air can also encourage mold growth, which may affect your sleep if you suffer from mold allergies.</string>
+    <string name="sensor_about_light">Light is the primary signal for your circadian rhythm, which governs not only your sleep, but also your mood, appetite, and more. In the morning, light prompts your body to wake up, while in the evening, the decrease in light signals to your body that it’s time to wind down, relax, and prepare for sleep. Being exposed to too little light in the morning or too much at night can confuse this rhythm and make it much harder to maintain a healthy sleep schedule.</string>
+    <string name="sensor_about_particulates">Particle pollution (or particulate matter) is one of the main contributors to poor air quality, and is one of the pollutants measured by the Air Quality Index (AQI). The AQI shows you how clean or polluted the air is in your area by measuring the concentration of pollutants in the air, as well potential corresponding effects the air might have on your health. Poor air quality has been correlated with increased risk of poor sleep, and sustained levels of poor air quality can be detrimental to your overall health.</string>
+    <string name="sensor_about_noise">A noisy environment can make it difficult to fall asleep, but the impact of sound on your quality of sleep doesn’t end there. Even if you manage to doze off, your brain continues to register and process sounds, meaning nighttime noise can disrupt your sleep even if it doesn’t wake you up.</string>
+    <string name="sensor_about_co2"> Equivalent carbon dioxide (CO2e) is a measure of the equivalent amount or concentration of carbon dioxide (CO2). The greenhouse gas carbon dioxide (CO2) is naturally part of Earth’s atmosphere, and CO2 emissions come from a variety of natural sources. However, human activity such as fuel combustion for energy and transportation increases the amount of CO2 present in the atmosphere, and high concentrations can impair brain activity and make it difficult to breathe, which could affect sleep quality.</string>
+    <string name="sensor_about_voc">Volatile organic compounds (VOCs) can be essential ingredients in many household products, such as cleansers, disinfectants, mattresses, fresh paint, and more. Indoors, normal atmospheric conditions can cause these compounds to evaporate into the air, which in large concentrations can have a detrimental effect on overall air quality, and your health. VOCs may lead to irritated eyes, headaches, allergies, or asthma which may in turn impact the quality of your sleep.</string>
+    <string name="sensor_about_pressure">Barometric pressure, also known as atmospheric pressure, is a measure of the pressure exerted by the weight of air in the Earth’s atmosphere. Studies have shown some evidence that individuals diagnosed with sleep disordered breathing are susceptible to weather-related changes in barometric pressure.</string>
+    <string name="sensor_about_uv_light"> A sunny day can be enjoyable, but too much sunlight can be dangerous. The sun’s rays give off ultraviolet (UV) radiation, and it’s this radiation that makes overexposure to sunlight damaging to your skin, causing sunburns and putting you at higher risk for skin cancer. Seasonal weather conditions combined with ozone depletion can cause different amounts of UV radiation to reach different regions at different times. The UV Index exists to provide a daily forecast of the severity of UV radiation in your area.</string>
+    <string name="sensor_about_light_temp">Light temperatures over 4,500 K are described as cool colors (or blue light) and temperatures between 2,000–3,000 K described as warm colors (or red light). As daylight is a cool color (starting at around 2,000 K during sunrise and sunset and peaking at around 10,000 on a clear blue day), your body uses blue light as a primary signal for your circadian rhythm, suppressing melatonin and keeping you alert during the day. Personal electronics and televisions also generally give off blue light, which means that using these devices before bed can adversely affect your sleep schedule, keeping you awake when you’re trying to get to sleep.</string>
+    <string name="air_quality">Air Quality</string>
+    <string name="title_room_conditions">Room Conditions</string>
+    <string name="room_conditions_welcome_title">Your current conditions</string>
+    <string name="room_conditions_welcome_message">Recent changes to room conditions may take a few moments to be reflected here. Tap a card for more detail.</string>
+    <string name="temperature_celsius">C</string>
+    <string name="temperature_fahrenheit">F</string>
+
+    <!-- region Expansions -->
+
+    <string name="action_expansions">Expansions</string>
+    <string name="expansion_list_title">Expansions</string>
+    <string name="expansions_state_not_connected">Connect</string>
+    <string name="expansions_state_connected_on">Enabled</string>
+    <string name="expansions_state_connected_off">Disabled</string>
+    <string name="expansions_state_revoked">Disconnected</string>
+    <string name="expansions_state_unknown">Unknown</string>
+    <string name="expansions_state_not_configured">Configure</string>
+    <string name="expansions_state_not_available">Coming soon</string>
+    <string name="expansions_connect_title">Connect</string>
+    <string name="expansions_select">Select</string>
+
+    <string name="expansions_configuration_selection_title_format">Connected to %1$s</string>
+    <string name="expansions_configuration_selection_subtitle_format">Select the %1$s that Sense will control.</string>
+    <string name="action_connect">Connect</string>
+
+    <string name="expansions_configuration_selection_item_missing_title_format">No %1$s found</string>
+    <string name="expansions_configuration_selection_item_missing_subtitle_format">Use the %1$s app to configure %2$ss.</string>
+    <string name="expansions_configuration_selection_empty_title_default">No configurations found</string>
+    <string name="expansions_configuration_selection_empty_subtitle_default">Use the Third party app to set configurations.</string>
+    <string name="expansions_configuration_selection_configured">Configured</string>
+    <string name="expansions_configuration_selection_setting_progress_format">Setting %1$s</string>
+    <string name="expansions_configuration_selection_setting_progress_default">Setting configuration</string>
+    <string name="expansion_detail_remove_access">Remove Access</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="expansion_detail_remove_access_dialog_message">Are you sure you want to remove this expansion? Previously set alarms will still sound, but will no longer activate this expansion.</string>
+    <string name="expansions_configuration_selection_loading">Loading\nconfigurations</string>
+    <string name="expansions_completing">Establishing\nconnection</string>
+
+    <string name="welcome_dialog_expansions_title">Expansions</string>
+    <string name="welcome_dialog_expansions_message">Enabling access to compatible smart devices allows Sense to activate them at relevant moments, like turning on your lights when Sense’s alarm sounds.</string>
+
+    <string name="welcome_dialog_expansions_settings_light_message">Enabling access to compatible lights lets you control them using Voice, and allows Sense to activate them automatically at relevant moments, like turning on your lights when Sense’s alarm sounds.</string>
+    <string name="welcome_dialog_expansions_settings_thermostat_message">Enabling access to a compatible thermostat lets you control it using Voice, and allows Sense to automatically set the temperature at relevant moments, like warming your home before you wake.</string>
+
+    <string name="welcome_dialog_expansions_alarm_light_message">Enabling lights allows Sense to turn on your lights when Sense’s alarm sounds.</string>
+    <string name="welcome_dialog_expansions_alarm_thermostat_message">Enabling thermostat allows Sense to set your ideal temperature when you wake.</string>
+
+    <string name="enabling_expansion">Enabling expansion</string>
+    <string name="disabling_expansion">Disabling expansion</string>
+
+    <!-- end region -->
+
+    <string name="voice_settings_list_mute">Mute</string>
+    <string name="voice_settings_volume">Volume</string>
+    <string name="voice_settings_primary_user">Primary User</string>
+    <string name="voice_settings_primary_user_about">Tell Sense whose information to respond with when asked questions like \"What\'s my Sleep Score?\" by setting primary user. Only the primary user will be able to access the Nest Expansion when released.
+</string>
+    <string name="voice_settings_title">Voice</string>
+    <string name="voice_select_volume">Select volume</string>
+    <string name="voice_volume_description">Drag your finger across the volume bars to adjust the volume for Voice.</string>
+
+    <string name="voice_settings_primary_user_true">You</string>
+    <string name="voice_settings_primary_user_false">Change</string>
+    <string name="voice_settings_primary_user_dialog_title">Are you sure?</string>
+    <string name="voice_settings_primary_user_dialog_message">Once you set yourself as the primary user of this Sense, you won’t be able to undo it unless another person using this Sense sets themselves as the primary user.</string>
+    <string name="voice_settings_primary_user_dialog_positive_button">Become Primary</string>
+    <string name="voice_settings_progress_updating">Updating</string>
+
+    <string name="title_lights">Lights</string>
+    <string name="smart_alarm_expansion_state_connected_off">Connect</string>
+    <string name="smart_alarm_expansion_state_connected_on">Off</string>
+    <string name="expansion_category_lights">Lights</string>
+    <string name="expansion_category_thermostat">Thermostat</string>
+    <string name="expansion_category_configurations">Configurations</string>
+
+    <string name="smart_alarm_expansion_same_value_format">%1$d%2$s</string>
+    <string name="smart_alarm_expansion_range_value_format">%1$d%2$s - %3$d%4$s</string>
+    <!-- end region -->
+
+    <string name="label_voice">Voice</string>
+    <string name="home_subnav_insights">INSIGHTS</string>
+    <string name="home_subnav_voice">VOICE</string>
+    <string name="welcome_to_voice_title">Welcome To Voice</string>
+    <string name="welcome_to_voice_body">Always say \"Okay Sense\" before each command to activate Voice. Ask about your Sleep Score, room conditions, and more.</string>
+    <string name="label_voice_commands">Voice Commands</string>
+
+    <string name="sense_mac_address">Sense MAC Address</string>
+    <string name="action_copy">Copy</string>
+    <string name="copied">Copied</string>
+
+    <string name="custom_adapter_item">%1$d %2$s</string>
+
+    <string name="alarm_source_voice">Voice Alarm</string>
+    <string name="alarm_source_mobile_app">Alarm</string>
+    <string name="voice_alarm_never">Voice Alarm</string>
+    <string name="voice_alarm_days_repeat_format">Voice Alarm  ―  %1$s</string>
+    <string name="smart_alarm_expansion_attribute_format">set at %1$s</string>
+
+    <string name="voice_settings_update_error_title">Changes not saved</string>
+    <string name="voice_settings_update_error_message">Sense did not accept the changes.</string>
+
+    <string name="sensor_calibrating">Calibrating</string>
+    <string name="action_timeline">Timeline</string>
+    <string name="action_timeline_history">Timeline History</string>
+    <string name="action_unmute">Unmute</string>
 </resources>

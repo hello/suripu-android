@@ -23,8 +23,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import javax.inject.Inject;
-
 import rx.Observable;
 
 public class ImageUtil {
@@ -64,7 +62,7 @@ public class ImageUtil {
 
     /**
      * @param isTemporary determines whether or not to make temporary file
-     *                    using {@link this#getCacheFile(String)}
+     *                    using {@link is.hello.sense.util.SenseCache.ImageCache#getCacheFile(String)}
      * @return Returns <code>null</code> if exception occurs.
      */
     public
@@ -240,10 +238,16 @@ public class ImageUtil {
     private Bitmap decodeBitmapFromUrlStream(@NonNull final String path) throws IOException {
         /*final URL url = new URL(path);
         final InputStream fis = url.openStream();
-        final Bitmap bitmap = BitmapFactory.decodeStream(fis);
+        final Bitmap bitmap = BitmapFactory.decodeStream(fis, new Rect(0,0,0,0), options);
         fis.close();
         return bitmap;*/
-        return picasso.load(Uri.parse(path)).get();
+        //TODO hardcoded to resize to 1000. Tested 1100 but is rejected by server
+        return picasso.load(Uri.parse(path))
+                .resize(1000,1000)
+                .config(Bitmap.Config.ARGB_8888)
+                .centerInside()
+                .onlyScaleDown()
+                .get();
     }
 
     private int getRotationFromExifData(@NonNull final String path) throws IOException {

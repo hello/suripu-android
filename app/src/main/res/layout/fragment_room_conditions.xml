@@ -1,14 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<is.hello.sense.ui.widget.FixedSwipeRefreshLayout
-    android:id="@+id/fragment_room_conditions_refresh_container"
+<RelativeLayout
+    android:id="@+id/fragment_room_conditions_root_container"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:focusable="false">
+    android:layout_height="match_parent">
+
+    <is.hello.sense.ui.widget.SenseBar
+        android:layout_alignParentTop="true"
+        android:id="@+id/fragment_room_conditions_sense_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x6"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/fragment_room_conditions_recycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-</is.hello.sense.ui.widget.FixedSwipeRefreshLayout>
+        android:layout_height="match_parent"
+        android:layout_below="@id/fragment_room_conditions_sense_bar"/>
+
+    <ProgressBar
+        android:id="@+id/fragment_room_conditions_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"/>
+
+</RelativeLayout>
+

@@ -17,7 +17,7 @@
         android:drawablePadding="@dimen/gap_large"
         android:gravity="center"
         android:textAppearance="?attr/senseTextAppearanceSubheading"
-        android:text="@string/onboarding_done_message_1"
+        android:text="@string/onboarding_complete_title"
         android:lineSpacingMultiplier="@dimen/line_multiple_subheading"/>
 
 </FrameLayout>

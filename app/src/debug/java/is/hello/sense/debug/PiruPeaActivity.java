@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,6 +20,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -31,23 +34,25 @@ import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.presenters.HardwarePresenter;
+import is.hello.sense.interactors.hardware.HardwareInteractor;
+import is.hello.sense.settings.SettingsPairSenseModule;
+import is.hello.sense.ui.activities.ScopedInjectionActivity;
+import is.hello.sense.ui.activities.SettingsActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
-import is.hello.sense.ui.common.FragmentNavigationActivity;
-import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.MessageDialogFragment;
-import is.hello.sense.ui.fragments.onboarding.SelectWiFiNetworkFragment;
+import is.hello.sense.ui.fragments.updating.SelectWifiNetworkFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerAdapter.OnItemClickedListener<SensePeripheral> {
+public class PiruPeaActivity extends ScopedInjectionActivity implements ArrayRecyclerAdapter.OnItemClickedListener<SensePeripheral> {
     @Inject BluetoothStack stack;
     @Inject ApiSessionManager apiSessionManager;
-    @Inject HardwarePresenter hardwarePresenter;
+    @Inject
+    HardwareInteractor hardwarePresenter;
 
     private SensePeripheral selectedPeripheral;
 
@@ -56,6 +61,12 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
     private RecyclerView recyclerView;
     private ProgressBar loadingIndicator;
 
+
+    @Override
+    protected List<Object> getModules() {
+        // May need to change variable: true
+        return Arrays.asList(new SettingsPairSenseModule(true));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +103,7 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
         peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Fade Out LEDs", this::stopAnimationWithFade));
         peripheralActions.add(new SettingsRecyclerAdapter.DetailItem("Turn Off LEDs", this::stopAnimationWithoutFade));
 
-        IntentFilter filter = new IntentFilter(HardwarePresenter.ACTION_CONNECTION_LOST);
+        IntentFilter filter = new IntentFilter(HardwareInteractor.ACTION_CONNECTION_LOST);
         Observable<Intent> onConnectionLost = Rx.fromLocalBroadcast(this, filter);
         bindAndSubscribe(onConnectionLost,
                          intent -> disconnect(),
@@ -239,12 +250,11 @@ public class PiruPeaActivity extends InjectionActivity implements ArrayRecyclerA
     }
 
     public void setWifiNetwork() {
-        final FragmentNavigationActivity.Builder builder =
-                new FragmentNavigationActivity.Builder(this);
+        final SettingsActivity.Builder builder =
+                new SettingsActivity.Builder(this);
         builder.setDefaultTitle(R.string.title_edit_wifi);
-        builder.setFragmentClass(SelectWiFiNetworkFragment.class);
-        builder.setArguments(SelectWiFiNetworkFragment.createSettingsArguments());
-        builder.setWindowBackgroundColor(getResources().getColor(R.color.background_onboarding));
+        builder.setFragmentClass(SelectWifiNetworkFragment.class);
+        builder.setWindowBackgroundColor(ContextCompat.getColor(this, R.color.background_onboarding));
         builder.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         startActivity(builder.toIntent());
     }

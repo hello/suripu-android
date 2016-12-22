@@ -8,13 +8,11 @@ import android.support.annotation.StringRes;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.fragments.onboarding.RegisterFragment;
 import is.hello.sense.ui.widget.util.Styles;
 
 public class LabelEditText extends RelativeLayout {
@@ -92,7 +90,7 @@ public class LabelEditText extends RelativeLayout {
         return label.getText().toString();
     }
 
-    public void setOnEditorActionListener(@NonNull final TextView.OnEditorActionListener l) {
+    public void setOnEditorActionListener(@Nullable final TextView.OnEditorActionListener l) {
         input.setOnEditorActionListener(l);
     }
 

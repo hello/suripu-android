@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,7 +17,8 @@ import javax.inject.Inject;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
-import is.hello.sense.graph.presenters.RoomConditionsPresenter;
+import is.hello.sense.api.model.v2.sensors.SensorStatus;
+import is.hello.sense.flows.home.interactors.SensorResponseInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -36,7 +38,8 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
     private static final int POSITION_ALERT = 3;
     private static final int POSITION_WAVE = 4;
 
-    @Inject RoomConditionsPresenter presenter;
+    @Inject
+    SensorResponseInteractor interactor;
 
     private ImageView senseBackground, senseGreen, senseYellow, senseRed;
     private DiagramVideoView senseWave;
@@ -60,8 +63,8 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
             Analytics.trackEvent(Analytics.Onboarding.EVENT_SENSE_COLORS, null);
         }
 
-        presenter.update();
-        addPresenter(presenter);
+        interactor.update();
+        addPresenter(interactor);
 
         setRetainInstance(true);
     }
@@ -123,9 +126,9 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bindAndSubscribe(presenter.currentConditions,
+        bindAndSubscribe(interactor.latest(),
                          conditions -> {
-                             this.hasCurrentConditions = !conditions.conditions.isEmpty();
+                             this.hasCurrentConditions = !(conditions.getSensors().isEmpty() || conditions.getStatus() == SensorStatus.WAITING_FOR_DATA);
                          },
                          e -> {
                              Logger.error(getClass().getSimpleName(), "Could not load conditions", e);
@@ -177,7 +180,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
         if (hasCurrentConditions) {
             ((OnboardingActivity) getActivity()).showRoomCheckIntro();
         } else {
-            ((OnboardingActivity) getActivity()).showSmartAlarmInfo();
+            getFragmentNavigation().flowFinished(this, Activity.RESULT_OK, null);
         }
     }
 
@@ -311,8 +314,12 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
     }
 
     static class SenseColor {
-        final @StringRes int headingRes;
-        final @StringRes int subheadingRes;
+        final
+        @StringRes
+        int headingRes;
+        final
+        @StringRes
+        int subheadingRes;
 
         SenseColor(@StringRes int headingRes,
                    @StringRes int subheadingRes) {

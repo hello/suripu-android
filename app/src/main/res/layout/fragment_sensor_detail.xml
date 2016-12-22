@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/fragment_sensor_detail_root"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="false"
+    android:orientation="vertical">
+
+    <is.hello.sense.ui.widget.SelectorView
+        android:id="@+id/fragment_sensor_detail_selector"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x6"/>
+
+    <is.hello.sense.ui.widget.SensorDetailScrollView
+        android:id="@+id/fragment_sensor_detail_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_light"
+        android:fillViewport="true"
+        android:focusable="true"
+        android:scrollbars="none">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/fragment_sensor_detail_calibrating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/fragment_sensor_detail_message"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/sensor_calibrating"
+                android:visibility="gone"
+                />
+
+            <TextView
+                android:id="@+id/fragment_sensor_detail_value"
+                style="@style/Heading.Light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/x5"/>
+
+            <TextView
+                android:id="@+id/fragment_sensor_detail_message"
+                style="@style/Body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/fragment_sensor_detail_value"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/x1"/>
+
+            <is.hello.sense.ui.widget.graphing.sensors.SensorGraphView
+                android:id="@+id/fragment_sensor_detail_graph_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/fragment_sensor_detail_message"
+                android:clickable="false"
+                android:focusable="false"
+                android:visibility="invisible"/>
+
+            <ProgressBar
+                android:id="@+id/fragment_sensor_detail_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/fragment_sensor_detail_message"
+                android:layout_centerHorizontal="true"
+                android:visibility="visible"/>
+
+            <is.hello.sense.ui.widget.SensorScaleList
+                android:id="@+id/fragment_sensor_detail_scales"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/fragment_sensor_detail_graph_view"
+                android:layout_marginTop="@dimen/x5"
+                android:orientation="vertical">
+
+            </is.hello.sense.ui.widget.SensorScaleList>
+
+            <TextView
+                android:id="@+id/fragment_sensor_detail_about_title"
+                style="@style/Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/fragment_sensor_detail_scales"
+                android:layout_marginLeft="@dimen/x2"
+                android:layout_marginRight="@dimen/x2"
+                android:layout_marginTop="@dimen/x5"
+                android:text="@string/sensor_detail_about_title"/>
+
+            <TextView
+                android:id="@+id/fragment_sensor_detail_about_body"
+                style="@style/Body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/fragment_sensor_detail_about_title"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/x5"
+                android:layout_marginLeft="@dimen/x2"
+                android:layout_marginRight="@dimen/x2"
+                android:layout_marginTop="@dimen/x2"
+                android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"/>
+
+        </RelativeLayout>
+
+
+    </is.hello.sense.ui.widget.SensorDetailScrollView>
+
+
+</LinearLayout>

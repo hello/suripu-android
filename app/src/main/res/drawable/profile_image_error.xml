@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/default_profile_picture" />
+    <item>
+        <bitmap android:src="@drawable/default_profile_picture"
+                android:gravity="center"/>
+    </item>
     <item android:drawable="@color/gray6_70"
           android:height="@dimen/profile_image_size"
           android:width="@dimen/profile_image_size"/>
-    <item android:drawable="@drawable/error_white"
-          android:gravity="center"/>
+    <item>
+        <bitmap android:src="@drawable/error_white"
+            android:gravity="center"/>
+    </item>
 </layer-list>

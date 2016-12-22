@@ -107,6 +107,10 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
         actionsContainer.setVisibility(View.GONE);
     }
 
+    protected void clearAction(final int childIndex) {
+        actionsContainer.removeViewAt(childIndex);
+    }
+
     protected void showActions() {
         actionsContainer.setVisibility(View.VISIBLE);
     }

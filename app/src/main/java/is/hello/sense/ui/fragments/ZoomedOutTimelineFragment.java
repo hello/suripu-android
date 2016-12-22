@@ -18,13 +18,12 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
-import is.hello.sense.graph.presenters.ZoomedOutTimelinePresenter;
+import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
 import is.hello.sense.ui.adapter.ZoomedOutTimelineAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.ZoomedOutTimelineLayoutManager;
 import is.hello.sense.ui.widget.timeline.ZoomedOutTimelineDecoration;
-import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.DateFormatter;
 
 public class ZoomedOutTimelineFragment extends InjectionFragment implements ZoomedOutTimelineAdapter.OnItemClickedListener {
@@ -33,9 +32,12 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
     private static final String ARG_START_DATE = ZoomedOutTimelineFragment.class.getName() + ".ARG_START_DATE";
     private static final String ARG_FIRST_TIMELINE = ZoomedOutTimelineFragment.class.getName() + ".ARG_FIRST_TIMELINE";
 
-    @Inject ZoomedOutTimelinePresenter presenter;
-    @Inject DateFormatter dateFormatter;
-    @Inject PreferencesPresenter preferences;
+    @Inject
+    ZoomedOutTimelineInteractor presenter;
+    @Inject
+    DateFormatter dateFormatter;
+    @Inject
+    PreferencesInteractor preferences;
 
     private TextView monthText;
     private RecyclerView recyclerView;
@@ -80,7 +82,6 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
 
         this.monthText = (TextView) view.findViewById(R.id.fragment_zoomed_out_timeline_month);
         monthText.setText(dateFormatter.formatAsTimelineNavigatorDate(startDate));
-        Views.setSafeOnClickListener(monthText, ignored -> getFragmentManager().popBackStack());
 
         this.recyclerView = (RecyclerView) view.findViewById(R.id.fragment_zoomed_out_timeline_recycler_view);
         recyclerView.addItemDecoration(new ZoomedOutTimelineDecoration(getResources()));
@@ -108,10 +109,10 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
             // a specific offset if we want it to be centered. Of course,
             // we can only get the offset after layout.
 
-            layoutManager.postLayout(() -> {
+            layoutManager.postLayout(() -> recyclerView.post(() -> {
                 recyclerView.scrollBy(-layoutManager.getItemWidth(), 0);
-                recyclerView.post(presenter::retrieveTimelines);
-            });
+                presenter.retrieveTimelines();
+            }));
         } else {
             layoutManager.scrollToPosition(position);
             recyclerView.post(presenter::retrieveTimelines);

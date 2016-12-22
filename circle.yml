@@ -7,10 +7,14 @@ general:
       - /no\-test\-.*/
 dependencies:
   override:
-    - echo y | android update sdk -u -a -t extra-android-m2repository,extra-google-m2repository,extra-android-support
+    - echo y | android update sdk -u -a -t android-25,extra-android-m2repository,extra-google-m2repository,extra-android-support,build-tools-25.0.1
     - ./gradlew dependencies -PhelloAwsAccessKeyID="$AWS_ACCESS_KEY_ID" -PhelloAwsSecretKey="$AWS_SECRET_KEY"
 test:
   override:
     - ./gradlew clean testDebug -PdisablePreDex -PhelloAwsAccessKeyID="$AWS_ACCESS_KEY_ID" -PhelloAwsSecretKey="$AWS_SECRET_KEY"
     - cp -r app/build/outputs $CIRCLE_ARTIFACTS
-    - cp -r app/build/reports/tests/* $CIRCLE_TEST_REPORTS
+
+  post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+

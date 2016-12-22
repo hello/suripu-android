@@ -3,6 +3,7 @@ package is.hello.sense.ui.widget;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -19,17 +20,29 @@ import java.util.List;
 import java.util.Objects;
 
 import is.hello.sense.R;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.ui.widget.util.Styles;
 
 public class SelectorView extends LinearLayout implements View.OnClickListener {
     public static final int EMPTY_SELECTION = -1;
 
     private final List<ToggleButton> buttons = new ArrayList<>();
-    private @NonNull LayoutParams buttonLayoutParams;
+    private
+    @NonNull
+    LayoutParams buttonLayoutParams;
     private int selectedIndex = EMPTY_SELECTION;
 
-    private @Nullable SelectionAwareDrawable selectionAwareBackground;
-    private @Nullable OnSelectionChangedListener onSelectionChangedListener;
+    private
+    @Nullable
+    SelectionAwareDrawable selectionAwareBackground;
+    private
+    @Nullable
+    OnSelectionChangedListener onSelectionChangedListener;
+
+    @ColorRes
+    private int buttonSelectedColorRes = R.color.text_color_selector_toggle_button; // default color
+    @ColorRes
+    private int buttonNotSelectedColorRes = R.color.text_color_selector_toggle_button; // default color
 
 
     //region Lifecycle
@@ -94,7 +107,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
     }
 
     @Override
-    public void addView(@NonNull final View child, final int index,final  ViewGroup.LayoutParams params) {
+    public void addView(@NonNull final View child, final int index, final ViewGroup.LayoutParams params) {
         if (child instanceof ToggleButton) {
             final ToggleButton button = (ToggleButton) child;
             final int buttonIndex = buttons.size();
@@ -158,7 +171,9 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         return buttons.size();
     }
 
-    public @NonNull ToggleButton getButtonAt(final int index) {
+    public
+    @NonNull
+    ToggleButton getButtonAt(final int index) {
         return buttons.get(index);
     }
 
@@ -184,7 +199,9 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         synchronize();
     }
 
-    public @Nullable OnSelectionChangedListener getOnSelectionChangedListener() {
+    public
+    @Nullable
+    OnSelectionChangedListener getOnSelectionChangedListener() {
         return onSelectionChangedListener;
     }
 
@@ -196,7 +213,14 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         this.buttonLayoutParams = buttonLayoutParams;
     }
 
-    //endregion
+    public void setButtonSelectedColorRes(@ColorRes final int buttonSelectedColorRes) {
+        this.buttonSelectedColorRes = buttonSelectedColorRes;
+    }
+
+    public void setButtonNotSelectedColorRes(@ColorRes final int buttonNotSelectedColorRes) {
+        this.buttonNotSelectedColorRes = buttonNotSelectedColorRes;
+    }
+//endregion
 
 
     //region Button Tags
@@ -255,8 +279,14 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         // Creating the button with a style does not actually style it,
         // but on Lollipop it removes the intrusive elevation added to
         // all buttons by default.
-        final ToggleButton optionButton = new ToggleButton(context, null,
-                                                           R.style.AppTheme_Button_ModeSelector);
+        final ToggleButton optionButton;
+        if (SenseApplication.isRunningInRobolectric()) {
+            optionButton = new ToggleButton(context);
+        } else {
+            optionButton = new ToggleButton(context, null,
+                                            R.style.AppTheme_Button_ModeSelector);
+
+        }
 
         optionButton.setTextOn(titleOn);
         optionButton.setTextOff(titleOff);
@@ -265,7 +295,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         optionButton.setMinimumHeight(resources.getDimensionPixelSize(R.dimen.button_min_size));
         optionButton.setBackgroundResource(R.drawable.selectable_dark_bounded);
         optionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(R.dimen.text_size_body_mid_sized));
-        optionButton.setTextColor(Styles.getColorStateList(resources, R.color.text_color_selector_toggle_button, null));
+        optionButton.setTextColor(Styles.getColorStateList(resources, buttonNotSelectedColorRes, null));
         applyButtonStyles(optionButton, false);
 
         if (getChildCount() > 0 && wantsDivider) {
@@ -296,15 +326,14 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         final Resources resources = getResources();
         if (isSelected) {
             Styles.setTextAppearance(optionButton, R.style.AppTheme_Text_Body_Bold);
+            optionButton.setTextColor(Styles.getColorStateList(resources, buttonSelectedColorRes, null));
         } else {
             Styles.setTextAppearance(optionButton, R.style.AppTheme_Text_Body);
+            optionButton.setTextColor(Styles.getColorStateList(resources, buttonNotSelectedColorRes, null));
         }
-        optionButton.setTextColor(Styles.getColorStateList(resources, R.color.text_color_selector_toggle_button, null));
         optionButton.setChecked(isSelected);
     }
     //endregion
-
-
 
     public interface OnSelectionChangedListener {
         void onSelectionChanged(int newSelectionIndex);

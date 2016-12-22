@@ -2,293 +2,179 @@ package is.hello.sense.ui.fragments.onboarding;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
-import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
 
 import is.hello.go99.Anime;
-import is.hello.go99.animators.AnimatorContext;
-import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.go99.animators.OnAnimationCompleted;
 import is.hello.sense.R;
-import is.hello.sense.api.ApiService;
-import is.hello.sense.api.model.Condition;
-import is.hello.sense.api.model.SensorState;
-import is.hello.sense.functional.Lists;
-import is.hello.sense.graph.presenters.RoomConditionsPresenter;
-import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.presenters.BasePresenter;
+import is.hello.sense.presenters.RoomCheckPresenter;
+import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.SensorConditionView;
-import is.hello.sense.ui.widget.SensorTickerView;
-import is.hello.sense.ui.widget.util.Drawing;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
-import is.hello.sense.units.UnitConverter;
-import is.hello.sense.units.UnitFormatter;
-import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Logger;
-import rx.Scheduler;
 
 import static is.hello.go99.Anime.cancelAll;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class OnboardingRoomCheckFragment extends InjectionFragment {
-    private static final long CONDITION_VISIBLE_MS = 2500;
+public class OnboardingRoomCheckFragment extends BasePresenterFragment
+implements RoomCheckPresenter.Output{
 
-    @Inject RoomConditionsPresenter presenter;
-    @Inject UnitFormatter unitFormatter;
+    @Inject
+    RoomCheckPresenter presenter;
 
     private ImageView sense;
+    private HorizontalScrollView sensorScrollView;
     private LinearLayout sensorViewContainer;
     private LinearLayout dynamicContent;
     private TextView status;
-    private SensorTickerView scoreTicker;
+    private TextView scoreTicker;
+    private TextView scoreUnit;
+    private Drawable graySense;
 
     private int startColor;
-    private boolean animationCompleted = false;
 
-    private final Scheduler.Worker deferWorker = observeScheduler.createWorker();
+    @Nullable
+    private SensorConditionView animatingSensorView;
+    @Nullable
+    private ValueAnimator scoreAnimator;
 
-    private final List<SensorState> sensors = new ArrayList<>();
-
-    private Resources resources;
-    private Drawable graySense;
-    private @Nullable SensorConditionView animatingSensorView;
-    private @Nullable ValueAnimator scoreAnimator;
+    private TimeInterpolator sensorContainerInterpolator;
+    private Button continueButton;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public BasePresenter getPresenter() {
+        return presenter;
+    }
+
+    @Override
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        this.animationCompleted = (savedInstanceState != null);
-
-        this.resources = getResources();
-        this.graySense = ResourcesCompat.getDrawable(resources, R.drawable.onboarding_sense_grey, null);
-        this.startColor = resources.getColor(Condition.ALERT.colorRes);
-
-        addPresenter(presenter);
-
         setRetainInstance(true);
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_onboarding_room_check, container, false);
+    public View onCreateView(final LayoutInflater inflater,
+                             final ViewGroup container,
+                             final Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_onboarding_room_check, container, false);
 
         this.sense = (ImageView) view.findViewById(R.id.fragment_onboarding_room_check_sense);
-        this.sensorViewContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_room_check_sensors);
-
+        this.sensorScrollView = (HorizontalScrollView) view.findViewById(R.id.fragment_onboarding_room_check_sensors_scroll_view);
+        this.sensorViewContainer = (LinearLayout) sensorScrollView.findViewById(R.id.fragment_onboarding_room_check_sensors);
         this.dynamicContent = (LinearLayout) view.findViewById(R.id.fragment_onboarding_room_check_content);
         this.status = (TextView) dynamicContent.findViewById(R.id.fragment_onboarding_room_check_status);
+        this.scoreTicker = (TextView) dynamicContent.findViewById(R.id.fragment_onboarding_room_check_score_tv);
+        this.scoreUnit = (TextView) dynamicContent.findViewById(R.id.fragment_onboarding_room_check_score_unit_tv);
+        this.sensorContainerInterpolator = new OvershootInterpolator(1.0f);
 
-        AnimatorContext animatorContext = getAnimatorContext();
-        this.scoreTicker = (SensorTickerView) dynamicContent.findViewById(R.id.fragment_onboarding_room_check_ticker);
-        scoreTicker.setAnimatorContext(animatorContext);
+        this.graySense = ResourcesCompat.getDrawable(getResources(), R.drawable.onboarding_sense_grey, null);
+        this.startColor = ContextCompat.getColor(getActivity(), R.color.sensor_empty);
+        this.sensorScrollView.setOnTouchListener( (event, ignore) -> true); //prevent scrolling
+        this.sensorViewContainer.setClickable(false);
+
 
         return view;
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        if (animationCompleted) {
-            jumpToEnd(false);
-        } else {
-            bindAndSubscribe(presenter.latest(),
-                             this::bindConditions,
-                             this::conditionsUnavailable);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        jumpToEnd(false);
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
-
         stopAnimations();
+        releaseViews();
     }
 
+    @Override
+    public void onDetach(){
+        super.onDetach();
+        releaseViews();
+        presenter = null;
+    }
 
-    //region Scene Animation
+    //region RoomCheck Output
 
-    private void showConditionAt(int position) {
-        if (position >= sensors.size()) {
-            jumpToEnd(true);
-            return;
+    @Override
+    public void initialize(){
+        initSensorContainerXOffset();
+    }
+
+    @Override
+    public void createSensorConditionViews(final @DrawableRes int[] icons) {
+        removeSensorContainerViews();
+
+        final LinearLayout.LayoutParams layoutParams
+                = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        final int padding = getResources().getDimensionPixelOffset(R.dimen.item_room_sensor_condition_view_width) / 2;
+        for(@DrawableRes final int sensorIconRes : icons) {
+            createSensorConditionView(sensorIconRes,
+                                      padding,
+                                      layoutParams);
         }
+    }
 
+    @Override
+    public void unavailableConditions(final Throwable e) {
+        removeSensorContainerViews();
+    }
+
+    @Override
+    public void showConditionAt(final int position,
+                                @NonNull final String statusMessage,
+                                @DrawableRes final int conditionDrawable,
+                                @StringRes final int checkStatusMessage,
+                                @DrawableRes final int conditionIcon,
+                                @ColorRes final int conditionColorRes,
+                                final int value,
+                                @NonNull final String unitSuffix,
+                                @NonNull  final Runnable onComplete) {
         animateSenseToGray();
-
-        final SensorState sensor = sensors.get(position);
-        final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(position);
-        final String sensorName = sensor.getName();
-
-        status.setTextAppearance(status.getContext(), R.style.AppTheme_Text_SectionHeading_Large);
-        status.setText(getStatusStringForSensor(sensorName));
-        Drawing.setLetterSpacing(status, Styles.LETTER_SPACING_SECTION_HEADING_LARGE);
-        this.animatingSensorView = sensorView;
-        sensorView.fadeInProgressIndicator(() -> {
-            int convertedValue = 0;
-            if (sensor.getValue() != null) {
-                UnitConverter converter = unitFormatter.getUnitConverterForSensor(sensorName);
-                convertedValue = (int) converter.convert(sensor.getValue().longValue());
-            }
-            final String unitSuffix = unitFormatter.getUnitSuffixForSensor(sensorName);
-            final long duration = scoreTicker.animateToValue(convertedValue, unitSuffix, finishedTicker -> {
-                if (!finishedTicker) {
-                    return;
-                }
-
-                animatorFor(status, getAnimatorContext())
-                        .fadeOut(View.VISIBLE)
-                        .addOnAnimationCompleted(finishedStatus -> {
-                            if (!finishedStatus) {
-                                return;
-                            }
-
-                            status.setTextAppearance(status.getContext(), R.style.AppTheme_Text_Body);
-                            status.setText(null);
-                            status.setTransformationMethod(null);
-                            Drawing.setLetterSpacing(status, 0f);
-                            status.setText(sensor.getMessage());
-
-                            animateSenseCondition(sensor.getCondition(), false);
-                            sensorView.transitionToIcon(getFinalIconForSensor(sensorName), () -> {
-                                deferWorker.schedule(() -> showConditionAt(position + 1),
-                                                     CONDITION_VISIBLE_MS,
-                                                     TimeUnit.MILLISECONDS);
-                            });
-
-                            animatorFor(status, getAnimatorContext())
-                                    .fadeIn()
-                                    .start();
-                        })
-                        .start();
-            });
-
-
-            final int endColor = resources.getColor(sensor.getCondition().colorRes);
-            this.scoreAnimator = AnimatorTemplate.DEFAULT.createColorAnimator(startColor, endColor);
-            scoreAnimator.setDuration(duration);
-            scoreAnimator.addUpdateListener(a -> {
-                final int color = (int) a.getAnimatedValue();
-                sensorView.setTint(color);
-                scoreTicker.setTextColor(color);
-            });
-            scoreAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    sensorView.setTint(endColor);
-                    scoreTicker.setTextColor(endColor);
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    OnboardingRoomCheckFragment.this.scoreAnimator = null;
-                }
-            });
-            scoreAnimator.start();
-        });
+        showConditionAt(position,
+                        checkStatusMessage,
+                        statusMessage,
+                        conditionIcon,
+                        ResourcesCompat.getDrawable(getResources(), conditionDrawable, null),
+                        conditionColorRes,
+                        value,
+                        unitSuffix,
+                        onComplete);
     }
 
-    private void jumpToEnd(boolean animate) {
-        this.animationCompleted = true;
-        deferWorker.unsubscribe();
+    @Override
+    public void showCompletion(final boolean animate, @NonNull final Runnable onContinue) {
         stopAnimations();
-
-        stateSafeExecutor.execute(() -> {
-            final int conditionCount = sensors.size();
-            if (conditionCount > 0) {
-                final int conditionSum = Lists.sumInt(sensors, c -> c.getCondition().ordinal());
-                final int conditionAverage = (int) Math.ceil(conditionSum / (float) conditionCount);
-                final int conditionOrdinal = Math.min(Condition.IDEAL.ordinal(), conditionAverage);
-                final Condition averageCondition = Condition.values()[conditionOrdinal];
-                if (animate) {
-                    animateSenseCondition(averageCondition, true);
-                } else {
-                    sense.setImageDrawable(getConditionDrawable(averageCondition));
-                }
-
-                for (int i = 0; i < conditionCount; i++) {
-                    final SensorConditionView sensorView = (SensorConditionView) sensorViewContainer.getChildAt(i);
-                    final SensorState sensor = sensors.get(i);
-                    sensorView.clearAnimation();
-                    sensorView.setTint(resources.getColor(sensor.getCondition().colorRes));
-                    sensorView.setIcon(getFinalIconForSensor(sensor.getName()));
-                }
-            }
-
-            showCompletion(animate);
-        });
+        setSenseCondition(animate, getDefaultSenseCondition());
+        showCompletion(animate,
+                       ignored -> onContinue.run());
     }
 
-    private void showCompletion(boolean animate) {
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        OnAnimationCompleted atEnd = finishedTransitionIn -> {
-            if (!finishedTransitionIn) {
-                return;
-            }
+    //endregion
 
-            Button continueButton = (Button) dynamicContent.findViewById(R.id.sub_fragment_room_check_end_continue);
-            Views.setSafeOnClickListener(continueButton, this::continueOnboarding);
-        };
-        if (animate) {
-            animatorFor(dynamicContent, getAnimatorContext())
-                    .fadeOut(View.INVISIBLE)
-                    .addOnAnimationCompleted(finishedFadeOut -> {
-                        if (!finishedFadeOut) {
-                            return;
-                        }
+    //region PresenterView
 
-                        dynamicContent.removeAllViews();
-
-                        inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, dynamicContent, true);
-
-                        animatorFor(dynamicContent, getAnimatorContext())
-                                .fadeIn()
-                                .addOnAnimationCompleted(atEnd)
-                                .postStart();
-                    })
-                    .start();
-        } else {
-            dynamicContent.removeAllViews();
-            inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, dynamicContent, true);
-            atEnd.onAnimationCompleted(true);
-        }
-    }
-
-    private void stopAnimations() {
-        scoreTicker.stopAnimating();
-        cancelAll(status, dynamicContent);
+    public void stopAnimations() {
+        cancelAll(status, dynamicContent, sensorViewContainer);
 
         if (scoreAnimator != null) {
             scoreAnimator.cancel();
@@ -299,43 +185,188 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
         }
     }
 
-    //endregion
+    public void releaseViews() {
+        sensorContainerInterpolator = null;
+        animatingSensorView = null;
+        scoreAnimator = null;
 
+        if(continueButton != null){
+            continueButton.setOnClickListener(null);
+        }
+
+        if(sensorScrollView != null){
+            sensorScrollView.setOnClickListener(null);
+        }
+    }
+
+    public void setSensorContainerInterpolator(@NonNull final TimeInterpolator interpolator){
+        this.sensorContainerInterpolator = interpolator;
+    }
+
+    //todo specifically for onboarding
+    public void initSensorContainerXOffset() {
+        sensorViewContainer.post( () -> {
+            sensorViewContainer.setX(sense.getX() + sense.getWidth() / 2
+                                             - getResources().getDimensionPixelSize(R.dimen.item_room_sensor_condition_view_width) );
+            sensorViewContainer.invalidate();
+        });
+    }
+
+    private void animateSensorContainerTranslateX(final int pixelOffset){
+        animatorFor(sensorViewContainer, animatorContext)
+                .withInterpolator(sensorContainerInterpolator)
+                .translationX(sensorViewContainer.getTranslationX() - pixelOffset)
+                .start();
+    }
+
+    public void createSensorConditionView(@DrawableRes final int icon,
+                                          final int padding,
+                                          final LinearLayout.LayoutParams layoutParams) {
+        final SensorConditionView conditionView = new SensorConditionView(getActivity());
+        final Drawable iconDrawable = ResourcesCompat.getDrawable(getResources(), icon, null);
+        conditionView.setIcon(iconDrawable);
+        conditionView.setAnimatorContext(animatorContext);
+        conditionView.setPadding(padding,0,padding,0);
+        sensorViewContainer.addView(conditionView, layoutParams);
+    }
+
+    public void showConditionAt(final int position,
+                                @StringRes final int checkStatusMessage,
+                                @NonNull final String statusMessage,
+                                @DrawableRes final int finalIcon,
+                                @Nullable final Drawable senseCondition,
+                                @ColorRes final int conditionEndColorRes,
+                                final int convertedUnitTickerValue,
+                                @NonNull final String unitSuffix,
+                                @NonNull final Runnable onComplete) {
+        final View childAt = sensorViewContainer.getChildAt(position);
+        if(!(childAt instanceof SensorConditionView)){
+            onComplete.run();
+            return;
+        }
+        final SensorConditionView sensorView = (SensorConditionView) childAt;
+        this.animatingSensorView = sensorView;
+        if(position != 0) {
+            animateSensorContainerTranslateX(sensorView.getWidth());
+        }
+
+        status.setText(checkStatusMessage);
+        sensorView.fadeInProgressIndicator(() -> {
+            final int endColor = ContextCompat.getColor(getActivity(), conditionEndColorRes);
+            scoreUnit.setText(unitSuffix);
+            scoreAnimator = ValueAnimator.ofInt(0, convertedUnitTickerValue);
+            scoreAnimator.setDuration(Anime.DURATION_SLOW);
+            scoreAnimator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
+            scoreAnimator.addUpdateListener(a -> {
+                final int color = Anime.interpolateColors(a.getAnimatedFraction(), startColor, endColor);
+                scoreTicker.setText(Integer.toString((int) a.getAnimatedValue(), 10));
+                sensorView.setTint(color);
+                scoreTicker.setTextColor(color);
+                scoreUnit.setTextColor(color);
+            });
+
+            scoreAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationCancel(final Animator animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(final Animator animation) {
+                    if(OnboardingRoomCheckFragment.this.scoreAnimator != null) {
+                        OnboardingRoomCheckFragment.this.scoreAnimator.removeAllListeners();
+                        OnboardingRoomCheckFragment.this.scoreAnimator = null;
+                    }
+                    if(status == null || OnboardingRoomCheckFragment.this.isRemoving()){
+                        return;
+                    }
+                    animatorFor(status, animatorContext)
+                            .fadeOut(View.VISIBLE)
+                            .addOnAnimationCompleted(finishedStatus -> {
+                                if (!finishedStatus || OnboardingRoomCheckFragment.this.isRemoving()) {
+                                    return;
+                                }
+
+                                status.setText(null);
+                                status.setText(statusMessage);
+
+                                animateSenseCondition(senseCondition, false);
+                                sensorView.transitionToIcon(finalIcon, onComplete);
+
+                                animatorFor(status, animatorContext)
+                                        .fadeIn()
+                                        .start();
+                            })
+                            .start();
+                }
+            });
+            scoreAnimator.start();
+        });
+    }
+
+    public void setSenseCondition(final boolean animate, @Nullable final Drawable senseCondition){
+        if(senseCondition != null) {
+            if (animate) {
+                animateSenseCondition(senseCondition, true);
+            } else {
+                sense.setImageDrawable(senseCondition);
+            }
+        }
+    }
+
+    public void showCompletion(final boolean animate,
+                               final View.OnClickListener onContinueClickListener) {
+
+        final LayoutInflater inflater = LayoutInflater.from(getActivity());
+        final OnAnimationCompleted atEnd = finishedTransitionIn -> {
+            if (!finishedTransitionIn) {
+                return;
+            }
+
+            continueButton = (Button) dynamicContent.findViewById(R.id.sub_fragment_room_check_end_continue);
+            Views.setSafeOnClickListener(continueButton, onContinueClickListener);
+        };
+        if (animate) {
+            animatorFor(dynamicContent, animatorContext)
+                    .fadeOut(View.INVISIBLE)
+                    .addOnAnimationCompleted(onCompleted -> {
+                        if(onCompleted){
+                            dynamicContent.removeAllViews();
+                            inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, dynamicContent, true);
+
+                            animatorFor(dynamicContent, animatorContext)
+                                    .fadeIn()
+                                    .addOnAnimationCompleted(atEnd)
+                                    .postStart();
+                        }
+                    }).start();
+
+        } else {
+            dynamicContent.removeAllViews();
+            inflater.inflate(R.layout.sub_fragment_onboarding_room_check_end_message, dynamicContent, true);
+            atEnd.onAnimationCompleted(true);
+        }
+    }
+
+    public void removeSensorContainerViews() {
+        sensorViewContainer.removeAllViews();
+    }
 
     //region Animating Sense
 
-    private void animateSenseToGray() {
-        Drawable senseDrawable = sense.getDrawable();
+    public void animateSenseToGray() {
+        final Drawable senseDrawable = sense.getDrawable();
         if (senseDrawable instanceof TransitionDrawable) {
             ((TransitionDrawable) senseDrawable).reverseTransition(Anime.DURATION_NORMAL);
         }
     }
 
-    private Drawable getConditionDrawable(@NonNull Condition condition) {
-        switch (condition) {
-            case ALERT: {
-                return ResourcesCompat.getDrawable(resources, R.drawable.onboarding_sense_red, null);
-            }
-
-            case WARNING: {
-                return ResourcesCompat.getDrawable(resources, R.drawable.onboarding_sense_yellow, null);
-            }
-
-            case IDEAL: {
-                return ResourcesCompat.getDrawable(resources, R.drawable.onboarding_sense_green, null);
-            }
-
-            default:
-            case UNKNOWN: {
-                return graySense;
-            }
-        }
+    public Drawable getDefaultSenseCondition() {
+        return graySense;
     }
 
-    private void animateSenseCondition(@NonNull Condition condition, boolean fromCurrent) {
-        TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[] {
-            fromCurrent ? sense.getDrawable() : graySense,
-            getConditionDrawable(condition),
+    private void animateSenseCondition(@NonNull final Drawable newSenseCondition, final boolean fromCurrent) {
+        final TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[] {
+                fromCurrent ? sense.getDrawable() : graySense, newSenseCondition,
         });
         transitionDrawable.setCrossFadeEnabled(true);
         sense.setImageDrawable(transitionDrawable);
@@ -343,116 +374,4 @@ public class OnboardingRoomCheckFragment extends InjectionFragment {
     }
 
     //endregion
-
-
-    //region Binding
-
-    private @StringRes int getStatusStringForSensor(@NonNull String sensorName) {
-        switch (sensorName) {
-            case ApiService.SENSOR_NAME_TEMPERATURE: {
-                return R.string.checking_condition_temperature;
-            }
-            case ApiService.SENSOR_NAME_HUMIDITY: {
-                return R.string.checking_condition_humidity;
-            }
-            case ApiService.SENSOR_NAME_PARTICULATES: {
-                return R.string.checking_condition_airquality;
-            }
-            case ApiService.SENSOR_NAME_LIGHT: {
-                return R.string.checking_condition_light;
-            }
-            case ApiService.SENSOR_NAME_SOUND: {
-                return R.string.checking_condition_sound;
-            }
-            default: {
-                return R.string.missing_data_placeholder;
-            }
-        }
-    }
-
-    private @DrawableRes int getInitialIconForSensor(@NonNull String sensorName) {
-        switch (sensorName) {
-            case ApiService.SENSOR_NAME_TEMPERATURE: {
-                return R.drawable.room_check_sensor_temperature;
-            }
-            case ApiService.SENSOR_NAME_HUMIDITY: {
-                return R.drawable.room_check_sensor_humidity;
-            }
-            case ApiService.SENSOR_NAME_PARTICULATES: {
-                return R.drawable.room_check_sensor_airquality;
-            }
-            case ApiService.SENSOR_NAME_LIGHT: {
-                return R.drawable.room_check_sensor_light;
-            }
-            case ApiService.SENSOR_NAME_SOUND: {
-                return R.drawable.room_check_sensor_sound;
-            }
-            default: {
-                return 0;
-            }
-        }
-    }
-
-    private @DrawableRes int getFinalIconForSensor(@NonNull String sensorName) {
-        switch (sensorName) {
-            case ApiService.SENSOR_NAME_TEMPERATURE: {
-                return R.drawable.room_check_sensor_filled_temperature;
-            }
-            case ApiService.SENSOR_NAME_HUMIDITY: {
-                return R.drawable.room_check_sensor_filled_humidity;
-            }
-            case ApiService.SENSOR_NAME_PARTICULATES: {
-                return R.drawable.room_check_sensor_filled_airquality;
-            }
-            case ApiService.SENSOR_NAME_LIGHT: {
-                return R.drawable.room_check_sensor_filled_light;
-            }
-            case ApiService.SENSOR_NAME_SOUND: {
-                return R.drawable.room_check_sensor_filled_sound;
-            }
-            default: {
-                return 0;
-            }
-        }
-    }
-
-    public void bindConditions(@NonNull RoomConditionsPresenter.Result current) {
-        sensors.clear();
-        sensors.addAll(current.conditions.toList());
-
-        sensorViewContainer.removeAllViews();
-
-        final Context context = getActivity();
-        final Resources resources = getResources();
-        final LinearLayout.LayoutParams layoutParams
-                = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
-        for (SensorState sensor : sensors) {
-            final SensorConditionView conditionView = new SensorConditionView(context);
-            final int iconForSensor = getInitialIconForSensor(sensor.getName());
-            final Drawable iconDrawable = ResourcesCompat.getDrawable(resources, iconForSensor, null);
-            conditionView.setIcon(iconDrawable);
-            conditionView.setAnimatorContext(animatorContext);
-            sensorViewContainer.addView(conditionView, layoutParams);
-        }
-
-
-        showConditionAt(0);
-    }
-
-    public void conditionsUnavailable(Throwable e) {
-        Analytics.trackError(e, "Room check");
-        Logger.error(getClass().getSimpleName(), "Could not load conditions for room check", e);
-
-        sensorViewContainer.removeAllViews();
-        sensors.clear();
-
-        jumpToEnd(true);
-    }
-
-    //endregion
-
-
-    public void continueOnboarding(@NonNull View sender) {
-        ((OnboardingActivity) getActivity()).showSmartAlarmInfo();
-    }
 }

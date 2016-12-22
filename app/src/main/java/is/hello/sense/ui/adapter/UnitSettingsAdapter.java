@@ -12,7 +12,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -131,14 +130,11 @@ public class UnitSettingsAdapter extends RecyclerView.Adapter<UnitSettingsAdapte
                 leftButton.setChecked(true);
                 rightButton.setChecked(false);
             }
-            radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(RadioGroup group, int checkedId) {
-                    boolean newValue = ((RadioButton) group.getChildAt(1)).isChecked();
-                    setUnitItemValue(item.key, newValue);
-                    radioChangeListener.onRadioValueChanged(item.key, newValue);
-                    notifyDataSetChanged();
-                }
+            radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+                boolean newValue = ((RadioButton) group.getChildAt(1)).isChecked();
+                setUnitItemValue(item.key, newValue);
+                radioChangeListener.onRadioValueChanged(item.key, newValue);
+                notifyDataSetChanged();
             });
         }
     }

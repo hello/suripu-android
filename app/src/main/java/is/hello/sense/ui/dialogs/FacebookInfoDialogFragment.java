@@ -10,15 +10,14 @@ import is.hello.sense.ui.widget.util.Styles;
 
 public class FacebookInfoDialogFragment extends SenseDialogFragment {
 
-    public static final String TAG = SenseDialogFragment.class.getSimpleName() + "_TAG";
+    public static final String TAG = FacebookInfoDialogFragment.class.getSimpleName() + "_TAG";
 
     public static FacebookInfoDialogFragment newInstance(){
-        final FacebookInfoDialogFragment dialogFragment = new FacebookInfoDialogFragment();
-        return dialogFragment;
+        return new FacebookInfoDialogFragment();
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
         final SenseAlertDialog dialog = SenseAlertDialog.newBottomSheetInstance(getActivity());
         final CharSequence clickableLink = getResources().getText(R.string.facebook_oauth_description);
         dialog.setMessage(Styles.resolveSupportLinks(getActivity(),

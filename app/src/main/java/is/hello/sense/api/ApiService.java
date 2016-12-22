@@ -9,6 +9,7 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.AppStats;
 import is.hello.sense.api.model.AppUnreadStats;
+import is.hello.sense.api.model.DeviceOTAState;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.model.PasswordUpdate;
@@ -16,15 +17,18 @@ import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.RoomConditions;
 import is.hello.sense.api.model.RoomSensorHistory;
+import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SenseTimeZone;
-import is.hello.sense.api.model.SensorGraphSample;
 import is.hello.sense.api.model.StoreReview;
 import is.hello.sense.api.model.SupportTopic;
 import is.hello.sense.api.model.UpdateCheckIn;
+import is.hello.sense.api.model.VoiceResponse;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightInfo;
+import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.api.model.v2.MultiDensityImage;
+import is.hello.sense.api.model.v2.ShareUrl;
 import is.hello.sense.api.model.v2.SleepDurations;
 import is.hello.sense.api.model.v2.SleepSoundActionPlay;
 import is.hello.sense.api.model.v2.SleepSoundActionStop;
@@ -34,6 +38,15 @@ import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.Trends;
+import is.hello.sense.api.model.v2.alarms.AlarmGroups;
+import is.hello.sense.api.model.v2.alerts.Alert;
+import is.hello.sense.api.model.v2.expansions.Configuration;
+import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.api.model.v2.expansions.State;
+import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
+import is.hello.sense.api.model.v2.sensors.SensorResponse;
+import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
+import is.hello.sense.api.model.v2.voice.SenseVoiceSettings;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import retrofit.http.Body;
@@ -58,13 +71,16 @@ public interface ApiService {
 
     String UNIT_TEMPERATURE_CELSIUS = "c";
     String UNIT_TEMPERATURE_US_CUSTOMARY = "f";
-
+    @Deprecated
     String SENSOR_NAME_TEMPERATURE = "temperature";
+    @Deprecated
     String SENSOR_NAME_HUMIDITY = "humidity";
+    @Deprecated
     String SENSOR_NAME_PARTICULATES = "particulates";
+    @Deprecated
     String SENSOR_NAME_LIGHT = "light";
+    @Deprecated
     String SENSOR_NAME_SOUND = "sound";
-
 
     /**
      * Sentinel value used by graphing APIs.
@@ -153,23 +169,22 @@ public interface ApiService {
 
     //endregion
 
-
     //region Room Conditions
 
+    @Deprecated
     @GET("/v1/room/current")
     Observable<RoomConditions> currentRoomConditions(@NonNull @Query("temp_unit") String unit);
 
+    @Deprecated
     @GET("/v1/room/all_sensors/hours")
     Observable<RoomSensorHistory> roomSensorHistory(@Query("quantity") int numberOfHours,
                                                     @Query("from_utc") long timestamp);
 
-    @GET("/v1/room/{sensor}/day")
-    Observable<ArrayList<SensorGraphSample>> sensorHistoryForDay(@Path("sensor") String sensor,
-                                                                 @Query("from") long timestamp);
+    @GET("/v2/sensors")
+    Observable<SensorResponse> getSensors();
 
-    @GET("/v1/room/{sensor}/week")
-    Observable<ArrayList<SensorGraphSample>> sensorHistoryForWeek(@Path("sensor") String sensor,
-                                                                  @Query("from") long timestamp);
+    @POST("/v2/sensors")
+    Observable<SensorsDataResponse> postSensors(@NonNull @Body SensorDataRequest request);
 
     //endregion
 
@@ -181,6 +196,9 @@ public interface ApiService {
 
     @GET("/v2/insights/info/{category}")
     Observable<ArrayList<InsightInfo>> insightInfo(@NonNull @Path("category") String category);
+
+    @POST("/v2/sharing/insight")
+    Observable<ShareUrl> shareInsight(@NonNull @Body InsightType insightType);
 
     //endregion
 
@@ -208,6 +226,10 @@ public interface ApiService {
     @GET("/v2/devices")
     Observable<Devices> registeredDevices();
 
+    /**
+     * Used to determine how may accounts have already been paired to a Sense, for adjusting onboarding flow
+     * to show how to set up partner's account. Pending deprecation.
+     */
     @GET("/v2/devices/info")
     Observable<DevicesInfo> devicesInfo();
 
@@ -220,20 +242,30 @@ public interface ApiService {
     @DELETE("/v2/devices/sense/{id}/all")
     Observable<VoidResponse> removeSenseAssociations(@Path("id") @NonNull String senseId);
 
+    @PUT("/v2/devices/swap")
+    Observable<SenseDevice.SwapResponse> swapDevices(@NonNull @Body SenseDevice.SwapRequest newSenseId);
+
+    @GET("/v2/devices/sense/{id}/voice")
+    Observable<SenseVoiceSettings> getVoiceSettings(@Path("id") @NonNull String senseId);
+
+    @PATCH("/v2/devices/sense/{id}/voice")
+    Observable<VoidResponse> setVoiceSettings(@Path("id") @NonNull String senseId, @Body SenseVoiceSettings settings);
+
     //endregion
 
 
     //region Smart Alarms
 
-    @GET("/v1/alarms")
-    Observable<ArrayList<Alarm>> smartAlarms();
+    @GET("/v2/alarms")
+    Observable<AlarmGroups> smartAlarms();
 
-    @POST("/v1/alarms/{client_time_utc}")
-    Observable<VoidResponse> saveSmartAlarms(@Path("client_time_utc") long timestamp,
-                                             @NonNull @Body List<Alarm> alarms);
+    @POST("/v2/alarms/{client_time_utc}")
+    Observable<AlarmGroups> saveSmartAlarms(@Path("client_time_utc") long timestamp,
+                                             @NonNull @Body AlarmGroups alarmGroups);
 
     @GET("/v1/alarms/sounds")
     Observable<ArrayList<Alarm.Sound>> availableSmartAlarmSounds();
+
 
     //endregion
 
@@ -291,6 +323,51 @@ public interface ApiService {
 
     @POST("/v2/store/feedback")
     Observable<Void> trackStoreReview(@NonNull @Body StoreReview review);
+
+    //endregion
+
+    //region Sense Update
+
+    @GET("/v1/ota/status")
+    Observable<DeviceOTAState> getSenseUpdateStatus();
+
+    @POST("/v1/ota/request_ota")
+    Observable<VoidResponse> requestSenseUpdate(@Body String empty);
+
+    //endregion
+
+    //region Voice
+
+    @GET("/v1/speech/onboarding")
+    Observable<ArrayList<VoiceResponse>> getOnboardingVoiceResponse();
+
+    //endregion
+
+    //region Expansions
+
+    @GET("/v2/expansions")
+    Observable<ArrayList<Expansion>> getExpansions();
+
+    @GET("/v2/expansions/{id}")
+    Observable<List<Expansion>> getExpansionDetail(@Path("id") long expansionId);
+
+    @PATCH("/v2/expansions/{id}")
+    Observable<Void> setExpansionState(@Path("id") long expansionId,
+                                       @Body @NonNull State.Request stateRequest);
+
+    @GET("/v2/expansions/{id}/configurations")
+    Observable<ArrayList<Configuration>> getConfigurations(@Path("id") long expansionId);
+
+    @PATCH("/v2/expansions/{id}/configurations")
+    Observable<Configuration> setConfigurations(@Path("id") long expansionId,
+                                                @Body @NonNull Configuration configuration);
+
+    //endregion
+
+    //region Alerts
+
+    @GET("/v2/alerts")
+    Observable<ArrayList<Alert>> getAlerts();
 
     //endregion
 }

@@ -1,6 +1,7 @@
 package is.hello.sense.ui.common;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -14,15 +15,19 @@ import android.support.v4.content.ContextCompat;
 
 import com.segment.analytics.Properties;
 
+import java.util.Locale;
+
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
+import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.fragments.support.TicketSelectTopicFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
 public class UserSupport {
+    public static final String TAG = UserSupport.class.getName();
     public static final String ORDER_URL = "https://store.hello.is";
     public static final String VIDEO_URL = "http://player.vimeo.com/external/101139949.hd.mp4?s=28ac378e29847b77e9fb7431f05d2772";
     public static final String FORGOT_PASSWORD_URL = "https://account.hello.is";
@@ -41,7 +46,7 @@ public class UserSupport {
         try {
             final Intent intent = createViewUriIntent(from, uri);
             from.startActivity(intent);
-        } catch (final ActivityNotFoundException e) {
+        } catch (final ActivityNotFoundException | NullPointerException e) {
             final SenseAlertDialog alertDialog = new SenseAlertDialog(from);
             alertDialog.setTitle(R.string.dialog_error_title);
             alertDialog.setMessage(R.string.error_no_web_browser);
@@ -64,7 +69,7 @@ public class UserSupport {
                     .build();
             from.startActivity(new Intent(Intent.ACTION_VIEW, marketUri));
         } catch (final ActivityNotFoundException e) {
-            Logger.info(UserSupport.class.getSimpleName(), "Market unavailable", e);
+            Logger.info(TAG, "Market unavailable", e);
 
             final Uri webUri = new Uri.Builder()
                     .scheme("http")
@@ -78,16 +83,17 @@ public class UserSupport {
         }
     }
 
-    public static void showAmazonReviewPage(@NonNull final Activity from) {
+    public static void showAmazonReviewPage(@NonNull final Activity from,
+                                            @NonNull final Locale locale,
+                                            final boolean hasVoice) {
+        final String authorityParam = Locale.US.equals(locale) ? "www.amazon.com" : "www.amazon.co.uk";
+        final String asinParam = hasVoice ? "B01M9F2WLE" : "B016XBL2RE";
         final Uri amazonReviewUri = new Uri.Builder()
                 .scheme("https")
-                .authority("www.amazon.com")
+                .authority(authorityParam)
                 .appendPath("review")
                 .appendPath("create-review")
-                .appendQueryParameter("ie", "UTF8")
-                .appendQueryParameter("asin", "B016XBL2RE")
-                .appendQueryParameter("channel", "awUDPv3")
-                .appendQueryParameter("ref_", "cm_cr_dp_aw_wr_but#")
+                .appendQueryParameter("asin", asinParam)
                 .build();
         openUri(from, amazonReviewUri);
     }
@@ -108,12 +114,12 @@ public class UserSupport {
         from.startActivity(builder.toIntent());
     }
 
-    public static void showForOnboardingStep(@NonNull final Activity from, @NonNull final OnboardingStep onboardingStep) {
-        final Properties properties = Analytics.createProperties(Analytics.Onboarding.PROP_HELP_STEP,
-                                                                 onboardingStep.toProperty());
-        Analytics.trackEvent(Analytics.Onboarding.EVENT_HELP, properties);
+    public static void showForHelpStep(@NonNull final Activity from, @NonNull final HelpStep helpStep) {
+        final Properties properties = Analytics.createProperties(Analytics.Global.PROP_HELP_STEP,
+                                                                 helpStep.toProperty());
+        Analytics.trackEvent(Analytics.Global.EVENT_HELP, properties);
 
-        openUri(from, onboardingStep.getUri());
+        openUri(from, helpStep.getUri());
     }
 
     public static void showForDeviceIssue(@NonNull final Activity from, @NonNull final DeviceIssue issue) {
@@ -156,15 +162,10 @@ public class UserSupport {
         openUri(from, supportUrl);
     }
 
-    public static void showGalleryStoragePermissionMoreInfoPage(@NonNull final Activity from){
+    public static void showGalleryStoragePermissionMoreInfoPage(@NonNull final Activity from) {
         Analytics.trackEvent(Analytics.Permissions.EVENT_GALLERY_MORE_INFO, null);
 
         final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/210819543");
-        openUri(from, supportUrl);
-    }
-
-    public static void showFacebookAutoFillMoreInfoPage(@NonNull final Activity from){
-        final Uri supportUrl = Uri.parse("https://support.hello.is/hc/en-us/articles/210329423");
         openUri(from, supportUrl);
     }
 
@@ -186,6 +187,21 @@ public class UserSupport {
         }
     }
 
+    public static void showUpdatePill(@NonNull final Activity from) {
+        Logger.debug(TAG,"showUpdatePill()");
+        from.startActivityForResult(
+                new Intent(from, PillUpdateActivity.class),
+                PillUpdateActivity.REQUEST_CODE);
+    }
+
+    public static void showUpdatePill(@NonNull final Fragment from, @NonNull final String deviceId) {
+        Logger.debug(TAG,"showUpdatePill() from fragment " + from.getClass().getName());
+        from.startActivityForResult(
+                new Intent(from.getActivity(), PillUpdateActivity.class)
+                        .putExtra(PillUpdateActivity.EXTRA_DEVICE_ID, deviceId),
+                PillUpdateActivity.REQUEST_CODE);
+    }
+
     public enum DeviceIssue {
         UNSTABLE_BLUETOOTH("https://support.hello.is/hc/en-us/articles/204796429"),
         SENSE_MISSING("https://support.hello.is/hc/en-us/articles/204797259"),
@@ -194,6 +210,8 @@ public class UserSupport {
         SENSE_ASCII_WEP("https://support.hello.is/hc/en-us/articles/205019779"),
         SLEEP_PILL_MISSING("https://support.hello.is/hc/en-us/articles/204797159"),
         PAIRING_2ND_PILL("https://support.hello.is/hc/en-us/articles/204797289"),
+        SLEEP_PILL_LOW_BATTERY("https://support.hello.is/hc/en-us/articles/204496999"),
+        SLEEP_PILL_WEAK_RSSI("https://support.hello.is/hc/en-us/articles/211421183"),
         TIMELINE_NOT_ENOUGH_SLEEP_DATA("https://support.hello.is/hc/en-us/articles/204994629"),
         TIMELINE_NO_SLEEP_DATA("https://support.hello.is/hc/en-us/articles/205706435");
 
@@ -212,7 +230,7 @@ public class UserSupport {
         }
     }
 
-    public enum OnboardingStep {
+    public enum HelpStep {
         INFO(""),
         DEMOGRAPHIC_QUESTIONS("https://support.hello.is/hc/en-us/articles/204796959"),
         BLUETOOTH("https://support.hello.is/hc/en-us/articles/205493335"),
@@ -224,11 +242,15 @@ public class UserSupport {
         SIGN_INTO_WIFI("https://support.hello.is/hc/en-us/articles/205493095"),
         PILL_PAIRING("https://support.hello.is/hc/en-us/articles/204797129"),
         PILL_PLACEMENT("https://support.hello.is/hc/en-us/articles/205493045"),
-        ADD_2ND_PILL("https://support.hello.is/hc/en-us/articles/204797289");
+        ADD_2ND_PILL("https://support.hello.is/hc/en-us/articles/204797289"),
+        UPDATE_PILL("https://support.hello.is/hc/en-us/articles/211303163"),
+        UPDATING_SENSE("https://support.hello.is/hc/en-us/articles/211890643"),
+        RESET_ORIGINAL_SENSE("https://support.hello.is/hc/en-us/articles/213033483"),
+        AUTO_FILL_FACEBOOK("https://support.hello.is/hc/en-us/articles/210329423");
 
         private final String url;
 
-        OnboardingStep(@NonNull final String url) {
+        HelpStep(@NonNull final String url) {
             this.url = url;
         }
 
@@ -240,7 +262,7 @@ public class UserSupport {
             return toString().toLowerCase();
         }
 
-        public static OnboardingStep fromString(@Nullable final String string) {
+        public static HelpStep fromString(@Nullable final String string) {
             return Enums.fromString(string, values(), INFO);
         }
     }

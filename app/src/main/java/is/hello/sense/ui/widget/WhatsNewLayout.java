@@ -22,9 +22,8 @@ public class WhatsNewLayout extends FrameLayout {
 
         final String lastVersion = preferences.getString(Constants.WHATS_NEW_LAYOUT_LAST_VERSION_SHOWN, null);
         final String desiredVersion = context.getString(R.string.whats_new_version);
-        if (lastVersion != null && lastVersion.equals(desiredVersion)) {
-            return false;
-        }
+
+
 
         final int timesShown = preferences.getInt(Constants.WHATS_NEW_LAYOUT_TIMES_SHOWN, 0);
         if (timesShown >= MAX_SHOWS) {
@@ -32,11 +31,30 @@ public class WhatsNewLayout extends FrameLayout {
             return false;
         }
 
-        //todo change these values before release 1.4.3
-        return !(context.getString(R.string.whats_new_title_text).isEmpty()
+        //todo remove this check when we want to use the welcome card in prod
+        if (preferences.getBoolean(Constants.WHATS_NEW_LAYOUT_FORCE_SHOW, false)) {
+            return true;
+        }
+
+        if (lastVersion != null && lastVersion.equals(desiredVersion)) {
+            return false;
+        }
+
+        return false;
+
+        // todo uncomment when we want to use the welcome card in prod
+/*        return !(context.getString(R.string.whats_new_title_text).isEmpty()
                 || context.getString(R.string.whats_new_message_text).isEmpty()
                 || context.getString(R.string.whats_new_button_text).isEmpty()
-                || context.getString(R.string.whats_new_version).isEmpty());
+                || context.getString(R.string.whats_new_version).isEmpty());*/
+    }
+
+    //todo remove method when we want to use the welcome card in prod.
+    public static void forceShow(@NonNull final Context context) {
+        context.getSharedPreferences(Constants.WHATS_NEW_LAYOUT_SHOULD_SHOW_PREFS, 0)
+               .edit()
+               .putBoolean(Constants.WHATS_NEW_LAYOUT_FORCE_SHOW, true)
+               .apply();
     }
 
     public static void clearState(@NonNull final Context context) {
@@ -62,7 +80,8 @@ public class WhatsNewLayout extends FrameLayout {
                .edit()
                .putString(Constants.WHATS_NEW_LAYOUT_LAST_VERSION_SHOWN, context.getString(R.string.whats_new_version))
                .putInt(Constants.WHATS_NEW_LAYOUT_TIMES_SHOWN, 0)
-               .apply();
+                .putBoolean(Constants.WHATS_NEW_LAYOUT_FORCE_SHOW, false)// todo remove
+                .apply();
     }
 
     private Listener listener;

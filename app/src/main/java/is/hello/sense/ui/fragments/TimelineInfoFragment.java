@@ -49,7 +49,7 @@ import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineMetric;
-import is.hello.sense.graph.presenters.PreferencesPresenter;
+import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.adapter.EmptyRecyclerAdapter;
 import is.hello.sense.ui.common.AnimatedInjectionFragment;
 import is.hello.sense.ui.widget.util.Drawing;
@@ -70,7 +70,8 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
     private static final int GRID_COLUMNS_PER_ROW = 2;
 
     @Inject DateFormatter dateFormatter;
-    @Inject PreferencesPresenter preferences;
+    @Inject
+    PreferencesInteractor preferences;
 
     private @Nullable MarkupString summary;
     private ScoreCondition scoreCondition;
@@ -89,7 +90,8 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
     //region Lifecycle
 
-    public static TimelineInfoFragment newInstance(@NonNull Timeline timeline, @IdRes int sourceViewId) {
+    public static TimelineInfoFragment newInstance(@NonNull final Timeline timeline,
+                                                   @IdRes final int sourceViewId) {
         final TimelineInfoFragment fragment = new TimelineInfoFragment();
 
         final Bundle arguments = new Bundle();
@@ -204,6 +206,12 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
         compound.setDuration(Anime.DURATION_NORMAL);
 
         return compound;
+    }
+
+    @Override
+    protected void onExitAnimatorEnd() {
+        super.onExitAnimatorEnd();
+        getActivity().onBackPressed();
     }
 
     /*
@@ -413,8 +421,8 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
             final float amount = (topViewHolder == null) ? 0f : topViewHolder.itemView.getTop() / headerHeight;
             header.setTranslationY(headerHeight * -(1f - amount));
 
-            titleText.setAlpha(amount);
-            summaryText.setAlpha(amount);
+            titleText.setAlpha(Anime.interpolateFloats(amount, 0, 1));
+            summaryText.setAlpha(Anime.interpolateFloats(amount, 0, 1));
         }
     }
     

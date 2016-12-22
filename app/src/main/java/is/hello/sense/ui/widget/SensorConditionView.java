@@ -7,9 +7,11 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -65,7 +67,7 @@ public class SensorConditionView extends FrameLayout {
         final int height = resources.getDimensionPixelSize(R.dimen.item_room_sensor_condition_view_height);
         addView(progressBar, new LayoutParams(width, height, Gravity.CENTER));
 
-        setTint(resources.getColor(R.color.sensor_empty));
+        setTint(ContextCompat.getColor(context, R.color.sensor_empty));
     }
 
     @Override
@@ -96,19 +98,19 @@ public class SensorConditionView extends FrameLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        int canvasWidth = canvas.getWidth(),
-            canvasHeight = canvas.getHeight();
-        int canvasMidX = canvasWidth / 2;
+        final int canvasWidth = canvas.getWidth();
+        final int canvasHeight = canvas.getHeight();
+        final int canvasMidX = canvasWidth / 2;
 
         if (icon != null) {
-            int iconMidX = icon.getIntrinsicWidth() / 2;
+            final int iconMidX = icon.getIntrinsicWidth() / 2;
             icon.setBounds(canvasMidX - iconMidX, 0,
                            canvasMidX + iconMidX, canvasHeight);
             icon.draw(canvas);
         }
 
         if (transitionIcon != null) {
-            int iconMidX = transitionIcon.getIntrinsicWidth() / 2;
+            final int iconMidX = transitionIcon.getIntrinsicWidth() / 2;
             transitionIcon.setBounds(canvasMidX - iconMidX, 0,
                                      canvasMidX + iconMidX, canvasHeight);
             transitionIcon.draw(canvas);
@@ -120,11 +122,13 @@ public class SensorConditionView extends FrameLayout {
 
     //region Contents
 
-    public void setAnimatorContext(@Nullable AnimatorContext animatorContext) {
+    public void setAnimatorContext(@Nullable
+                                   final AnimatorContext animatorContext) {
         this.animatorContext = animatorContext;
     }
 
-    public void setTint(int color) {
+    public void setTint(@ColorInt
+                        final int color) {
         this.tintColor = color;
 
         final Drawable indeterminate = progressBar.getIndeterminateDrawable();
@@ -141,7 +145,8 @@ public class SensorConditionView extends FrameLayout {
         invalidate();
     }
 
-    public void setIcon(@Nullable Drawable icon) {
+    public void setIcon(@Nullable
+                        final Drawable icon) {
         if (this.icon != null) {
             this.icon.setCallback(null);
             this.icon = null;
@@ -156,11 +161,14 @@ public class SensorConditionView extends FrameLayout {
         invalidate();
     }
 
-    public void setIcon(@DrawableRes int fillRes) {
+    public void setIcon(@DrawableRes final int fillRes) {
         setIcon(ResourcesCompat.getDrawable(resources, fillRes, null));
     }
 
-    public void transitionToIcon(@NonNull Drawable newIcon, @Nullable Runnable onCompletion) {
+    public void transitionToIcon(@NonNull
+                                 final Drawable newIcon,
+                                 @Nullable
+                                 final Runnable onCompletion) {
         this.transitionIcon = newIcon;
         Drawables.setTintColor(newIcon, tintColor);
         newIcon.setAlpha(0);
@@ -169,13 +177,13 @@ public class SensorConditionView extends FrameLayout {
         crossFade.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
         crossFade.setDuration(Anime.DURATION_SLOW);
 
-        Drawable oldIcon = icon;
+        final Drawable oldIcon = icon;
         if (oldIcon == null) {
             throw new IllegalStateException("Cannot transition from nothing");
         }
 
         crossFade.addUpdateListener(a -> {
-            float fraction = a.getAnimatedFraction();
+            final float fraction = a.getAnimatedFraction();
             oldIcon.setAlpha(Math.round(255f * (1f - fraction)));
             newIcon.setAlpha(Math.round(255f * fraction));
             invalidate();
@@ -214,11 +222,14 @@ public class SensorConditionView extends FrameLayout {
         crossFade.start();
     }
 
-    public void transitionToIcon(@DrawableRes int iconRes, @Nullable Runnable onCompletion) {
+    public void transitionToIcon(@DrawableRes
+                                 final int iconRes,
+                                 @Nullable
+                                 final Runnable onCompletion) {
         transitionToIcon(ResourcesCompat.getDrawable(resources, iconRes, null), onCompletion);
     }
 
-    public void fadeInProgressIndicator(@NonNull Runnable onCompletion) {
+    public void fadeInProgressIndicator(@NonNull final Runnable onCompletion) {
         animatorFor(progressBar, animatorContext)
                 .fadeIn()
                 .addOnAnimationCompleted(finished -> {

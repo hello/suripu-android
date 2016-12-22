@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/action_bar_height_compact"
+                android:background="@color/background_light">
+
+    <ImageView
+        android:id="@+id/view_sense_bar_left_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:paddingTop="@dimen/x1"
+        android:paddingBottom="@dimen/x1"
+        android:paddingStart="@dimen/x3"
+        android:paddingEnd="@dimen/x3"
+        android:background="@drawable/selectable_dark"/>
+
+    <TextView
+        android:id="@+id/view_sense_bar_text"
+        style="@style/AppTheme.Text.Header.H6"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingEnd="@dimen/x2"
+        android:paddingStart="@dimen/x2"/>
+
+    <ImageView
+        android:id="@+id/view_sense_bar_right_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:paddingTop="@dimen/x1"
+        android:paddingBottom="@dimen/x1"
+        android:paddingStart="@dimen/x3"
+        android:paddingEnd="@dimen/x3"
+        android:background="@drawable/selectable_dark"/>
+</RelativeLayout>
