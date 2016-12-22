@@ -17,4 +17,9 @@ public interface ViewPagerPresenter {
      * @return index position in {@link #getViewPagerItems()}.
      */
     int getStartingItemPosition();
+
+    /**
+     * @return number of items to retain adjacent to active view
+     */
+    int getOffscreenPageLimit();
 }
