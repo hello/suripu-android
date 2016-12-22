@@ -6,8 +6,8 @@ import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiResponse;
-import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.IListObject;
 
 public class SleepDurations extends ApiResponse implements IListObject, SleepSoundsPlayerView.ISleepSoundsPlayerRowItem {
@@ -20,7 +20,7 @@ public class SleepDurations extends ApiResponse implements IListObject, SleepSou
     }
 
     public Duration getDurationWithId(final int id) {
-        if (id == ListActivity.NONE) {
+        if (id == Constants.NONE) {
             return null;
         }
         for (final Duration duration : durations) {

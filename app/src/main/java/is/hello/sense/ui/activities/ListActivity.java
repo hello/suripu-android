@@ -30,13 +30,14 @@ import is.hello.sense.util.IListObject.IListItem;
 import is.hello.sense.util.Player;
 import is.hello.sense.util.SenseCache.AudioCache;
 
+import static is.hello.sense.util.Constants.NONE;
+
 public class ListActivity extends InjectionActivity implements Player.OnEventListener {
 
     private enum PlayerStatus {
         Idle, Loading, Playing
     }
 
-    public static final int NONE = -1;
     private static final int VIEW_TITLE = 1;
     private static final int VIEW_NOT_TITLE = 2;
     private static final String ARG_TITLE = ListActivity.class.getName() + ".ARG_TITLE";

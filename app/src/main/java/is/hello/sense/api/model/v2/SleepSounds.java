@@ -9,8 +9,8 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
-import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.IListObject;
 
 public class SleepSounds extends ApiResponse implements IListObject, SleepSoundsPlayerView.ISleepSoundsPlayerRowItem {
@@ -30,7 +30,7 @@ public class SleepSounds extends ApiResponse implements IListObject, SleepSounds
     }
 
     public Sound getSoundWithId(final int id) {
-        if (id == ListActivity.NONE) {
+        if (id == Constants.NONE) {
             return null;
         }
         for (final Sound sound : sounds) {

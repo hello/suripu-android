@@ -38,6 +38,7 @@ import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.NotTested;
 import rx.Observable;
 import rx.Subscription;
@@ -167,8 +168,8 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            final int value = data.getIntExtra(ListActivity.VALUE_ID, ListActivity.NONE);
-            if (value == ListActivity.NONE) {
+            final int value = data.getIntExtra(ListActivity.VALUE_ID, Constants.NONE);
+            if (value == Constants.NONE) {
                 return;
             }
             final String constant;
