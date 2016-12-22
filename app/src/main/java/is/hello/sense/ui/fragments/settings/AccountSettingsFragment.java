@@ -60,6 +60,7 @@ public class AccountSettingsFragment extends InjectionFragment
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
     private static final String CURRENT_ACCOUNT_INSTANCE_KEY = "currentAccount";
+    public static final int REQUEST_CODE_UNITS_AND_TIME = 0x40;
 
     @Inject
     Picasso picasso;
@@ -178,6 +179,14 @@ public class AccountSettingsFragment extends InjectionFragment
         adapter.add(weightItem);
 
         decoration.addTopInset(adapter.getItemCount(), sectionPadding);
+
+        final SettingsRecyclerAdapter.DetailItem unitsAndTimeItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_units_and_time),
+                                                                                                       this::onUnitsAndTimeClick);
+        //todo replace with unit and time svg once ready
+        unitsAndTimeItem.setIcon(R.drawable.icon_sense_24, R.string.label_units_and_time);
+        adapter.add(unitsAndTimeItem);
+
+        decoration.addTopInset(adapter.getItemCount(), sectionPadding);
         this.enhancedAudioItem = new SettingsRecyclerAdapter.ToggleItem(getString(R.string.label_enhanced_audio),
                                                                         this::changeEnhancedAudio);
         adapter.add(enhancedAudioItem);
@@ -251,6 +260,12 @@ public class AccountSettingsFragment extends InjectionFragment
             return;
         }
         facebookPresenter.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_UNITS_AND_TIME) {
+            bindAccount(currentAccount);
+            return;
+        }
+
         if (resultCode != Activity.RESULT_OK) {
             return;
         }
@@ -391,6 +406,12 @@ public class AccountSettingsFragment extends InjectionFragment
 
 
     //region Preferences
+
+    public void onUnitsAndTimeClick() {
+        final UnitSettingsFragment fragment = new UnitSettingsFragment();
+        fragment.setTargetFragment(this, REQUEST_CODE_UNITS_AND_TIME);
+        getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_units_and_time), true);
+    }
 
     public void changeEnhancedAudio() {
         if (accountPreferences == null) {

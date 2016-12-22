@@ -99,7 +99,7 @@ public class FragmentNavigationActivity extends SenseActivity
                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(focusView.getWindowToken(), 0);
             }
-            getFragmentManager().popBackStack();
+            onBackPressed();
             return true;
         }
 

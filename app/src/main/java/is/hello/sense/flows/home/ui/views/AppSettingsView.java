@@ -20,7 +20,6 @@ import is.hello.sense.ui.adapter.FooterRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 import is.hello.sense.ui.fragments.settings.NotificationsSettingsFragment;
-import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
 import is.hello.sense.ui.fragments.support.SupportFragment;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
@@ -73,9 +72,6 @@ public class AppSettingsView extends PresenterView {
 
         this.adapter.add(new SettingsRecyclerAdapter.TextItem(context.getString(R.string.label_notifications),
                                                               generator.create(NotificationsSettingsFragment.class, R.string.label_notifications, false)));
-
-        this.adapter.add(new SettingsRecyclerAdapter.TextItem(context.getString(R.string.label_units_and_time),
-                                                              generator.create(UnitSettingsFragment.class, R.string.label_units_and_time, false)));
 
         this.expansionItem = new SettingsRecyclerAdapter.TextItem(context.getString(R.string.action_expansions),
                                                                   () -> expansionsListener.onClick(null));

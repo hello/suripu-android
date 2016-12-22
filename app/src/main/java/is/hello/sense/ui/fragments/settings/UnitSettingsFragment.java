@@ -24,14 +24,19 @@ import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.adapter.UnitSettingsAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.ScrollEdge;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 
+import static is.hello.sense.ui.fragments.settings.AccountSettingsFragment.REQUEST_CODE_UNITS_AND_TIME;
+
 public class UnitSettingsFragment extends InjectionFragment
-        implements Handler.Callback, UnitSettingsAdapter.OnRadioChangeListener {
+        implements Handler.Callback,
+        UnitSettingsAdapter.OnRadioChangeListener,
+        OnBackPressedInterceptor {
     private static final int REQUEST_CODE_ERROR = 0xE3;
 
     private static final int DELAY_PUSH_PREFERENCES = 3000;
@@ -146,4 +151,9 @@ public class UnitSettingsFragment extends InjectionFragment
         return false;
     }
 
+    @Override
+    public boolean onInterceptBackPressed(@NonNull Runnable defaultBehavior) {
+        finishWithResult(REQUEST_CODE_UNITS_AND_TIME, null);
+        return true;
+    }
 }
