@@ -63,7 +63,7 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     public int getStartingItemPosition() {
         // should never happen but lets be safe.
         if (viewPagerDelegate == null) {
-            return 0;
+            return BaseViewPagerPresenterDelegate.DEFAULT_STARTING_ITEM_POSITION;
         }
         return viewPagerDelegate.getStartingItemPosition();
     }

@@ -523,7 +523,6 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     private static class HomeViewPagerDelegate extends BaseViewPagerPresenterDelegate {
-        private static final int DEFAULT_ITEM_INDEX = 0;
 
         @NonNull
         @Override
@@ -535,16 +534,6 @@ public class HomeActivity extends ScopedInjectionActivity
                     new StaticFragmentAdapter.Item(SoundsPresenterFragment.class, SoundsPresenterFragment.class.getSimpleName()),
                     new StaticFragmentAdapter.Item(RoomConditionsPresenterFragment.class, RoomConditionsPresenterFragment.class.getSimpleName())
             };
-        }
-
-        @Override
-        public int getStartingItemPosition() {
-            return DEFAULT_ITEM_INDEX;
-        }
-
-        @Override
-        public int getOffscreenPageLimit() {
-            return 2; //same as default for now
         }
 
     }
