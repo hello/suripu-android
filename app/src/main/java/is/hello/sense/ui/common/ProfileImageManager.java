@@ -337,21 +337,15 @@ public class ProfileImageManager {
 
         private final ImageUtil imageUtil;
         private final FilePathUtil filePathUtil;
-        private Fragment fragmentListener;
 
         public Builder(@NonNull final ImageUtil imageUtil, @NonNull final FilePathUtil filePathUtil) {
             this.imageUtil = imageUtil;
             this.filePathUtil = filePathUtil;
         }
 
-        public Builder setFragmentListener(@NonNull final Fragment listener) {
+        public ProfileImageManager build(@NonNull final Fragment listener) throws NullPointerException {
             checkFragmentInstance(listener);
-            this.fragmentListener = listener;
-            return this;
-        }
-
-        public ProfileImageManager build() {
-            return new ProfileImageManager(fragmentListener, imageUtil, filePathUtil);
+            return new ProfileImageManager(listener, imageUtil, filePathUtil);
         }
 
         private void checkFragmentInstance(@NonNull final Fragment fragment) {
