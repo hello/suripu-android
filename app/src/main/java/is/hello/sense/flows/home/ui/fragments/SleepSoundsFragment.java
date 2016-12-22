@@ -219,7 +219,12 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     //region Retry
     @Override
     public void retry() {
-
+        presenterView.setProgressBarVisible(true);
+        updateSensePairedSubscription(() -> {
+            sleepSoundsStatusInteractor.resetBackOffIfNeeded();
+            sleepSoundsStatusInteractor.startPolling();
+            sleepSoundsInteractor.update();
+        });
     }
     //endregion
 
