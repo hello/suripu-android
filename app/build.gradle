@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         classpath 'me.tatarka:gradle-retrolambda:3.2.1'
-        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.2'
+        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.1'
     }
 }
 
@@ -55,6 +55,11 @@ android {
     dataBinding {
         enabled = true
     }
+
+    lintOptions {
+        abortOnError false
+    }
+
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
