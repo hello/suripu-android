@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 
@@ -31,6 +34,7 @@ import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.units.UnitConverter;
 import is.hello.sense.util.Logger;
 
@@ -89,11 +93,33 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         final Bundle arguments = getArguments();
         if (savedInstanceState != null) {
             restoreState(savedInstanceState);
         } else if (arguments != null) {
             restoreState(arguments);
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.info_menu, menu);
+        final MenuItem infoItem = menu.findItem(R.id.action_info);
+        if(infoItem != null){
+            Styles.tintMenuIcon(getActivity(), infoItem, R.color.white);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_info:
+                this.getExpansionInfoDialogClickListener(expansionCategory).onClick(null);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -199,10 +225,6 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
                                                max,
                                                expansionCategoryFormatter.getSuffix(expansion.getCategory())
                                               );
-
-
-        presenterView.setExpansionEnabledTextViewClickListener(this.getExpansionInfoDialogClickListener(expansion.getCategory()));
-
 
         presenterView.showConnectedContainer(!expansion.requiresAuthentication());
 
