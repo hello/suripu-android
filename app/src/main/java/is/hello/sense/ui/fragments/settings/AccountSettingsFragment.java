@@ -261,11 +261,6 @@ public class AccountSettingsFragment extends InjectionFragment
         }
         facebookPresenter.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_CODE_UNITS_AND_TIME) {
-            bindAccount(currentAccount);
-            return;
-        }
-
         if (resultCode != Activity.RESULT_OK) {
             return;
         }
@@ -273,6 +268,8 @@ public class AccountSettingsFragment extends InjectionFragment
             accountPresenter.update();
         } else if (requestCode == REQUEST_CODE_ERROR) {
             getActivity().finish();
+        } else if (requestCode == REQUEST_CODE_UNITS_AND_TIME) {
+            bindAccount(currentAccount);
         }
     }
 

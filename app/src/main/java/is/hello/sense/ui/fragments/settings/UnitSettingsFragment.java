@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.settings;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -31,6 +30,9 @@ import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
+
 public class UnitSettingsFragment extends InjectionFragment
         implements Handler.Callback,
         UnitSettingsAdapter.OnRadioChangeListener,
@@ -39,6 +41,7 @@ public class UnitSettingsFragment extends InjectionFragment
 
     private static final int DELAY_PUSH_PREFERENCES = 3000;
     private static final int MSG_PUSH_PREFERENCES = 0x5;
+    private static final String ARG_IS_DIRTY = UnitSettingsFragment.class.getSimpleName() + "ARG_IS_DIRTY";
 
     @Inject
     AccountInteractor accountPresenter;
@@ -47,16 +50,29 @@ public class UnitSettingsFragment extends InjectionFragment
 
     private final Handler handler = new Handler(Looper.getMainLooper(), this);
 
+    /**
+     * True if preferences are changed
+     */
+    private boolean isDirty = false;
+
 
     //region Lifecycle
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
             Analytics.trackEvent(Analytics.Backside.EVENT_UNITS_TIME, null);
+        } else {
+            this.isDirty = savedInstanceState.getBoolean(ARG_IS_DIRTY);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(ARG_IS_DIRTY, isDirty);
     }
 
     @Nullable
@@ -122,7 +138,7 @@ public class UnitSettingsFragment extends InjectionFragment
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_CODE_ERROR && resultCode == Activity.RESULT_OK) {
+        if (requestCode == REQUEST_CODE_ERROR && resultCode == RESULT_OK) {
             getActivity().finish();
         }
     }
@@ -138,6 +154,7 @@ public class UnitSettingsFragment extends InjectionFragment
 
         handler.removeMessages(MSG_PUSH_PREFERENCES);
         handler.sendEmptyMessageDelayed(MSG_PUSH_PREFERENCES, DELAY_PUSH_PREFERENCES);
+        isDirty = true;
     }
 
     @Override
@@ -150,8 +167,8 @@ public class UnitSettingsFragment extends InjectionFragment
     }
 
     @Override
-    public boolean onInterceptBackPressed(@NonNull Runnable defaultBehavior) {
-        finishWithResult(getTargetRequestCode(), null);
+    public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
+        finishWithResult(this.isDirty ? RESULT_OK : RESULT_CANCELED, null);
         return true;
     }
 }
