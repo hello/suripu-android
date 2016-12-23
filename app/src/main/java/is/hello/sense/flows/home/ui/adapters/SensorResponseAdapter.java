@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,10 +45,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
      * Store air quality sensors within here
      */
     private final List<Sensor> airQualitySensors = new ArrayList<>();
-    /**
-     * Avoids having to check if an air quality sensor exists when getting the item count.
-     */
-    private boolean hasAirQuality = false;
+    private int firstAirQualitySensorPosition = RecyclerView.NO_POSITION;
 
     @StringRes
     private int messageTitle;
@@ -98,7 +96,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         if (this.airQualitySensors.isEmpty()) {
             return VIEW_SENSOR;
         }
-        if (position == getItemCount() - 1) {
+        if (position == firstAirQualitySensorPosition) {
             return VIEW_AIR_QUALITY;
         }
         return VIEW_SENSOR;
@@ -110,25 +108,20 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             return 1;
         }
         final int welcomeCardCount = this.showWelcomeCard ? 1 : 0;
-        if (this.hasAirQuality && !this.airQualitySensors.isEmpty()) {
-            return super.getItemCount() + 1 + welcomeCardCount;
-        }
+
         return super.getItemCount() + welcomeCardCount;
     }
 
     public void replaceAll(@NonNull final List<Sensor> sensors) {
         dismissMessage();
         this.airQualitySensors.clear();
-        this.hasAirQuality = false;
         final ArrayList<Sensor> normalSensors = new ArrayList<>();
         for (final Sensor sensor : sensors) {
             switch (sensor.getType()) {
                 case PARTICULATES:
                 case CO2:
                 case TVOC:
-                    this.hasAirQuality = true;
                     this.airQualitySensors.add(sensor);
-                    break;
                 default:
                     normalSensors.add(sensor);
             }
@@ -136,8 +129,12 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
         // If there is only one AirQuality item we will display it with a graph.
         if (this.airQualitySensors.size() == 1) {
-            normalSensors.add(this.airQualitySensors.get(0));
             this.airQualitySensors.clear();
+        } else if (this.airQualitySensors.size() > 1) {
+            this.firstAirQualitySensorPosition = normalSensors.indexOf(this.airQualitySensors.get(0));
+            normalSensors.removeAll(this.airQualitySensors);
+            // fake sensor to maintain position where air quality card will display
+            normalSensors.add(firstAirQualitySensorPosition, Sensor.newUnknownTestCase(0f));
         }
         super.replaceAll(normalSensors);
         notifyDataSetChanged();
