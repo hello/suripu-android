@@ -59,8 +59,8 @@ public class AccountSettingsFragment extends InjectionFragment
         implements AccountEditor.Container, ProfileImageManager.Listener {
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
+    private static final int REQUEST_CODE_UNITS_AND_TIME = 0x40;
     private static final String CURRENT_ACCOUNT_INSTANCE_KEY = "currentAccount";
-    public static final int REQUEST_CODE_UNITS_AND_TIME = 0x40;
 
     @Inject
     Picasso picasso;

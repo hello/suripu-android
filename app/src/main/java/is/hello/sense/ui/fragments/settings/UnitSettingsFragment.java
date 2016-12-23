@@ -31,8 +31,6 @@ import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 
-import static is.hello.sense.ui.fragments.settings.AccountSettingsFragment.REQUEST_CODE_UNITS_AND_TIME;
-
 public class UnitSettingsFragment extends InjectionFragment
         implements Handler.Callback,
         UnitSettingsAdapter.OnRadioChangeListener,
@@ -153,7 +151,7 @@ public class UnitSettingsFragment extends InjectionFragment
 
     @Override
     public boolean onInterceptBackPressed(@NonNull Runnable defaultBehavior) {
-        finishWithResult(REQUEST_CODE_UNITS_AND_TIME, null);
+        finishWithResult(getTargetRequestCode(), null);
         return true;
     }
 }
