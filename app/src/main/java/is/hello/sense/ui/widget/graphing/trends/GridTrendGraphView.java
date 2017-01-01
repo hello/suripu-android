@@ -389,6 +389,9 @@ public class GridTrendGraphView extends TrendGraphView {
                 if (size() <= 0) {
                     return null;
                 }
+                if (get(size() - 1).size() <= i) {
+                    return null;
+                }
                 return get(size() - 1).get(i);
             }
         }
