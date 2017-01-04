@@ -59,6 +59,7 @@ public class AccountSettingsFragment extends InjectionFragment
         implements AccountEditor.Container, ProfileImageManager.Listener {
     private static final int REQUEST_CODE_PASSWORD = 0x20;
     private static final int REQUEST_CODE_ERROR = 0xE3;
+    private static final int REQUEST_CODE_UNITS_AND_TIME = 0x40;
     private static final String CURRENT_ACCOUNT_INSTANCE_KEY = "currentAccount";
 
     @Inject
@@ -143,7 +144,8 @@ public class AccountSettingsFragment extends InjectionFragment
         decoration.addTopInset(adapter.getItemCount(), verticalPadding);
 
         adapter.add(profilePictureItem);
-        nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder), this::changeName, R.id.fragment_account_settings_name);
+        nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
+                                                          this::changeName);
         nameItem.setIcon(R.drawable.icon_settings_name, R.string.label_name);
         adapter.add(nameItem);
         emailItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder), this::changeEmail);
@@ -175,6 +177,14 @@ public class AccountSettingsFragment extends InjectionFragment
                                                                  this::changeWeight);
         weightItem.setIcon(R.drawable.icon_settings_weight, R.string.label_weight);
         adapter.add(weightItem);
+
+        decoration.addTopInset(adapter.getItemCount(), sectionPadding);
+
+        final SettingsRecyclerAdapter.DetailItem unitsAndTimeItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_units_and_time),
+                                                                                                       this::onUnitsAndTimeClick);
+        //todo replace with unit and time svg once ready
+        unitsAndTimeItem.setIcon(R.drawable.icon_sense_24, R.string.label_units_and_time);
+        adapter.add(unitsAndTimeItem);
 
         decoration.addTopInset(adapter.getItemCount(), sectionPadding);
         this.enhancedAudioItem = new SettingsRecyclerAdapter.ToggleItem(getString(R.string.label_enhanced_audio),
@@ -249,6 +259,7 @@ public class AccountSettingsFragment extends InjectionFragment
             return;
         }
         facebookPresenter.onActivityResult(requestCode, resultCode, data);
+
         if (resultCode != Activity.RESULT_OK) {
             return;
         }
@@ -256,6 +267,8 @@ public class AccountSettingsFragment extends InjectionFragment
             accountPresenter.update();
         } else if (requestCode == REQUEST_CODE_ERROR) {
             getActivity().finish();
+        } else if (requestCode == REQUEST_CODE_UNITS_AND_TIME) {
+            bindAccount(currentAccount);
         }
     }
 
@@ -389,6 +402,12 @@ public class AccountSettingsFragment extends InjectionFragment
 
 
     //region Preferences
+
+    public void onUnitsAndTimeClick() {
+        final UnitSettingsFragment fragment = new UnitSettingsFragment();
+        fragment.setTargetFragment(this, REQUEST_CODE_UNITS_AND_TIME);
+        getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_units_and_time), true);
+    }
 
     public void changeEnhancedAudio() {
         if (accountPreferences == null) {

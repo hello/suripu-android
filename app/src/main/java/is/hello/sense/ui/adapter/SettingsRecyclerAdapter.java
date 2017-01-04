@@ -2,8 +2,8 @@ package is.hello.sense.ui.adapter;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.databinding.DataBindingUtil;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -11,13 +11,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import is.hello.sense.R;
+import is.hello.sense.databinding.ItemSettingsDetailBinding;
+import is.hello.sense.databinding.ItemSettingsToggleBinding;
 import is.hello.sense.ui.widget.util.Views;
 
 public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecyclerAdapter.Item,
@@ -103,7 +103,6 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         implements View.OnClickListener{
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-
             itemView.setBackgroundResource(R.drawable.selectable_dark_bounded);
             Views.setTimeOffsetOnClickListener(itemView, this);
         }
@@ -143,60 +142,49 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
     }
 
     class DetailViewHolder extends ViewHolder<DetailItem> {
-        final ImageView icon;
-        final TextView title;
-        final TextView detail;
-        final View divider;
 
-        DetailViewHolder(@NonNull View itemView) {
+        private final ItemSettingsDetailBinding binding;
+
+        DetailViewHolder(@NonNull final View itemView) {
             super(itemView);
-
-            this.icon = (ImageView) itemView.findViewById(R.id.item_settings_detail_icon);
-            this.title = (TextView) itemView.findViewById(R.id.item_settings_detail_title);
-            this.detail = (TextView) itemView.findViewById(R.id.item_settings_detail_detail);
-            this.divider = itemView.findViewById(R.id.item_settings_detail_divider);
+            this.binding = DataBindingUtil.bind(itemView);
         }
 
         @Override
         void bind(@NonNull DetailItem item) {
             if (item.icon != 0) {
-                icon.setImageResource(item.icon);
-                icon.setContentDescription(resources.getString(item.iconContentDescription));
-                icon.setVisibility(View.VISIBLE);
+                this.binding.itemSettingsDetailIcon.setImageResource(item.icon);
+                this.binding.itemSettingsDetailIcon.setContentDescription(resources.getString(item.iconContentDescription));
+                this.binding.itemSettingsDetailIcon.setVisibility(View.VISIBLE);
             } else {
-                icon.setImageDrawable(null);
-                icon.setVisibility(View.GONE);
+                this.binding.itemSettingsDetailIcon.setImageDrawable(null);
+                this.binding.itemSettingsDetailIcon.setVisibility(View.GONE);
             }
-            title.setText(item.text);
-            detail.setText(item.value);
+            this.binding.itemSettingsDetailTitle.setText(item.text);
+            this.binding.itemSettingsDetailDetail.setText(item.value);
 
             if (!wantsDividers || item.position == getItemCount() - 1) {
-                divider.setVisibility(View.GONE);
+                this.binding.itemSettingsDetailDivider.setVisibility(View.GONE);
             } else {
-                divider.setVisibility(View.VISIBLE);
+                this.binding.itemSettingsDetailDivider.setVisibility(View.VISIBLE);
             }
 
-            if (item.iconIdRes != 0) {
-                icon.setId(item.iconIdRes);
-            }
+            this.binding.executePendingBindings();
         }
     }
 
     class ToggleViewHolder extends ViewHolder<ToggleItem> {
-        final TextView title;
-        final CompoundButton toggle;
+        private final ItemSettingsToggleBinding binding;
 
         ToggleViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            this.title = (TextView) itemView.findViewById(R.id.item_settings_toggle_check_title);
-            this.toggle = (CompoundButton) itemView.findViewById(R.id.item_settings_toggle_check_box);
+            this.binding = DataBindingUtil.bind(itemView);
         }
 
         @Override
         void bind(@NonNull ToggleItem item) {
-            title.setText(item.text);
-            toggle.setChecked(item.value);
+            this.binding.itemSettingsToggleCheckTitle.setText(item.text);
+            this.binding.itemSettingsToggleCheckBox.setChecked(item.value);
         }
     }
 
@@ -205,8 +193,7 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
 
     //region Items
 
-    public static class Item<T> {
-        static final int ID = 0;
+    public abstract static class Item<T> {
 
         T value;
         final
@@ -241,9 +228,7 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
             }
         }
 
-        public int getId() {
-            return ID;
-        }
+        public abstract int getId();
     }
 
     public static class TextItem<T> extends Item<T>{
@@ -275,15 +260,9 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         int icon;
         @StringRes
         int iconContentDescription;
-        private int iconIdRes = 0;
 
         public DetailItem(@NonNull String title, @Nullable Runnable onClick) {
             super(title, onClick);
-        }
-
-        public DetailItem(@NonNull String title, @Nullable Runnable onClick, @IdRes int iconIdRes) {
-            super(title, onClick);
-            this.iconIdRes = iconIdRes;
         }
 
         public void setIcon(@DrawableRes int icon, @StringRes int iconContentDescription) {
