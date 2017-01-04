@@ -19,7 +19,6 @@ import is.hello.sense.ui.widget.util.Views;
 @SuppressLint("ViewConstructor")
 public class ExpansionDetailPickerView extends PresenterView {
 
-    final TextView enabledTextView;
     final CompoundButton enabledSwitch;
 
     final TextView configurationTypeTextView;
@@ -40,7 +39,6 @@ public class ExpansionDetailPickerView extends PresenterView {
         this.connectedContainer = (ViewGroup) findViewById(R.id.view_expansion_detail_picker_bottom);
         this.showConnectedContainer(false); // can't set included layouts to gone
         this.enabledContainer = (ViewGroup) connectedContainer.findViewById(R.id.view_expansion_detail_enabled_container);
-        this.enabledTextView = (TextView) enabledContainer.findViewById(R.id.view_expansion_detail_enabled_tv);
         this.enabledSwitch = (CompoundButton) enabledContainer.findViewById(R.id.view_expansion_detail_configuration_selection_switch);
         // connected and configurations found
         this.configurationErrorImageView = (ImageView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_error);
@@ -64,7 +62,6 @@ public class ExpansionDetailPickerView extends PresenterView {
     public void releaseViews() {
         this.configurationSelectedTextView.setOnClickListener(null);
         this.enabledSwitch.setOnClickListener(null);
-        this.enabledTextView.setOnClickListener(null);
     }
 
     public void showConfigurationSuccess(@Nullable final String configurationName,
@@ -92,10 +89,6 @@ public class ExpansionDetailPickerView extends PresenterView {
 
     public void hidePickerSpinner(){
         this.expansionRangePicker.removeAllViews();
-    }
-
-    public void setExpansionEnabledTextViewClickListener(@NonNull final OnClickListener listener){
-        Views.setSafeOnClickListener(this.enabledTextView, listener);
     }
 
     public void setConfigurationTypeText(@NonNull final String configType){
