@@ -116,7 +116,7 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_info:
-                this.getExpansionInfoDialogClickListener(expansionCategory).onClick(null);
+                this.showExpansionInfoDialog(expansionCategory);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -322,11 +322,11 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
         configurationsInteractor.update();
     }
 
-    private View.OnClickListener getExpansionInfoDialogClickListener(@NonNull final Category category) {
+    private void showExpansionInfoDialog(@NonNull final Category category) {
         final int xmlResId = expansionCategoryFormatter.getExpansionAlarmInfoDialogXmlRes(category);
-        return ignoredView -> WelcomeDialogFragment.show(getActivity(),
-                                                         xmlResId,
-                                                         true);
+        WelcomeDialogFragment.show(getActivity(),
+                                   xmlResId,
+                                   true);
     }
 
     @Override

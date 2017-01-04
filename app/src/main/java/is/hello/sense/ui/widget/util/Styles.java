@@ -520,13 +520,12 @@ public final class Styles {
         return bitmap;
     }
 
-    public static void tintMenuIcon(final Context context,
-                                    final MenuItem item,
+    public static void tintMenuIcon(@NonNull final Context context,
+                                    @NonNull final MenuItem item,
                                     @ColorRes final int color) {
         final Drawable normalDrawable = item.getIcon();
         final Drawable wrapDrawable = DrawableCompat.wrap(normalDrawable);
         DrawableCompat.setTint(wrapDrawable, ContextCompat.getColor(context, color));
-
         item.setIcon(wrapDrawable);
     }
 }
