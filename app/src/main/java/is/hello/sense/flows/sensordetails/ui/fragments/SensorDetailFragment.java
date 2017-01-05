@@ -26,12 +26,12 @@ import is.hello.sense.api.model.v2.sensors.SensorCacheItem;
 import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
 import is.hello.sense.api.model.v2.sensors.X;
-import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractor;
 import is.hello.sense.flows.home.interactors.SensorResponseInteractor;
-import is.hello.sense.mvp.presenters.PresenterFragment;
-import is.hello.sense.flows.sensordetails.ui.views.SensorDetailView;
+import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractor;
 import is.hello.sense.flows.sensordetails.ui.activities.SensorDetailActivity;
+import is.hello.sense.flows.sensordetails.ui.views.SensorDetailView;
+import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
@@ -196,7 +196,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
             final ArrayList<Sensor> sensors = new ArrayList<>();
             sensors.add(this.sensor);
             sensorSubscription.unsubscribe();
-            sensorSubscription = bind(this.apiService.postSensors(new SensorDataRequest(queryScope, sensors)))
+            sensorSubscription = bind(this.sensorResponseInteractor.getDataFrom(new SensorDataRequest(queryScope, sensors)))
                     .subscribe(sensorsDataResponse -> {
                                    sensorCache.put(queryScope, new SensorCacheItem(sensorsDataResponse));
                                    bindSensorsDataResponse(queryScope,
