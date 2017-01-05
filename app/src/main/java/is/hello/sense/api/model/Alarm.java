@@ -36,6 +36,8 @@ import is.hello.sense.util.IListObject;
 
 public class Alarm extends ApiResponse {
     public static final int TOO_SOON_MINUTES = 2;
+    public static final int DEFAULT_HOUR = 7;
+    public static final int DEFAULT_MINUTE = 30;
 
     @SerializedName("id")
     private String id;
@@ -99,11 +101,20 @@ public class Alarm extends ApiResponse {
         return alarm;
     }
 
+    public static boolean hasSmartAlarm(@NonNull final List<Alarm> alarms) {
+        for(final Alarm alarm : alarms) {
+            if (alarm.isSmart()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public Alarm() {
         this.id = UUID.randomUUID().toString();
-        this.hourOfDay = 7;
-        this.minuteOfHour = 30;
+        this.hourOfDay = DEFAULT_HOUR;
+        this.minuteOfHour = DEFAULT_MINUTE;
         this.repeated = true;
         this.enabled = true;
         this.editable = true;
