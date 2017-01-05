@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import is.hello.commonsense.util.Errors;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.v2.sensors.QueryScope;
 import is.hello.sense.api.model.v2.sensors.Sensor;
@@ -55,8 +54,6 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
     UnitFormatter unitFormatter;
     @Inject
     PreferencesInteractor preferencesInteractor;
-    @Inject
-    ApiService apiService;
 
     @VisibleForTesting
     public SensorResponseAdapter adapter;
@@ -186,7 +183,7 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
                 showWelcomeCardIfNeeded();
                 final List<Sensor> sensors = currentConditions.getSensors();
                 postSensorSubscription.unsubscribe();
-                postSensorSubscription = bind(this.apiService.postSensors(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)))
+                postSensorSubscription = bind(this.sensorResponseInteractor.getDataFrom(new SensorDataRequest(QueryScope.LAST_3H_5_MINUTE, sensors)))
                         .subscribe(sensorsDataResponse -> RoomConditionsPresenterFragment.this.bindDataResponse(sensorsDataResponse, sensors),
                                    this::conditionsUnavailable);
                 break;
