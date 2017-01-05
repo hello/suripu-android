@@ -128,6 +128,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
                     normalSensors.add(sensor);
             }
         }
+        this.removeSingleSensorGroupsAt(firstAirQualitySensorPosition);
         super.replaceAll(normalSensors);
     }
 
@@ -136,6 +137,15 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         final List<Sensor> group = this.sensorGroupArray.get(key, new ArrayList<>());
         group.add(sensor);
         this.sensorGroupArray.put(key, group);
+    }
+
+    private void removeSingleSensorGroupsAt(@NonNull final int ... keys) {
+        for(final int key : keys) {
+            final List<Sensor> sensors = this.sensorGroupArray.get(key);
+            if(sensors != null && sensors.size() <= 1) {
+                this.sensorGroupArray.remove(key);
+            }
+        }
     }
 
     @Override
