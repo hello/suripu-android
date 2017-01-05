@@ -117,7 +117,6 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
 
     @Override
     public void onUserVisible() {
-        Analytics.trackEvent(Analytics.Backside.EVENT_MAIN_VIEW, null);
         presenterView.updateWhatsNewState();
         fetchInsights();
     }
