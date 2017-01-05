@@ -15,10 +15,10 @@ import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.model.v2.sensors.SensorStatus;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
+import is.hello.sense.flows.home.ui.adapters.SensorResponseAdapter;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.flows.home.ui.adapters.SensorResponseAdapter;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -68,7 +68,7 @@ public class RoomConditionsPresenterFragmentTests extends InjectionTestCase {
         sensors.add(Sensor.newVOCTestCase(0f));
         fragment.bindDataResponse(new SensorsDataResponse(), sensors);
         assertEquals(1, fragment.adapter.getItemCount());
-        assertEquals(SensorResponseAdapter.VIEW_AIR_QUALITY, fragment.adapter.getItemViewType(0));
+        assertEquals(SensorResponseAdapter.VIEW_SENSOR_GROUP, fragment.adapter.getItemViewType(0));
     }
 
     @Test
