@@ -119,8 +119,8 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
                 case CO2:
                 case TVOC:
                     if(firstAirQualitySensorPosition == RecyclerView.NO_POSITION) {
+                        firstAirQualitySensorPosition = normalSensors.size();
                         normalSensors.add(sensor);
-                        firstAirQualitySensorPosition = normalSensors.indexOf(sensor);
                     }
                     addSensorToGroupAt(firstAirQualitySensorPosition, sensor);
                     break;
