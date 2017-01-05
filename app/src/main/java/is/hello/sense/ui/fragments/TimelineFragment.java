@@ -453,10 +453,7 @@ public class TimelineFragment extends InjectionFragment
             return;
         }
 
-
-        if (WelcomeDialogFragment.shouldShow(getActivity(), R.xml.welcome_dialog_timeline)) {
-            WelcomeDialogFragment.show(getActivity(), R.xml.welcome_dialog_timeline, false);
-        } else if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
+        if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
             showTutorial(Tutorial.SWIPE_TIMELINE);
         }
     }
