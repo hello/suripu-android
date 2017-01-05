@@ -33,7 +33,6 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.InternalPrefManager;
 
 import static is.hello.sense.util.Analytics.Breadcrumb.Description;
-import static is.hello.sense.util.Analytics.Breadcrumb.EVENT_NAME;
 import static is.hello.sense.util.Analytics.Breadcrumb.Source;
 
 public enum Tutorial {
@@ -64,7 +63,7 @@ public enum Tutorial {
     @IdRes
     int anchorId;
     public final Interaction interaction;
-    public final Properties properties;
+    public final Properties properties; //todo remove properties as well if not tracking breadcrumb end event
 
     Tutorial(@StringRes final int descriptionRes,
              final int descriptionGravity,
@@ -94,7 +93,7 @@ public enum Tutorial {
                     .apply();
 
             // Mark shown for this user and don't show the breadcrumb.
-            markShown(activity, false);
+            markShown(activity);
             return false;
         }
 
@@ -106,13 +105,10 @@ public enum Tutorial {
     }
 
     public void wasDismissed(@NonNull final Context context) {
-        markShown(context, true);
+        markShown(context);
     }
 
-    public void markShown(@NonNull final Context context, final boolean track) {
-       if (track){
-           Analytics.trackEvent(EVENT_NAME, properties);
-       }
+    public void markShown(@NonNull final Context context) {
         final SharedPreferences preferences =
                 context.getSharedPreferences(getPrefName(context), 0);
         preferences.edit()

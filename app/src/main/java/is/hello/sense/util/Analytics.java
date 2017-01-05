@@ -442,9 +442,6 @@ public class Analytics {
     }
 
     public interface Backside {
-        String EVENT_SHOWN = "Top View";
-        String EVENT_TAB_TAPPED = "Top view tab tapped";
-        String EVENT_TAB_SWIPED = "Top view tab swiped";
 
         String EVENT_CURRENT_CONDITIONS = "Current Conditions";
         String EVENT_SENSOR_HISTORY = "Sensor History";
@@ -506,6 +503,18 @@ public class Analytics {
         String EVENT_TIMESCALE_WEEK = "week";
         String EVENT_TIMESCALE_MONTH = "month";
         String EVENT_TIMESCALE_QUARTER = "quarter";
+
+        /**
+         * User views the Voice tab list of commands
+         */
+        String EVENT_VOICE_TAB = "Voice";
+
+        /**
+         * User taps to see all examples of a "category" from the list
+         */
+        String EVENT_VOICE_EXAMPLES = "Voice Examples";
+
+        String PROP_VOICE_EXAMPLES = "category";
     }
 
     public interface General{
@@ -586,7 +595,6 @@ public class Analytics {
     public interface Breadcrumb {
         String PROP_SOURCE = "source";
         String PROP_DESCRIPTION = "description";
-        String EVENT_NAME = "Breadcrumb end";
 
         enum Source{
             ACCOUNT("account"),

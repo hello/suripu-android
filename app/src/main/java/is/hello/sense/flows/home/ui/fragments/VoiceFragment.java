@@ -1,10 +1,8 @@
 package is.hello.sense.flows.home.ui.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
-
 
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.adapters.VoiceCommandsAdapter;
@@ -16,6 +14,7 @@ import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.mvp.util.ViewPagerPresenterChild;
 import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
+import is.hello.sense.util.Analytics;
 import is.hello.sense.util.NotTested;
 
 @NotTested // enough
@@ -71,6 +70,7 @@ public class VoiceFragment extends PresenterFragment<VoiceView>
 
     @Override
     public void onUserVisible() {
+        Analytics.trackEvent(Analytics.Backside.EVENT_VOICE_TAB, null);
     }
     @Override
     public void onResume() {
@@ -90,9 +90,10 @@ public class VoiceFragment extends PresenterFragment<VoiceView>
     @Override
     public void onItemClicked(final int position,
                               @NonNull final VoiceCommandsAdapter.VoiceCommand item) {
-        final Intent intent = new Intent(getActivity(), VoiceCommandActivity.class);
-        intent.putExtra(VoiceCommandActivity.ITEM_KEY, item.name());
-        startActivity(intent); //todo undo this one day
+        Analytics.trackEvent(Analytics.Backside.EVENT_VOICE_EXAMPLES,
+                             Analytics.createProperties(Analytics.Backside.PROP_VOICE_EXAMPLES, item));
+        startActivity(VoiceCommandActivity.getIntent(getActivity(),
+                                                     item.name()));
     }
     //endregion
 
