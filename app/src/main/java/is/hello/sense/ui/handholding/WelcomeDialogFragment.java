@@ -47,6 +47,10 @@ import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 
+/**
+ * Used to display more detailed information triggered by a user interaction
+ * such as tapping on an info button. Welcome dialogs should not be triggered like a pop-up.
+ */
 public class WelcomeDialogFragment extends SenseDialogFragment {
     public static final String TAG = WelcomeDialogFragment.class.getSimpleName();
 
