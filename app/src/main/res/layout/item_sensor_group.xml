@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <LinearLayout
+        style="@style/AppTheme.Card.Clickable"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:descendantFocusability="blocksDescendants"
+        android:focusable="true"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x2"
+            android:layout_marginLeft="@dimen/x2"
+            android:layout_marginRight="@dimen/x2"
+            android:baselineAligned="false"
+            android:focusable="false"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/item_sensor_group_title"
+                style="@style/Card.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:layout_marginBottom="@dimen/x1"/>
+
+            <TextView
+                android:id="@+id/item_sensor_group_body"
+                style="@style/Card.Body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="false"/>
+
+        </LinearLayout>
+
+        <is.hello.sense.flows.home.ui.views.AirQualityCard
+            android:id="@+id/item_sensor_group_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            />
+
+    </LinearLayout>
+</layout>

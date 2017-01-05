@@ -140,6 +140,20 @@ public class Sensor extends ApiResponse {
 
     }
 
+    @Nullable
+    public static String getWorstMessage(@NonNull final List<Sensor> sensors) {
+        if (sensors.isEmpty()) {
+            return null;
+        }
+        Sensor worstConditionSensor = sensors.get(0);
+        for (final Sensor sensor : sensors) {
+            if (worstConditionSensor.hasBetterConditionThan(sensor)) {
+                worstConditionSensor = sensor;
+            }
+        }
+        return worstConditionSensor.getMessage();
+    }
+
     @VisibleForTesting
     public static Sensor newTemperatureTestCase(final Float value) {
         return new Sensor("temperature",
@@ -275,4 +289,5 @@ public class Sensor extends ApiResponse {
                              Sensor.newPressureTestCase(9f),
                              Sensor.newUnknownTestCase(10f));
     }
+
 }

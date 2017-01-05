@@ -1,5 +1,6 @@
 package is.hello.sense.flows.home.ui.adapters;
 
+import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,12 +8,12 @@ import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorType;
-import is.hello.sense.flows.home.ui.views.AirQualityCard;
+import is.hello.sense.databinding.ItemSensorGroupBinding;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
@@ -31,7 +32,7 @@ import is.hello.sense.units.UnitFormatter;
 public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorResponseAdapter.BaseViewHolder> {
     public static final int VIEW_SENSOR = 0;
     public static final int VIEW_ID_MESSAGE = 1;
-    public static final int VIEW_AIR_QUALITY = 2;
+    public static final int VIEW_SENSOR_GROUP = 2;
     public static final int VIEW_WELCOME_CARD = 3;
     public static final int VIEW_SENSE_MISSING = 4;
 
@@ -42,10 +43,9 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     private boolean showWelcomeCard = false;
     private boolean showSenseMissingCard = false;
     /**
-     * Store air quality sensors within here
+     * Groups lists of sensors mapped to the index of first sensor in normal sensor list
      */
-    private final List<Sensor> airQualitySensors = new ArrayList<>();
-    private int firstAirQualitySensorPosition = RecyclerView.NO_POSITION;
+    private final SparseArray<List<Sensor>> sensorGroupArray = new SparseArray<>();
 
     @StringRes
     private int messageTitle;
@@ -92,12 +92,8 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             return VIEW_SENSE_MISSING;
         } else if (this.showWelcomeCard && position == 0) {
             return VIEW_WELCOME_CARD;
-        }
-        if (this.airQualitySensors.isEmpty()) {
-            return VIEW_SENSOR;
-        }
-        if (position == firstAirQualitySensorPosition) {
-            return VIEW_AIR_QUALITY;
+        } else if (this.sensorGroupArray.get(position) != null) {
+            return VIEW_SENSOR_GROUP;
         }
         return VIEW_SENSOR;
     }
@@ -114,30 +110,32 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
     public void replaceAll(@NonNull final List<Sensor> sensors) {
         dismissMessage();
-        this.airQualitySensors.clear();
+        int firstAirQualitySensorPosition = RecyclerView.NO_POSITION;
+        this.sensorGroupArray.clear();
         final ArrayList<Sensor> normalSensors = new ArrayList<>();
         for (final Sensor sensor : sensors) {
             switch (sensor.getType()) {
                 case PARTICULATES:
                 case CO2:
                 case TVOC:
-                    this.airQualitySensors.add(sensor);
+                    if(firstAirQualitySensorPosition == RecyclerView.NO_POSITION) {
+                        normalSensors.add(sensor);
+                        firstAirQualitySensorPosition = normalSensors.indexOf(sensor);
+                    }
+                    addSensorToGroupAt(firstAirQualitySensorPosition, sensor);
+                    break;
                 default:
                     normalSensors.add(sensor);
             }
         }
-
-        // If there is only one AirQuality item we will display it with a graph.
-        if (this.airQualitySensors.size() == 1) {
-            this.airQualitySensors.clear();
-        } else if (this.airQualitySensors.size() > 1) {
-            this.firstAirQualitySensorPosition = normalSensors.indexOf(this.airQualitySensors.get(0));
-            normalSensors.removeAll(this.airQualitySensors);
-            // fake sensor to maintain position where air quality card will display
-            normalSensors.add(firstAirQualitySensorPosition, Sensor.newUnknownTestCase(0f));
-        }
         super.replaceAll(normalSensors);
-        notifyDataSetChanged();
+    }
+
+    private void addSensorToGroupAt(final int key,
+                                    @NonNull final Sensor sensor){
+        final List<Sensor> group = this.sensorGroupArray.get(key, new ArrayList<>());
+        group.add(sensor);
+        this.sensorGroupArray.put(key, group);
     }
 
     @Override
@@ -148,8 +146,8 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
                 return new ErrorViewHolder(this.inflater.inflate(R.layout.item_message_card, parent, false));
             case VIEW_SENSOR:
                 return new SensorViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_sensor_response, parent, false));
-            case VIEW_AIR_QUALITY:
-                return new AirQualityViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_sensor_response, parent, false));
+            case VIEW_SENSOR_GROUP:
+                return new SensorGroupViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_sensor_group, parent, false));
             case VIEW_WELCOME_CARD:
                 return new WelcomeCardViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_welcome_card, parent, false));
             default:
@@ -329,47 +327,25 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         }
     }
 
-    public class AirQualityViewHolder extends SensorBaseViewHolder {
-        private final LinearLayout root;
-        final AirQualityCard airQualityCard = new AirQualityCard(view.getContext());
+    public class SensorGroupViewHolder extends BaseViewHolder {
+        final ItemSensorGroupBinding sensorGroupBinding;
 
-        public AirQualityViewHolder(@NonNull final View itemView) {
+        public SensorGroupViewHolder(@NonNull final View itemView) {
             super(itemView);
-            this.root = (LinearLayout) itemView.findViewById(R.id.item_server_response_root);
-            this.root.setClickable(false);
-            this.title.setText(itemView.getContext().getString(R.string.air_quality));
-            this.graphView.setVisibility(View.GONE);
-            this.value.setVisibility(View.GONE);
-            this.descriptor.setVisibility(View.GONE);
-            this.airQualityCard.setClickable(true);
-            this.airQualityCard.setOnRowClickListener(sensor -> SensorResponseAdapter.this.dispatchItemClicked(0, sensor));
-            this.airQualityCard.setUnitFormatter(SensorResponseAdapter.this.unitFormatter);
-
-            this.airQualityCard.replaceAll(SensorResponseAdapter.this.airQualitySensors);
-            this.body.setText(getWorstMessage(SensorResponseAdapter.this.airQualitySensors));
-            if (this.root.getChildCount() < 3) {
-                this.root.addView(this.airQualityCard);
-            }
+            this.sensorGroupBinding = DataBindingUtil.bind(itemView);
+            //todo also update title text on bind
+            sensorGroupBinding.itemSensorGroupTitle.setText(itemView.getContext().getString(R.string.air_quality));
+            sensorGroupBinding.itemSensorGroupContent.setOnRowClickListener(sensor -> SensorResponseAdapter.this.dispatchItemClicked(0, sensor));
+            sensorGroupBinding.itemSensorGroupContent.setUnitFormatter(SensorResponseAdapter.this.unitFormatter);
 
         }
 
         @Override
         public void bind(final int position) {
-
-        }
-
-        @Nullable
-        public String getWorstMessage(@NonNull final List<Sensor> sensors) {
-            if (sensors.isEmpty()) {
-                return null;
-            }
-            Sensor worstCondition = sensors.get(0);
-            for (int i = 1; i < sensors.size(); i++) {
-                if (worstCondition.hasBetterConditionThan(sensors.get(i))) {
-                    worstCondition = sensors.get(i);
-                }
-            }
-            return worstCondition.getMessage();
+            super.bind(position);
+            final List<Sensor> sensors = SensorResponseAdapter.this.sensorGroupArray.get(position, new ArrayList<>());
+            sensorGroupBinding.itemSensorGroupBody.setText(Sensor.getWorstMessage(sensors));
+            sensorGroupBinding.itemSensorGroupContent.replaceAll(sensors);
         }
     }
 
