@@ -172,6 +172,20 @@ public abstract class PresenterFragment<T extends PresenterView>
         }
     }
 
+    public void showLockedBlockingActivity(@StringRes final int titleRes) {
+        showBlockingActivity(titleRes);
+        if (loadingDialogFragment != null) {
+            this.loadingDialogFragment.setLockOrientation();
+        }
+    }
+
+    public void showLockedBlockingActivity(final String title) {
+        showBlockingActivity(title);
+        if (loadingDialogFragment != null) {
+            this.loadingDialogFragment.setLockOrientation();
+        }
+    }
+
     public void showBlockingActivity(@StringRes final int titleRes) {
         showBlockingActivity(getString(titleRes));
     }
@@ -225,8 +239,4 @@ public abstract class PresenterFragment<T extends PresenterView>
     }
 
     //endregion
-
-    public void finishActivity() {
-        getActivity().finish();
-    }
 }
