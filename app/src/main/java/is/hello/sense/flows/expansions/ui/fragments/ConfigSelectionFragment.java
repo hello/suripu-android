@@ -63,7 +63,7 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        showBlockingActivity(R.string.expansions_configuration_selection_loading);
+        showLockedBlockingActivity(R.string.expansions_configuration_selection_loading);
         presenterView.postDelayed(stateSafeExecutor.bind( () -> {
             bindAndSubscribe(expansionDetailsInteractor.expansionSubject,
                              this::bindExpansion,
@@ -181,9 +181,9 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
         final Configuration selectedConfig = adapter.getSelectedItem();
         if (selectedConfig != null) {
             if (expansion != null) {
-                showBlockingActivity(getString(R.string.expansions_configuration_selection_setting_progress_format, expansion.getConfigurationType()));
+                showLockedBlockingActivity(getString(R.string.expansions_configuration_selection_setting_progress_format, expansion.getConfigurationType()));
             } else {
-                showBlockingActivity(R.string.expansions_configuration_selection_setting_progress_default);
+                showLockedBlockingActivity(R.string.expansions_configuration_selection_setting_progress_default);
             }
             bindAndSubscribe(configurationsInteractor.setConfiguration(selectedConfig),
                              this::bindConfigurationPostResponse,

@@ -254,8 +254,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
                 ExpansionDetailFragment.this.updateState(State.REVOKED,
                                                          ignored2 ->
                                                                  hideBlockingActivity(true,
-                                                                                      hideBlockingRunnable
-                                                                                     )
+                                                                                      hideBlockingRunnable)
                                                         );
         showAlertDialog(new SenseAlertDialog.Builder().setTitle(R.string.are_you_sure)
                                                       .setMessage(R.string.expansion_detail_remove_access_dialog_message)
@@ -287,7 +286,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
 
     @Override
     public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
-        showBlockingActivity(isChecked ? R.string.enabling_expansion : R.string.disabling_expansion);
+        showLockedBlockingActivity(isChecked ? R.string.enabling_expansion : R.string.disabling_expansion);
         updateState(isChecked ? State.CONNECTED_ON : State.CONNECTED_OFF, (ignored) ->
                 hideBlockingActivity(true, ExpansionDetailFragment.this.presenterView::showUpdateSwitchSuccess));
     }
