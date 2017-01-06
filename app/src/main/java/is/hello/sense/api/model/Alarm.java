@@ -101,13 +101,34 @@ public class Alarm extends ApiResponse {
         return alarm;
     }
 
-    public static boolean hasSmartAlarm(@NonNull final List<Alarm> alarms) {
+    /**
+     * @param alarms list to validate against
+     * @return true if there are no other enabled smart alarms with overlapping days
+     */
+    public boolean canBeSmartWith(@NonNull final List<Alarm> alarms) {
+        @JodaWeekDay
+        final Integer defaultDay = this.getDefaultRingTime().getDayOfWeek();
+
         for(final Alarm alarm : alarms) {
-            if (alarm.isSmart()) {
-                return true;
+            if (!(alarm.isSmart() && alarm.isEnabled())) {
+                continue;
+            }
+            final Set<Integer> conflictingDaysOfWeek = new HashSet<>(daysOfWeek);
+            final Set<Integer> reservedDaysOfWeek = alarm.getDaysOfWeek();
+
+            if(conflictingDaysOfWeek.isEmpty()
+                    && (reservedDaysOfWeek.contains(defaultDay) || reservedDaysOfWeek.isEmpty())) {
+                return false;
+            } else if (conflictingDaysOfWeek.contains(defaultDay) && reservedDaysOfWeek.isEmpty()) {
+                return false;
+            }
+            // find intersection of days
+            conflictingDaysOfWeek.retainAll(reservedDaysOfWeek);
+            if (!conflictingDaysOfWeek.isEmpty()) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
 
@@ -159,18 +180,19 @@ public class Alarm extends ApiResponse {
         return new DateTime(year, month, dayOfMonth, hourOfDay, minuteOfHour, DateTimeZone.UTC);
     }
 
-    public void setRingOnce() {
+    DateTime getDefaultRingTime() {
         final DateTime today = DateTime.now(DateTimeZone.getDefault());
         if (getTime().isBefore(today.toLocalTime())) {
-            final DateTime tomorrow = today.plusDays(1);
-            this.year = tomorrow.getYear();
-            this.month = tomorrow.getMonthOfYear();
-            this.dayOfMonth = tomorrow.getDayOfMonth();
-        } else {
-            this.year = today.getYear();
-            this.month = today.getMonthOfYear();
-            this.dayOfMonth = today.getDayOfMonth();
+            return today.plusDays(1);
         }
+        return today;
+    }
+
+    public void setRingOnce() {
+        final DateTime ringTime = getDefaultRingTime();
+        this.year = ringTime.getYear();
+        this.month = ringTime.getMonthOfYear();
+        this.dayOfMonth = ringTime.getDayOfMonth();
 
         setRepeated(false);
         daysOfWeek.clear();
