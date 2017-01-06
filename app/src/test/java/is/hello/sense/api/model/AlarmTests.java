@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class AlarmTests extends SenseTestCase {
+
     @Test
     public void repeated() {
         final Alarm alarm = new Alarm();

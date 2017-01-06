@@ -3,6 +3,7 @@ package is.hello.sense.api.model;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
@@ -36,6 +37,8 @@ import is.hello.sense.util.IListObject;
 
 public class Alarm extends ApiResponse {
     public static final int TOO_SOON_MINUTES = 2;
+    public static final int DEFAULT_HOUR = 7;
+    public static final int DEFAULT_MINUTE = 30;
 
     @SerializedName("id")
     private String id;
@@ -99,11 +102,10 @@ public class Alarm extends ApiResponse {
         return alarm;
     }
 
-
     public Alarm() {
         this.id = UUID.randomUUID().toString();
-        this.hourOfDay = 7;
-        this.minuteOfHour = 30;
+        this.hourOfDay = DEFAULT_HOUR;
+        this.minuteOfHour = DEFAULT_MINUTE;
         this.repeated = true;
         this.enabled = true;
         this.editable = true;
@@ -148,18 +150,20 @@ public class Alarm extends ApiResponse {
         return new DateTime(year, month, dayOfMonth, hourOfDay, minuteOfHour, DateTimeZone.UTC);
     }
 
-    public void setRingOnce() {
+    @VisibleForTesting
+    public DateTime getDefaultRingTime() {
         final DateTime today = DateTime.now(DateTimeZone.getDefault());
         if (getTime().isBefore(today.toLocalTime())) {
-            final DateTime tomorrow = today.plusDays(1);
-            this.year = tomorrow.getYear();
-            this.month = tomorrow.getMonthOfYear();
-            this.dayOfMonth = tomorrow.getDayOfMonth();
-        } else {
-            this.year = today.getYear();
-            this.month = today.getMonthOfYear();
-            this.dayOfMonth = today.getDayOfMonth();
+            return today.plusDays(1);
         }
+        return today;
+    }
+
+    public void setRingOnce() {
+        final DateTime ringTime = getDefaultRingTime();
+        this.year = ringTime.getYear();
+        this.month = ringTime.getMonthOfYear();
+        this.dayOfMonth = ringTime.getDayOfMonth();
 
         setRepeated(false);
         daysOfWeek.clear();

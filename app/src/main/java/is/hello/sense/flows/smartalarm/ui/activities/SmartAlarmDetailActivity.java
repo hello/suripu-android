@@ -239,8 +239,8 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
     @NotTested
     private void processSetAlarmIntent() {
         final Intent intent = getIntent();
-        final int hour = intent.getIntExtra(AlarmClock.EXTRA_HOUR, SmartAlarmDetailFragment.DEFAULT_HOUR);
-        final int minute = intent.getIntExtra(AlarmClock.EXTRA_MINUTES, SmartAlarmDetailFragment.DEFAULT_MINUTE);
+        final int hour = intent.getIntExtra(AlarmClock.EXTRA_HOUR, Alarm.DEFAULT_HOUR);
+        final int minute = intent.getIntExtra(AlarmClock.EXTRA_MINUTES, Alarm.DEFAULT_MINUTE);
         final List<Integer> calendarDays = intent.getIntegerArrayListExtra(AlarmClock.EXTRA_DAYS);
 
         final Alarm alarm = new Alarm();
