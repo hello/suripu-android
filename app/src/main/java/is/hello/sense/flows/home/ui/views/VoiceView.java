@@ -3,6 +3,7 @@ package is.hello.sense.flows.home.ui.views;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,11 +27,14 @@ public class VoiceView extends PresenterView {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         this.insetItemDecorationForWelcome.addBottomInset(0, resources.getDimensionPixelSize(R.dimen.x1));
         this.recyclerView = (RecyclerView) findViewById(R.id.view_voice_home_recycler);
+        this.recyclerView.setOverScrollMode(OVER_SCROLL_NEVER);
         this.recyclerView.setHasFixedSize(true);
         this.recyclerView.setItemAnimator(null);
         this.recyclerView.setLayoutManager(layoutManager);
-        this.recyclerView.addItemDecoration(new DividerItemDecoration(activity));
-        this.recyclerView.addItemDecoration(new FirstAndLastItemMarginDecoration(getResources()));
+        this.recyclerView.addItemDecoration(new FirstAndLastItemMarginDecoration(resources));
+        final Rect dividerInset = new Rect(resources.getDimensionPixelOffset(R.dimen.x8), 0, 0, 0);
+        this.recyclerView.addItemDecoration(new DividerItemDecoration(activity,
+                                                                      dividerInset));
         this.recyclerView.setAdapter(adapter);
 
     }
@@ -57,5 +61,4 @@ public class VoiceView extends PresenterView {
     public void scrollUp() {
         recyclerView.smoothScrollToPosition(0);
     }
-
 }

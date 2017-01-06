@@ -15,38 +15,44 @@ import is.hello.sense.R;
 public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     private final Paint paint = new Paint();
     private final int height;
+    private final Rect inset;
 
     @Deprecated
     public DividerItemDecoration(@NonNull Resources resources) {
         this.height = resources.getDimensionPixelSize(R.dimen.divider_size);
         paint.setColor(resources.getColor(R.color.border));
+        this.inset = new Rect();
     }
 
     public DividerItemDecoration(@NonNull final Context context) {
+        this(context, new Rect());
+    }
+
+    /**
+     * @param context used to fetch divider size
+     * @param inset applies inset to divider but ignores bottom
+     */
+    public DividerItemDecoration(@NonNull final Context context,
+                                 @NonNull final Rect inset) {
         this.height = context.getResources().getDimensionPixelSize(R.dimen.divider_size);
         paint.setColor(ContextCompat.getColor(context, R.color.border));
-    }
-
-
-    @Override
-    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-        final int lastItem = state.getItemCount() - 2;
-        final int position = parent.getChildAdapterPosition(view);
-        if (position <= lastItem) {
-            outRect.bottom += height;
-        }
+        this.inset = inset;
     }
 
     @Override
-    public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
+    public void onDrawOver(final Canvas c,
+                           final RecyclerView parent,
+                           final RecyclerView.State state) {
         final int lastItem = state.getItemCount() - 2;
         for (int i = 0, count = parent.getChildCount(); i < count; i++) {
             final View child = parent.getChildAt(i);
             final int position = parent.getChildAdapterPosition(child);
             if (position <= lastItem) {
                 final int bottom = child.getBottom();
-                c.drawRect(child.getLeft(), bottom - height,
-                           child.getRight(), bottom,
+                c.drawRect(child.getLeft() + inset.left,
+                           bottom - height + inset.top,
+                           child.getRight() + inset.right,
+                           bottom + inset.bottom,
                            paint);
             }
         }
