@@ -102,35 +102,6 @@ public class Alarm extends ApiResponse {
         return alarm;
     }
 
-    /**
-     * @param alarms list to validate against
-     * @return true if there are no other enabled smart alarms with overlapping days
-     */
-    public boolean canBeSmartWith(@NonNull final List<Alarm> alarms) {
-        @JodaWeekDay
-        final Integer defaultDay = this.getDefaultRingTime().getDayOfWeek();
-
-        for(final Alarm alarm : alarms) {
-            if (!(alarm.isSmart() && alarm.isEnabled())) {
-                continue;
-            }
-            final Set<Integer> reservedDaysOfWeek = alarm.getDaysOfWeek();
-
-            if(daysOfWeek.isEmpty()
-                    && (reservedDaysOfWeek.contains(defaultDay) || reservedDaysOfWeek.isEmpty())) {
-                return false;
-            } else if (daysOfWeek.contains(defaultDay) && reservedDaysOfWeek.isEmpty()) {
-                return false;
-            }
-            // test that no overlapping days are shared
-            if(!Collections.disjoint(daysOfWeek, reservedDaysOfWeek)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
     public Alarm() {
         this.id = UUID.randomUUID().toString();
         this.hourOfDay = DEFAULT_HOUR;
@@ -180,7 +151,7 @@ public class Alarm extends ApiResponse {
     }
 
     @VisibleForTesting
-    DateTime getDefaultRingTime() {
+    public DateTime getDefaultRingTime() {
         final DateTime today = DateTime.now(DateTimeZone.getDefault());
         if (getTime().isBefore(today.toLocalTime())) {
             return today.plusDays(1);

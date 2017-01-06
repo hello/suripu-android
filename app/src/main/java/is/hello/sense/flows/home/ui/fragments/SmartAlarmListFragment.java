@@ -232,7 +232,8 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
         }
         Analytics.trackEvent(Analytics.Backside.EVENT_NEW_ALARM, null);
         final Alarm newAlarm = new Alarm();
-        newAlarm.setSmart(newAlarm.canBeSmartWith(currentAlarms));
+        newAlarm.setSmart(smartAlarmInteractor.canBeSmartWith(newAlarm,
+                                                              currentAlarms));
         editAlarm(newAlarm, Constants.NONE);
     }
 
