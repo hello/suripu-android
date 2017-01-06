@@ -113,16 +113,16 @@ public class Alarm extends ApiResponse {
             if (!(alarm.isSmart() && alarm.isEnabled())) {
                 continue;
             }
-            final Set<Integer> conflictingDaysOfWeek = new HashSet<>(daysOfWeek);
             final Set<Integer> reservedDaysOfWeek = alarm.getDaysOfWeek();
 
-            if(conflictingDaysOfWeek.isEmpty()
+            if(daysOfWeek.isEmpty()
                     && (reservedDaysOfWeek.contains(defaultDay) || reservedDaysOfWeek.isEmpty())) {
                 return false;
-            } else if (conflictingDaysOfWeek.contains(defaultDay) && reservedDaysOfWeek.isEmpty()) {
+            } else if (daysOfWeek.contains(defaultDay) && reservedDaysOfWeek.isEmpty()) {
                 return false;
             }
             // find intersection of days
+            final Set<Integer> conflictingDaysOfWeek = new HashSet<>(daysOfWeek);
             conflictingDaysOfWeek.retainAll(reservedDaysOfWeek);
             if (!conflictingDaysOfWeek.isEmpty()) {
                 return false;
