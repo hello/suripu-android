@@ -272,6 +272,10 @@ public final class Player implements MediaPlayer.OnPreparedListener,
         }
     }
 
+    /**
+     * Similar to {@link Player#stopPlayback()}
+     * except {@link OnEventListener} is not notified
+     */
     public void pausePlayback() {
         if (state >= STATE_LOADING && state < STATE_PAUSED) {
             this.startWhenPrepared = false;
