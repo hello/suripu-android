@@ -3,6 +3,7 @@ package is.hello.sense.api.model;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
@@ -121,10 +122,8 @@ public class Alarm extends ApiResponse {
             } else if (daysOfWeek.contains(defaultDay) && reservedDaysOfWeek.isEmpty()) {
                 return false;
             }
-            // find intersection of days
-            final Set<Integer> conflictingDaysOfWeek = new HashSet<>(daysOfWeek);
-            conflictingDaysOfWeek.retainAll(reservedDaysOfWeek);
-            if (!conflictingDaysOfWeek.isEmpty()) {
+            // test that no overlapping days are shared
+            if(!Collections.disjoint(daysOfWeek, reservedDaysOfWeek)) {
                 return false;
             }
         }
@@ -180,6 +179,7 @@ public class Alarm extends ApiResponse {
         return new DateTime(year, month, dayOfMonth, hourOfDay, minuteOfHour, DateTimeZone.UTC);
     }
 
+    @VisibleForTesting
     DateTime getDefaultRingTime() {
         final DateTime today = DateTime.now(DateTimeZone.getDefault());
         if (getTime().isBefore(today.toLocalTime())) {
