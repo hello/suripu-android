@@ -175,7 +175,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
         this.weightItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_weight),
                                                                  this::changeWeight);
-        weightItem.setIcon(R.drawable.icon_settings_weight, R.string.label_weight);
+        weightItem.setIcon(R.drawable.icon_vector_weight_android, R.string.label_weight);
         adapter.add(weightItem);
 
         decoration.addTopInset(adapter.getItemCount(), sectionPadding);
