@@ -135,7 +135,9 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
                 showBluetoothFragment();
             } else if (fragment instanceof PairSenseFragment) {
                 showSenseUpdateIntro();
-            } else if (fragment instanceof UnpairPillFragment || fragment instanceof PairPillFragment) {
+            } else if (fragment instanceof UnpairPillFragment){
+                showUpdatePairPillFragment(true);
+            }else if(fragment instanceof PairPillFragment) {
                 checkForSenseOTA();
             } else if (fragment instanceof SenseOTAFragment) {
                 checkHasVoiceFeature();
@@ -162,7 +164,7 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
             checkSenseOTAStatus();
             showUnpairPillFragment();
         } else if (fragment instanceof UnpairPillFragment) {
-            showUpdatePairPillFragment();
+            showUpdatePairPillFragment(false);
         } else if (fragment instanceof PairPillFragment) {
             showUpdatePairPillConfirmationFragment();
         } else if (fragment instanceof UpdatePairPillConfirmationFragment) {
@@ -221,8 +223,8 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
         pushFragment(new UnpairPillFragment(), null, true);
     }
 
-    private void showUpdatePairPillFragment() {
-        pushFragment(new PairPillFragment(), null, false);
+    private void showUpdatePairPillFragment(final boolean skip) {
+        pushFragment(PairPillFragment.newInstance(skip), null, false);
     }
 
     private void showUpdatePairPillConfirmationFragment() {
@@ -278,8 +280,7 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
     }
 
     public void showVoiceDone() {
-        final Fragment fragment = new VoiceCompleteFragment();
-        pushFragment(fragment, null, false);
+        pushFragment(new VoiceCompleteFragment(), null, false);
     }
 
     public void showResetOriginalSense() {

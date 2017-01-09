@@ -105,7 +105,7 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
 
     }
 
-    private void showFinishedLoading(final boolean success) {
+    public void showFinishedLoading(final boolean success) {
         completeHardwareActivity(
                 () -> view.showFinishedLoadingFragment(
                         success ? R.string.sleep_pill_paired : R.string.action_done,
