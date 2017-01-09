@@ -3,7 +3,6 @@ package is.hello.sense.flows.home.ui.views;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.Resources;
-import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,9 +31,8 @@ public class VoiceView extends PresenterView {
         this.recyclerView.setItemAnimator(null);
         this.recyclerView.setLayoutManager(layoutManager);
         this.recyclerView.addItemDecoration(new FirstAndLastItemMarginDecoration(resources));
-        final Rect dividerInset = new Rect(resources.getDimensionPixelOffset(R.dimen.x8), 0, 0, 0);
-        this.recyclerView.addItemDecoration(new DividerItemDecoration(activity,
-                                                                      dividerInset));
+        this.recyclerView.addItemDecoration(DividerItemDecoration.getLeftInset(activity,
+                                                                               resources.getDimensionPixelOffset(R.dimen.x8)));
         this.recyclerView.setAdapter(adapter);
 
     }

@@ -17,6 +17,12 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     private final int height;
     private final Rect inset;
 
+    public static DividerItemDecoration getLeftInset(@NonNull final Context context,
+                                                     final int offsetPx) {
+        final Rect dividerInset = new Rect(offsetPx, 0, 0, 0);
+        return new DividerItemDecoration(context, dividerInset);
+    }
+
     @Deprecated
     public DividerItemDecoration(@NonNull Resources resources) {
         this.height = resources.getDimensionPixelSize(R.dimen.divider_size);
