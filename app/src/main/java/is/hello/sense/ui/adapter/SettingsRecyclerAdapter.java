@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -173,12 +174,15 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         }
     }
 
-    class ToggleViewHolder extends ViewHolder<ToggleItem> {
+    class ToggleViewHolder extends ViewHolder<ToggleItem> implements CompoundButton.OnCheckedChangeListener{
         private final ItemSettingsToggleBinding binding;
+        private final CompoundButton checkButton;
 
         ToggleViewHolder(@NonNull final View itemView) {
             super(itemView);
             this.binding = DataBindingUtil.bind(itemView);
+            this.checkButton = ( (CompoundButton) this.binding.itemSettingsToggleCheckBox.widgetSwitch);
+            this.checkButton.setOnCheckedChangeListener(this);
         }
 
         @Override
@@ -189,7 +193,15 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
                 this.binding.itemSettingsToggleIcon.setImageDrawable(null);
             }
             this.binding.itemSettingsToggleCheckTitle.setText(item.text);
-            this.binding.itemSettingsToggleCheckBox.setChecked(item.value);
+            this.checkButton.setOnCheckedChangeListener(null);
+            this.checkButton.setChecked(item.value);
+            this.checkButton.setOnCheckedChangeListener(this);
+        }
+
+        @Override
+        public void onCheckedChanged(final CompoundButton button,
+                                     final boolean isChecked) {
+            onClick(this.itemView);
         }
     }
 
