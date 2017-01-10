@@ -7,6 +7,7 @@ import android.app.FragmentManager;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -27,6 +28,7 @@ public final class ViewPagerPresenterView extends PresenterView {
     private final ExtendedViewPager viewPager;
     private final TabLayout tabLayout;
     private final FloatingActionButton fab;
+    private final AppBarLayout appBarLayout;
 
     /**
      * @param fragment - Fragment providing initialization settings and callbacks.
@@ -36,6 +38,7 @@ public final class ViewPagerPresenterView extends PresenterView {
         super(fragment.getActivity());
         this.viewPager = (ExtendedViewPager) findViewById(R.id.view_view_pager_extended_view_pager);
         this.tabLayout = (TabLayout) findViewById(R.id.view_view_pager_tab_layout);
+        this.appBarLayout = (AppBarLayout) findViewById(R.id.view_view_pager_appbar);
         this.tabLayout.setupWithViewPager(this.viewPager);
         this.fab = (FloatingActionButton) findViewById(R.id.view_view_pager_fab);
         createTabsAndPager(fragment);
@@ -110,12 +113,16 @@ public final class ViewPagerPresenterView extends PresenterView {
 
     @Nullable
     public Fragment getFragmentWithIndex(@NonNull final FragmentManager fragmentManager,
-                                         final int index){
-        return fragmentManager.findFragmentByTag("android:switcher:" + R.id.view_view_pager_extended_view_pager + ":"+index);
+                                         final int index) {
+        return fragmentManager.findFragmentByTag("android:switcher:" + R.id.view_view_pager_extended_view_pager + ":" + index);
     }
 
     public int getCurrentFragmentPosition() {
         return viewPager.getCurrentItem();
+    }
+
+    public void expandAppbar() {
+        appBarLayout.setExpanded(true, true);
     }
     //endregion
 

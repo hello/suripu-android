@@ -40,7 +40,7 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     @Override
     public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (getCurrentFragment() == null){
+        if (getCurrentFragment() == null) {
             return;
         }
         getCurrentFragment().setUserVisibleHint(isVisibleToUser);
@@ -70,7 +70,7 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
 
     @Override
     public int getOffscreenPageLimit() {
-        if(viewPagerDelegate == null) {
+        if (viewPagerDelegate == null) {
             return BaseViewPagerPresenterDelegate.DEFAULT_OFFSCREEN_PAGE_LIMIT;
         }
         return viewPagerDelegate.getOffscreenPageLimit();
@@ -82,6 +82,7 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     public void scrollUp() {
         final Fragment fragment = getCurrentFragment();
         if (fragment instanceof HomeActivity.ScrollUp) {
+            presenterView.expandAppbar();
             ((HomeActivity.ScrollUp) fragment).scrollUp();
         }
     }

@@ -5,12 +5,12 @@
                 android:layout_height="match_parent">
 
     <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/view_view_pager_extended_coordinator"
+        android:id="@+id/view_view_pager_coordinator"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <android.support.design.widget.AppBarLayout
-            android:id="@+id/id_appbar"
+            android:id="@+id/view_view_pager_appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
