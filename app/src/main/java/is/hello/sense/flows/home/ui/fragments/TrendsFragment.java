@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.api.model.v2.Trends.TimeScale;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.flows.home.ui.adapters.TrendsAdapter;
 import is.hello.sense.flows.home.ui.views.TrendsView;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TrendsInteractor;
@@ -40,7 +41,9 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     @Override
     public final void initializePresenterView() {
         if (presenterView == null) {
-            presenterView = new TrendsView(getActivity(), getAnimatorContext());
+            final LocalDate creationDate = preferencesInteractor.getAccountCreationDate();
+            final boolean accountIsMoreThan2WeeksOld = !DateFormatter.isInLast2Weeks(creationDate) && !DateFormatter.isTodayForTimeline(creationDate);
+            presenterView = new TrendsView(getActivity(), new TrendsAdapter(getAnimatorContext(), this, this, accountIsMoreThan2WeeksOld));
             presenterChildDelegate.onViewInitialized();
         }
     }
@@ -49,14 +52,11 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(trendsInteractor);
-        setHasOptionsMenu(true);
     }
 
     @Override
     public final void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        presenterView.setTrendFeedViewAnimationCallback(this);
-        showLoadingState();
         bindAndSubscribe(trendsInteractor.trends, this::bindTrends, this::presentError);
     }
 
@@ -72,7 +72,6 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     public void onResume() {
         super.onResume();
         presenterChildDelegate.onResume();
-        fetchTrends();
     }
 
     @Override
@@ -85,6 +84,7 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     //region ViewPagerPresenterChild
     @Override
     public void onUserVisible() {
+        fetchTrends();
     }
 
     @Override
@@ -101,17 +101,6 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     }
     //endregion
 
-    /* todo support analytics again
-    @Override
-    public final void onSelectionChanged(final int newSelectionIndex) {
-
-        final String eventProperty = newTimeScale == TimeScale.LAST_3_MONTHS ? Analytics.Backside.EVENT_TIMESCALE_QUARTER :
-                (newTimeScale == TimeScale.LAST_MONTH ? Analytics.Backside.EVENT_TIMESCALE_MONTH : Analytics.Backside.EVENT_TIMESCALE_WEEK);
-        final Properties properties = new Properties();
-        properties.put(Analytics.Backside.EVENT_TIMESCALE, eventProperty);
-        Analytics.trackEvent(Analytics.Backside.EVENT_CHANGE_TRENDS_TIMESCALE, properties);
-
-    }*/
     //region AnimationCallback
     @Override
     public final void isFinished() {
@@ -120,20 +109,13 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
 
     @Override
     public void scrollUp() {
-        if (presenterView == null){
+        if (presenterView == null) {
             return;
         }
         presenterView.scrollUp();
     }
 
     //region methods
-    public void showLoadingState() {
-        if (!presenterView.hasTrends()) {
-            final LocalDate creationDate = preferencesInteractor.getAccountCreationDate();
-            final boolean showWelcomeBack = !DateFormatter.isInLast2Weeks(creationDate) && !DateFormatter.isTodayForTimeline(creationDate);
-            presenterView.showWelcomeCard(showWelcomeBack);
-        }
-    }
 
     protected abstract TimeScale getTimeScale();
 
@@ -143,7 +125,7 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     }
 
     public final void presentError(final Throwable e) {
-        presenterView.showError(this);
+        presenterView.showError();
     }
     //endregion
 }

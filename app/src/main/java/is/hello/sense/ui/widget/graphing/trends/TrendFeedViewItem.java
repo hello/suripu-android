@@ -53,9 +53,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
         return new ComingSoonCardView(context, days);
     }
 
-    public TrendFeedViewItem(@NonNull final TrendGraphLayout layout,
-                             final boolean topMargin,
-                             final boolean bottomMargin) {
+    public TrendFeedViewItem(@NonNull final TrendGraphLayout layout) {
         super(layout.getContext());
 
         LayoutInflater.from(getContext()).inflate(R.layout.item_trend, this);
@@ -66,17 +64,8 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
         final Resources resources = getResources();
         final int padding = resources.getDimensionPixelSize(R.dimen.gap_card_content);
         setPadding(padding, 0, padding, padding);
-
-        final LayoutParams myLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
-                                                             LayoutParams.WRAP_CONTENT);
-        final int margin = resources.getDimensionPixelSize(R.dimen.x1);
-        if (topMargin) {
-            myLayoutParams.topMargin = margin;
-        }
-        if (bottomMargin) {
-            myLayoutParams.bottomMargin = margin;
-        }
-        setLayoutParams(myLayoutParams);
+        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
+                                         LayoutParams.WRAP_CONTENT));
 
         final float cornerRadius = resources.getDimension(R.dimen.raised_item_corner_radius);
         setCornerRadii(cornerRadius);
@@ -175,12 +164,11 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
 
         StaticCardLayout(@NonNull final Context context) {
             super(context);
-            final View view = LayoutInflater.from(getContext()).inflate(R.layout.item_message_card, this);
+            LayoutInflater.from(getContext()).inflate(R.layout.item_message_card, this);
             this.image = (ImageView) findViewById(R.id.item_message_card_image);
             this.title = (TextView) findViewById(R.id.item_message_card_title);
             this.message = (TextView) findViewById(R.id.item_message_card_message);
             this.action = (Button) findViewById(R.id.item_message_card_action);
-            view.setPadding(0, getContext().getResources().getDimensionPixelSize(R.dimen.x1), 0, 0);
         }
     }
 
