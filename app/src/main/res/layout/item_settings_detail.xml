@@ -19,6 +19,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:importantForAccessibility="no"
+                android:tint="@color/settings_icon_fill_color"
                 tools:src="@drawable/icon_settings_advanced"/>
         </RelativeLayout>
 
