@@ -1,7 +1,6 @@
 package is.hello.sense.ui.recycler;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -23,20 +22,13 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
         return new DividerItemDecoration(context, dividerInset);
     }
 
-    @Deprecated
-    public DividerItemDecoration(@NonNull Resources resources) {
-        this.height = resources.getDimensionPixelSize(R.dimen.divider_size);
-        paint.setColor(resources.getColor(R.color.border));
-        this.inset = new Rect();
-    }
-
     public DividerItemDecoration(@NonNull final Context context) {
         this(context, new Rect());
     }
 
     /**
-     * @param context used to fetch divider size
-     * @param inset applies inset to divider but ignores bottom
+     * @param context used to fetch divider size and color
+     * @param inset applies inset to divider
      */
     public DividerItemDecoration(@NonNull final Context context,
                                  @NonNull final Rect inset) {

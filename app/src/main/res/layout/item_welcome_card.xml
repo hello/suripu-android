@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -9,7 +10,8 @@
             android:id="@+id/item_welcome_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:adjustViewBounds="true"/>
+            android:adjustViewBounds="true"
+            tools:src="@drawable/conditions_welcome"/>
 
         <TextView
             android:id="@+id/item_welcome_title"
@@ -18,7 +20,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/item_welcome_image"
             android:layout_marginTop="@dimen/x1"
-            android:gravity="center"/>
+            android:gravity="center"
+            tools:text="Welcome Title"/>
 
         <TextView
             android:id="@+id/item_welcome_message"
@@ -30,7 +33,8 @@
             android:layout_marginLeft="@dimen/x2"
             android:layout_marginRight="@dimen/x2"
             android:layout_marginTop="@dimen/x1"
-            android:gravity="center"/>
+            android:gravity="center"
+            tools:text="Welcome Message"/>
 
     </RelativeLayout>
 </layout>

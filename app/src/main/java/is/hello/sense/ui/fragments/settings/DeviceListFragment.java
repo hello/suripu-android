@@ -99,7 +99,7 @@ public class DeviceListFragment extends InjectionFragment
         final Resources resources = getResources();
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new DividerItemDecoration(resources));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      EnumSet.of(ScrollEdge.TOP), FadingEdgesItemDecoration.Style.STRAIGHT));
 
