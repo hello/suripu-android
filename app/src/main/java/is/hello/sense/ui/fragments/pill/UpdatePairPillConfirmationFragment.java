@@ -1,5 +1,6 @@
 package is.hello.sense.ui.fragments.pill;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,7 +29,8 @@ public class UpdatePairPillConfirmationFragment extends SenseFragment implements
                 .setToolbarWantsHelpButton(true)
                 .setPrimaryOnClickListener(this::onPrimaryClick)
                 .setToolbarOnHelpClickListener(this::onHelpClick)
-                .setDiagramImage(R.drawable.attach_sleep_pill);
+                .setDiagramVideo(Uri.parse(getString(R.string.diagram_onboarding_clip_pill)))
+                .setDiagramImage(R.drawable.onboarding_clip_pill);
         return view;
     }
 
