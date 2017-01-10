@@ -188,6 +188,7 @@ public class AccountSettingsFragment extends InjectionFragment
         decoration.addTopInset(adapter.getItemCount(), sectionPadding);
         this.enhancedAudioItem = new SettingsRecyclerAdapter.ToggleItem(getString(R.string.label_enhanced_audio),
                                                                         this::changeEnhancedAudio);
+        this.enhancedAudioItem.setIcon(R.drawable.icon_settings_enhanced_audio_24);
         adapter.add(enhancedAudioItem);
 
         adapter.add(new SettingsRecyclerAdapter.CheckBoxItem<>(getString(R.string.info_enhanced_audio), null));

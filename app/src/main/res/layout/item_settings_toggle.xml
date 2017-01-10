@@ -4,20 +4,17 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/x7"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/x2"
+        android:paddingEnd="@dimen/x2">
 
-        <CheckBox
-            android:id="@+id/item_settings_toggle_check_box"
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/item_settings_toggle_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="@dimen/gap_small"
-            android:layout_marginBottom="@dimen/gap_small"
-            android:clickable="false"
-            android:focusable="false"/>
+            tools:src="@drawable/icon_settings_24"/>
 
         <TextView
             android:id="@+id/item_settings_toggle_check_title"
@@ -25,12 +22,20 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
-            android:layout_marginEnd="@dimen/gap_outer"
-            android:layout_marginTop="@dimen/gap_small"
-            android:layout_marginBottom="@dimen/gap_small"
+            android:layout_marginStart="@dimen/x3"
+            android:layout_marginEnd="@dimen/x3"
+            android:layout_marginTop="@dimen/x1"
+            android:layout_marginBottom="@dimen/x1"
             android:gravity="start"
             android:textAppearance="@style/AppTheme.Text.Body"
             tools:text="@string/app_name"/>
+
+        <CheckBox
+            android:id="@+id/item_settings_toggle_check_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false"/>
 
     </LinearLayout>
 

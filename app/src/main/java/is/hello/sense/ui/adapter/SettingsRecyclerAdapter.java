@@ -176,13 +176,18 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
     class ToggleViewHolder extends ViewHolder<ToggleItem> {
         private final ItemSettingsToggleBinding binding;
 
-        ToggleViewHolder(@NonNull View itemView) {
+        ToggleViewHolder(@NonNull final View itemView) {
             super(itemView);
             this.binding = DataBindingUtil.bind(itemView);
         }
 
         @Override
-        void bind(@NonNull ToggleItem item) {
+        void bind(@NonNull final ToggleItem item) {
+            if(item.icon != 0) {
+                this.binding.itemSettingsToggleIcon.setImageResource(item.icon);
+            } else {
+                this.binding.itemSettingsToggleIcon.setImageDrawable(null);
+            }
             this.binding.itemSettingsToggleCheckTitle.setText(item.text);
             this.binding.itemSettingsToggleCheckBox.setChecked(item.value);
         }
@@ -236,13 +241,13 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
 
         String text;
 
-        public TextItem(@NonNull String text,
-                        @Nullable Runnable onClick) {
+        public TextItem(@NonNull final String text,
+                        @Nullable final Runnable onClick) {
             super(onClick);
             this.text = text;
         }
 
-        public void setText(String text) {
+        public void setText(final String text) {
             this.text = text;
             notifyChanged();
         }
@@ -261,11 +266,13 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         @StringRes
         int iconContentDescription;
 
-        public DetailItem(@NonNull String title, @Nullable Runnable onClick) {
+        public DetailItem(@NonNull final String title,
+                          @Nullable final Runnable onClick) {
             super(title, onClick);
         }
 
-        public void setIcon(@DrawableRes int icon, @StringRes int iconContentDescription) {
+        public void setIcon(@DrawableRes final int icon,
+                            @StringRes final int iconContentDescription) {
             this.icon = icon;
             this.iconContentDescription = iconContentDescription;
         }
@@ -279,7 +286,11 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
     public static class ToggleItem extends TextItem<Boolean> {
         static final int ID = 3;
 
-        public ToggleItem(@NonNull String title, @Nullable Runnable onClick) {
+        @DrawableRes
+        int icon;
+
+        public ToggleItem(@NonNull final String title,
+                          @Nullable final Runnable onClick) {
             super(title, onClick);
 
             setValue(false);
@@ -288,6 +299,10 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         @Override
         public int getId() {
             return ID;
+        }
+
+        public void setIcon(@DrawableRes final int iconRes) {
+            this.icon = iconRes;
         }
     }
 
