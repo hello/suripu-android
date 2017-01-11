@@ -51,12 +51,14 @@ public class SleepSoundsStatusInteractor extends ScopedValueInteractor<SleepSoun
     }
 
     /**
-     * its important to update the observable so it uses the new interval.
+     * @return true if back off interval was reset else it wasn't required.
      */
-    public synchronized void resetBackOffIfNeeded() {
+    public synchronized boolean resetBackOffIfNeeded() {
         if (this.backOff != INITIAL_BACK_OFF_MS) {
             this.backOff = INITIAL_BACK_OFF_MS;
-            this.startPolling();
+            return true;
+        } else {
+            return false;
         }
     }
 
