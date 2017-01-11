@@ -7,7 +7,6 @@ import android.app.FragmentManager;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -28,7 +27,6 @@ public final class ViewPagerPresenterView extends PresenterView {
     private final ExtendedViewPager viewPager;
     private final TabLayout tabLayout;
     private final FloatingActionButton fab;
-    private final AppBarLayout appBarLayout;
     private final Animation fabLoadingAnimation;
 
     /**
@@ -39,7 +37,6 @@ public final class ViewPagerPresenterView extends PresenterView {
         super(fragment.getActivity());
         this.viewPager = (ExtendedViewPager) findViewById(R.id.view_view_pager_extended_view_pager);
         this.tabLayout = (TabLayout) findViewById(R.id.view_view_pager_tab_layout);
-        this.appBarLayout = (AppBarLayout) findViewById(R.id.view_view_pager_appbar);
         this.tabLayout.setupWithViewPager(this.viewPager);
         this.fabLoadingAnimation = AnimationUtils.loadAnimation(context, R.anim.rotate_360);
         this.fabLoadingAnimation.setRepeatCount(Animation.INFINITE);
@@ -122,10 +119,6 @@ public final class ViewPagerPresenterView extends PresenterView {
 
     public int getCurrentFragmentPosition() {
         return this.viewPager.getCurrentItem();
-    }
-
-    public void expandAppbar() {
-        this.appBarLayout.setExpanded(true, true);
     }
     //endregion
 

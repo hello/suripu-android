@@ -82,7 +82,6 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     public void scrollUp() {
         final Fragment fragment = getCurrentFragment();
         if (fragment instanceof HomeActivity.ScrollUp) {
-            this.presenterView.expandAppbar();
             ((HomeActivity.ScrollUp) fragment).scrollUp();
         }
     }
