@@ -26,11 +26,13 @@ public class VoiceView extends PresenterView {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         this.insetItemDecorationForWelcome.addBottomInset(0, resources.getDimensionPixelSize(R.dimen.x1));
         this.recyclerView = (RecyclerView) findViewById(R.id.view_voice_home_recycler);
+        this.recyclerView.setOverScrollMode(OVER_SCROLL_NEVER);
         this.recyclerView.setHasFixedSize(true);
         this.recyclerView.setItemAnimator(null);
         this.recyclerView.setLayoutManager(layoutManager);
-        this.recyclerView.addItemDecoration(new DividerItemDecoration(activity));
-        this.recyclerView.addItemDecoration(new FirstAndLastItemMarginDecoration(getResources()));
+        this.recyclerView.addItemDecoration(new FirstAndLastItemMarginDecoration(resources));
+        this.recyclerView.addItemDecoration(DividerItemDecoration.getLeftInset(activity,
+                                                                               resources.getDimensionPixelOffset(R.dimen.x8)));
         this.recyclerView.setAdapter(adapter);
 
     }
@@ -57,5 +59,4 @@ public class VoiceView extends PresenterView {
     public void scrollUp() {
         recyclerView.smoothScrollToPosition(0);
     }
-
 }

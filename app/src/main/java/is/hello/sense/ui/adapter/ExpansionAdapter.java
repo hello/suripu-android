@@ -1,11 +1,10 @@
 package is.hello.sense.ui.adapter;
 
+import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -13,6 +12,7 @@ import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.databinding.ItemRowExpansionBinding;
 import is.hello.sense.ui.widget.util.Styles;
 
 public class ExpansionAdapter extends ArrayRecyclerAdapter<Expansion, ExpansionAdapter.ExpansionViewHolder> {
@@ -38,15 +38,11 @@ public class ExpansionAdapter extends ArrayRecyclerAdapter<Expansion, ExpansionA
     }
 
     public class ExpansionViewHolder extends ArrayRecyclerAdapter.ViewHolder {
-        private final ImageView iconImageView;
-        private final TextView deviceNameTextView;
-        private final TextView stateTextView;
+        private final ItemRowExpansionBinding binding;
 
         public ExpansionViewHolder(final View itemView) {
             super(itemView);
-            this.iconImageView = (ImageView) itemView.findViewById(R.id.item_icon_iv);
-            this.deviceNameTextView = (TextView) itemView.findViewById(R.id.item_device_name_tv);
-            this.stateTextView = (TextView) itemView.findViewById(R.id.item_state_tv);
+            this.binding = DataBindingUtil.bind(itemView);
             this.itemView.setOnClickListener(this);
         }
 
@@ -56,28 +52,21 @@ public class ExpansionAdapter extends ArrayRecyclerAdapter<Expansion, ExpansionA
             final Expansion expansion = getItem(position);
             if(expansion != null) {
                 setEnabled(expansion.isAvailable());
-                picasso.cancelRequest(iconImageView);
+                picasso.cancelRequest(binding.itemIconIv);
                 picasso.load(expansion.getIcon().getUrl(itemView.getResources()))
                        .placeholder(R.drawable.icon_expansions_default)
-                       .into(iconImageView);
-                this.deviceNameTextView.setText(expansion.getDeviceName());
-                this.stateTextView.setText(expansion.getState().displayValue);
+                       .into(binding.itemIconIv);
+                this.binding.itemDeviceNameTv.setText(expansion.getDeviceName());
+                this.binding.itemStateTv.setText(expansion.getState().displayValue);
             }
 
         }
 
         public void setEnabled(final boolean enabled){
             itemView.setEnabled(enabled);
-            stateTextView.setEnabled(enabled);
-            deviceNameTextView.setEnabled(enabled);
-            iconImageView.setImageAlpha(Styles.getImageViewAlpha(enabled));
-
-
-            this.stateTextView.setCompoundDrawablesWithIntrinsicBounds(0,
-                                                                       0,
-                                                                       enabled? R.drawable.disclosure_chevron : 0,
-                                                                       0);
-
+            this.binding.itemDeviceNameTv.setEnabled(enabled);
+            this.binding.itemStateTv.setEnabled(enabled);
+            this.binding.itemIconIv.setImageAlpha(Styles.getImageViewAlpha(enabled));
         }
     }
 }

@@ -29,6 +29,7 @@ public final class ViewPagerPresenterView extends PresenterView {
     private final TabLayout tabLayout;
     private final FloatingActionButton fab;
     private final AppBarLayout appBarLayout;
+    private final Animation fabLoadingAnimation;
 
     /**
      * @param fragment - Fragment providing initialization settings and callbacks.
@@ -40,6 +41,8 @@ public final class ViewPagerPresenterView extends PresenterView {
         this.tabLayout = (TabLayout) findViewById(R.id.view_view_pager_tab_layout);
         this.appBarLayout = (AppBarLayout) findViewById(R.id.view_view_pager_appbar);
         this.tabLayout.setupWithViewPager(this.viewPager);
+        this.fabLoadingAnimation = AnimationUtils.loadAnimation(context, R.anim.rotate_360);
+        this.fabLoadingAnimation.setRepeatCount(Animation.INFINITE);
         this.fab = (FloatingActionButton) findViewById(R.id.view_view_pager_fab);
         createTabsAndPager(fragment);
     }
@@ -141,7 +144,7 @@ public final class ViewPagerPresenterView extends PresenterView {
     public void setFabVisible(final boolean visible) {
         if (visible) {
             this.fab.show();
-        } else if (this.fab.getVisibility() == VISIBLE) {
+        } else {
             this.fab.hide();
         }
     }
@@ -160,9 +163,10 @@ public final class ViewPagerPresenterView extends PresenterView {
         if (loading) {
             this.fab.setOnClickListener(null);
             this.fab.setImageResource(R.drawable.sound_loading_icon);
-            final Animation animation = AnimationUtils.loadAnimation(context, R.anim.rotate_360);
-            animation.setRepeatCount(Animation.INFINITE);
-            this.fab.startAnimation(animation);
+            final Animation currentAnimation = this.fab.getAnimation();
+            if (!(fabLoadingAnimation.equals(currentAnimation) && currentAnimation.hasStarted())) {
+                this.fab.startAnimation(fabLoadingAnimation);
+            }
         } else {
             this.fab.clearAnimation();
         }
