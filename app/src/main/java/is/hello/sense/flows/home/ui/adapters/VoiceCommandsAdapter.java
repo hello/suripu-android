@@ -1,5 +1,6 @@
 package is.hello.sense.flows.home.ui.adapters;
 
+import android.databinding.DataBindingUtil;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,14 +8,14 @@ import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
+import is.hello.sense.databinding.ItemVoiceCommandBinding;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
+import is.hello.sense.ui.widget.WelcomeCard;
 
 
 public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdapter.VoiceCommand, VoiceCommandsAdapter.BaseViewHolder> {
@@ -60,7 +61,7 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdap
     public BaseViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         switch (viewType) {
             case VIEW_WELCOME:
-                return new WelcomeCardViewHolder(VoiceCommandsAdapter.this.inflater.inflate(R.layout.item_welcome_card_close, parent, false));
+                return new WelcomeCardViewHolder(new WelcomeCard(parent.getContext()));
             case VIEW_ITEM:
                 return new ItemViewHolder(VoiceCommandsAdapter.this.inflater.inflate(R.layout.item_voice_command, parent, false));
             default:
@@ -87,36 +88,32 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdap
     }
 
     public class ItemViewHolder extends BaseViewHolder {
-        private final ImageView imageView;
-        private final TextView titleTextView;
-        private final TextView bodyTextView;
+        private final ItemVoiceCommandBinding binding;
 
         public ItemViewHolder(@NonNull final View itemView) {
             super(itemView);
-            this.imageView = (ImageView) itemView.findViewById(R.id.item_voice_command_image);
-            this.titleTextView = (TextView) itemView.findViewById(R.id.item_voice_command_title);
-            this.bodyTextView = (TextView) itemView.findViewById(R.id.item_voice_command_body);
+            this.binding = DataBindingUtil.bind(itemView);
         }
 
         @Override
         public void bind(final int position) {
             super.bind(position);
             final VoiceCommand voiceCommand = getItem(position);
-            this.imageView.setImageResource(voiceCommand.imageRes);
-            this.titleTextView.setText(voiceCommand.titleRes);
-            this.bodyTextView.setText(voiceCommand.bodyRes);
+            this.binding.itemVoiceCommandImage.setImageResource(voiceCommand.imageRes);
+            this.binding.itemVoiceCommandTitle.setText(voiceCommand.titleRes);
+            this.binding.itemVoiceCommandBody.setText(voiceCommand.bodyRes);
             this.itemView.setOnClickListener(v -> dispatchItemClicked(position, voiceCommand));
         }
     }
 
     private class WelcomeCardViewHolder extends BaseViewHolder {
 
-        public WelcomeCardViewHolder(@NonNull final View itemView) {
+        public WelcomeCardViewHolder(@NonNull final WelcomeCard itemView) {
             super(itemView);
-            ((ImageView) itemView.findViewById(R.id.item_welcome_image)).setImageResource(R.drawable.sense_with_voice);
-            ((TextView) itemView.findViewById(R.id.item_welcome_title)).setText(R.string.welcome_to_voice_title);
-            ((TextView) itemView.findViewById(R.id.item_welcome_message)).setText(R.string.welcome_to_voice_body);
-            itemView.findViewById(R.id.item_welcome_close).setOnClickListener(welcomeCardListener);
+            itemView.setContent(R.drawable.sense_with_voice,
+                                   R.string.welcome_to_voice_title,
+                                   R.string.welcome_to_voice_body);
+            itemView.setOnCloseButtonListener(welcomeCardListener);
         }
     }
 

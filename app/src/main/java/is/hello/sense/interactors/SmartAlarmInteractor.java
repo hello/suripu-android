@@ -8,6 +8,7 @@ import org.joda.time.Interval;
 import org.joda.time.Minutes;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,7 @@ import is.hello.sense.api.model.v2.alarms.AlarmSource;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InteractorSubject;
+import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 import rx.subjects.ReplaySubject;
 
@@ -68,6 +70,39 @@ public class SmartAlarmInteractor extends ValueInteractor<ArrayList<Alarm>> {
 
 
     //region Validation
+
+    /**
+     * @param checkAlarm alarm under test
+     * @param alarms list to validate
+     * @return true if 'alarms' contains no other enabled smart alarms with overlapping days as 'checkAlarm'
+     */
+    public boolean canBeSmartWith(@NonNull final Alarm checkAlarm,
+                                  @NonNull final List<Alarm> alarms) {
+        @DateFormatter.JodaWeekDay
+        final Integer defaultDay = checkAlarm.getDefaultRingTime()
+                                             .getDayOfWeek();
+
+        final Set<Integer> daysOfWeek = checkAlarm.getDaysOfWeek();
+
+        for(final Alarm alarm : alarms) {
+            if (!(alarm.isSmart() && alarm.isEnabled())) {
+                continue;
+            }
+            final Set<Integer> reservedDaysOfWeek = alarm.getDaysOfWeek();
+
+            if(daysOfWeek.isEmpty()
+                    && (reservedDaysOfWeek.contains(defaultDay) || reservedDaysOfWeek.isEmpty())) {
+                return false;
+            } else if (daysOfWeek.contains(defaultDay) && reservedDaysOfWeek.isEmpty()) {
+                return false;
+            }
+            // test that no overlapping days are shared
+            if(!Collections.disjoint(daysOfWeek, reservedDaysOfWeek)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public boolean validateAlarms(@NonNull List<Alarm> alarms) {
         final Set<Integer> alarmDays = new HashSet<>();

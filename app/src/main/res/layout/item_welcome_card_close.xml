@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:background="@color/background_light"
-              android:orientation="vertical">
-
-    <include layout="@layout/item_welcome_card"/>
-
-    <View style="@style/Divider.Horizontal"/>
-
-    <TextView
-        android:id="@+id/item_welcome_close"
-        style="@style/AppTheme.Card.Item"
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <is.hello.sense.ui.widget.RoundedLinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="@dimen/x1"
-        android:text="@string/action_close"/>
+        android:orientation="vertical"
+        style="@style/AppTheme.Card">
 
-</LinearLayout>
+        <include android:id="@+id/item_welcome_card"
+            layout="@layout/item_welcome_card"/>
+
+        <View style="@style/Divider.Horizontal"/>
+
+        <TextView
+            android:id="@+id/item_welcome_close"
+            style="@style/AppTheme.Card.Item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="@dimen/x1"
+            android:text="@string/action_close"/>
+
+    </is.hello.sense.ui.widget.RoundedLinearLayout>
+</layout>

@@ -150,8 +150,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     @Override
     public void onUserVisible() {
         Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS, null);
-        displayLoadingButton();
-        setFabVisible(presenterView.isShowingPlayer());
+        setFabVisibleAndLoading(presenterView.isShowingPlayer());
         updateSensePairedSubscription(() -> {
             sleepSoundsStatusInteractor.resetBackOffIfNeeded();
             sleepSoundsStatusInteractor.startPolling();
@@ -261,15 +260,20 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         return fabPresenter != null && isVisibleToUserAndResumed();
     }
 
-    public void setFabVisible(final boolean visible) {
+    /**
+     * When setting fab visible false it is important to also stop loading
+     * otherwise the hide animation will not behave as expected and fab remains visible.
+     */
+    public void setFabVisibleAndLoading(final boolean visible) {
         if (canUpdateFab()) {
+            fabPresenter.setFabLoading(visible);
             fabPresenter.setFabVisible(visible);
         }
     }
 
     public void adapterSetState(final SleepSoundsAdapter.AdapterState state) {
         presenterView.adapterSetState(state);
-        setFabVisible(false);
+        setFabVisibleAndLoading(false);
     }
 
     private void displayPlayButton() {
@@ -331,10 +335,12 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
                 }
             }
         } else {
-            setFabVisible(false);
+            setFabVisibleAndLoading(false);
         }
         presenterView.adapterBindStatus(status);
-        sleepSoundsStatusInteractor.resetBackOffIfNeeded();
+        if (sleepSoundsStatusInteractor.resetBackOffIfNeeded()) {
+            sleepSoundsStatusInteractor.startPolling();
+        }
     }
 
     private void bind(final @NonNull SleepSoundsStateDevice stateDevice) {
@@ -370,8 +376,8 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
                     return;
                 case OK:
                     presenterView.adapterBindState(combinedState);
-                    displayLoadingButton();
-                    setFabVisible(true);
+                    //displayLoadingButton();
+                    setFabVisibleAndLoading(true);
                     return;
                 default:
                     adapterSetState(SleepSoundsAdapter.AdapterState.ERROR);

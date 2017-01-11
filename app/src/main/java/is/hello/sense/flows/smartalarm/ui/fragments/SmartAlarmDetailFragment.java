@@ -71,8 +71,6 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     private static final int SOUND_REQUEST_CODE = 80;
     private static final int REPEAT_REQUEST_CODE = 89;
     private static final int EXPANSION_VALUE_REQUEST_CODE = 105;
-    public static final int DEFAULT_HOUR = 7;
-    public static final int DEFAULT_MINUTE = 30;
 
 
     public static SmartAlarmDetailFragment newInstance(@NonNull final Alarm alarm,
@@ -126,7 +124,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     @NotTested
     @Override
     public void onSaveInstanceState(final Bundle outState) {
-        outState.putBoolean(KEY_SKIP, this.skipUI); // probably won't ever be needed.
+        outState.putBoolean(KEY_SKIP, this.skipUI);
         outState.putSerializable(KEY_ALARM, this.alarm);
         outState.putInt(KEY_INDEX, this.index);
         outState.putBoolean(KEY_DIRTY, this.dirty);
@@ -222,8 +220,8 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         }
 
         if (requestCode == TIME_REQUEST_CODE) {
-            final int hour = data.getIntExtra(TimePickerDialogFragment.RESULT_HOUR, DEFAULT_HOUR);
-            final int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, DEFAULT_MINUTE);
+            final int hour = data.getIntExtra(TimePickerDialogFragment.RESULT_HOUR, Alarm.DEFAULT_HOUR);
+            final int minute = data.getIntExtra(TimePickerDialogFragment.RESULT_MINUTE, Alarm.DEFAULT_MINUTE);
             this.alarm.setTime(new LocalTime(hour, minute));
             updateUIForAlarm();
             markDirty();
@@ -343,8 +341,8 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     private void updateUIForAlarm() {
         this.presenterView.setTime(this.dateFormatter.formatAsAlarmTime(this.alarm.getTime(),
                                                                         this.use24Time));
-        this.presenterView.setSmartAlarm(this.alarm.isSmart(),
-                                         this::onSmartAlarmToggled);
+        this.presenterView.setSmartAlarmToggle(this.alarm.isSmart(),
+                                               this::onSmartAlarmToggled);
         this.presenterView.setRepeatDaysTextView(this.alarm.getRepeatSummary(getActivity(),
                                                                              false));
         if (this.alarm.getSound() != null && !TextUtils.isEmpty(this.alarm.getSound().name)) {

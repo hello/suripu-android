@@ -121,7 +121,6 @@ public class VoiceFragment extends PresenterFragment<VoiceView>
         sharedPreferences.edit()
                          .putBoolean(AccountPreferencesInteractor.VOICE_WELCOME_CARD, true)
                          .apply();
-        showWelcomeCard(true);
     }
 
     //endregion
