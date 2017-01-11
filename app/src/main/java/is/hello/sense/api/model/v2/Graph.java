@@ -150,7 +150,6 @@ public class Graph extends ApiResponse {
                 final int section = highlightedIndex / 7;
                 final int cell = highlightedIndex % 7;
                 graph.getSections().get(section).addHighlightedValues(cell);
-                Log.e(Graph.class.getSimpleName(), "Highlight: section: " + section + ", cell: " + cell);
             }
 
             graphs.add(graph);
