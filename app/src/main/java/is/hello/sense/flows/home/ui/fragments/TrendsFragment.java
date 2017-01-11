@@ -43,22 +43,24 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     //region PresenterFragment
     @Override
     public void initializePresenterView() {
-        if (presenterView == null) {
-            presenterView = new TrendsView(getActivity(), getTrendsAdapter());
-            presenterChildDelegate.onViewInitialized();
+        if (this.presenterView == null) {
+            this.presenterView = new TrendsView(getActivity(), createTrendsAdapter());
+            this.presenterChildDelegate.onViewInitialized();
         }
     }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addInteractor(trendsInteractor);
+        addInteractor(this.trendsInteractor);
     }
 
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bindAndSubscribe(trendsInteractor.trends, this::bindTrends, this::presentError);
+        bindAndSubscribe(this.trendsInteractor.trends,
+                         this::bindTrends,
+                         this::presentError);
     }
 
 
@@ -66,19 +68,19 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
-        presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
+        this.presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        presenterChildDelegate.onResume();
+        this.presenterChildDelegate.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        presenterChildDelegate.onPause();
+        this.presenterChildDelegate.onPause();
     }
 
     //endregion
@@ -97,25 +99,25 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     //region onRetry
     @Override
     public void fetchTrends() {
-        trendsInteractor.setTimeScale(getTimeScale());
-        trendsInteractor.update();
+        this.trendsInteractor.setTimeScale(getTimeScale());
+        this.trendsInteractor.update();
     }
     //endregion
 
     //region AnimationCallback
     @Override
-    public final void isFinished() {
-        presenterView.refreshRecyclerView();
+    public void isFinished() {
+        this.presenterView.refreshRecyclerView();
     }
     //endregion
 
     //region scrollUp
     @Override
     public void scrollUp() {
-        if (presenterView == null) {
+        if (this.presenterView == null) {
             return;
         }
-        presenterView.scrollUp();
+        this.presenterView.scrollUp();
     }
     //endregion
 
@@ -124,23 +126,23 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     protected abstract TimeScale getTimeScale();
 
     @VisibleForTesting
-    public void bindTrends(@NonNull final Trends trends) {
-        presenterView.updateTrends(trends);
+    void bindTrends(@NonNull final Trends trends) {
+        this.presenterView.updateTrends(trends);
     }
 
     @VisibleForTesting
-    public void presentError(final Throwable e) {
-        presenterView.showError();
+    void presentError(final Throwable e) {
+        this.presenterView.showError();
     }
 
     @VisibleForTesting
-    public boolean isAccountMoreThan2WeeksOld() {
-        final LocalDate creationDate = preferencesInteractor.getAccountCreationDate();
+    boolean isAccountMoreThan2WeeksOld() {
+        final LocalDate creationDate = this.preferencesInteractor.getAccountCreationDate();
         return !DateFormatter.isInLast2Weeks(creationDate) && !DateFormatter.isTodayForTimeline(creationDate);
     }
 
     @VisibleForTesting
-    public TrendsAdapter getTrendsAdapter() {
+    TrendsAdapter createTrendsAdapter() {
         return new TrendsAdapter(getAnimatorContext(),
                                  this,
                                  this,

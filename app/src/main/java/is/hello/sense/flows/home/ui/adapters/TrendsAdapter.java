@@ -26,10 +26,12 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<Graph, TrendsAdapter.Bas
     private static final int WELCOME_TYPE = 0;
     private static final int TREND_TYPE = 1;
     private static final int ERROR_TYPE = 2;
+
     private final AnimatorContext animatorContext;
     private final TrendGraphView.AnimationCallback animationCallback;
-    private final boolean accountIsMoreThan2WeeksOld;
     private final TrendFeedViewItem.OnRetry onRetry;
+    private final boolean accountIsMoreThan2WeeksOld;
+
     private boolean showError = false;
 
     public TrendsAdapter(@NonNull final AnimatorContext animatorContext,
@@ -66,17 +68,13 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<Graph, TrendsAdapter.Bas
             case ERROR_TYPE:
                 return new BaseViewHolder(TrendFeedViewItem.createErrorCard(parent.getContext(), onRetry));
             case WELCOME_TYPE:
-                final View view;
                 if (accountIsMoreThan2WeeksOld) {
-                    view = TrendFeedViewItem.createWelcomeBackCard(parent.getContext());
+                    return new BaseViewHolder(TrendFeedViewItem.createWelcomeBackCard(parent.getContext()));
                 } else {
-                    view = TrendFeedViewItem.createWelcomeCard(parent.getContext());
+                    return new BaseViewHolder(TrendFeedViewItem.createWelcomeCard(parent.getContext()));
                 }
-                return new BaseViewHolder(view);
-
             default:
                 return new TrendViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_trends, parent, false));
-
         }
     }
 
@@ -84,7 +82,6 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<Graph, TrendsAdapter.Bas
     public void onBindViewHolder(final TrendsAdapter.BaseViewHolder holder,
                                  final int position) {
         holder.bind(position);
-
     }
 
     public void setTrends(@NonNull final Trends trends) {
@@ -122,11 +119,9 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<Graph, TrendsAdapter.Bas
             }
         }
         return false; // All graphs were found.
-
     }
 
     public class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder {
-
 
         public BaseViewHolder(@NonNull final View itemView) {
             super(itemView);

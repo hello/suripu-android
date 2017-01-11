@@ -2,7 +2,9 @@ package is.hello.sense.flows.home.ui.fragments;
 
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 import org.mockito.Mockito;
 
 
@@ -12,8 +14,11 @@ import is.hello.sense.graph.SenseTestCase;
 import static org.robolectric.util.FragmentTestUtil.startFragment;
 
 public class TrendsFragmentTest extends SenseTestCase {
-    private TrendsFragment fragment;
 
+    @Rule
+    public Timeout globalTimeout = Timeout.seconds(10);
+
+    private TrendsFragment fragment;
 
     @Before
     public void setUp() throws Exception {
@@ -28,7 +33,7 @@ public class TrendsFragmentTest extends SenseTestCase {
         fragment.presenterView = null;
         fragment.initializePresenterView();
         Mockito.verify(fragment).isAccountMoreThan2WeeksOld();
-        Mockito.verify(fragment).getTrendsAdapter();
+        Mockito.verify(fragment).createTrendsAdapter();
         Mockito.verify(fragment.presenterChildDelegate).onViewInitialized();
     }
 
@@ -108,7 +113,6 @@ public class TrendsFragmentTest extends SenseTestCase {
         fragment.presenterView = Mockito.spy(fragment.presenterView);
         fragment.isFinished();
         Mockito.verify(fragment.presenterView).refreshRecyclerView();
-
     }
 
 

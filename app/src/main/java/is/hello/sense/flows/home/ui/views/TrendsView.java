@@ -6,8 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Trends;
@@ -18,7 +16,7 @@ import is.hello.sense.mvp.view.PresenterView;
 @SuppressLint("ViewConstructor")
 public class TrendsView extends PresenterView {
     private final RecyclerView recyclerView;
-    public final TrendsAdapter trendsAdapter;
+    private final TrendsAdapter trendsAdapter;
 
     public TrendsView(@NonNull final Activity activity,
                       @NonNull final TrendsAdapter trendsAdapter) {
@@ -26,7 +24,7 @@ public class TrendsView extends PresenterView {
         this.trendsAdapter = trendsAdapter;
         this.recyclerView = (RecyclerView) findViewById(R.id.view_trends_recycler);
         setUpStandardRecyclerViewDecorations(this.recyclerView, new LinearLayoutManager(activity));
-        recyclerView.setHasFixedSize(false);
+        this.recyclerView.setHasFixedSize(false); // important for refreshRecyclerView() to work.
         this.recyclerView.setAdapter(trendsAdapter);
     }
 
@@ -41,11 +39,11 @@ public class TrendsView extends PresenterView {
     }
 
     public void updateTrends(@NonNull final Trends trends) {
-        trendsAdapter.setTrends(trends);
+        this.trendsAdapter.setTrends(trends);
     }
 
     public void showError() {
-        trendsAdapter.showError();
+        this.trendsAdapter.showError();
     }
 
     public void scrollUp() {
@@ -65,7 +63,7 @@ public class TrendsView extends PresenterView {
      * {@link TrendsFragment#isFinished()}.
      */
     public void refreshRecyclerView() {
-        recyclerView.requestLayout();
+        this.recyclerView.requestLayout();
     }
 
 }

@@ -30,9 +30,9 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     //region PresenterFragment
     @Override
     public final void initializePresenterView() {
-        if (presenterView == null) {
-            viewPagerDelegate = newViewPagerDelegateInstance();
-            presenterView = new ViewPagerPresenterView(this);
+        if (this.presenterView == null) {
+            this.viewPagerDelegate = newViewPagerDelegateInstance();
+            this.presenterView = new ViewPagerPresenterView(this);
         }
     }
 
@@ -53,27 +53,27 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     @Override
     public StaticFragmentAdapter.Item[] getViewPagerItems() {
         // should never happen but lets be safe.
-        if (viewPagerDelegate == null) {
+        if (this.viewPagerDelegate == null) {
             return new StaticFragmentAdapter.Item[0];
         }
-        return viewPagerDelegate.getViewPagerItems();
+        return this.viewPagerDelegate.getViewPagerItems();
     }
 
     @Override
     public int getStartingItemPosition() {
         // should never happen but lets be safe.
-        if (viewPagerDelegate == null) {
+        if (this.viewPagerDelegate == null) {
             return BaseViewPagerPresenterDelegate.DEFAULT_STARTING_ITEM_POSITION;
         }
-        return viewPagerDelegate.getStartingItemPosition();
+        return this.viewPagerDelegate.getStartingItemPosition();
     }
 
     @Override
     public int getOffscreenPageLimit() {
-        if (viewPagerDelegate == null) {
+        if (this.viewPagerDelegate == null) {
             return BaseViewPagerPresenterDelegate.DEFAULT_OFFSCREEN_PAGE_LIMIT;
         }
-        return viewPagerDelegate.getOffscreenPageLimit();
+        return this.viewPagerDelegate.getOffscreenPageLimit();
     }
     //endregion
 
@@ -82,7 +82,7 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     public void scrollUp() {
         final Fragment fragment = getCurrentFragment();
         if (fragment instanceof HomeActivity.ScrollUp) {
-            presenterView.expandAppbar();
+            this.presenterView.expandAppbar();
             ((HomeActivity.ScrollUp) fragment).scrollUp();
         }
     }
@@ -113,11 +113,11 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
 
     @Nullable
     public Fragment getCurrentFragment() {
-        if (presenterView == null) {
+        if (this.presenterView == null) {
             return null;
         }
-        return presenterView.getFragmentWithIndex(getDesiredFragmentManager(),
-                                                  presenterView.getCurrentFragmentPosition());
+        return this.presenterView.getFragmentWithIndex(getDesiredFragmentManager(),
+                                                       this.presenterView.getCurrentFragmentPosition());
     }
 
     //endregion
@@ -125,31 +125,31 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     //region FabPresenter
     //@Override
     public void setFabSize(final float size) {
-        if (presenterView != null) {
-            presenterView.setFabSize(size);
+        if (this.presenterView != null) {
+            this.presenterView.setFabSize(size);
         }
     }
 
     @Override
     public void setFabVisible(final boolean visible) {
-        if (presenterView != null) {
-            presenterView.setFabVisible(visible);
+        if (this.presenterView != null) {
+            this.presenterView.setFabVisible(visible);
         }
     }
 
     @Override
     public void updateFab(@DrawableRes final int iconRes,
                           @Nullable final View.OnClickListener listener) {
-        if (presenterView != null) {
-            presenterView.updateFab(iconRes,
+        if (this.presenterView != null) {
+            this.presenterView.updateFab(iconRes,
                                     listener);
         }
     }
 
     @Override
     public void setFabLoading(final boolean loading) {
-        if (presenterView != null) {
-            presenterView.setFabLoading(loading);
+        if (this.presenterView != null) {
+            this.presenterView.setFabLoading(loading);
         }
     }
     //endregion

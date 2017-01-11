@@ -83,19 +83,19 @@ public abstract class SenseTestCase {
     /**
      * Uses reflection to update a final field value so it can be spied on.
      *
-     * @param classWithField class containing the field.
+     * @param objectWithField object containing the field.
      * @param field          field to remove final from.
      * @param newValue       value to change field with.
      * @throws Exception
      */
-    protected void changeFinalFieldValue(@NonNull final Object classWithField,
+    protected void changeFinalFieldValue(@NonNull final Object objectWithField,
                                          @NonNull final Field field,
                                          @Nullable final Object newValue) throws Exception {
         field.setAccessible(true);
         final Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
         modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-        field.set(classWithField, newValue);
+        field.set(objectWithField, newValue);
     }
 
 }

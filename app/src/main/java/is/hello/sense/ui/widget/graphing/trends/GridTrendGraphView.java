@@ -15,7 +15,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
-import android.util.Log;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
@@ -53,23 +52,25 @@ public class GridTrendGraphView extends TrendGraphView {
         setBackground(drawable);
         setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         drawable.showGraphAnimation();
-        getViewTreeObserver().addOnGlobalLayoutListener(this::redraw);
-    }
-    public void redraw(){
-        final int elements;
-        if (drawable.getGraph().getTimeScale() == Trends.TimeScale.LAST_3_MONTHS) {
-            elements = 15;
-        } else {
-            elements = 7;
-        }
-        final float circleSize = getWidth() / elements;
-        if (getCircleSize() != circleSize) {
-            ((GridGraphDrawable) drawable).initHeight(getWidth() / elements);
-            requestLayout();
-            invalidate();
-            bindGraph(drawable.getGraph());
-        }
-
+        getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                final int elements;
+                if (graph.getTimeScale() == Trends.TimeScale.LAST_3_MONTHS) {
+                    elements = 15;
+                } else {
+                    elements = 7;
+                }
+                final float circleSize = getWidth() / elements;
+                if (getCircleSize() != circleSize) {
+                    ((GridGraphDrawable) drawable).initHeight(getWidth() / elements);
+                    requestLayout();
+                    invalidate();
+                    bindGraph(drawable.getGraph());
+                    getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            }
+        });
     }
 
     @Override
