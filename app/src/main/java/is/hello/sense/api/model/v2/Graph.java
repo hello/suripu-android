@@ -123,7 +123,7 @@ public class Graph extends ApiResponse {
             }
 
             final Graph graph = new Graph(this);
-            if (offset >= 0) {
+            if (offset > 0) {
                 final GraphSection temp = new GraphSection(graphSection);
                 graph.addSection(temp);
                 for (int i = 0; i < offset; i++) {
@@ -150,6 +150,7 @@ public class Graph extends ApiResponse {
                 final int section = highlightedIndex / 7;
                 final int cell = highlightedIndex % 7;
                 graph.getSections().get(section).addHighlightedValues(cell);
+                Log.e(Graph.class.getSimpleName(), "Highlight: section: " + section + ", cell: " + cell);
             }
 
             graphs.add(graph);
