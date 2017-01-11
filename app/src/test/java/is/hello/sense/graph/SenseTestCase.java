@@ -10,7 +10,7 @@ import android.support.annotation.NonNull;
 import org.junit.runner.RunWith;
 import org.junit.runners.model.InitializationError;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.manifest.AndroidManifest;
@@ -55,7 +55,7 @@ public abstract class SenseTestCase {
         Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
     }
 
-    public static class WorkaroundTestRunner extends RobolectricGradleTestRunner {
+    public static class WorkaroundTestRunner extends RobolectricTestRunner {
         public WorkaroundTestRunner(Class<?> klass) throws InitializationError {
             super(klass);
         }
