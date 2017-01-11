@@ -2,6 +2,7 @@ package is.hello.sense.flows.home.ui.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.view.View;
 
 
@@ -35,27 +36,27 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     TrendsInteractor trendsInteractor;
     @Inject
     PreferencesInteractor preferencesInteractor;
-    private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
+
+    @VisibleForTesting
+    public final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
 
     //region PresenterFragment
     @Override
-    public final void initializePresenterView() {
+    public void initializePresenterView() {
         if (presenterView == null) {
-            final LocalDate creationDate = preferencesInteractor.getAccountCreationDate();
-            final boolean accountIsMoreThan2WeeksOld = !DateFormatter.isInLast2Weeks(creationDate) && !DateFormatter.isTodayForTimeline(creationDate);
-            presenterView = new TrendsView(getActivity(), new TrendsAdapter(getAnimatorContext(), this, this, accountIsMoreThan2WeeksOld));
+            presenterView = new TrendsView(getActivity(), getTrendsAdapter());
             presenterChildDelegate.onViewInitialized();
         }
     }
 
     @Override
-    public final void onCreate(final Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(trendsInteractor);
     }
 
     @Override
-    public final void onViewCreated(final View view, final Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bindAndSubscribe(trendsInteractor.trends, this::bindTrends, this::presentError);
     }
@@ -95,7 +96,7 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
 
     //region onRetry
     @Override
-    public final void fetchTrends() {
+    public void fetchTrends() {
         trendsInteractor.setTimeScale(getTimeScale());
         trendsInteractor.update();
     }
@@ -104,9 +105,11 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     //region AnimationCallback
     @Override
     public final void isFinished() {
+        presenterView.refreshRecyclerView();
     }
     //endregion
 
+    //region scrollUp
     @Override
     public void scrollUp() {
         if (presenterView == null) {
@@ -114,18 +117,34 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
         }
         presenterView.scrollUp();
     }
+    //endregion
 
     //region methods
 
     protected abstract TimeScale getTimeScale();
 
-    public final void bindTrends(@NonNull final Trends trends) {
+    @VisibleForTesting
+    public void bindTrends(@NonNull final Trends trends) {
         presenterView.updateTrends(trends);
-        isFinished();
     }
 
-    public final void presentError(final Throwable e) {
+    @VisibleForTesting
+    public void presentError(final Throwable e) {
         presenterView.showError();
+    }
+
+    @VisibleForTesting
+    public boolean isAccountMoreThan2WeeksOld() {
+        final LocalDate creationDate = preferencesInteractor.getAccountCreationDate();
+        return !DateFormatter.isInLast2Weeks(creationDate) && !DateFormatter.isTodayForTimeline(creationDate);
+    }
+
+    @VisibleForTesting
+    public TrendsAdapter getTrendsAdapter() {
+        return new TrendsAdapter(getAnimatorContext(),
+                                 this,
+                                 this,
+                                 isAccountMoreThan2WeeksOld());
     }
     //endregion
 }

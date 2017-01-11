@@ -25,7 +25,7 @@ public abstract class TrendGraphView extends View implements TrendFeedViewItem.O
 
     protected TrendGraphView(@NonNull final Context context,
                              @NonNull final AnimatorContext animatorContext,
-                             @Nullable final AnimationCallback animationCallback) {
+                             @NonNull final AnimationCallback animationCallback) {
         super(context);
         this.animatorContext = animatorContext;
         this.animationCallback = animationCallback;

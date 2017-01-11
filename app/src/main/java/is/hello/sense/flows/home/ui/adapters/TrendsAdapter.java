@@ -25,7 +25,7 @@ import is.hello.sense.ui.widget.graphing.trends.TrendGraphView;
 public class TrendsAdapter extends ArrayRecyclerAdapter<Graph, TrendsAdapter.BaseViewHolder> {
     private static final int WELCOME_TYPE = 0;
     private static final int TREND_TYPE = 1;
-    private static final int ERROR_TYPE = 2; // todo support
+    private static final int ERROR_TYPE = 2;
     private final AnimatorContext animatorContext;
     private final TrendGraphView.AnimationCallback animationCallback;
     private final boolean accountIsMoreThan2WeeksOld;
@@ -88,11 +88,15 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<Graph, TrendsAdapter.Bas
     }
 
     public void setTrends(@NonNull final Trends trends) {
+        if (!hasNewGraphs(trends)) {
+            return;
+        }
         this.showError = false;
         clear();
         if (trends.getGraphs() != null) {
             addAll(trends.getGraphs());
         }
+
         notifyDataSetChanged();
     }
 
@@ -100,6 +104,25 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<Graph, TrendsAdapter.Bas
         this.showError = true;
         clear();
         notifyDataSetChanged();
+    }
+
+    private boolean hasNewGraphs(@NonNull final Trends trends) {
+        if (showError) {
+            return true; // We are showing an error card. Update.
+        }
+        if (trends.getGraphs() == null) {
+            return getItemCount() != 1; // Wants to show welcome card. Confirm that we're not already showing it.
+        }
+        if (getItemCount() == 1) {
+            return true; // We are showing a welcome card. Update.
+        }
+        for (int i = 0; i < getItemCount(); i++) {
+            if (!trends.getGraphs().contains(getItem(i))) {
+                return true; // New graph. Update.
+            }
+        }
+        return false; // All graphs were found.
+
     }
 
     public class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder {
@@ -116,7 +139,6 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<Graph, TrendsAdapter.Bas
 
 
     private class TrendViewHolder extends BaseViewHolder {
-
         private final ItemTrendsBinding itemTrendsBinding;
 
         private TrendViewHolder(@NonNull final View itemView) {

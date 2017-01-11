@@ -48,15 +48,10 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
         return new WelcomeBackCardView(context);
     }
 
-    public static ComingSoonCardView createComingSoonCard(@NonNull final Context context,
-                                                          final int days) {
-        return new ComingSoonCardView(context, days);
-    }
-
     public TrendFeedViewItem(@NonNull final TrendGraphLayout layout) {
         super(layout.getContext());
 
-        LayoutInflater.from(getContext()).inflate(R.layout.item_trend, this);
+        LayoutInflater.from(getContext()).inflate(R.layout.item_trend_feed_view, this);
 
         setOrientation(VERTICAL);
         setBackgroundResource(R.drawable.raised_item_normal);
@@ -70,11 +65,11 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
         final float cornerRadius = resources.getDimension(R.dimen.raised_item_corner_radius);
         setCornerRadii(cornerRadius);
 
-        final View divider = findViewById(R.id.item_trend_divider);
+        final View divider = findViewById(R.id.item_trend_feed_view_divider);
         this.dividerDrawable = ShimmerDividerDrawable.createTrendCardDivider(resources);
         divider.setBackground(dividerDrawable);
 
-        this.title = (TextView) findViewById(R.id.item_trend_title);
+        this.title = (TextView) findViewById(R.id.item_trend_feed_view_title);
         this.graphBinder = layout;
         this.annotationsLayout = new LinearLayout(getContext());
 
@@ -212,16 +207,6 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
             super(context);
             title.setText(getResources().getString(R.string.title_trends_welcome_back));
             message.setText(getResources().getString(R.string.message_trends_welcome_back));
-        }
-    }
-
-    static class ComingSoonCardView extends WelcomeCardView {
-        ComingSoonCardView(@NonNull final Context context,
-                           final int days) {
-            super(context);
-            title.setText(getResources().getString(R.string.title_trends_coming_soon));
-            final CharSequence styledText = Html.fromHtml(getResources().getQuantityString(R.plurals.message_trends_coming_soon, days, days + ""));
-            message.setText(styledText);
         }
     }
 

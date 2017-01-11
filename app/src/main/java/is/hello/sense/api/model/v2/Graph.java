@@ -53,15 +53,15 @@ public class Graph extends ApiResponse {
     private int quarterSections = 0;
 
     @VisibleForTesting
-    public Graph(@NonNull String title,
-                 @NonNull DataType dataType,
-                 @NonNull GraphType graphType) {
+    public Graph(@NonNull final String title,
+                 @NonNull final DataType dataType,
+                 @NonNull final GraphType graphType) {
         this.title = title;
         this.dataType = dataType;
         this.graphType = graphType;
     }
 
-    public Graph(Graph graph) {
+    public Graph(final Graph graph) {
         this.timeScale = graph.timeScale;
         this.title = graph.title;
         this.dataType = graph.dataType;
@@ -86,11 +86,11 @@ public class Graph extends ApiResponse {
             int sections = 0;
             final ArrayList<Graph> graphs = getQuarterGraphs();
             for (int i = 0; i < graphs.size(); i += 2) {
-                Graph quarterGraph = graphs.get(i);
+                final Graph quarterGraph = graphs.get(i);
                 sections += quarterGraph.getSections().size();
             }
             for (int i = 1; i < graphs.size(); i += 2) {
-                Graph quarterGraph = graphs.get(i);
+                final Graph quarterGraph = graphs.get(i);
                 quarterSections += quarterGraph.getSections().size();
             }
             if (sections > quarterSections) {
@@ -110,14 +110,14 @@ public class Graph extends ApiResponse {
      */
     public ArrayList<Graph> convertToQuarterGraphs() {
         final ArrayList<Graph> graphs = new ArrayList<>();
-        for (GraphSection graphSection : sections) {
+        for (final GraphSection graphSection : sections) {
             int offset = 0;
             if (graphSection.getTitles() != null && !graphSection.getTitles().isEmpty()) {
                 final String monthTitle = graphSection.getTitles().get(0);
                 try {
                     final int monthValue = DateFormatter.getMonthInt(monthTitle);
                     offset = DateFormatter.getFirstDayOfMonthValue(monthValue) - 1;
-                } catch (ParseException e) {
+                } catch (final ParseException e) {
                     Log.e(getClass().getName(), "Problem parsing month: " + e.getLocalizedMessage());
                 }
             }
@@ -157,7 +157,7 @@ public class Graph extends ApiResponse {
         return graphs;
     }
 
-    public void addSection(GraphSection section) {
+    public void addSection(final GraphSection section) {
         this.sections.add(section);
     }
 
@@ -177,9 +177,6 @@ public class Graph extends ApiResponse {
         return graphType;
     }
 
-    public boolean isGrid() {
-        return getGraphType() == GraphType.GRID;
-    }
 
     public float getMinValue() {
         return minValue;
@@ -193,15 +190,12 @@ public class Graph extends ApiResponse {
         return sections;
     }
 
-    public List<ConditionRange> getConditionRanges() {
-        return conditionRanges;
-    }
 
     public List<Annotation> getAnnotations() {
         return annotations;
     }
 
-    public Condition getConditionForValue(float value) {
+    public Condition getConditionForValue(final float value) {
         for (final ConditionRange conditionRange : conditionRanges) {
             if (value >= conditionRange.getMinValue() && value <= conditionRange.getMaxValue()) {
                 return conditionRange.getCondition();
@@ -209,6 +203,22 @@ public class Graph extends ApiResponse {
         }
 
         return Condition.UNKNOWN;
+    }
+
+    @SuppressWarnings("SimplifiableIfStatement")
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof Graph)) {
+            return false;
+        }
+        final Graph otherGraph = (Graph) obj;
+        if (title == null || !title.equals(otherGraph.title)) {
+            return false;
+        }
+        if (timeScale != otherGraph.timeScale) {
+            return false;
+        }
+        return minValue == otherGraph.minValue && maxValue == otherGraph.maxValue;
     }
 
     @Override
@@ -233,7 +243,7 @@ public class Graph extends ApiResponse {
         BAR,
         BUBBLES;
 
-        public static GraphType fromString(@Nullable String string) {
+        public static GraphType fromString(@Nullable final String string) {
             return Enums.fromString(string, values(), EMPTY);
         }
     }
@@ -243,7 +253,7 @@ public class Graph extends ApiResponse {
         SCORES,
         HOURS {
             @Override
-            public CharSequence renderAnnotation(@NonNull Annotation annotation) {
+            public CharSequence renderAnnotation(@NonNull final Annotation annotation) {
                 return Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue(), 1),
                                                      BarTrendGraphView.BarGraphDrawable.HOUR_SYMBOL,
                                                      Styles.UNIT_STYLE_SUBSCRIPT);
@@ -251,7 +261,7 @@ public class Graph extends ApiResponse {
         },
         PERCENTS {
             @Override
-            public CharSequence renderAnnotation(@NonNull Annotation annotation) {
+            public CharSequence renderAnnotation(@NonNull final Annotation annotation) {
                 return Styles.assembleReadingAndUnit(Styles.createTextValue(annotation.getValue() * 100, 0),
                                                      BubbleTrendGraphView.BubbleGraphDrawable.PERCENT_SYMBOL,
                                                      Styles.UNIT_STYLE_SUBSCRIPT);
@@ -262,11 +272,11 @@ public class Graph extends ApiResponse {
             return (this == SCORES);
         }
 
-        public CharSequence renderAnnotation(@NonNull Annotation annotation) {
+        public CharSequence renderAnnotation(@NonNull final Annotation annotation) {
             return Styles.createTextValue(annotation.getValue(), 0);
         }
 
-        public static DataType fromString(@Nullable String string) {
+        public static DataType fromString(@Nullable final String string) {
             return Enums.fromString(string, values(), NONE);
         }
     }
