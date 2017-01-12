@@ -39,8 +39,10 @@ import is.hello.sense.util.StateSafeExecutor;
 
 public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHolder>
         implements Player.OnEventListener {
-    @VisibleForTesting static final int VIEW_TYPE_SEGMENT = 1;
-    @VisibleForTesting static final int VIEW_TYPE_EVENT = 2;
+    @VisibleForTesting
+    static final int VIEW_TYPE_SEGMENT = 1;
+    @VisibleForTesting
+    static final int VIEW_TYPE_EVENT = 2;
 
     private static final float EVENT_SCALE_MIN = 0.9f;
     private static final float EVENT_SCALE_MAX = 1.0f;
@@ -61,10 +63,16 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
     private int[] segmentHeights;
 
     private boolean use24Time = false;
-    private @Nullable StateSafeExecutor onItemClickExecutor;
-    private @Nullable OnItemClickListener onItemClickListener;
+    private
+    @Nullable
+    StateSafeExecutor onItemClickExecutor;
+    private
+    @Nullable
+    OnItemClickListener onItemClickListener;
 
-    private @Nullable Player player;
+    private
+    @Nullable
+    Player player;
     private int playingPosition = RecyclerView.NO_POSITION;
 
 
@@ -212,6 +220,11 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
                                        @Nullable OnItemClickListener onItemClickListener) {
         this.onItemClickExecutor = onItemClickExecutor;
         this.onItemClickListener = onItemClickListener;
+    }
+
+    public void release() {
+        this.onItemClickExecutor = null;
+        this.onItemClickListener = null;
     }
 
     private void dispatchItemClick(@NonNull SegmentViewHolder holder) {
@@ -545,6 +558,7 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
 
     public interface OnItemClickListener {
         void onSegmentItemClicked(int position, View view, @NonNull TimelineEvent event);
+
         void onEventItemClicked(int position, @NonNull TimelineEvent event);
     }
 }

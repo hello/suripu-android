@@ -29,7 +29,6 @@ import is.hello.sense.mvp.util.ViewPagerPresenterChild;
 import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
 import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SenseBar;
 import is.hello.sense.util.Analytics;
@@ -337,7 +336,7 @@ public class TimelinePagerFragment extends InjectionFragment
         if (viewPager.getCurrentItem() == viewPagerAdapter.getLastNight()) {
             final Fragment fragment = viewPagerAdapter.getCurrentFragment();
             if (fragment instanceof TimelineFragment) {
-                ((TimelineFragment) fragment).scrollUp();
+                ((TimelineFragment) fragment).scrollToTop();
             }
         } else {
             jumpToLastNight(true);

@@ -50,7 +50,7 @@ import is.hello.sense.ui.dialogs.BottomAlertDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
-import is.hello.sense.ui.fragments.TimelineFragment;
+import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.ui.widget.graphing.drawables.SleepScoreIconDrawable;

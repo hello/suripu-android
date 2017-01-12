@@ -3,8 +3,6 @@ package is.hello.sense.ui.adapter;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.database.DataSetObserver;
-import android.os.Bundle;
-import android.os.Parcelable;
 
 import org.joda.time.DateTimeUtils;
 import org.joda.time.Days;
@@ -18,7 +16,7 @@ import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineBuilder;
 import is.hello.sense.graph.SenseTestCase;
-import is.hello.sense.ui.fragments.TimelineFragment;
+import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.PagerAdapterTesting;
