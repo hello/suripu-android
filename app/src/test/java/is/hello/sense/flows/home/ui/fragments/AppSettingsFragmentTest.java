@@ -1,23 +1,12 @@
 package is.hello.sense.flows.home.ui.fragments;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import is.hello.sense.graph.SenseTestCase;
+import is.hello.sense.FragmentTest;
 
-import static org.robolectric.util.FragmentTestUtil.startFragment;
+public class AppSettingsFragmentTest extends FragmentTest<AppSettingsFragment> {
 
-public class AppSettingsFragmentTest extends SenseTestCase {
-    AppSettingsFragment fragment;
-
-
-    @Before
-    public void setUp() throws Exception {
-        fragment = new AppSettingsFragment();
-        startFragment(fragment);
-        fragment = Mockito.spy(fragment);
-    }
 
     @Test
     public void onCreateCallsCorrectMethods() {

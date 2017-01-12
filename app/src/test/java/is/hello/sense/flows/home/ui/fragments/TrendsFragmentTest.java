@@ -1,31 +1,16 @@
 package is.hello.sense.flows.home.ui.fragments;
 
 
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.Timeout;
 import org.mockito.Mockito;
 
 
+import is.hello.sense.FragmentTest;
 import is.hello.sense.api.model.v2.Trends;
-import is.hello.sense.graph.SenseTestCase;
 
-import static org.robolectric.util.FragmentTestUtil.startFragment;
 
-public class TrendsFragmentTest extends SenseTestCase {
+public class TrendsFragmentTest extends FragmentTest<WeekTrendsFragment> {
 
-    @Rule
-    public Timeout globalTimeout = Timeout.seconds(10);
-
-    private TrendsFragment fragment;
-
-    @Before
-    public void setUp() throws Exception {
-        fragment = new WeekTrendsFragment();
-        startFragment(fragment);
-        fragment = Mockito.spy(fragment);
-    }
 
     @Test
     public void initializePresenterViewCallsCorrectMethods() {

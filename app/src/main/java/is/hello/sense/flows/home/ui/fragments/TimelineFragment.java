@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
@@ -70,6 +71,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     // !! Important: Do not use setTargetFragment on TimelineFragment.
     // It is not guaranteed to exist at the time of state restoration.
 
+    //region static
     private static final String ARG_DATE = TimelineFragment.class.getName() + ".ARG_DATE";
     private static final String ARG_CACHED_TIMELINE = TimelineFragment.class.getName() + ".ARG_CACHED_TIMELINE";
 
@@ -83,32 +85,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     private static final double TOOL_TIP_HEIGHT_MULTIPLIER = 3.25; // 3 for top+bottom+text height. .25 for a little white space.
 
 
-    @Inject
-    TimelineInteractor timelineInteractor;
-    @Inject
-    DateFormatter dateFormatter;
-    @Inject
-    PreferencesInteractor preferences;
-    @Inject
-    LocalUsageTracker localUsageTracker;
-    @Inject
-    LastNightInteractor lastNightInteractor;
-
-
-    private int toolTipHeight;
-    private
-    @Nullable
-    TutorialOverlayView tutorialOverlay;
-    private
-    @Nullable
-    WeakReference<Dialog> activeDialog;
-
-    private TimelineInfoOverlay infoOverlay;
-    private final ExternalStoragePermission externalStoragePermission = new ExternalStoragePermission(this);
-    private Parent parent;
-
-    //region Lifecycle
-
     public static TimelineFragment newInstance(@NonNull final LocalDate date,
                                                @Nullable final Timeline cachedTimeline) {
         final TimelineFragment fragment = new TimelineFragment();
@@ -121,10 +97,31 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         return fragment;
     }
 
-    public void setParent(@Nullable final Parent parent) {
-        this.parent = parent;
-    }
+    //endregion
 
+    @Inject
+    TimelineInteractor timelineInteractor;
+    @Inject
+    DateFormatter dateFormatter;
+    @Inject
+    PreferencesInteractor preferences;
+    @Inject
+    LocalUsageTracker localUsageTracker;
+    @Inject
+    LastNightInteractor lastNightInteractor;
+
+    @Nullable
+    private TutorialOverlayView tutorialOverlay;
+
+    @Nullable
+    private WeakReference<Dialog> activeDialog;
+
+    private TimelineInfoOverlay infoOverlay;
+    private final ExternalStoragePermission externalStoragePermission = new ExternalStoragePermission(this);
+    private Parent parent;
+    private int toolTipHeight;
+
+    //region PresenterFragment
     @Override
     public void initializePresenterView() {
         if (this.presenterView == null) {
@@ -190,33 +187,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         }
     }
 
-
-    private TimelineAdapter createAdapter() {
-        final TimelineAdapter timelineAdapter = new TimelineAdapter(getActivity(),
-                                                                    dateFormatter,
-                                                                    dateFormatter.formatAsTimelineDate(getDate()),
-                                                                    this::onHistoryIconClicked,
-                                                                    this::onShareIconClicked);
-        timelineAdapter.setOnItemClickListener(stateSafeExecutor, this);
-        return timelineAdapter;
-    }
-
-    private void bindIfNeeded() {
-        if (getView() != null && getUserVisibleHint() && !hasSubscriptions()) {
-            timelineInteractor.updateIfEmpty();
-
-            stateSafeExecutor.execute(presenterView::pulseHeaderView);
-
-            bindAndSubscribe(timelineInteractor.timeline,
-                             this::bindTimeline,
-                             this::timelineUnavailable);
-
-            bindAndSubscribe(preferences.observableUse24Time(),
-                             presenterView::setUse24Time,
-                             Functions.LOG_ERROR);
-        }
-    }
-
     @Override
     public void onTrimMemory(final int level) {
         super.onTrimMemory(level);
@@ -241,21 +211,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
                 return;
             }
             presenterView.renderTimeline(timeline);
-        }
-    }
-
-    public void dismissVisibleOverlaysAndDialogs() {
-        if (infoOverlay != null) {
-            infoOverlay.dismiss(false);
-        }
-
-        if (tutorialOverlay != null) {
-            tutorialOverlay.dismiss(false);
-        }
-
-        final Dialog activeDialog = Functions.extract(this.activeDialog);
-        if (activeDialog != null) {
-            activeDialog.dismiss();
         }
     }
 
@@ -296,7 +251,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     }
 
     //endregion
-
 
     //region Actions
     public void showTimelineNavigator(@NonNull final LocalDate date,
@@ -351,7 +305,54 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         startActivity(TimelineActivity.getInfoIntent(getActivity(), timeline));
     }
 
+
+    @VisibleForTesting
+    TimelineAdapter createAdapter() {
+        final TimelineAdapter timelineAdapter = new TimelineAdapter(getActivity(),
+                                                                    dateFormatter,
+                                                                    dateFormatter.formatAsTimelineDate(getDate()),
+                                                                    this::onHistoryIconClicked,
+                                                                    this::onShareIconClicked);
+        timelineAdapter.setOnItemClickListener(stateSafeExecutor, this);
+        return timelineAdapter;
+    }
+
+    private void bindIfNeeded() {
+        if (getView() != null && getUserVisibleHint() && !hasSubscriptions()) {
+            timelineInteractor.updateIfEmpty();
+
+            stateSafeExecutor.execute(presenterView::pulseHeaderView);
+
+            bindAndSubscribe(timelineInteractor.timeline,
+                             this::bindTimeline,
+                             this::timelineUnavailable);
+
+            bindAndSubscribe(preferences.observableUse24Time(),
+                             presenterView::setUse24Time,
+                             Functions.LOG_ERROR);
+        }
+    }
+
+    public void dismissVisibleOverlaysAndDialogs() {
+        if (infoOverlay != null) {
+            infoOverlay.dismiss(false);
+        }
+
+        if (tutorialOverlay != null) {
+            tutorialOverlay.dismiss(false);
+        }
+
+        final Dialog activeDialog = Functions.extract(this.activeDialog);
+        if (activeDialog != null) {
+            activeDialog.dismiss();
+        }
+    }
+
     //region Hooks
+
+    public void setParent(@Nullable final Parent parent) {
+        this.parent = parent;
+    }
 
     @SuppressWarnings("ConstantConditions")
     public
