@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -159,6 +160,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
         StaticCardLayout(@NonNull final Context context) {
             super(context);
             LayoutInflater.from(getContext()).inflate(R.layout.item_message_card, this);
+            setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             this.image = (ImageView) findViewById(R.id.item_message_card_image);
             this.title = (TextView) findViewById(R.id.item_message_card_title);
             this.message = (TextView) findViewById(R.id.item_message_card_message);
