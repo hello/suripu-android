@@ -3,8 +3,11 @@ package is.hello.sense;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -55,7 +58,7 @@ public abstract class FragmentTest<T extends PresenterFragment> {
         startFragmentAndSpy(startWithArgs());
     }
 
-    public void startFragmentAndSpy(@Nullable final Bundle args) {
+    private void startFragmentAndSpy(@Nullable final Bundle args) {
         fragment = getInstanceOfT();
         if (args != null) {
             fragment.setArguments(args);
@@ -67,7 +70,10 @@ public abstract class FragmentTest<T extends PresenterFragment> {
             startFragment(fragment, activityClass);
         }
         fragment = Mockito.spy(fragment);
+    }
 
+    protected final void spyOnPresenterView() {
+        fragment.presenterView = Mockito.spy(fragment.presenterView);
     }
 
     @Nullable
@@ -76,7 +82,7 @@ public abstract class FragmentTest<T extends PresenterFragment> {
     }
 
     @Nullable
-    protected Class<? extends Activity> activityCreatingFragment() {
+    protected Class<? extends FragmentTestActivity> activityCreatingFragment() {
         return null;
     }
 
@@ -84,6 +90,34 @@ public abstract class FragmentTest<T extends PresenterFragment> {
     public void fragmentIsntNull() {
         assertNotNull(fragment);
     }
+
+    //region lifecycle helpers
+
+    protected final void callOnCreate() {
+        fragment.onCreate(null);
+    }
+
+    protected final void callOnViewCreated() {
+        fragment.onViewCreated(Mockito.mock(View.class), null);
+    }
+
+    protected final void callOnResume() {
+        fragment.onResume();
+    }
+
+    protected final void callOnPause() {
+        fragment.onPause();
+    }
+
+    protected final void callOnDestroyView() {
+        fragment.onDestroyView();
+    }
+
+    protected final void callOnDetach() {
+        fragment.onDetach();
+    }
+
+    //endregion
 
 
     /**
@@ -102,6 +136,23 @@ public abstract class FragmentTest<T extends PresenterFragment> {
         modifiersField.setAccessible(true);
         modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
         field.set(objectWithField, newValue);
+    }
+
+    // Remember if you're extending class is an inner class it must be static
+    public static class FragmentTestActivity extends Activity {
+        public FragmentTestActivity() {
+            // Remember to leave an empty constructor
+        }
+
+        @Override
+        protected void onCreate(final Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            final LinearLayout view = new LinearLayout(this, null, 0);
+            @IdRes final int id = 1;
+            view.setId(id);
+            setContentView(view);
+        }
+
     }
 
 }

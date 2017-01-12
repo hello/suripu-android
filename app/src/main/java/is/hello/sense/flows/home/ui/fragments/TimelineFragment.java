@@ -118,8 +118,12 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
     private TimelineInfoOverlay infoOverlay;
     private final ExternalStoragePermission externalStoragePermission = new ExternalStoragePermission(this);
-    private Parent parent;
-    private int toolTipHeight;
+
+    @VisibleForTesting
+    Parent parent;
+
+    @VisibleForTesting
+    int toolTipHeight;
 
     //region PresenterFragment
     @Override
@@ -130,6 +134,25 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
                                                   createAdapter(),
                                                   new ScrollListener(),
                                                   this::showBreakdown);
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (presenterView == null) {
+            return;
+        }
+        if (isVisibleToUser) {
+            // For all subsequent fragments running below Nougat
+            // setUserVisibleHint called before attached to activity
+            // not a reliable way to determine current view pager fragment
+            bindIfNeeded();
+            this.presenterView.setAnimationEnabled(true);
+        } else {
+            this.presenterView.setAnimationEnabled(false);
+            dismissVisibleOverlaysAndDialogs();
+            this.presenterView.clearHeader();
         }
     }
 
@@ -166,25 +189,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
                                                               getResources().getDisplayMetrics()) * TOOL_TIP_HEIGHT_MULTIPLIER);
         // For the first fragment
         bindIfNeeded();
-    }
-
-    @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (presenterView == null) {
-            return;
-        }
-        if (isVisibleToUser) {
-            // For all subsequent fragments running below Nougat
-            // setUserVisibleHint called before attached to activity
-            // not a reliable way to determine current view pager fragment
-            bindIfNeeded();
-            this.presenterView.setAnimationEnabled(true);
-        } else {
-            this.presenterView.setAnimationEnabled(false);
-            dismissVisibleOverlaysAndDialogs();
-            this.presenterView.clearHeader();
-        }
     }
 
     @Override
@@ -234,7 +238,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         }
         if (requestCode == REQUEST_CODE_CHANGE_SRC) {
             timelineInteractor.update();
-        } else if (requestCode == ZOOMED_OUT_TIMELINE_REQUEST) {
+        } else if (requestCode == ZOOMED_OUT_TIMELINE_REQUEST && data != null) {
             final LocalDate date = (LocalDate) data.getSerializableExtra(TimelineActivity.EXTRA_LOCAL_DATE);
             final Timeline timeline = (Timeline) data.getSerializableExtra(TimelineActivity.EXTRA_TIMELINE);
             parent.jumpTo(date, timeline);
@@ -300,8 +304,8 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
     //endregion
 
-    @NotTested
-    public void showBreakDown(@NonNull final Timeline timeline) {
+    @VisibleForTesting
+    void showBreakDown(@NonNull final Timeline timeline) {
         startActivity(TimelineActivity.getInfoIntent(getActivity(), timeline));
     }
 
@@ -317,7 +321,8 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         return timelineAdapter;
     }
 
-    private void bindIfNeeded() {
+    @VisibleForTesting
+    void bindIfNeeded() {
         if (getView() != null && getUserVisibleHint() && !hasSubscriptions()) {
             timelineInteractor.updateIfEmpty();
 
