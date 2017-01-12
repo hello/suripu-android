@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,8 +20,11 @@ import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
+import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.adapter.TimelineAdapter;
+import is.hello.sense.ui.handholding.Tutorial;
+import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.recycler.ExtendedItemAnimator;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.recycler.StaggeredFadeItemAnimator;
@@ -39,6 +43,8 @@ public class TimelineView extends PresenterView {
     private final StaggeredFadeItemAnimator itemAnimator;
     private final ColorDrawableCompat backgroundFill;
     private final RecyclerView.OnScrollListener scrollListener;
+    @Nullable
+    private TutorialOverlayView tutorialOverlay;
 
     public TimelineView(@NonNull final Activity activity,
                         @NonNull final AnimatorContext animatorContext,
@@ -93,10 +99,30 @@ public class TimelineView extends PresenterView {
         this.recyclerView.clearOnScrollListeners();
         this.recyclerView.setAdapter(null);
         this.adapter.release();
+
+        if (this.tutorialOverlay != null) {
+            this.tutorialOverlay.dismiss(false);
+            this.tutorialOverlay = null;
+        }
     }
     //endregion
 
     //region methods
+
+    public void showTutorial(@NonNull final Activity activity,
+                             @NonNull final TimelineFragment.Parent parent,
+                             @NonNull final Tutorial tutorial) {
+        if (this.tutorialOverlay != null) {
+            return;
+        }
+
+        this.tutorialOverlay = new TutorialOverlayView(activity, tutorial);
+        this.tutorialOverlay.setOnDismiss(() -> this.tutorialOverlay = null);
+        this.tutorialOverlay.setAnchorContainer(activity.findViewById(parent.getTutorialContainerIdRes()));
+        this.tutorialOverlay.show(parent.getTutorialContainerIdRes());
+    }
+
+
     public void setAnimationEnabled(final boolean enabled) {
         if (enabled) {
             this.itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, true);
@@ -132,11 +158,11 @@ public class TimelineView extends PresenterView {
     public void bindTimelineToHeader(@NonNull final Timeline timeline,
                                      @NonNull final Runnable backgroundAnimations,
                                      @NonNull final Runnable adapterAnimations) {
-        headerView.bindTimeline(timeline, backgroundAnimations, adapterAnimations);
+        this.headerView.bindTimeline(timeline, backgroundAnimations, adapterAnimations);
     }
 
     public void bindEventsToTimeline(@NonNull final ArrayList<TimelineEvent> events) {
-        adapter.bindEvents(events);
+        this.adapter.bindEvents(events);
     }
 
     public void setHeaderScoreEnabled(final boolean enabled) {
@@ -145,8 +171,8 @@ public class TimelineView extends PresenterView {
     }
 
     public void renderTimeline(@NonNull final Timeline timeline) {
-        backgroundFill.setColor(ContextCompat.getColor(getContext(), R.color.timeline_background_fill));
-        headerView.bindTimeline(timeline);
+        this.backgroundFill.setColor(ContextCompat.getColor(getContext(), R.color.timeline_background_fill));
+        this.headerView.bindTimeline(timeline);
         bindEventsToTimeline(timeline.getEvents());
     }
 
@@ -163,11 +189,11 @@ public class TimelineView extends PresenterView {
     }
 
     public void startBackgroundFade(final int targetColor) {
-        backgroundFill.colorAnimator(targetColor).start();
+        this.backgroundFill.colorAnimator(targetColor).start();
     }
 
     public boolean adapterHasEvents() {
-        return adapter.hasEvents();
+        return this.adapter.hasEvents();
     }
 
     public void scrollForSpace(@NonNull final TimelineAdapter.OnItemClickListener itemClickListener,
@@ -236,7 +262,7 @@ public class TimelineView extends PresenterView {
 
     private ExtendedItemAnimator.Listener createListener() {
         return new ExtendedItemAnimator.Listener() {
-            final Animator crossFade = backgroundFill.colorAnimator(ContextCompat.getColor(getContext(), R.color.background_timeline));
+            final Animator crossFade = TimelineView.this.backgroundFill.colorAnimator(ContextCompat.getColor(getContext(), R.color.background_timeline));
 
             @Override
             public void onItemAnimatorWillStart(@NonNull final AnimatorContext.Transaction transaction) {
@@ -248,7 +274,7 @@ public class TimelineView extends PresenterView {
                 if (!finished) {
                     crossFade.cancel();
                 }
-                itemAnimator.removeListener(this);
+                TimelineView.this.itemAnimator.removeListener(this);
             }
 
         };

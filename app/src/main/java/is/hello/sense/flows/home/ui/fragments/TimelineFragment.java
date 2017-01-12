@@ -49,7 +49,6 @@ import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
-import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.StaggeredFadeItemAnimator;
 import is.hello.sense.ui.widget.LoadingView;
@@ -62,7 +61,6 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
-import is.hello.sense.util.NotTested;
 import is.hello.sense.util.Share;
 import rx.Observable;
 
@@ -111,9 +109,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     LastNightInteractor lastNightInteractor;
 
     @Nullable
-    private TutorialOverlayView tutorialOverlay;
-
-    @Nullable
     private WeakReference<Dialog> activeDialog;
 
     private TimelineInfoOverlay infoOverlay;
@@ -140,7 +135,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     @Override
     public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (presenterView == null) {
+        if (this.presenterView == null) {
             return;
         }
         if (isVisibleToUser) {
@@ -159,11 +154,11 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     @Override
     public void onAttach(@NonNull final Activity activity) {
         super.onAttach(activity);
-        if (activity instanceof Parent && parent == null) {
+        if (activity instanceof Parent && this.parent == null) {
             setParent((Parent) activity);
-        } else if (activity instanceof ParentProvider && parent == null) {
+        } else if (activity instanceof ParentProvider && this.parent == null) {
             setParent(((ParentProvider) activity).getTimelineParent());
-        } else if (parent == null) {
+        } else if (this.parent == null) {
             throw new IllegalStateException("A parent is required to control TimelineFragment");
         }
     }
@@ -177,8 +172,8 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE, properties);
 
 
-        timelineInteractor.setDateWithTimeline(date, getCachedTimeline());
-        addInteractor(timelineInteractor);
+        this.timelineInteractor.setDateWithTimeline(date, getCachedTimeline());
+        addInteractor(this.timelineInteractor);
     }
 
     @Override
@@ -196,7 +191,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         super.onTrimMemory(level);
 
         if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
-            presenterView.destroySoundPlayer();
+            this.presenterView.destroySoundPlayer();
         }
     }
 
@@ -204,17 +199,17 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     public void onPause() {
         super.onPause();
 
-        if (infoOverlay != null) {
-            infoOverlay.dismiss(false);
+        if (this.infoOverlay != null) {
+            this.infoOverlay.dismiss(false);
         }
 
-        presenterView.stopSoundPlayer();
-        if (timelineInteractor.hasValidTimeline()) {
-            final Timeline timeline = timelineInteractor.timeline.getValue();
+        this.presenterView.stopSoundPlayer();
+        if (this.timelineInteractor.hasValidTimeline()) {
+            final Timeline timeline = this.timelineInteractor.timeline.getValue();
             if (timeline == null) {
                 return;
             }
-            presenterView.renderTimeline(timeline);
+            this.presenterView.renderTimeline(timeline);
         }
     }
 
@@ -227,7 +222,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     @Override
     public void onDetach() {
         super.onDetach();
-        parent = null;
+        this.parent = null;
     }
 
     @Override
@@ -237,11 +232,11 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             return;
         }
         if (requestCode == REQUEST_CODE_CHANGE_SRC) {
-            timelineInteractor.update();
+            this.timelineInteractor.update();
         } else if (requestCode == ZOOMED_OUT_TIMELINE_REQUEST && data != null) {
             final LocalDate date = (LocalDate) data.getSerializableExtra(TimelineActivity.EXTRA_LOCAL_DATE);
             final Timeline timeline = (Timeline) data.getSerializableExtra(TimelineActivity.EXTRA_TIMELINE);
-            parent.jumpTo(date, timeline);
+            this.parent.jumpTo(date, timeline);
         }
     }
 
@@ -277,11 +272,11 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     public void share() {
         Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
 
-        if (infoOverlay != null) {
-            infoOverlay.dismiss(false);
+        if (this.infoOverlay != null) {
+            this.infoOverlay.dismiss(false);
         }
 
-        bindAndSubscribe(timelineInteractor.latest(),
+        bindAndSubscribe(this.timelineInteractor.latest(),
                          timeline -> {
                              final Bitmap screenShot = TimelineImageGenerator.createShareableTimeline(getActivity(), timeline);
                              if (screenShot == null) {
@@ -294,10 +289,10 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     }
 
     public void showBreakdown(@NonNull final View sender) {
-        if (infoOverlay != null) {
-            infoOverlay.dismiss(false);
+        if (this.infoOverlay != null) {
+            this.infoOverlay.dismiss(false);
         }
-        bindAndSubscribe(timelineInteractor.latest(),
+        bindAndSubscribe(this.timelineInteractor.latest(),
                          this::showBreakDown,
                          Functions.LOG_ERROR);
     }
@@ -313,38 +308,34 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     @VisibleForTesting
     TimelineAdapter createAdapter() {
         final TimelineAdapter timelineAdapter = new TimelineAdapter(getActivity(),
-                                                                    dateFormatter,
-                                                                    dateFormatter.formatAsTimelineDate(getDate()),
+                                                                    this.dateFormatter,
+                                                                    this.dateFormatter.formatAsTimelineDate(getDate()),
                                                                     this::onHistoryIconClicked,
                                                                     this::onShareIconClicked);
-        timelineAdapter.setOnItemClickListener(stateSafeExecutor, this);
+        timelineAdapter.setOnItemClickListener(this.stateSafeExecutor, this);
         return timelineAdapter;
     }
 
     @VisibleForTesting
     void bindIfNeeded() {
         if (getView() != null && getUserVisibleHint() && !hasSubscriptions()) {
-            timelineInteractor.updateIfEmpty();
+            this.timelineInteractor.updateIfEmpty();
 
-            stateSafeExecutor.execute(presenterView::pulseHeaderView);
+            this.stateSafeExecutor.execute(this.presenterView::pulseHeaderView);
 
-            bindAndSubscribe(timelineInteractor.timeline,
+            bindAndSubscribe(this.timelineInteractor.timeline,
                              this::bindTimeline,
                              this::timelineUnavailable);
 
-            bindAndSubscribe(preferences.observableUse24Time(),
-                             presenterView::setUse24Time,
+            bindAndSubscribe(this.preferences.observableUse24Time(),
+                             this.presenterView::setUse24Time,
                              Functions.LOG_ERROR);
         }
     }
 
     public void dismissVisibleOverlaysAndDialogs() {
-        if (infoOverlay != null) {
-            infoOverlay.dismiss(false);
-        }
-
-        if (tutorialOverlay != null) {
-            tutorialOverlay.dismiss(false);
+        if (this.infoOverlay != null) {
+            this.infoOverlay.dismiss(false);
         }
 
         final Dialog activeDialog = Functions.extract(this.activeDialog);
@@ -390,25 +381,17 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
     //region Handholding
 
-    private void showTutorial(@NonNull final Tutorial tutorial) {
-        if (tutorialOverlay != null && parent != null) {
-            return;
-        }
-
-        this.tutorialOverlay = new TutorialOverlayView(getActivity(), tutorial);
-        tutorialOverlay.setOnDismiss(() -> this.tutorialOverlay = null);
-        tutorialOverlay.setAnchorContainer(getActivity().findViewById(parent.getTutorialContainerIdRes()));
-        tutorialOverlay.show(parent.getTutorialContainerIdRes());
-    }
 
     private void showHandholdingIfAppropriate() {
-        if (parent == null ||
+        if (this.parent == null ||
                 WelcomeDialogFragment.isAnyVisible(getActivity())) {
             return;
         }
 
         if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity())) {
-            showTutorial(Tutorial.SWIPE_TIMELINE);
+            presenterView.showTutorial(getActivity(),
+                                       parent,
+                                       Tutorial.SWIPE_TIMELINE);
         }
     }
 
@@ -530,8 +513,8 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
     @Override
     public void onEventItemClicked(final int eventPosition, @NonNull final TimelineEvent event) {
-        if (infoOverlay != null) {
-            infoOverlay.dismiss(true);
+        if (this.infoOverlay != null) {
+            this.infoOverlay.dismiss(true);
         }
 
         if (event.hasActions()) {
@@ -628,14 +611,14 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         final DateTime initialTime = event.getShiftedTimestamp();
         final RotaryTimePickerDialog.OnTimeSetListener listener = (hourOfDay, minuteOfHour) -> {
             final LocalTime newTime = new LocalTime(hourOfDay, minuteOfHour, 0);
-            stateSafeExecutor.execute(() -> completeAdjustTime(event, newTime));
+            this.stateSafeExecutor.execute(() -> completeAdjustTime(event, newTime));
         };
         final RotaryTimePickerDialog timePicker = new RotaryTimePickerDialog(
                 getActivity(),
                 listener,
                 initialTime.getHourOfDay(),
                 initialTime.getMinuteOfHour(),
-                preferences.getUse24Time()
+                this.preferences.getUse24Time()
         );
         timePicker.show();
 
@@ -647,9 +630,9 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
                                                                                 getString(R.string.dialog_loading_message),
                                                                                 LoadingDialogFragment.OPAQUE_BACKGROUND);
         dialogFragment.setDismissMessage(R.string.title_thank_you);
-        bindAndSubscribe(timelineInteractor.amendEventTime(event, newTime),
+        bindAndSubscribe(this.timelineInteractor.amendEventTime(event, newTime),
                          ignored -> {
-                             lastNightInteractor.update();
+                             this.lastNightInteractor.update();
                              LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), null);
                          },
                          e -> {
@@ -679,8 +662,8 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     private class ScrollListener extends RecyclerView.OnScrollListener {
         @Override
         public void onScrollStateChanged(final RecyclerView recyclerView, final int newState) {
-            if (newState != RecyclerView.SCROLL_STATE_IDLE && infoOverlay != null) {
-                infoOverlay.dismiss(false);
+            if (newState != RecyclerView.SCROLL_STATE_IDLE && TimelineFragment.this.infoOverlay != null) {
+                TimelineFragment.this.infoOverlay.dismiss(false);
             }
         }
 
