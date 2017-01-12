@@ -74,7 +74,7 @@ public final class ViewPagerPresenterView extends PresenterView {
         this.viewPager.setEnabled(true);
 
         // TabLayout
-        tabLayout.removeAllTabs();
+        this.tabLayout.removeAllTabs();
         for (final StaticFragmentAdapter.Item item : items) {
             this.tabLayout.addTab(this.tabLayout.newTab().setText(item.getTitle()));
         }
@@ -86,39 +86,39 @@ public final class ViewPagerPresenterView extends PresenterView {
     }
 
     public void setTabLayoutVisible(final boolean visible) {
-        tabLayout.setVisibility(visible ? VISIBLE : GONE);
+        this.tabLayout.setVisibility(visible ? VISIBLE : GONE);
     }
 
     public void lockViewPager(final int position) {
-        viewPager.setScrollingEnabled(false);
-        viewPager.setCurrentItem(position);
+        this.viewPager.setScrollingEnabled(false);
+        this.viewPager.setCurrentItem(position);
     }
 
     public void unlockViewPager() {
-        viewPager.setScrollingEnabled(true);
+        this.viewPager.setScrollingEnabled(true);
     }
 
     public void removeTabs() {
-        tabLayout.removeAllTabs();
+        this.tabLayout.removeAllTabs();
         setTabLayoutVisible(false);
     }
 
     public void addViewPagerListener(final ViewPager.OnPageChangeListener listener) {
-        viewPager.addOnPageChangeListener(listener);
+        this.viewPager.addOnPageChangeListener(listener);
     }
 
     public void removeViewPagerListener(final ViewPager.OnPageChangeListener listener) {
-        viewPager.removeOnPageChangeListener(listener);
+        this.viewPager.removeOnPageChangeListener(listener);
     }
 
     @Nullable
     public Fragment getFragmentWithIndex(@NonNull final FragmentManager fragmentManager,
-                                         final int index){
-        return fragmentManager.findFragmentByTag("android:switcher:" + R.id.view_view_pager_extended_view_pager + ":"+index);
+                                         final int index) {
+        return fragmentManager.findFragmentByTag("android:switcher:" + R.id.view_view_pager_extended_view_pager + ":" + index);
     }
 
     public int getCurrentFragmentPosition() {
-        return viewPager.getCurrentItem();
+        return this.viewPager.getCurrentItem();
     }
     //endregion
 
@@ -145,23 +145,23 @@ public final class ViewPagerPresenterView extends PresenterView {
     public void updateFab(final @DrawableRes int resource,
                           final @Nullable View.OnClickListener listener) {
         this.setFabLoading(false);
-        fab.setOnClickListener(listener);
-        fab.setImageResource(resource);
+        this.fab.setOnClickListener(listener);
+        this.fab.setImageResource(resource);
     }
 
     public void setFabLoading(final boolean loading) {
-        fab.setClickable(!loading);
-        fab.setLongClickable(!loading);
-        fab.setFocusable(!loading);
+        this.fab.setClickable(!loading);
+        this.fab.setLongClickable(!loading);
+        this.fab.setFocusable(!loading);
         if (loading) {
-            fab.setOnClickListener(null);
-            fab.setImageResource(R.drawable.sound_loading_icon);
-            final Animation currentAnimation = fab.getAnimation();
+            this.fab.setOnClickListener(null);
+            this.fab.setImageResource(R.drawable.sound_loading_icon);
+            final Animation currentAnimation = this.fab.getAnimation();
             if (!(fabLoadingAnimation.equals(currentAnimation) && currentAnimation.hasStarted())) {
-                fab.startAnimation(fabLoadingAnimation);
+                this.fab.startAnimation(fabLoadingAnimation);
             }
         } else {
-            fab.clearAnimation();
+            this.fab.clearAnimation();
         }
     }
     //endregion

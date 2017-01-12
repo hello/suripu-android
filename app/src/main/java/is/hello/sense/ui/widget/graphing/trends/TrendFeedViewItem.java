@@ -8,10 +8,10 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.text.Html;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -48,17 +48,10 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
         return new WelcomeBackCardView(context);
     }
 
-    public static ComingSoonCardView createComingSoonCard(@NonNull final Context context,
-                                                          final int days) {
-        return new ComingSoonCardView(context, days);
-    }
-
-    public TrendFeedViewItem(@NonNull final TrendGraphLayout layout,
-                             final boolean topMargin,
-                             final boolean bottomMargin) {
+    public TrendFeedViewItem(@NonNull final TrendGraphLayout layout) {
         super(layout.getContext());
 
-        LayoutInflater.from(getContext()).inflate(R.layout.item_trend, this);
+        LayoutInflater.from(getContext()).inflate(R.layout.item_trend_feed_view, this);
 
         setOrientation(VERTICAL);
         setBackgroundResource(R.drawable.raised_item_normal);
@@ -66,26 +59,17 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
         final Resources resources = getResources();
         final int padding = resources.getDimensionPixelSize(R.dimen.gap_card_content);
         setPadding(padding, 0, padding, padding);
-
-        final LayoutParams myLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
-                                                             LayoutParams.WRAP_CONTENT);
-        final int margin = resources.getDimensionPixelSize(R.dimen.x1);
-        if (topMargin) {
-            myLayoutParams.topMargin = margin;
-        }
-        if (bottomMargin) {
-            myLayoutParams.bottomMargin = margin;
-        }
-        setLayoutParams(myLayoutParams);
+        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
+                                         LayoutParams.WRAP_CONTENT));
 
         final float cornerRadius = resources.getDimension(R.dimen.raised_item_corner_radius);
         setCornerRadii(cornerRadius);
 
-        final View divider = findViewById(R.id.item_trend_divider);
+        final View divider = findViewById(R.id.item_trend_feed_view_divider);
         this.dividerDrawable = ShimmerDividerDrawable.createTrendCardDivider(resources);
         divider.setBackground(dividerDrawable);
 
-        this.title = (TextView) findViewById(R.id.item_trend_title);
+        this.title = (TextView) findViewById(R.id.item_trend_feed_view_title);
         this.graphBinder = layout;
         this.annotationsLayout = new LinearLayout(getContext());
 
@@ -175,12 +159,12 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
 
         StaticCardLayout(@NonNull final Context context) {
             super(context);
-            final View view = LayoutInflater.from(getContext()).inflate(R.layout.item_message_card, this);
+            LayoutInflater.from(getContext()).inflate(R.layout.item_message_card, this);
+            setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             this.image = (ImageView) findViewById(R.id.item_message_card_image);
             this.title = (TextView) findViewById(R.id.item_message_card_title);
             this.message = (TextView) findViewById(R.id.item_message_card_message);
             this.action = (Button) findViewById(R.id.item_message_card_action);
-            view.setPadding(0, getContext().getResources().getDimensionPixelSize(R.dimen.x1), 0, 0);
         }
     }
 
@@ -224,16 +208,6 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
             super(context);
             title.setText(getResources().getString(R.string.title_trends_welcome_back));
             message.setText(getResources().getString(R.string.message_trends_welcome_back));
-        }
-    }
-
-    static class ComingSoonCardView extends WelcomeCardView {
-        ComingSoonCardView(@NonNull final Context context,
-                           final int days) {
-            super(context);
-            title.setText(getResources().getString(R.string.title_trends_coming_soon));
-            final CharSequence styledText = Html.fromHtml(getResources().getQuantityString(R.plurals.message_trends_coming_soon, days, days + ""));
-            message.setText(styledText);
         }
     }
 
