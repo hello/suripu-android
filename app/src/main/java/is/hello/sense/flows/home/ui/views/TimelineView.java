@@ -141,6 +141,7 @@ public class TimelineView extends PresenterView {
 
     public void setHeaderScoreEnabled(final boolean enabled) {
         this.headerView.setScoreClickEnabled(enabled);
+        this.adapter.showShareIcon(enabled);
     }
 
     public void renderTimeline(@NonNull final Timeline timeline) {
@@ -203,11 +204,11 @@ public class TimelineView extends PresenterView {
             this.backgroundFill.setColor(ContextCompat.getColor(getContext(), R.color.background_timeline));
         }
         this.headerView.stopPulsing();
-        this.adapter.replaceHeader(0, newHeader);
+        this.adapter.replaceHeader(TimelineAdapter.CONTENT_START_POSITION, newHeader);
     }
 
     public void transitionOutOfNoDataState() {
-        if (this.adapter.getHeaderAt(0) == this.headerView) {
+        if (this.adapter.getHeaderAt(TimelineAdapter.CONTENT_START_POSITION) == this.headerView) {
             return;
         }
 
@@ -217,7 +218,7 @@ public class TimelineView extends PresenterView {
                                                        .withDuration(Anime.DURATION_NORMAL));
 
 
-        this.adapter.replaceHeader(0, this.headerView);
+        this.adapter.replaceHeader(TimelineAdapter.CONTENT_START_POSITION, this.headerView);
 
         this.headerView.setBackgroundSolid(false, 0);
         this.headerView.startPulsing();
@@ -229,9 +230,10 @@ public class TimelineView extends PresenterView {
         });
     }
 
-    public boolean isAnimating(){
+    public boolean isAnimating() {
         return itemAnimator.isRunning();
     }
+
     private ExtendedItemAnimator.Listener createListener() {
         return new ExtendedItemAnimator.Listener() {
             final Animator crossFade = backgroundFill.colorAnimator(ContextCompat.getColor(getContext(), R.color.background_timeline));

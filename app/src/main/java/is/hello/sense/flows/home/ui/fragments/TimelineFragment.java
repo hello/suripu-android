@@ -75,6 +75,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
     private static final int REQUEST_CODE_CHANGE_SRC = 0x50;
 
+    public static final int ZOOMED_OUT_TIMELINE_REQUEST = 101;
     private static final int ID_EVENT_CORRECT = 0;
     private static final int ID_EVENT_ADJUST_TIME = 1;
     private static final int ID_EVENT_REMOVE = 2;
@@ -189,8 +190,13 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         }
     }
 
+
     private TimelineAdapter createAdapter() {
-        final TimelineAdapter timelineAdapter = new TimelineAdapter(getActivity(), dateFormatter);
+        final TimelineAdapter timelineAdapter = new TimelineAdapter(getActivity(),
+                                                                    dateFormatter,
+                                                                    dateFormatter.formatAsTimelineDate(getDate()),
+                                                                    this::onHistoryIconClicked,
+                                                                    this::onShareIconClicked);
         timelineAdapter.setOnItemClickListener(stateSafeExecutor, this);
         return timelineAdapter;
     }
@@ -268,9 +274,15 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CODE_CHANGE_SRC && resultCode == Activity.RESULT_OK) {
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+        if (requestCode == REQUEST_CODE_CHANGE_SRC) {
             timelineInteractor.update();
+        } else if (requestCode == ZOOMED_OUT_TIMELINE_REQUEST) {
+            final LocalDate date = (LocalDate) data.getSerializableExtra(TimelineActivity.EXTRA_LOCAL_DATE);
+            final Timeline timeline = (Timeline) data.getSerializableExtra(TimelineActivity.EXTRA_TIMELINE);
+            parent.jumpTo(date, timeline);
         }
     }
 
@@ -281,13 +293,28 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         } else {
             externalStoragePermission.showEnableInstructionsDialog();
         }
-
     }
 
     //endregion
 
 
     //region Actions
+    public void showTimelineNavigator(@NonNull final LocalDate date,
+                                      @Nullable final Timeline timeline) {
+        startActivityForResult(TimelineActivity.getZoomedOutIntent(getActivity(),
+                                                                   date,
+                                                                   timeline),
+                               ZOOMED_OUT_TIMELINE_REQUEST);
+    }
+
+    private void onShareIconClicked(final View ignored) {
+        share();
+    }
+
+    private void onHistoryIconClicked(final View ignored) {
+        dismissVisibleOverlaysAndDialogs();
+        showTimelineNavigator(getDate(), getCachedTimeline());
+    }
 
     public void share() {
         Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
@@ -405,7 +432,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             final Runnable backgroundAnimations = this.stateSafeExecutor.bind(() -> {
                 final int targetColor = ContextCompat.getColor(getActivity(), R.color.timeline_background_fill);
                 this.presenterView.startBackgroundFade(targetColor);
-                this.parent.setShareVisible(true);
             });
             final Runnable adapterAnimations = this.stateSafeExecutor.bind(() -> {
                 this.presenterView.addItemAnimatorListener(new HandholdingOneShotListener());
@@ -416,7 +442,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             this.localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.TIMELINE_SHOWN_WITH_DATA);
         } else {
             this.presenterView.transitionIntoNoDataState((header -> {
-                this.parent.setShareVisible(false);
                 // Indicates on-boarding just ended
                 final LocalDate creationDate =
                         this.preferences.getLocalDate(PreferencesInteractor.ACCOUNT_CREATION_DATE);
@@ -427,8 +452,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
                     header.setTitle(R.string.title_timeline_first_night);
                     header.setMessage(R.string.message_timeline_first_night);
                     header.setAction(R.string.action_timeline_bad_data_support, null);
-                    this.parent.updateTitle(getString(R.string.action_last_night));
-
                 } else if (timeline.getScoreCondition() == ScoreCondition.INCOMPLETE) {
                     header.setDiagramResource(R.drawable.timeline_state_not_enough_data);
                     header.setTitle(R.string.title_timeline_not_enough_data);
@@ -687,7 +710,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
 
     public interface Parent {
-        void updateTitle(@NonNull final String title);
 
         @IdRes
         int getTutorialContainerIdRes();
@@ -695,12 +717,12 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         @IdRes
         int getTooltipOverlayContainerIdRes();
 
-        void setShareVisible(boolean visible);
-
         /**
          * Used to return to Last Night timeline when needed
          */
         void jumpToLastNight();
+
+        void jumpTo(@NonNull final LocalDate date, @Nullable final Timeline timeline);
 
     }
 
