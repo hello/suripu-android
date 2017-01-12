@@ -1,27 +1,20 @@
 package is.hello.sense.flows.home.ui.fragments;
 
-import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ComponentCallbacks2;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +28,6 @@ import java.lang.ref.WeakReference;
 
 import javax.inject.Inject;
 
-import is.hello.go99.Anime;
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
@@ -58,17 +50,12 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
-import is.hello.sense.ui.recycler.ExtendedItemAnimator;
-import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.recycler.StaggeredFadeItemAnimator;
 import is.hello.sense.ui.widget.LoadingView;
 import is.hello.sense.ui.widget.RotaryTimePickerDialog;
 import is.hello.sense.ui.widget.SenseBottomSheet;
-import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
-import is.hello.sense.ui.widget.timeline.TimelineHeaderView;
 import is.hello.sense.ui.widget.timeline.TimelineImageGenerator;
 import is.hello.sense.ui.widget.timeline.TimelineInfoOverlay;
-import is.hello.sense.ui.widget.timeline.TimelineNoDataHeaderView;
 import is.hello.sense.ui.widget.util.Dialogs;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -77,7 +64,6 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.NotTested;
 import is.hello.sense.util.Share;
 import rx.Observable;
-import rx.functions.Action1;
 
 public class TimelineFragment extends PresenterFragment<TimelineView>
         implements TimelineAdapter.OnItemClickListener {
