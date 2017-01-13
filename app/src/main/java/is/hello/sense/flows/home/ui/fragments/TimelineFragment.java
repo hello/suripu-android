@@ -320,18 +320,22 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
     @VisibleForTesting
     void bindIfNeeded() {
-        if (getView() != null && getUserVisibleHint() && !hasSubscriptions()) {
-            this.timelineInteractor.updateIfEmpty();
+        if (getView() != null && getUserVisibleHint()) {
+            if (!hasSubscriptions()) {
+                this.timelineInteractor.updateIfEmpty();
 
-            this.stateSafeExecutor.execute(this.presenterView::pulseHeaderView);
+                this.stateSafeExecutor.execute(this.presenterView::pulseHeaderView);
 
-            bindAndSubscribe(this.timelineInteractor.timeline,
-                             this::bindTimeline,
-                             this::timelineUnavailable);
+                bindAndSubscribe(this.timelineInteractor.timeline,
+                                 this::bindTimeline,
+                                 this::timelineUnavailable);
 
-            bindAndSubscribe(this.preferences.observableUse24Time(),
-                             this.presenterView::setUse24Time,
-                             Functions.LOG_ERROR);
+                bindAndSubscribe(this.preferences.observableUse24Time(),
+                                 this.presenterView::setUse24Time,
+                                 Functions.LOG_ERROR);
+            } else if (this.presenterView.inNoDataState()) {
+                update();
+            }
         }
     }
 

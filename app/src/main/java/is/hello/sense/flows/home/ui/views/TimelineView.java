@@ -108,6 +108,9 @@ public class TimelineView extends PresenterView {
     //endregion
 
     //region methods
+    public boolean inNoDataState() {
+        return this.adapter.getHeaderAt(TimelineAdapter.CONTENT_START_POSITION) != this.headerView;
+    }
 
     public void showTutorial(@NonNull final Activity activity,
                              @NonNull final TimelineFragment.Parent parent,
@@ -234,10 +237,9 @@ public class TimelineView extends PresenterView {
     }
 
     public void transitionOutOfNoDataState() {
-        if (this.adapter.getHeaderAt(TimelineAdapter.CONTENT_START_POSITION) == this.headerView) {
+        if (!inNoDataState()) {
             return;
         }
-
         this.itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, false);
         this.itemAnimator.setEnabled(ExtendedItemAnimator.Action.REMOVE, false);
         this.itemAnimator.setTemplate(this.itemAnimator.getTemplate()

@@ -140,7 +140,13 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
         verify(fragment).bindAndSubscribe(eq(fragment.timelineInteractor.timeline), any(), any());
         // preferencesInteractor returns another object that we can't verify. Just make sure bind
         // and subscribe was called twice and assume the second is for preferences.
+        fragment.presenterView = mock(TimelineView.class);
+        when(fragment.presenterView.inNoDataState()).thenReturn(true);
         verify(fragment, times(2)).bindAndSubscribe(any(), any(), any());
+        assertTrue(fragment.hasSubscriptions());
+        fragment.bindIfNeeded();
+        fragment.bindIfNeeded();
+        verify(fragment, times(2)).update();
     }
 
     @Test

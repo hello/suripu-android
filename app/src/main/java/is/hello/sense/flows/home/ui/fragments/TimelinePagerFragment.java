@@ -149,6 +149,10 @@ public class TimelinePagerFragment extends InjectionFragment
             shouldJumpToLastNightOnUserVisible = false;
             jumpToLastNight(false);
         }
+        final TimelineFragment timelineFragment = viewPagerAdapter.getCurrentTimeline();
+        if (timelineFragment != null) {
+            timelineFragment.setUserVisibleHint(true);
+        }
     }
 
     @Override
@@ -156,6 +160,7 @@ public class TimelinePagerFragment extends InjectionFragment
         final TimelineFragment timelineFragment = viewPagerAdapter.getCurrentTimeline();
         if (timelineFragment != null) {
             timelineFragment.dismissVisibleOverlaysAndDialogs();
+            timelineFragment.setUserVisibleHint(false);
         }
     }
 
