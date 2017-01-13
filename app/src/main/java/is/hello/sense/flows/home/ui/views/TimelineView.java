@@ -70,7 +70,7 @@ public class TimelineView extends PresenterView {
         this.recyclerView.addItemDecoration(new BottomInsetDecoration(resources, 2));
 
         this.headerView.setAnimatorContext(animatorContext);
-        this.headerView.setAnimationEnabled(false);
+        this.headerView.setAnimationEnabled(true);
         this.headerView.setOnScoreClickListener(onScoreClickListener);
 
 
