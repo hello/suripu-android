@@ -79,7 +79,7 @@ public class HomeView extends PresenterView {
     }
 
     public Fragment getCurrentFragment() {
-        return adapter.getItem(pager.getCurrentItem());
+        return adapter.createFragment(pager.getCurrentItem());
     }
 
 
