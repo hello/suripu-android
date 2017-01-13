@@ -474,21 +474,21 @@ public class GridTrendGraphView extends TrendGraphView {
                 if (value != null) {
                     if (value < 0f) {
                         textValue = context.getString(R.string.missing_data_placeholder);
-                        paint.setColor(ContextCompat.getColor(getContext(), R.color.graph_grid_empty_missing));
+                        paint.setColor(ContextCompat.getColor(context, R.color.graph_grid_empty_missing));
                         borderPaint.setColor(ContextCompat.getColor(context, R.color.trends_gridgraph_empty_cell_border));
-                        shouldDraw = value != -2f;
+                        shouldDraw = GraphSection.canShow(value);
                     } else {
                         shouldDraw = true;
                         textValue = Styles.createTextValue(value, 0);
                         final Condition condition = graph.getConditionForValue(value);
-                        paint.setColor(ContextCompat.getColor(getContext(), condition.colorRes));
+                        paint.setColor(ContextCompat.getColor(context, condition.colorRes));
                         borderPaint.setColor(ContextCompat.getColor(context, condition.colorRes));
 
                     }
                 } else {
                     shouldDraw = true;
                     textValue = "";
-                    paint.setColor(ContextCompat.getColor(getContext(), R.color.graph_grid_empty_cell));
+                    paint.setColor(ContextCompat.getColor(context, R.color.graph_grid_empty_cell));
                     borderPaint.setColor(ContextCompat.getColor(context, R.color.trends_gridgraph_empty_cell_border));
                 }
                 textCellPaint.getTextBounds(textValue, 0, textValue.length(), textBounds);

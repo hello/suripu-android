@@ -3,11 +3,9 @@ package is.hello.sense.api.model.v2;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +16,6 @@ import is.hello.sense.ui.widget.graphing.trends.BarTrendGraphView;
 import is.hello.sense.ui.widget.graphing.trends.BubbleTrendGraphView;
 import is.hello.sense.ui.widget.graphing.trends.GridTrendGraphView;
 import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.util.DateFormatter;
 
 public class Graph extends ApiResponse {
     @SerializedName("time_scale")
@@ -110,46 +107,35 @@ public class Graph extends ApiResponse {
      */
     public ArrayList<Graph> convertToQuarterGraphs() {
         final ArrayList<Graph> graphs = new ArrayList<>();
+        final int DAYS_IN_WEEK = 7;
         for (final GraphSection graphSection : sections) {
-            int offset = 0;
-            if (graphSection.getTitles() != null && !graphSection.getTitles().isEmpty()) {
-                final String monthTitle = graphSection.getTitles().get(0);
-                try {
-                    final int monthValue = DateFormatter.getMonthInt(monthTitle);
-                    offset = DateFormatter.getFirstDayOfMonthValue(monthValue) - 1;
-                } catch (final ParseException e) {
-                    Log.e(getClass().getName(), "Problem parsing month: " + e.getLocalizedMessage());
-                }
-            }
-
+            final int offset = graphSection.getFirstDayOfMonthOffset();
             final Graph graph = new Graph(this);
             if (offset > 0) {
-                final GraphSection temp = new GraphSection(graphSection);
+                final GraphSection temp = GraphSection.withHighlightedTitle(graphSection)
+                                                      .withDoNotShowValues(offset);
                 graph.addSection(temp);
-                for (int i = 0; i < offset; i++) {
-                    temp.addValue(-2f);
-                }
             }
             for (int i = offset; i < graphSection.getValues().size() + offset; i++) {
                 final GraphSection temp;
-                if (i % 7 == 0) {
-                    temp = new GraphSection(graphSection);
+                if (i % DAYS_IN_WEEK == 0) {
+                    temp = GraphSection.withHighlightedTitle(graphSection);
                     graph.addSection(temp);
                 } else {
-                    temp = graph.getSections().get(graph.getSections().size() - 1);
+                    temp = graph.getSection(graph.getSections().size() - 1);
                 }
-                temp.addValue(graphSection.getValues().get(i - offset));
+                temp.addValue(graphSection.getValue(i - offset));
 
             }
             for (int i = 0; i < graphSection.getTitles().size(); i++) {
                 final String title = graphSection.getTitles().get(i);
-                graph.getSections().get(i).addTitle(title);
+                graph.getSection(i).addTitle(title);
             }
             for (int highlightedIndex : graphSection.getHighlightedValues()) {
                 highlightedIndex += offset;
-                final int section = highlightedIndex / 7;
-                final int cell = highlightedIndex % 7;
-                graph.getSections().get(section).addHighlightedValues(cell);
+                final int sectionIndex = highlightedIndex / DAYS_IN_WEEK;
+                final int cell = highlightedIndex % DAYS_IN_WEEK;
+                graph.getSection(sectionIndex).addHighlightedValues(cell);
             }
 
             graphs.add(graph);
@@ -193,6 +179,10 @@ public class Graph extends ApiResponse {
 
     public List<Annotation> getAnnotations() {
         return annotations;
+    }
+
+    public GraphSection getSection(final int index) {
+        return sections.get(index);
     }
 
     public Condition getConditionForValue(final float value) {
