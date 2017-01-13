@@ -126,7 +126,9 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
         boolean previousEventHadInfo = false;
         for (int i = 0; i < eventCount; i++) {
             final TimelineEvent event = events.get(i);
-
+            if (event == null) {
+                continue;
+            }
             if (event.hasInfo()) {
                 final TimelineEvent previousEvent = i > 0 ? events.get(i - 1) : null;
                 final TimelineEvent nextEvent = i < (eventCount - 1) ? events.get(i + 1) : null;
@@ -135,12 +137,14 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
                 this.segmentHeights[i] = ViewGroup.LayoutParams.WRAP_CONTENT;
                 previousEventHadInfo = true;
             } else {
-                int segmentHeight = calculateSegmentHeight(event, previousEventHadInfo);
+                final int segmentHeight = calculateSegmentHeight(event, previousEventHadInfo);
                 this.segmentHeights[i] = segmentHeight;
                 previousEventHadInfo = false;
 
             }
-
+            if (event.getShiftedTimestamp() == null){
+                continue;
+            }
             final int hour = event.getShiftedTimestamp().getHourOfDay();
             if (!hours.contains(hour)) {
                 itemTimes.put(i, event.getShiftedTimestamp().toLocalTime());

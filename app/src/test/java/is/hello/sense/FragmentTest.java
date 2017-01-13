@@ -76,11 +76,20 @@ public abstract class FragmentTest<T extends PresenterFragment> {
         fragment.presenterView = Mockito.spy(fragment.presenterView);
     }
 
+    /**
+     * @return arguments for a fragment.
+     */
     @Nullable
     protected Bundle startWithArgs() {
         return null;
     }
 
+    /**
+     * Allows fragments to provide a custom activity, useful for when they expect the activity
+     * to provide an interface.
+     *
+     * @return null to use default {@link org.robolectric.util.FragmentTestUtil.org.robolectric.util.FragmentTestUtil.FragmentUtilActivity}
+     */
     @Nullable
     protected Class<? extends FragmentTestActivity> activityCreatingFragment() {
         return null;
@@ -138,7 +147,11 @@ public abstract class FragmentTest<T extends PresenterFragment> {
         field.set(objectWithField, newValue);
     }
 
-    // Remember if you're extending class is an inner class it must be static
+    /**
+     * Extendable version of {@link org.robolectric.util.FragmentTestUtil.org.robolectric.util.FragmentTestUtil.FragmentUtilActivity}
+     * for providing our own activities.
+     */
+    // Remember if the extending class is an inner class it must be static
     public static class FragmentTestActivity extends Activity {
         public FragmentTestActivity() {
             // Remember to leave an empty constructor

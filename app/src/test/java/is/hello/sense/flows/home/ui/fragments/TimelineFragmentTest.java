@@ -5,15 +5,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.View;
 
 import org.joda.time.LocalDate;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 import is.hello.sense.FragmentTest;
 import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.api.model.v2.TimelineEvent;
+import is.hello.sense.flows.home.ui.views.TimelineView;
 import is.hello.sense.flows.timeline.ui.activities.TimelineActivity;
-import rx.Observable;
+import is.hello.sense.ui.widget.timeline.TimelineInfoOverlay;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -62,7 +68,6 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
         verify(fragment).dismissVisibleOverlaysAndDialogs();
         verify(fragment.presenterView).clearHeader();
     }
-
 
     @Test
     public void onCreateTest() {
@@ -136,6 +141,83 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
         // preferencesInteractor returns another object that we can't verify. Just make sure bind
         // and subscribe was called twice and assume the second is for preferences.
         verify(fragment, times(2)).bindAndSubscribe(any(), any(), any());
+    }
+
+    @Test
+    public void getDateTest() {
+        assertEquals(fragment.getDate(), date);
+    }
+
+    @Test
+    public void updateTest() {
+        spyOnPresenterView();
+        spyOnTimelineInteractor();
+        fragment.update();
+        verify(fragment.presenterView).transitionOutOfNoDataState();
+        verify(fragment.timelineInteractor).update();
+    }
+
+    @Test
+    public void bindTimelineTestNoEvents() {
+        spyOnPresenterView();
+        final Timeline timeline = mock(Timeline.class);
+        timeline.getEvents().clear();
+        fragment.bindTimeline(timeline);
+        verify(fragment.presenterView).transitionIntoNoDataState(any());
+
+    }
+
+    @Test
+    public void bindTimelineTestWithEvents() {
+        final Timeline timeline = mock(Timeline.class);
+        final ArrayList<TimelineEvent> events = new ArrayList<>();
+        events.add(mock(TimelineEvent.class));
+        when(timeline.getEvents()).thenReturn(events);
+        when(timeline.getScore()).thenReturn(null);
+        spyOnPresenterView();
+        fragment.bindTimeline(timeline);
+        verify(fragment.presenterView).bindTimelineToHeader(eq(timeline), any(), any());
+    }
+
+    @Test
+    public void timelineUnavailableTest() {
+        fragment.presenterView = mock(TimelineView.class);
+        spyOnPresenterView();
+        when(fragment.presenterView.adapterHasEvents()).thenReturn(true);
+        fragment.timelineUnavailable(mock(Throwable.class));
+        verify(fragment.presenterView, times(0)).transitionIntoNoDataState(any());
+
+        when(fragment.presenterView.adapterHasEvents()).thenReturn(false);
+        fragment.timelineUnavailable(mock(Throwable.class));
+        verify(fragment.presenterView).transitionIntoNoDataState(any());
+    }
+
+    @Test
+    public void onSegmentItemClickedTest() {
+        final View view = mock(View.class);
+        when(view.getY()).thenReturn(0f);
+        fragment.toolTipHeight = 1;
+        fragment.infoOverlay = spy(mock(TimelineInfoOverlay.class));
+        spyOnPresenterView();
+        fragment.onSegmentItemClicked(0, mock(View.class), mock(TimelineEvent.class));
+        verify(fragment.infoOverlay).dismiss(eq(false));
+        verify(fragment.presenterView).scrollForSpace(any(),
+                                                      any(),
+                                                      any(),
+                                                      eq(0),
+                                                      eq(-1));
+    }
+
+    @Test
+    public void onEventItemClickedTest() {
+        final TimelineEvent event = mock(TimelineEvent.class);
+        when(event.hasActions()).thenReturn(true);
+        fragment.onEventItemClicked(0, event);
+        verify(fragment).showAvailableActions(eq(event));
+        verify(fragment, times(0)).showNoActionsAvailable();
+        when(event.hasActions()).thenReturn(false);
+        fragment.onEventItemClicked(0, event);
+        verify(fragment).showNoActionsAvailable();
     }
 
     private void spyOnTimelineInteractor() {

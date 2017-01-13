@@ -111,8 +111,10 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     @Nullable
     private WeakReference<Dialog> activeDialog;
 
-    private TimelineInfoOverlay infoOverlay;
     private final ExternalStoragePermission externalStoragePermission = new ExternalStoragePermission(this);
+
+    @VisibleForTesting
+    TimelineInfoOverlay infoOverlay;
 
     @VisibleForTesting
     Parent parent;
@@ -526,7 +528,8 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE_EVENT_TAPPED, null);
     }
 
-    private void showNoActionsAvailable() {
+    @VisibleForTesting
+    void showNoActionsAvailable() {
         final SenseBottomSheet noActions = new SenseBottomSheet(getActivity());
         noActions.setTitle(R.string.message_timeline_no_actions_title);
         noActions.setMessage(R.string.message_timeline_no_actions_body);
@@ -536,7 +539,8 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         this.activeDialog = new WeakReference<>(noActions);
     }
 
-    private void showAvailableActions(@NonNull final TimelineEvent event) {
+    @VisibleForTesting
+    void showAvailableActions(@NonNull final TimelineEvent event) {
         final SharedPreferences preferences = getActivity().getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
 
         final SenseBottomSheet actions = new SenseBottomSheet(getActivity());
