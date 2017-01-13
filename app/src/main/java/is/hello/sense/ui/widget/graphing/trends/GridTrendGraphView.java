@@ -16,7 +16,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
@@ -38,7 +37,9 @@ import is.hello.sense.ui.widget.util.Styles;
  */
 @SuppressLint("ViewConstructor")
 public class GridTrendGraphView extends TrendGraphView {
-
+    private final static int DEFAULT_CELLS = 7;
+    private final static int MANY_CELLS = 15;
+    private final int graphWidth;
     private final AnimatorContext animatorContext;
     private boolean showText = true;
 
@@ -47,30 +48,17 @@ public class GridTrendGraphView extends TrendGraphView {
                               @NonNull final AnimatorContext animatorContext,
                               @NonNull final AnimationCallback animationCallback) {
         super(context, animatorContext, animationCallback);
+        final int margin = context.getResources().getDimensionPixelSize(R.dimen.x1);
+        final int allMargins = margin * 6 + margin / 2;
+        final int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+        this.graphWidth = screenWidth - allMargins;
         this.animatorContext = animatorContext;
         this.drawable = new GridGraphDrawable(context, graph, animatorContext);
         setBackground(drawable);
         setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         drawable.showGraphAnimation();
-        getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                final int elements;
-                if (graph.getTimeScale() == Trends.TimeScale.LAST_3_MONTHS) {
-                    elements = 15;
-                } else {
-                    elements = 7;
-                }
-                final float circleSize = getWidth() / elements;
-                if (getCircleSize() != circleSize) {
-                    ((GridGraphDrawable) drawable).initHeight(getWidth() / elements);
-                    requestLayout();
-                    invalidate();
-                    bindGraph(drawable.getGraph());
-                    getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                }
-            }
-        });
+        ((GridGraphDrawable) drawable).initHeight();
+        bindGraph(drawable.getGraph());
     }
 
     @Override
@@ -81,9 +69,6 @@ public class GridTrendGraphView extends TrendGraphView {
             setDrawableHeight(getDrawableHeight(graph));
             requestLayout();
             finishedAnimating();
-            if (animationCallback != null) {
-                animationCallback.isFinished();
-            }
             super.bindGraph(graph);
             return;
         }
@@ -95,19 +80,13 @@ public class GridTrendGraphView extends TrendGraphView {
             return;
         }
         final int currentHeight = getDrawableHeight();
-        final float elements;
-        if (graph.getTimeScale() == Trends.TimeScale.LAST_3_MONTHS) {
-            elements = 15;
-        } else {
-            elements = 7;
-        }
         if (graph.getTimeScale() == Trends.TimeScale.LAST_3_MONTHS || oldGraph.getTimeScale() == Trends.TimeScale.LAST_3_MONTHS) {
             final ValueAnimator shrinkAnimator = getHeightChangeAnimator(maxAnimationFactor, minAnimationFactor, currentHeight);
             shrinkAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(final Animator animation) {
                     GridTrendGraphView.super.bindGraph(graph);
-                    ((GridGraphDrawable) drawable).initHeight(getWidth() / elements);
+                    ((GridGraphDrawable) drawable).initHeight();
                     final int targetHeight = getDrawableHeight(graph);
                     final ValueAnimator expandAnimator = getHeightChangeAnimator(minAnimationFactor, maxAnimationFactor, targetHeight);
                     expandAnimator.addListener(new AnimatorListenerAdapter() {
@@ -142,7 +121,7 @@ public class GridTrendGraphView extends TrendGraphView {
             animator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(final Animator animation) {
-                    ((GridGraphDrawable) drawable).initHeight(getWidth() / elements, graph);
+                    ((GridGraphDrawable) drawable).initHeight(graph);
                     if (!GridTrendGraphView.this.getGraph().equals(graph)) {
                         GridTrendGraphView.super.bindGraph(graph);
                     }
@@ -288,15 +267,15 @@ public class GridTrendGraphView extends TrendGraphView {
         /**
          * Called to establish the circle size.  Everything in the {@link GridGraphDrawable} is
          * based on the circleSize.
-         *
-         * @param circleSize width / 7
          */
-        private void initHeight(final float circleSize,
-                                @NonNull final Graph graph) {
-            if (circleSize == this.circleSize || circleSize == 0) {
-                return;
+        private void initHeight(@NonNull final Graph graph) {
+            final int elements;
+            if (graph.getTimeScale() == Trends.TimeScale.LAST_3_MONTHS) {
+                elements = MANY_CELLS;
+            } else {
+                elements = DEFAULT_CELLS;
             }
-            this.circleSize = circleSize;
+            this.circleSize = graphWidth / elements;
             this.padding = circleSize * .08f;
             this.height = getHeight(graph);
             this.reservedTopSpace = textHeight * 2 + padding;
@@ -304,8 +283,8 @@ public class GridTrendGraphView extends TrendGraphView {
             updateCellController();
         }
 
-        private void initHeight(final float circleSize) {
-            initHeight(circleSize, this.graph);
+        private void initHeight() {
+            initHeight(this.graph);
         }
 
         /**
