@@ -95,24 +95,30 @@ public class TimelineInfoOverlay implements Handler.Callback {
         this.onDismiss = onDismiss;
     }
 
+    /**
+     * @param screenSize define total available device width and height
+     * @param backgroundFrame define overlay boundaries
+     * @param focusedFrame define focused segment boundaries
+     * @return drawable with background overlays applied
+     */
     private Drawable createBackground(@NonNull final Point screenSize,
-                                      final int viewTop,
-                                      final int viewBottom) {
+                                      @NonNull final Rect backgroundFrame,
+                                      @NonNull final Rect focusedFrame) {
         final Path backgroundPath = new Path();
 
-        final int contentRight = Math.round(screenSize.x * maxBackgroundWidthFraction);
+        final int contentRight = Math.round(backgroundFrame.right * maxBackgroundWidthFraction);
         //from top of screen to top of view
-        backgroundPath.addRect(0, 0,
-                               screenSize.x, viewTop,
+        backgroundPath.addRect(backgroundFrame.left, backgroundFrame.top,
+                               backgroundFrame.right, focusedFrame.top,
                                Path.Direction.CW);
 
         //from top of view to bottom of view
-        backgroundPath.addRect(contentRight, viewTop,
-                               screenSize.x, viewBottom,
+        backgroundPath.addRect(contentRight, focusedFrame.top,
+                               backgroundFrame.right, focusedFrame.bottom,
                                Path.Direction.CW);
         //from bottom of view to bottom of screen
-        backgroundPath.addRect(0, viewBottom,
-                               screenSize.x, screenSize.y,
+        backgroundPath.addRect(backgroundFrame.left, focusedFrame.bottom,
+                               backgroundFrame.right, backgroundFrame.bottom,
                                Path.Direction.CW);
 
         final ShapeDrawable background = new ShapeDrawable(new PathShape(backgroundPath,
@@ -125,11 +131,11 @@ public class TimelineInfoOverlay implements Handler.Callback {
             return background;
         } else {
             final Path overlayPath = new Path();
-
-            overlayPath.addRect(0f,
-                                viewTop,
+            //overlay for focused segment
+            overlayPath.addRect(backgroundFrame.left,
+                                focusedFrame.top,
                                 contentRight * overlaySleepDepthPercentage,
-                                viewBottom,
+                                focusedFrame.bottom,
                                 Path.Direction.CW);
 
             final ShapeDrawable overlay = new ShapeDrawable(new PathShape(overlayPath,
@@ -143,26 +149,28 @@ public class TimelineInfoOverlay implements Handler.Callback {
     }
 
     public void show(@NonNull final View fromView,
-                     @IdRes final int contentRootResId,
+                     @IdRes final int backgroundRootResId,
                      final boolean animate) {
         if (dialog.isShowing()) {
             return;
         }
 
-        final int statusBarHeight = resources.getDimensionPixelSize(R.dimen.x3);
         final Rect viewFrame = new Rect();
         fromView.getGlobalVisibleRect(viewFrame);
+        final Rect backgroundFrame = new Rect();
+
+        final View backgroundView = activity.findViewById(backgroundRootResId);
+        backgroundView.getGlobalVisibleRect(backgroundFrame);
         final Point screenSize = new Point();
-        final View contentRoot = activity.findViewById(contentRootResId);
-        //something is changing based on scroll Y position.
-        // when timeline event clicked is near center of screen it overlays well
-        screenSize.x = contentRoot.getRight();
-        screenSize.y = contentRoot.getBottom() + statusBarHeight;
-
-        viewFrame.top -= contentRoot.getY();
-        viewFrame.bottom -= contentRoot.getY();
-
-        contents.setBackground(createBackground(screenSize, viewFrame.top, viewFrame.bottom));
+        //getRealSize includes status bar
+        dialog.getWindow().getWindowManager().getDefaultDisplay().getRealSize(screenSize);
+        // global visible rect returns incorrect top and bottom for rect
+        final int backgroundInset = resources.getDimensionPixelOffset(R.dimen.bottom_bar_height);
+        backgroundFrame.top = backgroundInset; //make 0 again once timeline header is moved into recyclerview
+        backgroundFrame.bottom = screenSize.y - backgroundInset;
+        contents.setBackground(createBackground(screenSize,
+                                                backgroundFrame,
+                                                viewFrame));
 
         final LayoutParams layoutParams = (FrameLayout.LayoutParams) tooltip.getLayoutParams();
         final int tooltipBottomMargin = layoutParams.bottomMargin;
