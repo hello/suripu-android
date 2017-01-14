@@ -49,6 +49,8 @@ public class GridTrendGraphView extends TrendGraphView {
                               @NonNull final AnimationCallback animationCallback) {
         super(context, animatorContext, animationCallback);
         final int margin = context.getResources().getDimensionPixelSize(R.dimen.x1);
+        // There are other views with margins that we need to subtract from screen width so the circles fit.
+        // One view has x1 on each side another has x2 on each side and another has x.5 on each side.
         final int allMargins = margin * 6 + margin / 2;
         final int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
         this.graphWidth = screenWidth - allMargins;
