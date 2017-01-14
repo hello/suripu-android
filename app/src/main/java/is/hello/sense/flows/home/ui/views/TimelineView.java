@@ -240,6 +240,7 @@ public class TimelineView extends PresenterView {
         if (!inNoDataState()) {
             return;
         }
+        itemAnimator.removeAllListeners();
         this.itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, false);
         this.itemAnimator.setEnabled(ExtendedItemAnimator.Action.REMOVE, false);
         this.itemAnimator.setTemplate(this.itemAnimator.getTemplate()
