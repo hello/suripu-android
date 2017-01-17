@@ -143,8 +143,12 @@ public class Graph extends ApiResponse {
         return graphs;
     }
 
-    public void addSection(final GraphSection section) {
+    private void addSection(final GraphSection section) {
         this.sections.add(section);
+    }
+
+    private GraphSection getSection(final int index) {
+        return sections.get(index);
     }
 
     public Trends.TimeScale getTimeScale() {
@@ -179,10 +183,6 @@ public class Graph extends ApiResponse {
 
     public List<Annotation> getAnnotations() {
         return annotations;
-    }
-
-    public GraphSection getSection(final int index) {
-        return sections.get(index);
     }
 
     public Condition getConditionForValue(final float value) {

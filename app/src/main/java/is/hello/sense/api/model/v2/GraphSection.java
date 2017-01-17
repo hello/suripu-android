@@ -30,7 +30,7 @@ public class GraphSection extends ApiResponse {
     @Nullable
     private Integer highlightedTitle;
 
-    public static GraphSection withHighlightedTitle(@NonNull final GraphSection graphSection) {
+    static GraphSection withHighlightedTitle(@NonNull final GraphSection graphSection) {
         final GraphSection section = new GraphSection();
         section.highlightedTitle = graphSection.highlightedTitle;
         return section;
@@ -40,7 +40,7 @@ public class GraphSection extends ApiResponse {
         return !DO_NOT_SHOW_VALUE.equals(value);
     }
 
-    public GraphSection() {
+    GraphSection() {
         this.titles = new ArrayList<>();
         this.values = new ArrayList<>();
         this.highlightedValues = new ArrayList<>();
@@ -67,6 +67,10 @@ public class GraphSection extends ApiResponse {
     }
 
     public Float getValue(final int index) {
+        if(index < 0 || index >= values.size()) {
+            Log.e(getClass().getName(), String.format("GraphSection.values %d out of bounds index", index));
+            return null;
+        }
         return values.get(index);
     }
 
@@ -84,19 +88,23 @@ public class GraphSection extends ApiResponse {
     }
 
     /**
+     * todo propagate throw errors to display dialog to error and not render graph
+     * currently defaults to 0 if any expected errors are caught
      * @return int 0 to 6 representing first day of week Sun to Sat of first month
      */
-    public int getFirstDayOfMonthOffset() {
+     int getFirstDayOfMonthOffset(){
         int offset = 0;
-        if (titles != null && !titles.isEmpty()) {
-            final String monthTitle = titles.get(0);
-            try {
-                final int monthValue = DateFormatter.getMonthInt(monthTitle);
-                offset = DateFormatter.getFirstDayOfMonthValue(monthValue) - 1;
-            } catch (final ParseException e) {
-                Log.e(getClass().getName(), "Problem parsing month: " + e.getLocalizedMessage());
+        try {
+            if (titles == null || titles.isEmpty()) {
+                throw new IllegalStateException("GraphSection title required to determine first day of month offset");
             }
+            final String monthTitle = titles.get(0);
+            final int monthValue = DateFormatter.getMonthInt(monthTitle);
+            offset = DateFormatter.getFirstDayOfMonthValue(monthValue) - 1;
+        } catch (final ParseException | IllegalStateException e) {
+            Log.e(getClass().getName(), "Problem parsing month: " + e.getLocalizedMessage());
         }
+
         return offset;
     }
 
@@ -104,7 +112,7 @@ public class GraphSection extends ApiResponse {
      * @param numValues number of values to add to end of {@link GraphSection#values} that will not be rendered
      * @return updated {@link GraphSection} instance
      */
-    public GraphSection withDoNotShowValues(final int numValues) {
+    GraphSection withDoNotShowValues(final int numValues) {
         for (int i = 0; i < numValues; i++) {
             values.add(DO_NOT_SHOW_VALUE);
         }
