@@ -29,6 +29,7 @@ import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.functional.Lists;
+import is.hello.sense.ui.widget.SenseBar;
 import is.hello.sense.ui.widget.timeline.TimelineSegmentDrawable;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -39,8 +40,11 @@ import is.hello.sense.util.StateSafeExecutor;
 
 public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHolder>
         implements Player.OnEventListener {
-    @VisibleForTesting static final int VIEW_TYPE_SEGMENT = 1;
-    @VisibleForTesting static final int VIEW_TYPE_EVENT = 2;
+    public static final int CONTENT_START_POSITION = 1;
+    @VisibleForTesting
+    static final int VIEW_TYPE_SEGMENT = 1;
+    @VisibleForTesting
+    static final int VIEW_TYPE_EVENT = 2;
 
     private static final float EVENT_SCALE_MIN = 0.9f;
     private static final float EVENT_SCALE_MAX = 1.0f;
@@ -61,15 +65,25 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
     private int[] segmentHeights;
 
     private boolean use24Time = false;
-    private @Nullable StateSafeExecutor onItemClickExecutor;
-    private @Nullable OnItemClickListener onItemClickListener;
+    private
+    @Nullable
+    StateSafeExecutor onItemClickExecutor;
+    private
+    @Nullable
+    OnItemClickListener onItemClickListener;
 
-    private @Nullable Player player;
+    private
+    @Nullable
+    Player player;
     private int playingPosition = RecyclerView.NO_POSITION;
 
+    private final SenseBar senseBar;
 
-    public TimelineAdapter(@NonNull Context context,
-                           @NonNull DateFormatter dateFormatter) {
+    public TimelineAdapter(@NonNull final Context context,
+                           @NonNull final DateFormatter dateFormatter,
+                           @NonNull final String title,
+                           @NonNull final View.OnClickListener historyListener,
+                           @NonNull final View.OnClickListener shareListener) {
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.dateFormatter = dateFormatter;
@@ -79,12 +93,21 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
         this.segmentHeightPerHour = resources.getDimensionPixelSize(R.dimen.timeline_segment_height_per_hour);
         this.segmentEventOffsetMax = resources.getDimensionPixelSize(R.dimen.timeline_segment_event_offset_max);
         this.segmentEventStolenHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_stolen_height);
+        this.senseBar = new SenseBar(context);
+        this.senseBar.setLeftImage(R.drawable.icon_calendar_24);
+        this.senseBar.setRightImage(R.drawable.icon_share_24);
+        this.senseBar.setLeftImageOnClickListener(historyListener);
+        this.senseBar.setRightImageOnClickListener(shareListener);
+        this.senseBar.setText(title);
+        this.senseBar.showLeftImage(true);
+        this.senseBar.showRightImage(false);
+        addHeader(this.senseBar);
     }
-
 
     //region Rendering Cache
 
-    private int calculateSegmentHeight(@NonNull TimelineEvent segment, boolean previousSegmentWasEvent) {
+    private int calculateSegmentHeight(@NonNull final TimelineEvent segment,
+                                       final boolean previousSegmentWasEvent) {
         final float hours = segment.getDuration(TimeUnit.SECONDS) / 3600f;
         int rawHeight = Math.round(segmentHeightPerHour * hours);
         if (previousSegmentWasEvent) {
@@ -103,7 +126,9 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
         boolean previousEventHadInfo = false;
         for (int i = 0; i < eventCount; i++) {
             final TimelineEvent event = events.get(i);
-
+            if (event == null) {
+                continue;
+            }
             if (event.hasInfo()) {
                 final TimelineEvent previousEvent = i > 0 ? events.get(i - 1) : null;
                 final TimelineEvent nextEvent = i < (eventCount - 1) ? events.get(i + 1) : null;
@@ -112,12 +137,14 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
                 this.segmentHeights[i] = ViewGroup.LayoutParams.WRAP_CONTENT;
                 previousEventHadInfo = true;
             } else {
-                int segmentHeight = calculateSegmentHeight(event, previousEventHadInfo);
+                final int segmentHeight = calculateSegmentHeight(event, previousEventHadInfo);
                 this.segmentHeights[i] = segmentHeight;
                 previousEventHadInfo = false;
 
             }
-
+            if (event.getShiftedTimestamp() == null){
+                continue;
+            }
             final int hour = event.getShiftedTimestamp().getHourOfDay();
             if (!hours.contains(hour)) {
                 itemTimes.put(i, event.getShiftedTimestamp().toLocalTime());
@@ -151,7 +178,7 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
         return !events.isEmpty();
     }
 
-    public TimelineEvent getEvent(int contentPosition) {
+    public TimelineEvent getEvent(final int contentPosition) {
         return events.get(contentPosition);
     }
 
@@ -212,6 +239,11 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
                                        @Nullable OnItemClickListener onItemClickListener) {
         this.onItemClickExecutor = onItemClickExecutor;
         this.onItemClickListener = onItemClickListener;
+    }
+
+    public void release() {
+        this.onItemClickExecutor = null;
+        this.onItemClickListener = null;
     }
 
     private void dispatchItemClick(@NonNull SegmentViewHolder holder) {
@@ -541,10 +573,13 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
     }
 
     //endregion
-
+    public void showShareIcon(final boolean show) {
+        this.senseBar.showRightImage(show);
+    }
 
     public interface OnItemClickListener {
         void onSegmentItemClicked(int position, View view, @NonNull TimelineEvent event);
+
         void onEventItemClicked(int position, @NonNull TimelineEvent event);
     }
 }

@@ -182,7 +182,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
         final SettingsRecyclerAdapter.DetailItem unitsAndTimeItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_units_and_time),
                                                                                                        this::onUnitsAndTimeClick);
-        unitsAndTimeItem.setIcon(R.drawable.ic_icon_settings_unitstime_24, R.string.label_units_and_time);
+        unitsAndTimeItem.setIcon(R.drawable.icon_settings_unitstime_24_fill, R.string.label_units_and_time);
         adapter.add(unitsAndTimeItem);
 
         decoration.addTopInset(adapter.getItemCount(), sectionPadding);
