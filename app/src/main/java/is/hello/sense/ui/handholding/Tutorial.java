@@ -77,6 +77,33 @@ public enum Tutorial {
         this.properties = properties;
     }
 
+    /**
+     * @param activity
+     * @return unique shared pref for this account
+     */
+    private static SharedPreferences getPrefs(@NonNull final Activity activity) {
+        return activity.getSharedPreferences(getPrefName(activity), Context.MODE_PRIVATE);
+    }
+
+    /**
+     * @param context
+     * @return a unique pref name for this account.
+     */
+    private static String getPrefName(@NonNull final Context context) {
+        return Constants.HANDHOLDING_PREFS + InternalPrefManager.getAccountId(context);
+    }
+
+    /**
+     * Reset all tutorials for this account.
+     *
+     * @param activity
+     */
+    public static void clearTutorials(@NonNull final Activity activity) {
+        getPrefs(activity)
+                .edit()
+                .clear()
+                .apply();
+    }
 
     public String getShownKey() {
         return "tutorial_" + toString().toLowerCase() + "_shown";
@@ -85,8 +112,8 @@ public enum Tutorial {
     public boolean shouldShow(@NonNull final Activity activity) {
         // Check if this device has ever seen the desired tutorial. If so mark it as seen for the user
         // and reset the pref so another account on the device will not suppress the breadcrumb too.
-        final SharedPreferences genericPreferences = activity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
-        if (genericPreferences.getBoolean(getShownKey(), false)){
+        final SharedPreferences genericPreferences = getPrefs(activity);
+        if (genericPreferences.getBoolean(getShownKey(), false)) {
             genericPreferences
                     .edit()
                     .putBoolean(getShownKey(), false)
@@ -115,11 +142,6 @@ public enum Tutorial {
                    .putBoolean(getShownKey(), true)
                    .apply();
     }
-
-    private static String getPrefName(@NonNull final Context context) {
-        return Constants.HANDHOLDING_PREFS + InternalPrefManager.getAccountId(context);
-    }
-
 
     //region Vending Animations
 
