@@ -78,11 +78,11 @@ public enum Tutorial {
     }
 
     /**
-     * @param activity
+     * @param context
      * @return unique shared pref for this account
      */
-    private static SharedPreferences getPrefs(@NonNull final Activity activity) {
-        return activity.getSharedPreferences(getPrefName(activity), Context.MODE_PRIVATE);
+    private static SharedPreferences getPrefs(@NonNull final Context context) {
+        return context.getSharedPreferences(getPrefName(context), Context.MODE_PRIVATE);
     }
 
     /**
@@ -124,11 +124,7 @@ public enum Tutorial {
             return false;
         }
 
-
-        final SharedPreferences preferences =
-                activity.getSharedPreferences(getPrefName(activity), 0);
-        return (!preferences.getBoolean(getShownKey(), false) &&
-                activity.findViewById(TutorialOverlayView.ROOT_CONTAINER_ID) == null);
+        return activity.findViewById(TutorialOverlayView.ROOT_CONTAINER_ID) == null;
     }
 
     public void wasDismissed(@NonNull final Context context) {
@@ -136,11 +132,9 @@ public enum Tutorial {
     }
 
     public void markShown(@NonNull final Context context) {
-        final SharedPreferences preferences =
-                context.getSharedPreferences(getPrefName(context), 0);
-        preferences.edit()
-                   .putBoolean(getShownKey(), true)
-                   .apply();
+        getPrefs(context).edit()
+                         .putBoolean(getShownKey(), true)
+                         .apply();
     }
 
     //region Vending Animations
