@@ -28,20 +28,13 @@ import is.hello.sense.mvp.presenters.PresenterFragment;
 import static junit.framework.Assert.assertNotNull;
 import static org.robolectric.util.FragmentTestUtil.startFragment;
 
-@RunWith(SenseTestCase.WorkaroundTestRunner.class)
-@Config(constants = BuildConfig.class,
-        application = SenseApplication.class,
-        sdk = 21)
-public abstract class FragmentTest<T extends PresenterFragment> {
+public abstract class FragmentTest<T extends PresenterFragment>
+        extends SenseTestCase {
 
     protected T fragment;
 
     @Rule
     public Timeout globalTimeout = Timeout.seconds(10);
-
-    protected Context getContext() {
-        return RuntimeEnvironment.application.getApplicationContext();
-    }
 
     private T getInstanceOfT() {
         final ParameterizedType superClass = (ParameterizedType) getClass().getGenericSuperclass();
@@ -56,6 +49,11 @@ public abstract class FragmentTest<T extends PresenterFragment> {
     @Before
     public void setUp() throws Exception {
         startFragmentAndSpy(startWithArgs());
+    }
+
+    @Test
+    public void fragmentIsntNull() {
+        assertNotNull(fragment);
     }
 
     private void startFragmentAndSpy(@Nullable final Bundle args) {
@@ -93,11 +91,6 @@ public abstract class FragmentTest<T extends PresenterFragment> {
     @Nullable
     protected Class<? extends FragmentTestActivity> activityCreatingFragment() {
         return null;
-    }
-
-    @Test
-    public void fragmentIsntNull() {
-        assertNotNull(fragment);
     }
 
     //region lifecycle helpers
