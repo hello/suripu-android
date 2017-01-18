@@ -17,6 +17,7 @@ import android.view.animation.AnimationUtils;
 import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
+import is.hello.sense.ui.adapter.FragmentPagerAdapter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 
@@ -114,7 +115,7 @@ public final class ViewPagerPresenterView extends PresenterView {
     @Nullable
     public Fragment getFragmentWithIndex(@NonNull final FragmentManager fragmentManager,
                                          final int index) {
-        return fragmentManager.findFragmentByTag("android:switcher:" + R.id.view_view_pager_extended_view_pager + ":" + index);
+        return fragmentManager.findFragmentByTag(FragmentPagerAdapter.makeFragmentTag(R.id.view_view_pager_extended_view_pager, index));
     }
 
     public int getCurrentFragmentPosition() {
