@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -70,7 +71,7 @@ public class TimelineView extends PresenterView {
         this.recyclerView.addItemDecoration(new BottomInsetDecoration(resources, 2));
 
         this.headerView.setAnimatorContext(animatorContext);
-        this.headerView.setAnimationEnabled(false);
+        this.headerView.setAnimationEnabled(true);
         this.headerView.setOnScoreClickListener(onScoreClickListener);
 
 
@@ -112,17 +113,21 @@ public class TimelineView extends PresenterView {
         return this.adapter.getHeaderAt(TimelineAdapter.CONTENT_START_POSITION) != this.headerView;
     }
 
-    public void showTutorial(@NonNull final Activity activity,
-                             @NonNull final TimelineFragment.Parent parent,
-                             @NonNull final Tutorial tutorial) {
+    public boolean hasTutorial() {
+        return this.tutorialOverlay != null;
+    }
+
+    public void showTutorial(@NonNull final TutorialOverlayView overlayView,
+                             @IdRes final int resId) {
         if (this.tutorialOverlay != null) {
             return;
         }
+        this.tutorialOverlay = overlayView;
+        this.tutorialOverlay.show(resId);
+    }
 
-        this.tutorialOverlay = new TutorialOverlayView(activity, tutorial);
-        this.tutorialOverlay.setOnDismiss(() -> this.tutorialOverlay = null);
-        this.tutorialOverlay.setAnchorContainer(activity.findViewById(parent.getTutorialContainerIdRes()));
-        this.tutorialOverlay.show(parent.getTutorialContainerIdRes());
+    public void clearTutorial() {
+        this.tutorialOverlay = null;
     }
 
 
@@ -240,6 +245,7 @@ public class TimelineView extends PresenterView {
         if (!inNoDataState()) {
             return;
         }
+        itemAnimator.removeAllListeners();
         this.itemAnimator.setEnabled(ExtendedItemAnimator.Action.ADD, false);
         this.itemAnimator.setEnabled(ExtendedItemAnimator.Action.REMOVE, false);
         this.itemAnimator.setTemplate(this.itemAnimator.getTemplate()

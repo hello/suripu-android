@@ -93,13 +93,6 @@ public class TrendsFragmentTest extends FragmentTest<WeekTrendsFragment> {
         Mockito.verify(fragment.presenterView).showError();
     }
 
-    @Test
-    public void isFinishedTest() {
-        fragment.presenterView = Mockito.spy(fragment.presenterView);
-        fragment.isFinished();
-        Mockito.verify(fragment.presenterView).refreshRecyclerView();
-    }
-
     private void spyOnTrendsInteractor() {
         fragment.trendsInteractor = Mockito.spy(fragment.trendsInteractor);
     }

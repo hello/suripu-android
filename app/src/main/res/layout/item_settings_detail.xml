@@ -13,12 +13,13 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="20dp">
 
-            <ImageView
+            <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/item_settings_detail_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:importantForAccessibility="no"
+                android:tint="@color/settings_icon_fill_color"
                 tools:src="@drawable/icon_settings_advanced"/>
         </RelativeLayout>
 

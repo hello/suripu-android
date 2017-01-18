@@ -107,7 +107,7 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     //region AnimationCallback
     @Override
     public void isFinished() {
-        this.presenterView.refreshRecyclerView();
+
     }
     //endregion
 
