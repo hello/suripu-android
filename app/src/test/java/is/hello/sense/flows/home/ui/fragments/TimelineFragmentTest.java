@@ -33,7 +33,7 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
 
     private static final LocalDate date = LocalDate.now();
 
-    @Nullable
+    @NonNull
     @Override
     protected Class<? extends FragmentTestActivity> activityCreatingFragment() {
         return ActivityWithParent.class;

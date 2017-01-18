@@ -10,7 +10,6 @@ import static org.mockito.Mockito.*;
 @Ignore
 public class AppSettingsFragmentTest extends FragmentTest<AppSettingsFragment> {
 
-
     @Test
     public void onCreateTest() {
         fragment.initializePresenterView();
