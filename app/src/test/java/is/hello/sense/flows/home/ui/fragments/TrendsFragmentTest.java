@@ -1,7 +1,6 @@
 package is.hello.sense.flows.home.ui.fragments;
 
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -9,7 +8,6 @@ import org.mockito.Mockito;
 import is.hello.sense.FragmentTest;
 import is.hello.sense.api.model.v2.Trends;
 
-@Ignore
 public class TrendsFragmentTest extends FragmentTest<WeekTrendsFragment> {
 
 
