@@ -1,11 +1,13 @@
 package is.hello.sense.flows.home.ui.fragments;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import is.hello.sense.FragmentTest;
 
 import static org.mockito.Mockito.*;
 
+@Ignore
 public class AppSettingsFragmentTest extends FragmentTest<AppSettingsFragment> {
 
 

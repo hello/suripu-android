@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.view.View;
 
 import org.joda.time.LocalDate;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
+@Ignore
 public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
 
     private static final LocalDate date = LocalDate.now();
