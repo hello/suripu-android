@@ -8,7 +8,6 @@ import org.mockito.Mockito;
 import is.hello.sense.FragmentTest;
 import is.hello.sense.api.model.v2.Trends;
 
-
 public class TrendsFragmentTest extends FragmentTest<WeekTrendsFragment> {
 
 
