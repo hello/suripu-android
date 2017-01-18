@@ -31,7 +31,7 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
 
     private static final LocalDate date = LocalDate.now();
 
-    @Nullable
+    @NonNull
     @Override
     protected Class<? extends FragmentTestActivity> activityCreatingFragment() {
         return ActivityWithParent.class;
@@ -188,7 +188,6 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
     @Test
     public void timelineUnavailableTest() {
         fragment.presenterView = mock(TimelineView.class);
-        spyOnPresenterView();
         when(fragment.presenterView.adapterHasEvents()).thenReturn(true);
         fragment.timelineUnavailable(mock(Throwable.class));
         verify(fragment.presenterView, times(0)).transitionIntoNoDataState(any());
@@ -203,7 +202,7 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
         final View view = mock(View.class);
         when(view.getY()).thenReturn(0f);
         fragment.toolTipHeight = 1;
-        fragment.infoOverlay = spy(mock(TimelineInfoOverlay.class));
+        fragment.infoOverlay = mock(TimelineInfoOverlay.class);
         spyOnPresenterView();
         fragment.onSegmentItemClicked(0, mock(View.class), mock(TimelineEvent.class));
         verify(fragment.infoOverlay).dismiss(eq(false));

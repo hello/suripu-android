@@ -50,20 +50,4 @@ public class TrendsView extends PresenterView {
         this.recyclerView.smoothScrollToPosition(0);
     }
 
-    /**
-     * This is specifically for {@link is.hello.sense.ui.widget.graphing.trends.GridTrendGraphView}.
-     * Unlike the other 2 graphs which have static heights, its height depends on the width of the
-     * screen. It has to wait for a GlobalLayout before it can calculate its height.
-     * <p>
-     * In the past we used a LinearLayout which we were able to call {@link View#requestLayout()}
-     * from the TrendGraphView itself after the GlobalLayout occurred.
-     * Now that a RecyclerView is drawing it, the call isn't successfully re-rendering the view.
-     * <p>
-     * We can call this method when the graph has finished animating to redraw it from
-     * {@link TrendsFragment#isFinished()}.
-     */
-    public void refreshRecyclerView() {
-        this.recyclerView.requestLayout();
-    }
-
 }

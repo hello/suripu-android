@@ -202,8 +202,8 @@
     <dimen name="trends_bubblegraph_title_top_margin">10dp</dimen>
     <dimen name="trends_bubblegraph_percent_offset">4dp</dimen>
     <dimen name="trends_gridgraph_border_inset">1dp</dimen>
-    <dimen name="trends_gridgraph_border_quarter_vertical_margins">10dp</dimen>
-    <dimen name="trends_gridgraph_border_quarter_horizontal_margins">3dp</dimen>
+    <dimen name="trends_gridgraph_border_quarter_vertical_margins">@dimen/x1</dimen>
+    <dimen name="trends_gridgraph_border_quarter_horizontal_margins">@dimen/x.5</dimen>
     <dimen name="sensor_graph_height">112dp</dimen>
     <dimen name="sensor_line_distance">5dp</dimen>
 

@@ -80,6 +80,8 @@ public abstract class TrendGraphView extends View implements TrendFeedViewItem.O
         animatorContext.startWhenIdle(animator);
     }
 
+
+    //todo phase this out.
     public interface AnimationCallback {
         void isFinished();
     }
