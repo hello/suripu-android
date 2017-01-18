@@ -85,7 +85,7 @@ public abstract class FragmentTest<T extends PresenterFragment>
      * Allows fragments to provide a custom activity, useful for when they expect the activity
      * to provide an interface.
      *
-     * @return null to use default {@link org.robolectric.util.FragmentTestUtil.org.robolectric.util.FragmentTestUtil.FragmentUtilActivity}
+     * @return activity class to create fragment from.
      */
     @NonNull
     protected Class<? extends FragmentTestActivity> activityCreatingFragment() {
