@@ -25,7 +25,13 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
 
@@ -159,7 +165,6 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
         spyOnPresenterView();
         spyOnTimelineInteractor();
         fragment.update();
-        verify(fragment.presenterView).transitionOutOfNoDataState();
         verify(fragment.timelineInteractor).update();
     }
 
@@ -183,6 +188,7 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
         spyOnPresenterView();
         fragment.bindTimeline(timeline);
         verify(fragment.presenterView).bindTimelineToHeader(eq(timeline), any(), any());
+        verify(fragment.presenterView).transitionOutOfNoDataState();
     }
 
     @Test
