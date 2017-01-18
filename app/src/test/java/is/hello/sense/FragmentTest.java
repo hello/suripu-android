@@ -13,10 +13,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -29,9 +26,8 @@ import static junit.framework.Assert.assertNotNull;
 import static org.robolectric.util.FragmentTestUtil.startFragment;
 
 
-@RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class)
-public abstract class FragmentTest<T extends PresenterFragment> {
+public abstract class FragmentTest<T extends PresenterFragment>
+        extends SenseTestCase {
 
     protected T fragment;
 
@@ -48,7 +44,6 @@ public abstract class FragmentTest<T extends PresenterFragment> {
         }
     }
 
-
     @Before
     public void setUp() throws Exception {
         startFragmentAndSpy(startWithArgs());
@@ -61,10 +56,15 @@ public abstract class FragmentTest<T extends PresenterFragment> {
 
     private void startFragmentAndSpy(@Nullable final Bundle args) {
         fragment = getInstanceOfT();
+
         if (args != null) {
             fragment.setArguments(args);
         }
-        Looper.prepare();
+
+        if (Looper.myLooper() == null) {
+            Looper.prepare();
+        }
+
         startFragment(fragment, activityCreatingFragment());
         fragment = Mockito.spy(fragment);
     }
