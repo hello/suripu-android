@@ -3,6 +3,7 @@ package is.hello.sense.mvp.presenters;
 import android.app.Fragment;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 
 import is.hello.sense.ui.common.DelegateObservableContainer;
 import is.hello.sense.ui.common.ObservableContainer;
@@ -20,7 +21,8 @@ public abstract class ObserverFragment extends ScopedInjectionFragment implement
     protected static final Func1<Fragment, Boolean> FRAGMENT_VALIDATOR = f -> f.isAdded() && !f.getActivity().isFinishing();
     protected StateSafeScheduler observeScheduler = new StateSafeScheduler(stateSafeExecutor);
 
-    protected DelegateObservableContainer<Fragment> observableContainer = new DelegateObservableContainer<>(observeScheduler, this, FRAGMENT_VALIDATOR);
+    @VisibleForTesting
+    public DelegateObservableContainer<Fragment> observableContainer = new DelegateObservableContainer<>(observeScheduler, this, FRAGMENT_VALIDATOR);
 
 
     @Override

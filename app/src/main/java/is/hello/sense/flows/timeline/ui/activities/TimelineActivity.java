@@ -29,7 +29,7 @@ import is.hello.sense.util.DateFormatter;
  */
 
 public class TimelineActivity extends ScopedInjectionActivity
-    implements ZoomedOutTimelineFragment.OnTimelineDateSelectedListener {
+        implements ZoomedOutTimelineFragment.OnTimelineDateSelectedListener {
 
     public static final String EXTRA_LOCAL_DATE = TimelineActivity.class.getSimpleName() + "EXTRA_LOCAL_DATE";
     public static final String EXTRA_TIMELINE = TimelineActivity.class.getSimpleName() + "EXTRA_TIMELINE";
@@ -44,7 +44,7 @@ public class TimelineActivity extends ScopedInjectionActivity
 
     public static Intent getZoomedOutIntent(@NonNull final Context context,
                                             @NonNull final LocalDate startDate,
-                                            @Nullable final Timeline timeline){
+                                            @Nullable final Timeline timeline) {
         final Intent intent = new Intent(context, TimelineActivity.class);
         intent.putExtra(EXTRA_LOCAL_DATE, startDate);
         intent.putExtra(EXTRA_TIMELINE, timeline);
@@ -53,7 +53,7 @@ public class TimelineActivity extends ScopedInjectionActivity
     }
 
     public static Intent getInfoIntent(@NonNull final Context context,
-                                       @NonNull final Timeline timeline){
+                                       @NonNull final Timeline timeline) {
         final Intent intent = new Intent(context, TimelineActivity.class);
         intent.putExtra(EXTRA_TIMELINE, timeline);
 
@@ -70,10 +70,10 @@ public class TimelineActivity extends ScopedInjectionActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment_navigation);
         final Intent intent = getIntent();
-        if(intent.hasExtra(EXTRA_LOCAL_DATE)){
+        if (intent.hasExtra(EXTRA_LOCAL_DATE)) {
             showTimelineNavigator((LocalDate) intent.getSerializableExtra(EXTRA_LOCAL_DATE),
                                   (Timeline) intent.getSerializableExtra(EXTRA_TIMELINE));
-        } else if(intent.hasExtra(EXTRA_TIMELINE)){
+        } else if (intent.hasExtra(EXTRA_TIMELINE)) {
             showTimelineInfo((Timeline) intent.getSerializableExtra(EXTRA_TIMELINE));
         }
         registerReceiver(onTimeChanged, new IntentFilter(Intent.ACTION_TIME_CHANGED));
@@ -87,7 +87,6 @@ public class TimelineActivity extends ScopedInjectionActivity
     }
 
 
-
     //region Timeline Navigation
 
     public void showTimelineNavigator(@NonNull final LocalDate startDate, @Nullable final Timeline timeline) {
@@ -98,8 +97,8 @@ public class TimelineActivity extends ScopedInjectionActivity
         getFragmentManager()
                 .beginTransaction()
                 .replace(getRootContainerIdRes(),
-                     navigatorFragment,
-                     ZoomedOutTimelineFragment.TAG)
+                         navigatorFragment,
+                         ZoomedOutTimelineFragment.TAG)
                 .addToBackStack(ZoomedOutTimelineFragment.TAG)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commitAllowingStateLoss();
@@ -121,7 +120,7 @@ public class TimelineActivity extends ScopedInjectionActivity
 
     //region TimelineInfo Breakdown
 
-    public void showTimelineInfo(@NonNull final Timeline timeline){
+    public void showTimelineInfo(@NonNull final Timeline timeline) {
         Analytics.trackEvent(Analytics.Timeline.EVENT_SLEEP_SCORE_BREAKDOWN, null);
         final TimelineInfoFragment infoOverlay =
                 TimelineInfoFragment.newInstance(timeline,
@@ -139,7 +138,9 @@ public class TimelineActivity extends ScopedInjectionActivity
         finish();
     }
 
-    public @IdRes final int getRootContainerIdRes(){
+    public
+    @IdRes
+    final int getRootContainerIdRes() {
         return R.id.activity_fragment_navigation_container;
     }
 }

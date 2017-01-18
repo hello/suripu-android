@@ -36,17 +36,21 @@ import android.view.ViewGroup;
 public abstract class FragmentPagerAdapter extends PagerAdapter {
     private final FragmentManager fragmentManager;
 
-    private @Nullable FragmentTransaction currentTransaction;
-    private @Nullable Fragment currentFragment;
+    private
+    @Nullable
+    FragmentTransaction currentTransaction;
+    private
+    @Nullable
+    Fragment currentFragment;
 
     //region Contract
 
     /**
      * Should be overriden by subclasses and made public.
      *
-     * @param fragmentManager   The fragment manager to add fragments to.
+     * @param fragmentManager The fragment manager to add fragments to.
      */
-    protected FragmentPagerAdapter(@NonNull FragmentManager fragmentManager) {
+    protected FragmentPagerAdapter(@NonNull final FragmentManager fragmentManager) {
         this.fragmentManager = fragmentManager;
     }
 
@@ -55,27 +59,34 @@ public abstract class FragmentPagerAdapter extends PagerAdapter {
      * populate a certain position with a fragment.
      * <p>
      * Subclasses should return a new instance each time this method is called.
-     * @param position  The position a fragment is required for.
-     * @return  A new fragment instance. Must not be null.
+     *
+     * @param position The position a fragment is required for.
+     * @return A new fragment instance. Must not be null.
      */
-    public abstract @NonNull Fragment createFragment(int position);
+    public abstract
+    @NonNull
+    Fragment createFragment(int position);
 
     /**
      * Provides an item id for a given position.
      * <p>
      * The default implementation returns the position.
-     * @param position  The position an id is needed for.
-     * @return  A stable item id. Used in tag generation.
+     *
+     * @param position The position an id is needed for.
+     * @return A stable item id. Used in tag generation.
      */
-    public long getItemId(int position) {
+    public long getItemId(final int position) {
         return position;
     }
 
     /**
      * Retrieve the currently visible fragment from the adapter.
-     * @return  The currently visible fragment if applicable.
+     *
+     * @return The currently visible fragment if applicable.
      */
-    public @Nullable Fragment getCurrentFragment() {
+    public
+    @Nullable
+    Fragment getCurrentFragment() {
         return currentFragment;
     }
 
@@ -86,35 +97,40 @@ public abstract class FragmentPagerAdapter extends PagerAdapter {
 
     /**
      * Generates a fragment tag from a given container view iid and item id.
-     * @param viewContainerId   The id of the container of the fragment.
-     * @param itemId            The id of the item.
+     *
+     * @param viewContainerId The id of the container of the fragment.
+     * @param itemId          The id of the item.
      * @return A stable tag for displaying the fragment.
      */
-    public static String makeFragmentTag(int viewContainerId, long itemId) {
+    public static String makeFragmentTag(final int viewContainerId,
+                                         final long itemId) {
         return "is:hello:sense:pager:" + viewContainerId + ":" + itemId;
     }
 
     @Override
-    public void startUpdate(ViewGroup container) {
+    public void startUpdate(final ViewGroup container) {
         // Do nothing.
     }
 
     @SuppressLint("CommitTransaction")
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public Object instantiateItem(final ViewGroup container,
+                                  final int position) {
         if (currentTransaction == null) {
             this.currentTransaction = fragmentManager.beginTransaction();
         }
 
-        String tag = makeFragmentTag(container.getId(), getItemId(position));
+        final String tag = makeFragmentTag(container.getId(), getItemId(position));
         Fragment fragment = fragmentManager.findFragmentByTag(tag);
         if (fragment != null) {
-            if (fragment.isDetached()) {
+            if (fragment.isDetached() && currentTransaction != null) {
                 currentTransaction.attach(fragment);
             }
         } else {
             fragment = createFragment(position);
-            currentTransaction.add(container.getId(), fragment, tag);
+            if (currentTransaction != null) {
+                currentTransaction.add(container.getId(), fragment, tag);
+            }
         }
 
         if (fragment != currentFragment) {
@@ -127,12 +143,14 @@ public abstract class FragmentPagerAdapter extends PagerAdapter {
 
     @SuppressLint("CommitTransaction")
     @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
+    public void destroyItem(final ViewGroup container,
+                            final int position,
+                            final Object object) {
         if (currentTransaction == null) {
             this.currentTransaction = fragmentManager.beginTransaction();
         }
 
-        Fragment fragment = (Fragment) object;
+        final Fragment fragment = (Fragment) object;
         currentTransaction.remove(fragment);
 
         if (currentFragment == fragment) {
@@ -141,7 +159,7 @@ public abstract class FragmentPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public void finishUpdate(ViewGroup container) {
+    public void finishUpdate(final ViewGroup container) {
         if (currentTransaction != null) {
             currentTransaction.commitAllowingStateLoss();
             this.currentTransaction = null;
@@ -151,8 +169,10 @@ public abstract class FragmentPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public void setPrimaryItem(ViewGroup container, int position, Object object) {
-        Fragment fragment = (Fragment) object;
+    public void setPrimaryItem(final ViewGroup container,
+                               final int position,
+                               final Object object) {
+        final Fragment fragment = (Fragment) object;
         if (fragment != currentFragment) {
             if (currentFragment != null) {
                 currentFragment.setMenuVisibility(false);
@@ -167,7 +187,8 @@ public abstract class FragmentPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object object) {
+    public boolean isViewFromObject(final View view,
+                                    final Object object) {
         return (view == ((Fragment) object).getView());
     }
 
