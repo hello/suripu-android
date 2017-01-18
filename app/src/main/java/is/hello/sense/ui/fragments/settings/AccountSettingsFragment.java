@@ -146,49 +146,49 @@ public class AccountSettingsFragment extends InjectionFragment
         adapter.add(profilePictureItem);
         nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
                                                           this::changeName);
-        nameItem.setIcon(R.drawable.icon_settings_name, R.string.label_name);
+        nameItem.setIcon(R.drawable.icon_settings_user_24, R.string.label_name);
         adapter.add(nameItem);
         emailItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder), this::changeEmail);
-        emailItem.setIcon(R.drawable.icon_settings_email, R.string.label_email);
+        emailItem.setIcon(R.drawable.icon_settings_email_24, R.string.label_email);
         adapter.add(emailItem);
 
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
         final SettingsRecyclerAdapter.DetailItem passwordItem =
                 new SettingsRecyclerAdapter.DetailItem(getString(R.string.title_change_password),
                                                        this::changePassword);
-        passwordItem.setIcon(R.drawable.icon_settings_lock, R.string.label_password);
+        passwordItem.setIcon(R.drawable.icon_settings_lock_24, R.string.label_password);
         adapter.add(passwordItem);
 
         birthdayItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_birthday), this::changeBirthDate);
-        birthdayItem.setIcon(R.drawable.icon_settings_calendar, R.string.label_birthday);
+        birthdayItem.setIcon(R.drawable.icon_settings_calendar_24, R.string.label_birthday);
 
         adapter.add(birthdayItem);
         this.genderItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_gender),
                                                                  this::changeGender);
-        genderItem.setIcon(R.drawable.icon_settings_gender, R.string.label_gender);
+        genderItem.setIcon(R.drawable.icon_settings_gender_24, R.string.label_gender);
         adapter.add(genderItem);
 
         this.heightItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_height),
                                                                  this::changeHeight);
-        heightItem.setIcon(R.drawable.icon_settings_height, R.string.label_height);
+        heightItem.setIcon(R.drawable.icon_settings_height_24, R.string.label_height);
         adapter.add(heightItem);
 
         this.weightItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_weight),
                                                                  this::changeWeight);
-        weightItem.setIcon(R.drawable.icon_settings_weight, R.string.label_weight);
+        weightItem.setIcon(R.drawable.icon_settings_weight_24, R.string.label_weight);
         adapter.add(weightItem);
 
         decoration.addTopInset(adapter.getItemCount(), sectionPadding);
 
         final SettingsRecyclerAdapter.DetailItem unitsAndTimeItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_units_and_time),
                                                                                                        this::onUnitsAndTimeClick);
-        //todo replace with unit and time svg once ready
-        unitsAndTimeItem.setIcon(R.drawable.icon_sense_24, R.string.label_units_and_time);
+        unitsAndTimeItem.setIcon(R.drawable.icon_settings_unitstime_24_fill, R.string.label_units_and_time);
         adapter.add(unitsAndTimeItem);
 
         decoration.addTopInset(adapter.getItemCount(), sectionPadding);
         this.enhancedAudioItem = new SettingsRecyclerAdapter.ToggleItem(getString(R.string.label_enhanced_audio),
                                                                         this::changeEnhancedAudio);
+        this.enhancedAudioItem.setIcon(R.drawable.icon_settings_enhanced_audio_24);
         adapter.add(enhancedAudioItem);
 
         adapter.add(new SettingsRecyclerAdapter.CheckBoxItem<>(getString(R.string.info_enhanced_audio), null));
@@ -197,7 +197,7 @@ public class AccountSettingsFragment extends InjectionFragment
         final SettingsRecyclerAdapter.DetailItem signOutItem =
                 new SettingsRecyclerAdapter.DetailItem(getString(R.string.action_log_out),
                                                        this::signOut);
-        signOutItem.setIcon(R.drawable.icon_settings_signout, R.string.action_log_out);
+        signOutItem.setIcon(R.drawable.icon_settings_logout_24, R.string.action_log_out);
         adapter.add(signOutItem);
 
         recyclerView.setAdapter(adapter);

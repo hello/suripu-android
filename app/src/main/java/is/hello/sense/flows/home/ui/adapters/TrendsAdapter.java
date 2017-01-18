@@ -21,6 +21,7 @@ import is.hello.sense.ui.widget.graphing.trends.GridTrendGraphView;
 import is.hello.sense.ui.widget.graphing.trends.TrendFeedViewItem;
 import is.hello.sense.ui.widget.graphing.trends.TrendGraphLayout;
 import is.hello.sense.ui.widget.graphing.trends.TrendGraphView;
+import is.hello.sense.util.Logger;
 
 public class TrendsAdapter extends ArrayRecyclerAdapter<Graph, TrendsAdapter.BaseViewHolder> {
     private static final int WELCOME_TYPE = 0;
@@ -98,6 +99,9 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<Graph, TrendsAdapter.Bas
     }
 
     public void showError() {
+        if (getItemCount() != 1) {
+            return; // doesn't make sense to remove valid data if they lose connection.
+        }
         this.showError = true;
         clear();
         notifyDataSetChanged();
@@ -127,9 +131,6 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<Graph, TrendsAdapter.Bas
             super(itemView);
         }
 
-        public void bind(final int position) {
-
-        }
     }
 
 
@@ -166,9 +167,9 @@ public class TrendsAdapter extends ArrayRecyclerAdapter<Graph, TrendsAdapter.Bas
                                                               animationCallback);
                     break;
                 default:
+                    Logger.debug(getClass().getSimpleName(), "Unknown graph type with value: " + graph.getGraphType());
                     return;
             }
-            itemTrendsBinding.itemTrendsContainer.getContext();
             itemTrendsBinding.itemTrendsContainer.addView(new TrendFeedViewItem(new TrendGraphLayout(context, trendGraphView)));
         }
     }

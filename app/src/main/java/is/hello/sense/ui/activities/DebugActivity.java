@@ -29,10 +29,12 @@ import is.hello.sense.ui.adapter.SettingsRecyclerAdapter.DetailItem;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
 import is.hello.sense.ui.widget.WhatsNewLayout;
 import is.hello.sense.util.Constants;
+import is.hello.sense.util.InternalPrefManager;
 import is.hello.sense.util.SessionLogger;
 
 public class DebugActivity extends InjectionActivity {
@@ -75,14 +77,13 @@ public class DebugActivity extends InjectionActivity {
         } catch (final ClassNotFoundException ignored) {
             // Do nothing.
         }
-    // todo remove when done testing
+        // todo remove when done testing
         adapter.add(new DetailItem("View Log", this::viewLog));
         adapter.add(new DetailItem("Clear Log", this::clearLog));
 
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
         adapter.add(new DetailItem("Share Log", this::sendLog));
 
-        adapter.add(new DetailItem("Show New Home Activity", this::showNewHomeActivity));
         adapter.add(new DetailItem("Show Room Check", this::showRoomCheck));
         adapter.add(new DetailItem("Show Onboarding Smart Alarm", this::showOnboardingSmartAlarm));
         adapter.add(new DetailItem("Show Update Pill", this::showUpdatePill));
@@ -93,6 +94,7 @@ public class DebugActivity extends InjectionActivity {
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
 
         adapter.add(new DetailItem("Forget welcome dialogs", this::clearHandholdingSettings));
+        adapter.add(new DetailItem("Forget account tutorials", this::clearTutorials));
         adapter.add(new DetailItem("Forget persistent preferences", this::clearPersistentPreferences));
 
         try {
@@ -119,10 +121,6 @@ public class DebugActivity extends InjectionActivity {
             actionBar.setTitle("Sense " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
             actionBar.setSubtitle(apiEndpoint.getName());
         }
-    }
-
-    private void showNewHomeActivity() {
-        startActivity(new Intent(this, HomeActivity.class));
     }
 
     public void showRoomCheck() {
@@ -186,6 +184,11 @@ public class DebugActivity extends InjectionActivity {
         WelcomeDialogFragment.clearShownStates(this);
         AccountPreferencesInteractor.newInstance(this).reset();
         Toast.makeText(getApplicationContext(), "Forgot welcome dialogs", Toast.LENGTH_SHORT).show();
+    }
+
+    public void clearTutorials(){
+        Tutorial.clearTutorials(this);
+        Toast.makeText(getApplicationContext(), "Forgot tutorials for account: "+ InternalPrefManager.getAccountId(this), Toast.LENGTH_SHORT).show();
     }
 
     public void reEnableReviewPrompt() {

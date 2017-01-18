@@ -3,17 +3,18 @@ package is.hello.sense.ui.dialogs;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.widget.Button;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.robolectric.Robolectric;
 
 import is.hello.buruberi.bluetooth.errors.GattException;
 import is.hello.buruberi.util.Operation;
+import is.hello.commonsense.bluetooth.errors.BuruberiReportingProvider;
 import is.hello.commonsense.util.Errors;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
@@ -29,6 +30,12 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
     private static final String MESSAGE = "Could not reverse polarity of the neutron flow.";
 
     private Activity parent;
+
+    @BeforeClass
+    public static void setUpReporting() {
+        //if this is not called buruberi errors will not have descriptive error messages
+        BuruberiReportingProvider.register();
+    }
 
     @Before
     public void setUp() {
@@ -133,7 +140,7 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
         final SenseAlertDialog dialog = show(dialogFragment);
         final String expectedMessage =
                 "An unknown error occurred with your device's Bluetooth, please try again." +
-                "\\n\\nPlease turn airplane mode on for a few seconds, turn it off, and then try again. " +
+                "\n\nPlease turn airplane mode on for a few seconds, turn it off, and then try again. " +
                 "If this problem persists, please visit our support site.";
         assertThat(dialog.getMessage().toString(), is(equalTo(expectedMessage)));
         assertThat(getTrackedError(dialogFragment), is(equalTo(new String[] {
@@ -154,7 +161,7 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
                 .withAddendum(R.string.error_addendum_unstable_stack)
                 .build();
         final SenseAlertDialog dialog = show(dialogFragment);
-        final String expectedMessage = MESSAGE + "\\n\\nPlease turn airplane mode on for a few seconds, " +
+        final String expectedMessage = MESSAGE + "\n\nPlease turn airplane mode on for a few seconds, " +
                 "turn it off, and then try again. If this problem persists, please visit our support site.";
         assertThat(dialog.getMessage().toString(), is(equalTo(expectedMessage)));
         assertThat(getTrackedError(dialogFragment), is(equalTo(new String[] {
@@ -172,7 +179,7 @@ public class ErrorDialogFragmentTests extends SenseTestCase {
                 .withSupportLink()
                 .build();
         SenseAlertDialog dialog = show(dialogFragment);
-        String expectedMessage = MESSAGE + "\\n\\nHaving trouble? Contact support";
+        String expectedMessage = MESSAGE + "\n\nHaving trouble? Contact support";
         assertThat(dialog.getMessage().toString(), is(equalTo(expectedMessage)));
         assertThat(getTrackedError(dialogFragment), is(equalTo(new String[] {
                 expectedMessage,

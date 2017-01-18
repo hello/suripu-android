@@ -123,7 +123,7 @@ public class Graph extends ApiResponse {
             }
 
             final Graph graph = new Graph(this);
-            if (offset >= 0) {
+            if (offset > 0) {
                 final GraphSection temp = new GraphSection(graphSection);
                 graph.addSection(temp);
                 for (int i = 0; i < offset; i++) {
