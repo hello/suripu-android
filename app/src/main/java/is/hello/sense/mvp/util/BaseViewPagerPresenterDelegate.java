@@ -12,7 +12,7 @@ import is.hello.sense.util.NotTested;
 public abstract class BaseViewPagerPresenterDelegate implements ViewPagerPresenter {
 
     public final static int DEFAULT_STARTING_ITEM_POSITION = 0;
-    public final static int DEFAULT_OFFSCREEN_PAGE_LIMIT = 4;
+    public final static int DEFAULT_OFFSCREEN_PAGE_LIMIT = 2;
 
     @NonNull
     @Override

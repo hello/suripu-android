@@ -537,6 +537,10 @@ public class HomeActivity extends ScopedInjectionActivity
             };
         }
 
+        @Override
+        public int getOffscreenPageLimit() {
+            return 4;
+        }
     }
 
 
