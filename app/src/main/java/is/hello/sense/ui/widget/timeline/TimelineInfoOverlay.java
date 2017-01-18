@@ -21,6 +21,7 @@ import android.support.v4.content.ContextCompat;
 import android.text.SpannableStringBuilder;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
@@ -155,6 +156,11 @@ public class TimelineInfoOverlay implements Handler.Callback {
             return;
         }
 
+        final Window wm = dialog.getWindow();
+        if(wm == null) {
+            return;
+        }
+
         final Rect viewFrame = new Rect();
         fromView.getGlobalVisibleRect(viewFrame);
         final Rect backgroundFrame = new Rect();
@@ -163,11 +169,12 @@ public class TimelineInfoOverlay implements Handler.Callback {
         backgroundView.getGlobalVisibleRect(backgroundFrame);
         final Point screenSize = new Point();
         //getRealSize includes status bar
-        dialog.getWindow().getWindowManager().getDefaultDisplay().getRealSize(screenSize);
+        wm.getWindowManager().getDefaultDisplay().getRealSize(screenSize);
         // global visible rect returns incorrect top and bottom for rect
         final int backgroundInset = resources.getDimensionPixelOffset(R.dimen.bottom_bar_height);
-        backgroundFrame.top = backgroundInset; //make 0 again once timeline header is moved into recyclerview
+        backgroundFrame.top = 0;
         backgroundFrame.bottom = screenSize.y - backgroundInset;
+
         contents.setBackground(createBackground(screenSize,
                                                 backgroundFrame,
                                                 viewFrame));
