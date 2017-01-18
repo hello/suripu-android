@@ -472,11 +472,11 @@ import is.hello.sense.ui.widget.util.Styles;
      * Get the name of the day that the given months first day is on as an integer.
      *
      * @param month - int representing january, february, ... , december.
-     * @return int that represents Sun-Sat
+     * @return int that represents Sun-Sat (1-7)
      * @throws ParseException
      */
-    public static int getFirstDayOfMonthValue(int month) throws ParseException {
-        Calendar cal = Calendar.getInstance();
+    public static int getFirstDayOfMonthValue(final int month) throws ParseException {
+        final Calendar cal = Calendar.getInstance();
         if (cal.get(Calendar.MONTH) < month) {
             cal.set(Calendar.YEAR, cal.get(Calendar.YEAR) - 1);
         }
