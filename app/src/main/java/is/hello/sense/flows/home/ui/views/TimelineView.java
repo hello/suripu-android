@@ -224,9 +224,6 @@ public class TimelineView extends PresenterView {
     }
 
     public void transitionIntoNoDataState(@NonNull final Action1<TimelineNoDataHeaderView> configurer) {
-        if (inNoDataState()) {
-            return;
-        }
         final TimelineNoDataHeaderView newHeader = new TimelineNoDataHeaderView(getContext());
         configurer.call(newHeader);
         if (ViewCompat.isLaidOut(this.recyclerView)) {
