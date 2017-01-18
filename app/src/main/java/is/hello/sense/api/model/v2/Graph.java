@@ -3,6 +3,7 @@ package is.hello.sense.api.model.v2;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -112,32 +113,35 @@ public class Graph extends ApiResponse {
             final int offset = graphSection.getFirstDayOfMonthOffset();
             final Graph graph = new Graph(this);
             if (offset > 0) {
-                final GraphSection temp = GraphSection.withHighlightedTitle(graphSection)
-                                                      .withDoNotShowValues(offset);
-                graph.addSection(temp);
+                graph.addSection(GraphSection.withHighlightedTitle(graphSection)
+                                             .withDoNotShowValues(offset));
             }
             for (int i = offset; i < graphSection.getValues().size() + offset; i++) {
-                final GraphSection temp;
                 if (i % DAYS_IN_WEEK == 0) {
-                    temp = GraphSection.withHighlightedTitle(graphSection);
-                    graph.addSection(temp);
-                } else {
-                    temp = graph.getSection(graph.getSections().size() - 1);
+                    graph.addSection(GraphSection.withHighlightedTitle(graphSection));
                 }
-                temp.addValue(graphSection.getValue(i - offset));
+                final GraphSection temp = graph.getSection(graph.getSections().size() - 1);
+                if(temp != null) {
+                    temp.addValue(graphSection.getValue(i - offset));
+                }
 
             }
             for (int i = 0; i < graphSection.getTitles().size(); i++) {
                 final String title = graphSection.getTitles().get(i);
-                graph.getSection(i).addTitle(title);
+                final GraphSection temp = graph.getSection(i);
+                if(temp != null) {
+                    temp.addTitle(title);
+                }
             }
             for (int highlightedIndex : graphSection.getHighlightedValues()) {
                 highlightedIndex += offset;
                 final int sectionIndex = highlightedIndex / DAYS_IN_WEEK;
                 final int cell = highlightedIndex % DAYS_IN_WEEK;
-                graph.getSection(sectionIndex).addHighlightedValues(cell);
+                final GraphSection temp = graph.getSection(sectionIndex);
+                if(temp != null) {
+                    temp.addHighlightedValues(cell);
+                }
             }
-
             graphs.add(graph);
         }
         return graphs;
@@ -147,7 +151,12 @@ public class Graph extends ApiResponse {
         this.sections.add(section);
     }
 
+    @Nullable
     private GraphSection getSection(final int index) {
+        if(index < 0 || index >= sections.size()) {
+            Log.e(getClass().getName(), String.format("%d index is out of bounds in sections of size %d", index, sections.size()));
+            return null;
+        }
         return sections.get(index);
     }
 

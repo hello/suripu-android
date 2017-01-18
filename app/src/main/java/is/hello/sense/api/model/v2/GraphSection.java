@@ -16,6 +16,7 @@ import is.hello.sense.util.DateFormatter;
 
 public class GraphSection extends ApiResponse {
     private static final Float DO_NOT_SHOW_VALUE = -2f;
+    private static final int TITLE_POSITION = 0;
 
     @SerializedName("values")
     private List<Float> values;
@@ -66,6 +67,7 @@ public class GraphSection extends ApiResponse {
         return values;
     }
 
+    @Nullable
     public Float getValue(final int index) {
         if(index < 0 || index >= values.size()) {
             Log.e(getClass().getName(), String.format("GraphSection.values %d out of bounds index", index));
@@ -98,11 +100,13 @@ public class GraphSection extends ApiResponse {
             if (titles == null || titles.isEmpty()) {
                 throw new IllegalStateException("GraphSection title required to determine first day of month offset");
             }
-            final String monthTitle = titles.get(0);
+            final String monthTitle = titles.get(TITLE_POSITION);
             final int monthValue = DateFormatter.getMonthInt(monthTitle);
             offset = DateFormatter.getFirstDayOfMonthValue(monthValue) - 1;
-        } catch (final ParseException | IllegalStateException e) {
+        } catch (final ParseException e) {
             Log.e(getClass().getName(), "Problem parsing month: " + e.getLocalizedMessage());
+        } catch (final IllegalStateException e) {
+            Log.e(getClass().getName(), e.getLocalizedMessage());
         }
 
         return offset;
