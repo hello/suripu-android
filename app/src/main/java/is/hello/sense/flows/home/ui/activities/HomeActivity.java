@@ -377,6 +377,7 @@ public class HomeActivity extends ScopedInjectionActivity
         tabLayout.addOnTabSelectedListener(new HomeTabListener());
         final TabLayout.Tab tab = tabLayout.getTabAt(currentItemIndex);
         if (shouldSelect && tab != null) {
+            tab.setIcon(drawablesActive[currentItemIndex]);
             tab.select();
         }
     }
@@ -490,6 +491,9 @@ public class HomeActivity extends ScopedInjectionActivity
 
         @Override
         public void onTabSelected(final TabLayout.Tab tab) {
+            if (!lastNightInteractor.timeline.hasValue()) {
+                lastNightInteractor.update();
+            }
             if (tab == null) {
                 return;
             }
