@@ -15,6 +15,9 @@ import android.widget.ImageView;
 import is.hello.sense.R;
 import is.hello.sense.util.Constants;
 
+import static is.hello.sense.util.PaintUtil.drawAndCenterText;
+import static is.hello.sense.util.PaintUtil.getCorrectTextSize;
+
 /**
  * Create this with {@link is.hello.sense.ui.widget.graphing.drawables.SleepScoreIconDrawable.Builder}
  */
@@ -27,7 +30,6 @@ public class SleepScoreIconDrawable extends Drawable {
     private final Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Rect textBounds = new Rect();
     private final int height;
     private final int width;
     private final String text;
@@ -53,7 +55,10 @@ public class SleepScoreIconDrawable extends Drawable {
             this.textPaint.setColor(unselectedColor);
             this.fillPaint.setColor(backgroundColor);
         }
-        getCorrectTextSize();
+        getCorrectTextSize(textPaint,
+                           text,
+                           getIntrinsicWidth() - (int) (getIntrinsicWidth() * TEXT_MARGIN_RATIO),
+                           getIntrinsicHeight() - (int) (getIntrinsicHeight() * TEXT_MARGIN_RATIO));
     }
 
     @Override
@@ -81,8 +86,8 @@ public class SleepScoreIconDrawable extends Drawable {
         canvas.drawCircle(centerX, centerY, radius - radius * CIRCLE_THICKNESS_RATIO, this.fillPaint);
         drawAndCenterText(canvas, this.textPaint, this.text);
 
-
     }
+
 
     /**
      * This does nothing
@@ -117,41 +122,6 @@ public class SleepScoreIconDrawable extends Drawable {
         imageView.setBackground(this);
     }
 
-    private void drawAndCenterText(final Canvas canvas,
-                                   final Paint paint,
-                                   final String text) {
-        canvas.getClipBounds(this.textBounds);
-        final float cHeight = this.textBounds.height();
-        final float cWidth = this.textBounds.width();
-        paint.setTextAlign(Paint.Align.LEFT);
-        paint.getTextBounds(text, 0, text.length(), this.textBounds);
-        final float x = cWidth / 2f - this.textBounds.width() / 2f - this.textBounds.left;
-        final float y = cHeight / 2f + this.textBounds.height() / 2f - this.textBounds.bottom;
-        canvas.drawText(text, x, y, paint);
-    }
-
-    private void getCorrectTextSize() {
-        this.textPaint.setTextSize(0);
-        final int height = getIntrinsicHeight() - (int) (getIntrinsicHeight() * TEXT_MARGIN_RATIO);
-        final int width = getIntrinsicWidth() - (int) (getIntrinsicWidth() * TEXT_MARGIN_RATIO);
-        while (doesTextFit(width, height)) {
-            this.textPaint.setTextSize(this.textPaint.getTextSize() + 1);
-        }
-        // its ok to be bigger. We have lots of margin
-
-    }
-
-    @SuppressWarnings("RedundantIfStatement")
-    private boolean doesTextFit(final int width, final int height) {
-        this.textPaint.getTextBounds(this.text, 0, this.text.length(), this.textBounds);
-        if (this.textBounds.height() > height) {
-            return false;
-        }
-        if (this.textBounds.width() > width) {
-            return false;
-        }
-        return true;
-    }
 
     public static class Builder {
         private final Context context;

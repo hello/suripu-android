@@ -12,7 +12,7 @@
     android:visibility="gone"
     tools:showIn="@layout/view_expansion_detail">
 
-    <ImageView
+    <is.hello.sense.flows.expansions.ui.widget.ExpansionImageView
         android:id="@+id/view_expansion_detail_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -26,6 +26,7 @@
     <!-- Text -->
 
     <!-- Official text sizes provided by Nathan -->
+    <dimen name="x.25">2dp</dimen>
     <dimen name="x.5">4dp</dimen>
     <dimen name="x1">8dp</dimen>
     <dimen name="x2">16dp</dimen>
