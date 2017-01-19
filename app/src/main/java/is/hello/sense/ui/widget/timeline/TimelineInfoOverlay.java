@@ -156,24 +156,24 @@ public class TimelineInfoOverlay implements Handler.Callback {
             return;
         }
 
-        final Window wm = dialog.getWindow();
+        final Window wm = activity.getWindow();
         if(wm == null) {
             return;
         }
+        final Point screenSize = new Point();
+        wm.getWindowManager().getDefaultDisplay().getSize(screenSize);
+
+        final Rect backgroundFrame = new Rect();
+        final View backgroundView = activity.findViewById(backgroundRootResId);
+        backgroundView.getGlobalVisibleRect(backgroundFrame);
 
         final Rect viewFrame = new Rect();
         fromView.getGlobalVisibleRect(viewFrame);
-        final Rect backgroundFrame = new Rect();
+        //todo needs debugging here because alignment is off when not center of screen
+        viewFrame.top -= backgroundFrame.top /2;
+        viewFrame.bottom -= backgroundFrame.top /2;
 
-        final View backgroundView = activity.findViewById(backgroundRootResId);
-        backgroundView.getGlobalVisibleRect(backgroundFrame);
-        final Point screenSize = new Point();
-        //getRealSize includes status bar
-        wm.getWindowManager().getDefaultDisplay().getRealSize(screenSize);
-        // global visible rect returns incorrect top and bottom for rect
-        final int backgroundInset = resources.getDimensionPixelOffset(R.dimen.bottom_bar_height);
         backgroundFrame.top = 0;
-        backgroundFrame.bottom = screenSize.y - backgroundInset;
 
         contents.setBackground(createBackground(screenSize,
                                                 backgroundFrame,
