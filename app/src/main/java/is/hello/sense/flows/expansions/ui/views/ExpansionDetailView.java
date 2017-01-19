@@ -56,6 +56,8 @@ public class ExpansionDetailView extends PresenterView {
         this.showConnectedContainer(false); // can't set included layouts to gone
         this.enabledContainer = (ViewGroup) connectedContainer.findViewById(R.id.view_expansion_detail_enabled_container);
         this.enabledTextView = (TextView) enabledContainer.findViewById(R.id.view_expansion_detail_enabled_tv);
+        this.enabledTextView.setCompoundDrawablePadding(getResources().getDimensionPixelSize(R.dimen.x1));
+        this.enabledTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.info_button_icon_small, 0);
         this.enabledSwitch = (CompoundButton) enabledContainer.findViewById(R.id.view_expansion_detail_configuration_selection_switch);
         // connected and configurations found
         this.configurationErrorImageView = (ImageView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_error);

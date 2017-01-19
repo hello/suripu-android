@@ -3,7 +3,6 @@ package is.hello.sense.mvp.view;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -18,6 +17,7 @@ import android.view.animation.AnimationUtils;
 import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
+import is.hello.sense.ui.adapter.FragmentPagerAdapter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 
@@ -28,6 +28,7 @@ public final class ViewPagerPresenterView extends PresenterView {
     private final ExtendedViewPager viewPager;
     private final TabLayout tabLayout;
     private final FloatingActionButton fab;
+    private final Animation fabLoadingAnimation;
 
     /**
      * @param fragment - Fragment providing initialization settings and callbacks.
@@ -38,6 +39,8 @@ public final class ViewPagerPresenterView extends PresenterView {
         this.viewPager = (ExtendedViewPager) findViewById(R.id.view_view_pager_extended_view_pager);
         this.tabLayout = (TabLayout) findViewById(R.id.view_view_pager_tab_layout);
         this.tabLayout.setupWithViewPager(this.viewPager);
+        this.fabLoadingAnimation = AnimationUtils.loadAnimation(context, R.anim.rotate_360);
+        this.fabLoadingAnimation.setRepeatCount(Animation.INFINITE);
         this.fab = (FloatingActionButton) findViewById(R.id.view_view_pager_fab);
         createTabsAndPager(fragment);
     }
@@ -67,12 +70,12 @@ public final class ViewPagerPresenterView extends PresenterView {
         final StaticFragmentAdapter adapter =
                 new StaticFragmentAdapter(fragment.getDesiredFragmentManager(),
                                           items);
-        this.viewPager.setOffscreenPageLimit(2);
+        this.viewPager.setOffscreenPageLimit(fragment.getOffscreenPageLimit());
         this.viewPager.setAdapter(adapter);
         this.viewPager.setEnabled(true);
 
         // TabLayout
-        tabLayout.removeAllTabs();
+        this.tabLayout.removeAllTabs();
         for (final StaticFragmentAdapter.Item item : items) {
             this.tabLayout.addTab(this.tabLayout.newTab().setText(item.getTitle()));
         }
@@ -84,39 +87,39 @@ public final class ViewPagerPresenterView extends PresenterView {
     }
 
     public void setTabLayoutVisible(final boolean visible) {
-        tabLayout.setVisibility(visible ? VISIBLE : GONE);
+        this.tabLayout.setVisibility(visible ? VISIBLE : GONE);
     }
 
     public void lockViewPager(final int position) {
-        viewPager.setScrollingEnabled(false);
-        viewPager.setCurrentItem(position);
+        this.viewPager.setScrollingEnabled(false);
+        this.viewPager.setCurrentItem(position);
     }
 
     public void unlockViewPager() {
-        viewPager.setScrollingEnabled(true);
+        this.viewPager.setScrollingEnabled(true);
     }
 
     public void removeTabs() {
-        tabLayout.removeAllTabs();
+        this.tabLayout.removeAllTabs();
         setTabLayoutVisible(false);
     }
 
     public void addViewPagerListener(final ViewPager.OnPageChangeListener listener) {
-        viewPager.addOnPageChangeListener(listener);
+        this.viewPager.addOnPageChangeListener(listener);
     }
 
     public void removeViewPagerListener(final ViewPager.OnPageChangeListener listener) {
-        viewPager.removeOnPageChangeListener(listener);
+        this.viewPager.removeOnPageChangeListener(listener);
     }
 
     @Nullable
     public Fragment getFragmentWithIndex(@NonNull final FragmentManager fragmentManager,
-                                         final int index){
-        return fragmentManager.findFragmentByTag("android:switcher:" + R.id.view_view_pager_extended_view_pager + ":"+index);
+                                         final int index) {
+        return fragmentManager.findFragmentByTag(FragmentPagerAdapter.makeFragmentTag(R.id.view_view_pager_extended_view_pager, index));
     }
 
     public int getCurrentFragmentPosition() {
-        return viewPager.getCurrentItem();
+        return this.viewPager.getCurrentItem();
     }
     //endregion
 
@@ -135,7 +138,7 @@ public final class ViewPagerPresenterView extends PresenterView {
     public void setFabVisible(final boolean visible) {
         if (visible) {
             this.fab.show();
-        } else if (this.fab.getVisibility() == VISIBLE) {
+        } else {
             this.fab.hide();
         }
     }
@@ -143,22 +146,23 @@ public final class ViewPagerPresenterView extends PresenterView {
     public void updateFab(final @DrawableRes int resource,
                           final @Nullable View.OnClickListener listener) {
         this.setFabLoading(false);
-        fab.setOnClickListener(listener);
-        fab.setImageResource(resource);
+        this.fab.setOnClickListener(listener);
+        this.fab.setImageResource(resource);
     }
 
     public void setFabLoading(final boolean loading) {
-        fab.setClickable(!loading);
-        fab.setLongClickable(!loading);
-        fab.setFocusable(!loading);
+        this.fab.setClickable(!loading);
+        this.fab.setLongClickable(!loading);
+        this.fab.setFocusable(!loading);
         if (loading) {
-            fab.setOnClickListener(null);
-            fab.setImageResource(R.drawable.sound_loading_icon);
-            final Animation animation = AnimationUtils.loadAnimation(context, R.anim.rotate_360);
-            animation.setRepeatCount(Animation.INFINITE);
-            fab.startAnimation(animation);
+            this.fab.setOnClickListener(null);
+            this.fab.setImageResource(R.drawable.sound_loading_icon);
+            final Animation currentAnimation = this.fab.getAnimation();
+            if (!(fabLoadingAnimation.equals(currentAnimation) && currentAnimation.hasStarted())) {
+                this.fab.startAnimation(fabLoadingAnimation);
+            }
         } else {
-            fab.clearAnimation();
+            this.fab.clearAnimation();
         }
     }
     //endregion

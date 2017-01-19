@@ -32,12 +32,7 @@ public class TrendsInteractor extends ScopedValueInteractor<Trends> {
         return apiService.trendsForTimeScale(timeScale);
     }
 
-    public void setTimeScale(@NonNull Trends.TimeScale timeScale) {
+    public void setTimeScale(@NonNull final Trends.TimeScale timeScale) {
         this.timeScale = timeScale;
-        update();
-    }
-
-    public Trends.TimeScale getTimeScale() {
-        return timeScale;
     }
 }

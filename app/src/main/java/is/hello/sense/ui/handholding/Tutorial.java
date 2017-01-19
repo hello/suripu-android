@@ -33,7 +33,6 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.InternalPrefManager;
 
 import static is.hello.sense.util.Analytics.Breadcrumb.Description;
-import static is.hello.sense.util.Analytics.Breadcrumb.EVENT_NAME;
 import static is.hello.sense.util.Analytics.Breadcrumb.Source;
 
 public enum Tutorial {
@@ -64,7 +63,7 @@ public enum Tutorial {
     @IdRes
     int anchorId;
     public final Interaction interaction;
-    public final Properties properties;
+    public final Properties properties; //todo remove properties as well if not tracking breadcrumb end event
 
     Tutorial(@StringRes final int descriptionRes,
              final int descriptionGravity,
@@ -78,6 +77,33 @@ public enum Tutorial {
         this.properties = properties;
     }
 
+    /**
+     * @param context
+     * @return unique shared pref for this account
+     */
+    private static SharedPreferences getPrefs(@NonNull final Context context) {
+        return context.getSharedPreferences(getPrefName(context), Context.MODE_PRIVATE);
+    }
+
+    /**
+     * @param context
+     * @return a unique pref name for this account.
+     */
+    private static String getPrefName(@NonNull final Context context) {
+        return Constants.HANDHOLDING_PREFS + InternalPrefManager.getAccountId(context);
+    }
+
+    /**
+     * Reset all tutorials for this account.
+     *
+     * @param activity
+     */
+    public static void clearTutorials(@NonNull final Activity activity) {
+        getPrefs(activity)
+                .edit()
+                .clear()
+                .apply();
+    }
 
     public String getShownKey() {
         return "tutorial_" + toString().toLowerCase() + "_shown";
@@ -86,44 +112,30 @@ public enum Tutorial {
     public boolean shouldShow(@NonNull final Activity activity) {
         // Check if this device has ever seen the desired tutorial. If so mark it as seen for the user
         // and reset the pref so another account on the device will not suppress the breadcrumb too.
-        final SharedPreferences genericPreferences = activity.getSharedPreferences(Constants.HANDHOLDING_PREFS, 0);
-        if (genericPreferences.getBoolean(getShownKey(), false)){
+        final SharedPreferences genericPreferences = getPrefs(activity);
+        if (genericPreferences.getBoolean(getShownKey(), false)) {
             genericPreferences
                     .edit()
                     .putBoolean(getShownKey(), false)
                     .apply();
 
             // Mark shown for this user and don't show the breadcrumb.
-            markShown(activity, false);
+            markShown(activity);
             return false;
         }
 
-
-        final SharedPreferences preferences =
-                activity.getSharedPreferences(getPrefName(activity), 0);
-        return (!preferences.getBoolean(getShownKey(), false) &&
-                activity.findViewById(TutorialOverlayView.ROOT_CONTAINER_ID) == null);
+        return activity.findViewById(TutorialOverlayView.ROOT_CONTAINER_ID) == null;
     }
 
     public void wasDismissed(@NonNull final Context context) {
-        markShown(context, true);
+        markShown(context);
     }
 
-    public void markShown(@NonNull final Context context, final boolean track) {
-       if (track){
-           Analytics.trackEvent(EVENT_NAME, properties);
-       }
-        final SharedPreferences preferences =
-                context.getSharedPreferences(getPrefName(context), 0);
-        preferences.edit()
-                   .putBoolean(getShownKey(), true)
-                   .apply();
+    public void markShown(@NonNull final Context context) {
+        getPrefs(context).edit()
+                         .putBoolean(getShownKey(), true)
+                         .apply();
     }
-
-    private static String getPrefName(@NonNull final Context context) {
-        return Constants.HANDHOLDING_PREFS + InternalPrefManager.getAccountId(context);
-    }
-
 
     //region Vending Animations
 

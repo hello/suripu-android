@@ -1,6 +1,5 @@
 package is.hello.sense;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -11,6 +10,8 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import com.bugsnag.android.Bugsnag;
 import com.facebook.FacebookSdk;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 import com.squareup.picasso.LruCache;
 
 import net.danlew.android.joda.JodaTimeAndroid;
@@ -51,7 +52,13 @@ public class SenseApplication extends MultiDexApplication {
         return "robolectric".equals(Build.FINGERPRINT);
     }
 
+    public static RefWatcher getRefWatcher() {
+        return instance.refWatcher;
+    }
+
     private ObjectGraph graph;
+
+    private RefWatcher refWatcher;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -89,6 +96,14 @@ public class SenseApplication extends MultiDexApplication {
         if (!isRunningInRobolectric) {
             localUsageTracker.deleteOldUsageStatsAsync();
         }
+
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+
+        this.refWatcher = LeakCanary.install(this);
 
         final Observable<Intent> onLogOut = Rx.fromLocalBroadcast(this, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         onLogOut.observeOn(Rx.mainThreadScheduler())

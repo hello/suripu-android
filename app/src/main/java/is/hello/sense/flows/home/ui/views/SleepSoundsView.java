@@ -15,14 +15,12 @@ import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
-import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.util.NotTested;
 
 @NotTested
 @SuppressLint("ViewConstructor")
 public class SleepSoundsView extends PresenterView {
 
-    private final SpinnerImageView playButton;
     private final ProgressBar progressBar;
     private final RecyclerView recyclerView;
     private final SleepSoundsAdapter adapter;
@@ -33,7 +31,6 @@ public class SleepSoundsView extends PresenterView {
         super(activity);
         this.recyclerView = (RecyclerView) findViewById(R.id.view_sleep_sounds_recycler);
         this.progressBar = (ProgressBar) findViewById(R.id.view_sleep_sounds_progressbar);
-        this.playButton = (SpinnerImageView) findViewById(R.id.view_sleep_sounds_playbutton);
         this.adapter = adapter;
 
         //RecyclerView
@@ -56,8 +53,6 @@ public class SleepSoundsView extends PresenterView {
     @Override
     public void releaseViews() {
         this.recyclerView.setAdapter(null);
-        this.playButton.setOnClickListener(null);
-
     }
     //endregion
 

@@ -156,12 +156,7 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
 
             titleText.setText(arguments.getString(ARG_TITLE));
 
-            final boolean lockOrientation = getArguments().getBoolean(ARG_LOCK_ORIENTATION, false);
-            if (lockOrientation) {
-                final Activity activity = getActivity();
-                oldOrientation = activity.getRequestedOrientation();
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
-            }
+            this.setLockOrientation(getActivity());
         }
 
         return dialog;
@@ -200,6 +195,17 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
      */
     public void setLockOrientation() {
         getArguments().putBoolean(ARG_LOCK_ORIENTATION, true);
+    }
+
+    private void setLockOrientation(@NonNull final Activity activity) {
+        final boolean lockOrientation = getArguments().getBoolean(ARG_LOCK_ORIENTATION, false);
+        if (lockOrientation) {
+            final int currentOrientation = activity.getRequestedOrientation();
+            if (currentOrientation != ActivityInfo.SCREEN_ORIENTATION_LOCKED) {
+                oldOrientation = currentOrientation;
+                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+            }
+        }
     }
 
     //endregion

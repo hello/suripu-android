@@ -2,6 +2,7 @@ package is.hello.sense.flows.home.ui.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.view.View;
 
 
@@ -12,6 +13,7 @@ import javax.inject.Inject;
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.api.model.v2.Trends.TimeScale;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.flows.home.ui.adapters.TrendsAdapter;
 import is.hello.sense.flows.home.ui.views.TrendsView;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TrendsInteractor;
@@ -34,30 +36,31 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     TrendsInteractor trendsInteractor;
     @Inject
     PreferencesInteractor preferencesInteractor;
-    private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
+
+    @VisibleForTesting
+    public final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
 
     //region PresenterFragment
     @Override
-    public final void initializePresenterView() {
-        if (presenterView == null) {
-            presenterView = new TrendsView(getActivity(), getAnimatorContext());
-            presenterChildDelegate.onViewInitialized();
+    public void initializePresenterView() {
+        if (this.presenterView == null) {
+            this.presenterView = new TrendsView(getActivity(), createTrendsAdapter());
+            this.presenterChildDelegate.onViewInitialized();
         }
     }
 
     @Override
-    public final void onCreate(final Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addInteractor(trendsInteractor);
-        setHasOptionsMenu(true);
+        addInteractor(this.trendsInteractor);
     }
 
     @Override
-    public final void onViewCreated(final View view, final Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        presenterView.setTrendFeedViewAnimationCallback(this);
-        showLoadingState();
-        bindAndSubscribe(trendsInteractor.trends, this::bindTrends, this::presentError);
+        bindAndSubscribe(this.trendsInteractor.trends,
+                         this::bindTrends,
+                         this::presentError);
     }
 
 
@@ -65,26 +68,26 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
-        presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
+        this.presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        presenterChildDelegate.onResume();
-        fetchTrends();
+        this.presenterChildDelegate.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        presenterChildDelegate.onPause();
+        this.presenterChildDelegate.onPause();
     }
 
     //endregion
     //region ViewPagerPresenterChild
     @Override
     public void onUserVisible() {
+        fetchTrends();
     }
 
     @Override
@@ -95,55 +98,55 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
 
     //region onRetry
     @Override
-    public final void fetchTrends() {
-        trendsInteractor.setTimeScale(getTimeScale());
-        trendsInteractor.update();
+    public void fetchTrends() {
+        this.trendsInteractor.setTimeScale(getTimeScale());
+        this.trendsInteractor.update();
     }
     //endregion
 
-    /* todo support analytics again
-    @Override
-    public final void onSelectionChanged(final int newSelectionIndex) {
-
-        final String eventProperty = newTimeScale == TimeScale.LAST_3_MONTHS ? Analytics.Backside.EVENT_TIMESCALE_QUARTER :
-                (newTimeScale == TimeScale.LAST_MONTH ? Analytics.Backside.EVENT_TIMESCALE_MONTH : Analytics.Backside.EVENT_TIMESCALE_WEEK);
-        final Properties properties = new Properties();
-        properties.put(Analytics.Backside.EVENT_TIMESCALE, eventProperty);
-        Analytics.trackEvent(Analytics.Backside.EVENT_CHANGE_TRENDS_TIMESCALE, properties);
-
-    }*/
     //region AnimationCallback
     @Override
-    public final void isFinished() {
+    public void isFinished() {
+
     }
     //endregion
 
+    //region scrollUp
     @Override
     public void scrollUp() {
-        if (presenterView == null){
+        if (this.presenterView == null) {
             return;
         }
-        presenterView.scrollUp();
+        this.presenterView.scrollUp();
     }
+    //endregion
 
     //region methods
-    public void showLoadingState() {
-        if (!presenterView.hasTrends()) {
-            final LocalDate creationDate = preferencesInteractor.getAccountCreationDate();
-            final boolean showWelcomeBack = !DateFormatter.isInLast2Weeks(creationDate) && !DateFormatter.isTodayForTimeline(creationDate);
-            presenterView.showWelcomeCard(showWelcomeBack);
-        }
-    }
 
     protected abstract TimeScale getTimeScale();
 
-    public final void bindTrends(@NonNull final Trends trends) {
-        presenterView.updateTrends(trends);
-        isFinished();
+    @VisibleForTesting
+    void bindTrends(@NonNull final Trends trends) {
+        this.presenterView.updateTrends(trends);
     }
 
-    public final void presentError(final Throwable e) {
-        presenterView.showError(this);
+    @VisibleForTesting
+    void presentError(final Throwable e) {
+        this.presenterView.showError();
+    }
+
+    @VisibleForTesting
+    boolean isAccountMoreThan2WeeksOld() {
+        final LocalDate creationDate = this.preferencesInteractor.getAccountCreationDate();
+        return !DateFormatter.isInLast2Weeks(creationDate) && !DateFormatter.isTodayForTimeline(creationDate);
+    }
+
+    @VisibleForTesting
+    TrendsAdapter createTrendsAdapter() {
+        return new TrendsAdapter(getAnimatorContext(),
+                                 this,
+                                 this,
+                                 isAccountMoreThan2WeeksOld());
     }
     //endregion
 }

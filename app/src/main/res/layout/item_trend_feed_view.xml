@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/item_trend_feed_view_title"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/trends_title_height"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textAppearance="@style/AppTheme.Text.Trends.Title"/>
+
+    <View
+        android:id="@+id/item_trend_feed_view_divider"
+        style="@style/Divider.Horizontal"
+        android:layout_height="@dimen/bottom_line"
+        android:layout_marginBottom="@dimen/x1"
+        android:background="@color/trends_line_divider"/>
+
+    <!-- content insertion point -->
+
+</merge>

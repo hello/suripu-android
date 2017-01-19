@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.TimelineEventBuilder;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.SenseTestCase;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.RecyclerAdapterTesting;
 import is.hello.sense.util.markup.text.MarkupString;
@@ -32,6 +34,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 public class TimelineAdapterTests extends SenseTestCase {
+
     private final Random random = new Random();
     private final FrameLayout fakeParent = new FrameLayout(getContext());
 
@@ -39,12 +42,15 @@ public class TimelineAdapterTests extends SenseTestCase {
     private final DateFormatter dateFormatter = new DateFormatter(getContext());
     private TimelineAdapter adapter;
 
-
     //region Lifecycle
 
     @Before
     public void setUp() throws Exception {
-        this.adapter = new TimelineAdapter(getContext(), dateFormatter);
+        this.adapter = new TimelineAdapter(getContext(),
+                                           dateFormatter,
+                                           Constants.EMPTY_STRING,
+                                           Mockito.mock(View.OnClickListener.class),
+                                           Mockito.mock(View.OnClickListener.class));
         adapter.addHeader(headerView);
     }
 

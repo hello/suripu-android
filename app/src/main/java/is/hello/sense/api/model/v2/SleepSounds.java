@@ -1,7 +1,6 @@
 package is.hello.sense.api.model.v2;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -11,6 +10,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.IListObject;
 
 public class SleepSounds extends ApiResponse implements IListObject, SleepSoundsPlayerView.ISleepSoundsPlayerRowItem {
@@ -29,20 +29,8 @@ public class SleepSounds extends ApiResponse implements IListObject, SleepSounds
         return state;
     }
 
-    public boolean hasSound(final @Nullable String soundName) {
-        if (soundName == null) {
-            return false;
-        }
-        for (final Sound sound : sounds) {
-            if (sound.getName().equals(soundName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public Sound getSoundWithId(final int id) {
-        if (id == -1) {
+        if (id == Constants.NONE) {
             return null;
         }
         for (final Sound sound : sounds) {

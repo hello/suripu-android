@@ -124,7 +124,7 @@ public class TicketDetailFragment extends InjectionFragment
         final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_ticket_detail_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new DividerItemDecoration(resources));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
         recyclerView.setItemAnimator(null);
 
         this.adapter = new CommentAdapter(getActivity());

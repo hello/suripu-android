@@ -9,10 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.text.format.DateFormat;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
-
 import org.joda.time.LocalDate;
 
 import javax.inject.Inject;
@@ -69,6 +65,9 @@ public class PreferencesInteractor extends BasePreferencesInteractor {
     public static final String HAS_VOICE = "has_voice";
     public static final String HAS_SOUNDS = "has_sounds";
 
+    public static final String SLEEP_SOUNDS_SOUND_ID = "sleep_sounds_sound_id";
+    public static final String SLEEP_SOUNDS_DURATION_ID = "sleep_sounds_duration_id";
+    public static final String SLEEP_SOUNDS_VOLUME_ID = "sleep_sounds_volume_id";
 
     public
     @Inject

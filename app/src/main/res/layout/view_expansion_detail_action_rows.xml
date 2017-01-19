@@ -26,8 +26,6 @@
             style="@style/AppTheme.Text.Body.New"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableEnd="@drawable/info_button_icon_small"
-            android:drawablePadding="@dimen/x1"
             android:gravity="center"
             android:text="@string/title_enabled"/>
 

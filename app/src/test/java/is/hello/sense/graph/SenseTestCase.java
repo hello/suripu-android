@@ -10,7 +10,7 @@ import android.support.annotation.NonNull;
 import org.junit.runner.RunWith;
 import org.junit.runners.model.InitializationError;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.manifest.AndroidManifest;
@@ -42,20 +42,20 @@ public abstract class SenseTestCase {
      * This is an expensive operation...avoid if possible.
      * 1) Temporary fix for issue https://github.com/robolectric/robolectric/issues/1460
      * with fragment transactions starting during the onViewCreated method
-     *
+     * <p>
      * 2) the injected dependencies in the fragment are not included in main Application objectGraph.
-     *
+     * <p>
      * Warning - this will break if the fragment is already attached to activity
      */
     public static void startNestedVisibleFragment(@NonNull final Fragment fragment,
                                                   @NonNull final Class<? extends Activity> activityClazz,
-                                                  @IdRes final int containerResId){
+                                                  @IdRes final int containerResId) {
         Robolectric.getForegroundThreadScheduler().pause();
         startVisibleFragment(fragment, activityClazz, containerResId);
         Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
     }
 
-    public static class WorkaroundTestRunner extends RobolectricGradleTestRunner {
+    public static class WorkaroundTestRunner extends RobolectricTestRunner {
         public WorkaroundTestRunner(Class<?> klass) throws InitializationError {
             super(klass);
         }
@@ -74,4 +74,5 @@ public abstract class SenseTestCase {
             );
         }
     }
+
 }

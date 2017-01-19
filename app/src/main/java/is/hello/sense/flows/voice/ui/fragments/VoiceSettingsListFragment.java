@@ -119,7 +119,7 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     }
 
     private void updateSettings(@NonNull final Observable<SenseVoiceSettings> updateObservable) {
-        showBlockingActivity(R.string.voice_settings_progress_updating);
+        showLockedBlockingActivity(R.string.voice_settings_progress_updating);
         updateSettingsSubscription.unsubscribe();
         updateSettingsSubscription = bind(updateObservable)
                 .subscribe(Functions.NO_OP,

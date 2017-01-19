@@ -133,8 +133,8 @@ public class SmartAlarmDetailView extends PresenterView {
      * @param checkedChangeListener listener to call when the user taps this.
      */
     @NotTested
-    public void setSmartAlarm(final boolean isChecked,
-                              @NonNull final CompoundButton.OnCheckedChangeListener checkedChangeListener) {
+    public void setSmartAlarmToggle(final boolean isChecked,
+                                    @NonNull final CompoundButton.OnCheckedChangeListener checkedChangeListener) {
         this.smartAlarmToggle.setOnCheckedChangeListener(null);
         this.smartAlarmToggle.setChecked(isChecked);
         this.smartAlarmToggle.setOnCheckedChangeListener(checkedChangeListener);

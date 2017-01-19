@@ -1,6 +1,7 @@
 package is.hello.sense.flows.home.ui.activities;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
@@ -27,6 +28,7 @@ import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
+import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
@@ -35,20 +37,21 @@ import is.hello.sense.interactors.TimelineInteractor;
 import is.hello.sense.mvp.presenters.HomePresenterFragment;
 import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
 import is.hello.sense.mvp.presenters.TrendsPresenterFragment;
+import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.mvp.util.FabPresenter;
 import is.hello.sense.mvp.util.FabPresenterProvider;
-import is.hello.sense.mvp.util.ViewPagerPresenter;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.appcompat.ScopedInjectionActivity;
+import is.hello.sense.ui.adapter.FragmentPagerAdapter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.dialogs.BottomAlertDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
-import is.hello.sense.ui.fragments.TimelineFragment;
+import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.ui.widget.graphing.drawables.SleepScoreIconDrawable;
@@ -66,12 +69,12 @@ public class HomeActivity extends ScopedInjectionActivity
         InsightInfoFragment.ParentProvider,
         TimelineFragment.ParentProvider,
         FabPresenterProvider,
-        ViewPagerPresenter {
+        OnboardingFlowProvider {
 
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
-    public static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
+    private static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
     private static final String KEY_CURRENT_ITEM_INDEX = HomeActivity.class.getSimpleName() + "CURRENT_ITEM_INDEX";
-    private static final int DEFAULT_ITEM_INDEX = 0;
+
     private static final int NUMBER_OF_ITEMS = 5;
     private static final int SLEEP_ICON_KEY = 0;
     private static final int TRENDS_ICON_KEY = 1;
@@ -98,11 +101,20 @@ public class HomeActivity extends ScopedInjectionActivity
 
     private final Drawable[] drawables = new Drawable[NUMBER_OF_ITEMS];
     private final Drawable[] drawablesActive = new Drawable[NUMBER_OF_ITEMS];
+    private final HomeViewPagerDelegate viewPagerDelegate = new HomeViewPagerDelegate();
     private int currentItemIndex;
     private View progressOverlay;
     private SpinnerImageView spinner;
     private ExtendedViewPager extendedViewPager;
     private TabLayout tabLayout;
+
+    public static Intent getIntent(@NonNull final Context context,
+                                   @OnboardingActivity.Flow final int fromFlow) {
+        final Intent intent = new Intent(context, HomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra(HomeActivity.EXTRA_ONBOARDING_FLOW, fromFlow);
+        return intent;
+    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -119,9 +131,11 @@ public class HomeActivity extends ScopedInjectionActivity
         this.extendedViewPager = (ExtendedViewPager) findViewById(R.id.activity_new_home_extended_view_pager);
         this.extendedViewPager.setScrollingEnabled(false);
         this.extendedViewPager.setFadePageTransformer(true);
+        this.extendedViewPager.setOffscreenPageLimit(viewPagerDelegate.getOffscreenPageLimit());
         this.tabLayout = (TabLayout) findViewById(R.id.activity_new_home_tab_layout);
         this.tabLayout.setupWithViewPager(this.extendedViewPager);
-        extendedViewPager.setAdapter(new StaticFragmentAdapter(getFragmentManager(), getViewPagerItems()));
+        extendedViewPager.setAdapter(new StaticFragmentAdapter(getFragmentManager(),
+                                                               viewPagerDelegate.getViewPagerItems()));
         setUpTabs(savedInstanceState == null);
     }
 
@@ -196,7 +210,7 @@ public class HomeActivity extends ScopedInjectionActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(tabLayout != null){
+        if (tabLayout != null) {
             tabLayout.clearOnTabSelectedListeners();
         }
     }
@@ -226,11 +240,14 @@ public class HomeActivity extends ScopedInjectionActivity
 
     private void restoreState(@Nullable final Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            this.currentItemIndex = savedInstanceState.getInt(KEY_CURRENT_ITEM_INDEX, DEFAULT_ITEM_INDEX);
+            this.currentItemIndex = savedInstanceState.getInt(KEY_CURRENT_ITEM_INDEX,
+                                                              viewPagerDelegate.getStartingItemPosition());
         } else {
-            this.currentItemIndex = DEFAULT_ITEM_INDEX;
+            this.currentItemIndex = viewPagerDelegate.getStartingItemPosition();
         }
     }
+
+    //region Onboarding flow provider
 
     @OnboardingActivity.Flow
     public int getOnboardingFlow() {
@@ -240,6 +257,8 @@ public class HomeActivity extends ScopedInjectionActivity
                                         OnboardingActivity.FLOW_NONE);
         return flow;
     }
+
+    //end region
 
     //region Device Issues and Alerts
 
@@ -358,6 +377,7 @@ public class HomeActivity extends ScopedInjectionActivity
         tabLayout.addOnTabSelectedListener(new HomeTabListener());
         final TabLayout.Tab tab = tabLayout.getTabAt(currentItemIndex);
         if (shouldSelect && tab != null) {
+            tab.setIcon(drawablesActive[currentItemIndex]);
             tab.select();
         }
     }
@@ -391,23 +411,6 @@ public class HomeActivity extends ScopedInjectionActivity
         }
     }
 
-    @NonNull
-    @Override
-    public StaticFragmentAdapter.Item[] getViewPagerItems() {
-        return new StaticFragmentAdapter.Item[]{
-                new StaticFragmentAdapter.Item(TimelinePagerFragment.class, TimelinePagerFragment.class.getSimpleName()),
-                new StaticFragmentAdapter.Item(TrendsPresenterFragment.class, TrendsPresenterFragment.class.getSimpleName()),
-                new StaticFragmentAdapter.Item(HomePresenterFragment.class, HomePresenterFragment.class.getSimpleName()),
-                new StaticFragmentAdapter.Item(SoundsPresenterFragment.class, SoundsPresenterFragment.class.getSimpleName()),
-                new StaticFragmentAdapter.Item(RoomConditionsPresenterFragment.class, RoomConditionsPresenterFragment.class.getSimpleName())
-        };
-    }
-
-    @Override
-    public int getStartingItemPosition() {
-        return DEFAULT_ITEM_INDEX;
-    }
-
     @Override
     public TimelineFragment.Parent getTimelineParent() {
         return (TimelineFragment.Parent) getFragmentWithIndex(SLEEP_ICON_KEY);
@@ -432,7 +435,7 @@ public class HomeActivity extends ScopedInjectionActivity
     @Nullable
     private Fragment getFragmentWithIndex(final int index) {
         return getFragmentManager()
-                .findFragmentByTag("android:switcher:" + R.id.activity_new_home_extended_view_pager + ":" + index);
+                .findFragmentByTag(FragmentPagerAdapter.makeFragmentTag(R.id.activity_new_home_extended_view_pager, index));
     }
 
     //region Notifications
@@ -488,12 +491,15 @@ public class HomeActivity extends ScopedInjectionActivity
 
         @Override
         public void onTabSelected(final TabLayout.Tab tab) {
+            if (!lastNightInteractor.timeline.hasValue()) {
+                lastNightInteractor.update();
+            }
             if (tab == null) {
                 return;
             }
             currentItemIndex = tab.getPosition();
             tab.setIcon(drawablesActive[currentItemIndex]);
-            if (currentItemIndex == SLEEP_ICON_KEY){
+            if (currentItemIndex == SLEEP_ICON_KEY) {
                 jumpToLastNight();
             }
         }
@@ -519,6 +525,26 @@ public class HomeActivity extends ScopedInjectionActivity
 
         }
 
+    }
+
+    private static class HomeViewPagerDelegate extends BaseViewPagerPresenterDelegate {
+
+        @NonNull
+        @Override
+        public StaticFragmentAdapter.Item[] getViewPagerItems() {
+            return new StaticFragmentAdapter.Item[]{
+                    new StaticFragmentAdapter.Item(TimelinePagerFragment.class, TimelinePagerFragment.class.getSimpleName()),
+                    new StaticFragmentAdapter.Item(TrendsPresenterFragment.class, TrendsPresenterFragment.class.getSimpleName()),
+                    new StaticFragmentAdapter.Item(HomePresenterFragment.class, HomePresenterFragment.class.getSimpleName()),
+                    new StaticFragmentAdapter.Item(SoundsPresenterFragment.class, SoundsPresenterFragment.class.getSimpleName()),
+                    new StaticFragmentAdapter.Item(RoomConditionsPresenterFragment.class, RoomConditionsPresenterFragment.class.getSimpleName())
+            };
+        }
+
+        @Override
+        public int getOffscreenPageLimit() {
+            return 4;
+        }
     }
 
 

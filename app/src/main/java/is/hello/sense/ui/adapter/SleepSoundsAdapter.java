@@ -95,15 +95,21 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     }
 
     private Sound getSavedSound() {
-        return combinedSleepState.getSounds().getSoundWithId(preferences.getInt(Constants.SLEEP_SOUNDS_SOUND_ID, -1));
+        return combinedSleepState.getSounds()
+                                 .getSoundWithId(preferences.getInt(PreferencesInteractor.SLEEP_SOUNDS_SOUND_ID,
+                                                                    Constants.NONE));
     }
 
     private Duration getSavedDuration() {
-        return combinedSleepState.getDurations().getDurationWithId(preferences.getInt(Constants.SLEEP_SOUNDS_DURATION_ID, -1));
+        return combinedSleepState.getDurations()
+                                 .getDurationWithId(preferences.getInt(PreferencesInteractor.SLEEP_SOUNDS_DURATION_ID,
+                                                                       Constants.NONE));
     }
 
     private SleepSoundStatus.Volume getSavedVolume() {
-        return combinedSleepState.getStatus().getVolumeWithValue(preferences.getInt(Constants.SLEEP_SOUNDS_VOLUME_ID, -1));
+        return combinedSleepState.getStatus()
+                                 .getVolumeWithValue(preferences.getInt(PreferencesInteractor.SLEEP_SOUNDS_VOLUME_ID,
+                                                                        Constants.NONE));
     }
 
 
