@@ -600,8 +600,7 @@ public class Analytics {
             ACCOUNT("account"),
             TRENDS("trends"),
             INSIGHTS("insights"),
-            TIMELINE("timeline"),
-            SENSOR_HISTORY("sensor history");
+            TIMELINE("timeline");
             private final String src;
             Source(@NonNull final String source){
                 this.src = source;
@@ -611,7 +610,6 @@ public class Analytics {
         enum Description{
             SWIPE_TIMELINE("swipe timeline"),
             ZOOM_OUT_TIMELINE("zoom out timeline"),
-            SCRUB_SENSOR_HISTORY("scrub sensor history"),
             TAP_INSIGHT_CARD("tap insight card"),
             TAP_NAME("tap name");
             private final String desc;
