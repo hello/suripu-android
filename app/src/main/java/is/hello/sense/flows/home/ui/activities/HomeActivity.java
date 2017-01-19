@@ -44,6 +44,7 @@ import is.hello.sense.notifications.Notification;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.appcompat.ScopedInjectionActivity;
+import is.hello.sense.ui.adapter.FragmentPagerAdapter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.dialogs.BottomAlertDialogFragment;
@@ -209,7 +210,7 @@ public class HomeActivity extends ScopedInjectionActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(tabLayout != null){
+        if (tabLayout != null) {
             tabLayout.clearOnTabSelectedListeners();
         }
     }
@@ -376,6 +377,7 @@ public class HomeActivity extends ScopedInjectionActivity
         tabLayout.addOnTabSelectedListener(new HomeTabListener());
         final TabLayout.Tab tab = tabLayout.getTabAt(currentItemIndex);
         if (shouldSelect && tab != null) {
+            tab.setIcon(drawablesActive[currentItemIndex]);
             tab.select();
         }
     }
@@ -433,7 +435,7 @@ public class HomeActivity extends ScopedInjectionActivity
     @Nullable
     private Fragment getFragmentWithIndex(final int index) {
         return getFragmentManager()
-                .findFragmentByTag("android:switcher:" + R.id.activity_new_home_extended_view_pager + ":" + index);
+                .findFragmentByTag(FragmentPagerAdapter.makeFragmentTag(R.id.activity_new_home_extended_view_pager, index));
     }
 
     //region Notifications
@@ -489,12 +491,15 @@ public class HomeActivity extends ScopedInjectionActivity
 
         @Override
         public void onTabSelected(final TabLayout.Tab tab) {
+            if (!lastNightInteractor.timeline.hasValue()) {
+                lastNightInteractor.update();
+            }
             if (tab == null) {
                 return;
             }
             currentItemIndex = tab.getPosition();
             tab.setIcon(drawablesActive[currentItemIndex]);
-            if (currentItemIndex == SLEEP_ICON_KEY){
+            if (currentItemIndex == SLEEP_ICON_KEY) {
                 jumpToLastNight();
             }
         }
@@ -536,6 +541,10 @@ public class HomeActivity extends ScopedInjectionActivity
             };
         }
 
+        @Override
+        public int getOffscreenPageLimit() {
+            return 4;
+        }
     }
 
 

@@ -8,7 +8,6 @@ import org.mockito.Mockito;
 import is.hello.sense.FragmentTest;
 import is.hello.sense.api.model.v2.Trends;
 
-
 public class TrendsFragmentTest extends FragmentTest<WeekTrendsFragment> {
 
 
@@ -91,13 +90,6 @@ public class TrendsFragmentTest extends FragmentTest<WeekTrendsFragment> {
         fragment.presenterView = Mockito.spy(fragment.presenterView);
         fragment.presentError(new Throwable());
         Mockito.verify(fragment.presenterView).showError();
-    }
-
-    @Test
-    public void isFinishedTest() {
-        fragment.presenterView = Mockito.spy(fragment.presenterView);
-        fragment.isFinished();
-        Mockito.verify(fragment.presenterView).refreshRecyclerView();
     }
 
     private void spyOnTrendsInteractor() {

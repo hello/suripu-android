@@ -3,7 +3,6 @@ package is.hello.sense.ui.adapter;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.annotation.NonNull;
-import android.support.v13.app.FragmentPagerAdapter;
 
 public class StaticFragmentAdapter extends FragmentPagerAdapter {
     private final Item[] items;
@@ -18,11 +17,6 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
         super(fm);
 
         this.items = items;
-    }
-
-    @Override
-    public Fragment getItem(final int position) {
-        return items[position].newInstance();
     }
 
     @Override
@@ -47,6 +41,12 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
             overrideCount = items.length - 1;
         }
         this.overrideCount = overrideCount;
+    }
+
+    @NonNull
+    @Override
+    public Fragment createFragment(final int position) {
+        return items[position].newInstance();
     }
 
 

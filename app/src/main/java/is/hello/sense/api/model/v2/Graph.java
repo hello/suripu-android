@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,6 @@ import is.hello.sense.ui.widget.graphing.trends.BarTrendGraphView;
 import is.hello.sense.ui.widget.graphing.trends.BubbleTrendGraphView;
 import is.hello.sense.ui.widget.graphing.trends.GridTrendGraphView;
 import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.util.DateFormatter;
 
 public class Graph extends ApiResponse {
     @SerializedName("time_scale")
@@ -110,55 +108,56 @@ public class Graph extends ApiResponse {
      */
     public ArrayList<Graph> convertToQuarterGraphs() {
         final ArrayList<Graph> graphs = new ArrayList<>();
+        final int DAYS_IN_WEEK = 7;
         for (final GraphSection graphSection : sections) {
-            int offset = 0;
-            if (graphSection.getTitles() != null && !graphSection.getTitles().isEmpty()) {
-                final String monthTitle = graphSection.getTitles().get(0);
-                try {
-                    final int monthValue = DateFormatter.getMonthInt(monthTitle);
-                    offset = DateFormatter.getFirstDayOfMonthValue(monthValue) - 1;
-                } catch (final ParseException e) {
-                    Log.e(getClass().getName(), "Problem parsing month: " + e.getLocalizedMessage());
-                }
-            }
-
+            final int offset = graphSection.getFirstDayOfMonthOffset();
             final Graph graph = new Graph(this);
             if (offset > 0) {
-                final GraphSection temp = new GraphSection(graphSection);
-                graph.addSection(temp);
-                for (int i = 0; i < offset; i++) {
-                    temp.addValue(-2f);
-                }
+                graph.addSection(GraphSection.withHighlightedTitle(graphSection)
+                                             .withDoNotShowValues(offset));
             }
             for (int i = offset; i < graphSection.getValues().size() + offset; i++) {
-                final GraphSection temp;
-                if (i % 7 == 0) {
-                    temp = new GraphSection(graphSection);
-                    graph.addSection(temp);
-                } else {
-                    temp = graph.getSections().get(graph.getSections().size() - 1);
+                if (i % DAYS_IN_WEEK == 0) {
+                    graph.addSection(GraphSection.withHighlightedTitle(graphSection));
                 }
-                temp.addValue(graphSection.getValues().get(i - offset));
+                final GraphSection temp = graph.getSection(graph.getSections().size() - 1);
+                if(temp != null) {
+                    temp.addValue(graphSection.getValue(i - offset));
+                }
 
             }
             for (int i = 0; i < graphSection.getTitles().size(); i++) {
                 final String title = graphSection.getTitles().get(i);
-                graph.getSections().get(i).addTitle(title);
+                final GraphSection temp = graph.getSection(i);
+                if(temp != null) {
+                    temp.addTitle(title);
+                }
             }
             for (int highlightedIndex : graphSection.getHighlightedValues()) {
                 highlightedIndex += offset;
-                final int section = highlightedIndex / 7;
-                final int cell = highlightedIndex % 7;
-                graph.getSections().get(section).addHighlightedValues(cell);
+                final int sectionIndex = highlightedIndex / DAYS_IN_WEEK;
+                final int cell = highlightedIndex % DAYS_IN_WEEK;
+                final GraphSection temp = graph.getSection(sectionIndex);
+                if(temp != null) {
+                    temp.addHighlightedValues(cell);
+                }
             }
-
             graphs.add(graph);
         }
         return graphs;
     }
 
-    public void addSection(final GraphSection section) {
+    private void addSection(final GraphSection section) {
         this.sections.add(section);
+    }
+
+    @Nullable
+    private GraphSection getSection(final int index) {
+        if(index < 0 || index >= sections.size()) {
+            Log.e(getClass().getName(), String.format("%d index is out of bounds in sections of size %d", index, sections.size()));
+            return null;
+        }
+        return sections.get(index);
     }
 
     public Trends.TimeScale getTimeScale() {

@@ -1,8 +1,8 @@
 package is.hello.sense;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,10 +13,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -27,6 +24,7 @@ import is.hello.sense.mvp.presenters.PresenterFragment;
 
 import static junit.framework.Assert.assertNotNull;
 import static org.robolectric.util.FragmentTestUtil.startFragment;
+
 
 public abstract class FragmentTest<T extends PresenterFragment>
         extends SenseTestCase {
@@ -58,15 +56,16 @@ public abstract class FragmentTest<T extends PresenterFragment>
 
     private void startFragmentAndSpy(@Nullable final Bundle args) {
         fragment = getInstanceOfT();
+
         if (args != null) {
             fragment.setArguments(args);
         }
-        final Class<? extends Activity> activityClass = activityCreatingFragment();
-        if (activityClass == null) {
-            startFragment(fragment);
-        } else {
-            startFragment(fragment, activityClass);
+
+        if (Looper.myLooper() == null) {
+            Looper.prepare();
         }
+
+        startFragment(fragment, activityCreatingFragment());
         fragment = Mockito.spy(fragment);
     }
 
@@ -86,11 +85,11 @@ public abstract class FragmentTest<T extends PresenterFragment>
      * Allows fragments to provide a custom activity, useful for when they expect the activity
      * to provide an interface.
      *
-     * @return null to use default {@link org.robolectric.util.FragmentTestUtil.org.robolectric.util.FragmentTestUtil.FragmentUtilActivity}
+     * @return activity class to create fragment from.
      */
-    @Nullable
+    @NonNull
     protected Class<? extends FragmentTestActivity> activityCreatingFragment() {
-        return null;
+        return FragmentTestActivity.class;
     }
 
     //region lifecycle helpers
