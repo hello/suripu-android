@@ -176,8 +176,7 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     private void pushDeviceData() {
         showBlockingActivity(R.string.title_pushing_data);
 
-        bindAndSubscribe(hardwareInteractor.pushData()
-                                           .flatMap( ignored -> Observable.error(new Throwable("fake exception"))),
+        bindAndSubscribe(hardwareInteractor.pushData(),
                          ignored -> getDeviceFeatures(),
                          error -> {
                              Logger.error(getClass().getSimpleName(), "Could not push Sense data, ignoring.", error);
