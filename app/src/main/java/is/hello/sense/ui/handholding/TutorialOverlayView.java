@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -45,6 +46,7 @@ public class TutorialOverlayView extends RelativeLayout {
     private final Activity activity;
     private final Tutorial tutorial;
     private final TextView descriptionText;
+    private final ViewGroup descriptionContainer;
 
     private
     @Nullable
@@ -75,8 +77,8 @@ public class TutorialOverlayView extends RelativeLayout {
 
         final Resources resources = getResources();
         final LayoutInflater inflater = LayoutInflater.from(activity);
-        final ViewGroup descriptionContainer = (ViewGroup) inflater.inflate(R.layout.item_tutorial_description,
-                                                                            this, false);
+        descriptionContainer = (ViewGroup) inflater.inflate(R.layout.item_tutorial_description,
+                                                            this, false);
         this.descriptionText = (TextView) descriptionContainer.findViewById(R.id.item_tutorial_description_text);
         descriptionText.setText(tutorial.descriptionRes);
         Views.setSafeOnClickListener(descriptionText, ignored -> interactionCompleted());
@@ -162,7 +164,7 @@ public class TutorialOverlayView extends RelativeLayout {
 
 
     //region Showing
-    public int getTextViewHeight(){
+    public int getTextViewHeight() {
         return this.descriptionText.getMeasuredHeight();
     }
 
@@ -192,6 +194,19 @@ public class TutorialOverlayView extends RelativeLayout {
 
     public void postShow(@IdRes final int containerRes) {
         post(() -> show(containerRes));
+    }
+
+    public void showAsBubble() {
+        descriptionContainer.setBackgroundResource(R.color.white_00);
+        final int extraRoom = getResources().getDimensionPixelSize(R.dimen.x2);
+        final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                                                           ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.gravity = Gravity.CENTER_HORIZONTAL;
+        lp.bottomMargin = extraRoom;
+        descriptionText.setLayoutParams(lp);
+        descriptionText.setBackgroundResource(R.drawable.bubble);
+        descriptionText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        descriptionText.setPadding(extraRoom, 0, extraRoom, 0);
     }
 
     public void dismiss(final boolean animate) {

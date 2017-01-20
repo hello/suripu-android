@@ -76,6 +76,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     private UpdateTimer updateTimer;
     private DateFormatter dateFormatter;
     private TimestampQuery timestampQuery = new TimestampQuery(QueryScope.DAY_5_MINUTE);
+    private boolean hasShownATutorial = false;
     @NonNull
     private Subscription sensorSubscription = Subscriptions.empty();
 
@@ -239,25 +240,45 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     }
 
     private void showTutorialIfNeeded() {
-        if (tutorialOverlayView == null && Tutorial.SENSOR_DETAILS_SCRUB.shouldShow(getActivity())) {
-            this.tutorialOverlayView = new TutorialOverlayView(getActivity(),
-                                                               Tutorial.SENSOR_DETAILS_SCRUB);
-            this.tutorialOverlayView.setOnDismiss(() -> this.tutorialOverlayView = null);
+        if (hasShownATutorial) {
+            return;
+        }
 
-            tutorialOverlayView.setAnchorContainer(getView());
-            getAnimatorContext().runWhenIdle(() -> {
-                if (tutorialOverlayView != null && getUserVisibleHint()) {
-                    tutorialOverlayView.postShow(R.id.activity_navigation_container);
-                    tutorialOverlayView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                            tutorialOverlayView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                            SensorDetailFragment.this.presenterView.smoothScrollBy(tutorialOverlayView.getTextViewHeight());
+        if (tutorialOverlayView == null) {
+            final boolean scrollUp;
+            if (Tutorial.SENSOR_DETAILS_SCRUB.shouldShow(getActivity())) {
+                hasShownATutorial = true;
+                scrollUp = true;
+                this.tutorialOverlayView = new TutorialOverlayView(getActivity(),
+                                                                   Tutorial.SENSOR_DETAILS_SCRUB);
+            } else if (Tutorial.SENSOR_DETAILS_SCROLL.shouldShow(getActivity())) {
+                scrollUp = false;
+                hasShownATutorial = true;
+                this.tutorialOverlayView = new TutorialOverlayView(getActivity(),
+                                                                   Tutorial.SENSOR_DETAILS_SCROLL);
+                this.tutorialOverlayView.showAsBubble();
+            } else {
+                scrollUp = false;
+            }
+            if (tutorialOverlayView != null) {
 
+                this.tutorialOverlayView.setOnDismiss(() -> this.tutorialOverlayView = null);
+                tutorialOverlayView.setAnchorContainer(getView());
+                getAnimatorContext().runWhenIdle(() -> {
+                    if (tutorialOverlayView != null && getUserVisibleHint()) {
+                        tutorialOverlayView.postShow(R.id.activity_navigation_container);
+                        if (scrollUp) {
+                            tutorialOverlayView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                                @Override
+                                public void onGlobalLayout() {
+                                    tutorialOverlayView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                    SensorDetailFragment.this.presenterView.smoothScrollBy(tutorialOverlayView.getTextViewHeight());
+                                }
+                            });
                         }
-                    });
-                }
-            });
+                    }
+                });
+            }
         }
     }
 

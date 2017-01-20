@@ -53,6 +53,12 @@ public enum Tutorial {
                          R.id.fragment_sensor_detail_graph_view,
                          Interaction.TAP,
                          Analytics.createBreadcrumbTrackingProperties(Source.SENSOR_GRAPH,
+                                                                      Description.SCRUB_GRAPH)),
+    SENSOR_DETAILS_SCROLL(R.string.tutorial_scroll_sensor_history,
+                         Gravity.BOTTOM,
+                         R.id.fragment_sensor_detail_graph_view,
+                         Interaction.SWIPE_UP,
+                         Analytics.createBreadcrumbTrackingProperties(Source.SENSOR_GRAPH,
                                                                       Description.SCRUB_GRAPH));
 
     public final
