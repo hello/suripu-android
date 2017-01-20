@@ -85,6 +85,10 @@ public class ExpansionTextDrawable extends Drawable {
 
     }
 
+    /**
+     * this does nothing.
+     * @param colorFilter
+     */
     @Override
     public void setColorFilter(final ColorFilter colorFilter) {
 

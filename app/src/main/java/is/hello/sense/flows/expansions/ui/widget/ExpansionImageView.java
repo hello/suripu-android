@@ -54,7 +54,6 @@ public class ExpansionImageView extends ImageView {
     public void setText(@Nullable final String text) {
         if (text == null || text.isEmpty()) {
             setImageResource(R.drawable.icon_expansions_default);
-            setVisibility(VISIBLE);
         } else if (text.length() > NUMBER_OF_CHARS) {
             this.drawable.setText(text.substring(0, NUMBER_OF_CHARS).toUpperCase());
         } else {
