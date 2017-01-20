@@ -82,9 +82,9 @@ public class TimelineImageGenerator {
         final TimelineMetric timeSleptMetric = timeline.getMetricWithName(TimelineMetric.Name.TOTAL_SLEEP);
         final TimelineMetric timesWokenUpMetric = timeline.getMetricWithName(TimelineMetric.Name.TIMES_AWAKE);
 
-        if (timeToFallAsleepMetric != null && timeToFallAsleepMetric.getValue() != null && timeToFallAsleepMetric.getUnit() != null
-                && timeSleptMetric != null && timeSleptMetric.getValue() != null && timeSleptMetric.getUnit() != null
-                && timesWokenUpMetric != null && timesWokenUpMetric.getValue() != null && timesWokenUpMetric.getUnit() != null) {
+        if (timeToFallAsleepMetric.isValid()
+                && timeSleptMetric.isValid()
+                && timesWokenUpMetric.isValid()) {
             binding.viewShareTimelineSleptForTime.setText(Styles.fromHtml(
                     resources.getString(R.string.share_timeline_sleep_time,
                                         getMetricTimeString(resources, timeToFallAsleepMetric.getValue()),
@@ -94,15 +94,13 @@ public class TimelineImageGenerator {
 
         for (final SensorImage sensorImage : sensors) {
             final TimelineMetric metric = timeline.getMetricWithName(sensorImage.name);
-            if (metric != null) {
-                final SensorConditionView sensor = new SensorConditionView(context);
-                final Drawable sensorIcon = ResourcesCompat.getDrawable(resources, sensorImage.imageRes, null);
-                if (sensorIcon != null) {
-                    final int sensorColor = ContextCompat.getColor(context, metric.getCondition().colorRes);
-                    sensor.setIcon(sensorIcon);
-                    sensor.setTint(sensorColor);
-                    binding.viewShareTimelineSensors.addView(sensor, layoutParams);
-                }
+            final SensorConditionView sensor = new SensorConditionView(context);
+            final Drawable sensorIcon = ResourcesCompat.getDrawable(resources, sensorImage.imageRes, null);
+            if (sensorIcon != null) {
+                final int sensorColor = ContextCompat.getColor(context, metric.getCondition().colorRes);
+                sensor.setIcon(sensorIcon);
+                sensor.setTint(sensorColor);
+                binding.viewShareTimelineSensors.addView(sensor, layoutParams);
             }
         }
 
