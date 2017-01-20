@@ -162,6 +162,9 @@ public class TutorialOverlayView extends RelativeLayout {
 
 
     //region Showing
+    public int getTextViewHeight(){
+        return this.descriptionText.getMeasuredHeight();
+    }
 
     public void setOnDismiss(@Nullable final Runnable onDismiss) {
         this.onDismiss = onDismiss;

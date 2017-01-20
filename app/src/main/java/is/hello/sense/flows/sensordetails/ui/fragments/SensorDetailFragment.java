@@ -6,6 +6,7 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.view.ViewTreeObserver;
 
 import com.segment.analytics.Properties;
 
@@ -33,6 +34,8 @@ import is.hello.sense.flows.sensordetails.ui.views.SensorDetailView;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.common.UpdateTimer;
+import is.hello.sense.ui.handholding.Tutorial;
+import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
@@ -65,6 +68,8 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     UnitFormatter unitFormatter;
     @Inject
     SensorLabelInteractor sensorLabelInteractor;
+    @Nullable
+    private TutorialOverlayView tutorialOverlayView;
 
     private final HashMap<QueryScope, SensorCacheItem> sensorCache = new HashMap<>();
     private Sensor sensor;
@@ -215,6 +220,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         this.presenterView.setGraph(this.sensor,
                                     SensorGraphView.StartDelay.SHORT,
                                     queryScope == QueryScope.DAY_5_MINUTE ? sensorLabelInteractor.getDayLabels() : sensorLabelInteractor.getWeekLabels());
+        showTutorialIfNeeded();
 
     }
 
@@ -230,6 +236,29 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
             this.presenterView.post(() -> ((SensorDetailActivity) activity).setActionbarColor(colorRes));
         }
 
+    }
+
+    private void showTutorialIfNeeded() {
+        if (tutorialOverlayView == null && Tutorial.SENSOR_DETAILS_SCRUB.shouldShow(getActivity())) {
+            this.tutorialOverlayView = new TutorialOverlayView(getActivity(),
+                                                               Tutorial.SENSOR_DETAILS_SCRUB);
+            this.tutorialOverlayView.setOnDismiss(() -> this.tutorialOverlayView = null);
+
+            tutorialOverlayView.setAnchorContainer(getView());
+            getAnimatorContext().runWhenIdle(() -> {
+                if (tutorialOverlayView != null && getUserVisibleHint()) {
+                    tutorialOverlayView.postShow(R.id.activity_navigation_container);
+                    tutorialOverlayView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            tutorialOverlayView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            SensorDetailFragment.this.presenterView.smoothScrollBy(tutorialOverlayView.getTextViewHeight());
+
+                        }
+                    });
+                }
+            });
+        }
     }
 
     @Override

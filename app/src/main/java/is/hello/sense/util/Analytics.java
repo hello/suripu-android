@@ -600,7 +600,8 @@ public class Analytics {
             ACCOUNT("account"),
             TRENDS("trends"),
             INSIGHTS("insights"),
-            TIMELINE("timeline");
+            TIMELINE("timeline"),
+            SENSOR_GRAPH("sensor graph");
             private final String src;
             Source(@NonNull final String source){
                 this.src = source;
@@ -611,7 +612,8 @@ public class Analytics {
             SWIPE_TIMELINE("swipe timeline"),
             ZOOM_OUT_TIMELINE("zoom out timeline"),
             TAP_INSIGHT_CARD("tap insight card"),
-            TAP_NAME("tap name");
+            TAP_NAME("tap name"),
+            SCRUB_GRAPH("scrub graph");
             private final String desc;
             Description(@NonNull final String desc){
                 this.desc = desc;
