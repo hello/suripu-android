@@ -14,7 +14,7 @@ import android.graphics.drawable.shapes.PathShape;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.IdRes;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -36,8 +36,8 @@ import rx.functions.Action1;
 public class TimelineInfoOverlay implements Handler.Callback {
     private static final long DISPLAY_DURATION = 3000;
     private static final int MSG_DISMISS = 0x1;
+    @ColorInt
     private final int backgroundColor;
-    private final Activity activity;
     private final AnimatorContext animatorContext;
 
     private final Handler delayHandler = new Handler(Looper.getMainLooper(), this);
@@ -55,7 +55,6 @@ public class TimelineInfoOverlay implements Handler.Callback {
 
     public TimelineInfoOverlay(@NonNull final Activity activity,
                                @NonNull final AnimatorContext animatorContext) {
-        this.activity = activity;
         this.animatorContext = animatorContext;
 
         this.resources = activity.getResources();
@@ -78,14 +77,13 @@ public class TimelineInfoOverlay implements Handler.Callback {
 
     public void bindEvent(@NonNull final TimelineEvent event) {
         final TimelineEvent.SleepState sleepState = event.getSleepState();
-
-        final CharSequence prefix = activity.getText(R.string.timeline_popup_info_prefix);
-        final CharSequence sleepDepth = activity.getText(sleepState.stringRes);
+        final CharSequence prefix = dialog.getContext().getText(R.string.timeline_popup_info_prefix);
+        final CharSequence sleepDepth = dialog.getContext().getText(sleepState.stringRes);
         final SpannableStringBuilder reading = new SpannableStringBuilder(prefix).append(sleepDepth);
         tooltip.setText(reading);
 
         if (sleepState == TimelineEvent.SleepState.LIGHT) {
-            this.darkenOverlayColor = ContextCompat.getColor(activity, sleepState.colorRes);
+            this.darkenOverlayColor = ContextCompat.getColor(dialog.getContext(), sleepState.colorRes);
         } else {
             this.darkenOverlayColor = Color.TRANSPARENT;
         }
@@ -97,7 +95,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
     }
 
     /**
-     * @param screenSize define total available device width and height
+     * @param screenSize define total available device width and height excluding status bar and navigation
      * @param backgroundFrame define overlay boundaries
      * @param focusedFrame define focused segment boundaries
      * @return drawable with background overlays applied
@@ -149,13 +147,16 @@ public class TimelineInfoOverlay implements Handler.Callback {
         }
     }
 
+    /**
+     * @param activity required to determine size of activity window which differs from dialog window
+     */
     public void show(@NonNull final View fromView,
-                     @IdRes final int backgroundRootResId,
+                     @NonNull final View withBackground,
+                     @NonNull final Activity activity,
                      final boolean animate) {
         if (dialog.isShowing()) {
             return;
         }
-
         final Window wm = activity.getWindow();
         if(wm == null) {
             return;
@@ -164,8 +165,8 @@ public class TimelineInfoOverlay implements Handler.Callback {
         wm.getWindowManager().getDefaultDisplay().getSize(screenSize);
 
         final Rect backgroundFrame = new Rect();
-        final View backgroundView = activity.findViewById(backgroundRootResId);
-        backgroundView.getGlobalVisibleRect(backgroundFrame);
+
+        withBackground.getGlobalVisibleRect(backgroundFrame);
 
         final Rect viewFrame = new Rect();
         fromView.getGlobalVisibleRect(viewFrame);
@@ -181,7 +182,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
 
         final LayoutParams layoutParams = (FrameLayout.LayoutParams) tooltip.getLayoutParams();
         final int tooltipBottomMargin = layoutParams.bottomMargin;
-        layoutParams.bottomMargin += (screenSize.y - viewFrame.top);
+        layoutParams.bottomMargin = (screenSize.y - viewFrame.top);
         tooltip.requestLayout();
 
         dialog.show();

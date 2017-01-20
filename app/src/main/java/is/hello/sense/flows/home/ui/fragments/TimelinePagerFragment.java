@@ -234,8 +234,8 @@ public class TimelinePagerFragment extends InjectionFragment
     }
 
     @Override
-    public int getTooltipOverlayContainerIdRes() {
-        return R.id.fragment_timeline_view_pager;
+    public View getTooltipOverlayContainerView() {
+        return viewPager;
     }
 
     @Override

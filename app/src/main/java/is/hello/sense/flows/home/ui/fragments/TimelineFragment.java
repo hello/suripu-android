@@ -501,7 +501,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             this.infoOverlay.dismiss(false);
         }
         if (view.getY() < this.toolTipHeight) {
-            final int dy = this.toolTipHeight - (int) view.getY();
+            final int dy = this.toolTipHeight * 2 - (int) view.getY();
             this.presenterView.scrollForSpace(this, event, view, position, -dy);
             return;
         }
@@ -513,7 +513,8 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         });
         this.infoOverlay.bindEvent(event);
         this.infoOverlay.show(view,
-                              this.parent.getTooltipOverlayContainerIdRes(),
+                              this.parent.getTooltipOverlayContainerView(),
+                              getActivity(),
                               animateShow);
 
         Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
@@ -714,8 +715,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         @IdRes
         int getTutorialContainerIdRes();
 
-        @IdRes
-        int getTooltipOverlayContainerIdRes();
+        View getTooltipOverlayContainerView();
 
         /**
          * Used to return to Last Night timeline when needed
