@@ -153,8 +153,9 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     protected final void onRelease() {
         super.onRelease();
         this.updateTimer = null;
-        sensorSubscription.unsubscribe();
-        sensorSubscription = Subscriptions.empty();
+        this.sensorSubscription.unsubscribe();
+        this.sensorSubscription = Subscriptions.empty();
+        this.tutorialOverlayView = null;
     }
 
     @Override
