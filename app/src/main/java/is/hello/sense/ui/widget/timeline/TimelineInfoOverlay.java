@@ -21,7 +21,6 @@ import android.support.v4.content.ContextCompat;
 import android.text.SpannableStringBuilder;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
@@ -147,22 +146,13 @@ public class TimelineInfoOverlay implements Handler.Callback {
         }
     }
 
-    /**
-     * @param activity required to determine size of activity window which differs from dialog window
-     */
     public void show(@NonNull final View fromView,
                      @NonNull final View withBackground,
-                     @NonNull final Activity activity,
+                     @NonNull final Point screenSize,
                      final boolean animate) {
         if (dialog.isShowing()) {
             return;
         }
-        final Window wm = activity.getWindow();
-        if(wm == null) {
-            return;
-        }
-        final Point screenSize = new Point();
-        wm.getWindowManager().getDefaultDisplay().getSize(screenSize);
 
         final Rect backgroundFrame = new Rect();
 

@@ -58,6 +58,7 @@ import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.timeline.TimelineImageGenerator;
 import is.hello.sense.ui.widget.timeline.TimelineInfoOverlay;
 import is.hello.sense.ui.widget.util.Dialogs;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
@@ -514,7 +515,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         this.infoOverlay.bindEvent(event);
         this.infoOverlay.show(view,
                               this.parent.getTooltipOverlayContainerView(),
-                              getActivity(),
+                              Views.getActivityScreenSize(getActivity(), false),
                               animateShow);
 
         Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);

@@ -1,6 +1,8 @@
 package is.hello.sense.ui.widget.util;
 
 import android.animation.ValueAnimator;
+import android.app.Activity;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,6 +11,7 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -33,6 +36,22 @@ public final class Views {
      * and {@link View#getLocationInWindow(int[])}.
      */
     public static final int ORIGIN_Y = 1;
+
+    /**
+     * @param includeSystemDecor true if components like status bar and bottom nav bar should be included
+     * @return {@link Point} size of device screen with or without system components
+     */
+    public static Point getActivityScreenSize(@NonNull final Activity activity,
+                                              final boolean includeSystemDecor) {
+        final Display display = activity.getWindowManager().getDefaultDisplay();
+        final Point screenSize = new Point();
+        if(includeSystemDecor) {
+            display.getRealSize(screenSize);
+        } else {
+            display.getSize(screenSize);
+        }
+        return screenSize;
+    }
 
 
     /**
