@@ -85,9 +85,9 @@ public class DevicesInteractor extends ValueInteractor<Devices> {
         }
     }
 
-    private class RetryRequiredException extends Throwable {
+    private class RetryRequiredException extends RuntimeException {
         RetryRequiredException() {
-            super("should only be visible in logs.");
+            super("Re-subscription required.");
         }
     }
 }
