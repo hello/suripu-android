@@ -36,7 +36,6 @@ public class ExpansionImageView extends ImageView {
         this.drawable = new ExpansionTextDrawable(context);
         setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                                      ViewGroup.LayoutParams.MATCH_PARENT));
-        setBackground(this.drawable);
         getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -75,16 +74,8 @@ public class ExpansionImageView extends ImageView {
         setText(expansion.getCompanyName());
         picasso.cancelRequest(this);
         picasso.load(expansion.getIcon().getUrl(getResources()))
-               .into(this, new Callback() {
-                   @Override
-                   public void onSuccess() {
-                       ExpansionImageView.this.setBackground(null);
-                   }
-
-                   @Override
-                   public void onError() {
-                   }
-               });
+               .placeholder(this.drawable)
+               .into(this);
 
     }
 

@@ -38,7 +38,7 @@ public class ExpansionTextDrawable extends Drawable {
         this.textPaint.setColor(ContextCompat.getColor(context, R.color.gray5));
         this.borderPaint.setColor(ContextCompat.getColor(context, R.color.gray2));
         this.backgroundPaint.setColor(ContextCompat.getColor(context, R.color.gray1));
-        this.borderWidth = context.getResources().getDimensionPixelSize(R.dimen.x_25) / 2;
+        this.borderWidth = context.getResources().getDimensionPixelSize(R.dimen.divider_size_thick);
         this.radius = context.getResources().getDimensionPixelSize(R.dimen.x_5);
     }
 
