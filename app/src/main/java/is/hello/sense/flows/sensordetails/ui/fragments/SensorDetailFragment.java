@@ -155,6 +155,9 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         this.updateTimer = null;
         this.sensorSubscription.unsubscribe();
         this.sensorSubscription = Subscriptions.empty();
+        if (tutorialOverlayView != null) {
+            this.tutorialOverlayView.dismiss(false);
+        }
         this.tutorialOverlayView = null;
     }
 
