@@ -111,15 +111,20 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         return (activity.getFragmentManager().findFragmentByTag(WelcomeDialogFragment.TAG) != null);
     }
 
-    public static void show(@NonNull Activity activity, @XmlRes int welcomeRes,
-                            boolean marshmallowFlickerWorkaround) {
+    public static void show(@NonNull final Activity activity,
+                            @XmlRes final int welcomeRes,
+                            final boolean marshmallowFlickerWorkaround) {
+        if (activity.isFinishing() || activity.isDestroyed()) {
+            return;
+        }
         final WelcomeDialogFragment welcomeDialog =
                 WelcomeDialogFragment.newInstance(welcomeRes, marshmallowFlickerWorkaround);
         welcomeDialog.showAllowingStateLoss(activity.getFragmentManager(), WelcomeDialogFragment.TAG);
     }
 
-    public static boolean showIfNeeded(@NonNull Activity activity, @XmlRes int welcomeRes,
-                                       boolean marshmallowFlickerWorkaround) {
+    public static boolean showIfNeeded(@NonNull final Activity activity,
+                                       final @XmlRes int welcomeRes,
+                                       final boolean marshmallowFlickerWorkaround) {
         if (shouldShow(activity, welcomeRes)) {
             show(activity, welcomeRes, marshmallowFlickerWorkaround);
             return true;
@@ -128,8 +133,8 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
         }
     }
 
-    public static WelcomeDialogFragment newInstance(@XmlRes int welcomeRes,
-                                                    boolean marshmallowFlickerWorkaround) {
+    public static WelcomeDialogFragment newInstance(@XmlRes final int welcomeRes,
+                                                    final boolean marshmallowFlickerWorkaround) {
         final WelcomeDialogFragment fragment = new WelcomeDialogFragment();
 
         final Bundle arguments = new Bundle();
