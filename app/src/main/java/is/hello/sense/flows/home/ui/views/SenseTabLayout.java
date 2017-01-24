@@ -49,10 +49,10 @@ public class SenseTabLayout extends TabLayout
         if (tab == null) {
             return;
         }
-        currentItemIndex = tab.getPosition();
-        tabChanged(currentItemIndex);
-        tab.setIcon(drawablesActive[currentItemIndex]);
-        if (currentItemIndex == SLEEP_ICON_KEY) {
+        this.currentItemIndex = tab.getPosition();
+        tabChanged(this.currentItemIndex);
+        tab.setIcon(this.drawablesActive[this.currentItemIndex]);
+        if (this.currentItemIndex == SLEEP_ICON_KEY) {
             jumpToLastNight();
         }
 
@@ -63,7 +63,7 @@ public class SenseTabLayout extends TabLayout
         if (tab == null) {
             return;
         }
-        tab.setIcon(drawables[tab.getPosition()]);
+        tab.setIcon(this.drawables[tab.getPosition()]);
     }
 
     @Override
@@ -74,27 +74,27 @@ public class SenseTabLayout extends TabLayout
     //endregion
 
     private void scrollUp(final int position) {
-        if (listener != null) {
-            listener.scrollUp(position);
+        if (this.listener != null) {
+            this.listener.scrollUp(position);
         }
     }
 
     private void tabChanged(final int fragmentPosition) {
-        if (listener != null) {
-            listener.tabChanged(fragmentPosition);
+        if (this.listener != null) {
+            this.listener.tabChanged(fragmentPosition);
         }
     }
 
     private void jumpToLastNight() {
-        if (listener != null) {
-            listener.jumpToLastNight();
+        if (this.listener != null) {
+            this.listener.jumpToLastNight();
         }
     }
 
     @Nullable
     private Timeline getCurrentTimeline() {
-        if (listener != null) {
-            return listener.getCurrentTimeline();
+        if (this.listener != null) {
+            return this.listener.getCurrentTimeline();
         }
         return null;
 
@@ -129,50 +129,52 @@ public class SenseTabLayout extends TabLayout
     }
 
     public void setUpTabs(final boolean shouldSelect) {
-        drawables[TRENDS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_trends_24);
-        drawablesActive[TRENDS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_trends_active_24);
-        drawables[INSIGHTS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_insight_24);
-        drawablesActive[INSIGHTS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_insight_active_24);
-        drawables[SOUNDS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_sound_24);
-        drawablesActive[SOUNDS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_sound_active_24);
-        drawables[CONDITIONS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_sense_24);
-        drawablesActive[CONDITIONS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_sense_active_24);
+        this.drawables[TRENDS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_trends_24);
+        this.drawablesActive[TRENDS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_trends_active_24);
+        this.drawables[INSIGHTS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_insight_24);
+        this.drawablesActive[INSIGHTS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_insight_active_24);
+        this.drawables[SOUNDS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_sound_24);
+        this.drawablesActive[SOUNDS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_sound_active_24);
+        this.drawables[CONDITIONS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_sense_24);
+        this.drawablesActive[CONDITIONS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_sense_active_24);
 
         final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(getContext());
-        drawableBuilder.withSize(drawables[TRENDS_ICON_KEY].getIntrinsicWidth(), drawables[TRENDS_ICON_KEY].getIntrinsicHeight());
+        drawableBuilder.withSize(this.drawables[TRENDS_ICON_KEY].getIntrinsicWidth(),
+                                 this.drawables[TRENDS_ICON_KEY].getIntrinsicHeight());
         final Timeline currentTimeline = getCurrentTimeline();
         if (currentTimeline == null) {
-            drawables[SLEEP_ICON_KEY] = drawableBuilder.build();
-            drawablesActive[SLEEP_ICON_KEY] = drawableBuilder.withSelected(true).build();
+            this.drawables[SLEEP_ICON_KEY] = drawableBuilder.build();
+            this.drawablesActive[SLEEP_ICON_KEY] = drawableBuilder.withSelected(true).build();
         } else {
             updateSleepScoreTab(currentTimeline);
         }
         removeAllTabs();
-        addTab(newTab().setIcon(drawables[SLEEP_ICON_KEY]));
-        addTab(newTab().setIcon(drawables[TRENDS_ICON_KEY]));
-        addTab(newTab().setIcon(drawables[INSIGHTS_ICON_KEY]));
-        addTab(newTab().setIcon(drawables[SOUNDS_ICON_KEY]));
-        addTab(newTab().setIcon(drawables[CONDITIONS_ICON_KEY]));
+        addTab(newTab().setIcon(this.drawables[SLEEP_ICON_KEY]));
+        addTab(newTab().setIcon(this.drawables[TRENDS_ICON_KEY]));
+        addTab(newTab().setIcon(this.drawables[INSIGHTS_ICON_KEY]));
+        addTab(newTab().setIcon(this.drawables[SOUNDS_ICON_KEY]));
+        addTab(newTab().setIcon(this.drawables[CONDITIONS_ICON_KEY]));
         clearOnTabSelectedListeners();
         addOnTabSelectedListener(this);
-        final TabLayout.Tab tab = getTabAt(currentItemIndex);
+        final TabLayout.Tab tab = getTabAt(this.currentItemIndex);
         if (shouldSelect && tab != null) {
-            tab.setIcon(drawablesActive[currentItemIndex]);
+            tab.setIcon(this.drawablesActive[this.currentItemIndex]);
             tab.select();
         }
     }
 
     public void updateSleepScoreTab(@Nullable final Timeline timeline) {
         final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(getContext());
-        drawableBuilder.withSize(drawables[TRENDS_ICON_KEY].getIntrinsicWidth(), drawables[TRENDS_ICON_KEY].getIntrinsicHeight());
+        drawableBuilder.withSize(this.drawables[TRENDS_ICON_KEY].getIntrinsicWidth(),
+                                 this.drawables[TRENDS_ICON_KEY].getIntrinsicHeight());
         if (timeline != null &&
                 timeline.getScore() != null) {
             if (TimelineInteractor.hasValidCondition(timeline)) {
                 drawableBuilder.withText(timeline.getScore());
             }
         }
-        drawables[SLEEP_ICON_KEY] = drawableBuilder.build();
-        drawablesActive[SLEEP_ICON_KEY] = drawableBuilder.withSelected(true).build();
+        this.drawables[SLEEP_ICON_KEY] = drawableBuilder.build();
+        this.drawablesActive[SLEEP_ICON_KEY] = drawableBuilder.withSelected(true).build();
         final TabLayout.Tab tab = getTabAt(SLEEP_ICON_KEY);
         if (tab == null) {
             return;

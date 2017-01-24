@@ -24,6 +24,7 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 
 public class NotificationReceiver extends BroadcastReceiver {
+    public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     public static final String EXTRA_TARGET = "target";
     public static final String EXTRA_FROM = "from";
     public static final String EXTRA_MESSAGE = "message";
@@ -107,7 +108,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 
             final Intent activityIntent = new Intent(context, HomeActivity.class);
             activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            activityIntent.putExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD, intent.getExtras());
+            activityIntent.putExtra(EXTRA_NOTIFICATION_PAYLOAD, intent.getExtras());
             builder.setContentIntent(PendingIntent.getActivity(context, 0,
                                                                activityIntent,
                                                                PendingIntent.FLAG_ONE_SHOT));

@@ -42,6 +42,7 @@ import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.mvp.util.FabPresenter;
 import is.hello.sense.mvp.util.FabPresenterProvider;
 import is.hello.sense.notifications.Notification;
+import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.appcompat.ScopedInjectionActivity;
@@ -73,11 +74,8 @@ public class HomeActivity extends ScopedInjectionActivity
         OnboardingFlowProvider,
         SenseTabLayout.Listener {
 
-    public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     private static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
     private static final String KEY_CURRENT_ITEM_INDEX = HomeActivity.class.getSimpleName() + "CURRENT_ITEM_INDEX";
-
-
     private static boolean isFirstActivityRun = true; // changed when paused
 
     @Inject
@@ -117,11 +115,11 @@ public class HomeActivity extends ScopedInjectionActivity
         addInteractor(this.lastNightInteractor);
         setContentView(R.layout.activity_new_home);
         this.progressOverlay = findViewById(R.id.activity_new_home_progress_overlay);
-        this.spinner = (SpinnerImageView) progressOverlay.findViewById(R.id.activity_new_home_spinner);
+        this.spinner = (SpinnerImageView) this.progressOverlay.findViewById(R.id.activity_new_home_spinner);
         this.extendedViewPager = (ExtendedViewPager) findViewById(R.id.activity_new_home_extended_view_pager);
         this.extendedViewPager.setScrollingEnabled(false);
         this.extendedViewPager.setFadePageTransformer(true);
-        this.extendedViewPager.setOffscreenPageLimit(viewPagerDelegate.getOffscreenPageLimit());
+        this.extendedViewPager.setOffscreenPageLimit(this.viewPagerDelegate.getOffscreenPageLimit());
         this.tabLayout = (SenseTabLayout) findViewById(R.id.activity_new_home_tab_layout);
         restoreState(savedInstanceState);
         this.tabLayout.setupWithViewPager(this.extendedViewPager);
@@ -145,7 +143,7 @@ public class HomeActivity extends ScopedInjectionActivity
                              Functions.LOG_ERROR);
         }
 
-        bindAndSubscribe(alertsInteractor.alert,
+        bindAndSubscribe(this.alertsInteractor.alert,
                          this::bindAlert,
                          Functions.LOG_ERROR);
         bindAndSubscribe(this.lastNightInteractor.timeline,
@@ -166,7 +164,7 @@ public class HomeActivity extends ScopedInjectionActivity
     @Override
     public void onSaveInstanceState(final Bundle outState, final PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
-        outState.putInt(KEY_CURRENT_ITEM_INDEX, tabLayout.getSelectedTabPosition());
+        outState.putInt(KEY_CURRENT_ITEM_INDEX, this.tabLayout.getSelectedTabPosition());
     }
 
     @Override
@@ -193,8 +191,8 @@ public class HomeActivity extends ScopedInjectionActivity
                                                "ACTION_SHOW_ALARMS");
             Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
             this.tabLayout.selectSoundTab();
-        } else if (intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
-            dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
+        } else if (intent.hasExtra(NotificationReceiver.EXTRA_NOTIFICATION_PAYLOAD)) {
+            dispatchNotification(intent.getBundleExtra(NotificationReceiver.EXTRA_NOTIFICATION_PAYLOAD));
         }
 
     }
@@ -362,26 +360,26 @@ public class HomeActivity extends ScopedInjectionActivity
     //region Notifications
 
     private void dispatchNotification(@NonNull final Bundle notification) {
-        stateSafeExecutor.execute(() -> {
+        this.stateSafeExecutor.execute(() -> {
             info(getClass().getSimpleName(), "dispatchNotification(" + notification + ")");
 
             final Notification target = Notification.fromBundle(notification);
             switch (target) {
                 case TIMELINE: {
-                    tabLayout.selectTimelineTab();
+                    this.tabLayout.selectTimelineTab();
                     //todo support scrolling to date.
                     break;
                 }
                 case SENSOR: {
-                    tabLayout.selectTimelineTab();
+                    this.tabLayout.selectTimelineTab();
                     break;
                 }
                 case TRENDS: {
-                    tabLayout.selectTrendsTab();
+                    this.tabLayout.selectTrendsTab();
                     break;
                 }
                 case ALARM: {
-                    tabLayout.selectSoundTab();
+                    this.tabLayout.selectSoundTab();
                     break;
                 }
                 case SETTINGS: {
@@ -389,11 +387,11 @@ public class HomeActivity extends ScopedInjectionActivity
                     break;
                 }
                 case INSIGHTS: {
-                    tabLayout.selectInsightsTab();
+                    this.tabLayout.selectInsightsTab();
                     break;
                 }
                 case CONDITIONS: {
-                    tabLayout.selectConditionsTab();
+                    this.tabLayout.selectConditionsTab();
                     break;
                 }
             }
@@ -421,17 +419,17 @@ public class HomeActivity extends ScopedInjectionActivity
 
     @Override
     public void tabChanged(final int fragmentPosition) {
-        if (!lastNightInteractor.timeline.hasValue()) {
-            lastNightInteractor.update();
+        if (!this.lastNightInteractor.timeline.hasValue()) {
+            this.lastNightInteractor.update();
         }
-        extendedViewPager.setCurrentItem(fragmentPosition);
+        this.extendedViewPager.setCurrentItem(fragmentPosition);
     }
 
     @Nullable
     @Override
     public Timeline getCurrentTimeline() {
-        if (lastNightInteractor.timeline.hasValue()) {
-            return lastNightInteractor.timeline.getValue();
+        if (this.lastNightInteractor.timeline.hasValue()) {
+            return this.lastNightInteractor.timeline.getValue();
         }
         return null;
     }
