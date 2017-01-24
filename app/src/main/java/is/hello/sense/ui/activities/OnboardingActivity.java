@@ -319,8 +319,10 @@ public class OnboardingActivity extends ScopedInjectionActivity
         } else if (fragment instanceof SetLocationFragment) {
             if (responseCode == RESULT_OK) {
                 showPairSense(true);
-            } else {
+            } else if (responseCode == SetLocationFragment.RESULT_USER_SKIPPED) {
                 showHomeActivity(OnboardingActivity.FLOW_REGISTER);
+            } else {
+                showPairSense(false);
             }
         } else if (fragment instanceof PairSenseFragment) {
             if (responseCode == PairSensePresenter.REQUEST_CODE_EDIT_WIFI) {

@@ -9,15 +9,18 @@ import android.view.ViewGroup;
 
 import is.hello.sense.R;
 import is.hello.sense.permissions.LocationPermission;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.util.Analytics;
 
 /**
  * Show user explanation for requiring location permission
  */
-public class SetLocationFragment extends SenseFragment {
+public class SetLocationFragment extends SenseFragment
+implements OnBackPressedInterceptor{
 
     private static final String ARG_SHOW_SKIP = SetLocationFragment.class.getSimpleName() + ".ARG_SHOW_SKIP";
+    public static final int RESULT_USER_SKIPPED = 200;
 
     /**
      * @param showSkip true will display the 'Skip Sense Setup' action.
@@ -88,7 +91,7 @@ public class SetLocationFragment extends SenseFragment {
     }
 
     private void onSkip(final View ignored) {
-        cancelFlow();
+        finishFlowWithResult(RESULT_USER_SKIPPED);
     }
 
     private void setLocation(final View primaryButton) {
@@ -97,5 +100,11 @@ public class SetLocationFragment extends SenseFragment {
         } else {
             finishFlow();
         }
+    }
+
+    @Override
+    public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
+        cancelFlow();
+        return true;
     }
 }

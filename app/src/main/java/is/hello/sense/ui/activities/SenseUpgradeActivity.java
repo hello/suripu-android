@@ -137,6 +137,8 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
                 showBluetoothFragment();
             } else if (fragment instanceof PairSenseFragment) {
                 showSenseUpdateIntro();
+            } else if (fragment instanceof SetLocationFragment) {
+                showSenseUpdate(false);
             } else if (fragment instanceof UnpairPillFragment || fragment instanceof PairPillFragment) {
                 checkForSenseOTA();
             } else if (fragment instanceof SenseOTAFragment) {
