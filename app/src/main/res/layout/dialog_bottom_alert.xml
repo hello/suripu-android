@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<is.hello.sense.ui.widget.RoundedLinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/item_bottom_alert"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    style="@style/AppTheme.LargeCard">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+    <LinearLayout
+        android:id="@+id/item_bottom_alert"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_light">
+
+        <View
+            android:id="@+id/dialog_bottom_alert_top_divider"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_size_thick"
+            android:background="@drawable/shadow_top_down"/>
 
         <TextView
             android:id="@+id/dialog_bottom_alert"
@@ -16,7 +23,8 @@
             android:layout_marginEnd="@dimen/x3"
             android:layout_marginBottom="@dimen/x2"
             android:gravity="start"
-            android:textAppearance="@style/AppTheme.Text.Heading.New" />
+            android:textAppearance="@style/AppTheme.Text.Heading.New"
+            tools:text="@string/dialog_title_replace_sense"/>
 
         <TextView
             android:id="@+id/dialog_bottom_alert_message"
@@ -30,7 +38,8 @@
             android:scrollbars="vertical"
             android:overScrollMode="ifContentScrolls"
             android:textAppearance="@style/AppTheme.Text.Body"
-            android:lineSpacingMultiplier="@dimen/line_multiple_body" />
+            android:lineSpacingMultiplier="@dimen/line_multiple_body"
+            tools:text="@string/dialog_message_replace_sense"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -48,7 +57,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:textColor="@color/text_dim"
-                style="@style/AppTheme.Button.Dialog.Positive"/>
+                style="@style/AppTheme.Button.Dialog.Positive"
+                tools:text="@string/action_close"/>
 
             <Button
                 android:id="@+id/dialog_bottom_alert_positive"
@@ -56,8 +66,16 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:textColor="@color/blue6"
-                style="@style/AppTheme.Button.Dialog.Positive"/>
+                style="@style/AppTheme.Button.Dialog.Positive"
+                tools:text="@string/action_okay"/>
 
         </LinearLayout>
 
-</is.hello.sense.ui.widget.RoundedLinearLayout>
+        <View
+            android:id="@+id/dialog_bottom_alert_bottom_divider"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_size_thick"
+            android:background="@drawable/shadow_bottom_up"/>
+
+    </LinearLayout>
+</layout>

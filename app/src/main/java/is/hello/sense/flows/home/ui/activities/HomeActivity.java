@@ -27,6 +27,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
+import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
@@ -51,7 +52,6 @@ import is.hello.sense.ui.dialogs.BottomAlertDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
-import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.ui.widget.graphing.drawables.SleepScoreIconDrawable;
@@ -293,6 +293,7 @@ public class HomeActivity extends ScopedInjectionActivity
             BottomAlertDialogFragment.newInstance(alert,
                                                   getResources())
                                      .showAllowingStateLoss(getFragmentManager(),
+                                                            R.id.activity_new_home_bottom_alert_container,
                                                             BottomAlertDialogFragment.TAG);
         } else if (shouldUpdateDeviceIssues()) {
             deviceIssuesPresenter.update();
@@ -306,9 +307,8 @@ public class HomeActivity extends ScopedInjectionActivity
 
         localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
 
-        final DeviceIssueDialogFragment deviceIssueDialogFragment =
-                DeviceIssueDialogFragment.newInstance(issue);
-        deviceIssueDialogFragment.showAllowingStateLoss(getFragmentManager(),
+        DeviceIssueDialogFragment.newInstance(issue)
+                                 .showAllowingStateLoss(getFragmentManager(), //todo add to R.id.activity_new_home_bottom_alert_container
                                                         DeviceIssueDialogFragment.TAG);
 
         deviceIssuesPresenter.updateLastShown(issue);

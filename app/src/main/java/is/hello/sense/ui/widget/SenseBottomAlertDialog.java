@@ -50,7 +50,7 @@ public class SenseBottomAlertDialog extends Dialog {
             final WindowManager.LayoutParams attributes;
             attributes = window.getAttributes();
             window.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
-            attributes.y = context.getResources().getDimensionPixelSize(R.dimen.x9);
+            attributes.y = context.getResources().getDimensionPixelSize(R.dimen.x6);
             window.setAttributes(attributes);
             window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             window.addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
