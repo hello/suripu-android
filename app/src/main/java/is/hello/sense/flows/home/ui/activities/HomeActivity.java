@@ -52,6 +52,7 @@ import is.hello.sense.ui.dialogs.BottomAlertDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
+import is.hello.sense.ui.dialogs.SystemAlertDialogFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.ui.widget.graphing.drawables.SleepScoreIconDrawable;
@@ -290,7 +291,7 @@ public class HomeActivity extends ScopedInjectionActivity
     private void bindAlert(@NonNull final Alert alert) {
         if (shouldShow(alert)) {
             localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
-            BottomAlertDialogFragment.newInstance(alert,
+            SystemAlertDialogFragment.newInstance(alert,
                                                   getResources())
                                      .showAllowingStateLoss(getFragmentManager(),
                                                             R.id.activity_new_home_bottom_alert_container,
@@ -306,9 +307,10 @@ public class HomeActivity extends ScopedInjectionActivity
         }
 
         localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
-
-        DeviceIssueDialogFragment.newInstance(issue)
-                                 .showAllowingStateLoss(getFragmentManager(), //todo add to R.id.activity_new_home_bottom_alert_container
+        DeviceIssueDialogFragment.newInstance(issue,
+                                              getResources())
+                                 .showAllowingStateLoss(getFragmentManager(),
+                                                        R.id.activity_new_home_bottom_alert_container,
                                                         DeviceIssueDialogFragment.TAG);
 
         deviceIssuesPresenter.updateLastShown(issue);

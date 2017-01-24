@@ -20,6 +20,7 @@ import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.graph.InteractorSubject;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Constants;
 import rx.Observable;
 
 public class DeviceIssuesInteractor extends ScopedValueInteractor<DeviceIssuesInteractor.Issue> {
@@ -164,7 +165,7 @@ public class DeviceIssuesInteractor extends ScopedValueInteractor<DeviceIssuesIn
     }
 
     public enum Issue {
-        NONE(0, 0, 0, 0),
+        NONE(Constants.NONE, Constants.NONE, Constants.NONE, Constants.NONE),
         NO_SENSE_PAIRED(Analytics.Timeline.SYSTEM_ALERT_TYPE_SENSE_NOT_PAIRED,
                         R.string.issue_title_no_sense,
                         R.string.issue_message_no_sense,

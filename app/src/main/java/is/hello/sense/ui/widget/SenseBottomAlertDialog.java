@@ -39,7 +39,7 @@ public class SenseBottomAlertDialog extends Dialog {
         this(context,R.style.AppTheme_Dialog_BottomAlert);
     }
 
-    public SenseBottomAlertDialog(@NonNull final Context context, final int style){
+    SenseBottomAlertDialog(@NonNull final Context context, final int style){
         super(context, style);
 
         setContentView(R.layout.dialog_bottom_alert);

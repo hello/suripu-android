@@ -10,11 +10,12 @@ import is.hello.sense.api.model.ApiResponse;
  * Encapsulates display values for corresponding {@link Alert}
  */
 
-public class AlertDialogViewModel extends ApiResponse {
+public class AlertDialogViewModel extends ApiResponse
+implements DialogViewModel<Category>{
 
-    public final String positiveButtonText;
+    private final String positiveButtonText;
 
-    public final String neutralButtonText;
+    private final String neutralButtonText;
 
     private final Alert alert;
 
@@ -32,15 +33,28 @@ public class AlertDialogViewModel extends ApiResponse {
                                                       resources);
     }
 
+    @Override
     public String getTitle(){
         return alert.getTitle();
     }
 
+    @Override
     public String getBody(){
         return alert.getBody();
     }
 
-    public Category getCategory(){
+    @Override
+    public String getPositiveButtonText() {
+        return positiveButtonText;
+    }
+
+    @Override
+    public String getNeutralButtonText() {
+        return neutralButtonText;
+    }
+
+    @Override
+    public Category getAnalyticPropertyType() {
         return alert.getCategory();
     }
 
