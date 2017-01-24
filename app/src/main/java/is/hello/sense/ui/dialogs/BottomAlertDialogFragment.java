@@ -14,7 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
+import com.google.gson.reflect.TypeToken;
 import com.segment.analytics.Properties;
+
+import java.io.Serializable;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
@@ -22,6 +25,7 @@ import is.hello.sense.api.model.v2.alerts.DialogViewModel;
 import is.hello.sense.databinding.DialogBottomAlertBinding;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.widget.SenseBottomAlertDialog;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 
@@ -52,18 +56,17 @@ public abstract class BottomAlertDialogFragment<T extends DialogViewModel> exten
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            setAlert((T) getArguments().getSerializable(ARG_ALERT));
+            setAlertFrom(getArguments());
 
             final Properties properties = Analytics.createProperties(
                     Analytics.Timeline.PROP_SYSTEM_ALERT_TYPE, alert.getAnalyticPropertyType());
 
             Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT, properties);
         } else {
-            setAlert((T) savedInstanceState.getSerializable(ARG_ALERT));
+            setAlertFrom(savedInstanceState);
         }
     }
 
-    //todo share with device issues
     @CallSuper
     @Nullable
     @Override
@@ -77,16 +80,18 @@ public abstract class BottomAlertDialogFragment<T extends DialogViewModel> exten
         this.binding.dialogBottomAlertMessage.setMovementMethod(LinkMovementMethod.getInstance());
 
         this.binding.dialogBottomAlertNeutral.setText(alert.getNeutralButtonText());
-        this.binding.dialogBottomAlertNeutral.setOnClickListener(ignore -> {
-            onNeutralButtonClicked();
-            dismissSafely();
-        });
+        Views.setTimeOffsetOnClickListener(this.binding.dialogBottomAlertNeutral,
+                                           ignore -> {
+                                               onNeutralButtonClicked();
+                                               dismissSafely();
+                                           });
 
         this.binding.dialogBottomAlertPositive.setText(alert.getPositiveButtonText());
-        this.binding.dialogBottomAlertPositive.setOnClickListener(ignore -> {
-            onPositiveButtonClicked();
-            dismissSafely();
-        });
+        Views.setTimeOffsetOnClickListener(this.binding.dialogBottomAlertPositive,
+                                           ignore -> {
+                                               onPositiveButtonClicked();
+                                               dismissSafely();
+                                           });
         return this.binding.getRoot();
     }
 
@@ -141,12 +146,31 @@ public abstract class BottomAlertDialogFragment<T extends DialogViewModel> exten
           .commitAllowingStateLoss();
     }
 
+    @SuppressWarnings("unchecked")
+    private void setAlertFrom(@Nullable final Bundle bundle) {
+        if (bundle == null) {
+            setAlert(null);
+            return;
+        }
+        final Serializable serializedAlert = bundle.getSerializable(ARG_ALERT);
+        if (serializedAlert instanceof DialogViewModel) {
+            try {
+                setAlert((T) serializedAlert);
+            } catch (final ClassCastException e) {
+                Logger.error(BottomAlertDialogFragment.TAG, ARG_ALERT + " was not expecting class " + new TypeToken<T>(){}.getType(), e);
+                setAlert(null);
+            }
+        } else {
+            setAlert(null);
+        }
+    }
+
     private void setAlert(@Nullable final T alert) {
-        if(alert == null){
+        if (alert == null) {
             this.alert = getEmptyDialogViewModelInstance();
             Logger.error(BottomAlertDialogFragment.TAG, " requires non null DialogViewModel object passed in arguments");
         } else {
-            this.alert = alert;
+                this.alert = alert;
         }
     }
 }
