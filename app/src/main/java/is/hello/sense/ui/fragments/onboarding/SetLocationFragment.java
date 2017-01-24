@@ -15,8 +15,21 @@ import is.hello.sense.util.Analytics;
 /**
  * Show user explanation for requiring location permission
  */
+public class SetLocationFragment extends SenseFragment {
 
-public class OnboardingSetLocationFragment extends SenseFragment {
+    private static final String ARG_SHOW_SKIP = SetLocationFragment.class.getSimpleName() + ".ARG_SHOW_SKIP";
+
+    /**
+     * @param showSkip true will display the 'Skip Sense Setup' action.
+     * @return fragment that will allow user to enable location permission.
+     */
+    public static SetLocationFragment newInstance(final boolean showSkip) {
+        final Bundle args = new Bundle();
+        args.putBoolean(ARG_SHOW_SKIP, showSkip);
+        final SetLocationFragment fragment = new SetLocationFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     private OnboardingSimpleStepView view;
     private final LocationPermission permission = new LocationPermission(this);
@@ -34,15 +47,21 @@ public class OnboardingSetLocationFragment extends SenseFragment {
     public View onCreateView(final LayoutInflater inflater,
                              final ViewGroup container,
                              final Bundle savedInstanceState) {
+        final boolean showSkip;
+        if (getArguments() != null && getArguments().getBoolean(ARG_SHOW_SKIP)) {
+            showSkip = true;
+        } else {
+            showSkip = false;
+        }
         view = new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.title_onboarding_register_location)
                 .setSubheadingText(R.string.message_onboarding_register_location)
                 .setPrimaryButtonText(R.string.action_set_location)
-                .setSecondaryButtonText(R.string.action_skip)
+                .setSecondaryButtonText(R.string.action_skip_sense_setup)
                 .setDiagramImage(R.drawable.onboarding_set_location_diagram)
                 .setPrimaryOnClickListener(this::setLocation)
                 .setSecondaryOnClickListener(this::onSkip)
-                .setWantsSecondaryButton(true)
+                .setWantsSecondaryButton(showSkip)
                 .setToolbarWantsBackButton(false);
 
         return view;
@@ -69,7 +88,7 @@ public class OnboardingSetLocationFragment extends SenseFragment {
     }
 
     private void onSkip(final View ignored) {
-        finishFlow();
+        cancelFlow();
     }
 
     private void setLocation(final View primaryButton) {

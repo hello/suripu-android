@@ -37,10 +37,22 @@ import rx.functions.Action0;
 
 public class PairSenseFragment extends BasePresenterFragment
         implements
-        FragmentCompat.OnRequestPermissionsResultCallback,
         PairSensePresenter.Output,
-        OnBackPressedInterceptor
-{
+        OnBackPressedInterceptor {
+
+    private static final String ARG_START_SCANNING = PairSenseFragment.class.getSimpleName() + ".ARG_START_SCANNING";
+
+    /**
+     * @param startWithScan when true will this fragment will immediately start looking for a Sense.
+     * @return fragment that will allow user to pair with a new sense device.
+     */
+    public static PairSenseFragment newInstance(final boolean startWithScan) {
+        final Bundle args = new Bundle();
+        args.putBoolean(ARG_START_SCANNING, startWithScan);
+        final PairSenseFragment fragment = new PairSenseFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     private final LocationPermission locationPermission = new LocationPermission(this);
     private OnboardingSimpleStepView view;
@@ -52,7 +64,6 @@ public class PairSenseFragment extends BasePresenterFragment
     public BasePresenter getPresenter() {
         return presenter;
     }
-
 
     protected void sendOnCreateAnalytics() {
         final Properties properties = Analytics.createBluetoothTrackingProperties(getActivity());
@@ -94,24 +105,24 @@ public class PairSenseFragment extends BasePresenterFragment
     }
 
     @Override
+    public void onViewCreated(final View view,
+                              final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (getArguments() != null && getArguments().getBoolean(ARG_START_SCANNING) && locationPermission.isGranted()) {
+            presenter.onLocationPermissionGranted();
+        }
+    }
+
+    @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         presenter.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
-    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
-        if (locationPermission.isGrantedFromResult(requestCode, permissions, grantResults)) {
-            onPrimaryButtonClicked();
-        } else {
-            locationPermission.showEnableInstructionsDialog();
-        }
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if(this.view != null) {
+        if (this.view != null) {
             this.view.destroy();
             this.view = null;
         }
@@ -124,7 +135,7 @@ public class PairSenseFragment extends BasePresenterFragment
 
     @Override
     public void showErrorDialog(final ErrorDialogFragment.PresenterBuilder builder,
-                             final int requestCode) {
+                                final int requestCode) {
         final ErrorDialogFragment dialogFragment = builder.build();
 
         dialogFragment.setTargetFragment(this, requestCode);
@@ -145,7 +156,7 @@ public class PairSenseFragment extends BasePresenterFragment
     }
 
     @Override
-    public void showMessageDialog(@StringRes final int titleRes, @StringRes final int messageRes){
+    public void showMessageDialog(@StringRes final int titleRes, @StringRes final int messageRes) {
         final MessageDialogFragment messageDialogFragment = MessageDialogFragment.newInstance(titleRes, messageRes);
         messageDialogFragment.showAllowingStateLoss(getFragmentManager(), MessageDialogFragment.TAG);
     }
@@ -153,7 +164,7 @@ public class PairSenseFragment extends BasePresenterFragment
     @Override
     public void showPairDialog(final String deviceName,
                                final Action0 positiveAction,
-                               final Action0 negativeAction){
+                               final Action0 negativeAction) {
         final SenseAlertDialog dialog = new SenseAlertDialog(getActivity());
         dialog.setTitle(R.string.debug_title_confirm_sense_pair);
         dialog.setMessage(getString(R.string.debug_message_confirm_sense_pair_fmt, deviceName));
@@ -166,14 +177,14 @@ public class PairSenseFragment extends BasePresenterFragment
     @Override
     public void onPrimaryButtonClicked() {
         if (!locationPermission.isGranted()) {
-            locationPermission.requestPermissionWithDialog();
+            finishFlowWithResult(PairSensePresenter.REQUEST_NEEDS_LOCATION_PERMISSION);
             return;
         }
         presenter.onLocationPermissionGranted();
     }
 
     protected void showSupportOptions() {
-        if (! presenter.showSupportOptions()) {
+        if (!presenter.showSupportOptions()) {
             return;
         }
 
