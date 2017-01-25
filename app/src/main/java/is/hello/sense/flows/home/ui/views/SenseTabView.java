@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
@@ -20,6 +21,9 @@ public class SenseTabView extends FrameLayout {
 
     @NonNull
     private final ImageView imageView;
+
+    @NonNull
+    private final TextView indicator;
 
     @Nullable
     public Drawable activeDrawable = null;
@@ -42,16 +46,21 @@ public class SenseTabView extends FrameLayout {
         super(context, attrs, defStyleAttr);
         LayoutInflater.from(context).inflate(R.layout.view_tab, this);
         this.imageView = (ImageView) findViewById(R.id.view_tab_icon);
-
+        this.indicator = (TextView) findViewById(R.id.view_tab_indicator);
     }
 
     public SenseTabView setActive(final boolean active) {
         if (active) {
+            this.indicator.setVisibility(GONE);
             this.imageView.setBackground(this.activeDrawable);
         } else {
             this.imageView.setBackground(this.normalDrawable);
         }
         return this;
+    }
+
+    public void showIndicator() {
+        this.indicator.setVisibility(VISIBLE);
     }
 
     public SenseTabView setDrawables(@DrawableRes final int normal,
@@ -70,7 +79,7 @@ public class SenseTabView extends FrameLayout {
     }
 
     public void updateSleepScoreIcon(@Nullable final Timeline timeline,
-                                    final boolean active) {
+                                     final boolean active) {
         useSleepScoreIcon(timeline,
                           this.imageView.getMeasuredWidth(),
                           this.imageView.getMeasuredHeight(),
