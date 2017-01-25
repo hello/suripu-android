@@ -1,8 +1,10 @@
 package is.hello.sense.flows.sensordetails.ui.fragments;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -249,6 +251,11 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         }
 
         if (tutorialOverlayView == null) {
+            @IdRes final int container;
+            if (!(getActivity() instanceof Parent)) {
+                return;
+            }
+            container = ((Parent) getActivity()).getContainerRes();
             final boolean scrollUp;
             if (Tutorial.SENSOR_DETAILS_SCRUB.shouldShow(getActivity())) {
                 hasShownATutorial = true;
@@ -270,7 +277,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
                 tutorialOverlayView.setAnchorContainer(getView());
                 getAnimatorContext().runWhenIdle(() -> {
                     if (tutorialOverlayView != null && getUserVisibleHint()) {
-                        tutorialOverlayView.postShow(R.id.activity_navigation_container);
+                        tutorialOverlayView.postShow(container);
                         if (scrollUp) {
                             tutorialOverlayView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                                 @Override
@@ -335,6 +342,13 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         public void setTimestamps(@NonNull final List<X> timestamps) {
             this.timestamps = timestamps;
         }
+    }
+
+
+    public interface Parent {
+
+        @IdRes
+        int getContainerRes();
     }
 
 }

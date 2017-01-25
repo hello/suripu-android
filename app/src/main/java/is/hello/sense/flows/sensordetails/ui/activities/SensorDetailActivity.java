@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -27,7 +28,8 @@ import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Windows;
 
 public class SensorDetailActivity extends ScopedInjectionActivity
-        implements FragmentNavigation {
+        implements FragmentNavigation,
+        SensorDetailFragment.Parent {
     private static final String EXTRA_SENSOR = SensorDetailActivity.class.getName() + ".EXTRA_SENSOR";
     private FragmentNavigationDelegate navigationDelegate;
     private ActionBar actionBar;
@@ -51,7 +53,7 @@ public class SensorDetailActivity extends ScopedInjectionActivity
         this.navigationDelegate = new FragmentNavigationDelegate(this,
                                                                  R.id.activity_navigation_container,
                                                                  stateSafeExecutor);
-        
+
         final Sensor sensor = (Sensor) getIntent().getSerializableExtra(EXTRA_SENSOR);
         final int color = ContextCompat.getColor(this, sensor.getColor());
         setStatusBarColor(Drawing.darkenColorBy(color, Drawing.DARK_MULTIPLIER));
@@ -91,6 +93,11 @@ public class SensorDetailActivity extends ScopedInjectionActivity
         return navigationDelegate.getTopFragment();
     }
 
+    @IdRes
+    @Override
+    public int getContainerRes() {
+        return R.id.activity_navigation_container;
+    }
 
     public final void setActionbarColor(@ColorRes final int colorRes) {
         if (actionBar != null) {
