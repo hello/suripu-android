@@ -7,13 +7,13 @@
         android:layout_height="@dimen/x7"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingStart="@dimen/x2"
         android:paddingEnd="@dimen/x2">
 
         <android.support.v7.widget.AppCompatImageView
             android:id="@+id/item_settings_toggle_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/x2"
             android:tint="@color/settings_icon_fill_color"
             tools:src="@drawable/icon_settings_24"/>
 
