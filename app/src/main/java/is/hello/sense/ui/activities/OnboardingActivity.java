@@ -320,7 +320,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
             if (responseCode == RESULT_OK) {
                 showPairSense(true);
             } else if (responseCode == SetLocationFragment.RESULT_USER_SKIPPED) {
-                showHomeActivity(OnboardingActivity.FLOW_REGISTER);
+                skipToEnd();
             } else {
                 showPairSense(false);
             }
