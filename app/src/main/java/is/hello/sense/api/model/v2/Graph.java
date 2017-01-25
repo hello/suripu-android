@@ -121,7 +121,7 @@ public class Graph extends ApiResponse {
                     graph.addSection(GraphSection.withHighlightedTitle(graphSection));
                 }
                 final GraphSection temp = graph.getSection(graph.getSections().size() - 1);
-                if(temp != null) {
+                if (temp != null) {
                     temp.addValue(graphSection.getValue(i - offset));
                 }
 
@@ -129,7 +129,7 @@ public class Graph extends ApiResponse {
             for (int i = 0; i < graphSection.getTitles().size(); i++) {
                 final String title = graphSection.getTitles().get(i);
                 final GraphSection temp = graph.getSection(i);
-                if(temp != null) {
+                if (temp != null) {
                     temp.addTitle(title);
                 }
             }
@@ -138,7 +138,7 @@ public class Graph extends ApiResponse {
                 final int sectionIndex = highlightedIndex / DAYS_IN_WEEK;
                 final int cell = highlightedIndex % DAYS_IN_WEEK;
                 final GraphSection temp = graph.getSection(sectionIndex);
-                if(temp != null) {
+                if (temp != null) {
                     temp.addHighlightedValues(cell);
                 }
             }
@@ -153,7 +153,7 @@ public class Graph extends ApiResponse {
 
     @Nullable
     private GraphSection getSection(final int index) {
-        if(index < 0 || index >= sections.size()) {
+        if (index < 0 || index >= sections.size()) {
             Log.e(getClass().getName(), String.format("%d index is out of bounds in sections of size %d", index, sections.size()));
             return null;
         }
@@ -216,6 +216,11 @@ public class Graph extends ApiResponse {
         }
         if (timeScale != otherGraph.timeScale) {
             return false;
+        }
+        for (final GraphSection section : sections) {
+            if (!otherGraph.sections.contains(section)) {
+                return false;
+            }
         }
         return minValue == otherGraph.minValue && maxValue == otherGraph.maxValue;
     }
