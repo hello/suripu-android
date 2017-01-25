@@ -6,21 +6,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <is.hello.sense.flows.home.ui.views.SenseTabLayout
+        android:id="@+id/activity_new_home_tab_layout"
+        style="@style/AppTheme.AppCompat.BottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
+
     <is.hello.sense.ui.widget.ExtendedViewPager
         android:id="@+id/activity_new_home_extended_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
         android:scrollbars="none"
-        app:senseFadingEdgeStyle="rounded">
+        android:layout_above="@id/activity_new_home_tab_layout"
+        app:senseFadingEdgeStyle="rounded"/>
 
-        <is.hello.sense.flows.home.ui.views.SenseTabLayout
-            android:id="@+id/activity_new_home_tab_layout"
-            style="@style/AppTheme.AppCompat.BottomBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+    <FrameLayout
+        android:id="@+id/activity_new_home_bottom_alert_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/activity_new_home_tab_layout">
 
-    </is.hello.sense.ui.widget.ExtendedViewPager>
+    </FrameLayout>
 
     <RelativeLayout
         android:id="@+id/activity_new_home_progress_overlay"

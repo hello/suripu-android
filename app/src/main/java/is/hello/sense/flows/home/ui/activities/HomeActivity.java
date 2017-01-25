@@ -27,6 +27,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
+import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
 import is.hello.sense.flows.home.ui.views.SenseTabLayout;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
@@ -53,7 +54,7 @@ import is.hello.sense.ui.dialogs.BottomAlertDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
-import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
+import is.hello.sense.ui.dialogs.SystemAlertDialogFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.ui.widget.graphing.drawables.SleepScoreIconDrawable;
@@ -269,10 +270,11 @@ public class HomeActivity extends ScopedInjectionActivity
 
     private void bindAlert(@NonNull final Alert alert) {
         if (shouldShow(alert)) {
-            this.localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
-            BottomAlertDialogFragment.newInstance(alert,
+            localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
+            SystemAlertDialogFragment.newInstance(alert,
                                                   getResources())
                                      .showAllowingStateLoss(getFragmentManager(),
+                                                            R.id.activity_new_home_bottom_alert_container,
                                                             BottomAlertDialogFragment.TAG);
         } else if (shouldUpdateDeviceIssues()) {
             this.deviceIssuesPresenter.update();
@@ -284,11 +286,11 @@ public class HomeActivity extends ScopedInjectionActivity
             return;
         }
 
-        this.localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
-
-        final DeviceIssueDialogFragment deviceIssueDialogFragment =
-                DeviceIssueDialogFragment.newInstance(issue);
-        deviceIssueDialogFragment.showAllowingStateLoss(getFragmentManager(),
+        localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
+        DeviceIssueDialogFragment.newInstance(issue,
+                                              getResources())
+                                 .showAllowingStateLoss(getFragmentManager(),
+                                                        R.id.activity_new_home_bottom_alert_container,
                                                         DeviceIssueDialogFragment.TAG);
 
         this.deviceIssuesPresenter.updateLastShown(issue);
