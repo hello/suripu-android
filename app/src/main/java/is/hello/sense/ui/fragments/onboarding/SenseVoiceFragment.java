@@ -5,7 +5,6 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
@@ -73,6 +72,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     private View nightStandView;
     private Lazy<Integer> TRANSLATE_Y =
             () -> getResources().getDimensionPixelSize(R.dimen.sense_voice_translate_y);
+    private final float SENSE_SCALE_FACTOR = 0.6f;
 
     private final ViewAnimator viewAnimator = new ViewAnimator(LoadingDialogFragment.DURATION_DEFAULT,
                                                                new AccelerateDecelerateInterpolator());
@@ -125,17 +125,18 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     }
 
     private void requestCreateViewLayoutChanges(final ViewGroup questionTextGroup) {
-        senseImageView.setScaleX(0.6f);
-        senseImageView.setScaleY(0.6f);
+        senseImageView.setScaleX(SENSE_SCALE_FACTOR);
+        senseImageView.setScaleY(SENSE_SCALE_FACTOR);
 
         senseCircleView.post(stateSafeExecutor.bind( () -> {
             //move circle view to center after sense is translated
             senseCircleView.setY(
-                    senseImageView.getY() + TRANSLATE_Y.get()*0.6f - ((senseCircleView.getHeight() - senseImageView.getHeight()) / 2)
+                    senseImageView.getY() + TRANSLATE_Y.get() * SENSE_SCALE_FACTOR - ((senseCircleView.getHeight() - senseImageView.getHeight()) / 2)
                                 );
             senseCircleView.invalidate();
-            questionTextGroup.setY( senseCircleView.getY() - questionTextGroup.getMeasuredHeight() -
-                                            getResources().getDimensionPixelSize(R.dimen.sense_voice_fixed_margin));
+            questionTextGroup.setY( senseCircleView.getY()
+                                            - questionTextGroup.getMeasuredHeight()
+                                            - getResources().getDimensionPixelSize(R.dimen.sense_voice_fixed_margin));
             questionTextGroup.invalidate();
         }));
 
@@ -148,9 +149,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
 
         if(senseCircleView.getDrawable() != null) {
             viewAnimator.onViewCreated(
-                    createAnimatorSetFor(
-                            (StateListDrawable) senseCircleView.getDrawable())
-                                      );
+                    createAnimatorSetFor(senseCircleView.getDrawable()));
         }
 
         bindAndSubscribe(senseVoiceInteractor.voiceResponse,
@@ -224,7 +223,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
 
         transaction.animatorFor(senseImageView)
                 .scale(1)
-                .translationY(TRANSLATE_Y.get() * 0.60f);
+                .translationY(TRANSLATE_Y.get() * SENSE_SCALE_FACTOR);
 
         transaction.animatorFor(title)
                 .fadeOut(View.INVISIBLE);
@@ -278,7 +277,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     private void presentError(final Throwable throwable) {
         poll(false);
         voiceTipSubscription.unsubscribe();
-        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(throwable, getActivity())
+        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.PresenterBuilder(throwable)
                 .withMessage(StringRef.from(R.string.error_internet_connection_generic_message))
                 .build();
 
