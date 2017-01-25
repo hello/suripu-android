@@ -1,29 +1,23 @@
 package is.hello.sense.flows.home.ui.views;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.view.View;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
-import is.hello.sense.interactors.TimelineInteractor;
-import is.hello.sense.ui.widget.graphing.drawables.SleepScoreIconDrawable;
 
 public class SenseTabLayout extends TabLayout
         implements TabLayout.OnTabSelectedListener {
 
-    private static final int NUMBER_OF_ITEMS = 5;
     public static final int SLEEP_ICON_KEY = 0;
     public static final int TRENDS_ICON_KEY = 1;
     public static final int INSIGHTS_ICON_KEY = 2;
     public static final int SOUNDS_ICON_KEY = 3;
     public static final int CONDITIONS_ICON_KEY = 4;
-
-    private final Drawable[] drawables = new Drawable[NUMBER_OF_ITEMS];
-    private final Drawable[] drawablesActive = new Drawable[NUMBER_OF_ITEMS];
 
     private Listener listener = null;
     private int currentItemIndex;
@@ -51,7 +45,7 @@ public class SenseTabLayout extends TabLayout
         }
         this.currentItemIndex = tab.getPosition();
         tabChanged(this.currentItemIndex);
-        tab.setIcon(this.drawablesActive[this.currentItemIndex]);
+        setTabActive(tab, true);
         if (this.currentItemIndex == SLEEP_ICON_KEY) {
             jumpToLastNight();
         }
@@ -60,10 +54,7 @@ public class SenseTabLayout extends TabLayout
 
     @Override
     public void onTabUnselected(final Tab tab) {
-        if (tab == null) {
-            return;
-        }
-        tab.setIcon(this.drawables[tab.getPosition()]);
+        setTabActive(tab, false);
     }
 
     @Override
@@ -117,7 +108,7 @@ public class SenseTabLayout extends TabLayout
     }
 
     public void selectConditionsTab() {
-        selectTab(INSIGHTS_ICON_KEY);
+        selectTab(CONDITIONS_ICON_KEY);
     }
 
     private void selectTab(final int position) {
@@ -129,58 +120,33 @@ public class SenseTabLayout extends TabLayout
     }
 
     public void setUpTabs(final boolean shouldSelect) {
-        this.drawables[TRENDS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_trends_24);
-        this.drawablesActive[TRENDS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_trends_active_24);
-        this.drawables[INSIGHTS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_insight_24);
-        this.drawablesActive[INSIGHTS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_insight_active_24);
-        this.drawables[SOUNDS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_sound_24);
-        this.drawablesActive[SOUNDS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_sound_active_24);
-        this.drawables[CONDITIONS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_sense_24);
-        this.drawablesActive[CONDITIONS_ICON_KEY] = ContextCompat.getDrawable(getContext(), R.drawable.icon_sense_active_24);
-
-        final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(getContext());
-        drawableBuilder.withSize(this.drawables[TRENDS_ICON_KEY].getIntrinsicWidth(),
-                                 this.drawables[TRENDS_ICON_KEY].getIntrinsicHeight());
-        final Timeline currentTimeline = getCurrentTimeline();
-        if (currentTimeline == null) {
-            this.drawables[SLEEP_ICON_KEY] = drawableBuilder.build();
-            this.drawablesActive[SLEEP_ICON_KEY] = drawableBuilder.withSelected(true).build();
-        } else {
-            updateSleepScoreTab(currentTimeline);
-        }
         removeAllTabs();
-        addTab(newTab().setIcon(this.drawables[SLEEP_ICON_KEY]));
-        addTab(newTab().setIcon(this.drawables[TRENDS_ICON_KEY]));
-        addTab(newTab().setIcon(this.drawables[INSIGHTS_ICON_KEY]));
-        addTab(newTab().setIcon(this.drawables[SOUNDS_ICON_KEY]));
-        addTab(newTab().setIcon(this.drawables[CONDITIONS_ICON_KEY]));
+        addTab(createSleepScoreTab(getCurrentTimeline()));
+        addTab(createTabFor(R.drawable.icon_trends_24, R.drawable.icon_trends_active_24));
+        addTab(createTabFor(R.drawable.icon_insight_24, R.drawable.icon_insight_active_24));
+        addTab(createTabFor(R.drawable.icon_sound_24, R.drawable.icon_sound_active_24));
+        addTab(createTabFor(R.drawable.icon_sense_24, R.drawable.icon_sense_active_24));
+
         clearOnTabSelectedListeners();
         addOnTabSelectedListener(this);
+
         final TabLayout.Tab tab = getTabAt(this.currentItemIndex);
         if (shouldSelect && tab != null) {
-            tab.setIcon(this.drawablesActive[this.currentItemIndex]);
+            setTabActive(tab, true);
             tab.select();
         }
     }
 
-    public void updateSleepScoreTab(@Nullable final Timeline timeline) {
-        final SleepScoreIconDrawable.Builder drawableBuilder = new SleepScoreIconDrawable.Builder(getContext());
-        drawableBuilder.withSize(this.drawables[TRENDS_ICON_KEY].getIntrinsicWidth(),
-                                 this.drawables[TRENDS_ICON_KEY].getIntrinsicHeight());
-        if (timeline != null &&
-                timeline.getScore() != null) {
-            if (TimelineInteractor.hasValidCondition(timeline)) {
-                drawableBuilder.withText(timeline.getScore());
-            }
-        }
-        this.drawables[SLEEP_ICON_KEY] = drawableBuilder.build();
-        this.drawablesActive[SLEEP_ICON_KEY] = drawableBuilder.withSelected(true).build();
-        final TabLayout.Tab tab = getTabAt(SLEEP_ICON_KEY);
-        if (tab == null) {
-            return;
-        }
-        drawableBuilder.withSelected(tab.isSelected());
-        tab.setIcon(drawableBuilder.build());
+    private Tab createSleepScoreTab(@Nullable final Timeline timeline) {
+        return newTab().setCustomView(new SenseTabView(getContext())
+                                              .useSleepScoreIcon(timeline));
+    }
+
+    private Tab createTabFor(@DrawableRes final int normal,
+                             @DrawableRes final int active) {
+        return newTab().setCustomView(new SenseTabView(getContext())
+                                              .setDrawables(normal, active)
+                                              .setActive(false));
     }
 
     public void setCurrentItemIndex(final int index) {
@@ -189,6 +155,29 @@ public class SenseTabLayout extends TabLayout
 
     public void setListener(@Nullable final Listener listener) {
         this.listener = listener;
+    }
+
+    private void setTabActive(@Nullable final Tab tab,
+                              final boolean active) {
+        if (tab == null) {
+            return;
+        }
+        final View view = tab.getCustomView();
+        if (view instanceof SenseTabView) {
+            ((SenseTabView) view).setActive(active);
+        }
+    }
+
+    public void updateSleepScoreTab(@Nullable final Timeline timeline) {
+        final TabLayout.Tab tab = getTabAt(SLEEP_ICON_KEY);
+        if (tab == null) {
+            return;
+        }
+        final View view = tab.getCustomView();
+        if (view instanceof SenseTabView) {
+            ((SenseTabView) view).updateSleepScoreIcon(timeline, tab.isSelected());
+        }
+
     }
 
     public interface Listener {
