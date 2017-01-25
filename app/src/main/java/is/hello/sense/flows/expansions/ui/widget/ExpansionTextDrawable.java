@@ -9,6 +9,7 @@ import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -113,4 +114,16 @@ public class ExpansionTextDrawable extends Drawable {
         this.text = text;
     }
 
+    public int getBorderWidth() {
+        return borderWidth;
+    }
+
+    @ColorInt
+    public int getBorderColor() {
+        return borderPaint.getColor();
+    }
+
+    public int getRadius() {
+        return radius;
+    }
 }
