@@ -1,6 +1,7 @@
 package is.hello.sense.ui.widget.timeline;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
@@ -19,8 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.joda.time.LocalDate;
-
-import java.util.Locale;
 
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
@@ -158,7 +157,7 @@ public class TimelineImageGenerator {
             minutes = minutes / 60;
             unitRes = R.plurals.hours;
         }
-        String result = String.format(Locale.US, "%.01f", minutes);
+        @SuppressLint("DefaultLocale") String result = String.format("%.01f", minutes);
         result = Styles.stripTrailingPeriods(Styles.stripTrailingZeros(result));
         return result + " " + resources.getQuantityString(unitRes, (int) Math.ceil(minutes));
     }
