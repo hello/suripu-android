@@ -4,14 +4,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="@dimen/x2">
+    android:orientation="vertical">
 
     <include
         android:id="@+id/view_expansion_detail_info_top"
         layout="@layout/view_expansion_detail_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x5"/>
 
     <include
         android:id="@+id/view_expansion_detail_bottom"

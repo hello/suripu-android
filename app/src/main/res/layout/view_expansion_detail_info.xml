@@ -5,8 +5,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:padding="@dimen/x2"
     android:visibility="gone"
-    tools:showIn="@layout/view_expansion_detail">
+    tools:showIn="@layout/view_expansion_detail"
+    tools:visibility="visible">
 
     <ImageView
         android:id="@+id/view_expansion_detail_icon"
@@ -16,7 +18,8 @@
         android:layout_marginBottom="@dimen/x4"
         android:layout_marginEnd="@dimen/x1"
         android:minHeight="@dimen/expansion_icon_min_size"
-        android:minWidth="@dimen/expansion_icon_min_size"/>
+        android:minWidth="@dimen/expansion_icon_min_size"
+        tools:src="@drawable/icon_expansions_default"/>
 
     <TextView
         android:id="@+id/view_expansion_detail_device_name"
@@ -24,7 +27,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/x1"
-        android:layout_toEndOf="@+id/view_expansion_detail_icon"/>
+        android:layout_toEndOf="@+id/view_expansion_detail_icon"
+        tools:text="@string/expansion_list_title"/>
 
     <TextView
         android:id="@+id/view_expansion_detail_device_company_name"
@@ -32,13 +36,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/view_expansion_detail_device_name"
-        android:layout_toEndOf="@+id/view_expansion_detail_icon"/>
+        android:layout_toEndOf="@+id/view_expansion_detail_icon"
+        tools:text="@string/expansion_category_thermostat"/>
 
     <TextView
         android:id="@+id/view_expansion_detail_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/view_expansion_detail_icon"/>
+        android:layout_below="@+id/view_expansion_detail_icon"
+        tools:text="@string/description_factory_reset"/>
 
     <Button
         android:id="@+id/view_expansion_detail_connect_button"
