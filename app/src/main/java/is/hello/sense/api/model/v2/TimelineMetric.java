@@ -34,6 +34,15 @@ public class TimelineMetric extends ApiResponse implements Parcelable {
     Condition condition;
 
 
+    public static TimelineMetric empty() {
+        final TimelineMetric emptyMetric = new TimelineMetric();
+        emptyMetric.name = Name.UNKNOWN;
+        emptyMetric.value = null;
+        emptyMetric.unit = Unit.UNKNOWN;
+        emptyMetric.condition = Condition.UNKNOWN;
+        return emptyMetric;
+    }
+
     @SuppressWarnings("unused")
     public TimelineMetric() {
 
@@ -53,6 +62,13 @@ public class TimelineMetric extends ApiResponse implements Parcelable {
 
     public Condition getCondition() {
         return condition;
+    }
+
+    public boolean isValid() {
+        return value != null &&
+                name != Name.UNKNOWN &&
+                unit != Unit.UNKNOWN &&
+                condition != Condition.UNKNOWN;
     }
 
     @Override
@@ -120,11 +136,11 @@ public class TimelineMetric extends ApiResponse implements Parcelable {
 
         public final @StringRes int stringRes;
 
-        Name(@StringRes int stringRes) {
+        Name(@StringRes final int stringRes) {
             this.stringRes = stringRes;
         }
 
-        public static Name fromString(@NonNull String string) {
+        public static Name fromString(@NonNull final String string) {
             return Enums.fromString(string, values(), UNKNOWN);
         }
 
@@ -138,10 +154,11 @@ public class TimelineMetric extends ApiResponse implements Parcelable {
         MINUTES,
         QUANTITY,
         TIMESTAMP,
-        CONDITION;
+        CONDITION,
+        UNKNOWN;
 
-        public static Unit fromString(@NonNull String string) {
-            return Enums.fromString(string, values(), QUANTITY);
+        public static Unit fromString(@NonNull final String string) {
+            return Enums.fromString(string, values(), UNKNOWN);
         }
     }
 }
