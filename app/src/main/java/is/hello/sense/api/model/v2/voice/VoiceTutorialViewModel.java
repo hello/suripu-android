@@ -45,7 +45,7 @@ public class VoiceTutorialViewModel {
                                                                   FAIL_STATE));
     }
 
-    public VoiceTutorialViewModel(@NonNull final QuestionTextViewModel questionTextViewModel,
+    private VoiceTutorialViewModel(@NonNull final QuestionTextViewModel questionTextViewModel,
                                   @NonNull final  SenseImageViewModel senseImageViewModel) {
         this.questionTextViewModel = questionTextViewModel;
         this.senseImageViewModel = senseImageViewModel;
