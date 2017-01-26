@@ -29,6 +29,7 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
     public static final int REQUEST_CODE_EDIT_WIFI = 0xf1;
     private static final int REQUEST_CODE_HIGH_POWER_RETRY = 0x88;
     private static final int REQUEST_CODE_SHOW_RATIONALE_DIALOG = 0xb2;
+    public static final int REQUEST_NEEDS_LOCATION_PERMISSION = 0xcc;
 
     private static final int RESULT_EDIT_WIFI = 0x99;
     private static final int LINK_ACCOUNT_FAILURES_BEFORE_EDIT_WIFI = 3;

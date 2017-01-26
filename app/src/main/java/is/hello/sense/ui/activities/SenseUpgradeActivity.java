@@ -25,6 +25,7 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
+import is.hello.sense.ui.fragments.onboarding.SetLocationFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
 import is.hello.sense.ui.fragments.onboarding.VoiceCompleteFragment;
@@ -41,7 +42,8 @@ import is.hello.sense.ui.fragments.updating.SelectWifiNetworkFragment;
 import is.hello.sense.util.SkippableFlow;
 
 public class SenseUpgradeActivity extends ScopedInjectionActivity
-        implements FragmentNavigation, SkippableFlow {
+        implements FragmentNavigation,
+        SkippableFlow {
     public static final String ARG_NEEDS_BLUETOOTH = SenseUpgradeActivity.class.getName() + ".ARG_NEEDS_BLUETOOTH";
 
     private FragmentNavigationDelegate navigationDelegate;
@@ -135,6 +137,8 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
                 showBluetoothFragment();
             } else if (fragment instanceof PairSenseFragment) {
                 showSenseUpdateIntro();
+            } else if (fragment instanceof SetLocationFragment) {
+                showSenseUpdate(false);
             } else if (fragment instanceof UnpairPillFragment || fragment instanceof PairPillFragment) {
                 checkForSenseOTA();
             } else if (fragment instanceof SenseOTAFragment) {
@@ -148,11 +152,16 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
             return;
         }
 
-        if (fragment instanceof SenseUpgradeIntroFragment || fragment instanceof BluetoothFragment) {
-            showSenseUpdate();
+        if (fragment instanceof SenseUpgradeIntroFragment
+                || fragment instanceof BluetoothFragment) {
+            showSenseUpdate(false);
+        } else if (fragment instanceof SetLocationFragment) {
+            showSenseUpdate(true);
         } else if (fragment instanceof PairSenseFragment) {
             if (responseCode == PairSensePresenter.REQUEST_CODE_EDIT_WIFI) {
                 showSelectWifiNetwork();
+            } else if (responseCode == PairSensePresenter.REQUEST_NEEDS_LOCATION_PERMISSION) {
+                showSetLocation();
             } else {
                 showSenseUpdateReady();
             }
@@ -205,13 +214,18 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
         pushFragment(new SenseUpgradeIntroFragment(), null, true);
     }
 
-    public void showSenseUpdate() {
+    public void showSenseUpdate(final boolean startWithScan) {
         if (bluetoothStack.isEnabled()) {
-            pushFragment(new PairSenseFragment(), null, false);
+            pushFragment(PairSenseFragment.newInstance(startWithScan), null, false);
         } else {
             showBluetoothFragment();
         }
     }
+
+    public void showSetLocation() {
+        pushFragment(SetLocationFragment.newInstance(false), null, false);
+    }
+
 
     public void showSenseUpdateReady() {
         pushFragment(new SenseUpgradeReadyFragment(), null, false);
