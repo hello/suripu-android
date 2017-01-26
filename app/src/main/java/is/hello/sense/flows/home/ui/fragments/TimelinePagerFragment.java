@@ -25,6 +25,7 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TimelineInteractor;
 import is.hello.sense.mvp.util.ViewPagerPresenterChild;
 import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
+import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
@@ -37,7 +38,7 @@ public class TimelinePagerFragment extends InjectionFragment
         implements ViewPager.OnPageChangeListener,
         TimelineFragment.Parent,
         HomeActivity.ScrollUp,
-        ViewPagerPresenterChild {
+        StaticFragmentAdapter.Controller {
 
     @Inject
     PreferencesInteractor preferences;
@@ -45,8 +46,6 @@ public class TimelinePagerFragment extends InjectionFragment
     DateFormatter dateFormatter;
     @Inject
     TimelineInteractor timelineInteractor;
-
-    private final ViewPagerPresenterChildDelegate viewPagerPresenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
 
     private static final String KEY_LAST_UPDATED = TimelinePagerFragment.class.getSimpleName() + "KEY_LAST_UPDATED";
     private static final String KEY_LAST_ITEM = TimelinePagerFragment.class.getSimpleName() + "KEY_LAST_ITEM";
@@ -96,7 +95,6 @@ public class TimelinePagerFragment extends InjectionFragment
         }
 
         getActivity().registerReceiver(onTimeChanged, new IntentFilter(Intent.ACTION_TIME_CHANGED));
-        viewPagerPresenterChildDelegate.onViewInitialized();
         return view;
     }
 
@@ -118,7 +116,6 @@ public class TimelinePagerFragment extends InjectionFragment
     @Override
     public void onResume() {
         super.onResume();
-        viewPagerPresenterChildDelegate.onResume();
         if ((System.currentTimeMillis() - lastUpdated) > Constants.STALE_INTERVAL_MS) {
             if (isCurrentFragmentLastNight()) {
                 Logger.info(getClass().getSimpleName(), "Timeline content stale, reloading.");
@@ -140,11 +137,17 @@ public class TimelinePagerFragment extends InjectionFragment
     @Override
     public void onPause() {
         super.onPause();
-        viewPagerPresenterChildDelegate.onPause();
     }
 
     @Override
-    public void onUserVisible() {
+    public boolean hasPresenterView() {
+        debugLog("Has Presenter View  = " + (viewPagerAdapter != null));
+        return viewPagerAdapter != null;
+    }
+
+    @Override
+    public void isVisibleToUser() {
+        debugLog("isVisibleToUser");
         if (shouldJumpToLastNightOnUserVisible) {
             shouldJumpToLastNightOnUserVisible = false;
             jumpToLastNight(false);
@@ -156,18 +159,13 @@ public class TimelinePagerFragment extends InjectionFragment
     }
 
     @Override
-    public void onUserInvisible() {
+    public void isInvisibleToUser() {
+        debugLog("isInvisibleToUser");
         final TimelineFragment timelineFragment = viewPagerAdapter.getCurrentTimeline();
         if (timelineFragment != null) {
             timelineFragment.dismissVisibleOverlaysAndDialogs();
             timelineFragment.setUserVisibleHint(false);
         }
-    }
-
-    @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        viewPagerPresenterChildDelegate.setUserVisibleHint(isVisibleToUser);
     }
 
     @Override
@@ -187,7 +185,6 @@ public class TimelinePagerFragment extends InjectionFragment
 
     @Override
     public void onPageSelected(final int position) {
-        final LocalDate localDate = viewPagerAdapter.getItemDate(position);
 
     }
 

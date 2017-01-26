@@ -20,6 +20,7 @@ import is.hello.sense.interactors.TrendsInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.mvp.util.ViewPagerPresenterChild;
 import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
+import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.widget.graphing.trends.TrendFeedViewItem;
 import is.hello.sense.ui.widget.graphing.trends.TrendGraphView;
 import is.hello.sense.util.Analytics;
@@ -29,7 +30,7 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
         implements
         TrendFeedViewItem.OnRetry,
         TrendGraphView.AnimationCallback,
-        ViewPagerPresenterChild,
+        StaticFragmentAdapter.Controller,
         HomeActivity.ScrollUp {
 
     @Inject
@@ -37,15 +38,11 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     @Inject
     PreferencesInteractor preferencesInteractor;
 
-    @VisibleForTesting
-    public final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
-
     //region PresenterFragment
     @Override
     public void initializePresenterView() {
         if (this.presenterView == null) {
             this.presenterView = new TrendsView(getActivity(), createTrendsAdapter());
-            this.presenterChildDelegate.onViewInitialized();
         }
     }
 
@@ -68,31 +65,18 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
-        this.presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        this.presenterChildDelegate.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        this.presenterChildDelegate.onPause();
     }
 
     //endregion
-    //region ViewPagerPresenterChild
+    //region Controller
+
     @Override
-    public void onUserVisible() {
+    public void isVisibleToUser() {
         fetchTrends();
     }
 
     @Override
-    public void onUserInvisible() {
-
+    public void isInvisibleToUser() {
     }
     //endregion
 

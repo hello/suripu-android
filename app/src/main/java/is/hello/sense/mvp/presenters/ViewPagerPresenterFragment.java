@@ -23,7 +23,8 @@ import is.hello.sense.util.NotTested;
 public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewPagerPresenterView>
         implements ViewPagerPresenter,
         FabPresenter,
-        HomeActivity.ScrollUp {
+        HomeActivity.ScrollUp,
+        StaticFragmentAdapter.Controller {
 
     private BaseViewPagerPresenterDelegate viewPagerDelegate;
 
@@ -153,4 +154,36 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
     }
     //endregion
 
+    //region controller
+    @Override
+    public void isVisibleToUser() {
+        forwardToCurrentController(true);
+    }
+
+    @Override
+    public void isInvisibleToUser() {
+        forwardToCurrentController(false);
+    }
+    //region
+
+    @Nullable
+    private StaticFragmentAdapter.Controller getCurrentController() {
+        final Fragment fragment = getCurrentFragment();
+        if (fragment instanceof StaticFragmentAdapter.Controller) {
+            return (StaticFragmentAdapter.Controller) fragment;
+        }
+        return null;
+    }
+
+    private void forwardToCurrentController(final boolean isVisible) {
+        final StaticFragmentAdapter.Controller controller = getCurrentController();
+        if (controller == null || !controller.hasPresenterView()) {
+            return;
+        }
+        if (isVisible) {
+            controller.isVisibleToUser();
+        } else {
+            controller.isInvisibleToUser();
+        }
+    }
 }

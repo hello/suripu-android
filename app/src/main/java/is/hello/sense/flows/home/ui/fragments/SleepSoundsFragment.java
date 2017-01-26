@@ -36,6 +36,7 @@ import is.hello.sense.mvp.util.ViewPagerPresenterChild;
 import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
+import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -52,7 +53,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
         implements
         SleepSoundsAdapter.InteractionListener,
         SleepSoundsAdapter.Retry,
-        ViewPagerPresenterChild,
+        StaticFragmentAdapter.Controller,
         HomeActivity.ScrollUp {
     private static final int SOUNDS_REQUEST_CODE = 123;
     private static final int DURATION_REQUEST_CODE = 231;
@@ -70,8 +71,8 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     private Subscription stopOperationSubscriber = Subscriptions.empty();
     private Subscription hasSensePairedSubscription = Subscriptions.empty();
 
-    private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
     private UserWants userWants = UserWants.NONE;
+    private boolean isVisibleToUser = false;
 
     enum UserWants {
         PLAY,
@@ -101,14 +102,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
                                                              getAnimatorContext(),
                                                              this)
             );
-            this.presenterChildDelegate.onViewInitialized();
         }
-    }
-
-    @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        this.presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
     }
 
     @Override
@@ -121,7 +115,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
                                                                 PreferencesInteractor.SLEEP_SOUNDS_VOLUME_ID,
                                                                 PreferencesInteractor.SLEEP_SOUNDS_DURATION_ID),
                          changedKey -> {
-                             if(presenterView != null) {
+                             if (presenterView != null) {
                                  presenterView.notifyAdapter();
                              }
                          },
@@ -136,19 +130,8 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        this.presenterChildDelegate.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        this.presenterChildDelegate.onPause();
-    }
-
-    @Override
-    public void onUserVisible() {
+    public void isVisibleToUser() {
+        this.isVisibleToUser = true;
         Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS, null);
         setFabVisibleAndLoading(presenterView.isShowingPlayer());
         updateSensePairedSubscription(() -> {
@@ -159,7 +142,8 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     }
 
     @Override
-    public void onUserInvisible() {
+    public void isInvisibleToUser() {
+        this.isVisibleToUser = false;
         sleepSoundsStatusInteractor.stopPolling();
     }
 
@@ -494,7 +478,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     }
 
     private boolean isVisibleToUserAndResumed() {
-        return presenterChildDelegate.isVisibleToUser() && isResumed();
+        return this.isVisibleToUser && isResumed();
     }
     //endregion
 

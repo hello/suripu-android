@@ -42,6 +42,7 @@ import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
+import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
@@ -62,7 +63,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
         InsightsAdapter.InteractionListener,
         InsightInfoFragment.Parent,
         InsightsAdapter.OnRetry,
-        ViewPagerPresenterChild,
+        StaticFragmentAdapter.Controller,
         HomeActivity.ScrollUp {
 
     @Inject
@@ -81,9 +82,6 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     Picasso picasso;
     @Inject
     ApiService apiService;
-
-    private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
-
 
     @Nullable
     private TutorialOverlayView tutorialOverlayView;
@@ -105,25 +103,18 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     public final void initializePresenterView() {
         if (presenterView == null) {
             presenterView = new InsightsView(getActivity(), dateFormatter, picasso, this);
-            this.presenterChildDelegate.onViewInitialized();
         }
     }
 
     @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        this.presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
-    }
-
-    @Override
-    public void onUserVisible() {
+    public void isVisibleToUser() {
         presenterView.updateWhatsNewState();
         this.insightsInteractor.setMarkShownOnComplete(true);
         fetchInsights();
     }
 
     @Override
-    public void onUserInvisible() {
+    public void isInvisibleToUser() {
 
     }
 
@@ -174,14 +165,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     @Override
     public void onResume() {
         super.onResume();
-        this.presenterChildDelegate.onResume();
         update();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        this.presenterChildDelegate.onPause();
     }
 
     @Override

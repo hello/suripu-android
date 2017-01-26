@@ -133,6 +133,10 @@ public abstract class PresenterFragment<T extends PresenterView>
         this.loadingDialogFragment = null;
     }
 
+    public final boolean hasPresenterView() {
+        return presenterView != null;
+    }
+
     @NonNull
     public AnimatorContext getAnimatorContext() {
         if (animatorContext == null) {

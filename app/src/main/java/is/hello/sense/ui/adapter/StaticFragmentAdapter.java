@@ -4,17 +4,18 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.ViewGroup;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import is.hello.sense.mvp.util.ViewPagerPresenterChild;
 
 public class StaticFragmentAdapter extends android.support.v13.app.FragmentStatePagerAdapter {
     private final Item[] items;
     private int lastPosition = -1;
+
+    // FragmentStatePagerAdapter find by tag return null
+    // Need this to hold references of each fragment.
     private final Map<Integer, Fragment> fragmentMap = new HashMap<>();
 
     public StaticFragmentAdapter(@NonNull final FragmentManager fm,
@@ -38,7 +39,6 @@ public class StaticFragmentAdapter extends android.support.v13.app.FragmentState
     @Override
     public Object instantiateItem(final ViewGroup container,
                                   final int position) {
-        Log.e(getClass().getSimpleName(), "Instance: " + position);
         final Fragment fragment = ((Fragment) super.instantiateItem(container, position));
         fragmentMap.put(position, fragment);
         return fragment;
@@ -72,17 +72,19 @@ public class StaticFragmentAdapter extends android.support.v13.app.FragmentState
 
     private void alertFragmentVisible(final int position,
                                       final boolean isVisible) {
-        Log.e(getClass().getSimpleName(), "alertFragmentVisible: " + position);
         final Fragment fragment = getFragmentAtPosition(position);
-        if (!(fragment instanceof ViewPagerPresenterChild)) {
+        if (!(fragment instanceof Controller)) {
             return;
         }
-/*
+        final Controller controller = (Controller) fragment;
+        if (!controller.hasPresenterView()) {
+            return;
+        }
         if (isVisible) {
-            ((ViewPagerPresenterChild) fragment).onUserVisible();
+            controller.isVisibleToUser();
         } else {
-            ((ViewPagerPresenterChild) fragment).onUserInvisible();
-        }*/
+            controller.isInvisibleToUser();
+        }
     }
 
     public static class Item {
@@ -109,7 +111,12 @@ public class StaticFragmentAdapter extends android.support.v13.app.FragmentState
         }
     }
 
-    public static String makeFragmentName(final int viewId, final long id) {
-        return "android:switcher:" + viewId + ":" + id;
+    public interface Controller {
+        void isVisibleToUser();
+
+        void isInvisibleToUser();
+
+        boolean hasPresenterView();
     }
+
 }

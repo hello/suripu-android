@@ -35,6 +35,7 @@ import is.hello.sense.mvp.util.ViewPagerPresenterChild;
 import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
+import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -49,7 +50,7 @@ import rx.Observable;
 public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView>
         implements
         SmartAlarmAdapter.InteractionListener,
-        ViewPagerPresenterChild,
+        StaticFragmentAdapter.Controller,
         HomeActivity.ScrollUp {
     private static final int DELETE_REQUEST_CODE = 117;
 
@@ -62,7 +63,6 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     @Inject
     ExpansionCategoryFormatter expansionCategoryFormatter;
     private ArrayList<Alarm> currentAlarms = new ArrayList<>();
-    private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
     @Nullable
     private FabPresenter fabPresenter;
 
@@ -76,14 +76,7 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
                                                                               this,
                                                                               dateFormatter,
                                                                               expansionCategoryFormatter));
-            this.presenterChildDelegate.onViewInitialized();
         }
-    }
-
-    @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        this.presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
     }
 
     @Override
@@ -132,25 +125,13 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        this.presenterChildDelegate.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        this.presenterChildDelegate.onPause();
-    }
-
-    @Override
-    public void onUserVisible() {
+    public void isVisibleToUser() {
         Analytics.trackEvent(Analytics.Backside.EVENT_ALARMS, null);
         updateAlarms(null);
     }
 
     @Override
-    public void onUserInvisible() {
+    public void isInvisibleToUser() {
 
     }
     //endregion
