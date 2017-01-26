@@ -3,52 +3,66 @@ package is.hello.sense.ui.adapter;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.view.ViewGroup;
 
-public class StaticFragmentAdapter extends FragmentPagerAdapter {
+import java.util.HashMap;
+import java.util.Map;
+
+public class StaticFragmentAdapter extends android.support.v13.app.FragmentStatePagerAdapter {
     private final Item[] items;
-
-    /**
-     * Used to limit the number of items shown.
-     */
-    private int overrideCount = -1;
+    private int lastPosition = -1;
+    private final Map<Integer, Fragment> fragmentMap = new HashMap<>();
 
     public StaticFragmentAdapter(@NonNull final FragmentManager fm,
                                  @NonNull final Item... items) {
         super(fm);
-
         this.items = items;
     }
 
     @Override
-    public CharSequence getPageTitle(final int position) {
-        return items[position].title;
-    }
-
-    @Override
     public int getCount() {
-        if (overrideCount == -1) {
-            return items.length;
-        }
-        return overrideCount;
-
+        return items.length;
     }
 
-    public void setOverrideCount(int overrideCount) {
-        if (overrideCount < -1) {
-            overrideCount = -1;
-        }
-        if (overrideCount > items.length - 1) {
-            overrideCount = items.length - 1;
-        }
-        this.overrideCount = overrideCount;
-    }
-
-    @NonNull
     @Override
-    public Fragment createFragment(final int position) {
-        return items[position].newInstance();
+    public Fragment getItem(final int position) {
+        final Fragment fragment = items[position].newInstance();
+        fragmentMap.put(position, fragment);
+        return fragment;
     }
 
+    @Override
+    public Object instantiateItem(final ViewGroup container,
+                                  final int position) {
+        final Fragment fragment = ((Fragment) super.instantiateItem(container, position));
+        fragmentMap.put(position, fragment);
+        return fragment;
+    }
+
+    @Override
+    public void destroyItem(final ViewGroup container,
+                            final int position,
+                            final Object object) {
+        fragmentMap.remove(position);
+        super.destroyItem(container, position, object);
+    }
+
+    @Override
+    public void setPrimaryItem(final ViewGroup container,
+                               final int position,
+                               final Object object) {
+        if (lastPosition == position) {
+            return;
+        }
+        lastPosition = position;
+        super.setPrimaryItem(container, lastPosition, object);
+    }
+
+    @Nullable
+    public Fragment getFragmentAtPosition(final int position) {
+        return fragmentMap.get(position);
+    }
 
     public static class Item {
         public final Class<? extends Fragment> fragmentClass;
@@ -72,5 +86,9 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public static String makeFragmentName(final int viewId, final long id) {
+        return "android:switcher:" + viewId + ":" + id;
     }
 }

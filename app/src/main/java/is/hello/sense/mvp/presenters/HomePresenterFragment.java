@@ -62,8 +62,7 @@ public class HomePresenterFragment extends ViewPagerPresenterFragment
         if (presenterView == null) {
             return null;
         }
-        final Fragment fragment = presenterView.getFragmentWithIndex(getDesiredFragmentManager(),
-                                                                     getStartingItemPosition());
+        final Fragment fragment = getCurrentFragment();
         if (fragment instanceof InsightInfoFragment.Parent) {
             return (InsightInfoFragment.Parent) fragment;
         } else {

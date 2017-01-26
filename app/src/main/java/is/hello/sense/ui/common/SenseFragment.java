@@ -8,7 +8,9 @@ import android.os.Handler;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import is.hello.sense.BuildConfig;
 import is.hello.sense.SenseApplication;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -90,6 +92,12 @@ public class SenseFragment extends Fragment {
         }
     }
 
+    protected final void debugLog(@NonNull final String text) {
+        if (BuildConfig.DEBUG) {
+            Log.e(getClass().getSimpleName(), text);
+        }
+    }
+
     public void finishFlow() {
         finishFlowWithResult(RESULT_OK);
     }
@@ -108,4 +116,5 @@ public class SenseFragment extends Fragment {
             fragmentNavigation.flowFinished(this, resultCode, intent);
         }
     }
+
 }

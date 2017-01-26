@@ -355,8 +355,10 @@ public class HomeActivity extends ScopedInjectionActivity
 
     @Nullable
     private Fragment getFragmentWithIndex(final int index) {
-        return getFragmentManager()
-                .findFragmentByTag(FragmentPagerAdapter.makeFragmentTag(R.id.activity_new_home_extended_view_pager, index));
+        if (extendedViewPager.getAdapter() instanceof StaticFragmentAdapter){
+            return ((StaticFragmentAdapter)extendedViewPager.getAdapter()).getFragmentAtPosition(index);
+        }
+        return null;
     }
 
     //region Notifications

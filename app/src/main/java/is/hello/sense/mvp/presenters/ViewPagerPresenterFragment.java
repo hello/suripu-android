@@ -115,9 +115,9 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
         if (this.presenterView == null) {
             return null;
         }
-        return this.presenterView.getFragmentWithIndex(getDesiredFragmentManager(),
-                                                       this.presenterView.getCurrentFragmentPosition());
+        return this.presenterView.getCurrentFragment();
     }
+
 
     //endregion
 
@@ -141,7 +141,7 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
                           @Nullable final View.OnClickListener listener) {
         if (this.presenterView != null) {
             this.presenterView.updateFab(iconRes,
-                                    listener);
+                                         listener);
         }
     }
 
