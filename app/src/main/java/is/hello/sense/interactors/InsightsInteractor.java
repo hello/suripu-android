@@ -1,15 +1,11 @@
 package is.hello.sense.interactors;
 
-import android.support.annotation.NonNull;
-
-import java.io.InvalidObjectException;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.Insight;
-import is.hello.sense.api.model.v2.InsightInfo;
 import is.hello.sense.graph.InteractorSubject;
 import rx.Observable;
 
@@ -20,6 +16,7 @@ public class InsightsInteractor extends ScopedValueInteractor<ArrayList<Insight>
     UnreadStateInteractor unreadStatePresenter;
 
     public final InteractorSubject<ArrayList<Insight>> insights = this.subject;
+    private boolean markShownOnComplete = false;
 
     @Override
     protected boolean isDataDisposable() {
@@ -34,18 +31,16 @@ public class InsightsInteractor extends ScopedValueInteractor<ArrayList<Insight>
     @Override
     protected Observable<ArrayList<Insight>> provideUpdateObservable() {
         return apiService.currentInsights()
-                         .doOnCompleted(unreadStatePresenter::updateInsightsLastViewed);
+                         .doOnCompleted(() -> {
+
+                             if (markShownOnComplete) {
+                                 markShownOnComplete = false;
+                                 unreadStatePresenter.updateInsightsLastViewed();
+                             }
+                         });
     }
 
-
-    @Deprecated
-    public Observable<InsightInfo> infoForInsight(@NonNull Insight insight) {
-        return apiService.insightInfo(insight.getCategory()).flatMap(insights -> {
-            if (insights.isEmpty()) {
-                return Observable.error(new InvalidObjectException("No insight info found."));
-            } else {
-                return Observable.just(insights.get(0));
-            }
-        });
+    public void setMarkShownOnComplete(final boolean markShownOnComplete) {
+        this.markShownOnComplete = markShownOnComplete;
     }
 }

@@ -118,6 +118,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     @Override
     public void onUserVisible() {
         presenterView.updateWhatsNewState();
+        this.insightsInteractor.setMarkShownOnComplete(true);
         fetchInsights();
     }
 

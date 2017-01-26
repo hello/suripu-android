@@ -59,8 +59,8 @@ public class SenseTabView extends FrameLayout {
         return this;
     }
 
-    public void showIndicator() {
-        this.indicator.setVisibility(VISIBLE);
+    public void setIndicatorVisible(final boolean visible) {
+        this.indicator.setVisibility(visible ? VISIBLE : GONE);
     }
 
     public SenseTabView setDrawables(@DrawableRes final int normal,

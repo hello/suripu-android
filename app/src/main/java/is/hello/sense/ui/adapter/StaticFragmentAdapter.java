@@ -4,10 +4,13 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import is.hello.sense.mvp.util.ViewPagerPresenterChild;
 
 public class StaticFragmentAdapter extends android.support.v13.app.FragmentStatePagerAdapter {
     private final Item[] items;
@@ -35,6 +38,7 @@ public class StaticFragmentAdapter extends android.support.v13.app.FragmentState
     @Override
     public Object instantiateItem(final ViewGroup container,
                                   final int position) {
+        Log.e(getClass().getSimpleName(), "Instance: " + position);
         final Fragment fragment = ((Fragment) super.instantiateItem(container, position));
         fragmentMap.put(position, fragment);
         return fragment;
@@ -55,13 +59,30 @@ public class StaticFragmentAdapter extends android.support.v13.app.FragmentState
         if (lastPosition == position) {
             return;
         }
+        alertFragmentVisible(lastPosition, false);
         lastPosition = position;
         super.setPrimaryItem(container, lastPosition, object);
+        alertFragmentVisible(lastPosition, true);
     }
 
     @Nullable
     public Fragment getFragmentAtPosition(final int position) {
         return fragmentMap.get(position);
+    }
+
+    private void alertFragmentVisible(final int position,
+                                      final boolean isVisible) {
+        Log.e(getClass().getSimpleName(), "alertFragmentVisible: " + position);
+        final Fragment fragment = getFragmentAtPosition(position);
+        if (!(fragment instanceof ViewPagerPresenterChild)) {
+            return;
+        }
+/*
+        if (isVisible) {
+            ((ViewPagerPresenterChild) fragment).onUserVisible();
+        } else {
+            ((ViewPagerPresenterChild) fragment).onUserInvisible();
+        }*/
     }
 
     public static class Item {

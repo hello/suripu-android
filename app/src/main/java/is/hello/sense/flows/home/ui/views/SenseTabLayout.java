@@ -103,7 +103,7 @@ public class SenseTabLayout extends TabLayout
         selectTab(SOUNDS_ICON_KEY);
     }
 
-    public void selectInsightsTab() {
+    public void selectHomeTab() {
         selectTab(INSIGHTS_ICON_KEY);
     }
 
@@ -117,6 +117,23 @@ public class SenseTabLayout extends TabLayout
             return;
         }
         tab.select();
+    }
+
+
+    public void setHomeabIndicatorVisible(final boolean show) {
+        setTabIndicatorVisible(INSIGHTS_ICON_KEY, show);
+    }
+
+    private void setTabIndicatorVisible(final int position,
+                                        final boolean visible) {
+        final TabLayout.Tab tab = getTabAt(position);
+        if (tab == null) {
+            return;
+        }
+        if (tab.getCustomView() instanceof SenseTabView) {
+            ((SenseTabView) tab.getCustomView()).setIndicatorVisible(visible);
+        }
+
     }
 
     public void setUpTabs(final boolean shouldSelect) {

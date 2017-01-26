@@ -4,13 +4,10 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 
 import com.segment.analytics.Properties;
@@ -35,7 +32,7 @@ import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.interactors.TimelineInteractor;
+import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.mvp.presenters.HomePresenterFragment;
 import is.hello.sense.mvp.presenters.SoundsPresenterFragment;
 import is.hello.sense.mvp.presenters.TrendsPresenterFragment;
@@ -47,7 +44,6 @@ import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.appcompat.ScopedInjectionActivity;
-import is.hello.sense.ui.adapter.FragmentPagerAdapter;
 import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.dialogs.BottomAlertDialogFragment;
@@ -57,7 +53,6 @@ import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.SystemAlertDialogFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SpinnerImageView;
-import is.hello.sense.ui.widget.graphing.drawables.SleepScoreIconDrawable;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
@@ -93,6 +88,8 @@ public class HomeActivity extends ScopedInjectionActivity
     VoiceSettingsInteractor voiceSettingsInteractor;
     @Inject
     LastNightInteractor lastNightInteractor;
+    @Inject
+    UnreadStateInteractor unreadStateInteractor;
     private final HomeViewPagerDelegate viewPagerDelegate = new HomeViewPagerDelegate();
     private View progressOverlay;
     private SpinnerImageView spinner;
@@ -114,6 +111,7 @@ public class HomeActivity extends ScopedInjectionActivity
         addInteractor(this.deviceIssuesPresenter);
         addInteractor(this.alertsInteractor);
         addInteractor(this.lastNightInteractor);
+        addInteractor(this.unreadStateInteractor);
         setContentView(R.layout.activity_new_home);
         this.progressOverlay = findViewById(R.id.activity_new_home_progress_overlay);
         this.spinner = (SpinnerImageView) this.progressOverlay.findViewById(R.id.activity_new_home_spinner);
@@ -143,12 +141,14 @@ public class HomeActivity extends ScopedInjectionActivity
                              this::bindDeviceIssue,
                              Functions.LOG_ERROR);
         }
-
         bindAndSubscribe(this.alertsInteractor.alert,
                          this::bindAlert,
                          Functions.LOG_ERROR);
         bindAndSubscribe(this.lastNightInteractor.timeline,
                          this.tabLayout::updateSleepScoreTab,
+                         Functions.LOG_ERROR);
+        bindAndSubscribe(this.unreadStateInteractor.hasUnreadItems,
+                         this::bindUnreadItems,
                          Functions.LOG_ERROR);
         this.lastNightInteractor.update();
         checkInForUpdates();
@@ -268,6 +268,10 @@ public class HomeActivity extends ScopedInjectionActivity
         }
     }
 
+    private void bindUnreadItems(final boolean hasUnreadItems) {
+        tabLayout.setHomeabIndicatorVisible(hasUnreadItems);
+    }
+
     private void bindAlert(@NonNull final Alert alert) {
         if (shouldShow(alert)) {
             localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
@@ -355,8 +359,8 @@ public class HomeActivity extends ScopedInjectionActivity
 
     @Nullable
     private Fragment getFragmentWithIndex(final int index) {
-        if (extendedViewPager.getAdapter() instanceof StaticFragmentAdapter){
-            return ((StaticFragmentAdapter)extendedViewPager.getAdapter()).getFragmentAtPosition(index);
+        if (extendedViewPager != null && extendedViewPager.getAdapter() instanceof StaticFragmentAdapter) {
+            return ((StaticFragmentAdapter) extendedViewPager.getAdapter()).getFragmentAtPosition(index);
         }
         return null;
     }
@@ -391,7 +395,7 @@ public class HomeActivity extends ScopedInjectionActivity
                     break;
                 }
                 case INSIGHTS: {
-                    this.tabLayout.selectInsightsTab();
+                    this.tabLayout.selectHomeTab();
                     break;
                 }
                 case CONDITIONS: {
