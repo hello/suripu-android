@@ -72,6 +72,14 @@ public class ViewAnimator {
         setInterpolator(set, interpolator);
     }
 
+    /**
+     * @return false if calling {@link ViewAnimator#onResume()} will
+     * throw error.
+     */
+    public boolean canResume() {
+        return set != null;
+    }
+
     public void onResume() {
         resumeAnimation();
     }

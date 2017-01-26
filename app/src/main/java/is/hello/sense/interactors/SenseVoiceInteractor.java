@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -63,6 +65,7 @@ public class SenseVoiceInteractor extends ValueInteractor<VoiceResponse> {
     protected Observable<VoiceResponse> provideUpdateObservable() {
         return apiService.getOnboardingVoiceResponse()
                          .map(SenseVoiceInteractor::getMostRecent)
+                         .map( ignore -> new VoiceResponse(DateTime.now(), "", "", "", VoiceResponse.Result.TRY_AGAIN)) //todo remove after testing
                          .filter(this::isValidResponse)
                          .doOnNext(this::updateState);
     }

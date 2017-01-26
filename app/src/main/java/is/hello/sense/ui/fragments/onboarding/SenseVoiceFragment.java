@@ -70,7 +70,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     private ImageView senseImageView;
     private ImageView senseCircleView;
     private View nightStandView;
-    private Lazy<Integer> TRANSLATE_Y =
+    private final Lazy<Integer> TRANSLATE_Y =
             () -> getResources().getDimensionPixelSize(R.dimen.sense_voice_translate_y);
     private final float SENSE_SCALE_FACTOR = 0.6f;
 
@@ -79,9 +79,9 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     @NonNull
     private Subscription voiceTipSubscription = Subscriptions.empty();
     @NonNull
-    private Subscription requestDelayedSubscription= Subscriptions.empty();
+    private Subscription requestDelayedSubscription = Subscriptions.empty();
 
-    private Lazy<Runnable> runnableLazy =
+    private final Lazy<Runnable> runnableLazy =
             () -> stateSafeExecutor.bind(SenseVoiceFragment.this::animateToNormalState);
 
     @Override
@@ -114,7 +114,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         Views.setTimeOffsetOnClickListener(retryButton,this::onRetry);
         Views.setTimeOffsetOnClickListener(skipButton,this::onSkip);
         toolbar = OnboardingToolbar.of(this, view)
-                                   .setOnHelpClickListener(ignored -> showVoiceTipDialog(true, this::poll))
+                                   .setOnHelpClickListener(ignored -> showVoiceTipDialog(true, this::onVoiceTipDismissed))
                                    .setHelpButtonIcon(R.drawable.info_button_icon_small)
                                    .setWantsHelpButton(false)
                                    .setWantsBackButton(false);
@@ -166,7 +166,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if(senseCircleView.getDrawable() != null) {
+        if(viewAnimator.canResume()) {
             viewAnimator.onResume();
         }
     }
@@ -177,15 +177,9 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         viewAnimator.onDestroyView();
         if(toolbar != null) {
             toolbar.onDestroyView();
-            toolbar = null;
         }
-        title = null;
-        subtitle = null;
-        tryText = null;
-        questionText = null;
         if(retryButton != null) {
             retryButton.setOnClickListener(null);
-            retryButton = null;
         }
         if(skipButton != null) {
             skipButton.setOnClickListener(null);
@@ -195,8 +189,6 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         showVoiceTipDialog(false, null);
         requestDelayedSubscription.unsubscribe();
         requestDelayedSubscription = Subscriptions.empty();
-        TRANSLATE_Y = null;
-        runnableLazy = null;
 
     }
 
@@ -355,8 +347,8 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
                             FAIL_STATE,
                             0,
                             true);
-                if(senseVoiceInteractor.getFailCount() == VOICE_FAIL_COUNT_THRESHOLD){
-                    showVoiceTipDialog(true, this::poll);
+                if (senseVoiceInteractor.getFailCount() == VOICE_FAIL_COUNT_THRESHOLD) {
+                    showVoiceTipDialog(true, this::onVoiceTipDismissed);
                 }
                 //return to normal state
                 questionText.postOnAnimationDelayed(
@@ -365,6 +357,19 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
             }
         });
 
+    }
+
+    private void onVoiceTipDismissed(final boolean isDismissed) {
+        this.poll(isDismissed);
+        stateSafeExecutor.setCanExecute(isDismissed);
+        if(isDismissed) {
+            stateSafeExecutor.executePendingForResume();
+            if(viewAnimator.canResume()) {
+                viewAnimator.onResume();
+            }
+        } else {
+            viewAnimator.onPause();
+        }
     }
 
     private void updateState(@StringRes final int stringRes,
