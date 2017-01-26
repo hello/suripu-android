@@ -83,6 +83,7 @@ public abstract class PresenterFragment<T extends PresenterView>
     @NonNull
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        //debugLog("onCreateView- initializePresenterView"); // useful for debugging
         initializePresenterView(); // todo force this to return a new instance
         return presenterView;
     }
@@ -134,6 +135,7 @@ public abstract class PresenterFragment<T extends PresenterView>
     }
 
     public final boolean hasPresenterView() {
+       // debugLog("HasPresenterView: " + (presenterView != null)); //useful for debugging
         return presenterView != null;
     }
 

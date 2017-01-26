@@ -24,7 +24,7 @@ import is.hello.sense.flows.home.ui.fragments.QuarterTrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.SleepSoundsFragment;
 import is.hello.sense.flows.home.ui.fragments.SmartAlarmListFragment;
-import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
+import is.hello.sense.flows.home.ui.fragments.TimelinePagerPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
 import is.hello.sense.flows.home.ui.fragments.WeekTrendsFragment;
@@ -112,7 +112,7 @@ import is.hello.sense.zendesk.ZendeskModule;
                 SenseDetailsFragment.class,
                 PillDetailsFragment.class,
 
-                TimelinePagerFragment.class,
+                TimelinePagerPresenterFragment.class,
                 TimelineFragment.class,
                 TimelineInteractor.class,
                 TimelineInfoFragment.class,

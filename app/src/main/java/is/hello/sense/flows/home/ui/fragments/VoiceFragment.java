@@ -10,19 +10,15 @@ import is.hello.sense.flows.home.ui.views.VoiceView;
 import is.hello.sense.flows.voicecommands.ui.activities.VoiceCommandActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountPreferencesInteractor;
-import is.hello.sense.mvp.presenters.PresenterFragment;
-import is.hello.sense.mvp.util.ViewPagerPresenterChild;
-import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
+import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
-import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.NotTested;
 
 @NotTested // enough
-public class VoiceFragment extends PresenterFragment<VoiceView>
+public class VoiceFragment extends ControllerPresenterFragment<VoiceView>
         implements
         ArrayRecyclerAdapter.OnItemClickedListener<VoiceCommandsAdapter.VoiceCommand>,
-        StaticFragmentAdapter.Controller,
         HomeActivity.ScrollUp {
 
     private VoiceCommandsAdapter adapter;
@@ -57,13 +53,11 @@ public class VoiceFragment extends PresenterFragment<VoiceView>
     //endRegion
     //region Controller
     @Override
-    public void isInvisibleToUser() {
-
-    }
-
-    @Override
-    public void isVisibleToUser() {
-        Analytics.trackEvent(Analytics.Backside.EVENT_VOICE_TAB, null);
+    public void setVisibleToUser(final boolean isVisible) {
+        super.setVisibleToUser(isVisible);
+        if (isVisible) {
+            Analytics.trackEvent(Analytics.Backside.EVENT_VOICE_TAB, null);
+        }
     }
     //endregion
 

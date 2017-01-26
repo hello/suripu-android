@@ -13,12 +13,10 @@ public class TrendsFragmentTest extends FragmentTest<WeekTrendsFragment> {
 
     @Test
     public void initializePresenterViewTest() {
-        spyOnPresenterChildDelegate();
         fragment.presenterView = null;
         fragment.initializePresenterView();
         Mockito.verify(fragment).isAccountMoreThan2WeeksOld();
         Mockito.verify(fragment).createTrendsAdapter();
-        Mockito.verify(fragment.presenterChildDelegate).onViewInitialized();
     }
 
     @Test
@@ -35,30 +33,10 @@ public class TrendsFragmentTest extends FragmentTest<WeekTrendsFragment> {
         Mockito.verify(fragment).bindAndSubscribe(Mockito.eq(fragment.trendsInteractor.trends), Mockito.anyObject(), Mockito.anyObject());
     }
 
-    @Test
-    public void setUserVisibleHintTest() {
-        spyOnPresenterChildDelegate();
-        fragment.setUserVisibleHint(true);
-        Mockito.verify(fragment.presenterChildDelegate).setUserVisibleHint(Mockito.eq(true));
-    }
-
-    @Test
-    public void onResumeTest() {
-        spyOnPresenterChildDelegate();
-        callOnResume();
-        Mockito.verify(fragment.presenterChildDelegate).onResume();
-    }
-
-    @Test
-    public void onPauseTest() {
-        spyOnPresenterChildDelegate();
-        fragment.onPause();
-        Mockito.verify(fragment.presenterChildDelegate).onPause();
-    }
 
     @Test
     public void onUserVisibleTest() {
-        fragment.onUserVisible();
+        fragment.setVisibleToUser(true);
         Mockito.verify(fragment).fetchTrends();
     }
 
@@ -96,14 +74,4 @@ public class TrendsFragmentTest extends FragmentTest<WeekTrendsFragment> {
         fragment.trendsInteractor = Mockito.spy(fragment.trendsInteractor);
     }
 
-
-    private void spyOnPresenterChildDelegate() {
-        try {
-            changeFinalFieldValue(fragment,
-                                  fragment.getClass().getField("presenterChildDelegate"),
-                                  Mockito.spy(fragment.presenterChildDelegate));
-        } catch (final Exception ignored) {
-
-        }
-    }
 }

@@ -121,6 +121,9 @@ public class SenseTabLayout extends TabLayout
 
 
     public void setHomeabIndicatorVisible(final boolean show) {
+        if (currentItemIndex == INSIGHTS_ICON_KEY) {
+            return;
+        }
         setTabIndicatorVisible(INSIGHTS_ICON_KEY, show);
     }
 

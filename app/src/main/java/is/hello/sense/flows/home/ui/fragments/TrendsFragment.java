@@ -17,20 +17,16 @@ import is.hello.sense.flows.home.ui.adapters.TrendsAdapter;
 import is.hello.sense.flows.home.ui.views.TrendsView;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TrendsInteractor;
-import is.hello.sense.mvp.presenters.PresenterFragment;
-import is.hello.sense.mvp.util.ViewPagerPresenterChild;
-import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
-import is.hello.sense.ui.adapter.StaticFragmentAdapter;
+import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.ui.widget.graphing.trends.TrendFeedViewItem;
 import is.hello.sense.ui.widget.graphing.trends.TrendGraphView;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 
-public abstract class TrendsFragment extends PresenterFragment<TrendsView>
+public abstract class TrendsFragment extends ControllerPresenterFragment<TrendsView>
         implements
         TrendFeedViewItem.OnRetry,
         TrendGraphView.AnimationCallback,
-        StaticFragmentAdapter.Controller,
         HomeActivity.ScrollUp {
 
     @Inject
@@ -71,13 +67,13 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     //region Controller
 
     @Override
-    public void isVisibleToUser() {
-        fetchTrends();
+    public void setVisibleToUser(final boolean isVisible) {
+        super.setVisibleToUser(isVisible);
+        if (isVisible) {
+            fetchTrends();
+        }
     }
 
-    @Override
-    public void isInvisibleToUser() {
-    }
     //endregion
 
     //region onRetry

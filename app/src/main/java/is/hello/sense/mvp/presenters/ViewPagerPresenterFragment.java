@@ -20,7 +20,7 @@ import is.hello.sense.util.NotTested;
  * Any class Fragment that wants to host fragments should extend this.
  */
 @NotTested
-public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewPagerPresenterView>
+public abstract class ViewPagerPresenterFragment extends ControllerPresenterFragment<ViewPagerPresenterView>
         implements ViewPagerPresenter,
         FabPresenter,
         HomeActivity.ScrollUp,
@@ -156,14 +156,15 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
 
     //region controller
     @Override
-    public void isVisibleToUser() {
-        forwardToCurrentController(true);
+    public void setVisibleToUser(final boolean isVisible) {
+        super.setVisibleToUser(isVisible);
+        final StaticFragmentAdapter.Controller controller = getCurrentController();
+        if (controller == null || !controller.hasPresenterView()) {
+            return;
+        }
+        controller.setVisibleToUser(isVisible);
     }
 
-    @Override
-    public void isInvisibleToUser() {
-        forwardToCurrentController(false);
-    }
     //region
 
     @Nullable
@@ -175,15 +176,4 @@ public abstract class ViewPagerPresenterFragment extends PresenterFragment<ViewP
         return null;
     }
 
-    private void forwardToCurrentController(final boolean isVisible) {
-        final StaticFragmentAdapter.Controller controller = getCurrentController();
-        if (controller == null || !controller.hasPresenterView()) {
-            return;
-        }
-        if (isVisible) {
-            controller.isVisibleToUser();
-        } else {
-            controller.isInvisibleToUser();
-        }
-    }
 }

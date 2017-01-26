@@ -25,7 +25,7 @@ import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
-import is.hello.sense.flows.home.ui.fragments.TimelinePagerFragment;
+import is.hello.sense.flows.home.ui.fragments.TimelinePagerPresenterFragment;
 import is.hello.sense.flows.home.ui.views.SenseTabLayout;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
@@ -151,6 +151,7 @@ public class HomeActivity extends ScopedInjectionActivity
                          this::bindUnreadItems,
                          Functions.LOG_ERROR);
         this.lastNightInteractor.update();
+        this.unreadStateInteractor.update();
         checkInForUpdates();
     }
 
@@ -430,6 +431,7 @@ public class HomeActivity extends ScopedInjectionActivity
         if (!this.lastNightInteractor.timeline.hasValue()) {
             this.lastNightInteractor.update();
         }
+        this.unreadStateInteractor.update();
         this.extendedViewPager.setCurrentItem(fragmentPosition);
     }
 
@@ -454,7 +456,7 @@ public class HomeActivity extends ScopedInjectionActivity
         @Override
         public StaticFragmentAdapter.Item[] getViewPagerItems() {
             return new StaticFragmentAdapter.Item[]{
-                    new StaticFragmentAdapter.Item(TimelinePagerFragment.class, TimelinePagerFragment.class.getSimpleName()),
+                    new StaticFragmentAdapter.Item(TimelinePagerPresenterFragment.class, TimelinePagerPresenterFragment.class.getSimpleName()),
                     new StaticFragmentAdapter.Item(TrendsPresenterFragment.class, TrendsPresenterFragment.class.getSimpleName()),
                     new StaticFragmentAdapter.Item(HomePresenterFragment.class, HomePresenterFragment.class.getSimpleName()),
                     new StaticFragmentAdapter.Item(SoundsPresenterFragment.class, SoundsPresenterFragment.class.getSimpleName()),

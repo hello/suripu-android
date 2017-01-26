@@ -29,14 +29,11 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SleepSoundsInteractor;
 import is.hello.sense.interactors.SleepSoundsStatusInteractor;
-import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.mvp.util.FabPresenter;
 import is.hello.sense.mvp.util.FabPresenterProvider;
-import is.hello.sense.mvp.util.ViewPagerPresenterChild;
-import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
-import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -49,11 +46,10 @@ import rx.subscriptions.Subscriptions;
 import static is.hello.sense.util.Constants.EMPTY_STRING;
 
 @NotTested
-public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
+public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSoundsView>
         implements
         SleepSoundsAdapter.InteractionListener,
         SleepSoundsAdapter.Retry,
-        StaticFragmentAdapter.Controller,
         HomeActivity.ScrollUp {
     private static final int SOUNDS_REQUEST_CODE = 123;
     private static final int DURATION_REQUEST_CODE = 231;
@@ -72,7 +68,6 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     private Subscription hasSensePairedSubscription = Subscriptions.empty();
 
     private UserWants userWants = UserWants.NONE;
-    private boolean isVisibleToUser = false;
 
     enum UserWants {
         PLAY,
@@ -130,22 +125,21 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     }
 
     @Override
-    public void isVisibleToUser() {
-        this.isVisibleToUser = true;
-        Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS, null);
-        setFabVisibleAndLoading(presenterView.isShowingPlayer());
-        updateSensePairedSubscription(() -> {
-            sleepSoundsStatusInteractor.resetBackOffIfNeeded();
-            sleepSoundsStatusInteractor.startPolling();
-            sleepSoundsInteractor.update();
-        });
+    public void setVisibleToUser(final boolean isVisible) {
+        super.setVisibleToUser(isVisible);
+        if (isVisible) {
+            Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS, null);
+            setFabVisibleAndLoading(presenterView.isShowingPlayer());
+            updateSensePairedSubscription(() -> {
+                sleepSoundsStatusInteractor.resetBackOffIfNeeded();
+                sleepSoundsStatusInteractor.startPolling();
+                sleepSoundsInteractor.update();
+            });
+        } else {
+            sleepSoundsStatusInteractor.stopPolling();
+        }
     }
 
-    @Override
-    public void isInvisibleToUser() {
-        this.isVisibleToUser = false;
-        sleepSoundsStatusInteractor.stopPolling();
-    }
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
@@ -478,7 +472,7 @@ public class SleepSoundsFragment extends PresenterFragment<SleepSoundsView>
     }
 
     private boolean isVisibleToUserAndResumed() {
-        return this.isVisibleToUser && isResumed();
+        return this.isVisibleToUser() && isResumed();
     }
     //endregion
 

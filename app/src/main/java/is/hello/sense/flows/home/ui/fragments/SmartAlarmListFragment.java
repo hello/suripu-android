@@ -28,14 +28,11 @@ import is.hello.sense.flows.smartalarm.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
-import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.mvp.util.FabPresenter;
 import is.hello.sense.mvp.util.FabPresenterProvider;
-import is.hello.sense.mvp.util.ViewPagerPresenterChild;
-import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
-import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.common.SenseDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -47,10 +44,9 @@ import is.hello.sense.util.NotTested;
 import rx.Observable;
 
 @NotTested
-public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView>
+public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAlarmListView>
         implements
         SmartAlarmAdapter.InteractionListener,
-        StaticFragmentAdapter.Controller,
         HomeActivity.ScrollUp {
     private static final int DELETE_REQUEST_CODE = 117;
 
@@ -125,14 +121,12 @@ public class SmartAlarmListFragment extends PresenterFragment<SmartAlarmListView
     }
 
     @Override
-    public void isVisibleToUser() {
-        Analytics.trackEvent(Analytics.Backside.EVENT_ALARMS, null);
-        updateAlarms(null);
-    }
-
-    @Override
-    public void isInvisibleToUser() {
-
+    public void setVisibleToUser(final boolean isVisible) {
+        super.setVisibleToUser(isVisible);
+        if (isVisible) {
+            Analytics.trackEvent(Analytics.Backside.EVENT_ALARMS, null);
+            updateAlarms(null);
+        }
     }
     //endregion
 

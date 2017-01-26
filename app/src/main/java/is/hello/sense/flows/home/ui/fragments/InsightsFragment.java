@@ -36,9 +36,7 @@ import is.hello.sense.interactors.InsightsInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.QuestionsInteractor;
 import is.hello.sense.interactors.questions.ReviewQuestionProvider;
-import is.hello.sense.mvp.presenters.PresenterFragment;
-import is.hello.sense.mvp.util.ViewPagerPresenterChild;
-import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
+import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
@@ -59,7 +57,7 @@ import is.hello.sense.util.Share;
 import rx.Observable;
 
 @NotTested //enough
-public class InsightsFragment extends PresenterFragment<InsightsView> implements
+public class InsightsFragment extends ControllerPresenterFragment<InsightsView> implements
         InsightsAdapter.InteractionListener,
         InsightInfoFragment.Parent,
         InsightsAdapter.OnRetry,
@@ -107,15 +105,13 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     }
 
     @Override
-    public void isVisibleToUser() {
-        presenterView.updateWhatsNewState();
-        this.insightsInteractor.setMarkShownOnComplete(true);
-        fetchInsights();
-    }
-
-    @Override
-    public void isInvisibleToUser() {
-
+    public void setVisibleToUser(final boolean isVisible) {
+        super.setVisibleToUser(isVisible);
+        if (isVisible) {
+            presenterView.updateWhatsNewState();
+            this.insightsInteractor.setMarkShownOnComplete(true);
+            fetchInsights();
+        }
     }
 
     @Override

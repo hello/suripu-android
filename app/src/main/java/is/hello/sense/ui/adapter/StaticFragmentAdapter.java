@@ -80,11 +80,7 @@ public class StaticFragmentAdapter extends android.support.v13.app.FragmentState
         if (!controller.hasPresenterView()) {
             return;
         }
-        if (isVisible) {
-            controller.isVisibleToUser();
-        } else {
-            controller.isInvisibleToUser();
-        }
+        controller.setVisibleToUser(isVisible);
     }
 
     public static class Item {
@@ -112,11 +108,13 @@ public class StaticFragmentAdapter extends android.support.v13.app.FragmentState
     }
 
     public interface Controller {
-        void isVisibleToUser();
-
-        void isInvisibleToUser();
+        void setVisibleToUser(boolean isVisible);
 
         boolean hasPresenterView();
+
+        boolean isVisibleToUser();
+
+
     }
 
 }

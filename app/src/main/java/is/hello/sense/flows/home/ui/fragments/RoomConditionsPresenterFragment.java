@@ -28,12 +28,9 @@ import is.hello.sense.flows.sensordetails.ui.activities.SensorDetailActivity;
 import is.hello.sense.flows.settings.ui.activities.AppSettingsActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.mvp.presenters.PresenterFragment;
-import is.hello.sense.mvp.util.ViewPagerPresenterChild;
-import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
+import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
-import is.hello.sense.ui.adapter.StaticFragmentAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
@@ -42,11 +39,10 @@ import is.hello.sense.util.Logger;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-public class RoomConditionsPresenterFragment extends PresenterFragment<RoomConditionsView>
+public class RoomConditionsPresenterFragment extends ControllerPresenterFragment<RoomConditionsView>
         implements ArrayRecyclerAdapter.OnItemClickedListener<Sensor>,
         SensorResponseAdapter.ErrorItemClickListener,
-        HomeActivity.ScrollUp,
-        StaticFragmentAdapter.Controller {
+        HomeActivity.ScrollUp {
     private final static long WELCOME_CARD_TIMES_SHOWN_LIMIT = 2;
 
     @Inject
@@ -231,13 +227,12 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
     }
 
     @Override
-    public void isVisibleToUser() {
-        Analytics.trackEvent(Analytics.Backside.EVENT_CURRENT_CONDITIONS, null);
-        this.sensorResponseInteractor.update();
+    public void setVisibleToUser(final boolean isVisible) {
+        super.setVisibleToUser(isVisible);
+        if (isVisible) {
+            Analytics.trackEvent(Analytics.Backside.EVENT_CURRENT_CONDITIONS, null);
+            this.sensorResponseInteractor.update();
+        }
     }
 
-    @Override
-    public void isInvisibleToUser() {
-
-    }
 }
