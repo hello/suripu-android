@@ -13,7 +13,7 @@ import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.mvp.util.FabPresenter;
 import is.hello.sense.mvp.util.ViewPagerPresenter;
 import is.hello.sense.mvp.view.ViewPagerPresenterView;
-import is.hello.sense.ui.adapter.StaticFragmentAdapter;
+import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.util.NotTested;
 
 /**
@@ -23,8 +23,7 @@ import is.hello.sense.util.NotTested;
 public abstract class ViewPagerPresenterFragment extends ControllerPresenterFragment<ViewPagerPresenterView>
         implements ViewPagerPresenter,
         FabPresenter,
-        HomeActivity.ScrollUp,
-        StaticFragmentAdapter.Controller {
+        HomeActivity.ScrollUp{
 
     private BaseViewPagerPresenterDelegate viewPagerDelegate;
 
@@ -35,16 +34,6 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
             this.viewPagerDelegate = newViewPagerDelegateInstance();
             this.presenterView = new ViewPagerPresenterView(this);
         }
-    }
-
-
-    @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (getCurrentFragment() == null) {
-            return;
-        }
-        getCurrentFragment().setUserVisibleHint(isVisibleToUser);
     }
 
     //endregion

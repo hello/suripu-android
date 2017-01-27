@@ -39,8 +39,6 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.PreferencesInteractorTests;
 import is.hello.sense.interactors.QuestionsInteractor;
 import is.hello.sense.interactors.QuestionsInteractorTests;
-import is.hello.sense.interactors.RoomConditionsInteractor;
-import is.hello.sense.interactors.RoomConditionsInteractorTests;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractorTests;
 import is.hello.sense.interactors.SenseVoiceInteractor;
@@ -63,7 +61,7 @@ import is.hello.sense.interactors.settings.SettingsPairSenseInteractorTests;
 import is.hello.sense.interactors.upgrade.UpgradePairSenseInteractorTests;
 import is.hello.sense.rating.LocalUsageTrackerTests;
 import is.hello.sense.ui.adapter.SmartAlarmAdapterTests;
-import is.hello.sense.ui.fragments.RoomConditionsPresenterFragmentTests;
+import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragmentTests;
 import is.hello.sense.units.UnitFormatterTests;
 import is.hello.sense.util.BatteryUtil;
 import is.hello.sense.util.DateFormatterTests;
@@ -82,9 +80,6 @@ import static org.mockito.Mockito.mock;
             QuestionsInteractorTests.class,
             QuestionsInteractor.class,
             ApiQuestionProviderTests.class,
-
-            RoomConditionsInteractorTests.class,
-            RoomConditionsInteractor.class,
 
             HardwareInteractor.class,
             HardwareInteractorTests.class,

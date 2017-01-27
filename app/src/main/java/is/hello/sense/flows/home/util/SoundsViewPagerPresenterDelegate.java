@@ -7,7 +7,7 @@ import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.fragments.SleepSoundsFragment;
 import is.hello.sense.flows.home.ui.fragments.SmartAlarmListFragment;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
-import is.hello.sense.ui.adapter.StaticFragmentAdapter;
+import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.util.NotTested;
 
 @NotTested

@@ -68,8 +68,8 @@ public class AppSettingsFragment extends PresenterFragment<AppSettingsView> impl
 
     @Override
     public final Runnable create(@NonNull final Class<? extends Fragment> fragmentClass,
-                                             @StringRes final int titleRes,
-                                             final boolean lockOrientation) {
+                                 @StringRes final int titleRes,
+                                 final boolean lockOrientation) {
         return () -> {
             final FragmentNavigationActivity.Builder builder =
                     new FragmentNavigationActivity.Builder(getActivity(), HardwareFragmentActivity.class);

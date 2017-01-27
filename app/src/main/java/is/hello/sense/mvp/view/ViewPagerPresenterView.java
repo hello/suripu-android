@@ -16,12 +16,12 @@ import android.view.animation.AnimationUtils;
 import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
-import is.hello.sense.ui.adapter.StaticFragmentAdapter;
+import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 
 
 @SuppressLint("ViewConstructor")
-public final class ViewPagerPresenterView extends PresenterView {
+public class ViewPagerPresenterView extends PresenterView {
 
     private final ExtendedViewPager viewPager;
     private final TabLayout tabLayout;
@@ -59,8 +59,18 @@ public final class ViewPagerPresenterView extends PresenterView {
     //endregion
 
     //region methods
+    public void unlockViewPager(@NonNull final ViewPagerPresenterFragment fragment) {
+        createTabsAndPager(fragment);
+        this.viewPager.setScrollingEnabled(true);
+    }
 
-    public void createTabsAndPager(@NonNull final ViewPagerPresenterFragment fragment) {
+    public void lockViewPager(final int startPosition) {
+        removeTabs();
+        this.viewPager.setScrollingEnabled(false);
+        this.viewPager.setCurrentItem(startPosition);
+    }
+
+    private void createTabsAndPager(@NonNull final ViewPagerPresenterFragment fragment) {
 
         final StaticFragmentAdapter.Item[] items = fragment.getViewPagerItems();
 
@@ -84,20 +94,11 @@ public final class ViewPagerPresenterView extends PresenterView {
         setTabLayoutVisible(true);
     }
 
-    public void setTabLayoutVisible(final boolean visible) {
+    private void setTabLayoutVisible(final boolean visible) {
         this.tabLayout.setVisibility(visible ? VISIBLE : GONE);
     }
 
-    public void lockViewPager(final int position) {
-        this.viewPager.setScrollingEnabled(false);
-        this.viewPager.setCurrentItem(position);
-    }
-
-    public void unlockViewPager() {
-        this.viewPager.setScrollingEnabled(true);
-    }
-
-    public void removeTabs() {
+    private void removeTabs() {
         this.tabLayout.removeAllTabs();
         setTabLayoutVisible(false);
     }

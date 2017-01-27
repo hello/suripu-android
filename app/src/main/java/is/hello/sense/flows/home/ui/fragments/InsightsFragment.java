@@ -40,7 +40,7 @@ import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
-import is.hello.sense.ui.adapter.StaticFragmentAdapter;
+import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;

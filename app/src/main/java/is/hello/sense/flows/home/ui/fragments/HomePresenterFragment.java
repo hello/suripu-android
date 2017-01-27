@@ -1,9 +1,10 @@
-package is.hello.sense.mvp.presenters;
+package is.hello.sense.flows.home.ui.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.view.View;
 
 import javax.inject.Inject;
@@ -11,10 +12,10 @@ import javax.inject.Inject;
 import is.hello.sense.flows.home.util.HomeViewPagerPresenterDelegate;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.HasVoiceInteractor;
+import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 
-//todo move to is.hello.sense.flows.home.ui.fragments and replace HomeFragment
 public class HomePresenterFragment extends ViewPagerPresenterFragment
         implements InsightInfoFragment.ParentProvider {
     @Inject
@@ -46,12 +47,11 @@ public class HomePresenterFragment extends ViewPagerPresenterFragment
     //endRegion
 
     //region methods
+    @VisibleForTesting
     public void bindVoiceSettings(final boolean hasVoice) {
         if (hasVoice) {
-            presenterView.createTabsAndPager(this);
-            presenterView.unlockViewPager();
+            presenterView.unlockViewPager(this);
         } else {
-            presenterView.removeTabs();
             presenterView.lockViewPager(getStartingItemPosition());
         }
     }
@@ -59,9 +59,6 @@ public class HomePresenterFragment extends ViewPagerPresenterFragment
     @Nullable
     @Override
     public InsightInfoFragment.Parent provideInsightInfoParent() {
-        if (presenterView == null) {
-            return null;
-        }
         final Fragment fragment = getCurrentFragment();
         if (fragment instanceof InsightInfoFragment.Parent) {
             return (InsightInfoFragment.Parent) fragment;

@@ -1,4 +1,4 @@
-package is.hello.sense.ui.adapter;
+package is.hello.sense.flows.home.ui.adapters;
 
 import android.app.Fragment;
 import android.app.FragmentManager;

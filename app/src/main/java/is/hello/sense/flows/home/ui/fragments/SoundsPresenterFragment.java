@@ -1,4 +1,4 @@
-package is.hello.sense.mvp.presenters;
+package is.hello.sense.flows.home.ui.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -6,13 +6,13 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 
 import is.hello.sense.flows.home.util.SoundsViewPagerPresenterDelegate;
+import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 
-//todo move to is.hello.sense.flows.home.ui.fragments and replace SoundsFragment
 public class SoundsPresenterFragment extends ViewPagerPresenterFragment
         implements ViewPager.OnPageChangeListener {
-    //region ViewPagerPresenterFragment
 
+    //region ViewPagerPresenterFragment
     @NonNull
     @Override
     protected BaseViewPagerPresenterDelegate newViewPagerDelegateInstance() {
@@ -20,23 +20,25 @@ public class SoundsPresenterFragment extends ViewPagerPresenterFragment
     }
     //endRegion
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(final View view,
+                              final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         presenterView.addViewPagerListener(this);
     }
 
     @Override
     public void onDestroyView() {
-        if(presenterView != null){
+        if (presenterView != null) {
             presenterView.removeViewPagerListener(this);
         }
         super.onDestroyView();
     }
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        final float size = Math.min(1f, Math.abs(1f - positionOffset * 2));
-        setFabSize(size);
+    public void onPageScrolled(final int position,
+                               final float positionOffset,
+                               final int positionOffsetPixels) {
+        setFabSize(Math.min(1f, Math.abs(1f - positionOffset * 2)));
     }
 
     @Override
@@ -44,6 +46,6 @@ public class SoundsPresenterFragment extends ViewPagerPresenterFragment
     }
 
     @Override
-    public void onPageScrollStateChanged(int state) {
+    public void onPageScrollStateChanged(final int state) {
     }
 }

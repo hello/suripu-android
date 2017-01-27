@@ -25,7 +25,6 @@ import is.hello.sense.mvp.presenters.PresenterFragment;
 import static junit.framework.Assert.assertNotNull;
 import static org.robolectric.util.FragmentTestUtil.startFragment;
 
-
 public abstract class FragmentTest<T extends PresenterFragment>
         extends SenseTestCase {
 
@@ -34,6 +33,7 @@ public abstract class FragmentTest<T extends PresenterFragment>
     @Rule
     public Timeout globalTimeout = Timeout.seconds(10);
 
+    @SuppressWarnings("unchecked cast")
     private T getInstanceOfT() {
         final ParameterizedType superClass = (ParameterizedType) getClass().getGenericSuperclass();
         final Class<T> type = (Class<T>) superClass.getActualTypeArguments()[0];
@@ -98,6 +98,10 @@ public abstract class FragmentTest<T extends PresenterFragment>
         fragment.onCreate(null);
     }
 
+    protected final void callOnCreateView() {
+        fragment.onCreateView(null, null, null);
+    }
+
     protected final void callOnViewCreated() {
         fragment.onViewCreated(Mockito.mock(View.class), null);
     }
@@ -118,6 +122,9 @@ public abstract class FragmentTest<T extends PresenterFragment>
         fragment.onDetach();
     }
 
+    protected final void callInitializePresenterView() {
+        fragment.initializePresenterView();
+    }
     //endregion
 
 
@@ -140,7 +147,7 @@ public abstract class FragmentTest<T extends PresenterFragment>
     }
 
     /**
-     * Extendable version of {@link org.robolectric.util.FragmentTestUtil.org.robolectric.util.FragmentTestUtil.FragmentUtilActivity}
+     * Extendable version of org.robolectric.util.FragmentTestUtil.org.robolectric.util.FragmentTestUtil.FragmentUtilActivity
      * for providing our own activities.
      */
     // Remember if the extending class is an inner class it must be static
@@ -151,6 +158,7 @@ public abstract class FragmentTest<T extends PresenterFragment>
 
         @Override
         protected void onCreate(final Bundle savedInstanceState) {
+            setTheme(R.style.AppTheme_AppCompat_NoActionBar);
             super.onCreate(savedInstanceState);
             final LinearLayout view = new LinearLayout(this, null, 0);
             @IdRes final int id = 1;

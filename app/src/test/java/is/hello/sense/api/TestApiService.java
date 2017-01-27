@@ -30,8 +30,6 @@ import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.model.PasswordUpdate;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
-import is.hello.sense.api.model.RoomConditions;
-import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.StoreReview;
@@ -250,12 +248,6 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
-    public Observable<RoomConditions> currentRoomConditions(@NonNull @Query("temp_unit") String unit) {
-        return loadResponse("current_conditions", new TypeToken<RoomConditions>() {
-        }.getType());
-    }
-
-    @Override
     public Observable<ArrayList<Question>> questions(@NonNull @Query("date") String timestamp) {
         return loadResponse("questions", new TypeToken<ArrayList<Question>>() {
         }.getType());
@@ -355,12 +347,6 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<ArrayList<InsightInfo>> insightInfo(@NonNull @Path("category") String category) {
         return unimplemented();
-    }
-
-    @Override
-    public Observable<RoomSensorHistory> roomSensorHistory(@Query("quantity") int numberOfHours,
-                                                           @Query("from_utc") long timestamp) {
-        return loadResponse("room_sensor_history", new TypeToken<RoomSensorHistory>(){}.getType());
     }
 
     @Override
