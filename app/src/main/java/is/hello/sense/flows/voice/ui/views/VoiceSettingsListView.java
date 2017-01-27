@@ -11,6 +11,7 @@ import android.widget.TextView;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.voice.SenseVoiceSettings;
 import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.ui.widget.ExtendedScrollView;
 import is.hello.sense.ui.widget.WelcomeCard;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitOperations;
@@ -24,7 +25,7 @@ public class VoiceSettingsListView extends PresenterView {
     private final CompoundButton muteSwitch;
     private final TextView primaryUserValueTextView;
     @Nullable
-    private WelcomeCard firmwareUpdateCard;
+    private ViewGroup firmwareUpdateCardContainer;
 
     public VoiceSettingsListView(@NonNull final Activity activity) {
         super(activity);
@@ -38,7 +39,7 @@ public class VoiceSettingsListView extends PresenterView {
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.view_voice_settings_list_scrollable;
+        return R.layout.view_voice_settings_list;
     }
 
     @Override
@@ -46,7 +47,7 @@ public class VoiceSettingsListView extends PresenterView {
         this.volumeViewGroup.setOnClickListener(null);
         this.muteSwitch.setOnCheckedChangeListener(null);
         this.primaryUserGroup.setOnClickListener(null);
-        this.firmwareUpdateCard = null;
+        this.firmwareUpdateCardContainer = null;
     }
 
     public void setVolumeClickListener(@NonNull final OnClickListener listener) {
@@ -92,18 +93,19 @@ public class VoiceSettingsListView extends PresenterView {
 
     public void showFirmwareUpdateCard(final boolean show) {
         if (show) {
-            if(firmwareUpdateCard == null) {
-                this.firmwareUpdateCard = new WelcomeCard(context);
+            if(firmwareUpdateCardContainer == null) {
+                final WelcomeCard firmwareUpdateCard = new WelcomeCard(context);
                 firmwareUpdateCard.showCloseButton(false);
                 firmwareUpdateCard.setContent(R.drawable.illustration_sense_update,
                                               R.string.sense_state_fw_update_title,
                                               R.string.sense_voice_state_fw_update_message);
-                ((ViewGroup) findViewById(R.id.view_voice_settings_list_container))
-                        .addView(firmwareUpdateCard, 0); //todo hide all other views
+                firmwareUpdateCardContainer = new ExtendedScrollView(context);
+                firmwareUpdateCardContainer.addView(firmwareUpdateCard);
+                addView(firmwareUpdateCardContainer);
             }
         } else {
-            if(firmwareUpdateCard != null) {
-                removeView(firmwareUpdateCard);
+            if(firmwareUpdateCardContainer != null) {
+                removeView(firmwareUpdateCardContainer);
             }
         }
     }
