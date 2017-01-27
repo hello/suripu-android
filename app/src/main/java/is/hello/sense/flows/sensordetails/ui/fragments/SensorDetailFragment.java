@@ -51,6 +51,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         implements SelectorView.OnSelectionChangedListener,
         SensorGraphDrawable.ScrubberCallback {
     private static final String ARG_SENSOR = SensorDetailFragment.class.getName() + ".ARG_SENSOR";
+    private static final String ARG_HAS_SHOWN_TUTORIAL = SensorDetailFragment.class.getName() + ".ARG_HAS_SHOWN_TUTORIAL";
 
     public static SensorDetailFragment createFragment(@NonNull final Sensor sensor) {
         final SensorDetailFragment sensorDetailFragment = new SensorDetailFragment();
@@ -78,7 +79,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     private UpdateTimer updateTimer;
     private DateFormatter dateFormatter;
     private TimestampQuery timestampQuery = new TimestampQuery(QueryScope.DAY_5_MINUTE);
-    private boolean hasShownATutorial = false;
+    private boolean hasShownATutorial;
     @NonNull
     private Subscription sensorSubscription = Subscriptions.empty();
 
@@ -121,6 +122,11 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (savedInstanceState != null) {
+            hasShownATutorial = savedInstanceState.getBoolean(ARG_HAS_SHOWN_TUTORIAL);
+        } else {
+            hasShownATutorial = false;
+        }
         this.updateTimer = new UpdateTimer(2, TimeUnit.MINUTES);
 
         bindAndSubscribe(this.sensorResponseInteractor.sensors,
@@ -182,7 +188,13 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         if (this.sensor != null) {
             outState.putSerializable(ARG_SENSOR, this.sensor);
         }
+        outState.putBoolean(ARG_HAS_SHOWN_TUTORIAL, hasShownATutorial);
         super.onSaveInstanceState(outState);
+    }
+
+    @Nullable
+    public Sensor getCurrentSensor() {
+        return sensor;
     }
 
     private void sendAnalyticsEvent(@Nullable final Sensor sensor) {
