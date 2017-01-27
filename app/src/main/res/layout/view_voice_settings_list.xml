@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/view_voice_settings_list_container"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:divider="@drawable/divider_horizontal_inset"
@@ -10,8 +11,7 @@
         android:id="@+id/view_voice_settings_list_volume_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/selectable_dark_bounded"
-        android:padding="@dimen/x2">
+        style="@style/AppTheme.Card.Item">
 
         <TextView
             android:id="@+id/view_voice_settings_list_volume_tv"
@@ -38,10 +38,9 @@
         android:id="@+id/view_voice_settings_list_mute_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/selectable_dark_bounded"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="@dimen/x2">
+        style="@style/AppTheme.Card.Item">
 
         <TextView
             android:layout_width="wrap_content"
@@ -63,14 +62,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/x2">
+        android:orientation="vertical">
 
         <FrameLayout
             android:id="@+id/view_voice_settings_list_primary_user_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/selectable_dark_bounded">
+            style="@style/AppTheme.Card.Item">
 
             <TextView
                 android:id="@+id/view_voice_settings_list_primary_user_tv"
@@ -93,12 +91,12 @@
         </FrameLayout>
 
         <TextView
-            style="@style/Label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start|center_vertical"
-            android:layout_marginTop="@dimen/x1"
-            android:text="@string/voice_settings_primary_user_about"/>
+            android:padding="@dimen/x2"
+            android:text="@string/voice_settings_primary_user_about"
+            android:textAppearance="@style/Label"/>
     </LinearLayout>
 
 </LinearLayout>
