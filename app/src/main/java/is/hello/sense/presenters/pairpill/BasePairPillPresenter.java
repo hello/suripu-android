@@ -105,6 +105,12 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
 
     }
 
+    public void onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
+        if (!isPairing) {
+            defaultBehavior.run();
+        }
+    }
+
     private void showFinishedLoading(final boolean success) {
         completeHardwareActivity(
                 () -> view.showFinishedLoadingFragment(
