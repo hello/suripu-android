@@ -12,7 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
@@ -54,25 +53,16 @@ public class SensorDetailActivity extends ScopedInjectionActivity
 
         if (savedInstanceState != null) {
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
-            final Serializable sensor = savedInstanceState.getSerializable(EXTRA_SENSOR);
-            if (sensor instanceof Sensor) {
-                setBarColor((Sensor) sensor);
+            final Fragment fragment = getTopFragment();
+            if (fragment instanceof SensorDetailFragment) {
+                setBarColorForSensor(((SensorDetailFragment) fragment).getCurrentSensor());
             }
         } else {
             final Sensor sensor = (Sensor) getIntent().getSerializableExtra(EXTRA_SENSOR);
-            setBarColor(sensor);
+            setBarColorForSensor(sensor);
             showSensorDetailFragment(sensor);
         }
 
-    }
-
-    @Override
-    protected void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        final Fragment fragment = getTopFragment();
-        if (fragment instanceof SensorDetailFragment) {
-            outState.putSerializable(EXTRA_SENSOR, ((SensorDetailFragment) fragment).getCurrentSensor());
-        }
     }
 
     @Override
@@ -107,7 +97,7 @@ public class SensorDetailActivity extends ScopedInjectionActivity
         return R.id.activity_navigation_container;
     }
 
-    private void setBarColor(@Nullable Sensor sensor) {
+    private void setBarColorForSensor(@Nullable final Sensor sensor) {
         if (sensor == null) {
             return;
         }
