@@ -47,11 +47,12 @@ public class UserSupport {
             final Intent intent = createViewUriIntent(from, uri);
             from.startActivity(intent);
         } catch (final ActivityNotFoundException | NullPointerException e) {
-            final SenseAlertDialog alertDialog = new SenseAlertDialog(from);
-            alertDialog.setTitle(R.string.dialog_error_title);
-            alertDialog.setMessage(R.string.error_no_web_browser);
-            alertDialog.setPositiveButton(android.R.string.ok, null);
-            alertDialog.show();
+            new SenseAlertDialog.Builder()
+                    .setTitle(R.string.dialog_error_title)
+                    .setMessage(R.string.error_no_web_browser)
+                    .setPositiveButton(R.string.action_ok, null)
+                    .build(from)
+                    .show();
         }
     }
 
