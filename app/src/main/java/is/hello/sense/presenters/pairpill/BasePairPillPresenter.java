@@ -46,6 +46,8 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
 
     public abstract void onHelpClick(@NonNull final View viewClicked);
 
+    public abstract void onInterceptBackPressed(@NonNull final Runnable defaultBehavior);
+
     @CallSuper
     @Override
     public void onResume() {
@@ -103,12 +105,6 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
             });
         }, this::presentError);
 
-    }
-
-    public void onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
-        if (!isPairing) {
-            defaultBehavior.run();
-        }
     }
 
     private void showFinishedLoading(final boolean success) {
