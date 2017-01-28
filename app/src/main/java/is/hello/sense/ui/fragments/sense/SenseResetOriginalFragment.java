@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments.sense;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
@@ -41,7 +42,7 @@ public class SenseResetOriginalFragment extends BasePresenterFragment
         this.view = new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.title_sense_reset_original)
                 .setSubheadingText(R.string.info_sense_reset_original)
-                .setToolbarOnHelpClickListener(ignored -> presenter.navigateToHelp())
+                .setToolbarOnHelpClickListener(this::onHelp)
                 .setDiagramImage(R.drawable.sense_reset_original)
                 .setWantsSecondaryButton(false)
                 .setPrimaryButtonText(R.string.action_reset_sense_original)
@@ -49,8 +50,12 @@ public class SenseResetOriginalFragment extends BasePresenterFragment
         return view;
     }
 
+    public void onHelp(final View ignored) {
+        presenter.navigateToHelp();
+    }
+
     public void onNext(final View ignored) {
-        presenter.startOperation();
+        presenter.onStart();
     }
 
     @Override
@@ -66,9 +71,9 @@ public class SenseResetOriginalFragment extends BasePresenterFragment
 
     @Override
     public void showRetry(@StringRes final int retryRes,
-                          final View.OnClickListener onClickListener) {
+                          @NonNull final Runnable onClickRunnable) {
         this.view.setSecondaryButtonText(retryRes)
-                 .setSecondaryOnClickListener(onClickListener);
+                 .setSecondaryOnClickListener(ignore -> onClickRunnable.run());
     }
 
     //endregion

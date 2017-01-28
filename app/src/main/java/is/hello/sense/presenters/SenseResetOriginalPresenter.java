@@ -1,7 +1,7 @@
 package is.hello.sense.presenters;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.view.View;
 
 import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
 import is.hello.commonsense.util.ConnectProgress;
@@ -35,8 +35,11 @@ public class SenseResetOriginalPresenter
         execute( () -> view.showHelpUri(UserSupport.HelpStep.RESET_ORIGINAL_SENSE));
     }
 
-    public void startOperation() {
-        showBlockingActivity(R.string.dialog_sense_reset_original);
+    public void onStart() {
+        showBlockingActivity(R.string.dialog_sense_reset_original, this::startOperation);
+    }
+
+    void startOperation() {
         if(currentSenseInteractor.getCurrentSense() == null){
             onError(new SenseNotFoundError());
             return;
@@ -46,12 +49,16 @@ public class SenseResetOriginalPresenter
                          this::onError);
     }
 
-    public void onOperationComplete(final Void ignored) {
+    void onOperationComplete() {
         hideBlockingActivity(true, () -> {
             currentSenseInteractor.senseDevice.forget();
             interactor.reset();
             view.finishFlow();
         });
+    }
+
+    void onSkip() {
+        showBlockingActivity(R.string.empty, this::onOperationComplete);
     }
 
     public void onError(final Throwable e) {
@@ -60,8 +67,7 @@ public class SenseResetOriginalPresenter
             builder.withMessage(StringRef.from(R.string.error_factory_reset_original_sense_message));
             view.showErrorDialog(builder);
             view.showRetry(R.string.action_skip,
-                           ignored -> onOperationComplete(null)
-            );
+                           this::onSkip);
         });
 
     }
@@ -91,12 +97,13 @@ public class SenseResetOriginalPresenter
 
     private void factoryResetOperation() {
         bindAndSubscribe(interactor.unsafeFactoryReset(),
-                         this::onOperationComplete,
+                         ignored -> this.onOperationComplete(),
                          this::onError);
     }
 
     public interface Output extends BaseOutput {
 
-        void showRetry(@StringRes int retryRes, View.OnClickListener onClickListener);
+        void showRetry(@StringRes int retryRes,
+                       @NonNull final Runnable onClickRunnable);
     }
 }
