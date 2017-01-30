@@ -108,7 +108,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     @NonNull
     private Subscription requestDelayedSubscription = Subscriptions.empty();
 
-    private final Lazy<Runnable> animateToNormalStateLazyRunnable = () -> SenseVoiceFragment.this::animateToNormalState;
+    private final Runnable animateToNormalStateRunnable = SenseVoiceFragment.this::animateToNormalState;
 
     private final UIHandler uiHandler = new UIHandler(this);
 
@@ -349,7 +349,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         sendAnalyticsEvent(voiceResponse);
 
         getAnimatorContext().runWhenIdle(() -> {
-            this.uiHandler.removeCallbacks(animateToNormalStateLazyRunnable.get());
+            this.uiHandler.removeCallbacks(animateToNormalStateRunnable);
 
             if(SenseVoiceInteractor.hasSuccessful(voiceResponse)){
                 animateToWaitState();
@@ -362,7 +362,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
                                      LoadingDialogFragment.DURATION_DEFAULT*2);
                 }
                 //return to normal state
-                this.postDelayed(animateToNormalStateLazyRunnable.get(),
+                this.postDelayed(animateToNormalStateRunnable,
                                  LoadingDialogFragment.DURATION_DEFAULT * 3);
             }
         });

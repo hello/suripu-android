@@ -25,7 +25,8 @@ public class VoiceTutorialViewModel {
                                                                     R.color.primary,
                                                                     View.INVISIBLE,
                                                                     Arrays.equals(senseImageState, FAIL_STATE)),
-                                          new SenseImageViewModel(0, OK_STATE));
+                                          new SenseImageViewModel(AnimatorSetHandler.SINGLE_ANIMATION,
+                                                                  OK_STATE));
     }
 
     public static VoiceTutorialViewModel getOnNotDetectedModel() {
@@ -33,7 +34,8 @@ public class VoiceTutorialViewModel {
                                                              R.color.text_dark,
                                                              View.INVISIBLE,
                                                              true),
-                                   new SenseImageViewModel(0, FAIL_STATE));
+                                   new SenseImageViewModel(AnimatorSetHandler.SINGLE_ANIMATION,
+                                                           FAIL_STATE));
     }
 
     public static VoiceTutorialViewModel getOnErrorModel() {
@@ -104,7 +106,8 @@ public class VoiceTutorialViewModel {
         public final int[] state;
 
         public static SenseImageViewModel getOnWaitModel() {
-            return new SenseImageViewModel(0, WAIT_STATE);
+            return new SenseImageViewModel(AnimatorSetHandler.SINGLE_ANIMATION,
+                                           WAIT_STATE);
         }
 
         public static SenseImageViewModel getOnWakeModel() {
