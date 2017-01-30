@@ -1,11 +1,14 @@
 package is.hello.sense.flows.sensordetails.ui.fragments;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.view.ViewTreeObserver;
 
 import com.segment.analytics.Properties;
 
@@ -33,9 +36,12 @@ import is.hello.sense.flows.sensordetails.ui.views.SensorDetailView;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.common.UpdateTimer;
+import is.hello.sense.ui.handholding.Tutorial;
+import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -46,6 +52,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         implements SelectorView.OnSelectionChangedListener,
         SensorGraphDrawable.ScrubberCallback {
     private static final String ARG_SENSOR = SensorDetailFragment.class.getName() + ".ARG_SENSOR";
+    private static final String ARG_HAS_SHOWN_TUTORIAL = SensorDetailFragment.class.getName() + ".ARG_HAS_SHOWN_TUTORIAL";
 
     public static SensorDetailFragment createFragment(@NonNull final Sensor sensor) {
         final SensorDetailFragment sensorDetailFragment = new SensorDetailFragment();
@@ -65,12 +72,15 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     UnitFormatter unitFormatter;
     @Inject
     SensorLabelInteractor sensorLabelInteractor;
+    @Nullable
+    private TutorialOverlayView tutorialOverlayView;
 
     private final HashMap<QueryScope, SensorCacheItem> sensorCache = new HashMap<>();
     private Sensor sensor;
     private UpdateTimer updateTimer;
     private DateFormatter dateFormatter;
     private TimestampQuery timestampQuery = new TimestampQuery(QueryScope.DAY_5_MINUTE);
+    private boolean hasShownATutorial;
     @NonNull
     private Subscription sensorSubscription = Subscriptions.empty();
 
@@ -113,6 +123,11 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (savedInstanceState != null) {
+            hasShownATutorial = savedInstanceState.getBoolean(ARG_HAS_SHOWN_TUTORIAL);
+        } else {
+            hasShownATutorial = false;
+        }
         this.updateTimer = new UpdateTimer(2, TimeUnit.MINUTES);
 
         bindAndSubscribe(this.sensorResponseInteractor.sensors,
@@ -147,8 +162,12 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     protected final void onRelease() {
         super.onRelease();
         this.updateTimer = null;
-        sensorSubscription.unsubscribe();
-        sensorSubscription = Subscriptions.empty();
+        this.sensorSubscription.unsubscribe();
+        this.sensorSubscription = Subscriptions.empty();
+        if (tutorialOverlayView != null) {
+            this.tutorialOverlayView.dismiss(false);
+        }
+        this.tutorialOverlayView = null;
     }
 
     @Override
@@ -170,7 +189,13 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         if (this.sensor != null) {
             outState.putSerializable(ARG_SENSOR, this.sensor);
         }
+        outState.putBoolean(ARG_HAS_SHOWN_TUTORIAL, hasShownATutorial);
         super.onSaveInstanceState(outState);
+    }
+
+    @NonNull
+    public Sensor getCurrentSensor() {
+        return sensor;
     }
 
     private void sendAnalyticsEvent(@Nullable final Sensor sensor) {
@@ -215,6 +240,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         this.presenterView.setGraph(this.sensor,
                                     SensorGraphView.StartDelay.SHORT,
                                     queryScope == QueryScope.DAY_5_MINUTE ? sensorLabelInteractor.getDayLabels() : sensorLabelInteractor.getWeekLabels());
+        showTutorialIfNeeded();
 
     }
 
@@ -230,6 +256,49 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
             this.presenterView.post(() -> ((SensorDetailActivity) activity).setActionbarColor(colorRes));
         }
 
+    }
+
+    private void showTutorialIfNeeded() {
+        if (hasShownATutorial) {
+            return;
+        }
+
+        if (tutorialOverlayView == null) {
+            @IdRes final int container;
+            if (!(getActivity() instanceof Parent)) {
+                return;
+            }
+            container = ((Parent) getActivity()).getContainerRes();
+            final boolean scrollUp;
+            if (Tutorial.SENSOR_DETAILS_SCRUB.shouldShow(getActivity())) {
+                hasShownATutorial = true;
+                scrollUp = true;
+                this.tutorialOverlayView = new TutorialOverlayView(getActivity(),
+                                                                   Tutorial.SENSOR_DETAILS_SCRUB);
+            } else if (Tutorial.SENSOR_DETAILS_SCROLL.shouldShow(getActivity())) {
+                scrollUp = false;
+                hasShownATutorial = true;
+                this.tutorialOverlayView = new TutorialOverlayView(getActivity(),
+                                                                   Tutorial.SENSOR_DETAILS_SCROLL);
+                this.tutorialOverlayView.showAsBubble();
+            } else {
+                scrollUp = false;
+            }
+            if (tutorialOverlayView != null) {
+
+                this.tutorialOverlayView.setOnDismiss(() -> this.tutorialOverlayView = null);
+                tutorialOverlayView.setAnchorContainer(getView());
+                if (tutorialOverlayView != null && getUserVisibleHint()) {
+                    tutorialOverlayView.show(container);
+                    if (scrollUp) {
+                        Views.runWhenLaidOut(tutorialOverlayView, () -> {
+                            SensorDetailFragment.this.presenterView.smoothScrollBy(tutorialOverlayView.getTextViewHeight());
+
+                        });
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -281,6 +350,13 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         public void setTimestamps(@NonNull final List<X> timestamps) {
             this.timestamps = timestamps;
         }
+    }
+
+
+    public interface Parent {
+
+        @IdRes
+        int getContainerRes();
     }
 
 }
