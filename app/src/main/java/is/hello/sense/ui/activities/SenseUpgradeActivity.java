@@ -75,9 +75,8 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
         if (savedInstanceState != null) {
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         } else if (navigationDelegate.getTopFragment() == null) {
-            finishUpgrade();
-            //showSenseUpdateIntro(); todo uncomment
-            //storeCurrentSenseDevice();
+            showSenseUpdateIntro();
+            storeCurrentSenseDevice();
         }
     }
 
@@ -106,7 +105,7 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
 
     @Override
     public void skipToEnd() {
-        finishUpgrade();
+        finishUpgrade(RESULT_CANCELED);
     }
 
     //endregion
@@ -146,8 +145,7 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
             } else if (fragment instanceof SenseVoiceFragment) {
                 showVoiceDone();
             } else {
-                setResult(RESULT_CANCELED, null);
-                finish();
+                skipToEnd();
             }
             return;
         }
@@ -185,7 +183,7 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
         } else if (fragment instanceof VoiceCompleteFragment) {
             showResetOriginalSense();
         } else if (fragment instanceof SenseResetOriginalFragment) {
-            finishUpgrade();
+            finishUpgrade(RESULT_OK);
         }
 
     }
@@ -301,11 +299,8 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
         pushFragment(new SenseResetOriginalFragment(), null, false);
     }
 
-    public void finishUpgrade() {
-        setResult(RESULT_OK);
-        //final Intent intent = new Intent(this, AppSettingsActivity.class);
-        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        //startActivity(intent);
+    public void finishUpgrade(final int result) {
+        setResult(result);
         finish();
     }
 
