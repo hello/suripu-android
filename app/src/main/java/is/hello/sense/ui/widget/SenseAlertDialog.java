@@ -333,7 +333,7 @@ public class SenseAlertDialog extends Dialog {
         setView(view, true);
     }
 
-
+    //todo evaluate alternatives to passing around runnable for executing work for dialog button clicks
     public interface SerializedRunnable extends Serializable {
         void run();
     }
