@@ -3,17 +3,12 @@ package is.hello.sense.flows.home.ui.views;
 import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.res.Resources;
-import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 
 import com.squareup.picasso.Picasso;
 
@@ -25,8 +20,6 @@ import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.adapter.ParallaxRecyclerScrollListener;
-import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.DateFormatter;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
@@ -96,41 +89,41 @@ public final class InsightsView extends PresenterView {
         insightsAdapter.questionUnavailable(e);
     }
 
-    public Animator getAnimator() {
-        if (recyclerView != null) {
+    @NonNull
+    public Animator getAnimator(final boolean isEnter) {
+        if(isEnter) {
             return createRecyclerEnter();
+        } else {
+            return createRecyclerExit();
         }
-        return createRecyclerExit();
     }
 
     public final void clearCurrentQuestion() {
         insightsAdapter.clearCurrentQuestion();
     }
 
-    private final Animator createRecyclerEnter() {
+    private Animator createRecyclerEnter() {
         return animatorFor(recyclerView)
                 .scale(UNFOCUSED_CONTENT_SCALE)
                 .alpha(UNFOCUSED_CONTENT_ALPHA)
                 .addOnAnimationCompleted(finished -> {
                     // If we don't reset this now, Views#getFrameInWindow(View, Rect) will
                     // return a subtly broken value, and the exit transition will be broken.
-                    if (recyclerView != null) {
-                        recyclerView.setScaleX(FOCUSED_CONTENT_SCALE);
-                        recyclerView.setScaleY(FOCUSED_CONTENT_SCALE);
-                        recyclerView.setAlpha(FOCUSED_CONTENT_ALPHA);
-                    }
+                    recyclerView.setScaleX(FOCUSED_CONTENT_SCALE);
+                    recyclerView.setScaleY(FOCUSED_CONTENT_SCALE);
+                    recyclerView.setAlpha(FOCUSED_CONTENT_ALPHA);
+
                 });
     }
 
-    private final Animator createRecyclerExit() {
+    private Animator createRecyclerExit() {
         return animatorFor(recyclerView)
                 .addOnAnimationWillStart(animator -> {
                     // Ensure visual consistency.
-                    if (recyclerView != null) {
-                        recyclerView.setScaleX(UNFOCUSED_CONTENT_SCALE);
-                        recyclerView.setScaleY(UNFOCUSED_CONTENT_SCALE);
-                        recyclerView.setAlpha(UNFOCUSED_CONTENT_ALPHA);
-                    }
+                    recyclerView.setScaleX(UNFOCUSED_CONTENT_SCALE);
+                    recyclerView.setScaleY(UNFOCUSED_CONTENT_SCALE);
+                    recyclerView.setAlpha(UNFOCUSED_CONTENT_ALPHA);
+
                 })
                 .scale(FOCUSED_CONTENT_SCALE)
                 .alpha(FOCUSED_CONTENT_ALPHA);

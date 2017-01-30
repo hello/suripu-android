@@ -280,7 +280,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
             Views.getFrameInWindow(selectedInsightHolder.itemView, state.cardRectInWindow);
             Views.getFrameInWindow(selectedInsightHolder.image, state.imageRectInWindow);
             state.imageParallaxPercent = selectedInsightHolder.image.getParallaxPercent();
-            state.parentAnimator = presenterView.getAnimator();
+            state.parentAnimator = presenterView.getAnimator(isEnter);
             return state;
         } else {
             return null;
