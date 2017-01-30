@@ -97,10 +97,7 @@ public class SensorDetailActivity extends ScopedInjectionActivity
         return R.id.activity_navigation_container;
     }
 
-    private void setBarColorForSensor(@Nullable final Sensor sensor) {
-        if (sensor == null) {
-            return;
-        }
+    private void setBarColorForSensor(@NonNull final Sensor sensor) {
         final int color = ContextCompat.getColor(this, sensor.getColor());
         setStatusBarColor(Drawing.darkenColorBy(color, Drawing.DARK_MULTIPLIER));
 

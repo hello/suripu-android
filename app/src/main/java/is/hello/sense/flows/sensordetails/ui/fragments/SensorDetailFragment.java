@@ -193,7 +193,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         super.onSaveInstanceState(outState);
     }
 
-    @Nullable
+    @NonNull
     public Sensor getCurrentSensor() {
         return sensor;
     }
