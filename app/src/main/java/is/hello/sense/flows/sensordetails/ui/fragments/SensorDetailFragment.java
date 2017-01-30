@@ -41,6 +41,7 @@ import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -287,20 +288,15 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
 
                 this.tutorialOverlayView.setOnDismiss(() -> this.tutorialOverlayView = null);
                 tutorialOverlayView.setAnchorContainer(getView());
-                getAnimatorContext().runWhenIdle(() -> {
-                    if (tutorialOverlayView != null && getUserVisibleHint()) {
-                        tutorialOverlayView.postShow(container);
-                        if (scrollUp) {
-                            tutorialOverlayView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                                @Override
-                                public void onGlobalLayout() {
-                                    tutorialOverlayView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                                    SensorDetailFragment.this.presenterView.smoothScrollBy(tutorialOverlayView.getTextViewHeight());
-                                }
-                            });
-                        }
+                if (tutorialOverlayView != null && getUserVisibleHint()) {
+                    tutorialOverlayView.show(container);
+                    if (scrollUp) {
+                        Views.runWhenLaidOut(tutorialOverlayView, () -> {
+                            SensorDetailFragment.this.presenterView.smoothScrollBy(tutorialOverlayView.getTextViewHeight());
+
+                        });
                     }
-                });
+                }
             }
         }
     }
