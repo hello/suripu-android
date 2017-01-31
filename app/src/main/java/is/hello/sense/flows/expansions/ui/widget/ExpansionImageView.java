@@ -39,6 +39,7 @@ public class ExpansionImageView extends ImageView {
                                                                this.drawable.getBorderColor());
         setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                                      ViewGroup.LayoutParams.MATCH_PARENT));
+        this.drawable.setDimensions(getMinimumWidth(), getMinimumHeight());
     }
 
     @Override
