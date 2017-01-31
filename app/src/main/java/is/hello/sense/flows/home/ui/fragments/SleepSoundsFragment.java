@@ -68,49 +68,9 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     private Subscription hasSensePairedSubscription = Subscriptions.empty();
 
     private UserWants userWants = UserWants.NONE;
-
     private State currentState = State.IDLE;
     @Nullable
     private ViewPagerPresenterFragment.NotificationListener notificationListener = null;
-
-    @Override
-    public void onFabClick() {
-        if (currentState == State.IDLE) {
-            onPlayClickListener();
-        } else if (currentState == State.PLAYING) {
-            onStopClickListener();
-        }
-    }
-
-    @Override
-    public boolean shouldShowFab() {
-        return currentState != State.ERROR;
-    }
-
-    @Override
-    public int getFabDrawableRes() {
-        if (currentState == State.IDLE) {
-            return R.drawable.sound_play_icon;
-        } else if (currentState == State.PLAYING) {
-            return R.drawable.sound_stop_icon;
-        }
-        return R.drawable.sound_loading_icon;
-    }
-
-    @Override
-    public void setNotificationListener(@NonNull final ViewPagerPresenterFragment.NotificationListener notificationListener) {
-        this.notificationListener = notificationListener;
-    }
-
-    @Override
-    public boolean hasNotificationListener() {
-        return notificationListener != null;
-    }
-
-    @Override
-    public boolean shouldFabRotate() {
-        return currentState == State.LOADING;
-    }
 
     enum UserWants {
         PLAY,
@@ -278,7 +238,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     }
     //endregion
 
-
+    //region ScrollUp
     @Override
     public void scrollUp() {
         if (presenterView == null) {
@@ -287,9 +247,51 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
         presenterView.scrollUp();
     }
 
+    //endregion
+
+    //region FabListener
+    @Override
+    public void onFabClick() {
+        if (currentState == State.IDLE) {
+            onPlayClickListener();
+        } else if (currentState == State.PLAYING) {
+            onStopClickListener();
+        }
+    }
+
+    @Override
+    public boolean shouldShowFab() {
+        return currentState != State.ERROR;
+    }
+
+    @Override
+    public int getFabDrawableRes() {
+        if (currentState == State.IDLE) {
+            return R.drawable.sound_play_icon;
+        } else if (currentState == State.PLAYING) {
+            return R.drawable.sound_stop_icon;
+        }
+        return R.drawable.sound_loading_icon;
+    }
+
+    @Override
+    public void setNotificationListener(@NonNull final ViewPagerPresenterFragment.NotificationListener notificationListener) {
+        this.notificationListener = notificationListener;
+    }
+
+    @Override
+    public boolean hasNotificationListener() {
+        return notificationListener != null;
+    }
+
+    @Override
+    public boolean shouldFabRotate() {
+        return currentState == State.LOADING;
+    }
+
+    //endregion
+
     //region FabPresenter helpers
-
-
     public void adapterSetState(final SleepSoundsAdapter.AdapterState state) {
         presenterView.adapterSetState(state);
         displayPlayButton();

@@ -187,7 +187,7 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
     }
     //endregion
 
-    //region FabClick
+    //region FabListener
     @Override
     public void onFabClick() {
         this.onAddButtonClicked(null);
