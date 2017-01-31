@@ -9,7 +9,7 @@
         android:id="@+id/fragment_insight_info_fill"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background_light"
+        android:background="?attr/senseBackgroundSecondary"
         tools:visibility="visible"/>
 
     <ProgressBar

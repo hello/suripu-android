@@ -277,7 +277,6 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     public final InsightInfoFragment.SharedState provideSharedState(final boolean isEnter) {
         if (selectedInsightHolder != null && getActivity() != null) {
             final InsightInfoFragment.SharedState state = new InsightInfoFragment.SharedState();
-            Views.getFrameInWindow(selectedInsightHolder.itemView, state.cardRectInWindow);
             Views.getFrameInWindow(selectedInsightHolder.image, state.imageRectInWindow);
             state.imageParallaxPercent = selectedInsightHolder.image.getParallaxPercent();
             state.parentAnimator = presenterView.getAnimator(isEnter);
