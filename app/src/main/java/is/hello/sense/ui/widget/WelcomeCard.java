@@ -54,4 +54,16 @@ public class WelcomeCard extends FrameLayout {
     public void setOnCloseButtonListener(@NonNull final OnClickListener listener) {
         Views.setSafeOnClickListener(this.binding.itemWelcomeClose, listener);
     }
+
+    public void showCloseButton(final boolean isVisible) {
+        if (isVisible) {
+            this.binding.getRoot().setBackgroundResource(R.drawable.raised_item_normal);
+            this.binding.itemWelcomeCloseDivider.setVisibility(VISIBLE);
+            this.binding.itemWelcomeClose.setVisibility(VISIBLE);
+        } else {
+            this.binding.getRoot().setBackground(null);
+            this.binding.itemWelcomeCloseDivider.setVisibility(GONE);
+            this.binding.itemWelcomeClose.setVisibility(GONE);
+        }
+    }
 }
