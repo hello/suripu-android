@@ -9,13 +9,9 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.RelativeLayout;
 
-import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
 import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
@@ -63,6 +59,7 @@ public class ViewPagerPresenterView extends PresenterView {
     //endregion
 
     //region methods
+
     public void unlockViewPager(@NonNull final ViewPagerPresenterFragment fragment) {
         createTabsAndPager(fragment);
         this.viewPager.setScrollingEnabled(true);
@@ -81,6 +78,7 @@ public class ViewPagerPresenterView extends PresenterView {
         // ViewPager
         final StaticFragmentAdapter adapter =
                 new StaticFragmentAdapter(fragment.getDesiredFragmentManager(),
+                                          viewPager.getId(),
                                           items);
         this.viewPager.setOffscreenPageLimit(fragment.getOffscreenPageLimit());
         this.viewPager.setAdapter(adapter);
@@ -91,11 +89,20 @@ public class ViewPagerPresenterView extends PresenterView {
         for (final StaticFragmentAdapter.Item item : items) {
             this.tabLayout.addTab(this.tabLayout.newTab().setText(item.getTitle()));
         }
-        final TabLayout.Tab firstTab = this.tabLayout.getTabAt(fragment.getStartingItemPosition());
-        if (firstTab != null) {
-            firstTab.select();
-        }
+        selectTab(fragment.getStartingItemPosition());
         setTabLayoutVisible(true);
+    }
+
+    private void selectTab(final int position) {
+
+        if (this.tabLayout.getTabCount() <= position) {
+            return;
+        }
+        final TabLayout.Tab tab = this.tabLayout.getTabAt(position);
+        if (tab == null) {
+            return;
+        }
+        tab.select();
     }
 
     private void setTabLayoutVisible(final boolean visible) {
@@ -116,11 +123,15 @@ public class ViewPagerPresenterView extends PresenterView {
     }
 
     public int getAdapterChildCount() {
-        return this.viewPager.getChildCount();
+        return this.viewPager.getAdapter().getCount();
     }
 
     public int getCurrentItemPosition() {
         return this.viewPager.getCurrentItem();
+    }
+
+    private StaticFragmentAdapter getAdapter() {
+        return (StaticFragmentAdapter) this.viewPager.getAdapter();
     }
 
     @Nullable
@@ -130,8 +141,8 @@ public class ViewPagerPresenterView extends PresenterView {
 
     @Nullable
     public Fragment getFragmentAtPos(final int pos) {
-        if (this.viewPager.getAdapter() instanceof StaticFragmentAdapter && getAdapterChildCount() > pos) {
-            return ((StaticFragmentAdapter) this.viewPager.getAdapter()).getFragmentAtPosition(pos);
+        if (getAdapterChildCount() > pos) {
+            return getAdapter().getFragment(pos);
         }
         return null;
     }

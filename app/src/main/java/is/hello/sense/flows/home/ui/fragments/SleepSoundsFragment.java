@@ -177,10 +177,12 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
         super.setVisibleToUser(isVisible);
         if (isVisible) {
             Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS, null);
-            if (presenterView.isShowingPlayer()) {
-                displayPlayButton();
-            } else {
-                displayLoadingButton();
+            if (currentState == State.IDLE) {
+                if (presenterView.isShowingPlayer()) {
+                    displayPlayButton();
+                } else {
+                    displayLoadingButton();
+                }
             }
             updateSensePairedSubscription(() -> {
                 sleepSoundsStatusInteractor.resetBackOffIfNeeded();

@@ -37,8 +37,6 @@ import is.hello.sense.flows.home.ui.fragments.HomePresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.SoundsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsPresenterFragment;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
-import is.hello.sense.mvp.util.FabPresenter;
-import is.hello.sense.mvp.util.FabPresenterProvider;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.rating.LocalUsageTracker;
@@ -122,6 +120,7 @@ public class HomeActivity extends ScopedInjectionActivity
         restoreState(savedInstanceState);
         this.tabLayout.setupWithViewPager(this.extendedViewPager);
         this.extendedViewPager.setAdapter(new StaticFragmentAdapter(getFragmentManager(),
+                                                                    this.extendedViewPager.getId(),
                                                                     this.viewPagerDelegate.getViewPagerItems()));
         this.tabLayout.setUpTabs(savedInstanceState == null);
         this.tabLayout.setListener(this);
@@ -355,7 +354,7 @@ public class HomeActivity extends ScopedInjectionActivity
     @Nullable
     private Fragment getFragmentWithIndex(final int index) {
         if (extendedViewPager != null && extendedViewPager.getAdapter() instanceof StaticFragmentAdapter) {
-            return ((StaticFragmentAdapter) extendedViewPager.getAdapter()).getFragmentAtPosition(index);
+            return ((StaticFragmentAdapter) extendedViewPager.getAdapter()).getFragment(index);
         }
         return null;
     }

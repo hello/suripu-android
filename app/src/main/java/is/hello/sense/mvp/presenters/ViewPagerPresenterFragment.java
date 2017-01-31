@@ -95,8 +95,11 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
             return;
         }
         controller.setVisibleToUser(isVisible);
-        getCurrentFabListener().setNotificationListener(this.notificationListener);
+        if (shouldAddViewPagerListener()) {
+            getCurrentFabListener().setNotificationListener(this.notificationListener);
+        }
     }
+
     //endregion
 
     //region ViewPager.ViewPagePresenter
@@ -197,7 +200,7 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
      * @param position position to update.
      */
     private void updateFab(final int position) {
-        updateFab(1, position);
+        updateFab(1f, position);
     }
 
     /**
@@ -215,10 +218,10 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
         final Fragment fragment = this.presenterView.getFragmentAtPos(position);
         if (fragment instanceof FabListener) {
             final FabListener fabListener = (FabListener) fragment;
+            if (!fabListener.hasNotificationListener()) {
+                fabListener.setNotificationListener(notificationListener);
+            }
             if (fabListener.shouldShowFab()) {
-                if (!fabListener.hasNotificationListener()) {
-                    fabListener.setNotificationListener(this.notificationListener);
-                }
                 this.presenterView.setFabRotating(fabListener.shouldFabRotate());
                 this.presenterView.setFabSize(Math.min(1f, Math.abs(1f - positionOffset * 2)));
                 this.presenterView.setFabResource(fabListener.getFabDrawableRes());
@@ -226,6 +229,7 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
                 return;
             }
         }
+        this.presenterView.setFabSize(0);
         this.presenterView.setFabVisible(false);
     }
 

@@ -4,25 +4,37 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
 
-import java.util.HashMap;
-import java.util.Map;
 
 
-public class StaticFragmentAdapter extends android.support.v13.app.FragmentStatePagerAdapter {
+public class StaticFragmentAdapter extends FragmentPagerAdapter {
+
     private final Item[] items;
     private int lastPosition = -1;
+    private final FragmentManager fragmentManager;
+    private final int containerId;
 
-    // FragmentStatePagerAdapter find by tag return null
-    // Need this to hold references of each fragment.
-    private final Map<Integer, Fragment> fragmentMap = new HashMap<>();
+    private static String makeFragmentName(final int viewId,
+                                           final long id) {
+        return "android:switcher:" + viewId + ":" + id;
+    }
 
     public StaticFragmentAdapter(@NonNull final FragmentManager fm,
+                                 final int containerId,
                                  @NonNull final Item... items) {
         super(fm);
+        this.fragmentManager = fm;
         this.items = items;
+        this.containerId = containerId;
     }
+
+    @Nullable
+    public Fragment getFragment(final int id) {
+        return fragmentManager.findFragmentByTag(makeFragmentName(containerId, id));
+    }
+
 
     @Override
     public int getCount() {
@@ -31,26 +43,9 @@ public class StaticFragmentAdapter extends android.support.v13.app.FragmentState
 
     @Override
     public Fragment getItem(final int position) {
-        final Fragment fragment = items[position].newInstance();
-        fragmentMap.put(position, fragment);
-        return fragment;
+        return items[position].newInstance();
     }
 
-    @Override
-    public Object instantiateItem(final ViewGroup container,
-                                  final int position) {
-        final Fragment fragment = ((Fragment) super.instantiateItem(container, position));
-        fragmentMap.put(position, fragment);
-        return fragment;
-    }
-
-    @Override
-    public void destroyItem(final ViewGroup container,
-                            final int position,
-                            final Object object) {
-        fragmentMap.remove(position);
-        super.destroyItem(container, position, object);
-    }
 
     @Override
     public void setPrimaryItem(final ViewGroup container,
@@ -65,14 +60,10 @@ public class StaticFragmentAdapter extends android.support.v13.app.FragmentState
         alertFragmentVisible(lastPosition, true);
     }
 
-    @Nullable
-    public Fragment getFragmentAtPosition(final int position) {
-        return fragmentMap.get(position);
-    }
 
     private void alertFragmentVisible(final int position,
                                       final boolean isVisible) {
-        final Fragment fragment = getFragmentAtPosition(position);
+        final Fragment fragment = getFragment(position);
         if (!(fragment instanceof Controller)) {
             return;
         }

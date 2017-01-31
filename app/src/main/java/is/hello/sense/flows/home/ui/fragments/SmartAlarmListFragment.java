@@ -195,7 +195,10 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
 
     @Override
     public boolean shouldShowFab() {
-        return smartAlarmInteractor.alarms.hasValue() && !smartAlarmInteractor.alarms.getValue().isEmpty();
+        return smartAlarmInteractor != null
+                && smartAlarmInteractor.alarms != null
+                && smartAlarmInteractor.alarms.hasValue()
+                && !smartAlarmInteractor.alarms.getValue().isEmpty();
     }
 
     @DrawableRes
