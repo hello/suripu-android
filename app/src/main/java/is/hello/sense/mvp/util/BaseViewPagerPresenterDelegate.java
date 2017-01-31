@@ -27,4 +27,5 @@ public abstract class BaseViewPagerPresenterDelegate implements ViewPagerPresent
     public int getOffscreenPageLimit() {
         return DEFAULT_OFFSCREEN_PAGE_LIMIT;
     }
+
 }

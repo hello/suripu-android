@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -29,8 +31,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
 import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
-import is.hello.sense.mvp.util.FabPresenter;
-import is.hello.sense.mvp.util.FabPresenterProvider;
+import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
 import is.hello.sense.ui.common.SenseDialogFragment;
@@ -47,7 +48,8 @@ import rx.Observable;
 public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAlarmListView>
         implements
         SmartAlarmAdapter.InteractionListener,
-        HomeActivity.ScrollUp {
+        HomeActivity.ScrollUp,
+        ViewPagerPresenterFragment.FabListener {
     private static final int DELETE_REQUEST_CODE = 117;
 
     @Inject
@@ -60,7 +62,7 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
     ExpansionCategoryFormatter expansionCategoryFormatter;
     private ArrayList<Alarm> currentAlarms = new ArrayList<>();
     @Nullable
-    private FabPresenter fabPresenter;
+    private ViewPagerPresenterFragment.NotificationListener notificationListener = null;
 
 
     //region PresenterFragment
@@ -86,7 +88,6 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        this.fabPresenter = ((FabPresenterProvider) getActivity()).getFabPresenter();
         final Observable<Boolean> use24Time = preferences.observableUse24Time();
         bindAndSubscribe(use24Time, presenterView::updateAdapterTime, Functions.LOG_ERROR);
         smartAlarmInteractor.alarms.forget();
@@ -101,7 +102,7 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        this.fabPresenter = null;
+        this.notificationListener = null;
     }
 
     @Override
@@ -176,7 +177,7 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
     }
     //endregion
 
-
+    //region ScrollUp
     @Override
     public void scrollUp() {
         if (presenterView == null) {
@@ -184,20 +185,49 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
         }
         presenterView.scrollUp();
     }
+    //endregion
+
+    //region FabClick
+    @Override
+    public void onFabClick() {
+        this.onAddButtonClicked(null);
+    }
+
+    @Override
+    public boolean shouldShowFab() {
+        return smartAlarmInteractor.alarms.hasValue() && !smartAlarmInteractor.alarms.getValue().isEmpty();
+    }
+
+    @DrawableRes
+    @Override
+    public int getFabDrawableRes() {
+        return R.drawable.icon_plus;
+    }
+
+    @Override
+    public void setNotificationListener(@NonNull final ViewPagerPresenterFragment.NotificationListener notificationListener) {
+        this.notificationListener = notificationListener;
+    }
+
+    @Override
+    public boolean hasNotificationListener() {
+        return notificationListener != null;
+    }
+
+    @Override
+    public boolean shouldFabRotate() {
+        return false;
+    }
+    //endregion
 
     //region methods
-    private void updateAlarmFab(final boolean isVisible) {
-        if (fabPresenter != null) {
-            if (isVisible) {
-                fabPresenter.updateFab(R.drawable.icon_plus,
-                                       this::onAddButtonClicked);
-            }
-            fabPresenter.setFabVisible(isVisible);
+    private void notifyChange() {
+        if (this.notificationListener != null) {
+            this.notificationListener.notifyChange();
         }
     }
 
-
-    public void onAddButtonClicked(@NonNull final View ignored) {
+    public void onAddButtonClicked(@Nullable final View ignored) {
         if (this.currentAlarms.size() >= 30) {
             showAlertDialog(new SenseAlertDialog.Builder()
                                     .setTitle(R.string.error_to_many_alarms_title)
@@ -231,7 +261,7 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
             message.onClickListener = this::onAddButtonClicked;
             presenterView.bindAdapterMessage(message);
         }
-        this.updateAlarmFab(!alarms.isEmpty());
+        notifyChange();
         presenterView.setProgressBarVisible(false);
     }
 
@@ -259,8 +289,8 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
             message.actionRes = R.string.action_retry;
             message.onClickListener = this::updateAlarms;
         }
+        notifyChange();
         presenterView.bindAdapterMessage(message);
-        this.updateAlarmFab(false);
         presenterView.setProgressBarVisible(false);
     }
 
@@ -277,6 +307,7 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
         }
         showErrorDialog(builder);
     }
+
     //endregion
 
 

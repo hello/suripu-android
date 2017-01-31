@@ -9,9 +9,11 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.RelativeLayout;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
@@ -32,7 +34,8 @@ public class ViewPagerPresenterView extends PresenterView {
      * @param fragment - Fragment providing initialization settings and callbacks.
      *                 Don't keep a reference to this.
      */
-    public ViewPagerPresenterView(@NonNull final ViewPagerPresenterFragment fragment) {
+    public ViewPagerPresenterView(@NonNull final ViewPagerPresenterFragment fragment,
+                                  @Nullable final OnClickListener onFabClickListener) {
         super(fragment.getActivity());
         this.viewPager = (ExtendedViewPager) findViewById(R.id.view_view_pager_extended_view_pager);
         this.tabLayout = (TabLayout) findViewById(R.id.view_view_pager_tab_layout);
@@ -40,6 +43,7 @@ public class ViewPagerPresenterView extends PresenterView {
         this.fabLoadingAnimation = AnimationUtils.loadAnimation(context, R.anim.rotate_360);
         this.fabLoadingAnimation.setRepeatCount(Animation.INFINITE);
         this.fab = (FloatingActionButton) findViewById(R.id.view_view_pager_fab);
+        this.fab.setOnClickListener(onFabClickListener);
         createTabsAndPager(fragment);
     }
 
@@ -111,10 +115,23 @@ public class ViewPagerPresenterView extends PresenterView {
         this.viewPager.removeOnPageChangeListener(listener);
     }
 
+    public int getAdapterChildCount() {
+        return this.viewPager.getChildCount();
+    }
+
+    public int getCurrentItemPosition() {
+        return this.viewPager.getCurrentItem();
+    }
+
     @Nullable
     public Fragment getCurrentFragment() {
-        if (this.viewPager.getAdapter() instanceof StaticFragmentAdapter) {
-            return ((StaticFragmentAdapter) this.viewPager.getAdapter()).getFragmentAtPosition(this.viewPager.getCurrentItem());
+        return getFragmentAtPos(getCurrentItemPosition());
+    }
+
+    @Nullable
+    public Fragment getFragmentAtPos(final int pos) {
+        if (this.viewPager.getAdapter() instanceof StaticFragmentAdapter && getAdapterChildCount() > pos) {
+            return ((StaticFragmentAdapter) this.viewPager.getAdapter()).getFragmentAtPosition(pos);
         }
         return null;
     }
@@ -124,37 +141,20 @@ public class ViewPagerPresenterView extends PresenterView {
     //region fab methods
 
     public void setFabSize(final float size) {
-        if (size >= 0.5) {
-            this.fab.setScaleX(size);
-            this.fab.setScaleY(size);
-            this.fab.setAlpha(Anime.interpolateFloats(size, 0, 2) - 1);
-        } else {
-            this.fab.setAlpha(0f);
-        }
+        this.fab.setScaleX(size);
+        this.fab.setScaleY(size);
     }
 
     public void setFabVisible(final boolean visible) {
-        if (visible) {
-            this.fab.show();
-        } else {
-            this.fab.hide();
-        }
+        fab.setVisibility(visible ? VISIBLE : GONE);
     }
 
-    public void updateFab(final @DrawableRes int resource,
-                          final @Nullable View.OnClickListener listener) {
-        this.setFabLoading(false);
-        this.fab.setOnClickListener(listener);
+    public void setFabResource(final @DrawableRes int resource) {
         this.fab.setImageResource(resource);
     }
 
-    public void setFabLoading(final boolean loading) {
-        this.fab.setClickable(!loading);
-        this.fab.setLongClickable(!loading);
-        this.fab.setFocusable(!loading);
-        if (loading) {
-            this.fab.setOnClickListener(null);
-            this.fab.setImageResource(R.drawable.sound_loading_icon);
+    public void setFabRotating(final boolean rotate) {
+        if (rotate) {
             final Animation currentAnimation = this.fab.getAnimation();
             if (!(fabLoadingAnimation.equals(currentAnimation) && currentAnimation.hasStarted())) {
                 this.fab.startAnimation(fabLoadingAnimation);
@@ -163,6 +163,7 @@ public class ViewPagerPresenterView extends PresenterView {
             this.fab.clearAnimation();
         }
     }
+
     //endregion
 
 }

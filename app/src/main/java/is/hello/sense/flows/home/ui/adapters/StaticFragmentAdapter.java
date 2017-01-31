@@ -105,6 +105,10 @@ public class StaticFragmentAdapter extends android.support.v13.app.FragmentState
                 throw new RuntimeException(e);
             }
         }
+
+        public Class<? extends Fragment> getFragmentClass() {
+            return fragmentClass;
+        }
     }
 
     public interface Controller {

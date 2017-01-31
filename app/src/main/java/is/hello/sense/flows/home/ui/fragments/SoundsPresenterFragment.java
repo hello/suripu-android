@@ -9,8 +9,7 @@ import is.hello.sense.flows.home.util.SoundsViewPagerPresenterDelegate;
 import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 
-public class SoundsPresenterFragment extends ViewPagerPresenterFragment
-        implements ViewPager.OnPageChangeListener {
+public class SoundsPresenterFragment extends ViewPagerPresenterFragment {
 
     //region ViewPagerPresenterFragment
     @NonNull
@@ -19,33 +18,9 @@ public class SoundsPresenterFragment extends ViewPagerPresenterFragment
         return new SoundsViewPagerPresenterDelegate(getResources());
     }
     //endRegion
-    @Override
-    public void onViewCreated(final View view,
-                              final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        presenterView.addViewPagerListener(this);
-    }
 
     @Override
-    public void onDestroyView() {
-        if (presenterView != null) {
-            presenterView.removeViewPagerListener(this);
-        }
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onPageScrolled(final int position,
-                               final float positionOffset,
-                               final int positionOffsetPixels) {
-        setFabSize(Math.min(1f, Math.abs(1f - positionOffset * 2)));
-    }
-
-    @Override
-    public void onPageSelected(final int position) {
-    }
-
-    @Override
-    public void onPageScrollStateChanged(final int state) {
+    protected boolean shouldAddViewPagerListener() {
+        return true;
     }
 }

@@ -66,7 +66,6 @@ public class HomeActivity extends ScopedInjectionActivity
         Alert.ActionHandler,
         InsightInfoFragment.ParentProvider,
         TimelineFragment.ParentProvider,
-        FabPresenterProvider,
         OnboardingFlowProvider,
         SenseTabLayout.Listener {
 
@@ -340,11 +339,6 @@ public class HomeActivity extends ScopedInjectionActivity
     @Override
     public TimelineFragment.Parent getTimelineParent() {
         return (TimelineFragment.Parent) getFragmentWithIndex(SenseTabLayout.SLEEP_ICON_KEY);
-    }
-
-    @Override
-    public FabPresenter getFabPresenter() {
-        return (FabPresenter) getFragmentWithIndex(SenseTabLayout.SOUNDS_ICON_KEY);
     }
 
     @Nullable
