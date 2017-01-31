@@ -44,7 +44,6 @@ public final class InsightsView extends PresenterView {
 
         this.progressBar = (ProgressBar) findViewById(R.id.fragment_insights_progress);
         this.recyclerView = (RecyclerView) findViewById(R.id.fragment_insights_recycler);
-        recyclerView.setHasFixedSize(false);
         setUpStandardRecyclerViewDecorations(recyclerView,
                                              new LinearLayoutManager(context));
         recyclerView.addOnScrollListener(new ParallaxRecyclerScrollListener());

@@ -306,14 +306,12 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
 
         Analytics.trackEvent(Analytics.Backside.EVENT_INSIGHT_DETAIL, null);
 
-        // InsightsFragment lives inside of a child fragment manager, whose root view is inset
-        // on the bottom to make space for the open timeline. We go right to the root fragment
-        // manager to keep things simple.
+        // We go right to the root fragment manager to keep things simple.
         final FragmentManager fragmentManager = getActivity().getFragmentManager();
         final InsightInfoFragment infoFragment = InsightInfoFragment.newInstance(insight,
                                                                                  getResources());
         infoFragment.show(fragmentManager,
-                          R.id.activity_new_home_container,
+                          R.id.activity_new_home_container, //todo remove direct reference on activity id
                           InsightInfoFragment.TAG);
 
         this.selectedInsightHolder = viewHolder;

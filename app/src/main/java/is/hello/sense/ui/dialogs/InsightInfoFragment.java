@@ -462,10 +462,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
         final Animator[] animators = createContentViewAnimators(1f, 0f);
 
-        /*for (int i = 0, length = contentViews.length; i < length; i++) {
-            animators[i] = animatorFor(contentViews[i]).alpha(0f);
-        }*/
-
         subscene.playTogether(animators);
         return subscene;
     }
