@@ -32,7 +32,10 @@ import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.VoiceResponse;
-import is.hello.sense.api.model.v2.voice.VoiceTutorialViewModel;
+import is.hello.sense.api.model.v2.voice.VoiceTutorialFactory;
+import is.hello.sense.api.model.v2.voice.VoiceTutorialFactory.QuestionTextState;
+import is.hello.sense.api.model.v2.voice.VoiceTutorialFactory.SenseImageState;
+import is.hello.sense.api.model.v2.voice.VoiceTutorialFactory.VoiceTutorial;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.SenseVoiceInteractor;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -46,11 +49,37 @@ import is.hello.sense.util.Analytics;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.subscriptions.Subscriptions;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class SenseVoiceFragment extends BaseHardwareFragment {
+
+    public static class ViewStateDispatcher {
+        final Lazy<VoiceTutorial> notDetectedState;
+        final Lazy<VoiceTutorial> errorState;
+        final Lazy<QuestionTextState> firstQuestionWakeState;
+        final Lazy<QuestionTextState> secondQuestionWakeState;
+        final Lazy<SenseImageState> senseWaitState;
+        final Lazy<SenseImageState> senseWakeState;
+        final Func1<int[],VoiceTutorial> successStateFunc;
+
+        ViewStateDispatcher() {
+            final VoiceTutorialFactory factory = new VoiceTutorialFactory();
+            this.notDetectedState = factory::getOnNotDetected;
+            this.errorState = factory::getOnError;
+            this.firstQuestionWakeState = factory::getFirstOnWakeState;
+            this.secondQuestionWakeState = factory::getSecondOnWakeState;
+            this.senseWaitState = factory::getSenseOnWaitState;
+            this.senseWakeState = factory::getSenseOnWakeState;
+            this.successStateFunc = factory::getOnSuccess;
+        }
+
+        VoiceTutorial getSuccessState(final int[] drawableState) {
+            return successStateFunc.call(drawableState);
+        }
+    }
 
     public static class UIHandler extends Handler {
         final WeakReference<SenseVoiceFragment> fragmentRef;
@@ -111,6 +140,8 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     private final Runnable animateToNormalStateRunnable = SenseVoiceFragment.this::animateToNormalState;
 
     private final UIHandler uiHandler = new UIHandler(this);
+
+    private final ViewStateDispatcher viewStateDispatcher = new ViewStateDispatcher();
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -250,7 +281,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         transaction.animatorFor(subtitle)
                 .fadeOut(View.INVISIBLE);
 
-        senseCircleView.setImageResource(VoiceTutorialViewModel.SenseImageViewModel.SRC_CIRCLE_DRAWABLE);
+        senseCircleView.setImageResource(SenseImageState.SRC_CIRCLE_DRAWABLE);
         senseCircleView.getDrawable().setAlpha(0);
         questionText.setAlpha(0);
     }
@@ -302,7 +333,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         if(ApiException.isNetworkError(throwable)){
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         }
-        updateState(VoiceTutorialViewModel.getOnErrorModel());
+        updateState(viewStateDispatcher.errorState.get());
         getAnimatorContext().transaction(
                 transaction -> updateButtons(true,transaction), null);
     }
@@ -353,10 +384,10 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
 
             if(SenseVoiceInteractor.hasSuccessful(voiceResponse)){
                 animateToWaitState();
-                updateState(VoiceTutorialViewModel.getOnSuccessModel(senseImageView.getDrawableState()));
+                updateState(viewStateDispatcher.getSuccessState(senseImageView.getDrawableState()));
                 onFinish(true);
             } else {
-                updateState(VoiceTutorialViewModel.getOnNotDetectedModel());
+                updateState(viewStateDispatcher.notDetectedState.get());
                 if (senseVoiceInteractor.getFailCount() == VOICE_FAIL_COUNT_THRESHOLD) {
                     this.postDelayed(() -> showVoiceTipDialog(true, this::onVoiceTipDismissed),
                                      LoadingDialogFragment.DURATION_DEFAULT*2);
@@ -382,11 +413,11 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         }
     }
 
-    private void updateState(@NonNull final VoiceTutorialViewModel viewModel) {
-        this.post(() -> setSenseCircleViewState(viewModel.getSenseImageViewModel()));
+    private void updateState(@NonNull final VoiceTutorial viewModel) {
+        this.post(() -> setSenseCircleViewState(viewModel.getSenseImageState()));
         this.postDelayed(() -> {
-                             setQuestionState(viewModel.getQuestionTextViewModel());
-                             setSenseImageViewState(viewModel.getSenseImageViewModel().state);
+                             setQuestionState(viewModel.getQuestionTextState());
+                             setSenseImageViewState(viewModel.getSenseImageState().state);
                          }, LoadingDialogFragment.DURATION_DEFAULT);
     }
 
@@ -396,7 +427,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     }
 
     private void animateToWaitState(){
-        final VoiceTutorialViewModel.SenseImageViewModel waitModel = VoiceTutorialViewModel.SenseImageViewModel.getOnWaitModel();
+        final SenseImageState waitModel = viewStateDispatcher.senseWaitState.get();
         this.post(() -> {
             setSenseCircleViewState(waitModel);
             setSenseImageViewState(waitModel.state);
@@ -404,15 +435,15 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     }
 
     private void animateToWakeState(){
-        final VoiceTutorialViewModel.SenseImageViewModel wakeModel = VoiceTutorialViewModel.SenseImageViewModel.getOnWakeModel();
-        this.post(() -> setQuestionState(VoiceTutorialViewModel.QuestionTextViewModel.getFirstOnWakeModel()));
+        final SenseImageState wakeModel = viewStateDispatcher.senseWakeState.get();
+        this.post(() -> setQuestionState(viewStateDispatcher.firstQuestionWakeState.get()));
 
         this.postDelayed(() -> setSenseCircleViewState(wakeModel),
                          LoadingDialogFragment.DURATION_DEFAULT);
 
         this.postDelayed(() -> {
             setSenseImageViewState(wakeModel.state);
-            setQuestionState(VoiceTutorialViewModel.QuestionTextViewModel.getSecondOnWakeModel());
+            setQuestionState(viewStateDispatcher.secondQuestionWakeState.get());
         }, LoadingDialogFragment.DURATION_DEFAULT*2);
     }
 
@@ -420,7 +451,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
      * Important to wrap onCompletion lambda with stateSafeExecutor to prevent execution if fragment view is gone/destroyed
      * Anytime an operation is delayed, it is not guaranteed to have access to same views when attempt to execute.
      */
-    private void setQuestionState(@NonNull final VoiceTutorialViewModel.QuestionTextViewModel model){
+    private void setQuestionState(@NonNull final QuestionTextState model){
         if (model.animateText){
             animatorFor(questionText, animatorContext)
                     .translationY(TRANSLATE_Y.get())
@@ -452,7 +483,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         senseImageView.setImageState(state, false);
     }
 
-    private void setSenseCircleViewState(@NonNull final VoiceTutorialViewModel.SenseImageViewModel model){
+    private void setSenseCircleViewState(@NonNull final SenseImageState model){
         senseCircleView.setImageState(model.state, false);
         viewAnimator.setRepeatCount(model.repeatCount);
         viewAnimator.resetAnimation(
@@ -489,7 +520,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     }
 
     private boolean post(@NonNull final Runnable runnable) {
-        return postDelayed(runnable, 0);
+        return this.uiHandler.post(runnable);
     }
 
     /**
