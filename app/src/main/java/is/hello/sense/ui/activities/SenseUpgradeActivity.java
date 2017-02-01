@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
 import is.hello.sense.SenseUpgradeModule;
-import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.CurrentSenseInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
@@ -25,9 +24,9 @@ import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
-import is.hello.sense.ui.fragments.onboarding.SetLocationFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
+import is.hello.sense.ui.fragments.onboarding.SetLocationFragment;
 import is.hello.sense.ui.fragments.onboarding.VoiceCompleteFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAFragment;
 import is.hello.sense.ui.fragments.onboarding.sense.SenseOTAIntroFragment;
@@ -106,7 +105,7 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
 
     @Override
     public void skipToEnd() {
-        showHomeActivity();
+        finishUpgrade(RESULT_CANCELED);
     }
 
     //endregion
@@ -146,8 +145,7 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
             } else if (fragment instanceof SenseVoiceFragment) {
                 showVoiceDone();
             } else {
-                setResult(RESULT_CANCELED, null);
-                finish();
+                skipToEnd();
             }
             return;
         }
@@ -185,7 +183,7 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
         } else if (fragment instanceof VoiceCompleteFragment) {
             showResetOriginalSense();
         } else if (fragment instanceof SenseResetOriginalFragment) {
-            showHomeActivity();
+            finishUpgrade(RESULT_OK);
         }
 
     }
@@ -301,11 +299,8 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
         pushFragment(new SenseResetOriginalFragment(), null, false);
     }
 
-    public void showHomeActivity() {
-        setResult(RESULT_OK);
-        final Intent intent = new Intent(this, HomeActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
+    public void finishUpgrade(final int result) {
+        setResult(result);
         finish();
     }
 
