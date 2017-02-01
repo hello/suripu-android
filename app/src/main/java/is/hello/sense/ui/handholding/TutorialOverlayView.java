@@ -32,6 +32,7 @@ import android.widget.TextView;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Logger;
 
@@ -180,6 +181,9 @@ public class TutorialOverlayView extends RelativeLayout {
         tutorial.markShown(getContext());
         this.container = (ViewGroup) activity.findViewById(containerRes);
         if (container == null) {
+            if (SenseApplication.isRunningInRobolectric()){
+                return;
+            }
             final String idName = getResources().getResourceName(containerRes);
             throw new IllegalStateException("Could not find view by id " + idName);
         }
