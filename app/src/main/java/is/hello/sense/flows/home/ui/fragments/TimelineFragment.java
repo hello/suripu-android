@@ -394,7 +394,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             return;
         }
 
-        if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity()) && !this.presenterView.hasTutorial()) {
+        if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity()) && !this.presenterView.hasTutorial() && parent.hasThreeDaysOfData()) {
             final TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.SWIPE_TIMELINE);
             overlayView.setOnDismiss(() -> this.presenterView.clearTutorial());
             overlayView.setAnchorContainer(getActivity().findViewById(this.parent.getTutorialContainerIdRes()));
@@ -710,6 +710,8 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
 
     public interface Parent {
+
+        boolean hasThreeDaysOfData();
 
         @IdRes
         int getTutorialContainerIdRes();

@@ -241,6 +241,10 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
 
     public static class ActivityWithParent extends FragmentTestActivity
             implements TimelineFragment.Parent {
+        @Override
+        public boolean hasThreeDaysOfData() {
+            return true;
+        }
 
         public ActivityWithParent() {
 

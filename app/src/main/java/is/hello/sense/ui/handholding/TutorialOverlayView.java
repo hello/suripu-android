@@ -110,6 +110,7 @@ public class TutorialOverlayView extends RelativeLayout {
         }
 
         addView(descriptionContainer, tutorial.generateDescriptionLayoutParams());
+        tutorial.markShown(getContext());
     }
 
     //endregion

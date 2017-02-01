@@ -229,6 +229,15 @@ public class TimelinePagerFragment extends InjectionFragment
 
     //region Timeline parent
 
+
+    @Override
+    public boolean hasThreeDaysOfData() {
+        if (viewPagerAdapter == null) {
+            return false;
+        }
+        return viewPagerAdapter.getCount() >= 3;
+    }
+
     @Override
     public int getTutorialContainerIdRes() {
         return R.id.fragment_timeline_pager_container;
