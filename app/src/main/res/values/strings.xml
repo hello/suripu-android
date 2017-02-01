@@ -717,7 +717,7 @@
     <string name="voice_settings_list_mute">Mute</string>
     <string name="voice_settings_volume">Volume</string>
     <string name="voice_settings_primary_user">Primary User</string>
-    <string name="voice_settings_primary_user_about">Tell Sense whose information to respond with when asked questions like \"What\'s my Sleep Score?\" by setting primary user. Only the primary user will be able to access the Nest Expansion when released.
+    <string name="voice_settings_primary_user_about">Tell Sense whose information to respond with when asked questions like \"What\'s my Sleep Score?\" by setting primary user. Only the primary user will be able to access the Nest Expansion.
 </string>
     <string name="voice_settings_title">Voice</string>
     <string name="voice_select_volume">Select volume</string>
