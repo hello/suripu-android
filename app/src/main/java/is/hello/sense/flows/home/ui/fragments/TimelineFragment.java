@@ -187,6 +187,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
                                                               getResources().getDisplayMetrics()) * TOOL_TIP_HEIGHT_MULTIPLIER);
         // For the first fragment
         bindIfNeeded();
+        showHandholdingIfAppropriate();
     }
 
     @Override
@@ -386,7 +387,9 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
 
     //region Handholding
-
+    public boolean isAtLeastThreeDaysOld(){
+        return DateFormatter.isMoreThanThreeDays(preferences.getAccountCreationDate());
+    }
 
     private void showHandholdingIfAppropriate() {
         if (this.parent == null ||
@@ -394,7 +397,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             return;
         }
 
-        if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity()) && !this.presenterView.hasTutorial() && parent.hasThreeDaysOfData()) {
+        if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity()) && !this.presenterView.hasTutorial() && isAtLeastThreeDaysOld()) {
             final TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.SWIPE_TIMELINE);
             overlayView.setOnDismiss(() -> this.presenterView.clearTutorial());
             overlayView.setAnchorContainer(getActivity().findViewById(this.parent.getTutorialContainerIdRes()));
@@ -410,10 +413,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
         @Override
         public void onItemAnimatorDidStop(final boolean finished) {
-            if (finished) {
-                showHandholdingIfAppropriate();
-            }
-
             TimelineFragment.this.presenterView.removeItemAnimatorListener(this);
         }
     }
@@ -710,8 +709,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
 
     public interface Parent {
-
-        boolean hasThreeDaysOfData();
 
         @IdRes
         int getTutorialContainerIdRes();

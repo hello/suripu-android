@@ -187,7 +187,6 @@ public class TimelinePagerFragment extends InjectionFragment
 
     @Override
     public void onPageSelected(final int position) {
-        final LocalDate localDate = viewPagerAdapter.getItemDate(position);
 
     }
 
@@ -228,15 +227,6 @@ public class TimelinePagerFragment extends InjectionFragment
 
 
     //region Timeline parent
-
-
-    @Override
-    public boolean hasThreeDaysOfData() {
-        if (viewPagerAdapter == null) {
-            return false;
-        }
-        return viewPagerAdapter.getCount() >= 3;
-    }
 
     @Override
     public int getTutorialContainerIdRes() {
