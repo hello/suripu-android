@@ -17,10 +17,9 @@ import is.hello.sense.util.Analytics;
  * Show user explanation for requiring location permission
  */
 public class SetLocationFragment extends SenseFragment
-implements OnBackPressedInterceptor{
+        implements OnBackPressedInterceptor {
 
     private static final String ARG_SHOW_SKIP = SetLocationFragment.class.getSimpleName() + ".ARG_SHOW_SKIP";
-    public static final int RESULT_USER_SKIPPED = 200;
 
     /**
      * @param showSkip true will display the 'Skip Sense Setup' action.
@@ -57,13 +56,13 @@ implements OnBackPressedInterceptor{
             showSkip = false;
         }
         view = new OnboardingSimpleStepView(this, inflater)
-                .setHeadingText(R.string.title_onboarding_register_location)
+                .setHeadingText(R.string.action_pair_your_sense)
                 .setSubheadingText(R.string.message_onboarding_register_location)
                 .setPrimaryButtonText(R.string.action_set_location)
-                .setSecondaryButtonText(R.string.action_skip_sense_setup)
-                .setDiagramImage(R.drawable.onboarding_set_location_diagram)
+                .setSecondaryButtonText(R.string.action_why_is_this_required)
+                .setDiagramImage(R.drawable.sense_scan_ble)
                 .setPrimaryOnClickListener(this::setLocation)
-                .setSecondaryOnClickListener(this::onSkip)
+                .setSecondaryOnClickListener(this::onHelp)
                 .setWantsSecondaryButton(showSkip)
                 .setToolbarWantsBackButton(false);
 
@@ -90,16 +89,17 @@ implements OnBackPressedInterceptor{
         }
     }
 
-    private void onSkip(final View ignored) {
-        finishFlowWithResult(RESULT_USER_SKIPPED);
+    private void onHelp(final View ignored) {
+        permission.requestPermissionWithDialog();
     }
 
     private void setLocation(final View primaryButton) {
         if (!permission.isGranted()) {
-            permission.requestPermissionWithDialog();
+            permission.requestPermission();
         } else {
             finishFlow();
         }
+
     }
 
     @Override

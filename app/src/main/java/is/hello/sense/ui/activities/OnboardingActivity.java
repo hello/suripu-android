@@ -317,13 +317,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
                 showBirthday(null, true);
             }
         } else if (fragment instanceof SetLocationFragment) {
-            if (responseCode == RESULT_OK) {
-                showPairSense(true);
-            } else if (responseCode == SetLocationFragment.RESULT_USER_SKIPPED) {
-                skipToEnd();
-            } else {
-                showPairSense(false);
-            }
+            showPairSense(responseCode == RESULT_OK);
         } else if (fragment instanceof PairSenseFragment) {
             if (responseCode == PairSensePresenter.REQUEST_CODE_EDIT_WIFI) {
                 showSelectWifiNetwork();
