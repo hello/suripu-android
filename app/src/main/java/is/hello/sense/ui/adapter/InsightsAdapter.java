@@ -20,7 +20,6 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import is.hello.commonsense.util.Errors;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
@@ -437,7 +436,6 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                     share.setOnClickListener(null);
                 }
             }
-
             body.setText(Styles.darkenEmphasis(resources, insight.getMessage()));
 
             if (position == loadingInsightPosition) {
