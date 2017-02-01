@@ -105,7 +105,7 @@ public class UnitFormatterTests extends InjectionTestCase {
 
         assertThat(unitFormatter.createUnitBuilder(SensorType.TEMPERATURE, 4)
                                 .buildWithStyle().toString(),
-                   is(equalTo("4 °")));
+                   is(equalTo("4°")));
 
         preferences.edit()
                    .putBoolean(PreferencesInteractor.USE_CELSIUS, false)
@@ -113,7 +113,7 @@ public class UnitFormatterTests extends InjectionTestCase {
 
         assertThat(unitFormatter.createUnitBuilder(SensorType.TEMPERATURE, 4)
                                 .buildWithStyle().toString(),
-                   is(equalTo("39 °")));
+                   is(equalTo("39°")));
     }
 
     @Test
@@ -140,72 +140,72 @@ public class UnitFormatterTests extends InjectionTestCase {
         assertThat(unitFormatter.createUnitBuilder(SensorType.LIGHT, 42.0f)
                                 .setValueDecimalPlaces(0)
                                 .buildWithStyle().toString(),
-                   is(equalTo("42 lx")));
+                   is(equalTo("42lx")));
         assertThat(unitFormatter.createUnitBuilder(SensorType.LIGHT, 9.5f)
                                 .buildWithStyle().toString(),
-                   is(equalTo("9.5 lx")));
+                   is(equalTo("9.5lx")));
         assertThat(unitFormatter.createUnitBuilder(SensorType.LIGHT, 1.3f)
                                 .buildWithStyle().toString(),
-                   is(equalTo("1.3 lx")));
+                   is(equalTo("1.3lx")));
         assertThat(unitFormatter.createUnitBuilder(SensorType.LIGHT, 3.7f)
                                 .buildWithStyle().toString(),
-                   is(equalTo("3.7 lx")));
+                   is(equalTo("3.7lx")));
     }
 
     @Test
     public void formatHumidity() throws Exception {
         assertThat(unitFormatter.createUnitBuilder(SensorType.HUMIDITY, 42)
                                 .buildWithStyle().toString(),
-                   is(equalTo("42 %")));
+                   is(equalTo("42%")));
     }
 
     @Test
     public void formatNoise() throws Exception {
         assertThat(unitFormatter.createUnitBuilder(SensorType.SOUND, 42)
                                 .buildWithStyle().toString(),
-                   is(equalTo("42 dB")));
+                   is(equalTo("42dB")));
     }
 
     @Test
     public void formatLightTemperature() throws Exception {
         assertThat(unitFormatter.createUnitBuilder(SensorType.LIGHT_TEMPERATURE, 42)
                                 .buildWithStyle().toString(),
-                   is(equalTo("42 k")));
+                   is(equalTo("42k")));
     }
 
     @Test
     public void formatUV() throws Exception {
         assertThat(unitFormatter.createUnitBuilder(SensorType.UV, 42)
                                 .buildWithStyle().toString(),
-                   is(equalTo("42 ")));
+                   is(equalTo("42")));
     }
 
     @Test
     public void formatVOC() throws Exception {
         assertThat(unitFormatter.createUnitBuilder(SensorType.TVOC, 42)
                                 .buildWithStyle().toString(),
-                   is(equalTo("42 µg/m³")));
+                   is(equalTo("42µg/m³")));
     }
 
     @Test
     public void formatCO2() throws Exception {
         assertThat(unitFormatter.createUnitBuilder(SensorType.CO2, 42)
                                 .buildWithStyle().toString(),
-                   is(equalTo("42 ppm")));
+                   is(equalTo("42ppm")));
     }
 
     @Test
     public void formatPressure() throws Exception {
         assertThat(unitFormatter.createUnitBuilder(SensorType.PRESSURE, 42)
                                 .buildWithStyle().toString(),
-                   is(equalTo("42 mbar")));
+                   is(equalTo("42mbar")));
     }
 
     @Test
     public void formatUnknown() throws Exception {
         assertThat(unitFormatter.createUnitBuilder(SensorType.UNKNOWN, 42)
                                 .buildWithStyle().toString(),
-                   is(equalTo("42 ")));
+                   is(equalTo("42")));
     }
 
     @Test
@@ -213,7 +213,7 @@ public class UnitFormatterTests extends InjectionTestCase {
         assertThat(unitFormatter.createUnitBuilder(SensorType.HUMIDITY, 42)
                                 .hideValue()
                                 .buildWithStyle().toString(),
-                   is(equalTo(" %")));
+                   is(equalTo("%")));
     }
 
     @Test
@@ -221,7 +221,7 @@ public class UnitFormatterTests extends InjectionTestCase {
         assertThat(unitFormatter.createUnitBuilder(SensorType.HUMIDITY, 42)
                                 .hideSuffix()
                                 .buildWithStyle().toString(),
-                   is(equalTo("42 ")));
+                   is(equalTo("42")));
     }
 
     @Test
@@ -229,7 +229,7 @@ public class UnitFormatterTests extends InjectionTestCase {
         assertThat(unitFormatter.createUnitBuilder(SensorType.HUMIDITY, 42.12f)
                                 .setValueDecimalPlaces(-2)
                                 .buildWithStyle().toString(),
-                   is(equalTo("42 %")));
+                   is(equalTo("42%")));
     }
 
     @Test
@@ -237,14 +237,21 @@ public class UnitFormatterTests extends InjectionTestCase {
         assertThat(unitFormatter.createUnitBuilder(SensorType.HUMIDITY, 42.12f)
                                 .setValueDecimalPlaces(2)
                                 .buildWithStyle().toString(),
-                   is(equalTo("42.12 %")));
+                   is(equalTo("42.12%")));
     }
 
     @Test
     public void defaultLightValueDecimalPlaceIsOne() throws Exception {
         assertThat(unitFormatter.createUnitBuilder(SensorType.LIGHT, 42.12f)
                                 .buildWithStyle().toString(),
-                   is(equalTo("42.1 lx")));
+                   is(equalTo("42.1lx")));
+    }
+
+    @Test
+    public void formatSensorWithStyleAndSpace() throws Exception {
+        assertThat(unitFormatter.createUnitBuilder(SensorType.HUMIDITY, 42f)
+                                .buildWithStyleAndSpace().toString(),
+                   is(equalTo("42 %")));
     }
 
     @Test

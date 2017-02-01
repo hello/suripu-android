@@ -319,6 +319,10 @@ public class UnitFormatter extends Interactor {
             return Styles.assembleReadingAndUnit(formattedValue(), formattedSuffix(), suffixPrinter.getUnitStyle());
         }
 
+        public CharSequence buildWithStyleAndSpace() {
+            return Styles.assembleReadingAndUnitWithSpace(formattedValue(), formattedSuffix(), suffixPrinter.getUnitStyle());
+        }
+
         /**
          * @return suffix as subscript
          */
