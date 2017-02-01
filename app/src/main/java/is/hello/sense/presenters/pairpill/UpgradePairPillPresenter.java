@@ -67,4 +67,9 @@ public class UpgradePairPillPresenter extends BasePairPillPresenter {
     public String getPillPairedAnalyticsEvent() {
         return Analytics.Upgrade.EVENT_PILL_PAIRED;
     }
+
+    @Override
+    public void onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
+        //never execute defaultBehavior
+    }
 }

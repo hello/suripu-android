@@ -46,6 +46,8 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
 
     public abstract void onHelpClick(@NonNull final View viewClicked);
 
+    public abstract void onInterceptBackPressed(@NonNull final Runnable defaultBehavior);
+
     @CallSuper
     @Override
     public void onResume() {
