@@ -253,11 +253,6 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
         }
 
         @Override
-        public View getTooltipOverlayContainerView() {
-            return mock(View.class);
-        }
-
-        @Override
         public void jumpToLastNight() {
 
         }

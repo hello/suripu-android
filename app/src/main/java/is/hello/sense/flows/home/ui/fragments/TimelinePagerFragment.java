@@ -234,11 +234,6 @@ public class TimelinePagerFragment extends InjectionFragment
     }
 
     @Override
-    public View getTooltipOverlayContainerView() {
-        return viewPager;
-    }
-
-    @Override
     public void jumpToLastNight() {
         shouldJumpToLastNightOnUserVisible = true;
     }

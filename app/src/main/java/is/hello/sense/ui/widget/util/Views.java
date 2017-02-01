@@ -11,10 +11,10 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
@@ -38,19 +38,18 @@ public final class Views {
     public static final int ORIGIN_Y = 1;
 
     /**
-     * @param includeSystemDecor true if components like status bar and bottom nav bar should be included
-     * @return {@link Point} size of device screen with or without system components
+     * @param includeStatusBar true if status bar should be included
+     * @return {@link Point} size of content screen with or without status bar
      */
     public static Point getActivityScreenSize(@NonNull final Activity activity,
-                                              final boolean includeSystemDecor) {
-        final Display display = activity.getWindowManager().getDefaultDisplay();
-        final Point screenSize = new Point();
-        if(includeSystemDecor) {
-            display.getRealSize(screenSize);
+                                              final boolean includeStatusBar) {
+        final View view;
+        if(includeStatusBar) {
+            view = activity.getWindow().getDecorView();
         } else {
-            display.getSize(screenSize);
+            view = activity.findViewById(Window.ID_ANDROID_CONTENT);
         }
-        return screenSize;
+        return new Point(view.getRight(), view.getBottom());
     }
 
 

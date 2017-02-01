@@ -155,16 +155,15 @@ public class TimelineInfoOverlay implements Handler.Callback {
         }
 
         final Rect backgroundFrame = new Rect();
-
         withBackground.getGlobalVisibleRect(backgroundFrame);
 
         final Rect viewFrame = new Rect();
         fromView.getGlobalVisibleRect(viewFrame);
-        //todo needs debugging here because alignment is off when not center of screen
-        viewFrame.top -= backgroundFrame.top /2;
-        viewFrame.bottom -= backgroundFrame.top /2;
-
-        backgroundFrame.top = 0;
+        fromView.getY();
+        //apply offset for status bar
+        viewFrame.offset(-backgroundFrame.left,
+                         -backgroundFrame.top);
+        backgroundFrame.offset(0, -backgroundFrame.top);
 
         contents.setBackground(createBackground(screenSize,
                                                 backgroundFrame,
@@ -209,7 +208,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
 
         if (animate) {
             animatorContext.transaction(t -> {
-                final int tooltipBottomMargin = resources.getDimensionPixelSize(R.dimen.gap_xsmall);
+                final int tooltipBottomMargin = resources.getDimensionPixelSize(R.dimen.x2);
                 t.animatorFor(tooltip)
                  .translationY(tooltipBottomMargin);
 

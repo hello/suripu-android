@@ -514,7 +514,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         });
         this.infoOverlay.bindEvent(event);
         this.infoOverlay.show(view,
-                              this.parent.getTooltipOverlayContainerView(),
+                              this.presenterView,
                               Views.getActivityScreenSize(getActivity(), false),
                               animateShow);
 
@@ -715,8 +715,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
         @IdRes
         int getTutorialContainerIdRes();
-
-        View getTooltipOverlayContainerView();
 
         /**
          * Used to return to Last Night timeline when needed
