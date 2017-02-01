@@ -50,23 +50,20 @@ public class ExpansionAdapter extends ArrayRecyclerAdapter<Expansion, ExpansionA
         public void bind(final int position) {
             super.bind(position);
             final Expansion expansion = getItem(position);
-            if(expansion != null) {
+            if (expansion != null) {
                 setEnabled(expansion.isAvailable());
-                picasso.cancelRequest(binding.itemIconIv);
-                picasso.load(expansion.getIcon().getUrl(itemView.getResources()))
-                       .placeholder(R.drawable.icon_expansions_default)
-                       .into(binding.itemIconIv);
+                this.binding.itemIconIv.setExpansion(picasso, expansion);
                 this.binding.itemDeviceNameTv.setText(expansion.getDeviceName());
                 this.binding.itemStateTv.setText(expansion.getState().displayValue);
             }
 
         }
 
-        public void setEnabled(final boolean enabled){
+        public void setEnabled(final boolean enabled) {
             itemView.setEnabled(enabled);
             this.binding.itemDeviceNameTv.setEnabled(enabled);
             this.binding.itemStateTv.setEnabled(enabled);
-            this.binding.itemIconIv.setImageAlpha(Styles.getImageViewAlpha(enabled));
+            this.binding.itemIconIv.setAlpha(Styles.getViewAlpha(enabled));
         }
     }
 }

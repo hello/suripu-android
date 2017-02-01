@@ -40,6 +40,8 @@
         <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading.New</item>
         <item name="senseTextAppearanceSubheading">@style/AppTheme.Text.Body.MidSized.Dim</item>
         <item name="senseTextAppearanceFieldLabel">@style/AppTheme.Text.Body.Small.New</item>
+
+        <item name="senseBackgroundSecondary">@color/background_light</item>
     </style>
 
     <style name="AppTheme.Onboarding" parent="AppTheme.NoActionBar">
@@ -178,15 +180,8 @@
         <item name="android:paddingBottom">0dp</item>
     </style>
 
-    <style name="AppTheme.Dialog.BottomAlert" parent="Platform.Dialog.NoElevation">
+    <style name="AppTheme.Dialog.BottomAlert" parent="AppTheme.Dialog.BottomSheet">
         <item name="android:backgroundDimEnabled">false</item>
-        <item name="android:windowBackground">@color/transparent</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowAnimationStyle">@style/WindowAnimations.BottomSlide</item>
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingLeft">0dp</item>
-        <item name="android:paddingRight">0dp</item>
-        <item name="android:paddingBottom">0dp</item>
     </style>
 
     <style name="WindowAnimations" parent="android:style/Animation"/>
@@ -588,6 +583,8 @@
         <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading.New</item>
         <item name="senseTextAppearanceSubheading">@style/AppTheme.Text.Body.MidSized.Dim</item>
         <item name="senseTextAppearanceFieldLabel">@style/AppTheme.Text.Body.Small.New</item>
+
+        <item name="senseBackgroundSecondary">@color/background_light</item>
     </style>
 
     <style name="AppTheme.AppCompat.ProgressBar" parent="Widget.AppCompat.ProgressBar">

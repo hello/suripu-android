@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import is.hello.go99.Anime;
@@ -21,7 +22,7 @@ public class StaggeredFadeItemAnimator extends ExtendedItemAnimator {
     public static final long DELAY = 20;
 
     private final List<Transaction> pending = new ArrayList<>();
-    private final List<Transaction> running = new ArrayList<>();
+    private final List<Transaction> running = Collections.synchronizedList(new ArrayList<>());
 
     private AnimatorTemplate template = AnimatorTemplate.DEFAULT;
     private boolean delayEnabled = true;
@@ -151,8 +152,13 @@ public class StaggeredFadeItemAnimator extends ExtendedItemAnimator {
     @Override
     public void endAnimations() {
         pending.clear();
-        for (final Transaction transaction : running) {
-            Anime.cancelAll(transaction.target.itemView);
+        if(running.isEmpty()) {
+            return;
+        }
+        synchronized (running) {
+            for (final Transaction transaction : running) {
+                Anime.cancelAll(transaction.target.itemView);
+            }
         }
     }
 

@@ -3,6 +3,7 @@ package is.hello.sense.flows.voice.ui.views;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -10,6 +11,8 @@ import android.widget.TextView;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.voice.SenseVoiceSettings;
 import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.ui.widget.ExtendedScrollView;
+import is.hello.sense.ui.widget.WelcomeCard;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitOperations;
 
@@ -21,6 +24,8 @@ public class VoiceSettingsListView extends PresenterView {
     private final TextView volumeValueTextView;
     private final CompoundButton muteSwitch;
     private final TextView primaryUserValueTextView;
+    @Nullable
+    private ViewGroup firmwareUpdateCardContainer;
 
     public VoiceSettingsListView(@NonNull final Activity activity) {
         super(activity);
@@ -42,6 +47,7 @@ public class VoiceSettingsListView extends PresenterView {
         this.volumeViewGroup.setOnClickListener(null);
         this.muteSwitch.setOnCheckedChangeListener(null);
         this.primaryUserGroup.setOnClickListener(null);
+        this.firmwareUpdateCardContainer = null;
     }
 
     public void setVolumeClickListener(@NonNull final OnClickListener listener) {
@@ -83,5 +89,24 @@ public class VoiceSettingsListView extends PresenterView {
         primaryUserValueTextView.setEnabled(true);  // required to change text color
         primaryUserValueTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.disclosure_chevron_small, 0);
         this.primaryUserValueTextView.setVisibility(VISIBLE);
+    }
+
+    public void showFirmwareUpdateCard(final boolean show) {
+        if (show) {
+            if(firmwareUpdateCardContainer == null) {
+                final WelcomeCard firmwareUpdateCard = new WelcomeCard(context);
+                firmwareUpdateCard.showCloseButton(false);
+                firmwareUpdateCard.setContent(R.drawable.illustration_sense_update,
+                                              R.string.sense_state_fw_update_title,
+                                              R.string.sense_voice_state_fw_update_message);
+                firmwareUpdateCardContainer = new ExtendedScrollView(context);
+                firmwareUpdateCardContainer.addView(firmwareUpdateCard);
+                addView(firmwareUpdateCardContainer);
+            }
+        } else {
+            if(firmwareUpdateCardContainer != null) {
+                removeView(firmwareUpdateCardContainer);
+            }
+        }
     }
 }

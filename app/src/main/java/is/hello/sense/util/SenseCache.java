@@ -52,8 +52,10 @@ public abstract class SenseCache extends ValueInteractor<File> {
     }
 
     public void trimCache() {
-        for (final String child : cache.list()) {
-            new File(cache, child).delete();
+        if (cache.list() != null) {
+            for (final String child : cache.list()) {
+                new File(cache, child).delete();
+            }
         }
         file.forget();
     }
@@ -92,7 +94,7 @@ public abstract class SenseCache extends ValueInteractor<File> {
                     String downloadFailedReason = null;
                     final File cacheFile = getCacheFile(urlLocation);
                     HttpURLConnection connection = null;
-                    try{
+                    try {
                         final URL url = new URL(urlLocation);
                         connection = (HttpURLConnection) url.openConnection();
                         connection.connect();
@@ -106,8 +108,8 @@ public abstract class SenseCache extends ValueInteractor<File> {
                         } else {
                             Log.d(TAG, "Downloading");
                         }
-                        try(final InputStream input = new BufferedInputStream(url.openStream());
-                            final OutputStream output = new FileOutputStream(cacheFile)){
+                        try (final InputStream input = new BufferedInputStream(url.openStream());
+                             final OutputStream output = new FileOutputStream(cacheFile)) {
                             final byte data[] = new byte[1024];
                             int count;
                             while ((count = input.read(data)) != -1) {

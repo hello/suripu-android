@@ -165,7 +165,6 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
         spyOnPresenterView();
         spyOnTimelineInteractor();
         fragment.update();
-        verify(fragment.presenterView).transitionOutOfNoDataState();
         verify(fragment.timelineInteractor).update();
     }
 
@@ -189,6 +188,7 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
         spyOnPresenterView();
         fragment.bindTimeline(timeline);
         verify(fragment.presenterView).bindTimelineToHeader(eq(timeline), any(), any());
+        verify(fragment.presenterView).transitionOutOfNoDataState();
     }
 
     @Test

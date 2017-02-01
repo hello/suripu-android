@@ -380,7 +380,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     }
 
     public void update() {
-        this.presenterView.transitionOutOfNoDataState();
         this.timelineInteractor.update();
     }
 
@@ -428,6 +427,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     public void bindTimeline(@NonNull final Timeline timeline) {
         final boolean hasEvents = !Lists.isEmpty(timeline.getEvents());
         if (hasEvents) {
+            this.presenterView.transitionOutOfNoDataState();
             final Runnable backgroundAnimations = this.stateSafeExecutor.bind(() -> {
                 final int targetColor = ContextCompat.getColor(getActivity(), R.color.timeline_background_fill);
                 this.presenterView.startBackgroundFade(targetColor);

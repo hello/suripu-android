@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.support.annotation.NonNull;
 
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.StateSafeExecutor;
 
 public class SenseDialogFragment extends DialogFragment implements StateSafeExecutor.Resumes {
@@ -53,7 +54,16 @@ public class SenseDialogFragment extends DialogFragment implements StateSafeExec
         super.show(manager, tag);
     }
 
-    public int showAllowingStateLoss(@NonNull FragmentManager fm, @NonNull String tag) {
+    /**
+     * @return default int of {@link FragmentTransaction#commitAllowingStateLoss()}
+     * or {@link is.hello.sense.util.Constants#NONE} if {@link FragmentManager#isDestroyed()}
+     * to prevent starting new transaction as activity is being destroyed
+     */
+    public int showAllowingStateLoss(@NonNull final FragmentManager fm,
+                                     @NonNull final String tag) {
+        if(fm.isDestroyed()) {
+            return Constants.NONE;
+        }
         return fm.beginTransaction()
                 .add(this, tag)
                 .commitAllowingStateLoss();

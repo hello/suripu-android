@@ -176,12 +176,21 @@ public abstract class BasePresenterFragment extends ScopedInjectionFragment {
     }
 
     public void showBlockingActivity(@StringRes final int titleRes) {
+        showBlockingActivity(titleRes, null);
+    }
+
+    public void showBlockingActivity(@StringRes final int titleRes,
+                                     @Nullable final Runnable onShowListener) {
         if (loadingDialogFragment == null) {
             this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(),
                                                                     getString(titleRes),
                                                                     LoadingDialogFragment.OPAQUE_BACKGROUND);
         } else {
             loadingDialogFragment.setTitle(getString(titleRes));
+        }
+
+        if (onShowListener != null) {
+            loadingDialogFragment.setOnShowListener((SenseAlertDialog.SerializedRunnable) onShowListener::run);
         }
     }
 

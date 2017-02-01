@@ -33,7 +33,7 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
-@Deprecated //todo remember to remove layout file and our resources when deleting this file
+@Deprecated
 public class OnboardingPairPill extends BaseHardwareFragment implements OnBackPressedInterceptor {
     private ProgressBar activityIndicator;
     private TextView activityStatus;
@@ -60,17 +60,17 @@ public class OnboardingPairPill extends BaseHardwareFragment implements OnBackPr
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_onboarding_pair_pill, container, false);
+        final View view = inflater.inflate(R.layout.fragment_pair_pill, container, false);
 
-        this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_onboarding_pair_pill_activity);
-        this.activityStatus = (TextView) view.findViewById(R.id.fragment_onboarding_pair_pill_status);
+        this.activityIndicator = (ProgressBar) view.findViewById(R.id.fragment_pair_pill_activity);
+        this.activityStatus = (TextView) view.findViewById(R.id.fragment_pair_pill_status);
 
-        this.diagram = (DiagramVideoView) view.findViewById(R.id.fragment_onboarding_pair_pill_diagram);
+        this.diagram = (DiagramVideoView) view.findViewById(R.id.fragment_pair_pill_diagram);
 
-        this.skipButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_skip);
+        this.skipButton = (Button) view.findViewById(R.id.fragment_pair_pill_skip);
         Views.setSafeOnClickListener(skipButton, ignored -> skipPairingPill());
 
-        this.retryButton = (Button) view.findViewById(R.id.fragment_onboarding_pair_pill_retry);
+        this.retryButton = (Button) view.findViewById(R.id.fragment_pair_pill_retry);
         Views.setSafeOnClickListener(retryButton, ignored -> pairPill());
 
 
@@ -243,7 +243,7 @@ public class OnboardingPairPill extends BaseHardwareFragment implements OnBackPr
 
     @Override
     public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
-        if (isPairOnlySession() && !isPairing) {
+        if (!isPairing) {
             defaultBehavior.run();
         }
         return true;

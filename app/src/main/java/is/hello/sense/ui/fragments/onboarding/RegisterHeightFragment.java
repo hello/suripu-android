@@ -38,7 +38,7 @@ public class RegisterHeightFragment extends SenseFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
@@ -52,41 +52,38 @@ public class RegisterHeightFragment extends SenseFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_onboarding_register_height, container, false);
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_onboarding_register_height, container, false);
 
         this.scale = (ScaleView) view.findViewById(R.id.fragment_onboarding_register_height_scale);
         this.scaleReading = (TextView) view.findViewById(R.id.fragment_onboarding_register_height_scale_reading);
 
-        boolean defaultMetric = UnitFormatter.isDefaultLocaleMetric();
-        boolean useCentimeters = preferences.getBoolean(PreferencesInteractor.USE_CENTIMETERS, defaultMetric);
+        final boolean defaultMetric = UnitFormatter.isDefaultLocaleMetric();
+        final boolean useCentimeters = preferences.getBoolean(PreferencesInteractor.USE_CENTIMETERS, defaultMetric);
         if (useCentimeters) {
             scale.setOnValueChangedListener(centimeters -> {
                 scaleReading.setText(getString(R.string.height_cm_fmt, centimeters));
             });
         } else {
             scale.setOnValueChangedListener(centimeters -> {
-                long totalInches = UnitOperations.centimetersToInches(centimeters);
-                long feet = totalInches / 12;
-                long inches = totalInches % 12;
+                final long totalInches = UnitOperations.centimetersToInches(centimeters);
+                final long feet = totalInches / 12;
+                final long inches = totalInches % 12;
                 scaleReading.setText(getString(R.string.height_inches_fmt, feet, inches));
             });
         }
 
-        Account account = AccountEditor.getContainer(this).getAccount();
+        final Account account = AccountEditor.getContainer(this).getAccount();
         if (account.getHeight() != null) {
             scale.setValue(account.getHeight(), true);
         }
 
-        Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
-        Views.setSafeOnClickListener(nextButton, ignored -> next());
+        final Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
+        Views.setTimeOffsetOnClickListener(nextButton, ignored -> next());
 
-        Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
+        final Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
         if (AccountEditor.getWantsSkipButton(this)) {
-            Views.setSafeOnClickListener(skipButton, ignored -> {
-                Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "height"));
-                AccountEditor.getContainer(this).onAccountUpdated(this);
-            });
+            Views.setTimeOffsetOnClickListener(skipButton, ignored -> skip());
         } else {
             skipButton.setVisibility(View.INVISIBLE);
             nextButton.setText(R.string.action_done);
@@ -99,7 +96,7 @@ public class RegisterHeightFragment extends SenseFragment {
     public void onResume() {
         super.onResume();
 
-        Account account = AccountEditor.getContainer(this).getAccount();
+        final Account account = AccountEditor.getContainer(this).getAccount();
         if (!hasAnimated && account.getHeight() != null) {
             scale.setValue(scale.getMinValue(), true);
             scale.postDelayed(() -> {
@@ -112,7 +109,7 @@ public class RegisterHeightFragment extends SenseFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("hasAnimated", true);
@@ -124,6 +121,12 @@ public class RegisterHeightFragment extends SenseFragment {
         scale.onDestroyView();
         scale = null;
         scaleReading = null;
+    }
+
+    public void skip() {
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP,
+                             Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "height"));
+        AccountEditor.getContainer(this).onAccountUpdated(this);
     }
 
     public void next() {

@@ -218,6 +218,10 @@ public abstract class BasePresenter<S extends BaseOutput>
         execute(() -> view.showBlockingActivity(titleRes));
     }
 
+    protected void showBlockingActivity(@StringRes final int titleRes, @Nullable final Runnable onShow) {
+        execute(() -> view.showBlockingActivity(titleRes, onShow));
+    }
+
     protected void hideBlockingActivity(final boolean success, @NonNull final Runnable onComplete) {
         execute(() -> view.hideBlockingActivity(success, bind(onComplete)));
     }

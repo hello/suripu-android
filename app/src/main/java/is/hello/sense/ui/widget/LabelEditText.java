@@ -36,8 +36,7 @@ public class LabelEditText extends RelativeLayout {
         super(context, attrs, defStyleAttr);
         LayoutInflater.from(context).inflate(R.layout.view_label_edit_text, this);
         label = (TextView) findViewById(R.id.view_label_edit_text_label);
-
-        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.LabelEditText, 0, 0);
+        final TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.LabelEditText, 0, 0);
         try {
             if (ta.getBoolean(R.styleable.LabelEditText_isPassword, false)) {
                 input = (EditText) findViewById(R.id.view_label_edit_text_input_password);
@@ -69,7 +68,7 @@ public class LabelEditText extends RelativeLayout {
             input.setImeOptions(value);
         }
 
-        boolean selectAllOnFocus = attrs.getAttributeBooleanValue(ANDROID_NAMESPACE, "selectAllOnFocus", false);
+        final boolean selectAllOnFocus = attrs.getAttributeBooleanValue(ANDROID_NAMESPACE, "selectAllOnFocus", false);
         input.setSelectAllOnFocus(selectAllOnFocus);
     }
 

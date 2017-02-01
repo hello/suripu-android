@@ -264,9 +264,9 @@ import is.hello.sense.ui.widget.util.Styles;
             if (use24Time) {
                 return date.toString(context.getString(R.string.format_timeline_event_time_24_hr));
             } else {
-                String time = date.toString(context.getString(R.string.format_timeline_event_time_12_hr));
-                String period = date.toString(context.getString(R.string.format_timeline_12_hr_period));
-                return Styles.assembleReadingAndUnit(time, period, Styles.UNIT_STYLE_SUBSCRIPT);
+                final String time = date.toString(context.getString(R.string.format_timeline_event_time_12_hr));
+                final String period = date.toString(context.getString(R.string.format_timeline_12_hr_period));
+                return Styles.assembleReadingAndUnitWithSpace(time, period, Styles.UNIT_STYLE_SUBSCRIPT);
             }
         }
         return context.getString(R.string.format_date_placeholder);
@@ -361,22 +361,27 @@ import is.hello.sense.ui.widget.util.Styles;
         }
     }
 
-    public @NonNull CharSequence formatDuration(long duration, @NonNull TimeUnit unit) {
-        long totalMinutes = unit.toMinutes(duration);
+    public @NonNull CharSequence formatDuration(final long duration,
+                                                @NonNull final TimeUnit unit) {
+        final long totalMinutes = unit.toMinutes(duration);
         if (totalMinutes < 60) {
-            return Styles.assembleReadingAndUnit(Long.toString(totalMinutes), context.getString(R.string.format_duration_abbrev_minutes), Styles.UNIT_STYLE_SUBSCRIPT);
+            return Styles.assembleReadingAndUnitWithSpace(Long.toString(totalMinutes),
+                                                          context.getString(R.string.format_duration_abbrev_minutes),
+                                                          Styles.UNIT_STYLE_SUBSCRIPT);
         } else {
-            float hours = totalMinutes / 60f;
-            long leftOverMinutes = totalMinutes % 60;
+            final float hours = totalMinutes / 60f;
+            final long leftOverMinutes = totalMinutes % 60;
 
-            String reading;
+            final String reading;
             if (leftOverMinutes == 0) {
                 reading = String.format("%.0f", hours);
             } else {
                 reading = String.format("%.1f", hours);
             }
 
-            return Styles.assembleReadingAndUnit(reading, context.getString(R.string.format_duration_abbrev_hours), Styles.UNIT_STYLE_SUBSCRIPT);
+            return Styles.assembleReadingAndUnitWithSpace(reading,
+                                                          context.getString(R.string.format_duration_abbrev_hours),
+                                                          Styles.UNIT_STYLE_SUBSCRIPT);
         }
     }
 
@@ -472,11 +477,11 @@ import is.hello.sense.ui.widget.util.Styles;
      * Get the name of the day that the given months first day is on as an integer.
      *
      * @param month - int representing january, february, ... , december.
-     * @return int that represents Sun-Sat
+     * @return int that represents Sun-Sat (1-7)
      * @throws ParseException
      */
-    public static int getFirstDayOfMonthValue(int month) throws ParseException {
-        Calendar cal = Calendar.getInstance();
+    public static int getFirstDayOfMonthValue(final int month) throws ParseException {
+        final Calendar cal = Calendar.getInstance();
         if (cal.get(Calendar.MONTH) < month) {
             cal.set(Calendar.YEAR, cal.get(Calendar.YEAR) - 1);
         }

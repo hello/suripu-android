@@ -8,7 +8,7 @@
     </style>
 
     <style name="Title" parent="AppTheme.Text.Header.H6.Medium">
-        <item name="android:textColor">@color/gray6</item>
+        <item name="android:textColor">@color/dark</item>
     </style>
 
     <style name="Body" parent="AppTheme.Text.Body">
@@ -40,7 +40,7 @@
     </style>
 
     <style name="Body.Link">
-        <item name="android:textColor">@color/blue6</item>
+        <item name="android:textColor">@color/primary</item>
     </style>
 
     <style name="Card" parent="AppTheme.Text.Body">
@@ -50,14 +50,19 @@
     <style name="Card.Title">
         <item name="android:textSize">@dimen/text_h7</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/gray6</item>
+        <item name="android:textColor">@color/dark</item>
         <item name="android:textAllCaps">true</item>
+    </style>
 
+    <style name="Card.WelcomeTitle">
+        <item name="android:textSize">@dimen/text_h5</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/dark</item>
     </style>
 
     <style name="Card.Body">
         <item name="android:textSize">@dimen/text_body</item>
-        <item name="android:textColor">@color/gray5</item>
+        <item name="android:textColor">@color/standard</item>
     </style>
 
     <style name="Card.Value">
@@ -66,7 +71,7 @@
 
     <style name="Card.Unit">
         <item name="android:textSize">@dimen/text_h8</item>
-        <item name="android:textColor">@color/gray5</item>
+        <item name="android:textColor">@color/standard</item>
     </style>
 
 
@@ -212,7 +217,7 @@
     <!-- Non-generic -->
 
     <style name="AppTheme.Text.Timeline.Summary.Title" parent="@style/AppTheme.Text.Body.MidSized">
-        <item name="android:textColor">@color/gray4</item>
+        <item name="android:textColor">@color/dim</item>
         <item name="android:textAllCaps">true</item>
     </style>
 
@@ -387,7 +392,7 @@
         <item name="android:textAlignment">center</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textSize">@dimen/player_preview_text_size</item>
-        <item name="android:textColor">@color/gray4</item>
+        <item name="android:textColor">@color/dim</item>
     </style>
 
     <style name="AppTheme.Text.Player.Title">
@@ -399,12 +404,12 @@
     <style name="AppTheme.Text.Player.Item">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textSize">@dimen/text_size_body</item>
-        <item name="android:textColor">@color/gray5</item>
+        <item name="android:textColor">@color/standard</item>
     </style>
 
     <style name="AppTheme.Text.Player.Preview">
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textColor">@color/gray4</item>
+        <item name="android:textColor">@color/dim</item>
     </style>
 </resources>

@@ -15,6 +15,7 @@ import com.squareup.picasso.Picasso;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.flows.expansions.ui.widget.ExpansionImageView;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.widget.util.Views;
 
@@ -24,7 +25,7 @@ public class ExpansionDetailView extends PresenterView {
     final ViewGroup expansionInfoContainer;
     final TextView deviceNameTextView;
     final TextView companyNameTextView;
-    final ImageView expansionIconImageView;
+    final ExpansionImageView expansionIconImageView;
     final TextView expansionDescriptionTextView;
     final Button connectButton;
 
@@ -46,7 +47,7 @@ public class ExpansionDetailView extends PresenterView {
         this.expansionInfoContainer = (ViewGroup) findViewById(R.id.view_expansion_detail_info_top);
         this.deviceNameTextView = (TextView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_device_name);
         this.companyNameTextView = (TextView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_device_company_name);
-        this.expansionIconImageView = (ImageView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_icon);
+        this.expansionIconImageView = (ExpansionImageView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_icon);
         this.expansionDescriptionTextView = (TextView) expansionInfoContainer.findViewById(R.id.view_expansion_detail_description);
 
         // not connected
@@ -117,14 +118,12 @@ public class ExpansionDetailView extends PresenterView {
         this.expansionInfoContainer.setVisibility(VISIBLE);
         this.deviceNameTextView.setText(expansion.getDeviceName());
         this.companyNameTextView.setText(expansion.getCompanyName());
-        picasso.load(expansion.getIcon().getUrl(getResources()))
-               .placeholder(R.drawable.icon_expansions_default)
-               .into(expansionIconImageView);
+        this.expansionIconImageView.setExpansion(picasso, expansion);
         this.expansionDescriptionTextView.setText(expansion.getDescription());
         this.configurationTypeTextView.setText(expansion.getConfigurationType());
     }
 
-    public void setExpansionEnabledTextViewClickListener(@NonNull final OnClickListener listener){
+    public void setExpansionEnabledTextViewClickListener(@NonNull final OnClickListener listener) {
         Views.setSafeOnClickListener(this.enabledTextView, listener);
     }
 

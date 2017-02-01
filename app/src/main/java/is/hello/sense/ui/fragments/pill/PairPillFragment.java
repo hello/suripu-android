@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.presenters.pairpill.BasePairPillPresenter;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
@@ -22,7 +23,8 @@ import is.hello.sense.ui.widget.DiagramVideoView;
 import is.hello.sense.ui.widget.util.Views;
 
 public class PairPillFragment extends BasePresenterFragment
-        implements BasePairPillPresenter.Output {
+        implements BasePairPillPresenter.Output,
+        OnBackPressedInterceptor {
 
     @Inject
     BasePairPillPresenter presenter;
@@ -122,6 +124,14 @@ public class PairPillFragment extends BasePresenterFragment
                                                          runnable,
                                                          messageRes);
 
+    }
+
+    @Override
+    public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
+        if (getPresenter() != null) {
+            getPresenter().onInterceptBackPressed(defaultBehavior);
+        }
+        return true;
     }
 
 }
