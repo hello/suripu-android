@@ -65,12 +65,16 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
                                                       final int flags) {
         final LoadingDialogFragment preexistingDialog = (LoadingDialogFragment) fm.findFragmentByTag(TAG);
         if (preexistingDialog != null) {
-            preexistingDialog.dismiss();
+            if (flags == preexistingDialog.getFlags()) {
+                preexistingDialog.setTitle(title);
+                return preexistingDialog;
+            } else {
+                preexistingDialog.dismiss();
+            }
         }
 
         final LoadingDialogFragment dialog = LoadingDialogFragment.newInstance(title, flags);
         dialog.show(fm, TAG);
-
         return dialog;
     }
 
@@ -225,6 +229,15 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
                 oldOrientation = currentOrientation;
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
             }
+        }
+    }
+
+    public int getFlags() {
+        final Bundle args = getArguments();
+        if(args != null) {
+            return args.getInt(ARG_FLAGS, DEFAULTS);
+        } else {
+            return DEFAULTS;
         }
     }
 
