@@ -11,6 +11,7 @@ import is.hello.sense.R;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.SenseFragment;
+import is.hello.sense.ui.common.ViewAnimator;
 import is.hello.sense.util.Analytics;
 
 /**
@@ -19,6 +20,7 @@ import is.hello.sense.util.Analytics;
 public class SetLocationFragment extends SenseFragment
         implements OnBackPressedInterceptor {
 
+    private final ViewAnimator viewAnimator = new ViewAnimator();
     private static final String ARG_SHOW_SKIP = SetLocationFragment.class.getSimpleName() + ".ARG_SHOW_SKIP";
 
     /**
@@ -55,12 +57,13 @@ public class SetLocationFragment extends SenseFragment
         } else {
             showSkip = false;
         }
+        final View animatedView = viewAnimator.inflateView(inflater, container, R.layout.sense_ble_view, R.id.blue_box_view);
         view = new OnboardingSimpleStepView(this, inflater)
+                .setAnimatedView(animatedView)
                 .setHeadingText(R.string.action_pair_your_sense)
                 .setSubheadingText(R.string.message_onboarding_register_location)
                 .setPrimaryButtonText(R.string.action_set_location)
                 .setSecondaryButtonText(R.string.action_why_is_this_required)
-                .setDiagramImage(R.drawable.sense_scan_ble)
                 .setPrimaryOnClickListener(this::setLocation)
                 .setSecondaryOnClickListener(this::onHelp)
                 .setWantsSecondaryButton(showSkip)
@@ -70,8 +73,30 @@ public class SetLocationFragment extends SenseFragment
     }
 
     @Override
+    public void onViewCreated(final View view,
+                              final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewAnimator.onViewCreated(getActivity(), R.animator.bluetooth_sleep_pill_ota_animator);
+
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        viewAnimator.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        viewAnimator.onPause();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
+        viewAnimator.onDestroyView();
         if (view != null) {
             this.view.destroy();
         }
