@@ -20,16 +20,11 @@ import is.hello.sense.util.Analytics;
 public class SetLocationFragment extends SenseFragment
         implements OnBackPressedInterceptor {
 
-    private final ViewAnimator viewAnimator = new ViewAnimator();
-    private static final String ARG_SHOW_SKIP = SetLocationFragment.class.getSimpleName() + ".ARG_SHOW_SKIP";
-
     /**
-     * @param showSkip true will display the 'Skip Sense Setup' action.
      * @return fragment that will allow user to enable location permission.
      */
-    public static SetLocationFragment newInstance(final boolean showSkip) {
+    public static SetLocationFragment newInstance() {
         final Bundle args = new Bundle();
-        args.putBoolean(ARG_SHOW_SKIP, showSkip);
         final SetLocationFragment fragment = new SetLocationFragment();
         fragment.setArguments(args);
         return fragment;
@@ -37,6 +32,7 @@ public class SetLocationFragment extends SenseFragment
 
     private OnboardingSimpleStepView view;
     private final LocationPermission permission = new LocationPermission(this);
+    private final ViewAnimator viewAnimator = new ViewAnimator();
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -51,12 +47,6 @@ public class SetLocationFragment extends SenseFragment
     public View onCreateView(final LayoutInflater inflater,
                              final ViewGroup container,
                              final Bundle savedInstanceState) {
-        final boolean showSkip;
-        if (getArguments() != null && getArguments().getBoolean(ARG_SHOW_SKIP)) {
-            showSkip = true;
-        } else {
-            showSkip = false;
-        }
         final View animatedView = viewAnimator.inflateView(inflater, container, R.layout.sense_ble_view, R.id.blue_box_view);
         view = new OnboardingSimpleStepView(this, inflater)
                 .setAnimatedView(animatedView)
@@ -66,7 +56,6 @@ public class SetLocationFragment extends SenseFragment
                 .setSecondaryButtonText(R.string.action_why_is_this_required)
                 .setPrimaryOnClickListener(this::setLocation)
                 .setSecondaryOnClickListener(this::onHelp)
-                .setWantsSecondaryButton(showSkip)
                 .setToolbarWantsBackButton(false);
 
         return view;

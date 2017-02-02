@@ -56,13 +56,13 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
-import is.hello.sense.ui.fragments.onboarding.SetLocationFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
+import is.hello.sense.ui.fragments.onboarding.SetLocationFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.fragments.onboarding.SimpleStepFragment;
 import is.hello.sense.ui.fragments.onboarding.VoiceCompleteFragment;
@@ -488,7 +488,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
     }
 
     public void showSetLocation() {
-        pushFragment(SetLocationFragment.newInstance(!isPairOnly()), null, false);
+        pushFragment(SetLocationFragment.newInstance(), null, false);
     }
 
     public void showSetupSense() {
