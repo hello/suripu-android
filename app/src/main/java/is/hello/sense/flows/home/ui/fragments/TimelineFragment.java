@@ -187,7 +187,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
                                                               getResources().getDisplayMetrics()) * TOOL_TIP_HEIGHT_MULTIPLIER);
         // For the first fragment
         bindIfNeeded();
-        showHandholdingIfAppropriate();
     }
 
     @Override
@@ -387,13 +386,17 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
 
     //region Handholding
-    public boolean isAtLeastThreeDaysOld(){
+    public boolean isAtLeastThreeDaysOld() {
         return DateFormatter.isMoreThanThreeDays(preferences.getAccountCreationDate());
     }
 
     private void showHandholdingIfAppropriate() {
         if (this.parent == null ||
                 WelcomeDialogFragment.isAnyVisible(getActivity())) {
+            return;
+        }
+
+        if (!timelineInteractor.timeline.hasValue() || !DateFormatter.isLastNight(timelineInteractor.timeline.getValue().getDate())) {
             return;
         }
 
@@ -413,6 +416,9 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
         @Override
         public void onItemAnimatorDidStop(final boolean finished) {
+            if (finished) {
+                showHandholdingIfAppropriate();
+            }
             TimelineFragment.this.presenterView.removeItemAnimatorListener(this);
         }
     }

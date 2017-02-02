@@ -119,7 +119,10 @@ public class DateFormatter extends Interactor {
     /**
      * Returns whether or not a given local date is considered to be today.
      */
-    public static boolean isTodayForTimeline(@NonNull LocalDate localDate) {
+    public static boolean isTodayForTimeline(@Nullable final LocalDate localDate) {
+        if (localDate == null) {
+            return false;
+        }
         return todayForTimeline().equals(localDate);
     }
 
