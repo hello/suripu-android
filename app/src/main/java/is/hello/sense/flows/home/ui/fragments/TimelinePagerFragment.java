@@ -187,7 +187,6 @@ public class TimelinePagerFragment extends InjectionFragment
 
     @Override
     public void onPageSelected(final int position) {
-        final LocalDate localDate = viewPagerAdapter.getItemDate(position);
 
     }
 
@@ -232,11 +231,6 @@ public class TimelinePagerFragment extends InjectionFragment
     @Override
     public int getTutorialContainerIdRes() {
         return R.id.fragment_timeline_pager_container;
-    }
-
-    @Override
-    public int getTooltipOverlayContainerIdRes() {
-        return R.id.fragment_timeline_view_pager;
     }
 
     @Override

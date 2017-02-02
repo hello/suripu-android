@@ -14,7 +14,7 @@ import android.graphics.drawable.shapes.PathShape;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.IdRes;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -35,8 +35,8 @@ import rx.functions.Action1;
 public class TimelineInfoOverlay implements Handler.Callback {
     private static final long DISPLAY_DURATION = 3000;
     private static final int MSG_DISMISS = 0x1;
+    @ColorInt
     private final int backgroundColor;
-    private final Activity activity;
     private final AnimatorContext animatorContext;
 
     private final Handler delayHandler = new Handler(Looper.getMainLooper(), this);
@@ -54,7 +54,6 @@ public class TimelineInfoOverlay implements Handler.Callback {
 
     public TimelineInfoOverlay(@NonNull final Activity activity,
                                @NonNull final AnimatorContext animatorContext) {
-        this.activity = activity;
         this.animatorContext = animatorContext;
 
         this.resources = activity.getResources();
@@ -77,14 +76,13 @@ public class TimelineInfoOverlay implements Handler.Callback {
 
     public void bindEvent(@NonNull final TimelineEvent event) {
         final TimelineEvent.SleepState sleepState = event.getSleepState();
-
-        final CharSequence prefix = activity.getText(R.string.timeline_popup_info_prefix);
-        final CharSequence sleepDepth = activity.getText(sleepState.stringRes);
+        final CharSequence prefix = dialog.getContext().getText(R.string.timeline_popup_info_prefix);
+        final CharSequence sleepDepth = dialog.getContext().getText(sleepState.stringRes);
         final SpannableStringBuilder reading = new SpannableStringBuilder(prefix).append(sleepDepth);
         tooltip.setText(reading);
 
         if (sleepState == TimelineEvent.SleepState.LIGHT) {
-            this.darkenOverlayColor = ContextCompat.getColor(activity, sleepState.colorRes);
+            this.darkenOverlayColor = ContextCompat.getColor(dialog.getContext(), sleepState.colorRes);
         } else {
             this.darkenOverlayColor = Color.TRANSPARENT;
         }
@@ -95,24 +93,30 @@ public class TimelineInfoOverlay implements Handler.Callback {
         this.onDismiss = onDismiss;
     }
 
+    /**
+     * @param screenSize define total available device width and height excluding status bar and navigation
+     * @param backgroundFrame define overlay boundaries
+     * @param focusedFrame define focused segment boundaries
+     * @return drawable with background overlays applied
+     */
     private Drawable createBackground(@NonNull final Point screenSize,
-                                      final int viewTop,
-                                      final int viewBottom) {
+                                      @NonNull final Rect backgroundFrame,
+                                      @NonNull final Rect focusedFrame) {
         final Path backgroundPath = new Path();
 
-        final int contentRight = Math.round(screenSize.x * maxBackgroundWidthFraction);
+        final int contentRight = Math.round(backgroundFrame.right * maxBackgroundWidthFraction);
         //from top of screen to top of view
-        backgroundPath.addRect(0, 0,
-                               screenSize.x, viewTop,
+        backgroundPath.addRect(backgroundFrame.left, backgroundFrame.top,
+                               backgroundFrame.right, focusedFrame.top,
                                Path.Direction.CW);
 
         //from top of view to bottom of view
-        backgroundPath.addRect(contentRight, viewTop,
-                               screenSize.x, viewBottom,
+        backgroundPath.addRect(contentRight, focusedFrame.top,
+                               backgroundFrame.right, focusedFrame.bottom,
                                Path.Direction.CW);
         //from bottom of view to bottom of screen
-        backgroundPath.addRect(0, viewBottom,
-                               screenSize.x, screenSize.y,
+        backgroundPath.addRect(backgroundFrame.left, focusedFrame.bottom,
+                               backgroundFrame.right, backgroundFrame.bottom,
                                Path.Direction.CW);
 
         final ShapeDrawable background = new ShapeDrawable(new PathShape(backgroundPath,
@@ -125,11 +129,11 @@ public class TimelineInfoOverlay implements Handler.Callback {
             return background;
         } else {
             final Path overlayPath = new Path();
-
-            overlayPath.addRect(0f,
-                                viewTop,
+            //overlay for focused segment
+            overlayPath.addRect(backgroundFrame.left,
+                                focusedFrame.top,
                                 contentRight * overlaySleepDepthPercentage,
-                                viewBottom,
+                                focusedFrame.bottom,
                                 Path.Direction.CW);
 
             final ShapeDrawable overlay = new ShapeDrawable(new PathShape(overlayPath,
@@ -143,30 +147,31 @@ public class TimelineInfoOverlay implements Handler.Callback {
     }
 
     public void show(@NonNull final View fromView,
-                     @IdRes final int contentRootResId,
+                     @NonNull final View withBackground,
+                     @NonNull final Point screenSize,
                      final boolean animate) {
         if (dialog.isShowing()) {
             return;
         }
 
-        final int statusBarHeight = resources.getDimensionPixelSize(R.dimen.x3);
+        final Rect backgroundFrame = new Rect();
+        withBackground.getGlobalVisibleRect(backgroundFrame);
+
         final Rect viewFrame = new Rect();
         fromView.getGlobalVisibleRect(viewFrame);
-        final Point screenSize = new Point();
-        final View contentRoot = activity.findViewById(contentRootResId);
-        //something is changing based on scroll Y position.
-        // when timeline event clicked is near center of screen it overlays well
-        screenSize.x = contentRoot.getRight();
-        screenSize.y = contentRoot.getBottom() + statusBarHeight;
+        fromView.getY();
+        //apply offset for status bar
+        viewFrame.offset(-backgroundFrame.left,
+                         -backgroundFrame.top);
+        backgroundFrame.offset(0, -backgroundFrame.top);
 
-        viewFrame.top -= contentRoot.getY();
-        viewFrame.bottom -= contentRoot.getY();
-
-        contents.setBackground(createBackground(screenSize, viewFrame.top, viewFrame.bottom));
+        contents.setBackground(createBackground(screenSize,
+                                                backgroundFrame,
+                                                viewFrame));
 
         final LayoutParams layoutParams = (FrameLayout.LayoutParams) tooltip.getLayoutParams();
         final int tooltipBottomMargin = layoutParams.bottomMargin;
-        layoutParams.bottomMargin += (screenSize.y - viewFrame.top);
+        layoutParams.bottomMargin = (screenSize.y - viewFrame.top);
         tooltip.requestLayout();
 
         dialog.show();
@@ -203,7 +208,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
 
         if (animate) {
             animatorContext.transaction(t -> {
-                final int tooltipBottomMargin = resources.getDimensionPixelSize(R.dimen.gap_xsmall);
+                final int tooltipBottomMargin = resources.getDimensionPixelSize(R.dimen.x2);
                 t.animatorFor(tooltip)
                  .translationY(tooltipBottomMargin);
 

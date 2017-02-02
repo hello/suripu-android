@@ -1,6 +1,8 @@
 package is.hello.sense.ui.widget.util;
 
 import android.animation.ValueAnimator;
+import android.app.Activity;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +14,7 @@ import android.text.style.ClickableSpan;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
@@ -33,6 +36,21 @@ public final class Views {
      * and {@link View#getLocationInWindow(int[])}.
      */
     public static final int ORIGIN_Y = 1;
+
+    /**
+     * @param includeStatusBar true if status bar should be included
+     * @return {@link Point} size of content screen with or without status bar
+     */
+    public static Point getActivityScreenSize(@NonNull final Activity activity,
+                                              final boolean includeStatusBar) {
+        final View view;
+        if(includeStatusBar) {
+            view = activity.getWindow().getDecorView();
+        } else {
+            view = activity.findViewById(Window.ID_ANDROID_CONTENT);
+        }
+        return new Point(view.getRight(), view.getBottom());
+    }
 
 
     /**
