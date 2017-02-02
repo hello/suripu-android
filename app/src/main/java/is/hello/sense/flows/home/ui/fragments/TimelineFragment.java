@@ -82,8 +82,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     private static final int ID_EVENT_REMOVE = 2;
     private static final int ID_EVENT_INCORRECT = 3;
     private static final double TOOL_TIP_HEIGHT_MULTIPLIER = 3.25; // 3 for top+bottom+text height. .25 for a little white space.
-    private boolean isLastNight = false;
-
 
     public static TimelineFragment newInstance(@NonNull final LocalDate date,
                                                @Nullable final Timeline cachedTimeline) {
@@ -397,7 +395,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             return;
         }
 
-        if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity()) && !this.presenterView.hasTutorial() && isAtLeastThreeDaysOld() && isLastNight) {
+        if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity()) && !this.presenterView.hasTutorial() && isAtLeastThreeDaysOld()) {
             final TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.SWIPE_TIMELINE);
             overlayView.setOnDismiss(() -> this.presenterView.clearTutorial());
             overlayView.setAnchorContainer(getActivity().findViewById(this.parent.getTutorialContainerIdRes()));
@@ -427,8 +425,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
     public void bindTimeline(@NonNull final Timeline timeline) {
         final boolean hasEvents = !Lists.isEmpty(timeline.getEvents());
-        this.isLastNight = DateFormatter.isLastNight(timeline.getDate());
-        if (!this.isLastNight) {
+        if (!DateFormatter.isLastNight(timeline.getDate())) {
             Tutorial.SWIPE_TIMELINE.markShown(getActivity());
         }
         if (hasEvents) {
