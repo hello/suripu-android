@@ -11,6 +11,7 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.v2.voice.SenseVoiceSettings;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
@@ -57,7 +58,7 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
         showProgress(true);
         bindAndSubscribe(currentSenseInteractor.senseDevice,
                          this::bindSenseDevice,
-                         this::presentSettingsUnavailable);
+                         this::presentDeviceUnavailable);
 
         bindAndSubscribe(settingsInteractor.settingsSubject,
                          this::bindSettings,
@@ -88,6 +89,7 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     }
 
     public void bindSettings(@NonNull final SenseVoiceSettings settings) {
+        presenterView.showFirmwareUpdateCard(false);
         presenterView.updateVolumeTextView(settings);
 
         presenterView.updateMuteSwitch(settings.isMuteOrDefault(),
@@ -123,12 +125,12 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
         updateSettingsSubscription.unsubscribe();
         updateSettingsSubscription = bind(updateObservable)
                 .subscribe(Functions.NO_OP,
-                           this::presentError,
+                           this::presentUpdateError,
                            () -> hideBlockingActivity(true, null));
 
     }
 
-    private void presentError(@NonNull final Throwable e) {
+    private void presentUpdateError(@NonNull final Throwable e) {
         showProgress(false);
         if (e instanceof VoiceSettingsInteractor.SettingsUpdateThrowable) {
             final ErrorDialogFragment.PresenterBuilder builder = new ErrorDialogFragment.PresenterBuilder(e);
@@ -144,11 +146,20 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
         }
     }
 
-    private void presentSettingsUnavailable(@NonNull final Throwable e) {
+    private void presentDeviceUnavailable(@NonNull final Throwable e) {
         hideBlockingActivity(false, null);
         presenterView.setVisibility(View.INVISIBLE);
         showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e),
                         RESULT_CANCEL_FLOW);
+    }
+
+    private void presentSettingsUnavailable(@NonNull final Throwable e) {
+        if(ApiException.statusEquals(e, 400) || ApiException.statusEquals(e, 412)) {
+            showProgress(false);
+            presenterView.showFirmwareUpdateCard(true);
+        } else {
+            presentDeviceUnavailable(e);
+        }
     }
 
     private void redirectToVolumeSelection(final View ignore) {

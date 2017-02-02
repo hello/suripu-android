@@ -11,11 +11,11 @@ import is.hello.sense.R;
 
 public class PasswordEditText extends EditText
         implements View.OnTouchListener, View.OnFocusChangeListener{
+    private final static int HIDDEN_INPUT_TYPE = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD;
+    private final static int VISIBLE_INPUT_TYPE = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
+    private final static int HIDDEN_ICON = R.drawable.secreteye;
+    private final static int VISIBLE_ICON = R.drawable.secreteyehighlighted;
     private boolean isPasswordMasked = true;
-    private final int HIDDEN_INPUT_TYPE = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD;
-    private final int VISIBLE_INPUT_TYPE = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
-    private final int HIDDEN_ICON = R.drawable.secreteye;
-    private final int VISIBLE_ICON = R.drawable.secreteyehighlighted;
 
     public PasswordEditText(Context context) {
         super(context);
@@ -57,7 +57,7 @@ public class PasswordEditText extends EditText
     @Override
     public void setOnFocusChangeListener(OnFocusChangeListener l) {
         if (!l.equals(this)) {
-            throw new Error("Don't set focus on PasswordEditText");
+            throw new Error("Cannot override internal focusChangedListener for " + PasswordEditText.class.getSimpleName());
         }
         super.setOnFocusChangeListener(this);
     }

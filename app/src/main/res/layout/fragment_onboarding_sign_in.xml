@@ -13,8 +13,8 @@
         style="@style/AppTheme.Button.Borderless.White"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/gap_outer"
-        android:paddingRight="@dimen/gap_outer"
+        android:paddingLeft="@dimen/x3"
+        android:paddingRight="@dimen/x3"
         android:text="@string/action_forgot_password"
         android:textAllCaps="false"/>
 
@@ -31,13 +31,13 @@
             android:layout_height="wrap_content"
             android:background="@color/background_onboarding"
             android:orientation="vertical"
-            android:padding="@dimen/gap_outer">
+            android:padding="@dimen/x3">
 
             <TextView
                 android:id="@+id/fragment_onboarding_register_heading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/gap_medium"
+                android:layout_marginBottom="@dimen/x2"
                 android:lineSpacingMultiplier="@dimen/line_multiple_heading"
                 android:text="@string/title_sign_in"
                 android:textAppearance="@style/AppTheme.Text.Heading.New"/>
@@ -47,7 +47,7 @@
                 android:id="@+id/fragment_onboarding_email_let"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/gap_large"
+                android:layout_marginBottom="@dimen/x3"
                 android:imeOptions="actionNext|flagNoExtractUi"
                 android:inputType="textEmailAddress"
                 android:nextFocusForward="@+id/fragment_onboarding_password_let"
@@ -62,7 +62,7 @@
                 android:id="@+id/fragment_onboarding_password_let"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/gap_large"
+                android:layout_marginBottom="@dimen/x3"
                 android:imeOptions="actionGo|flagNoExtractUi"
                 android:inputType="textPassword"
                 android:nextFocusForward="@+id/fragment_onboarding_password"
@@ -79,10 +79,10 @@
         style="@style/AppTheme.Button.Rounded"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/gap_outer"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginTop="@dimen/gap_small"
+        android:layout_marginBottom="@dimen/x3"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
+        android:layout_marginTop="@dimen/x1"
         android:text="@string/action_continue"/>
 
 </LinearLayout>

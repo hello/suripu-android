@@ -42,18 +42,24 @@ public enum Tutorial {
                    Interaction.SWIPE_RIGHT,
                    Analytics.createBreadcrumbTrackingProperties(Source.TIMELINE,
                                                                 Description.SWIPE_TIMELINE)),
-    SCRUB_SENSOR_HISTORY(R.string.tutorial_scrub_sensor_history,
-                         Gravity.TOP,
-                         R.id.fragment_sensor_history_graph,
-                         Interaction.SWIPE_LEFT,
-                         Analytics.createBreadcrumbTrackingProperties(Source.SENSOR_HISTORY,
-                                                                      Description.SCRUB_SENSOR_HISTORY)),
     TAP_INSIGHT_CARD(R.string.tutorial_tap_insight_card,
                      Gravity.BOTTOM,
                      R.id.item_insight_card,
                      Interaction.TAP,
                      Analytics.createBreadcrumbTrackingProperties(Source.INSIGHTS,
-                                                                  Description.TAP_INSIGHT_CARD));
+                                                                  Description.TAP_INSIGHT_CARD)),
+    SENSOR_DETAILS_SCRUB(R.string.tutorial_scrub_sensor_history,
+                         Gravity.BOTTOM,
+                         R.id.fragment_sensor_detail_graph_view,
+                         Interaction.TAP,
+                         Analytics.createBreadcrumbTrackingProperties(Source.SENSOR_GRAPH,
+                                                                      Description.SCRUB_GRAPH)),
+    SENSOR_DETAILS_SCROLL(R.string.tutorial_scroll_sensor_history,
+                         Gravity.BOTTOM,
+                         R.id.fragment_sensor_detail_graph_view,
+                         Interaction.SWIPE_UP,
+                         Analytics.createBreadcrumbTrackingProperties(Source.SENSOR_GRAPH,
+                                                                      Description.SCRUB_GRAPH));
 
     public final
     @StringRes

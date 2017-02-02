@@ -1,6 +1,5 @@
 package is.hello.sense.ui.widget;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -334,7 +333,7 @@ public class SenseAlertDialog extends Dialog {
         setView(view, true);
     }
 
-
+    //todo evaluate alternatives to passing around runnable for executing work for dialog button clicks
     public interface SerializedRunnable extends Serializable {
         void run();
     }
@@ -398,8 +397,8 @@ public class SenseAlertDialog extends Dialog {
             return this;
         }
 
-        public SenseAlertDialog build(@NonNull final Activity activity) {
-            final SenseAlertDialog alertDialog = new SenseAlertDialog(activity);
+        public SenseAlertDialog build(@NonNull final Context context) {
+            final SenseAlertDialog alertDialog = new SenseAlertDialog(context);
             if (bundle.containsKey(ARG_TITLE)) {
                 alertDialog.setTitle(bundle.getInt(ARG_TITLE));
             }

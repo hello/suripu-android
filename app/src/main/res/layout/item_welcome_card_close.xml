@@ -9,7 +9,9 @@
         <include android:id="@+id/item_welcome_card"
             layout="@layout/item_welcome_card"/>
 
-        <View style="@style/Divider.Horizontal"/>
+        <View
+            android:id="@+id/item_welcome_close_divider"
+            style="@style/Divider.Horizontal"/>
 
         <TextView
             android:id="@+id/item_welcome_close"

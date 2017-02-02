@@ -19,6 +19,8 @@ public interface BaseOutput extends
 
     void showBlockingActivity(@StringRes final int titleRes);
 
+    void showBlockingActivity(@StringRes final int titleRes, @Nullable final Runnable onShow);
+
     void hideBlockingActivity(final boolean success, @NonNull final Runnable onComplete);
 
     void hideBlockingActivity(@StringRes final int messageRes, @Nullable final Runnable onComplete);

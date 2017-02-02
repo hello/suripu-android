@@ -275,8 +275,8 @@
     <string name="title_turn_off_bluetooth">Turn Off Bluetooth</string>
     <string name="message_turn_off_bluetooth">Sense no longer requires Bluetooth be turned on, would you like to turn it off?</string>
     <string name="action_turn_off">Turn Off</string>
-    <string name="title_onboarding_register_location">What\'s your location?</string>
-    <string name="message_onboarding_register_location">Sense uses your location to know sunrise and sunset times, local weather and more.</string>
+    <string name="message_onboarding_register_location">Sense needs your location in order to connect to your device via Bluetooth Low Energy. You’ll need to enable Location Services to continue.</string>
+    <string name="action_why_is_this_required">Why is this required?</string>
     <string name="action_set_location">Set Location</string>
     <string name="action_back">Back</string>
     <string name="label_last_seen">Last Seen</string>
@@ -424,7 +424,8 @@
 
     <string name="tutorial_swipe_timeline">Swipe left or right to navigate between days.</string>
     <string name="tutorial_zoom_out_timeline">Tap the calendar icon to navigate quickly between days.</string>
-    <string name="tutorial_scrub_sensor_history">Press and hold graphs to see historical data.</string>
+    <string name="tutorial_scrub_sensor_history">Press and hold graph to see more data.</string>
+    <string name="tutorial_scroll_sensor_history">Scroll for more.</string>
     <string name="tutorial_tap_insight_card">Tap on a card to learn more.</string>
 
     <string name="action_save">Save</string>
@@ -529,9 +530,9 @@
     <string name="trend_time_scale_month">MONTH</string>
     <string name="trend_time_scale_quarter">QUARTER</string>
 
-    <string name="request_permission_location_title">We need to ask for your location</string>
+    <string name="request_permission_location_title">Sense needs your location</string>
     <string name="request_permission_location_title2">Location Services required</string>
-    <string name="request_permission_location_message">"Android requires that Location Services are enabled to scan for Bluetooth Low Energy devices. Please enable Location Services to continue. If you deny this permission, you may be unable to set up."</string>
+    <string name="request_permission_location_message">Android requires that apps have permission to access Location Services in order to scan for Bluetooth Low Energy devices. Please enable Location Services before continuing. You may revoke this permission once setup is complete.</string>
     <string name="request_permission_location_required_title">Location Services not enabled</string>
     <string name="request_permission_location_required_message">Android requires that Location Services be enabled to scan for Bluetooth Low Energy devices. Please enable Location Services in <a href="#settings">Settings</a> to continue.</string>
     <string name="request_permission_write_external_storage_title">We need to ask for access to your photos</string>
@@ -552,9 +553,9 @@
     <string name="sleep_sounds_volume_label">Volume</string>
     <string name="sleep_sounds_state_no_sounds_title">Updating Sleep Sounds</string>
     <string name="sleep_sounds_state_no_sounds_message">Sleep Sounds will be available once Sense has finished updating. Note that this may take up to an hour.</string>
-    <string name="sleep_sounds_state_fw_update_title">Sense needs to update</string>
+    <string name="sense_state_fw_update_title">Sense needs to update</string>
     <string name="sleep_sounds_state_fw_update_message">Sense will update automatically when plugged in and connected to Wi-Fi. This may take a few moments.</string>
-
+    <string name="sense_voice_state_fw_update_message">Sense will update automatically when plugged in and connected to Wi-Fi. This may take up to two hours.</string>
     <string name="list_activity_sound_title">SELECT A SLEEP SOUND</string>
     <string name="list_activity_duration_title">PLAY A SLEEP SOUND FOR</string>
     <string name="list_activity_volume_title">VOLUME CONTROL</string>
@@ -715,7 +716,7 @@
     <string name="voice_settings_list_mute">Mute</string>
     <string name="voice_settings_volume">Volume</string>
     <string name="voice_settings_primary_user">Primary User</string>
-    <string name="voice_settings_primary_user_about">Tell Sense whose information to respond with when asked questions like \"What\'s my Sleep Score?\" by setting primary user. Only the primary user will be able to access the Nest Expansion when released.
+    <string name="voice_settings_primary_user_about">Tell Sense whose information to respond with when asked questions like \"What\'s my Sleep Score?\" by setting primary user. Only the primary user will be able to access the Nest Expansion.
 </string>
     <string name="voice_settings_title">Voice</string>
     <string name="voice_select_volume">Select volume</string>

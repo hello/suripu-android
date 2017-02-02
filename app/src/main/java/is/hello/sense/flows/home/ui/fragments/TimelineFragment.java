@@ -58,6 +58,7 @@ import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.timeline.TimelineImageGenerator;
 import is.hello.sense.ui.widget.timeline.TimelineInfoOverlay;
 import is.hello.sense.ui.widget.util.Dialogs;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
@@ -501,7 +502,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             this.infoOverlay.dismiss(false);
         }
         if (view.getY() < this.toolTipHeight) {
-            final int dy = this.toolTipHeight - (int) view.getY();
+            final int dy = this.toolTipHeight * 2 - (int) view.getY();
             this.presenterView.scrollForSpace(this, event, view, position, -dy);
             return;
         }
@@ -513,7 +514,8 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         });
         this.infoOverlay.bindEvent(event);
         this.infoOverlay.show(view,
-                              this.parent.getTooltipOverlayContainerIdRes(),
+                              this.presenterView,
+                              Views.getActivityScreenSize(getActivity(), false),
                               animateShow);
 
         Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
@@ -713,9 +715,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
         @IdRes
         int getTutorialContainerIdRes();
-
-        @IdRes
-        int getTooltipOverlayContainerIdRes();
 
         /**
          * Used to return to Last Night timeline when needed

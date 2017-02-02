@@ -47,7 +47,6 @@ import is.hello.sense.ui.widget.ParallaxImageView;
 import is.hello.sense.ui.widget.SplitButtonLayout;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
-import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.SafeOnClickListener;
 import is.hello.sense.util.Share;
@@ -212,13 +211,9 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         final Drawable existingImage = parent != null
                 ? parent.getInsightImage()
                 : null;
-        if (existingImage != null)
-
-        {
+        if (existingImage != null) {
             illustrationImage.setDrawable(existingImage, false);
-        } else if (!TextUtils.isEmpty(imageUrl))
-
-        {
+        } else if (!TextUtils.isEmpty(imageUrl)) {
             final int maxWidth = getResources().getDisplayMetrics().widthPixels;
             final int maxHeight = Math.round(maxWidth * illustrationImage.getAspectRatioScale());
             picasso.load(imageUrl)
@@ -284,7 +279,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             bottomShadow.setVisibility(View.GONE);
 
             scene.play(createIllustrationEnter(state.imageRectInWindow))
-                 .with(createFillEnter(state.cardRectInWindow))
                  .with(createParallaxEnter(state.imageParallaxPercent))
                  .with(state.parentAnimator)
                  .with(createStatusBarEnter())
@@ -352,7 +346,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             scrollView.setOnScrollListener(null);
 
             scene.play(createIllustrationExit(state.imageRectInWindow))
-                 .with(createFillExit(state.cardRectInWindow))
                  .with(createParallaxExit(state.imageParallaxPercent))
                  .with(state.parentAnimator)
                  .after(MULTI_PHASE_DELAY)
@@ -388,14 +381,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         final Animator[] animators = createContentViewAnimators(0f, 1f);
         subscene.playTogether(animators);
         return subscene;
-    }
-
-    private Animator createFillEnter(@NonNull final Rect insightCardRect) {
-        final Rect fillRect = Views.copyFrame(fillView);
-        fillView.layout(insightCardRect.left, insightCardRect.top,
-                        insightCardRect.right, insightCardRect.bottom);
-
-        return Views.createFrameAnimator(fillView, insightCardRect, fillRect);
     }
 
     private Animator[] createContentViewAnimators(final float startAlpha, final float endAlpha){
@@ -466,10 +451,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
         final Animator[] animators = createContentViewAnimators(1f, 0f);
 
-        /*for (int i = 0, length = contentViews.length; i < length; i++) {
-            animators[i] = animatorFor(contentViews[i]).alpha(0f);
-        }*/
-
         subscene.playTogether(animators);
         return subscene;
     }
@@ -501,11 +482,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         final @ColorInt int start = Windows.getStatusBarColor(window);
         final @ColorInt int end = defaultStatusBarColor;
         return Windows.createStatusBarColorAnimator(window, start, end);
-    }
-
-    private Animator createFillExit(@NonNull final Rect insightCardRect) {
-        final Rect fillRect = Views.copyFrame(fillView);
-        return Views.createFrameAnimator(fillView, fillRect, insightCardRect);
     }
 
 //endregion
@@ -644,7 +620,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         @Override
         public String toString() {
             return "SharedState{" +
-                    "cardRectInWindow=" + cardRectInWindow +
                     ", imageRectInWindow=" + imageRectInWindow +
                     ", imageParallaxPercent=" + imageParallaxPercent +
                     ", parentAnimator=" + parentAnimator +

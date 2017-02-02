@@ -5,19 +5,19 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Expansion;
+import is.hello.sense.ui.widget.util.RoundedCornersTransformation;
 
 public class ExpansionImageView extends ImageView {
     private static final int NUMBER_OF_CHARS = 2;
     private final ExpansionTextDrawable drawable;
+    private final RoundedCornersTransformation transformation;
 
     public ExpansionImageView(final Context context) {
         this(context, null);
@@ -34,15 +34,23 @@ public class ExpansionImageView extends ImageView {
                               final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.drawable = new ExpansionTextDrawable(context);
+        this.transformation = new RoundedCornersTransformation(this.drawable.getRadius(),
+                                                               this.drawable.getBorderWidth(),
+                                                               this.drawable.getBorderColor());
         setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                                      ViewGroup.LayoutParams.MATCH_PARENT));
-        getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                ExpansionImageView.this.drawable.setDimensions(getMeasuredWidth(), getMeasuredHeight());
-            }
-        });
+        this.drawable.setDimensions(getMinimumWidth(), getMinimumHeight());
+    }
+
+    @Override
+    protected void onSizeChanged(final int width,
+                                 final int height,
+                                 final int oldWidth,
+                                 final int oldHeight) {
+        super.onSizeChanged(width, height, oldWidth, oldHeight);
+        if(width != oldWidth || height != oldHeight) {
+            this.drawable.setDimensions(width, height);
+        }
     }
 
     /**
@@ -68,12 +76,10 @@ public class ExpansionImageView extends ImageView {
      */
     public void setExpansion(@NonNull final Picasso picasso,
                              @NonNull final Expansion expansion) {
-
-        // The following code will be used in at least two places. Rather than duplicate it lets
-        // use a function.
         setText(expansion.getCompanyName());
         picasso.cancelRequest(this);
         picasso.load(expansion.getIcon().getUrl(getResources()))
+               .transform(transformation)
                .placeholder(this.drawable)
                .into(this);
 

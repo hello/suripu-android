@@ -211,11 +211,6 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
     }
 
     @Override
-    public int getTooltipOverlayContainerIdRes() {
-        return R.id.fragment_timeline_view_pager;
-    }
-
-    @Override
     public void jumpToLastNight() {
         shouldJumpToLastNightOnUserVisible = true;
     }
