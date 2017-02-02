@@ -221,7 +221,7 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
     }
 
     public void showSetLocation() {
-        pushFragment(SetLocationFragment.newInstance(false), null, false);
+        pushFragment(SetLocationFragment.newInstance(), null, false);
     }
 
 

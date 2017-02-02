@@ -275,10 +275,9 @@
     <string name="title_turn_off_bluetooth">Turn Off Bluetooth</string>
     <string name="message_turn_off_bluetooth">Sense no longer requires Bluetooth be turned on, would you like to turn it off?</string>
     <string name="action_turn_off">Turn Off</string>
-    <string name="title_onboarding_register_location">What\'s your location?</string>
-    <string name="message_onboarding_register_location">Sense uses your location to scan for your  Sense\'s BLE, to know sunrise and sunset times, local weather and more.</string>
+    <string name="message_onboarding_register_location">Sense needs your location in order to connect to your device via Bluetooth Low Energy. You’ll need to enable Location Services to continue.</string>
+    <string name="action_why_is_this_required">Why is this required?</string>
     <string name="action_set_location">Set Location</string>
-    <string name="action_skip_sense_setup">Skip Sense Setup</string>
     <string name="action_back">Back</string>
     <string name="label_last_seen">Last Seen</string>
     <string name="label_wifi">Wi-Fi</string>
@@ -531,9 +530,9 @@
     <string name="trend_time_scale_month">MONTH</string>
     <string name="trend_time_scale_quarter">QUARTER</string>
 
-    <string name="request_permission_location_title">We need to ask for your location</string>
+    <string name="request_permission_location_title">Sense needs your location</string>
     <string name="request_permission_location_title2">Location Services required</string>
-    <string name="request_permission_location_message">"Android requires that Location Services are enabled to scan for Bluetooth Low Energy devices. Please enable Location Services to continue setup. You can disable them after setup is complete."</string>
+    <string name="request_permission_location_message">Android requires that apps have permission to access Location Services in order to scan for Bluetooth Low Energy devices. Please enable Location Services before continuing. You may revoke this permission once setup is complete.</string>
     <string name="request_permission_location_required_title">Location Services not enabled</string>
     <string name="request_permission_location_required_message">Android requires that Location Services be enabled to scan for Bluetooth Low Energy devices. Please enable Location Services in <a href="#settings">Settings</a> to continue.</string>
     <string name="request_permission_write_external_storage_title">We need to ask for access to your photos</string>
