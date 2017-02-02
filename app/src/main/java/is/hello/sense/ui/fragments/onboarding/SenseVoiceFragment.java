@@ -56,31 +56,6 @@ import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class SenseVoiceFragment extends BaseHardwareFragment {
 
-    public static class ViewStateDispatcher {
-        final Lazy<VoiceTutorial> notDetectedState;
-        final Lazy<VoiceTutorial> errorState;
-        final Lazy<QuestionTextState> firstQuestionWakeState;
-        final Lazy<QuestionTextState> secondQuestionWakeState;
-        final Lazy<SenseImageState> senseWaitState;
-        final Lazy<SenseImageState> senseWakeState;
-        final Func1<int[],VoiceTutorial> successStateFunc;
-
-        ViewStateDispatcher() {
-            final VoiceTutorialFactory factory = new VoiceTutorialFactory();
-            this.notDetectedState = factory::getOnNotDetected;
-            this.errorState = factory::getOnError;
-            this.firstQuestionWakeState = factory::getFirstOnWakeState;
-            this.secondQuestionWakeState = factory::getSecondOnWakeState;
-            this.senseWaitState = factory::getSenseOnWaitState;
-            this.senseWakeState = factory::getSenseOnWakeState;
-            this.successStateFunc = factory::getOnSuccess;
-        }
-
-        VoiceTutorial getSuccessState(final int[] drawableState) {
-            return successStateFunc.call(drawableState);
-        }
-    }
-
     public static class UIHandler extends Handler {
         final WeakReference<SenseVoiceFragment> fragmentRef;
 
@@ -140,8 +115,6 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     private final Runnable animateToNormalStateRunnable = SenseVoiceFragment.this::animateToNormalState;
 
     private final UIHandler uiHandler = new UIHandler(this);
-
-    private final ViewStateDispatcher viewStateDispatcher = new ViewStateDispatcher();
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -333,7 +306,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         if(ApiException.isNetworkError(throwable)){
             errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
         }
-        updateState(viewStateDispatcher.errorState.get());
+        updateState(VoiceTutorial.ERROR);
         getAnimatorContext().transaction(
                 transaction -> updateButtons(true,transaction), null);
     }
@@ -384,10 +357,10 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
 
             if(SenseVoiceInteractor.hasSuccessful(voiceResponse)){
                 animateToWaitState();
-                updateState(viewStateDispatcher.getSuccessState(senseImageView.getDrawableState()));
+                updateState(VoiceTutorialFactory.isFailState(senseImageView.getDrawableState())? VoiceTutorial.SUCCESS_FAIL_STATE: VoiceTutorial.SUCCESS);
                 onFinish(true);
             } else {
-                updateState(viewStateDispatcher.notDetectedState.get());
+                updateState(VoiceTutorial.NOT_DETECTED);
                 if (senseVoiceInteractor.getFailCount() == VOICE_FAIL_COUNT_THRESHOLD) {
                     this.postDelayed(() -> showVoiceTipDialog(true, this::onVoiceTipDismissed),
                                      LoadingDialogFragment.DURATION_DEFAULT*2);
@@ -417,7 +390,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         this.post(() -> setSenseCircleViewState(viewModel.getSenseImageState()));
         this.postDelayed(() -> {
                              setQuestionState(viewModel.getQuestionTextState());
-                             setSenseImageViewState(viewModel.getSenseImageState().state);
+                             setSenseImageViewState(viewModel.getSenseImageState().getState());
                          }, LoadingDialogFragment.DURATION_DEFAULT);
     }
 
@@ -426,24 +399,24 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         animateToWakeState();
     }
 
-    private void animateToWaitState(){
-        final SenseImageState waitModel = viewStateDispatcher.senseWaitState.get();
+    private void animateToWaitState() {
+        final SenseImageState waitModel = SenseImageState.WAIT_STATE;
         this.post(() -> {
             setSenseCircleViewState(waitModel);
-            setSenseImageViewState(waitModel.state);
+            setSenseImageViewState(waitModel.getState());
         });
     }
 
     private void animateToWakeState(){
-        final SenseImageState wakeModel = viewStateDispatcher.senseWakeState.get();
-        this.post(() -> setQuestionState(viewStateDispatcher.firstQuestionWakeState.get()));
+        final SenseImageState wakeModel = SenseImageState.WAKE_STATE;
+        this.post(() -> setQuestionState(QuestionTextState.FIRST_ON_WAKE_STATE));
 
         this.postDelayed(() -> setSenseCircleViewState(wakeModel),
                          LoadingDialogFragment.DURATION_DEFAULT);
 
         this.postDelayed(() -> {
-            setSenseImageViewState(wakeModel.state);
-            setQuestionState(viewStateDispatcher.secondQuestionWakeState.get());
+            setSenseImageViewState(wakeModel.getState());
+            setQuestionState(QuestionTextState.SECOND_ON_WAKE_STATE);
         }, LoadingDialogFragment.DURATION_DEFAULT*2);
     }
 
@@ -484,8 +457,8 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     }
 
     private void setSenseCircleViewState(@NonNull final SenseImageState model){
-        senseCircleView.setImageState(model.state, false);
-        viewAnimator.setRepeatCount(model.repeatCount);
+        senseCircleView.setImageState(model.getState(), false);
+        viewAnimator.setRepeatCount(model.getRepeatCount());
         viewAnimator.resetAnimation(
                 createAnimatorSetFor(senseCircleView.getDrawable()));
     }

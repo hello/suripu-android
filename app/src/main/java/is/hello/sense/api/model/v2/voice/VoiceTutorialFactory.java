@@ -12,71 +12,31 @@ import is.hello.go99.ViewVisibility;
 import is.hello.sense.R;
 import is.hello.sense.util.AnimatorSetHandler;
 
-import static is.hello.sense.api.model.v2.voice.VoiceTutorialFactory.SenseImageState.FAIL_STATE;
-import static is.hello.sense.api.model.v2.voice.VoiceTutorialFactory.SenseImageState.OK_STATE;
-import static is.hello.sense.api.model.v2.voice.VoiceTutorialFactory.SenseImageState.WAIT_STATE;
-import static is.hello.sense.api.model.v2.voice.VoiceTutorialFactory.SenseImageState.WAKE_STATE;
 
 public class VoiceTutorialFactory {
 
-    public VoiceTutorial getOnSuccess(final int[] senseImageState) {
-        return new VoiceTutorial(new QuestionTextState(R.string.sense_voice_question_temperature,
-                                                       R.color.primary,
-                                                       View.INVISIBLE,
-                                                       Arrays.equals(senseImageState, FAIL_STATE)),
-                                 new SenseImageState(AnimatorSetHandler.SINGLE_ANIMATION,
-                                                     OK_STATE));
+    public static boolean isFailState(final int[] senseImageState) {
+        if (senseImageState == null){
+            return true;
+        }
+        return (Arrays.equals(senseImageState, StateHolder.FAIL.state));
     }
 
-    public VoiceTutorial getOnNotDetected() {
-        return new VoiceTutorial(new QuestionTextState(R.string.error_sense_voice_not_detected,
-                                                       R.color.text_dark,
-                                                       View.INVISIBLE,
-                                                       true),
-                                 new SenseImageState(AnimatorSetHandler.SINGLE_ANIMATION,
-                                                     FAIL_STATE));
-    }
-
-    public VoiceTutorial getOnError() {
-        return new VoiceTutorial(new QuestionTextState(R.string.error_sense_voice_problem,
-                                                       R.color.text_dark,
-                                                       View.GONE,
-                                                       true),
-                                 new SenseImageState(AnimatorSetHandler.LOOP_ANIMATION,
-                                                     FAIL_STATE));
-    }
-
-    public QuestionTextState getFirstOnWakeState() {
-        return new QuestionTextState(R.string.sense_voice_wake_phrase,
-                                     R.color.text_dark,
-                                     View.VISIBLE,
-                                     true);
-    }
-
-    public QuestionTextState getSecondOnWakeState() {
-        return new QuestionTextState(R.string.sense_voice_question_temperature,
-                                     R.color.text_dark,
-                                     View.VISIBLE,
-                                     false);
-    }
-
-    public SenseImageState getSenseOnWaitState() {
-        return new SenseImageState(AnimatorSetHandler.SINGLE_ANIMATION,
-                                   WAIT_STATE);
-    }
-
-    public SenseImageState getSenseOnWakeState() {
-        return new SenseImageState(AnimatorSetHandler.LOOP_ANIMATION,
-                                   WAKE_STATE);
-    }
-
-    public static class VoiceTutorial {
+    public enum VoiceTutorial {
+        SUCCESS(QuestionTextState.SUCCESS,
+                SenseImageState.SUCCESS_STATE),
+        SUCCESS_FAIL_STATE(QuestionTextState.SUCCESS_FAIL_STATE,
+                           SenseImageState.SUCCESS_STATE),
+        NOT_DETECTED(QuestionTextState.NOT_DETECTED,
+                     SenseImageState.SINGLE_FAIL_STATE),
+        ERROR(QuestionTextState.ERROR,
+              SenseImageState.LOOP_FAIL_STATE);
 
         private final QuestionTextState questionTextState;
         private final SenseImageState senseImageState;
 
-        private VoiceTutorial(@NonNull final QuestionTextState questionTextState,
-                              @NonNull final SenseImageState senseImageState) {
+        VoiceTutorial(@NonNull final QuestionTextState questionTextState,
+                      @NonNull final SenseImageState senseImageState) {
             this.questionTextState = questionTextState;
             this.senseImageState = senseImageState;
         }
@@ -89,9 +49,38 @@ public class VoiceTutorialFactory {
             return senseImageState;
         }
 
+        @NonNull
+        public int[] getState() {
+            return senseImageState.getState();
+        }
+
     }
 
-    public static class QuestionTextState {
+    public enum QuestionTextState {
+        SUCCESS(R.string.sense_voice_question_temperature,
+                R.color.primary,
+                View.INVISIBLE,
+                false),
+        SUCCESS_FAIL_STATE(R.string.sense_voice_question_temperature,
+                           R.color.primary,
+                           View.INVISIBLE,
+                           true),
+        NOT_DETECTED(R.string.error_sense_voice_not_detected,
+                     R.color.text_dark,
+                     View.INVISIBLE,
+                     true),
+        ERROR(R.string.error_sense_voice_problem,
+              R.color.text_dark,
+              View.GONE,
+              true),
+        FIRST_ON_WAKE_STATE(R.string.sense_voice_wake_phrase,
+                            R.color.text_dark,
+                            View.VISIBLE,
+                            true),
+        SECOND_ON_WAKE_STATE(R.string.sense_voice_question_temperature,
+                             R.color.text_dark,
+                             View.VISIBLE,
+                             false);
         @StringRes
         public final int question;
         @ColorRes
@@ -111,20 +100,45 @@ public class VoiceTutorialFactory {
     }
 
 
-    public static class SenseImageState {
+    public enum SenseImageState {
+        SUCCESS_STATE(AnimatorSetHandler.SINGLE_ANIMATION, StateHolder.OK),
+        SINGLE_FAIL_STATE(AnimatorSetHandler.SINGLE_ANIMATION, StateHolder.FAIL),
+        LOOP_FAIL_STATE(AnimatorSetHandler.LOOP_ANIMATION, StateHolder.FAIL),
+        WAIT_STATE(AnimatorSetHandler.SINGLE_ANIMATION, StateHolder.WAIT),
+        WAKE_STATE(AnimatorSetHandler.LOOP_ANIMATION, StateHolder.WAKE);
         @DrawableRes
         public static final int SRC_CIRCLE_DRAWABLE = R.drawable.sense_voice_circle_selector;
-        static final int[] WAKE_STATE = new int[]{android.R.attr.state_first};
-        static final int[] FAIL_STATE = new int[]{android.R.attr.state_middle};
-        static final int[] OK_STATE = new int[]{android.R.attr.state_last};
-        static final int[] WAIT_STATE = new int[]{};
-        public final int repeatCount;
-        public final int[] state;
+        private final int repeatCount;
+        private final StateHolder stateHolder;
 
         SenseImageState(final int repeatCount,
-                        final int[] state) {
+                        final StateHolder stateHolder) {
             this.repeatCount = repeatCount;
+            this.stateHolder = stateHolder;
+        }
+
+        @NonNull
+        public int[] getState() {
+            return stateHolder.state;
+        }
+
+        public int getRepeatCount() {
+            return repeatCount;
+        }
+    }
+
+    private enum StateHolder {
+        WAKE(new int[]{android.R.attr.state_first}),
+        FAIL(new int[]{android.R.attr.state_middle}),
+        OK(new int[]{android.R.attr.state_last}),
+        WAIT(new int[]{});
+
+        private final int[] state;
+
+        StateHolder(@NonNull final int[] state) {
             this.state = state;
         }
+
+
     }
 }
