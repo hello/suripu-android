@@ -3,6 +3,7 @@ package is.hello.sense.mvp.view;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
+import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -132,6 +133,14 @@ public class ViewPagerPresenterView extends PresenterView {
 
     private StaticFragmentAdapter getAdapter() {
         return (StaticFragmentAdapter) this.viewPager.getAdapter();
+    }
+
+    public void saveInstanceState(@NonNull final Bundle outstate) {
+        getAdapter().saveInstanceState(outstate);
+    }
+
+    public void restoreSavedInstanceState(@Nullable final Bundle savedInstanceState) {
+        getAdapter().restoreSavedInstanceState(savedInstanceState);
     }
 
     @Nullable

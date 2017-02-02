@@ -2,17 +2,20 @@ package is.hello.sense.flows.home.ui.adapters;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
 
+import is.hello.sense.util.Constants;
 
 
 public class StaticFragmentAdapter extends FragmentPagerAdapter {
+    private static final String KEY_LAST_POSITION = StaticFragmentAdapter.class.getSimpleName() + ".KEY_LAST_POSITION";
 
     private final Item[] items;
-    private int lastPosition = -1;
+    private int lastPosition = Constants.NONE;
     private final FragmentManager fragmentManager;
     private final int containerId;
 
@@ -60,6 +63,16 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
         alertFragmentVisible(lastPosition, true);
     }
 
+    public void restoreSavedInstanceState(@Nullable final Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            return;
+        }
+        this.lastPosition = savedInstanceState.getInt(KEY_LAST_POSITION, Constants.NONE);
+    }
+
+    public void saveInstanceState(@NonNull final Bundle outstate) {
+        outstate.putInt(KEY_LAST_POSITION, lastPosition);
+    }
 
     private void alertFragmentVisible(final int position,
                                       final boolean isVisible) {

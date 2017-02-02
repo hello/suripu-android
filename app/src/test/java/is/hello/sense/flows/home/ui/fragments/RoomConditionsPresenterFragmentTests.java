@@ -96,9 +96,9 @@ public class RoomConditionsPresenterFragmentTests extends FragmentTest<RoomCondi
                 fragment.getActivity().getLayoutInflater().inflate(R.layout.item_sensor_response, Mockito.any(), false));
 
         viewHolder.bind(0);
-        assertEquals("0 °", viewHolder.value.getText().toString());
+        assertEquals("0°", viewHolder.value.getText().toString());
         viewHolder.bind(1);
-        assertEquals("1 %", viewHolder.value.getText().toString());
+        assertEquals("1%", viewHolder.value.getText().toString());
         viewHolder.bind(2);
         assertEquals("2.0", viewHolder.value.getText().toString());
         assertEquals("lx", viewHolder.descriptor.getText().toString());

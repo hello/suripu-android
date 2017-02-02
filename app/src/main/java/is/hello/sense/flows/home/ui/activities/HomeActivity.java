@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.PagerAdapter;
 import android.view.View;
 
 import com.segment.analytics.Properties;
@@ -119,9 +120,11 @@ public class HomeActivity extends ScopedInjectionActivity
         this.tabLayout = (SenseTabLayout) findViewById(R.id.activity_new_home_tab_layout);
         restoreState(savedInstanceState);
         this.tabLayout.setupWithViewPager(this.extendedViewPager);
-        this.extendedViewPager.setAdapter(new StaticFragmentAdapter(getFragmentManager(),
-                                                                    this.extendedViewPager.getId(),
-                                                                    this.viewPagerDelegate.getViewPagerItems()));
+        final StaticFragmentAdapter fragmentAdapter = new StaticFragmentAdapter(getFragmentManager(),
+                                                                                this.extendedViewPager.getId(),
+                                                                                this.viewPagerDelegate.getViewPagerItems());
+        fragmentAdapter.restoreSavedInstanceState(savedInstanceState);
+        this.extendedViewPager.setAdapter(fragmentAdapter);
         this.tabLayout.setUpTabs(savedInstanceState == null);
         this.tabLayout.setListener(this);
     }
@@ -165,6 +168,10 @@ public class HomeActivity extends ScopedInjectionActivity
     public void onSaveInstanceState(final Bundle outState, final PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
         outState.putInt(KEY_CURRENT_ITEM_INDEX, this.tabLayout.getSelectedTabPosition());
+        final PagerAdapter adapter = extendedViewPager.getAdapter();
+        if (adapter instanceof StaticFragmentAdapter) {
+            ((StaticFragmentAdapter) adapter).saveInstanceState(outState);
+        }
     }
 
     @Override
