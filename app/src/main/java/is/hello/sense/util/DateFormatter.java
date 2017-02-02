@@ -143,7 +143,10 @@ public class DateFormatter extends Interactor {
     /**
      * Returns whether or not a given date is considered to be last night.
      */
-    public static boolean isLastNight(@NonNull LocalDate instant) {
+    public static boolean isLastNight(@Nullable final LocalDate instant) {
+        if (instant == null) {
+            return false;
+        }
         return lastNight().isEqual(instant);
     }
 
