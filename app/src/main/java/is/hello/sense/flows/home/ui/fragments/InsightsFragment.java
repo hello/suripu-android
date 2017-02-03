@@ -224,9 +224,10 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
             return;
         }
         presenterView.showCards(currentQuestion, insights);
-
+ /*
+ // todo bring back with tablayout indicators
         final Activity activity = getActivity();
-        if (getOnboardingFlow(activity) == OnboardingActivity.FLOW_NONE &&
+       if (getOnboardingFlow(activity) == OnboardingActivity.FLOW_NONE &&
                 tutorialOverlayView == null && Tutorial.TAP_INSIGHT_CARD.shouldShow(activity)) {
             this.tutorialOverlayView = new TutorialOverlayView(activity,
                                                                Tutorial.TAP_INSIGHT_CARD);
@@ -238,7 +239,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
                     tutorialOverlayView.postShow(R.id.activity_new_home_extended_view_pager);
                 }
             });
-        }
+        }*/
     }
 
     private void bindInsights(@NonNull final List<Insight> insights) {

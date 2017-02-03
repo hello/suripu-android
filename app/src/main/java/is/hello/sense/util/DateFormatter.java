@@ -44,17 +44,19 @@ import is.hello.sense.R;
 import is.hello.sense.interactors.Interactor;
 import is.hello.sense.ui.widget.util.Styles;
 
-@Singleton public class DateFormatter extends Interactor {
+@Singleton
+public class DateFormatter extends Interactor {
     /**
      * The hour of day when the last night date is considered to roll over.
-     * <p />
+     * <p/>
      * <code>3:00 AM</code> chosen to support early first shift risers.
      */
     public static final int NIGHT_BOUNDARY_HOUR = 3;
 
     private final Context context;
 
-    @Inject public DateFormatter(@NonNull Context context) {
+    @Inject
+    public DateFormatter(@NonNull Context context) {
         this.context = context.getApplicationContext();
     }
 
@@ -67,7 +69,7 @@ import is.hello.sense.ui.widget.util.Styles;
             return DateFormat.getDateFormatOrder(context);
         } catch (IllegalArgumentException e) {
             Logger.warn(DateFormatter.class.getSimpleName(), "Device's DateFormat#getDateFormatOrder(Context) is faulty", e);
-            return new char[] {'y', 'M', 'd'};
+            return new char[]{'y', 'M', 'd'};
         }
     }
 
@@ -80,7 +82,9 @@ import is.hello.sense.ui.widget.util.Styles;
      * shifted into the user's local device time zone.
      */
     @VisibleForTesting
-    static @NonNull DateTime nowDateTime() {
+    static
+    @NonNull
+    DateTime nowDateTime() {
         return DateTime.now(DateTimeZone.getDefault());
     }
 
@@ -89,7 +93,9 @@ import is.hello.sense.ui.widget.util.Styles;
      * shifted into the user's local device time zone.
      */
     @VisibleForTesting
-    static @NonNull LocalDate nowLocalDate() {
+    static
+    @NonNull
+    LocalDate nowLocalDate() {
         return LocalDate.now(DateTimeZone.getDefault());
     }
 
@@ -99,7 +105,9 @@ import is.hello.sense.ui.widget.util.Styles;
      * Should not be used for anything thing that does not require
      * the {@link #NIGHT_BOUNDARY_HOUR} constant to apply.
      */
-    public static @NonNull LocalDate todayForTimeline() {
+    public static
+    @NonNull
+    LocalDate todayForTimeline() {
         final DateTime now = nowDateTime();
         if (now.getHourOfDay() < NIGHT_BOUNDARY_HOUR) {
             return now.minusDays(1).toLocalDate();
@@ -111,14 +119,19 @@ import is.hello.sense.ui.widget.util.Styles;
     /**
      * Returns whether or not a given local date is considered to be today.
      */
-    public static boolean isTodayForTimeline(@NonNull LocalDate localDate) {
+    public static boolean isTodayForTimeline(@Nullable final LocalDate localDate) {
+        if (localDate == null) {
+            return false;
+        }
         return todayForTimeline().equals(localDate);
     }
 
     /**
      * Returns the date considered to represent last night.
      */
-    public static @NonNull LocalDate lastNight() {
+    public static
+    @NonNull
+    LocalDate lastNight() {
         final DateTime now = nowDateTime();
         if (now.getHourOfDay() < NIGHT_BOUNDARY_HOUR) {
             return now.minusDays(2).toLocalDate();
@@ -130,7 +143,10 @@ import is.hello.sense.ui.widget.util.Styles;
     /**
      * Returns whether or not a given date is considered to be last night.
      */
-    public static boolean isLastNight(@NonNull LocalDate instant) {
+    public static boolean isLastNight(@Nullable final LocalDate instant) {
+        if (instant == null) {
+            return false;
+        }
         return lastNight().isEqual(instant);
     }
 
@@ -151,6 +167,12 @@ import is.hello.sense.ui.widget.util.Styles;
     public static boolean isInLast2Weeks(@NonNull final LocalDate instant) {
         final Interval interval = new Interval(Weeks.TWO, nowDateTime().withTimeAtStartOfDay());
         return interval.contains(instant.toDateTimeAtStartOfDay());
+    }
+
+    public static boolean isMoreThanThreeDays(@NonNull final LocalDate creationDate) {
+        final LocalDate today = LocalDate.now();
+        return Math.abs(Days.daysBetween(today, creationDate).getDays()) > 3;
+
     }
 
     //endregion
@@ -183,7 +205,9 @@ import is.hello.sense.ui.widget.util.Styles;
 
     //region Core Formatters
 
-    public @NonNull String formatAsTimelineDate(@Nullable LocalDate date) {
+    public
+    @NonNull
+    String formatAsTimelineDate(@Nullable LocalDate date) {
         if (date != null) {
             final LocalDate lastNight = lastNight();
             if (date.equals(lastNight) || date.isAfter(lastNight)) {
@@ -198,7 +222,9 @@ import is.hello.sense.ui.widget.util.Styles;
         }
     }
 
-    public @NonNull String formatAsTimelineNavigatorDate(@Nullable LocalDate date) {
+    public
+    @NonNull
+    String formatAsTimelineNavigatorDate(@Nullable LocalDate date) {
         if (date != null) {
             if (!date.year().equals(nowLocalDate().year())) {
                 return date.toString(context.getString(R.string.format_date_month_year));
@@ -210,7 +236,9 @@ import is.hello.sense.ui.widget.util.Styles;
         }
     }
 
-    public @NonNull String formatAsLocalizedDate(@Nullable LocalDate date) {
+    public
+    @NonNull
+    String formatAsLocalizedDate(@Nullable LocalDate date) {
         if (date != null) {
             return DateFormat.getDateFormat(context).format(date.toDate());
         } else {
@@ -218,7 +246,9 @@ import is.hello.sense.ui.widget.util.Styles;
         }
     }
 
-    public static @NonNull CharSequence assembleTimeAndPeriod(@NonNull CharSequence time, @Nullable CharSequence period) {
+    public static
+    @NonNull
+    CharSequence assembleTimeAndPeriod(@NonNull CharSequence time, @Nullable CharSequence period) {
         if (TextUtils.isEmpty(period)) {
             return time;
         } else {
@@ -229,7 +259,9 @@ import is.hello.sense.ui.widget.util.Styles;
         }
     }
 
-    public @NonNull CharSequence formatForTimelineEvent(@Nullable DateTime date, boolean use24Time) {
+    public
+    @NonNull
+    CharSequence formatForTimelineEvent(@Nullable DateTime date, boolean use24Time) {
         if (date != null) {
             if (use24Time) {
                 return date.toString(context.getString(R.string.format_timeline_event_time_24_hr));
@@ -242,7 +274,9 @@ import is.hello.sense.ui.widget.util.Styles;
         return context.getString(R.string.format_date_placeholder);
     }
 
-    public @Nullable CharSequence formatForTimelineSegment(@Nullable LocalTime date, boolean use24Time) {
+    public
+    @Nullable
+    CharSequence formatForTimelineSegment(@Nullable LocalTime date, boolean use24Time) {
         if (date != null) {
             String hour, period;
             if (use24Time) {
@@ -259,7 +293,9 @@ import is.hello.sense.ui.widget.util.Styles;
         }
     }
 
-    public @NonNull CharSequence formatForTimelineInfo(@Nullable DateTime date, boolean use24Time) {
+    public
+    @NonNull
+    CharSequence formatForTimelineInfo(@Nullable DateTime date, boolean use24Time) {
         if (date != null) {
             if (use24Time) {
                 return date.toString(context.getString(R.string.format_timeline_event_time_24_hr));
@@ -273,7 +309,9 @@ import is.hello.sense.ui.widget.util.Styles;
     }
 
     @NotLocalizable(NotLocalizable.BecauseOf.API_LIMITATION)
-    public @NonNull CharSequence formatAsAlarmTime(@Nullable LocalTime time, boolean use24Time) {
+    public
+    @NonNull
+    CharSequence formatAsAlarmTime(@Nullable LocalTime time, boolean use24Time) {
         if (time != null) {
             if (use24Time) {
                 return time.toString(context.getString(R.string.format_alarm_time_24_hr));
@@ -296,7 +334,9 @@ import is.hello.sense.ui.widget.util.Styles;
         return context.getString(R.string.format_date_placeholder);
     }
 
-    public @NonNull String formatAsTime(@Nullable DateTime time, boolean use24Time) {
+    public
+    @NonNull
+    String formatAsTime(@Nullable DateTime time, boolean use24Time) {
         if (time != null) {
             if (use24Time) {
                 return time.toString(context.getString(R.string.format_time_24_hr));
@@ -307,7 +347,9 @@ import is.hello.sense.ui.widget.util.Styles;
         return context.getString(R.string.format_date_placeholder);
     }
 
-    public @NonNull String formatAsDayAndTime(@Nullable DateTime time, boolean use24Time) {
+    public
+    @NonNull
+    String formatAsDayAndTime(@Nullable DateTime time, boolean use24Time) {
         if (time != null) {
             if (use24Time) {
                 return time.toString(context.getString(R.string.format_day_and_time_24_hr));
@@ -361,8 +403,10 @@ import is.hello.sense.ui.widget.util.Styles;
         }
     }
 
-    public @NonNull CharSequence formatDuration(final long duration,
-                                                @NonNull final TimeUnit unit) {
+    public
+    @NonNull
+    CharSequence formatDuration(final long duration,
+                                @NonNull final TimeUnit unit) {
         final long totalMinutes = unit.toMinutes(duration);
         if (totalMinutes < 60) {
             return Styles.assembleReadingAndUnitWithSpace(Long.toString(totalMinutes),
@@ -390,7 +434,9 @@ import is.hello.sense.ui.widget.util.Styles;
 
     //region Calendar Support
 
-    public static @JodaWeekDay int calendarDayToJodaTimeDay(int calendarDay) {
+    public static
+    @JodaWeekDay
+    int calendarDayToJodaTimeDay(int calendarDay) {
         switch (calendarDay) {
             case Calendar.SUNDAY: {
                 return DateTimeConstants.SUNDAY;
@@ -452,7 +498,9 @@ import is.hello.sense.ui.widget.util.Styles;
         }
     }
 
-    public static @JodaWeekDay int nextJodaTimeDay(@JodaWeekDay final int jodaTimeDay) {
+    public static
+    @JodaWeekDay
+    int nextJodaTimeDay(@JodaWeekDay final int jodaTimeDay) {
         final @JodaWeekDay int nextDay = jodaTimeDay + 1;
         if (nextDay > DateTimeConstants.SUNDAY) {
             return DateTimeConstants.MONDAY;
@@ -516,5 +564,6 @@ import is.hello.sense.ui.widget.util.Styles;
     @Retention(RetentionPolicy.SOURCE)
     @Target({ElementType.PARAMETER, ElementType.METHOD,
             ElementType.FIELD, ElementType.LOCAL_VARIABLE})
-    public @interface JodaWeekDay {}
+    public @interface JodaWeekDay {
+    }
 }
