@@ -7,8 +7,6 @@ import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import javax.inject.Inject;
@@ -78,7 +76,7 @@ public final class NotificationRegistration {
     }
 
     private boolean checkPlayServices() {
-        final int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(activity);
+        /*final int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(activity);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
                 GooglePlayServicesUtil.getErrorDialog(resultCode, activity, 0).show();
@@ -86,7 +84,7 @@ public final class NotificationRegistration {
                 Logger.warn(NotificationRegistration.class.getSimpleName(), "Google play services fatal error: " + resultCode);
             }
             return false;
-        }
+        }*/
         return true;
     }
 
