@@ -13,6 +13,7 @@ import java.util.concurrent.Executor;
 public class StateSafeExecutor implements Executor {
     private final Resumes host;
     private final Queue<Runnable> pending = new ArrayDeque<>(8); //Synchronize all access to this!
+    private boolean canExecute;
 
     /**
      * Constructs a state-safe executor that will
@@ -20,6 +21,22 @@ public class StateSafeExecutor implements Executor {
      */
     public StateSafeExecutor(@NonNull Resumes host) {
         this.host = host;
+        this.canExecute = true;
+    }
+
+    /**
+     * @return true if able to execute work in queue
+     */
+    public boolean canExecute() {
+        return canExecute && host.isResumed();
+    }
+
+    /**
+     * Use this to pause execution of work when {@link Resumes#isResumed()}
+     * is true.
+     */
+    public void setCanExecute(final boolean canExecute) {
+        this.canExecute = canExecute;
     }
 
     /**
@@ -29,7 +46,7 @@ public class StateSafeExecutor implements Executor {
     public void executePendingForResume() {
         synchronized(pending) {
             Runnable runnable;
-            while (host.isResumed() && (runnable = pending.poll()) != null) {
+            while (canExecute() && (runnable = pending.poll()) != null) {
                 runnable.run();
             }
         }
@@ -42,7 +59,7 @@ public class StateSafeExecutor implements Executor {
      */
     @Override
     public void execute(@NonNull Runnable command) {
-        if (host.isResumed()) {
+        if (canExecute()) {
             command.run();
         } else {
             synchronized(pending) {
