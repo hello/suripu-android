@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -69,8 +68,6 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
     static final int SUCCESS_STATE = 2;
     static final int SUCCESS_AFTER_ERROR_STATE = 3;
 
-    @DrawableRes
-    public static final int SRC_CIRCLE_DRAWABLE = R.drawable.sense_voice_circle_selector;
     static final int[] SENSE_WAKE_STATE = new int[]{android.R.attr.state_first};
     static final int[] SENSE_FAIL_STATE = new int[]{android.R.attr.state_middle};
     static final int[] SENSE_OK_STATE = new int[]{android.R.attr.state_last};
@@ -274,7 +271,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         transaction.animatorFor(subtitle)
                 .fadeOut(View.INVISIBLE);
 
-        senseCircleView.setImageResource(SRC_CIRCLE_DRAWABLE);
+        senseCircleView.setImageResource(R.drawable.sense_voice_circle_selector);
         senseCircleView.getDrawable().setAlpha(0);
         questionText.setAlpha(0);
     }
