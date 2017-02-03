@@ -9,6 +9,7 @@ import java.lang.ref.WeakReference;
 
 public class AnimatorSetHandler extends Handler {
     public static final int LOOP_ANIMATION = -1;
+    public static final int SINGLE_ANIMATION = 0;
     private final long callbackDelay;
     private final Runnable callback;
     private int repeatCount;
@@ -38,7 +39,7 @@ public class AnimatorSetHandler extends Handler {
                 animatorSetRef.start();
             }
             final AnimatorSetHandler handlerRef = handlerWeakReference.get();
-            if(handlerRef != null && handlerRef.repeatCount != 0) {
+            if(handlerRef != null && handlerRef.repeatCount != SINGLE_ANIMATION) {
                 handlerRef.start();
                 if(handlerRef.repeatCount != LOOP_ANIMATION) {
                     handlerRef.repeatCount--;
