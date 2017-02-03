@@ -9,12 +9,10 @@ import android.support.annotation.Nullable;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.android.gms.iid.InstanceID;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import javax.inject.Inject;
 
-import is.hello.sense.BuildConfig;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.PushRegistration;
@@ -111,14 +109,18 @@ public final class NotificationRegistration {
                 .apply();
     }
 
+    //todo move to fetch token from service
     private Observable<String> registerWithGCM() {
         return Observable.create((Observable.OnSubscribe<String>) subscriber -> {
             Logger.info(NotificationRegistration.class.getSimpleName(), "Registering for notifications.");
 
             try {
-                final String registrationId = InstanceID.getInstance(activity)
-                                                  .getToken(BuildConfig.GCM_AUTH_TOKEN_IDS,
-                                                            GoogleCloudMessaging.INSTANCE_ID_SCOPE);
+                final String registrationId = FirebaseInstanceId.getInstance()
+                                                                .getToken();
+                if(registrationId == null) {
+                    subscriber.onError(new Throwable("No Firebase token found"));
+                    return;
+                }
                 saveRegistrationId(registrationId);
                 Logger.info(NotificationRegistration.class.getSimpleName(), "Registered with GCM: " + registrationId);
 
