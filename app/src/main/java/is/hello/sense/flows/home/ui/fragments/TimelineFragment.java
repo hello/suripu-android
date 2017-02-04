@@ -58,6 +58,7 @@ import is.hello.sense.ui.widget.SenseBottomSheet;
 import is.hello.sense.ui.widget.timeline.TimelineImageGenerator;
 import is.hello.sense.ui.widget.timeline.TimelineInfoOverlay;
 import is.hello.sense.ui.widget.util.Dialogs;
+import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
@@ -82,7 +83,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     private static final int ID_EVENT_REMOVE = 2;
     private static final int ID_EVENT_INCORRECT = 3;
     private static final double TOOL_TIP_HEIGHT_MULTIPLIER = 3.25; // 3 for top+bottom+text height. .25 for a little white space.
-
 
     public static TimelineFragment newInstance(@NonNull final LocalDate date,
                                                @Nullable final Timeline cachedTimeline) {
@@ -386,7 +386,9 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
 
     //region Handholding
-
+    public boolean isAtLeastThreeDaysOld() {
+        return DateFormatter.isMoreThanThreeDays(preferences.getAccountCreationDate());
+    }
 
     private void showHandholdingIfAppropriate() {
         if (this.parent == null ||
@@ -394,7 +396,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             return;
         }
 
-        if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity()) && !this.presenterView.hasTutorial()) {
+        if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity()) && !this.presenterView.hasTutorial() && isAtLeastThreeDaysOld()) {
             final TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.SWIPE_TIMELINE);
             overlayView.setOnDismiss(() -> this.presenterView.clearTutorial());
             overlayView.setAnchorContainer(getActivity().findViewById(this.parent.getTutorialContainerIdRes()));
@@ -413,7 +415,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             if (finished) {
                 showHandholdingIfAppropriate();
             }
-
             TimelineFragment.this.presenterView.removeItemAnimatorListener(this);
         }
     }
@@ -425,6 +426,9 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
     public void bindTimeline(@NonNull final Timeline timeline) {
         final boolean hasEvents = !Lists.isEmpty(timeline.getEvents());
+        if (!DateFormatter.isLastNight(timeline.getDate())) {
+            Tutorial.SWIPE_TIMELINE.markShown(getActivity());
+        }
         if (hasEvents) {
             this.presenterView.transitionOutOfNoDataState();
             final Runnable backgroundAnimations = this.stateSafeExecutor.bind(() -> {
@@ -501,7 +505,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             this.infoOverlay.dismiss(false);
         }
         if (view.getY() < this.toolTipHeight) {
-            final int dy = this.toolTipHeight - (int) view.getY();
+            final int dy = this.toolTipHeight * 2 - (int) view.getY();
             this.presenterView.scrollForSpace(this, event, view, position, -dy);
             return;
         }
@@ -513,7 +517,8 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         });
         this.infoOverlay.bindEvent(event);
         this.infoOverlay.show(view,
-                              this.parent.getTooltipOverlayContainerIdRes(),
+                              this.presenterView,
+                              Views.getActivityScreenSize(getActivity(), false),
                               animateShow);
 
         Analytics.trackEvent(Analytics.Timeline.EVENT_TAP, null);
@@ -713,9 +718,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
         @IdRes
         int getTutorialContainerIdRes();
-
-        @IdRes
-        int getTooltipOverlayContainerIdRes();
 
         /**
          * Used to return to Last Night timeline when needed

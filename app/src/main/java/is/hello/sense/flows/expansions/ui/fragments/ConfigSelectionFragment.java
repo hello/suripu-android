@@ -44,6 +44,12 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     private Expansion expansion;
 
     @Override
+    public void onAttach(@NonNull final Activity activity) {
+        super.onAttach(activity);
+        showLockedBlockingActivity(R.string.expansions_configuration_selection_loading);
+    }
+
+    @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(expansionDetailsInteractor);
@@ -57,14 +63,15 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
             this.adapter.setOnItemClickedListener(this);
             presenterView = new ConfigSelectionView(getActivity(), adapter);
             presenterView.setDoneButtonClickListener(this::onDoneButtonClicked);
+            presenterView.setVisibility(View.INVISIBLE);
         }
     }
 
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        showLockedBlockingActivity(R.string.expansions_configuration_selection_loading);
         presenterView.postDelayed(stateSafeExecutor.bind( () -> {
+            presenterView.setVisibility(View.VISIBLE);
             bindAndSubscribe(expansionDetailsInteractor.expansionSubject,
                              this::bindExpansion,
                              this::presentError);

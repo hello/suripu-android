@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -8,7 +9,8 @@
         android:id="@+id/fragment_insight_info_fill"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background_light"/>
+        android:background="?attr/senseBackgroundSecondary"
+        tools:visibility="visible"/>
 
     <ProgressBar
         android:id="@+id/fragment_insight_info_progress"
@@ -37,7 +39,8 @@
                 android:layout_marginBottom="@dimen/x3"
                 android:background="@color/background_insight_illustration"
                 android:src="@drawable/empty_illustration"
-                app:senseAspectRatio="2:1"/>
+                app:senseAspectRatio="2:1"
+                />
 
             <TextView
                 android:id="@+id/fragment_insight_info_title"
@@ -50,7 +53,9 @@
                 android:lineSpacingMultiplier="@dimen/line_multiple_heading"
                 android:textColor="@color/text_dark"
                 android:textSize="@dimen/text_size_heading"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                tools:visibility="visible"
+                tools:text="@string/action_insights"/>
 
             <TextView
                 android:id="@+id/fragment_insight_info_message"
@@ -62,7 +67,9 @@
                 android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"
                 android:textAppearance="@style/AppTheme.Text.Body"
                 android:textColor="@color/text_medium"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                tools:visibility="visible"
+                tools:text="@string/lorem_ipsum"/>
 
             <TextView
                 android:id="@+id/fragment_insight_info_summary_header"
@@ -76,7 +83,9 @@
                 android:text="@string/title_about_you"
                 android:textAllCaps="true"
                 android:textAppearance="@style/AppTheme.Text.SectionHeading.Large"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                tools:visibility="visible"
+                tools:text="@string/action_insights"/>
 
             <TextView
                 android:id="@+id/fragment_insight_info_summary"
@@ -88,7 +97,9 @@
                 android:background="@drawable/block_quote_vertical"
                 android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"
                 android:textAppearance="@style/AppTheme.Text.Body.MidSized.Dim"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                tools:visibility="visible"
+                tools:text="@string/lorem_ipsum"/>
 
         </LinearLayout>
 
@@ -100,7 +111,8 @@
         android:layout_height="@dimen/x7"
         android:layout_alignParentBottom="true"
         app:leftButtonText="@string/action_close"
-        app:rightButtonText="@string/action_share"/>
+        app:rightButtonText="@string/action_share"
+        android:visibility="visible"/>
 
     <ImageView
         android:id="@+id/fragment_insight_info_top_shadow"
@@ -109,7 +121,8 @@
         android:importantForAccessibility="no"
         android:scaleType="fitXY"
         android:src="@drawable/shadow_top_down"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <ImageView
         android:id="@+id/fragment_insight_info_bottom_shadow"
@@ -119,6 +132,7 @@
         android:importantForAccessibility="no"
         android:scaleType="fitXY"
         android:src="@drawable/shadow_bottom_up"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
 </RelativeLayout>

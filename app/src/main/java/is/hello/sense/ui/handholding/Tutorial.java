@@ -42,18 +42,24 @@ public enum Tutorial {
                    Interaction.SWIPE_RIGHT,
                    Analytics.createBreadcrumbTrackingProperties(Source.TIMELINE,
                                                                 Description.SWIPE_TIMELINE)),
-    SCRUB_SENSOR_HISTORY(R.string.tutorial_scrub_sensor_history,
-                         Gravity.TOP,
-                         R.id.fragment_sensor_history_graph,
-                         Interaction.SWIPE_LEFT,
-                         Analytics.createBreadcrumbTrackingProperties(Source.SENSOR_HISTORY,
-                                                                      Description.SCRUB_SENSOR_HISTORY)),
     TAP_INSIGHT_CARD(R.string.tutorial_tap_insight_card,
                      Gravity.BOTTOM,
                      R.id.item_insight_card,
                      Interaction.TAP,
                      Analytics.createBreadcrumbTrackingProperties(Source.INSIGHTS,
-                                                                  Description.TAP_INSIGHT_CARD));
+                                                                  Description.TAP_INSIGHT_CARD)),
+    SENSOR_DETAILS_SCRUB(R.string.tutorial_scrub_sensor_history,
+                         Gravity.BOTTOM,
+                         R.id.fragment_sensor_detail_graph_view,
+                         Interaction.TAP,
+                         Analytics.createBreadcrumbTrackingProperties(Source.SENSOR_GRAPH,
+                                                                      Description.SCRUB_GRAPH)),
+    SENSOR_DETAILS_SCROLL(R.string.tutorial_scroll_sensor_history,
+                         Gravity.BOTTOM,
+                         R.id.fragment_sensor_detail_graph_view,
+                         Interaction.SWIPE_UP,
+                         Analytics.createBreadcrumbTrackingProperties(Source.SENSOR_GRAPH,
+                                                                      Description.SCRUB_GRAPH));
 
     public final
     @StringRes
@@ -110,21 +116,7 @@ public enum Tutorial {
     }
 
     public boolean shouldShow(@NonNull final Activity activity) {
-        // Check if this device has ever seen the desired tutorial. If so mark it as seen for the user
-        // and reset the pref so another account on the device will not suppress the breadcrumb too.
-        final SharedPreferences genericPreferences = getPrefs(activity);
-        if (genericPreferences.getBoolean(getShownKey(), false)) {
-            genericPreferences
-                    .edit()
-                    .putBoolean(getShownKey(), false)
-                    .apply();
-
-            // Mark shown for this user and don't show the breadcrumb.
-            markShown(activity);
-            return false;
-        }
-
-        return activity.findViewById(TutorialOverlayView.ROOT_CONTAINER_ID) == null;
+        return !getPrefs(activity).getBoolean(getShownKey(), false) && activity.findViewById(TutorialOverlayView.ROOT_CONTAINER_ID) == null;
     }
 
     public void wasDismissed(@NonNull final Context context) {

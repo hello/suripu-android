@@ -16,12 +16,14 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.SenseDialogFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
@@ -35,7 +37,7 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
     private static final String ARG_FLAGS = LoadingDialogFragment.class.getName() + ".ARG_FLAGS";
     private static final String ARG_DISMISS_MSG = LoadingDialogFragment.class.getName() + ".ARG_DISMISS_MSG";
     private static final String ARG_LOCK_ORIENTATION = LoadingDialogFragment.class.getName() + ".ARG_LOCK_ORIENTATION";
-
+    private static final String ARG_ON_SHOW_RUNNABLE = LoadingDialogFragment.class.getName() + ".ARG_ON_SHOW_RUNNABLE";
 
     //region Config
 
@@ -63,12 +65,16 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
                                                       final int flags) {
         final LoadingDialogFragment preexistingDialog = (LoadingDialogFragment) fm.findFragmentByTag(TAG);
         if (preexistingDialog != null) {
-            preexistingDialog.dismiss();
+            if (flags == preexistingDialog.getFlags()) {
+                preexistingDialog.setTitle(title);
+                return preexistingDialog;
+            } else {
+                preexistingDialog.dismiss();
+            }
         }
 
         final LoadingDialogFragment dialog = LoadingDialogFragment.newInstance(title, flags);
         dialog.show(fm, TAG);
-
         return dialog;
     }
 
@@ -135,7 +141,7 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
 
     @Override
     public @NonNull Dialog onCreateDialog(final Bundle savedInstanceState) {
-        Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_Loading);
+        final Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_Loading);
 
         dialog.setContentView(R.layout.fragment_dialog_loading);
         dialog.setCanceledOnTouchOutside(false);
@@ -157,6 +163,8 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
             titleText.setText(arguments.getString(ARG_TITLE));
 
             this.setLockOrientation(getActivity());
+
+            this.internalSetOnShowListener(arguments, dialog);
         }
 
         return dialog;
@@ -187,6 +195,22 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
         getArguments().putInt(ARG_DISMISS_MSG, messageRes);
     }
 
+    public void setOnShowListener(@NonNull final SenseAlertDialog.SerializedRunnable onShow) {
+        getArguments().putSerializable(ARG_ON_SHOW_RUNNABLE, onShow);
+    }
+
+    private void internalSetOnShowListener(@NonNull final Bundle arguments,
+                                           @NonNull final Dialog dialog) {
+        if (arguments.containsKey(ARG_ON_SHOW_RUNNABLE)) {
+            final Serializable serializable =  arguments.getSerializable(ARG_ON_SHOW_RUNNABLE);
+            if (serializable instanceof SenseAlertDialog.SerializedRunnable) {
+                final SenseAlertDialog.SerializedRunnable onShow =
+                        (SenseAlertDialog.SerializedRunnable) serializable;
+                dialog.setOnShowListener(ignore -> onShow.run());
+            }
+        }
+    }
+
     /**
      * Causes orientation changes to be blocked for the
      * duration of the loading dialog being visible.
@@ -205,6 +229,15 @@ public final class LoadingDialogFragment extends SenseDialogFragment {
                 oldOrientation = currentOrientation;
                 activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
             }
+        }
+    }
+
+    public int getFlags() {
+        final Bundle args = getArguments();
+        if(args != null) {
+            return args.getInt(ARG_FLAGS, DEFAULTS);
+        } else {
+            return DEFAULTS;
         }
     }
 

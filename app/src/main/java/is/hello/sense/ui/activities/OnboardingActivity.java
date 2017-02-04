@@ -56,13 +56,13 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterBirthdayFragment
 import is.hello.sense.ui.fragments.onboarding.OnboardingRegisterGenderFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingRoomCheckFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
-import is.hello.sense.ui.fragments.onboarding.OnboardingSetLocationFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
+import is.hello.sense.ui.fragments.onboarding.SetLocationFragment;
 import is.hello.sense.ui.fragments.onboarding.SignInFragment;
 import is.hello.sense.ui.fragments.onboarding.SimpleStepFragment;
 import is.hello.sense.ui.fragments.onboarding.VoiceCompleteFragment;
@@ -130,7 +130,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
 
     @Override
     protected List<Object> getModules() {
-        if (getIntent() != null && getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
+        if (getIntent() != null && isPairOnly()) {
             return Arrays.asList(new OnboardingModule(), new SettingsPairSenseModule(true));
         }
         return Arrays.asList(new OnboardingModule(), new OnboardingPairSenseModule());
@@ -174,11 +174,11 @@ public class OnboardingActivity extends ScopedInjectionActivity
             return;
         }
 
-        if (getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
+        if (isPairOnly()) {
             final int lastCheckPoint = getLastCheckPoint();
             switch (lastCheckPoint) {
                 case Constants.ONBOARDING_CHECKPOINT_SENSE:
-                    showPairSense();
+                    showPairSense(false);
                     break;
                 case Constants.ONBOARDING_CHECKPOINT_PILL:
                     showPairPill(false);
@@ -216,7 +216,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
                         break;
 
                     case Constants.ONBOARDING_CHECKPOINT_SENSE:
-                        showPairPill(!getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false));
+                        showPairPill(!isPairOnly());
                         break;
 
                     case Constants.ONBOARDING_CHECKPOINT_PILL:
@@ -308,8 +308,6 @@ public class OnboardingActivity extends ScopedInjectionActivity
             } else if (responseCode == IntroductionFragment.RESPONSE_GET_STARTED) {
                 showGetStarted(false);
             }
-        } else if (fragment instanceof OnboardingSetLocationFragment) {
-            showSetupSense();
         } else if (fragment instanceof ConnectToWiFiFragment) {
             showPairPill(true);
         } else if (fragment instanceof BluetoothFragment) {
@@ -318,9 +316,13 @@ public class OnboardingActivity extends ScopedInjectionActivity
             } else if (responseCode == OnboardingActivity.RESPONSE_SHOW_BIRTHDAY) {
                 showBirthday(null, true);
             }
+        } else if (fragment instanceof SetLocationFragment) {
+            showPairSense(responseCode == RESULT_OK);
         } else if (fragment instanceof PairSenseFragment) {
             if (responseCode == PairSensePresenter.REQUEST_CODE_EDIT_WIFI) {
                 showSelectWifiNetwork();
+            } else if (responseCode == PairSensePresenter.REQUEST_NEEDS_LOCATION_PERMISSION) {
+                showSetLocation();
             } else {
                 showPairPill(true);
             }
@@ -363,10 +365,13 @@ public class OnboardingActivity extends ScopedInjectionActivity
         back();
     }
 
+    private boolean isPairOnly() {
+        return getIntent() != null && getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false);
+    }
+
     public void back() {
         final boolean hasStartCheckPoint = getIntent().hasExtra(EXTRA_START_CHECKPOINT);
-        final boolean pairOnly = getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false);
-        final boolean wantsDialog = (!hasStartCheckPoint && !pairOnly);
+        final boolean wantsDialog = (!hasStartCheckPoint && !isPairOnly());
         if (wantsDialog && getFragmentManager().getBackStackEntryCount() == 0) {
             final SenseAlertDialog builder = new SenseAlertDialog(this);
             builder.setTitle(R.string.dialog_title_confirm_leave_onboarding);
@@ -407,9 +412,9 @@ public class OnboardingActivity extends ScopedInjectionActivity
         pushFragment(new SignInFragment(), null, true);
     }
 
-    public void showPairSense() {
+    public void showPairSense(final boolean startWithScan) {
         if (bluetoothStack.isEnabled()) {
-            pushFragment(new PairSenseFragment(), null, false);
+            pushFragment(PairSenseFragment.newInstance(startWithScan), null, false);
         } else {
             pushFragment(BluetoothFragment.newInstance(
                     OnboardingActivity.RESPONSE_SETUP_SENSE), null, false);
@@ -474,7 +479,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
             final Account account = getAccount();
             bindAndSubscribe(apiService.updateAccount(account, true), ignored -> {
                 LoadingDialogFragment.close(getFragmentManager());
-                showSetLocation();
+                showSetupSense();
             }, e -> {
                 LoadingDialogFragment.close(getFragmentManager());
                 ErrorDialogFragment.presentError(this, e);
@@ -483,7 +488,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
     }
 
     public void showSetLocation() {
-        pushFragment(new OnboardingSetLocationFragment(), null, false);
+        pushFragment(SetLocationFragment.newInstance(), null, false);
     }
 
     public void showSetupSense() {
@@ -496,7 +501,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
             builder.setSubheadingText(R.string.info_setup_sense);
             builder.setDiagramImage(R.drawable.onboarding_sense_intro);
             builder.setNextFragmentClass(PairSenseFragment.class);
-            if (getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
+            if (isPairOnly()) {
                 builder.setAnalyticsEvent(Analytics.Settings.EVENT_SENSE_SETUP);
             } else {
                 builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_SETUP);
@@ -531,7 +536,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
             builder.setSubheadingText(R.string.onboarding_message_sleep_pill_intro);
             builder.setDiagramImage(R.drawable.onboarding_sleep_pill);
             builder.setHideToolbar(true);
-            if (getIntent().getBooleanExtra(EXTRA_PAIR_ONLY, false)) {
+            if (isPairOnly()) {
                 builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO_IN_APP);
             } else {
                 builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO);

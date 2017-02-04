@@ -178,6 +178,7 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         private final ItemSettingsToggleBinding binding;
         private final CompoundButton checkButton;
 
+        @SuppressWarnings("RedundantCast")
         ToggleViewHolder(@NonNull final View itemView) {
             super(itemView);
             this.binding = DataBindingUtil.bind(itemView);
@@ -188,8 +189,10 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         @Override
         void bind(@NonNull final ToggleItem item) {
             if(item.icon != 0) {
+                this.binding.itemSettingsToggleIcon.setVisibility(View.VISIBLE);
                 this.binding.itemSettingsToggleIcon.setImageResource(item.icon);
             } else {
+                this.binding.itemSettingsToggleIcon.setVisibility(View.GONE);
                 this.binding.itemSettingsToggleIcon.setImageDrawable(null);
             }
             this.binding.itemSettingsToggleCheckTitle.setText(item.text);

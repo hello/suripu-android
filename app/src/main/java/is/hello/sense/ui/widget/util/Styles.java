@@ -27,6 +27,7 @@ import android.support.annotation.StyleRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.Html;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -49,7 +50,6 @@ import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Trends;
-import is.hello.sense.ui.widget.graphing.ColorDrawableCompat;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.SuperscriptSpanAdjuster;
 import is.hello.sense.util.markup.text.MarkupString;
@@ -153,8 +153,8 @@ public final class Styles {
 
     public static
     @NonNull
-    CharSequence createUnitSuperscriptSpan(@NonNull String suffix) {
-        final SpannableString spannableSuffix = new SpannableString(' ' + suffix);
+    CharSequence createUnitSuperscriptSpan(@NonNull final String suffix) {
+        final SpannableString spannableSuffix = new SpannableString(suffix);
         if (UnitFormatter.UNIT_SUFFIX_TEMPERATURE.equals(suffix)) {
             spannableSuffix.setSpan(new RelativeSizeSpan(0.6f),
                                     0, spannableSuffix.length(),
@@ -178,8 +178,8 @@ public final class Styles {
 
     public static
     @NonNull
-    CharSequence createUnitSubscriptSpan(@NonNull String suffix) {
-        final SpannableString spannableSuffix = new SpannableString(' ' + suffix);
+    CharSequence createUnitSubscriptSpan(@NonNull final String suffix) {
+        final SpannableString spannableSuffix = new SpannableString(suffix);
         spannableSuffix.setSpan(new RelativeSizeSpan(0.6f),
                                 0, spannableSuffix.length(),
                                 Spanned.SPAN_INCLUSIVE_INCLUSIVE);
@@ -213,22 +213,17 @@ public final class Styles {
         return builder;
     }
 
+    @NonNull
+    public static CharSequence assembleReadingAndUnitWithSpace(@NonNull final CharSequence value,
+                                                               @NonNull final String suffix,
+                                                               @UnitStyle final int unitStyle) {
+        return assembleReadingAndUnit(value, ' ' + suffix, unitStyle);
+    }
+
     public static
     @NonNull
     CharSequence assembleReadingAndUnit(final double value, @NonNull final String suffix) {
         return assembleReadingAndUnit(String.format("%.0f", value), suffix, UNIT_STYLE_SUPERSCRIPT);
-    }
-
-    public static
-    @NonNull
-    CharSequence assembleReadingAndUnit(final double value, @NonNull final String suffix, final int decimals) {
-        return assembleReadingAndUnit(String.format("%." + decimals + "f", value), suffix, UNIT_STYLE_SUPERSCRIPT);
-    }
-
-    public static
-    @NonNull
-    CharSequence assembleReadingAndUnit(String value, @NonNull String suffix) {
-        return assembleReadingAndUnit(String.format("%1$2s", value), suffix, UNIT_STYLE_SUPERSCRIPT);
     }
 
     public static
@@ -238,12 +233,6 @@ public final class Styles {
                 resources.getColor(R.color.graph_fill_gradient_top),
                 resources.getColor(R.color.graph_fill_gradient_bottom),
         });
-    }
-
-    public static
-    @NonNull
-    ColorDrawableCompat createGraphFillSolidDrawable(@NonNull Resources resources) {
-        return new ColorDrawableCompat(resources.getColor(R.color.graph_fill_solid));
     }
 
     public static void applyRefreshLayoutStyle(@NonNull SwipeRefreshLayout refreshLayout) {
@@ -527,5 +516,13 @@ public final class Styles {
         final Drawable wrapDrawable = DrawableCompat.wrap(normalDrawable);
         DrawableCompat.setTint(wrapDrawable, ContextCompat.getColor(context, color));
         item.setIcon(wrapDrawable);
+    }
+
+    public static Spanned fromHtml(@NonNull final String string) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return Html.fromHtml(string, Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            return Html.fromHtml(string);
+        }
     }
 }

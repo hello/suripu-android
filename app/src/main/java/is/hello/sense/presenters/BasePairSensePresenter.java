@@ -2,12 +2,9 @@ package is.hello.sense.presenters;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-
-import java.util.concurrent.TimeUnit;
 
 import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.util.ConnectProgress;
@@ -23,17 +20,11 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
-import rx.Subscription;
-import rx.subscriptions.Subscriptions;
 
 public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Output> extends BaseHardwarePresenter<T> {
 
     protected static final String OPERATION_LINK_ACCOUNT = "Linking account";
     protected static final String ARG_HAS_LINKED_ACCOUNT = "hasLinkedAccount";
-
-    //todo undue these
-    private static final int RETRY_TIMES = 10;
-    private static final int DELAY = 2;
 
     private boolean linkedAccount = false;
 
@@ -42,9 +33,6 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
     protected final DevicesInteractor devicesInteractor;
     private final PairSenseInteractor pairSenseInteractor;
     protected final PreferencesInteractor preferencesInteractor;
-
-    @NonNull
-    private Subscription devicesSubscription = Subscriptions.empty();
 
     public BasePairSensePresenter(@NonNull final HardwareInteractor hardwareInteractor,
                                   @NonNull final DevicesInteractor devicesInteractor,
@@ -189,51 +177,26 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
         showBlockingActivity(R.string.title_pushing_data);
 
         bindAndSubscribe(hardwareInteractor.pushData(),
-                         ignored -> getDeviceFeatures(RETRY_TIMES),
+                         ignored -> getDeviceFeatures(),
                          error -> {
                              Logger.error(getClass().getSimpleName(), "Could not push Sense data, ignoring.", error);
-                             getDeviceFeatures(RETRY_TIMES);
+                             getDeviceFeatures();
                          });
     }
 
-    /**
-     * @param retry will make UI calls if equal to {@link #RETRY_TIMES}, which should be the case
-     *              only if called from the UI thread. Trying to show the blocking activity from
-     *              another thread will trigger an error and not show voice tutorial if the user has it.
-     *              <p>
-     *              todo clean up how this presenter is showing blocking activities (will be done as we transition to viper2).
-     */
-    private void getDeviceFeatures(final int retry) {
-        if (retry == RETRY_TIMES) {
-            showBlockingActivity(R.string.title_pushing_data);
-        }
-        //todo figure out a way to automatically unsubscribe after first value is received.
-        //todo should also consider forgetting the subject here.
-        devicesSubscription.unsubscribe();
+    private void getDeviceFeatures() {
+        showBlockingActivity(R.string.title_pushing_data);
 
-        if (retry == 0) {
-            onFinished();
-            return;
-        }
-        devicesInteractor.devices.forget();
-        devicesSubscription = bind(devicesInteractor.devices)
-                .delay(DELAY, TimeUnit.SECONDS)
-                .subscribe(devices -> {
-                               devicesSubscription.unsubscribe(); // Unsubscribe so onfinished isn't called multiple times. Triggering an error for too many BLE commands at once
-                               if (devices == null || devices.getSense() == null) {
-                                   getDeviceFeatures(retry - 1); // servers not in sync. try again.
-                               } else {
-                                   preferencesInteractor.setDevice(devices.getSense());
-                                   onFinished();
-                               }
-                           },
-                           error -> {
-                               devicesSubscription.unsubscribe();// Unsubscribe so onfinished isn't called multiple times. Triggering an error for too many BLE commands at once
-                               Logger.error(getClass().getSimpleName(), "Could not get features from Sense, ignoring.", error);
-                               onFinished();
-                           });
-        devicesInteractor.update();
-
+        bindAndSubscribe(devicesInteractor.getDevicesWithRetry(),
+                devices -> {
+                        if(devices != null) { //todo should preferences be updated to reflect no device found?
+                            preferencesInteractor.setDevice(devices.getSense());
+                        }
+                        onFinished();
+                }, error -> {
+                       Logger.error(getClass().getSimpleName(), "Could not get features from Sense, ignoring.", error);
+                       onFinished();
+                });
     }
 
     private void onFinished() {
@@ -245,25 +208,6 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
                                   e -> {
                                       presentError(e, "Turning off LEDs");
                                   });
-    }
-
-    @CallSuper
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        releaseSubscription();
-    }
-
-    @CallSuper
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        releaseSubscription();
-    }
-
-    private void releaseSubscription() {
-        devicesSubscription.unsubscribe();
-        devicesSubscription = Subscriptions.empty();
     }
 
     public interface Output extends BaseOutput {

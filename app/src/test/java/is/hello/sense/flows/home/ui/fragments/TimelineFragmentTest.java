@@ -208,6 +208,7 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
         final View view = mock(View.class);
         when(view.getY()).thenReturn(0f);
         fragment.toolTipHeight = 1;
+        final int scrollY = -2;
         fragment.infoOverlay = mock(TimelineInfoOverlay.class);
         spyOnPresenterView();
         fragment.onSegmentItemClicked(0, mock(View.class), mock(TimelineEvent.class));
@@ -216,7 +217,7 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
                                                       any(),
                                                       any(),
                                                       eq(0),
-                                                      eq(-1));
+                                                      eq(scrollY));
     }
 
     @Test
@@ -235,10 +236,6 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
         fragment.timelineInteractor = spy(fragment.timelineInteractor);
     }
 
-    private void spyOnPreferences() {
-        fragment.preferences = spy(fragment.preferences);
-    }
-
     public static class ActivityWithParent extends FragmentTestActivity
             implements TimelineFragment.Parent {
 
@@ -248,11 +245,6 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
 
         @Override
         public int getTutorialContainerIdRes() {
-            return 0;
-        }
-
-        @Override
-        public int getTooltipOverlayContainerIdRes() {
             return 0;
         }
 

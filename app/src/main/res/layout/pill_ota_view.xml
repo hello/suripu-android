@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:background="@color/gray3_50">
 
+    <!-- If image view src changes dimension size blue box view may require update as well-->
     <View
         android:id="@+id/blue_box_view"
         android:layout_width="100dp"

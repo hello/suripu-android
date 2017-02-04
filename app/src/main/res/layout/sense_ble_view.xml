@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/gray3_50">
+
+    <!-- If image view src changes dimension size blue box view may require update as well-->
+    <View
+        android:id="@+id/blue_box_view"
+        android:layout_width="100dp"
+        android:layout_height="180dp"
+        android:background="@color/primary"
+        android:layout_gravity="right"/>
+
+    <ImageView
+        android:id="@+id/sense_ble_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/sense_scan_ble"
+        android:adjustViewBounds="true"
+        />
+
+</FrameLayout>

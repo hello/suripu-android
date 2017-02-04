@@ -5,13 +5,12 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.view.Window;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,10 +23,10 @@ import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.widget.util.Drawing;
-import is.hello.sense.ui.widget.util.Windows;
 
 public class SensorDetailActivity extends ScopedInjectionActivity
-        implements FragmentNavigation {
+        implements FragmentNavigation,
+        SensorDetailFragment.Parent {
     private static final String EXTRA_SENSOR = SensorDetailActivity.class.getName() + ".EXTRA_SENSOR";
     private FragmentNavigationDelegate navigationDelegate;
     private ActionBar actionBar;
@@ -51,17 +50,18 @@ public class SensorDetailActivity extends ScopedInjectionActivity
         this.navigationDelegate = new FragmentNavigationDelegate(this,
                                                                  R.id.activity_navigation_container,
                                                                  stateSafeExecutor);
-        
-        final Sensor sensor = (Sensor) getIntent().getSerializableExtra(EXTRA_SENSOR);
-        final int color = ContextCompat.getColor(this, sensor.getColor());
-        setStatusBarColor(Drawing.darkenColorBy(color, Drawing.DARK_MULTIPLIER));
 
-        actionBar = getActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(sensor.getName());
-            setActionbarColor(sensor.getColor());
+        if (savedInstanceState != null) {
+            navigationDelegate.onRestoreInstanceState(savedInstanceState);
+            final Fragment fragment = getTopFragment();
+            if (fragment instanceof SensorDetailFragment) {
+                setBarColorForSensor(((SensorDetailFragment) fragment).getCurrentSensor());
+            }
+        } else {
+            final Sensor sensor = (Sensor) getIntent().getSerializableExtra(EXTRA_SENSOR);
+            setBarColorForSensor(sensor);
+            showSensorDetailFragment(sensor);
         }
-        showSensorDetailFragment(sensor);
 
     }
 
@@ -91,6 +91,22 @@ public class SensorDetailActivity extends ScopedInjectionActivity
         return navigationDelegate.getTopFragment();
     }
 
+    @IdRes
+    @Override
+    public int getContainerRes() {
+        return R.id.activity_navigation_container;
+    }
+
+    private void setBarColorForSensor(@NonNull final Sensor sensor) {
+        final int color = ContextCompat.getColor(this, sensor.getColor());
+        setStatusBarColor(Drawing.darkenColorBy(color, Drawing.DARK_MULTIPLIER));
+
+        actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(sensor.getName());
+            setActionbarColor(sensor.getColor());
+        }
+    }
 
     public final void setActionbarColor(@ColorRes final int colorRes) {
         if (actionBar != null) {

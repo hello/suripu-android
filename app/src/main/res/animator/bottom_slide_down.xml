@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+     android:ordering="together">
+    <objectAnimator
+        android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+        android:duration="@integer/anime_duration_normal"
+        android:propertyName="alpha"
+        android:valueFrom="1"
+        android:valueTo="0" />
+
+    <objectAnimator
+        android:interpolator="@android:anim/accelerate_decelerate_interpolator"
+        android:duration="@integer/anime_duration_normal"
+        android:propertyName="translationY"
+        android:valueFrom="0"
+        android:valueTo="@dimen/dialog_bottom_max_height"
+        />
+</set>

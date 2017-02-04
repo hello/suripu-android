@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:gravity="center_vertical"
@@ -9,25 +10,27 @@
         android:id="@+id/item_settings_place_holder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/gap_small"
-        android:layout_marginEnd="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="@dimen/gap_small"
+        android:layout_marginBottom="@dimen/x1"
+        android:layout_marginEnd="@dimen/x2"
+        android:layout_marginStart="@dimen/x2"
+        android:layout_marginTop="@dimen/x1"
         android:clickable="false"
         android:focusable="false"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/item_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginBottom="@dimen/gap_small"
-        android:layout_marginEnd="@dimen/gap_outer"
-        android:layout_marginTop="@dimen/gap_small"
+        android:layout_marginBottom="@dimen/x1"
+        android:layout_marginEnd="@dimen/x3"
+        android:layout_marginTop="@dimen/x1"
         android:layout_weight="1"
         android:lineSpacingMultiplier="@dimen/line_multiple_body"
         android:textAppearance="@style/AppTheme.Text.Body.Small"
-        android:textColor="@color/text_dim"/>
+        android:textColor="@color/text_dim"
+        tools:text="@string/label_notifications"/>
 
 </LinearLayout>

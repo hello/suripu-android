@@ -23,6 +23,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.databinding.ItemSensorGroupBinding;
+import is.hello.sense.databinding.ItemWelcomeCardBinding;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
@@ -233,9 +234,10 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
         public WelcomeCardViewHolder(@NonNull final View itemView) {
             super(itemView);
-            ((ImageView) itemView.findViewById(R.id.item_welcome_image)).setImageResource(R.drawable.conditions_welcome);
-            ((TextView) itemView.findViewById(R.id.item_welcome_title)).setText(R.string.room_conditions_welcome_title);
-            ((TextView) itemView.findViewById(R.id.item_welcome_message)).setText(R.string.room_conditions_welcome_message);
+            final ItemWelcomeCardBinding binding = DataBindingUtil.bind(itemView);
+            binding.itemWelcomeImage.setImageResource(R.drawable.conditions_welcome);
+            binding.itemWelcomeTitle.setText(R.string.room_conditions_welcome_title);
+            binding.itemWelcomeMessage.setText(R.string.room_conditions_welcome_message);
         }
     }
 

@@ -2,6 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools">
     <RelativeLayout
+        android:id="@+id/item_welcome_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/background_light">
@@ -15,26 +16,27 @@
 
         <TextView
             android:id="@+id/item_welcome_title"
-            style="@style/Card.Title"
+            style="@style/Card.WelcomeTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/item_welcome_image"
             android:layout_marginTop="@dimen/x1"
             android:gravity="center"
-            tools:text="Welcome Title"/>
+            tools:text="@string/room_conditions_welcome_title"/>
 
         <TextView
             android:id="@+id/item_welcome_message"
             style="@style/AppTheme.Text.Body"
+            android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/item_welcome_title"
             android:layout_marginBottom="@dimen/x4"
             android:layout_marginLeft="@dimen/x2"
             android:layout_marginRight="@dimen/x2"
-            android:layout_marginTop="@dimen/x1"
+            android:layout_marginTop="@dimen/x2"
             android:gravity="center"
-            tools:text="Welcome Message"/>
+            tools:text="@string/room_conditions_welcome_message"/>
 
     </RelativeLayout>
 </layout>

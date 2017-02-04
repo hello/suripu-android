@@ -3,32 +3,25 @@
         xmlns:tools="http://schemas.android.com/tools">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/x7"
         android:gravity="center_vertical">
 
-        <RelativeLayout
-            android:id="@+id/item_icon_container"
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/item_settings_detail_icon"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/x7"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/x2"
             android:layout_centerVertical="true"
-            android:layout_marginStart="20dp">
-
-            <android.support.v7.widget.AppCompatImageView
-                android:id="@+id/item_settings_detail_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:importantForAccessibility="no"
-                android:tint="@color/settings_icon_fill_color"
-                tools:src="@drawable/icon_settings_advanced"/>
-        </RelativeLayout>
+            android:importantForAccessibility="no"
+            android:tint="@color/settings_icon_fill_color"
+            tools:src="@drawable/icon_settings_advanced"/>
 
 
         <TextView
             android:id="@+id/item_settings_detail_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/item_icon_container"
+            android:layout_toEndOf="@id/item_settings_detail_icon"
             android:layout_marginStart="@dimen/x3"
             android:layout_gravity="center_vertical"
             android:layout_centerVertical="true"

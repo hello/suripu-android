@@ -224,9 +224,10 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
             return;
         }
         presenterView.showCards(currentQuestion, insights);
-
+ /*
+ // todo bring back with tablayout indicators
         final Activity activity = getActivity();
-        if (getOnboardingFlow(activity) == OnboardingActivity.FLOW_NONE &&
+       if (getOnboardingFlow(activity) == OnboardingActivity.FLOW_NONE &&
                 tutorialOverlayView == null && Tutorial.TAP_INSIGHT_CARD.shouldShow(activity)) {
             this.tutorialOverlayView = new TutorialOverlayView(activity,
                                                                Tutorial.TAP_INSIGHT_CARD);
@@ -238,7 +239,7 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
                     tutorialOverlayView.postShow(R.id.activity_new_home_extended_view_pager);
                 }
             });
-        }
+        }*/
     }
 
     private void bindInsights(@NonNull final List<Insight> insights) {
@@ -277,10 +278,9 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     public final InsightInfoFragment.SharedState provideSharedState(final boolean isEnter) {
         if (selectedInsightHolder != null && getActivity() != null) {
             final InsightInfoFragment.SharedState state = new InsightInfoFragment.SharedState();
-            Views.getFrameInWindow(selectedInsightHolder.itemView, state.cardRectInWindow);
             Views.getFrameInWindow(selectedInsightHolder.image, state.imageRectInWindow);
             state.imageParallaxPercent = selectedInsightHolder.image.getParallaxPercent();
-            state.parentAnimator = presenterView.getAnimator();
+            state.parentAnimator = presenterView.getAnimator(isEnter);
             return state;
         } else {
             return null;
@@ -306,14 +306,12 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
 
         Analytics.trackEvent(Analytics.Backside.EVENT_INSIGHT_DETAIL, null);
 
-        // InsightsFragment lives inside of a child fragment manager, whose root view is inset
-        // on the bottom to make space for the open timeline. We go right to the root fragment
-        // manager to keep things simple.
+        // We go right to the root fragment manager to keep things simple.
         final FragmentManager fragmentManager = getActivity().getFragmentManager();
         final InsightInfoFragment infoFragment = InsightInfoFragment.newInstance(insight,
                                                                                  getResources());
         infoFragment.show(fragmentManager,
-                          R.id.activity_new_home_container,
+                          R.id.activity_new_home_container, //todo remove direct reference on activity id
                           InsightInfoFragment.TAG);
 
         this.selectedInsightHolder = viewHolder;

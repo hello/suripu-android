@@ -33,6 +33,11 @@ public final class SensorDetailView extends PresenterView
      */
     private static final float GRAPH_HEIGHT_RATIO = .65f;
 
+    /**
+     * How long to wait before scrolling the view for tutorials.
+     */
+    private static final int TUTORIAL_SCROLL_DELAY_MS = 250;
+
 
     private final SelectorView subNavSelector;
     private final ImageView calibrationImageView;
@@ -54,7 +59,7 @@ public final class SensorDetailView extends PresenterView
                             @NonNull final SelectorView.OnSelectionChangedListener listener,
                             @NonNull final SensorGraphDrawable.ScrubberCallback scrubberCallback) {
         super(activity);
-        noDataColor = ContextCompat.getColor(getContext(), R.color.dim);
+        this.noDataColor = ContextCompat.getColor(getContext(), R.color.dim);
         this.unitFormatter = unitFormatter;
         this.subNavSelector = (SelectorView) findViewById(R.id.fragment_sensor_detail_selector);
         this.calibrationImageView = (ImageView) findViewById(R.id.fragment_sensor_detail_calibrating);
@@ -178,6 +183,10 @@ public final class SensorDetailView extends PresenterView
             this.sensorGraphView.invalidate();
             postDelayed(() -> this.subNavSelector.setEnabled(true), delay.getLength());
         });
+    }
+
+    public void smoothScrollBy(final int dY) {
+        postDelayed(() -> this.scrollView.smoothScrollTo(0, dY), TUTORIAL_SCROLL_DELAY_MS);
     }
 
     private void refreshWithProgress() {
