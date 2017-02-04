@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -46,6 +47,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.interactors.FacebookInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.notifications.NotificationRegistrationBroadcastReceiver;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.OnboardingToolbar;
@@ -397,6 +399,8 @@ public class RegisterFragment extends InjectionFragment
                                                                   passwordTextLET.getInputText());
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             sessionManager.setSession(session);
+            LocalBroadcastManager.getInstance(getActivity())
+                                 .sendBroadcast(NotificationRegistrationBroadcastReceiver.getIntent(null));
 
             preferences.putLocalDate(PreferencesInteractor.ACCOUNT_CREATION_DATE,
                                      LocalDate.now());

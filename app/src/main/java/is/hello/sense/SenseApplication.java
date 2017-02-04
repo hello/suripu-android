@@ -26,6 +26,7 @@ import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.SenseAppModule;
+import is.hello.sense.notifications.NotificationRegistrationBroadcastReceiver;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.util.Analytics;
@@ -80,6 +81,11 @@ public class SenseApplication extends MultiDexApplication {
             Bugsnag.setReleaseStage(BuildConfig.BUILD_TYPE);
             Bugsnag.setNotifyReleaseStages("release");
         }
+
+        LocalBroadcastManager.getInstance(this)
+                             .registerReceiver(
+                                     new NotificationRegistrationBroadcastReceiver(),
+                                     new IntentFilter(NotificationRegistrationBroadcastReceiver.ACTION_FILTER));
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
