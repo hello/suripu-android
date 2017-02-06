@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
-import is.hello.sense.BuildConfig;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.PushRegistration;
@@ -17,15 +16,9 @@ public final class NotificationRegistration {
     private final Context context;
     @Inject ApiService apiService;
 
+    //todo use for notification enable prefs else remove
     private static @NonNull SharedPreferences getNotificationPreferences(@NonNull final Context context) {
         return context.getSharedPreferences(Constants.NOTIFICATION_PREFS, Context.MODE_PRIVATE);
-    }
-
-    public static void resetAppVersion(@NonNull final Context context){
-        getNotificationPreferences(context).edit()
-                .putInt(Constants.NOTIFICATION_PREF_APP_VERSION, 0)
-                .apply();
-
     }
 
     public NotificationRegistration(@NonNull final Context context) {
@@ -47,19 +40,11 @@ public final class NotificationRegistration {
         return true;
     }
 
-    private void saveAppVersionCode() {
-        getNotificationPreferences(context)
-                .edit()
-                .putInt(Constants.NOTIFICATION_PREF_APP_VERSION, BuildConfig.VERSION_CODE)
-                .apply();
-    }
-
     void register(@NonNull final String registrationId) {
-        final PushRegistration registration = new PushRegistration(BuildConfig.VERSION_NAME, registrationId);
+        final PushRegistration registration = new PushRegistration(registrationId);
         apiService.registerForNotifications(registration)
                   .subscribe(ignored -> {
                               Logger.info(NotificationRegistration.class.getSimpleName(), "Registered with backend.");
-                              saveAppVersionCode();
                           }, e -> Logger.error(NotificationRegistration.class.getSimpleName(), "Could not register with API.", e));
     }
 }

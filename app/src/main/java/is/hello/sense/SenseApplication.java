@@ -82,11 +82,6 @@ public class SenseApplication extends MultiDexApplication {
             Bugsnag.setNotifyReleaseStages("release");
         }
 
-        LocalBroadcastManager.getInstance(this)
-                             .registerReceiver(
-                                     new NotificationRegistrationBroadcastReceiver(),
-                                     new IntentFilter(NotificationRegistrationBroadcastReceiver.ACTION_FILTER));
-
         FacebookSdk.sdkInitialize(getApplicationContext());
 
         JodaTimeAndroid.init(this);
@@ -98,6 +93,11 @@ public class SenseApplication extends MultiDexApplication {
         }
 
         buildGraph();
+
+        LocalBroadcastManager.getInstance(this)
+                             .registerReceiver(
+                                     new NotificationRegistrationBroadcastReceiver(),
+                                     new IntentFilter(NotificationRegistrationBroadcastReceiver.ACTION_FILTER));
 
         if (!isRunningInRobolectric) {
             localUsageTracker.deleteOldUsageStatsAsync();

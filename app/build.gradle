@@ -10,7 +10,6 @@ buildscript {
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
 apply plugin: 'me.tatarka.retrolambda'
 
 repositories {
@@ -219,3 +218,7 @@ dependencies {
     provided 'com.squareup.dagger:dagger-compiler:1.2.2'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
 }
+
+//required to be placed at end of build file to detect com.google.firebase version
+//otherwise will default to version 9.0.0
+apply plugin: 'com.google.gms.google-services'

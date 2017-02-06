@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
+import is.hello.sense.BuildConfig;
+
 public final class PushRegistration extends ApiResponse {
     public static final String OS_ANDROID = "android";
 
@@ -25,11 +27,10 @@ public final class PushRegistration extends ApiResponse {
     public final String deviceToken;
 
 
-    public PushRegistration(@NonNull final String appVersion,
-                            @NonNull final String deviceToken) {
+    public PushRegistration(@NonNull final String deviceToken) {
         this.os = OS_ANDROID;
         this.version = Build.VERSION.RELEASE;
-        this.appVersion = appVersion;
+        this.appVersion = BuildConfig.VERSION_NAME;
         this.deviceToken = deviceToken;
     }
 

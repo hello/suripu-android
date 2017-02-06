@@ -14,7 +14,6 @@ public final class Constants {
 
     //todo remove if no longer storing locally
     public static final String NOTIFICATION_PREFS = "notification_prefs";
-    public static final String NOTIFICATION_PREF_APP_VERSION = "app_version_code";
 
     public static final String HANDHOLDING_PREFS = "handholding_prefs";
     public static final String HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO = "has_shown_timeline_adjust_intro";
