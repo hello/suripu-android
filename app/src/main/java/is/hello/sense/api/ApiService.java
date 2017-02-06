@@ -47,6 +47,7 @@ import is.hello.sense.api.model.v2.sensors.SensorDataRequest;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
 import is.hello.sense.api.model.v2.voice.SenseVoiceSettings;
+import is.hello.sense.api.model.v2.voice.VoiceCommandResponse;
 import is.hello.sense.api.sessions.OAuthCredentials;
 import is.hello.sense.api.sessions.OAuthSession;
 import retrofit.http.Body;
@@ -261,7 +262,7 @@ public interface ApiService {
 
     @POST("/v2/alarms/{client_time_utc}")
     Observable<AlarmGroups> saveSmartAlarms(@Path("client_time_utc") long timestamp,
-                                             @NonNull @Body AlarmGroups alarmGroups);
+                                            @NonNull @Body AlarmGroups alarmGroups);
 
     @GET("/v1/alarms/sounds")
     Observable<ArrayList<Alarm.Sound>> availableSmartAlarmSounds();
@@ -340,6 +341,9 @@ public interface ApiService {
 
     @GET("/v1/speech/onboarding")
     Observable<ArrayList<VoiceResponse>> getOnboardingVoiceResponse();
+
+    @GET("/v2/voice/commands")
+    Observable<VoiceCommandResponse> getVoiceCommands();
 
     //endregion
 

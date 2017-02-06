@@ -2,8 +2,12 @@ package is.hello.sense.flows.home.ui.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 
+import javax.inject.Inject;
+
+import is.hello.sense.flows.home.interactors.VoiceCommandsInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.adapters.VoiceCommandsAdapter;
 import is.hello.sense.flows.home.ui.views.VoiceView;
@@ -22,11 +26,14 @@ public class VoiceFragment extends PresenterFragment<VoiceView>
         implements
         ArrayRecyclerAdapter.OnItemClickedListener<VoiceCommandsAdapter.VoiceCommand>,
         ViewPagerPresenterChild,
-        HomeActivity.ScrollUp{
+        HomeActivity.ScrollUp {
 
     private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
     private VoiceCommandsAdapter adapter;
+
     private AccountPreferencesInteractor sharedPreferences;
+    @Inject
+    VoiceCommandsInteractor voiceCommandsInteractor;
 
     //region PresenterFragment
     @Override
@@ -45,6 +52,7 @@ public class VoiceFragment extends PresenterFragment<VoiceView>
         super.onCreate(savedInstanceState);
         sharedPreferences = AccountPreferencesInteractor.newInstance(getActivity());
         addInteractor(sharedPreferences);
+        addInteractor(voiceCommandsInteractor);
     }
 
     @Override
@@ -53,6 +61,13 @@ public class VoiceFragment extends PresenterFragment<VoiceView>
         bindAndSubscribe(sharedPreferences.observableBoolean(AccountPreferencesInteractor.VOICE_WELCOME_CARD, false),
                          this::showWelcomeCard,
                          Functions.LOG_ERROR);
+        bindAndSubscribe(voiceCommandsInteractor.voiceCommands,
+                         voiceResponse -> {
+                             Log.e("VoiceFragment", voiceResponse.toString());
+                             //todo finish
+                         },
+                         Functions.LOG_ERROR); //todo show error.
+        voiceCommandsInteractor.update();
     }
 
     @Override
@@ -72,6 +87,7 @@ public class VoiceFragment extends PresenterFragment<VoiceView>
     public void onUserVisible() {
         Analytics.trackEvent(Analytics.Backside.EVENT_VOICE_TAB, null);
     }
+
     @Override
     public void onResume() {
         super.onResume();
