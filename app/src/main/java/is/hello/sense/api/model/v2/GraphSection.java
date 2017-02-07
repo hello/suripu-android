@@ -130,23 +130,8 @@ public class GraphSection extends ApiResponse {
             return false;
         }
         final GraphSection otherGraphSection = (GraphSection) obj;
-        if (values.size() != otherGraphSection.values.size()
-                || titles.size() != otherGraphSection.titles.size()) {
-            return false;
-        }
-        for (int i = 0; i < values.size(); i++) {
-            final Float value = values.get(i);
-            if (value == null) {
-                if (otherGraphSection.values.get(i) != null) {
-                    return false;
-                }
-            } else if (!value.equals(otherGraphSection.values.get(i))) {
-                return false;
-            }
+        return titles.size() != otherGraphSection.titles.size() && values.equals(otherGraphSection.values);
 
-        }
-
-        return true;
     }
 
     @Override
