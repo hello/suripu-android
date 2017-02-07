@@ -3,6 +3,7 @@ package is.hello.sense.notifications;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -12,8 +13,11 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.Map;
+
 import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.util.Constants;
 
 /**
  * Handles receiving downstream messages
@@ -21,7 +25,6 @@ import is.hello.sense.flows.home.ui.activities.HomeActivity;
 
 public class NotificationMessageService extends FirebaseMessagingService {
     private static final String TAG = NotificationMessageService.class.getSimpleName();
-    private int notificationId = 0; //todo should reset?
 
     @Override
     public void onMessageReceived(@NonNull final RemoteMessage remoteMessage) {
@@ -46,26 +49,39 @@ public class NotificationMessageService extends FirebaseMessagingService {
 
     private void sendNotification(final RemoteMessage remoteMessage) {
 
-        final CharSequence messageText;
-        if(remoteMessage.getNotification() != null) {
-            messageText = remoteMessage.getNotification().getBody();
+        final CharSequence titleText;
+        final CharSequence bodyText;
+        final NotificationType type;
+        final String detail;
+        final Context context = getApplicationContext();
+        // currently we ignore any notification object returned from remoteMessage.getNotification();
+        if (remoteMessage.getData() != null) {
+            final Map<String, String> dataPayload = remoteMessage.getData();
+            titleText = dataPayload.get(Notification.REMOTE_TITLE);
+            bodyText = dataPayload.get(Notification.REMOTE_BODY);
+            type = NotificationType.fromString(dataPayload.get(Notification.REMOTE_TYPE));
+            detail = dataPayload.get(Notification.REMOTE_DETAIL);
         } else {
-            //todo better default
-            messageText = getString(R.string.lorem_ipsum);
+            titleText = context.getString(R.string.app_name);
+            bodyText = getString(R.string.empty);
+            type = NotificationType.SLEEP_SCORE;
+            detail = Constants.EMPTY_STRING;
         }
 
-        final Context context = getApplicationContext();
+        final Bundle bundle = new Bundle();
+        bundle.putSerializable(Notification.EXTRA_TYPE, type);
+        bundle.putString(Notification.EXTRA_DETAILS, detail);
 
         final Intent activityIntent = new Intent(context, HomeActivity.class);
         activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        //activityIntent.putExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD, intent.getExtras());
+        activityIntent.putExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD, bundle);
 
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setSmallIcon(R.drawable.ic_stat_notify_msg);
         builder.setColor(ContextCompat.getColor(context, R.color.light_accent));
-        builder.setContentTitle(context.getString(R.string.app_name));
-        builder.setContentText(messageText);
-        builder.setStyle(new NotificationCompat.BigTextStyle().bigText(messageText));
+        builder.setContentTitle(titleText);
+        builder.setContentText(bodyText);
+        builder.setStyle(new NotificationCompat.BigTextStyle().bigText(bodyText));
         builder.setContentIntent(PendingIntent.getActivity(context, 0,
                                                            activityIntent,
                                                            PendingIntent.FLAG_ONE_SHOT));
@@ -73,6 +89,6 @@ public class NotificationMessageService extends FirebaseMessagingService {
 
         final NotificationManagerCompat manager =
                 NotificationManagerCompat.from(context);
-        manager.notify(notificationId++, builder.build());
+        manager.notify(type.hashCode(), builder.build());
     }
 }

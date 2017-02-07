@@ -42,6 +42,7 @@ import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.mvp.util.FabPresenter;
 import is.hello.sense.mvp.util.FabPresenterProvider;
 import is.hello.sense.notifications.Notification;
+import is.hello.sense.notifications.NotificationType;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.appcompat.ScopedInjectionActivity;
@@ -446,37 +447,16 @@ public class HomeActivity extends ScopedInjectionActivity
         stateSafeExecutor.execute(() -> {
             info(getClass().getSimpleName(), "dispatchNotification(" + notification + ")");
 
-            final Notification target = Notification.fromBundle(notification);
+            final NotificationType target = Notification.typeFromBundle(notification);
             switch (target) {
-                case TIMELINE: {
+                case SLEEP_SCORE: {
                     selectTab(SLEEP_ICON_KEY);
                     //todo support scrolling to date.
 
                     break;
                 }
-                case SENSOR: {
-                    selectTab(SLEEP_ICON_KEY);
-                    break;
-                }
-                case TRENDS: {
-                    selectTab(TRENDS_ICON_KEY);
-                    break;
-                }
-                case ALARM: {
-                    selectTab(SOUNDS_ICON_KEY);
-                    break;
-                }
-                case SETTINGS: {
-                    //todo start AppSettingsActivity after merging.
-                    break;
-                }
-                case INSIGHTS: {
-                    selectTab(INSIGHTS_ICON_KEY);
-                    break;
-                }
-                case CONDITIONS: {
-                    selectTab(CONDITIONS_ICON_KEY);
-                    break;
+                case PILL_BATTERY: {
+                    //todo handle and pass along
                 }
             }
         });
