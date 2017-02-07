@@ -46,10 +46,6 @@ public class SenseTabLayout extends TabLayout
         this.currentItemIndex = tab.getPosition();
         tabChanged(this.currentItemIndex);
         setTabActive(tab, true);
-        if (this.currentItemIndex == SLEEP_ICON_KEY) {
-            jumpToLastNight();
-        }
-
     }
 
     @Override
@@ -76,11 +72,6 @@ public class SenseTabLayout extends TabLayout
         }
     }
 
-    private void jumpToLastNight() {
-        if (this.listener != null) {
-            this.listener.jumpToLastNight();
-        }
-    }
 
     @Nullable
     private Timeline getCurrentTimeline() {
@@ -202,8 +193,6 @@ public class SenseTabLayout extends TabLayout
 
     public interface Listener {
         void scrollUp(int fragmentPosition);
-
-        void jumpToLastNight();
 
         void tabChanged(int fragmentPosition);
 

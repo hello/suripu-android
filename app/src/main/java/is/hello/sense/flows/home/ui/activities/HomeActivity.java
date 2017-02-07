@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
+import android.widget.TableLayout;
 
 import com.segment.analytics.Properties;
 
@@ -306,6 +307,12 @@ public class HomeActivity extends ScopedInjectionActivity
         this.deviceIssuesPresenter.updateLastShown(issue);
     }
 
+    public void jumpToLastNight() {
+        final TimelineFragment.Parent parent = getTimelineParent();
+        if (parent != null) {
+            parent.jumpToLastNight();
+        }
+    }
     //endregion
 
     //region Alert Action Handler
@@ -419,20 +426,15 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     @Override
-    public void jumpToLastNight() {
-        final TimelineFragment.Parent parent = getTimelineParent();
-        if (parent != null) {
-            parent.jumpToLastNight();
-        }
-    }
-
-    @Override
     public void tabChanged(final int fragmentPosition) {
         if (!this.lastNightInteractor.timeline.hasValue()) {
             this.lastNightInteractor.update();
         }
         this.unreadStateInteractor.update();
         this.extendedViewPager.setCurrentItem(fragmentPosition);
+        if (fragmentPosition == SenseTabLayout.SLEEP_ICON_KEY) {
+            jumpToLastNight();
+        }
     }
 
     @Nullable
