@@ -168,7 +168,6 @@ public class NotificationsSettingsFragment extends InjectionFragment implements 
         loadingIndicator.setVisibility(View.GONE);
 
         final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity()).build();
-        errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 

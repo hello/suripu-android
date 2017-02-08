@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.view.MenuItem;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
@@ -14,7 +15,7 @@ import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.settings.ui.views.AppSettingsView;
 import is.hello.sense.flows.voice.ui.activities.VoiceSettingsActivity;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
-import is.hello.sense.ui.activities.ScopedInjectionActivity;
+import is.hello.sense.ui.activities.appcompat.ScopedInjectionActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -42,6 +43,9 @@ public class AppSettingsActivity extends ScopedInjectionActivity
         } else {
             showAppSettingsFragment();
         }
+        updateActionBarText();
+
+
     }
 
     @Override
@@ -124,7 +128,8 @@ public class AppSettingsActivity extends ScopedInjectionActivity
     }
 
     public void showNotificationsFragment() {
-        showFragment(NotificationsSettingsFragment.class, R.string.label_notifications, false);
+        pushFragment(new NotificationsSettingsFragment(), null, true);
+        updateActionBarText();
     }
 
     public void showExpansions() {
@@ -150,6 +155,30 @@ public class AppSettingsActivity extends ScopedInjectionActivity
         Distribution.startDebugActivity(this);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        updateActionBarText();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return false;
+    }
+
+    private void updateActionBarText() {
+        final Fragment topFragment = getTopFragment();
+        if (topFragment instanceof NotificationsSettingsFragment) {
+            setActionBarText(R.string.label_notifications);
+        } else {
+            setActionBarText(R.string.app_name);
+        }
+    }
+
     private void showFragment(@NonNull final Class<? extends Fragment> fragmentClass,
                               @StringRes final int titleRes,
                               final boolean lockOrientation) {
@@ -163,4 +192,5 @@ public class AppSettingsActivity extends ScopedInjectionActivity
         startActivity(builder.toIntent());
 
     }
+
 }

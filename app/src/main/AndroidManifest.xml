@@ -132,6 +132,7 @@
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
 
         <activity
+            android:theme="@style/AppTheme.AppCompat"
             android:name=".flows.settings.ui.activities.AppSettingsActivity"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
 
