@@ -347,7 +347,7 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
 
         @Override
         public void notifyChange() {
-            if (ViewPagerPresenterFragment.this.presenterView != null) {
+            if (ViewPagerPresenterFragment.this.presenterView != null && !isScrolling) {
                 updateFab(ViewPagerPresenterFragment.this.presenterView.getCurrentItemPosition());
             }
         }

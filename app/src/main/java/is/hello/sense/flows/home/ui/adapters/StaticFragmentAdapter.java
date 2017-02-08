@@ -74,6 +74,7 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
         outstate.putInt(KEY_LAST_POSITION, lastPosition);
     }
 
+
     private void alertFragmentVisible(final int position,
                                       final boolean isVisible) {
         final Fragment fragment = getFragment(position);
@@ -88,8 +89,8 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
     }
 
     public static class Item {
-        public final Class<? extends Fragment> fragmentClass;
-        public final String title;
+        private final Class<? extends Fragment> fragmentClass;
+        private final String title;
 
         public Item(@NonNull final Class<? extends Fragment> fragmentClass,
                     @NonNull final String title) {

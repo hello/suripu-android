@@ -66,10 +66,10 @@ public class ViewPagerPresenterView extends PresenterView {
         this.viewPager.setScrollingEnabled(true);
     }
 
-    public void lockViewPager(final int startPosition) {
+    public void lockViewPager(final int position) {
         removeTabs();
         this.viewPager.setScrollingEnabled(false);
-        this.viewPager.setCurrentItem(startPosition);
+        this.viewPager.setCurrentItem(position);
     }
 
     private void createTabsAndPager(@NonNull final ViewPagerPresenterFragment fragment) {

@@ -111,7 +111,7 @@ public class SenseTabLayout extends TabLayout
     }
 
 
-    public void setHomeabIndicatorVisible(final boolean show) {
+    public void setHomeTabIndicatorVisible(final boolean show) {
         if (currentItemIndex == INSIGHTS_ICON_KEY) {
             return;
         }
@@ -131,6 +131,7 @@ public class SenseTabLayout extends TabLayout
     }
 
     public void setUpTabs(final boolean shouldSelect) {
+        clearOnTabSelectedListeners();
         removeAllTabs();
         addTab(createSleepScoreTab(getCurrentTimeline()));
         addTab(createTabFor(R.drawable.icon_trends_24, R.drawable.icon_trends_active_24));
@@ -138,7 +139,6 @@ public class SenseTabLayout extends TabLayout
         addTab(createTabFor(R.drawable.icon_sound_24, R.drawable.icon_sound_active_24));
         addTab(createTabFor(R.drawable.icon_sense_24, R.drawable.icon_sense_active_24));
 
-        clearOnTabSelectedListeners();
         addOnTabSelectedListener(this);
 
         final TabLayout.Tab tab = getTabAt(this.currentItemIndex);
