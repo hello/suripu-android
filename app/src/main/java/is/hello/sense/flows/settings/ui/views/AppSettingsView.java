@@ -11,14 +11,14 @@ import is.hello.sense.mvp.view.BindedPresenterView;
 
 @SuppressLint("ViewConstructor")
 public class AppSettingsView extends BindedPresenterView<ViewAppSettingsBinding> {
-    public static final int INDEX_ACCOUNT = 0;
-    public static final int INDEX_DEVICES = 1;
-    public static final int INDEX_NOTIFICATIONS = 2;
-    public static final int INDEX_EXPANSIONS = 3;
-    public static final int INDEX_VOICE = 4;
-    public static final int INDEX_SUPPORT = 5;
-    public static final int INDEX_SHARE = 6;
-    public static final int INDEX_DEBUG = 7;
+    public static final int INDEX_ACCOUNT = 1000;
+    public static final int INDEX_DEVICES = 1001;
+    public static final int INDEX_NOTIFICATIONS = 1002;
+    public static final int INDEX_EXPANSIONS = 1003;
+    public static final int INDEX_VOICE = 1004;
+    public static final int INDEX_SUPPORT = 1005;
+    public static final int INDEX_SHARE = 1006;
+    public static final int INDEX_DEBUG = 1007;
 
     private Listener listener = null;
 
