@@ -31,6 +31,7 @@ public class AppSettingsActivity extends ScopedInjectionActivity
         implements FragmentNavigation {
     private FragmentNavigationDelegate navigationDelegate;
 
+    //region ScopedInjectionActivity
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,8 +45,6 @@ public class AppSettingsActivity extends ScopedInjectionActivity
             showAppSettingsFragment();
         }
         updateActionBarText();
-
-
     }
 
     @Override
@@ -59,6 +58,24 @@ public class AppSettingsActivity extends ScopedInjectionActivity
         super.onDestroy();
         this.navigationDelegate.onDestroy();
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        updateActionBarText();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return false;
+    }
+    //endregion
+
+    //region NavigationDelegate
 
     @Override
     public final void pushFragment(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
@@ -113,7 +130,9 @@ public class AppSettingsActivity extends ScopedInjectionActivity
     public final Fragment getTopFragment() {
         return navigationDelegate.getTopFragment();
     }
+    //endregion
 
+    //region methods
     public void showAppSettingsFragment() {
         pushFragment(new AppSettingsFragment(), null, false);
     }
@@ -155,21 +174,6 @@ public class AppSettingsActivity extends ScopedInjectionActivity
         Distribution.startDebugActivity(this);
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        updateActionBarText();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
-        }
-        return false;
-    }
-
     private void updateActionBarText() {
         final Fragment topFragment = getTopFragment();
         if (topFragment instanceof NotificationsSettingsFragment) {
@@ -192,5 +196,6 @@ public class AppSettingsActivity extends ScopedInjectionActivity
         startActivity(builder.toIntent());
 
     }
+    //endregion
 
 }
