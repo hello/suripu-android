@@ -72,6 +72,9 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         if (sleepPill != null) {
             deviceList.add(sleepPill);
         }
+        if(sense instanceof SenseDevice && ((SenseDevice) sense).shouldUpgrade()) {
+            deviceList.add( new PlaceholderDevice(PlaceholderDevice.Type.SENSE_WITH_VOICE));
+        }
         replaceAll(deviceList);
     }
 
@@ -123,7 +126,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
     public void onClick(final View view) {
         if (onDeviceInteractionListener != null) {
             final PlaceholderDevice.Type type = (PlaceholderDevice.Type) view.getTag();
-            onDeviceInteractionListener.onPairNewDevice(type);
+            onDeviceInteractionListener.onPlaceholderInteraction(type);
         }
     }
 
@@ -239,14 +242,9 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             status2Label.setText(R.string.label_firmware_version);
             status2.setText(device.firmwareVersion);
 
-            if (device.shouldUpgrade()) {
-                actionButton.setText(R.string.action_upgrade_sense);
-                actionButton.setEnabled(true);
-                actionButton.setVisibility(View.VISIBLE);
-            } else {
-                actionButton.setVisibility(View.GONE);
-                actionButton.setEnabled(false);
-            }
+            actionButton.setVisibility(View.GONE);
+            actionButton.setEnabled(false);
+
         }
     }
 
@@ -371,11 +369,12 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                     actionButton.setEnabled(true);
                     break;
                 }
-                //unused
+
                 case SENSE_WITH_VOICE: {
                     title.setText(R.string.device_hardware_version_sense_with_voice);
-                    message.setText(R.string.info_no_sense_connected);
-                    actionButton.setText(R.string.action_pair_sense);
+                    message.setText(R.string.info_set_up_sense_with_voice);
+                    Styles.initializeSupportFooter(activity, message);
+                    actionButton.setText(R.string.action_set_up_sense_with_voice);
                     actionButton.setEnabled(true);
                     break;
                 }
@@ -398,7 +397,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
 
 
     public interface OnDeviceInteractionListener {
-        void onPairNewDevice(@NonNull PlaceholderDevice.Type type);
+        void onPlaceholderInteraction(@NonNull PlaceholderDevice.Type type);
         void onUpdateDevice(@NonNull BaseDevice device);
     }
 }

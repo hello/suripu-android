@@ -236,7 +236,7 @@ public class DevicesAdapterTests extends SenseTestCase {
         final LambdaVar<PlaceholderDevice.Type> clickedType = LambdaVar.empty();
         adapter.setOnDeviceInteractionListener(new DevicesAdapter.OnDeviceInteractionListener() {
             @Override
-            public void onPairNewDevice(@NonNull PlaceholderDevice.Type type) {
+            public void onPlaceholderInteraction(@NonNull PlaceholderDevice.Type type) {
                 clickedType.set(type);
             }
 
@@ -282,7 +282,7 @@ public class DevicesAdapterTests extends SenseTestCase {
         final LambdaVar<PlaceholderDevice.Type> clickedType = LambdaVar.empty();
         adapter.setOnDeviceInteractionListener(new DevicesAdapter.OnDeviceInteractionListener() {
             @Override
-            public void onPairNewDevice(@NonNull PlaceholderDevice.Type type) {
+            public void onPlaceholderInteraction(@NonNull PlaceholderDevice.Type type) {
                 clickedType.set(type);
             }
 
@@ -322,7 +322,7 @@ public class DevicesAdapterTests extends SenseTestCase {
         final LambdaVar<BaseDevice> clickedDevice = LambdaVar.empty();
         adapter.setOnDeviceInteractionListener(new DevicesAdapter.OnDeviceInteractionListener() {
             @Override
-            public void onPairNewDevice(@NonNull PlaceholderDevice.Type type) {
+            public void onPlaceholderInteraction(@NonNull PlaceholderDevice.Type type) {
                 //do nothing
             }
 
@@ -356,7 +356,7 @@ public class DevicesAdapterTests extends SenseTestCase {
         final LambdaVar<BaseDevice> clickedDevice = LambdaVar.empty();
         adapter.setOnDeviceInteractionListener(new DevicesAdapter.OnDeviceInteractionListener() {
             @Override
-            public void onPairNewDevice(@NonNull PlaceholderDevice.Type type) {
+            public void onPlaceholderInteraction(@NonNull PlaceholderDevice.Type type) {
                 //do nothing
             }
 
