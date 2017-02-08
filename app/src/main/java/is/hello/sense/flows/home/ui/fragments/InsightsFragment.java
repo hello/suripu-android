@@ -35,6 +35,7 @@ import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.QuestionsInteractor;
+import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.interactors.questions.ReviewQuestionProvider;
 import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.rating.LocalUsageTracker;
@@ -80,6 +81,8 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
     Picasso picasso;
     @Inject
     ApiService apiService;
+    @Inject
+    UnreadStateInteractor unreadStateInteractor;
 
     @Nullable
     private TutorialOverlayView tutorialOverlayView;
@@ -109,7 +112,6 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
         super.setVisibleToUser(isVisible);
         if (isVisible) {
             presenterView.updateWhatsNewState();
-            this.insightsInteractor.setMarkShownOnComplete(true);
             fetchInsights();
         }
     }
@@ -120,6 +122,7 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
         addInteractor(insightsInteractor);
         addInteractor(deviceIssuesInteractor);
         addInteractor(questionsInteractor);
+        addInteractor(unreadStateInteractor);
         deviceIssuesInteractor.bindScope((Scope) getActivity());
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
@@ -225,6 +228,9 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
     private void bindInsights(@NonNull final List<Insight> insights) {
         this.insights = insights;
         this.insightsLoaded = true;
+        if (isVisibleToUser()) {
+            unreadStateInteractor.updateInsightsLastViewed();
+        }
         bindPendingIfReady();
     }
 

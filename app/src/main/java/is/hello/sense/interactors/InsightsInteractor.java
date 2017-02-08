@@ -12,11 +12,8 @@ import rx.Observable;
 public class InsightsInteractor extends ScopedValueInteractor<ArrayList<Insight>> {
     @Inject
     ApiService apiService;
-    @Inject
-    UnreadStateInteractor unreadStatePresenter;
 
     public final InteractorSubject<ArrayList<Insight>> insights = this.subject;
-    private boolean markShownOnComplete = false;
 
     @Override
     protected boolean isDataDisposable() {
@@ -30,17 +27,7 @@ public class InsightsInteractor extends ScopedValueInteractor<ArrayList<Insight>
 
     @Override
     protected Observable<ArrayList<Insight>> provideUpdateObservable() {
-        return apiService.currentInsights()
-                         .doOnCompleted(() -> {
-
-                             if (markShownOnComplete) {
-                                 markShownOnComplete = false;
-                                 unreadStatePresenter.updateInsightsLastViewed();
-                             }
-                         });
+        return apiService.currentInsights();
     }
 
-    public void setMarkShownOnComplete(final boolean markShownOnComplete) {
-        this.markShownOnComplete = markShownOnComplete;
-    }
 }
