@@ -1,6 +1,7 @@
 package is.hello.sense.ui.activities.appcompat;
 
 import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -37,8 +38,16 @@ public abstract class SenseActivity extends AppCompatActivity {
     }
 
     protected final void setActionBarText(@StringRes final int stringRes) {
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(stringRes);
+        if (getSupportActionBar() == null) {
+            return;
         }
+        getSupportActionBar().setTitle(stringRes);
+    }
+
+    protected final void setActionBarHomeUpImage(@DrawableRes final int drawableRes) {
+        if (getSupportActionBar() == null) {
+            return;
+        }
+        getSupportActionBar().setHomeAsUpIndicator(drawableRes);
     }
 }

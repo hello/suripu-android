@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import is.hello.sense.R;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
+import is.hello.sense.flows.settings.ui.fragments.NotificationFragment;
 import is.hello.sense.flows.settings.ui.views.AppSettingsView;
 import is.hello.sense.flows.voice.ui.activities.VoiceSettingsActivity;
 import is.hello.sense.ui.activities.HardwareFragmentActivity;
@@ -21,7 +22,6 @@ import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
-import is.hello.sense.ui.fragments.settings.NotificationsSettingsFragment;
 import is.hello.sense.ui.fragments.support.SupportFragment;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Distribution;
@@ -44,7 +44,7 @@ public class AppSettingsActivity extends ScopedInjectionActivity
         } else {
             showAppSettingsFragment();
         }
-        updateActionBarText();
+        updateActionBar();
     }
 
     @Override
@@ -62,7 +62,7 @@ public class AppSettingsActivity extends ScopedInjectionActivity
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        updateActionBarText();
+        updateActionBar();
     }
 
     @Override
@@ -147,8 +147,8 @@ public class AppSettingsActivity extends ScopedInjectionActivity
     }
 
     public void showNotificationsFragment() {
-        pushFragment(new NotificationsSettingsFragment(), null, true);
-        updateActionBarText();
+        pushFragment(new NotificationFragment(), null, true);
+        updateActionBar();
     }
 
     public void showExpansions() {
@@ -174,12 +174,14 @@ public class AppSettingsActivity extends ScopedInjectionActivity
         Distribution.startDebugActivity(this);
     }
 
-    private void updateActionBarText() {
+    private void updateActionBar() {
         final Fragment topFragment = getTopFragment();
-        if (topFragment instanceof NotificationsSettingsFragment) {
+        if (topFragment instanceof NotificationFragment) {
             setActionBarText(R.string.label_notifications);
+            setActionBarHomeUpImage(R.drawable.app_style_ab_cancel);
         } else {
             setActionBarText(R.string.app_name);
+            setActionBarHomeUpImage(R.drawable.app_style_ab_up);
         }
     }
 

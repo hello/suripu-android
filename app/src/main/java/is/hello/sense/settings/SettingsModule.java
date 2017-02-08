@@ -1,6 +1,7 @@
 package is.hello.sense.settings;
 
 import dagger.Module;
+import is.hello.sense.flows.settings.ui.fragments.NotificationFragment;
 import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.ui.activities.SettingsActivity;
 import is.hello.sense.ui.fragments.onboarding.RegisterHeightFragment;
@@ -14,6 +15,7 @@ import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
 
 @Module(complete = false, injects = {
         AccountSettingsFragment.class,
+        NotificationFragment.class,
         ChangePasswordFragment.class,
         ChangeEmailFragment.class,
         RegisterWeightFragment.class,
