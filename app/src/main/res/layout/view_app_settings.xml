@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_light">
+
+        <ProgressBar
+            android:id="@+id/view_app_settings_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"/>
+
+        <ScrollView
+            android:id="@+id/view_app_settings_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/view_app_settings_my_account"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/x2"
+                        android:text="@string/label_account"
+                        android:textAppearance="@style/AppTheme.Text.Body"/>
+
+                    <View style="@style/Divider.Horizontal"/>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/view_app_settings_devices"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/x2"
+                        android:text="@string/label_devices"
+                        android:textAppearance="@style/AppTheme.Text.Body"/>
+
+                    <View style="@style/Divider.Horizontal"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/view_app_settings_notifications"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/x2"
+                        android:text="@string/label_notifications"
+                        android:textAppearance="@style/AppTheme.Text.Body"/>
+
+                    <View style="@style/Divider.Horizontal"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/view_app_settings_expansions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/x2"
+                        android:text="@string/action_expansions"
+                        android:textAppearance="@style/AppTheme.Text.Body"/>
+
+                    <View style="@style/Divider.Horizontal"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/view_app_settings_voice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/x2"
+                        android:text="@string/label_voice"
+                        android:textAppearance="@style/AppTheme.Text.Body"/>
+
+                    <View style="@style/Divider.Horizontal"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/view_app_settings_support"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/x4"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/x2"
+                        android:text="@string/action_support"
+                        android:textAppearance="@style/AppTheme.Text.Body"/>
+
+                    <View style="@style/Divider.Horizontal"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/view_app_settings_share"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/x2"
+                        android:text="@string/label_tell_a_friend"
+                        android:textAppearance="@style/AppTheme.Text.Body"/>
+
+                    <View style="@style/Divider.Horizontal"/>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/view_app_settings_debug"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="@dimen/x3"
+                    android:textAppearance="@style/AppTheme.Text.Body.MidSized.New"
+                    tools:text="Sense 0.0.0"/>
+
+            </LinearLayout>
+        </ScrollView>
+    </RelativeLayout>
+</layout>

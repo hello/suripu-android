@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import is.hello.sense.R;
-import is.hello.sense.flows.home.ui.fragments.AppSettingsFragment;
+import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
 import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -25,7 +25,7 @@ public class AppSettingsActivity extends ScopedInjectionActivity
                                                                  stateSafeExecutor);
         if (savedInstanceState != null) {
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
-        }else {
+        } else {
             showAppSettingsFragment();
         }
     }
