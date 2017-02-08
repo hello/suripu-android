@@ -10,7 +10,6 @@ import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 import is.hello.sense.ui.fragments.settings.ChangeEmailFragment;
 import is.hello.sense.ui.fragments.settings.ChangePasswordFragment;
 import is.hello.sense.ui.fragments.settings.DeviceTimeZoneFragment;
-import is.hello.sense.ui.fragments.settings.NotificationsSettingsFragment;
 import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
 
 @Module(complete = false, injects = {
@@ -22,7 +21,6 @@ import is.hello.sense.ui.fragments.settings.UnitSettingsFragment;
         RegisterHeightFragment.class,
         UnitSettingsFragment.class,
         AccountInteractor.class,
-        NotificationsSettingsFragment.class,
         DeviceTimeZoneFragment.class,
         SettingsActivity.class,
 })
