@@ -1,5 +1,7 @@
 package is.hello.sense.ui.adapter;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.api.model.BaseDevice;
 import is.hello.sense.api.model.Devices;
@@ -145,12 +148,22 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
 
         abstract boolean wantsChevron();
 
+        @DrawableRes
+        int getChevronRes() {
+            return R.drawable.disclosure_chevron;
+        }
+
+        @Nullable
+        Drawable getChevronDrawable() {
+            return title.getCompoundDrawables()[2];
+        }
+
         @Override
         public void bind(final int position) {
             if (wantsChevron()) {
                 @SuppressWarnings("ConstantConditions")
                 final Drawable chevron = ResourcesCompat.getDrawable(resources,
-                                                                     R.drawable.disclosure_chevron,
+                                                                     getChevronRes(),
                                                                      null).mutate();
                 Drawables.setTintColor(chevron, ContextCompat.getColor(activity, R.color.light_accent));
                 title.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, chevron, null);
@@ -361,6 +374,12 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         }
 
         @Override
+        @DrawableRes
+        int getChevronRes() {
+            return R.drawable.animated_up_down_chevron;
+        }
+
+        @Override
         public void bind(final int position) {
             final PlaceholderDevice device = (PlaceholderDevice) getItem(position);
             switch (device.type) {
@@ -374,24 +393,21 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 }
 
                 case SENSE_WITH_VOICE: {
-                    if(device.isCollapsed()) {
-                        message.setVisibility(View.GONE);
-                        actionButton.setVisibility(View.GONE);
-                    } else {
-                        message.setVisibility(View.VISIBLE);
-                        actionButton.setVisibility(View.VISIBLE);
-                        //todo initiate scroll to fit rest of card
-                    }
+                    setBodyVisible(device.isCollapsed());
                     title.setText(R.string.device_hardware_version_sense_with_voice);
                     message.setText(R.string.info_set_up_sense_with_voice);
                     Styles.initializeSupportFooter(activity, message);
                     actionButton.setText(R.string.action_set_up_sense_with_voice);
                     actionButton.setEnabled(true);
                     wantsChevron = true;
-                    title.setOnClickListener( ignored -> {
-                        device.toggleCollapsed();
-                        notifyItemChanged(position);
-                    });
+                    final ValueAnimator animation = ValueAnimator.ofInt(0, 10000); //todo max level constantize
+                    animation.setDuration(Anime.DURATION_NORMAL);
+                    title.setOnClickListener( ignored -> animateChevron(animation,
+                                                                        !device.isCollapsed(),
+                                                                        () -> {
+                                                                            device.toggleCollapsed();
+                                                                            setBodyVisible(device.isCollapsed());
+                                                                        }));
                     break;
                 }
 
@@ -408,6 +424,58 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             actionButton.setTag(device.type);
             Views.setSafeOnClickListener(actionButton, DevicesAdapter.this);
             super.bind(position);
+        }
+
+        private void setBodyVisible(final boolean collapsed) {
+            if (collapsed) {
+                message.setVisibility(View.GONE);
+                actionButton.setVisibility(View.GONE);
+            } else {
+                message.setVisibility(View.VISIBLE);
+                actionButton.setVisibility(View.VISIBLE);
+            }
+        }
+
+        void animateChevron(@NonNull final ValueAnimator animator,
+                            final boolean reverse,
+                            @NonNull final Runnable onComplete) {
+            final Drawable chevron = super.getChevronDrawable();
+            if(chevron == null || animator.isRunning()) {
+                return;
+            }
+
+            animator.addUpdateListener(animation1 -> {
+                if(animation1.isRunning()) {
+                    chevron.setLevel((int) animation1.getAnimatedValue());
+                }
+            });
+            animator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    onComplete.run();
+                    animation.removeAllListeners();
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    onComplete.run();
+                    animation.removeAllListeners();
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+                }
+            });
+
+            if(reverse) {
+                animator.reverse();
+            } else {
+                animator.start();
+            }
         }
     }
 
