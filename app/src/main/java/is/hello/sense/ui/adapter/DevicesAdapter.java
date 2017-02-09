@@ -44,6 +44,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
     private
     @Nullable
     OnDeviceInteractionListener onDeviceInteractionListener;
+    private boolean hasSense = false;
 
     public DevicesAdapter(@NonNull final Activity activity) {
         super(new ArrayList<>());
@@ -67,13 +68,16 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             sleepPill = new PlaceholderDevice(PlaceholderDevice.Type.SLEEP_PILL);
         }
 
-        final List<BaseDevice> deviceList = new ArrayList<>(2);
+        final List<BaseDevice> deviceList = new ArrayList<>(3);
+        this.hasSense = sense instanceof SenseDevice;
+        if (hasSense && ((SenseDevice) sense).shouldUpgrade()) {
+            final PlaceholderDevice senseWithVoice = new PlaceholderDevice(PlaceholderDevice.Type.SENSE_WITH_VOICE);
+            senseWithVoice.toggleCollapsed();
+            deviceList.add(senseWithVoice);
+        }
         deviceList.add(sense);
         if (sleepPill != null) {
             deviceList.add(sleepPill);
-        }
-        if(sense instanceof SenseDevice && ((SenseDevice) sense).shouldUpgrade()) {
-            deviceList.add( new PlaceholderDevice(PlaceholderDevice.Type.SENSE_WITH_VOICE));
         }
         replaceAll(deviceList);
     }
@@ -343,7 +347,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
     class PlaceholderViewHolder extends BaseViewHolder {
         final TextView message;
         final Button actionButton;
-
+        boolean wantsChevron = false;
         PlaceholderViewHolder(@NonNull final View view) {
             super(view);
 
@@ -353,13 +357,11 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
 
         @Override
         boolean wantsChevron() {
-            return false;
+            return wantsChevron;
         }
 
         @Override
         public void bind(final int position) {
-            super.bind(position);
-
             final PlaceholderDevice device = (PlaceholderDevice) getItem(position);
             switch (device.type) {
                 case SENSE: {
@@ -367,15 +369,29 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                     message.setText(R.string.info_no_sense_connected);
                     actionButton.setText(R.string.action_pair_sense);
                     actionButton.setEnabled(true);
+                    wantsChevron = false;
                     break;
                 }
 
                 case SENSE_WITH_VOICE: {
+                    if(device.isCollapsed()) {
+                        message.setVisibility(View.GONE);
+                        actionButton.setVisibility(View.GONE);
+                    } else {
+                        message.setVisibility(View.VISIBLE);
+                        actionButton.setVisibility(View.VISIBLE);
+                        //todo initiate scroll to fit rest of card
+                    }
                     title.setText(R.string.device_hardware_version_sense_with_voice);
                     message.setText(R.string.info_set_up_sense_with_voice);
                     Styles.initializeSupportFooter(activity, message);
                     actionButton.setText(R.string.action_set_up_sense_with_voice);
                     actionButton.setEnabled(true);
+                    wantsChevron = true;
+                    title.setOnClickListener( ignored -> {
+                        device.toggleCollapsed();
+                        notifyItemChanged(position);
+                    });
                     break;
                 }
 
@@ -383,15 +399,15 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                     title.setText(R.string.device_pill);
                     message.setText(R.string.info_no_sleep_pill_connected);
                     actionButton.setText(R.string.action_pair_new_pill);
-                    final boolean hasSense = (getItemCount() > 0 &&
-                            DevicesAdapter.this.getItemViewType(0) != TYPE_PLACEHOLDER);
-                    actionButton.setEnabled(hasSense);
+                    actionButton.setEnabled(DevicesAdapter.this.hasSense);
+                    wantsChevron = false;
                     break;
                 }
             }
 
             actionButton.setTag(device.type);
             Views.setSafeOnClickListener(actionButton, DevicesAdapter.this);
+            super.bind(position);
         }
     }
 
