@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
-    xmlns:tools="http://schemas.android.com/tools"
     package="is.hello.sense"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -28,9 +28,9 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="false"
         android:theme="@style/AppTheme"
-        android:networkSecurityConfig="@xml/network_security_config"
         tools:ignore="UnusedAttribute">
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -132,9 +132,9 @@
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
 
         <activity
-            android:theme="@style/AppTheme.AppCompat"
             android:name=".flows.settings.ui.activities.AppSettingsActivity"
-            android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"
+            android:theme="@style/AppTheme.AppCompat.AppSettingsActivity"/>
 
         <activity
             android:name=".ui.activities.HardwareFragmentActivity"
@@ -163,6 +163,12 @@
         <activity
             android:name=".flows.voicecommands.ui.activities.VoiceCommandActivity"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+
+        <activity
+            android:label="@string/label_notifications"
+            android:name=".flows.notification.ui.activities.NotificationActivity"
+            android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
+            android:theme="@style/AppTheme.AppCompat.AppSettingsActivity.NotificationActivity"/>
 
 
         <activity

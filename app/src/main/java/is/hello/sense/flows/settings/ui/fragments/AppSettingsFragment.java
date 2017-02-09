@@ -56,7 +56,7 @@ public class AppSettingsFragment extends PresenterFragment<AppSettingsView> impl
         this.presenterView.setDebugText(getString(R.string.app_version_fmt,
                                                   getString(R.string.app_name),
                                                   BuildConfig.VERSION_NAME));
-        this.presenterView.showDebug(BuildConfig.DEBUG_SCREEN_ENABLED);
+        this.presenterView.enableDebug(BuildConfig.DEBUG_SCREEN_ENABLED);
         this.hasVoiceInteractor.update();
     }
 

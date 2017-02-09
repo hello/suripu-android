@@ -1,4 +1,4 @@
-package is.hello.sense.flows.settings.ui.fragments;
+package is.hello.sense.flows.notification.ui.fragments;
 
 
 import android.os.Bundle;
@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import is.hello.sense.R;
-import is.hello.sense.flows.settings.ui.views.NotificationView;
+import is.hello.sense.flows.notification.ui.views.NotificationView;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.util.Analytics;
 
@@ -39,6 +39,8 @@ public class NotificationFragment extends PresenterFragment<NotificationView> {
     public void onViewCreated(final View view,
                               final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Analytics.trackEvent(Analytics.Backside.EVENT_NOTIFICATIONS, null);
+        if (savedInstanceState == null) {
+            Analytics.trackEvent(Analytics.Backside.EVENT_NOTIFICATIONS, null);
+        }
     }
 }

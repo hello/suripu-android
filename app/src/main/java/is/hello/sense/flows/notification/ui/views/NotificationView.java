@@ -1,4 +1,4 @@
-package is.hello.sense.flows.settings.ui.views;
+package is.hello.sense.flows.notification.ui.views;
 
 
 import android.annotation.SuppressLint;

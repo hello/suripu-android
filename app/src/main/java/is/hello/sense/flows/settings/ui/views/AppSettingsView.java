@@ -60,8 +60,8 @@ public class AppSettingsView extends BindedPresenterView<ViewAppSettingsBinding>
 
     }
 
-    public void showDebug(final boolean show) {
-        this.binding.viewAppSettingsDebug.setVisibility(show ? VISIBLE : GONE);
+    public void enableDebug(final boolean enable) {
+        this.binding.viewAppSettingsDebug.setClickable(enable);
     }
 
     public void setDebugText(@Nullable final String text) {

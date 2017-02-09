@@ -37,17 +37,4 @@ public abstract class SenseActivity extends AppCompatActivity {
         Windows.setStatusBarColor(getWindow(), color);
     }
 
-    protected final void setActionBarText(@StringRes final int stringRes) {
-        if (getSupportActionBar() == null) {
-            return;
-        }
-        getSupportActionBar().setTitle(stringRes);
-    }
-
-    protected final void setActionBarHomeUpImage(@DrawableRes final int drawableRes) {
-        if (getSupportActionBar() == null) {
-            return;
-        }
-        getSupportActionBar().setHomeAsUpIndicator(drawableRes);
-    }
 }
