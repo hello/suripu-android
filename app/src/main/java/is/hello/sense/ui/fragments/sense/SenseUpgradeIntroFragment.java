@@ -37,7 +37,7 @@ public class SenseUpgradeIntroFragment extends BasePresenterFragment
                 .setHeadingText(R.string.title_upgrade_sense_voice)
                 .setSubheadingText(R.string.info_upgrade_sense_voice)
                 .setDiagramImage(R.drawable.onboarding_sense_intro)
-                .setPrimaryButtonText(R.string.action_set_up)
+                .setPrimaryButtonText(R.string.action_continue)
                 .setPrimaryOnClickListener(presenter::onPrimaryClicked)
                 .setSecondaryButtonText(R.string.action_upgrade_sense_voice_help)
                 .setSecondaryOnClickListener(presenter::onSecondaryClicked)
