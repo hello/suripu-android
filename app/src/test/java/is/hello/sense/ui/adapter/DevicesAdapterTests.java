@@ -72,7 +72,7 @@ public class DevicesAdapterTests extends SenseTestCase {
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
         final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
-                                                    fakeParent, adapter.getItemViewType(0), 0);
+                                                    fakeParent, 1);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sense")));
         assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
@@ -97,7 +97,7 @@ public class DevicesAdapterTests extends SenseTestCase {
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
         final DevicesAdapter.SenseViewHolder senseHolder = RecyclerAdapterTesting.createAndBindView(adapter,
-                fakeParent, adapter.getItemViewType(0), 0);
+                fakeParent, 1);
 
         assertThat(senseHolder.title.getText().toString(), is(equalTo("Sense")));
         assertThat(senseHolder.lastSeen.getText().toString(), is(equalTo("5 days ago")));
@@ -121,7 +121,7 @@ public class DevicesAdapterTests extends SenseTestCase {
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
         final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
-                                                                                               fakeParent, adapter.getItemViewType(0), 0);
+                                                                                               fakeParent, 1);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sense")));
         assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
@@ -145,7 +145,7 @@ public class DevicesAdapterTests extends SenseTestCase {
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
         final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
-                                                                                               fakeParent, adapter.getItemViewType(0), 0);
+                                                                                               fakeParent, 1);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sense")));
         assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
@@ -170,8 +170,7 @@ public class DevicesAdapterTests extends SenseTestCase {
 
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), Lists.newArrayList(sleepPill)));
 
-        final DevicesAdapter.SleepPillViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
-                fakeParent, adapter.getItemViewType(1), 1);
+        final DevicesAdapter.SleepPillViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 2);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
         assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
@@ -194,8 +193,7 @@ public class DevicesAdapterTests extends SenseTestCase {
 
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), Lists.newArrayList(sleepPill)));
 
-        final DevicesAdapter.SleepPillViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
-                fakeParent, adapter.getItemViewType(1), 1);
+        final DevicesAdapter.SleepPillViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 2);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
         assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
@@ -218,8 +216,7 @@ public class DevicesAdapterTests extends SenseTestCase {
 
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), Lists.newArrayList(sleepPill)));
 
-        final DevicesAdapter.SleepPillViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
-                fakeParent, adapter.getItemViewType(1), 1);
+        final DevicesAdapter.SleepPillViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 2);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
         assertThat(holder.lastSeen.getText().toString(), is(equalTo("5 days ago")));
@@ -246,8 +243,7 @@ public class DevicesAdapterTests extends SenseTestCase {
             }
         });
 
-        final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
-                fakeParent, adapter.getItemViewType(0), 0);
+        final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 0);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sense")));
         assertThat(holder.actionButton.getText().toString(), is(equalTo("Pair Sense")));
@@ -292,8 +288,7 @@ public class DevicesAdapterTests extends SenseTestCase {
             }
         });
 
-        final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
-                 fakeParent, adapter.getItemViewType(1), 1);
+        final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 2);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
         assertThat(holder.actionButton.getText().toString(), is(equalTo("Pair New Pill")));
@@ -332,8 +327,7 @@ public class DevicesAdapterTests extends SenseTestCase {
             }
         });
 
-        final DevicesAdapter.SleepPillViewHolder holder = RecyclerAdapterTesting.createAndBindView(
-                adapter, fakeParent, adapter.getItemViewType(1), 1);
+        final DevicesAdapter.SleepPillViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 1);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
         assertThat(holder.actionButton.getText().toString(), is(equalTo(getString(R.string.action_update))));
@@ -347,37 +341,35 @@ public class DevicesAdapterTests extends SenseTestCase {
     }
 
     @Test
-    public void showSenseUpgradeButton() throws Exception {
+    public void showSenseUpgradeCard() throws Exception {
 
         final SenseDevice senseDevice = createOkSense();
 
         adapter.bindDevices(new Devices(Lists.newArrayList(senseDevice), new ArrayList<>()));
 
-        final LambdaVar<BaseDevice> clickedDevice = LambdaVar.empty();
+        final LambdaVar<PlaceholderDevice.Type> clickedPlaceholder = LambdaVar.empty();
         adapter.setOnDeviceInteractionListener(new DevicesAdapter.OnDeviceInteractionListener() {
             @Override
             public void onPlaceholderInteraction(@NonNull PlaceholderDevice.Type type) {
-                //do nothing
+                clickedPlaceholder.set(type);
             }
 
             @Override
             public void onUpdateDevice(@NonNull BaseDevice device) {
-                clickedDevice.set(device);
+                //do nothing
             }
         });
 
-        final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(
-                adapter, fakeParent, adapter.getItemViewType(0), 0);
+        final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 0);
 
-        assertThat(holder.title.getText().toString(), is(equalTo(getString(R.string.device_hardware_version_sense))));
+        assertThat(holder.title.getText().toString(), is(equalTo(getString(R.string.device_hardware_version_sense_with_voice))));
         assertThat(holder.actionButton.getText().toString(), is(equalTo(getString(R.string.action_upgrade_sense))));
         assertThat(holder.actionButton.isEnabled(), is(true));
 
         // For SafeOnClickListener to function properly
         ShadowSystemClock.setCurrentTimeMillis(1000);
         holder.actionButton.performClick();
-        //fails because getAdapterPosition() returns -1 instead of mocked position
-        //assertThat(clickedDevice.get(), is(instanceOf(SenseDevice.class)));
+        assertThat(clickedPlaceholder.get(), is(PlaceholderDevice.Type.SENSE_WITH_VOICE));
     }
 
     @Test
@@ -387,8 +379,7 @@ public class DevicesAdapterTests extends SenseTestCase {
 
         adapter.bindDevices(new Devices(Lists.newArrayList(senseDevice), new ArrayList<>()));
 
-        final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(
-                adapter, fakeParent, adapter.getItemViewType(0), 0);
+        final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 0);
 
         assertThat(holder.title.getText().toString(), is(equalTo(getString(R.string.device_hardware_version_sense_with_voice))));
         assertThat(holder.actionButton.isEnabled(), is(false));

@@ -382,6 +382,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         @Override
         public void bind(final int position) {
             final PlaceholderDevice device = (PlaceholderDevice) getItem(position);
+            setBodyVisible(device.isCollapsed());
             switch (device.type) {
                 case SENSE: {
                     title.setText(R.string.device_sense);
@@ -393,7 +394,6 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 }
 
                 case SENSE_WITH_VOICE: {
-                    setBodyVisible(device.isCollapsed());
                     title.setText(R.string.device_hardware_version_sense_with_voice);
                     message.setText(R.string.info_set_up_sense_with_voice);
                     Styles.initializeSupportFooter(activity, message);
