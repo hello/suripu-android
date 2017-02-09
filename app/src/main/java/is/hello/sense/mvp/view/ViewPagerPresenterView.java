@@ -3,7 +3,6 @@ package is.hello.sense.mvp.view;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
-import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,8 +13,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
 import is.hello.sense.R;
-import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
 import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
+import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 
 
@@ -133,14 +132,6 @@ public class ViewPagerPresenterView extends PresenterView {
 
     private StaticFragmentAdapter getAdapter() {
         return (StaticFragmentAdapter) this.viewPager.getAdapter();
-    }
-
-    public void saveInstanceState(@NonNull final Bundle outstate) {
-        getAdapter().saveInstanceState(outstate);
-    }
-
-    public void restoreSavedInstanceState(@Nullable final Bundle savedInstanceState) {
-        getAdapter().restoreSavedInstanceState(savedInstanceState);
     }
 
     @Nullable

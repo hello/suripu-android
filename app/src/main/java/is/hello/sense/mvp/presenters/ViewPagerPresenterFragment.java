@@ -12,10 +12,10 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.mvp.util.ViewPagerPresenter;
 import is.hello.sense.mvp.view.ViewPagerPresenterView;
-import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.util.NotTested;
 
 /**
@@ -73,17 +73,12 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
         if (shouldAddViewPagerListener()) {
             presenterView.addViewPagerListener(this);
         }
-        this.presenterView.restoreSavedInstanceState(savedInstanceState);
     }
 
     @CallSuper
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (this.presenterView == null) {
-            return;
-        }
-        this.presenterView.saveInstanceState(outState);
     }
 
     @CallSuper

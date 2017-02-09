@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.view.PagerAdapter;
 import android.view.View;
 
 import com.segment.analytics.Properties;
@@ -24,9 +23,13 @@ import is.hello.sense.api.model.v2.alerts.Alert;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
+import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
+import is.hello.sense.flows.home.ui.fragments.HomePresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
+import is.hello.sense.flows.home.ui.fragments.SoundsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerPresenterFragment;
+import is.hello.sense.flows.home.ui.fragments.TrendsPresenterFragment;
 import is.hello.sense.flows.home.ui.views.SenseTabLayout;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
@@ -34,16 +37,12 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
-import is.hello.sense.flows.home.ui.fragments.HomePresenterFragment;
-import is.hello.sense.flows.home.ui.fragments.SoundsPresenterFragment;
-import is.hello.sense.flows.home.ui.fragments.TrendsPresenterFragment;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.appcompat.ScopedInjectionActivity;
-import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.ui.dialogs.AppUpdateDialogFragment;
 import is.hello.sense.ui.dialogs.BottomAlertDialogFragment;
 import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
@@ -123,7 +122,6 @@ public class HomeActivity extends ScopedInjectionActivity
         final StaticFragmentAdapter fragmentAdapter = new StaticFragmentAdapter(getFragmentManager(),
                                                                                 this.extendedViewPager.getId(),
                                                                                 this.viewPagerDelegate.getViewPagerItems());
-        fragmentAdapter.restoreSavedInstanceState(savedInstanceState);
         this.extendedViewPager.setAdapter(fragmentAdapter);
         this.tabLayout.setUpTabs(savedInstanceState == null);
         this.tabLayout.setListener(this);
@@ -168,10 +166,6 @@ public class HomeActivity extends ScopedInjectionActivity
     public void onSaveInstanceState(final Bundle outState, final PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
         outState.putInt(KEY_CURRENT_ITEM_INDEX, this.tabLayout.getSelectedTabPosition());
-        final PagerAdapter adapter = extendedViewPager.getAdapter();
-        if (adapter instanceof StaticFragmentAdapter) {
-            ((StaticFragmentAdapter) adapter).saveInstanceState(outState);
-        }
     }
 
     @Override
