@@ -7,17 +7,21 @@ import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.ui.widget.util.RoundedCornersTransformation;
 
-public class ExpansionImageView extends ImageView {
+public class ExpansionImageView extends FrameLayout {
     private static final int NUMBER_OF_CHARS = 2;
     private final ExpansionTextDrawable drawable;
     private final RoundedCornersTransformation transformation;
+    private final ProgressBar progressBar;
+    private final ImageView imageview;
 
     public ExpansionImageView(final Context context) {
         this(context, null);
@@ -33,13 +37,21 @@ public class ExpansionImageView extends ImageView {
                               final AttributeSet attrs,
                               final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        final int padding = context.getResources().getDimensionPixelSize(R.dimen.x2);
+        this.progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleSmall);
+        this.progressBar.setPadding(padding, padding, padding, padding);
+        this.imageview = new ImageView(context);
+        addView(this.progressBar);
+        addView(this.imageview);
+
         this.drawable = new ExpansionTextDrawable(context);
         this.transformation = new RoundedCornersTransformation(this.drawable.getRadius(),
                                                                this.drawable.getBorderWidth(),
                                                                this.drawable.getBorderColor());
-        setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                     ViewGroup.LayoutParams.MATCH_PARENT));
+        this.imageview.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                                    ViewGroup.LayoutParams.MATCH_PARENT));
         this.drawable.setDimensions(getMinimumWidth(), getMinimumHeight());
+
     }
 
     @Override
@@ -48,7 +60,7 @@ public class ExpansionImageView extends ImageView {
                                  final int oldWidth,
                                  final int oldHeight) {
         super.onSizeChanged(width, height, oldWidth, oldHeight);
-        if(width != oldWidth || height != oldHeight) {
+        if (width != oldWidth || height != oldHeight) {
             this.drawable.setDimensions(width, height);
         }
     }
@@ -60,7 +72,7 @@ public class ExpansionImageView extends ImageView {
      */
     public void setText(@Nullable final String text) {
         if (text == null || text.isEmpty()) {
-            setImageResource(R.drawable.icon_expansions_default);
+            this.imageview.setImageResource(R.drawable.icon_expansions_default);
         } else if (text.length() > NUMBER_OF_CHARS) {
             this.drawable.setText(text.substring(0, NUMBER_OF_CHARS).toUpperCase());
         } else {
@@ -77,11 +89,21 @@ public class ExpansionImageView extends ImageView {
     public void setExpansion(@NonNull final Picasso picasso,
                              @NonNull final Expansion expansion) {
         setText(expansion.getCompanyName());
-        picasso.cancelRequest(this);
+        picasso.cancelRequest(this.imageview);
         picasso.load(expansion.getIcon().getUrl(getResources()))
-               .transform(transformation)
-               .placeholder(this.drawable)
-               .into(this);
+               .transform(this.transformation)
+               .into(this.imageview, new Callback() {
+                   @Override
+                   public void onSuccess() {
+                       ExpansionImageView.this.progressBar.setVisibility(GONE);
+                   }
+
+                   @Override
+                   public void onError() {
+                       ExpansionImageView.this.progressBar.setVisibility(GONE);
+                       ExpansionImageView.this.imageview.setImageDrawable(drawable);
+                   }
+               });
 
     }
 
