@@ -1,6 +1,7 @@
-package is.hello.sense.flows.home.ui.fragments;
+package is.hello.sense.flows.settings.ui.fragments;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import is.hello.sense.FragmentTest;
 
@@ -18,8 +19,8 @@ public class AppSettingsFragmentTest extends FragmentTest<AppSettingsFragment> {
 
     @Test
     public void onCreateViewTest() {
-        fragment.presenterView = spy(fragment.presenterView);
-        fragment.hasVoiceInteractor = spy(fragment.hasVoiceInteractor);
+        fragment.presenterView = Mockito.spy(fragment.presenterView);
+        fragment.hasVoiceInteractor = Mockito.spy(fragment.hasVoiceInteractor);
         callOnViewCreated();
         verify(fragment).bindAndSubscribe(eq(fragment.hasVoiceInteractor.hasVoice), anyObject(), anyObject());
         verify(fragment.hasVoiceInteractor).update();

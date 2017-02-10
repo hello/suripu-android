@@ -404,6 +404,13 @@
         <item name="android:color">@color/border</item>
     </style>
 
+
+    <style name="Divider.Horizontal.LeftInset">
+        <item name="android:layout_marginLeft">
+            @dimen/x2
+        </item>
+    </style>
+
     <style name="Divider.Horizontal.Padded">
         <item name="android:layout_marginTop">@dimen/gap_small</item>
         <item name="android:layout_marginBottom">@dimen/gap_small</item>
@@ -554,11 +561,7 @@
 
     <!-- AppCompat Themes
     (mainly for use with https://developer.android.com/topic/libraries/support-library/features.html#design) -->
-    <style name="AppTheme.AppCompat"/>
-
-    <style name="AppTheme.AppCompat.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- The primary branding color for the app. By default, this is the color applied to the
-   action bar background. -->
+    <style name="AppTheme.AppCompat" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/primary</item>
         <!-- Dark variant of the primary branding color. By default, this is the color applied to
          the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
@@ -577,14 +580,59 @@
         <!-- The color applied to framework switch thumbs in their normal state. -->
         <item name="colorSwitchThumbNormal">@color/primary</item>
         <!-- Inactive track color(75% transparency) -->
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
+
+        <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading.New</item>
+        <item name="senseTextAppearanceSubheading">@style/AppTheme.Text.Body.MidSized.Dim</item>
+        <item name="senseTextAppearanceFieldLabel">@style/AppTheme.Text.Body.Small.New</item>
+        <item name="senseBackgroundSecondary">@color/background_light</item>
+
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
+        <item name="actionBarStyle">@style/ActionBar</item>
+        <item name="actionMenuTextColor">@color/white</item>
+        <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
+    </style>
+
+    <style name="ActionBar" parent="@style/Widget.AppCompat.ActionBar.Solid">
+        <item name="titleTextStyle">@style/ActionBarStyle</item>
+        <item name="elevation">0dp</item>
+    </style>
+
+    <style name="ActionBarStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="AppTheme.AppCompat.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <!-- Dark variant of the primary branding color. By default, this is the color applied to
+         the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
+        <item name="colorPrimaryDark">@color/primary</item>
+        <!-- Bright complement to the primary branding color. By default, this is the color applied
+         to framework controls (via colorControlActivated). -->
+        <item name="colorAccent">@color/light_accent</item>
+        <!-- The color applied to framework controls in their normal state. -->
+        <item name="colorControlNormal">@color/primary</item>
+        <!-- The color applied to framework controls in their activated (ex. checked) state. -->
+        <item name="colorControlActivated">@color/primary</item>
+        <!-- The color applied to framework control highlights (ex. ripples, list selectors). -->
+        <item name="colorControlHighlight">@color/primary</item>
+        <!-- The color applied to framework buttons in their normal state. -->
+        <item name="colorButtonNormal">@color/primary</item>
+        <!-- The color applied to framework switch thumbs in their normal state. -->
+        <item name="colorSwitchThumbNormal">@color/primary</item>
+        <!-- Inactive track color(75% transparency) -->
         <item name="android:windowBackground">@color/background</item>
         <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
         <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading.New</item>
         <item name="senseTextAppearanceSubheading">@style/AppTheme.Text.Body.MidSized.Dim</item>
         <item name="senseTextAppearanceFieldLabel">@style/AppTheme.Text.Body.Small.New</item>
-
         <item name="senseBackgroundSecondary">@color/background_light</item>
+
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
+        <item name="actionBarStyle">@style/ActionBar</item>
+        <item name="actionMenuTextColor">@color/white</item>
+        <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
     </style>
 
     <style name="AppTheme.AppCompat.ProgressBar" parent="Widget.AppCompat.ProgressBar">
@@ -608,7 +656,7 @@
         <item name="tabMaxWidth">0dp</item>
     </style>
 
-    <style name="AppTheme.AppCompat.BottomBar" parent="AppTheme.AppCompat.NoActionBar.TabLayout">
+    <style name="AppTheme.AppCompat.NoActionBar.BottomBar" parent="AppTheme.AppCompat.NoActionBar.TabLayout">
         <item name="android:minHeight">@dimen/bottom_bar_height</item>
         <item name="tabIndicatorColor">@color/background_light</item>
         <item name="tabIndicatorHeight">0dp</item>
@@ -619,5 +667,13 @@
         <item name="backgroundTint">@color/light_accent</item>
     </style>
 
+    <style name="AppTheme.AppCompat.AppSettingsActivity">
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/primary</item>
+        <item name="android:windowBackground">@color/background_light</item>
+    </style>
+
+    <style name="AppTheme.AppCompat.AppSettingsActivity.NotificationActivity">
+        <item name="android:homeAsUpIndicator">@drawable/app_style_ab_cancel</item>
+    </style>
 
 </resources>
