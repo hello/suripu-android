@@ -24,7 +24,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
-import is.hello.sense.flows.home.ui.fragments.HomePresenterFragment;
+import is.hello.sense.flows.home.ui.fragments.FeedPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.SoundsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
@@ -445,7 +445,7 @@ public class HomeActivity extends ScopedInjectionActivity
             return new StaticFragmentAdapter.Item[]{
                     new StaticFragmentAdapter.Item(TimelinePagerPresenterFragment.class, TimelinePagerPresenterFragment.class.getSimpleName()),
                     new StaticFragmentAdapter.Item(TrendsPresenterFragment.class, TrendsPresenterFragment.class.getSimpleName()),
-                    new StaticFragmentAdapter.Item(HomePresenterFragment.class, HomePresenterFragment.class.getSimpleName()),
+                    new StaticFragmentAdapter.Item(FeedPresenterFragment.class, FeedPresenterFragment.class.getSimpleName()),
                     new StaticFragmentAdapter.Item(SoundsPresenterFragment.class, SoundsPresenterFragment.class.getSimpleName()),
                     new StaticFragmentAdapter.Item(RoomConditionsPresenterFragment.class, RoomConditionsPresenterFragment.class.getSimpleName())
             };

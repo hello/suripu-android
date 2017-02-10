@@ -16,7 +16,7 @@ import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 
-public class HomePresenterFragment extends ViewPagerPresenterFragment
+public class FeedPresenterFragment extends ViewPagerPresenterFragment
         implements InsightInfoFragment.ParentProvider {
     @Inject
     HasVoiceInteractor hasVoiceInteractor;

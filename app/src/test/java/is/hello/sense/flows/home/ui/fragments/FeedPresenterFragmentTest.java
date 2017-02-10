@@ -8,7 +8,7 @@ import is.hello.sense.flows.home.util.HomeViewPagerPresenterDelegate;
 
 import static junit.framework.Assert.assertTrue;
 
-public class HomePresenterFragmentTest extends FragmentTest<HomePresenterFragment> {
+public class FeedPresenterFragmentTest extends FragmentTest<FeedPresenterFragment> {
 
 
     @Test
