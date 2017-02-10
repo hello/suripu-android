@@ -298,7 +298,7 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
         final InsightInfoFragment infoFragment = InsightInfoFragment.newInstance(insight,
                                                                                  getResources());
         infoFragment.show(fragmentManager,
-                          R.id.activity_new_home_container, //todo remove direct reference on activity id
+                          R.id.activity_navigation_container, //todo remove direct reference on activity id
                           InsightInfoFragment.TAG);
 
         this.selectedInsightHolder = viewHolder;

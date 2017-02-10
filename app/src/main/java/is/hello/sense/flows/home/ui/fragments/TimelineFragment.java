@@ -161,6 +161,8 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             setParent((Parent) activity);
         } else if (activity instanceof ParentProvider && this.parent == null) {
             setParent(((ParentProvider) activity).getTimelineParent());
+        } else if (getParentFragment() instanceof Parent && this.parent == null) {
+            setParent(((Parent) getParentFragment()));
         } else if (this.parent == null) {
             throw new IllegalStateException("A parent is required to control TimelineFragment");
         }

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+    <is.hello.sense.flows.home.ui.views.SenseTabLayout
+        android:id="@+id/view_home_tab_layout"
+        style="@style/AppTheme.AppCompat.BottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
+
+    <is.hello.sense.ui.widget.ExtendedViewPager
+        android:id="@+id/view_home_extended_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/view_home_tab_layout"
+        android:fillViewport="true"
+        android:scrollbars="none"
+        app:senseFadingEdgeStyle="rounded"/>
+
+    <FrameLayout
+        android:id="@+id/activity_new_home_bottom_alert_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/view_home_tab_layout">
+
+    </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/view_home_progress_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/gray6_70"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <is.hello.sense.ui.widget.SpinnerImageView
+            android:id="@+id/view_home_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@drawable/animated_progress_bar_white"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>
