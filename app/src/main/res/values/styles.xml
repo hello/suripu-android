@@ -582,12 +582,13 @@
         <!-- Inactive track color(75% transparency) -->
         <item name="android:windowBackground">@color/background</item>
         <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
+
         <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading.New</item>
         <item name="senseTextAppearanceSubheading">@style/AppTheme.Text.Body.MidSized.Dim</item>
         <item name="senseTextAppearanceFieldLabel">@style/AppTheme.Text.Body.Small.New</item>
+        <item name="senseBackgroundSecondary">@color/background_light</item>
 
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
-        <item name="senseBackgroundSecondary">@color/background_light</item>
         <item name="actionBarStyle">@style/ActionBar</item>
         <item name="actionMenuTextColor">@color/white</item>
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
@@ -626,9 +627,9 @@
         <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading.New</item>
         <item name="senseTextAppearanceSubheading">@style/AppTheme.Text.Body.MidSized.Dim</item>
         <item name="senseTextAppearanceFieldLabel">@style/AppTheme.Text.Body.Small.New</item>
+        <item name="senseBackgroundSecondary">@color/background_light</item>
 
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
-        <item name="senseBackgroundSecondary">@color/background_light</item>
         <item name="actionBarStyle">@style/ActionBar</item>
         <item name="actionMenuTextColor">@color/white</item>
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
@@ -668,6 +669,7 @@
 
     <style name="AppTheme.AppCompat.AppSettingsActivity">
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/primary</item>
+        <item name="android:windowBackground">@color/background_light</item>
     </style>
 
     <style name="AppTheme.AppCompat.AppSettingsActivity.NotificationActivity">

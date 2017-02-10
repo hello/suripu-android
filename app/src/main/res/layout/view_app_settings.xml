@@ -2,16 +2,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools">
 
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/background_light">
-
-        <ProgressBar
-            android:id="@+id/view_app_settings_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"/>
+        android:layout_height="match_parent">
 
         <ScrollView
             android:id="@+id/view_app_settings_content"
@@ -23,126 +16,80 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <LinearLayout
+                <TextView
                     android:id="@+id/view_app_settings_my_account"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/selectable_dark_bounded"
-                    android:orientation="vertical">
+                    android:text="@string/label_account"
+                    style="@style/AppTheme.Card.Item"/>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/x2"
-                        android:text="@string/label_account"
-                        android:textAppearance="@style/AppTheme.Text.Body"/>
+                <View style="@style/Divider.Horizontal.LeftInset"/>
 
-                    <View style="@style/Divider.Horizontal.LeftInset"/>
-                </LinearLayout>
-
-
-                <LinearLayout
+                <TextView
                     android:id="@+id/view_app_settings_devices"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/selectable_dark_bounded"
-                    android:orientation="vertical">
+                    android:text="@string/label_devices"
+                    style="@style/AppTheme.Card.Item"/>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/x2"
-                        android:text="@string/label_devices"
-                        android:textAppearance="@style/AppTheme.Text.Body"/>
+                <View style="@style/Divider.Horizontal.LeftInset"/>
 
-                    <View style="@style/Divider.Horizontal.LeftInset"/>
-                </LinearLayout>
 
-                <LinearLayout
+                <TextView
                     android:id="@+id/view_app_settings_notifications"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/selectable_dark_bounded"
-                    android:orientation="vertical">
+                    android:padding="@dimen/x2"
+                    android:text="@string/label_notifications"
+                    style="@style/AppTheme.Card.Item"/>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/x2"
-                        android:text="@string/label_notifications"
-                        android:textAppearance="@style/AppTheme.Text.Body"/>
-
-                    <View style="@style/Divider.Horizontal.LeftInset"/>
-                </LinearLayout>
+                <View style="@style/Divider.Horizontal.LeftInset"/>
 
                 <LinearLayout
-                    android:id="@+id/view_app_settings_expansions"
+                    android:id="@+id/view_app_settings_voice_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/selectable_dark_bounded"
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/view_app_settings_expansions"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/x2"
                         android:text="@string/action_expansions"
-                        android:textAppearance="@style/AppTheme.Text.Body"/>
+                        style="@style/AppTheme.Card.Item"/>
 
                     <View style="@style/Divider.Horizontal.LeftInset"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/view_app_settings_voice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/selectable_dark_bounded"
-                    android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/view_app_settings_voice"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/x2"
                         android:text="@string/label_voice"
-                        android:textAppearance="@style/AppTheme.Text.Body"/>
+                        style="@style/AppTheme.Card.Item"/>
 
                     <View style="@style/Divider.Horizontal.LeftInset"/>
                 </LinearLayout>
 
-                <LinearLayout
+
+                <TextView
                     android:id="@+id/view_app_settings_support"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/x4"
-                    android:background="@drawable/selectable_dark_bounded"
-                    android:orientation="vertical">
+                    android:text="@string/action_support"
+                    style="@style/AppTheme.Card.Item"/>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/x2"
-                        android:text="@string/action_support"
-                        android:textAppearance="@style/AppTheme.Text.Body"/>
+                <View style="@style/Divider.Horizontal.LeftInset"/>
 
-                    <View style="@style/Divider.Horizontal.LeftInset"/>
-                </LinearLayout>
 
-                <LinearLayout
+                <TextView
                     android:id="@+id/view_app_settings_share"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/selectable_dark_bounded"
-                    android:orientation="vertical">
+                    android:text="@string/label_tell_a_friend"
+                    style="@style/AppTheme.Card.Item"/>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/x2"
-                        android:text="@string/label_tell_a_friend"
-                        android:textAppearance="@style/AppTheme.Text.Body"/>
-
-                    <View style="@style/Divider.Horizontal.LeftInset"/>
-                </LinearLayout>
+                <View style="@style/Divider.Horizontal.LeftInset"/>
 
                 <TextView
                     android:id="@+id/view_app_settings_debug"
@@ -155,5 +102,11 @@
 
             </LinearLayout>
         </ScrollView>
-    </RelativeLayout>
+
+        <ProgressBar
+            android:id="@+id/view_app_settings_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+    </FrameLayout>
 </layout>
