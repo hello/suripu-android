@@ -404,6 +404,13 @@
         <item name="android:color">@color/border</item>
     </style>
 
+
+    <style name="Divider.Horizontal.LeftInset">
+        <item name="android:layout_marginLeft">
+            @dimen/x2
+        </item>
+    </style>
+
     <style name="Divider.Horizontal.Padded">
         <item name="android:layout_marginTop">@dimen/gap_small</item>
         <item name="android:layout_marginBottom">@dimen/gap_small</item>
@@ -666,4 +673,5 @@
     <style name="AppTheme.AppCompat.AppSettingsActivity.NotificationActivity">
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_cancel</item>
     </style>
+
 </resources>

@@ -27,6 +27,7 @@
                     android:id="@+id/view_app_settings_my_account"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/selectable_dark_bounded"
                     android:orientation="vertical">
 
                     <TextView
@@ -36,7 +37,7 @@
                         android:text="@string/label_account"
                         android:textAppearance="@style/AppTheme.Text.Body"/>
 
-                    <View style="@style/Divider.Horizontal"/>
+                    <View style="@style/Divider.Horizontal.LeftInset"/>
                 </LinearLayout>
 
 
@@ -44,6 +45,7 @@
                     android:id="@+id/view_app_settings_devices"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/selectable_dark_bounded"
                     android:orientation="vertical">
 
                     <TextView
@@ -53,13 +55,14 @@
                         android:text="@string/label_devices"
                         android:textAppearance="@style/AppTheme.Text.Body"/>
 
-                    <View style="@style/Divider.Horizontal"/>
+                    <View style="@style/Divider.Horizontal.LeftInset"/>
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/view_app_settings_notifications"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/selectable_dark_bounded"
                     android:orientation="vertical">
 
                     <TextView
@@ -69,13 +72,14 @@
                         android:text="@string/label_notifications"
                         android:textAppearance="@style/AppTheme.Text.Body"/>
 
-                    <View style="@style/Divider.Horizontal"/>
+                    <View style="@style/Divider.Horizontal.LeftInset"/>
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/view_app_settings_expansions"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/selectable_dark_bounded"
                     android:orientation="vertical">
 
                     <TextView
@@ -85,13 +89,14 @@
                         android:text="@string/action_expansions"
                         android:textAppearance="@style/AppTheme.Text.Body"/>
 
-                    <View style="@style/Divider.Horizontal"/>
+                    <View style="@style/Divider.Horizontal.LeftInset"/>
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/view_app_settings_voice"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/selectable_dark_bounded"
                     android:orientation="vertical">
 
                     <TextView
@@ -101,7 +106,7 @@
                         android:text="@string/label_voice"
                         android:textAppearance="@style/AppTheme.Text.Body"/>
 
-                    <View style="@style/Divider.Horizontal"/>
+                    <View style="@style/Divider.Horizontal.LeftInset"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -109,6 +114,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/x4"
+                    android:background="@drawable/selectable_dark_bounded"
                     android:orientation="vertical">
 
                     <TextView
@@ -118,13 +124,14 @@
                         android:text="@string/action_support"
                         android:textAppearance="@style/AppTheme.Text.Body"/>
 
-                    <View style="@style/Divider.Horizontal"/>
+                    <View style="@style/Divider.Horizontal.LeftInset"/>
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/view_app_settings_share"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/selectable_dark_bounded"
                     android:orientation="vertical">
 
                     <TextView
@@ -134,7 +141,7 @@
                         android:text="@string/label_tell_a_friend"
                         android:textAppearance="@style/AppTheme.Text.Body"/>
 
-                    <View style="@style/Divider.Horizontal"/>
+                    <View style="@style/Divider.Horizontal.LeftInset"/>
                 </LinearLayout>
 
                 <TextView
