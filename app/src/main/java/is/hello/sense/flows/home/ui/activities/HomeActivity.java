@@ -67,6 +67,7 @@ public class HomeActivity extends ScopedInjectionActivity
         OnboardingFlowProvider,
         SenseTabLayout.Listener {
 
+    public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     private static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
     private static final String KEY_CURRENT_ITEM_INDEX = HomeActivity.class.getSimpleName() + "CURRENT_ITEM_INDEX";
     private static boolean isFirstActivityRun = true; // changed when paused
@@ -125,6 +126,11 @@ public class HomeActivity extends ScopedInjectionActivity
         this.extendedViewPager.setAdapter(fragmentAdapter);
         this.tabLayout.setUpTabs(savedInstanceState == null);
         this.tabLayout.setListener(this);
+        //todo needs testing with server
+        final Intent intent = getIntent();
+        if(intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
+            dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
+        }
     }
 
     @Override
@@ -372,36 +378,22 @@ public class HomeActivity extends ScopedInjectionActivity
         this.stateSafeExecutor.execute(() -> {
             info(getClass().getSimpleName(), "dispatchNotification(" + notification + ")");
 
-            final Notification target = Notification.fromBundle(notification);
+            @Notification.Type
+            final String target = Notification.typeFromBundle(notification);
             switch (target) {
-                case TIMELINE: {
+                case Notification.SLEEP_SCORE: {
                     this.tabLayout.selectTimelineTab();
                     //todo support scrolling to date.
+
                     break;
                 }
-                case SENSOR: {
-                    this.tabLayout.selectTimelineTab();
-                    break;
-                }
-                case TRENDS: {
-                    this.tabLayout.selectTrendsTab();
-                    break;
-                }
-                case ALARM: {
-                    this.tabLayout.selectSoundTab();
-                    break;
-                }
-                case SETTINGS: {
-                    //todo start AppSettingsActivity after merging.
-                    break;
-                }
-                case INSIGHTS: {
-                    this.tabLayout.selectHomeTab();
-                    break;
-                }
-                case CONDITIONS: {
+                case Notification.PILL_BATTERY: {
+                    //todo handle and pass along
                     this.tabLayout.selectConditionsTab();
                     break;
+                }
+                default:{
+                    info(getClass().getSimpleName(), "unsupported notification type " + target);
                 }
             }
         });

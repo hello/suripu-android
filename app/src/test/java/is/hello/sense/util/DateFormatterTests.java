@@ -196,6 +196,20 @@ public class DateFormatterTests extends InjectionTestCase {
     }
 
     @Test
+    public void isMoreThanThreeDays() {
+        final LocalDate now = LocalDate.now();
+        assertThat(DateFormatter.isMoreThanThreeDays(now), is(false));
+        assertThat(DateFormatter.isMoreThanThreeDays(now.plusDays(1)), is(false));
+        assertThat(DateFormatter.isMoreThanThreeDays(now.plusDays(2)), is(false));
+        assertThat(DateFormatter.isMoreThanThreeDays(now.plusDays(3)), is(false));
+        assertThat(DateFormatter.isMoreThanThreeDays(now.plusDays(4)), is(true));
+        assertThat(DateFormatter.isMoreThanThreeDays(now.plusDays(5)), is(true));
+        assertThat(DateFormatter.isMoreThanThreeDays(now.plusDays(50)), is(true));
+        assertThat(DateFormatter.isMoreThanThreeDays(now.plusDays(500)), is(true));
+        assertThat(DateFormatter.isMoreThanThreeDays(now.plusDays(5000)), is(true));
+    }
+
+    @Test
     public void isInLast2Weeks() {
         final LocalDate now = DateFormatter.nowLocalDate();
         assertThat(DateFormatter.isInLast2Weeks(now.plusDays(1)), is(false));

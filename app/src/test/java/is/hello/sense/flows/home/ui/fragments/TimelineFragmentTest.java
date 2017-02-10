@@ -236,10 +236,6 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
         fragment.timelineInteractor = spy(fragment.timelineInteractor);
     }
 
-    private void spyOnPreferences() {
-        fragment.preferences = spy(fragment.preferences);
-    }
-
     public static class ActivityWithParent extends FragmentTestActivity
             implements TimelineFragment.Parent {
 

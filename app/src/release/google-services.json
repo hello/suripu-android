@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "644205261111",
+    "firebase_url": "https://suripu-android-prod.firebaseio.com",
+    "project_id": "suripu-android-prod",
+    "storage_bucket": "suripu-android-prod.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:644205261111:android:4c6aa53abb5aba2e",
+        "android_client_info": {
+          "package_name": "is.hello.sense"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "644205261111-u9je141o4ueg4m13s8g4luhtbmvmo11p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgiMRJqMTjf0UNhEuEEjurceI3GwtFyb4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
