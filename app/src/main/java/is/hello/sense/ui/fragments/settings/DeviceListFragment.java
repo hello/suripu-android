@@ -85,6 +85,10 @@ public class DeviceListFragment extends InjectionFragment
         if (savedInstanceState == null) {
             Analytics.trackEvent(Analytics.Backside.EVENT_DEVICES, null);
         }
+
+        this.adapter = new DevicesAdapter(getActivity());
+        adapter.setOnItemClickedListener(this);
+        adapter.setOnDeviceInteractionListener(this);
     }
 
     @Nullable
@@ -102,10 +106,6 @@ public class DeviceListFragment extends InjectionFragment
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      EnumSet.of(ScrollEdge.TOP), FadingEdgesItemDecoration.Style.STRAIGHT));
-
-        this.adapter = new DevicesAdapter(getActivity());
-        adapter.setOnItemClickedListener(this);
-        adapter.setOnDeviceInteractionListener(this);
 
         this.supportInfoFooter = (TextView) inflater.inflate(R.layout.item_device_support_footer, recyclerView, false);
         supportInfoFooter.setVisibility(View.INVISIBLE);
@@ -140,8 +140,17 @@ public class DeviceListFragment extends InjectionFragment
         super.onDestroyView();
 
         this.loadingIndicator = null;
-        this.adapter = null;
         this.supportInfoFooter = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(this.adapter != null) {
+            this.adapter.setOnItemClickedListener(null);
+            this.adapter.setOnDeviceInteractionListener(null);
+            this.adapter = null;
+        }
     }
 
     @Override

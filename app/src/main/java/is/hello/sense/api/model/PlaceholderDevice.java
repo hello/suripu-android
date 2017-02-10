@@ -21,8 +21,12 @@ public class PlaceholderDevice extends BaseDevice {
         return R.string.device_unknown;
     }
 
-    public void toggleCollapsed() {
+    /**
+     * @return new collapsed boolean state
+     */
+    public boolean toggleCollapsed() {
         this.collapsed = !collapsed;
+        return collapsed;
     }
 
     public boolean isCollapsed() {

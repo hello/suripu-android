@@ -48,6 +48,8 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
     @Nullable
     OnDeviceInteractionListener onDeviceInteractionListener;
     private boolean hasSense = false;
+    @Nullable
+    private PlaceholderDevice senseWithVoicePlaceholder;
 
     public DevicesAdapter(@NonNull final Activity activity) {
         super(new ArrayList<>());
@@ -74,9 +76,11 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         final List<BaseDevice> deviceList = new ArrayList<>(3);
         this.hasSense = sense instanceof SenseDevice;
         if (hasSense && ((SenseDevice) sense).shouldUpgrade()) {
-            final PlaceholderDevice senseWithVoice = new PlaceholderDevice(PlaceholderDevice.Type.SENSE_WITH_VOICE);
-            senseWithVoice.toggleCollapsed();
-            deviceList.add(senseWithVoice);
+            if(senseWithVoicePlaceholder == null) {
+                this.senseWithVoicePlaceholder = new PlaceholderDevice(PlaceholderDevice.Type.SENSE_WITH_VOICE);
+                senseWithVoicePlaceholder.toggleCollapsed();
+            }
+            deviceList.add(senseWithVoicePlaceholder);
         }
         deviceList.add(sense);
         if (sleepPill != null) {
@@ -119,7 +123,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 return new SleepPillViewHolder(view);
             }
             default: {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Unknown type " + viewType);
             }
         }
     }
@@ -155,21 +159,26 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
 
         @Nullable
         Drawable getChevronDrawable() {
-            return title.getCompoundDrawables()[2];
+            if(!wantsChevron()) {
+                return null;
+            }
+            Drawable chevron = title.getCompoundDrawables()[2];
+            if(chevron == null) {
+                //noinspection ConstantConditions
+                chevron = ResourcesCompat.getDrawable(resources,
+                                                      getChevronRes(),
+                                                      null).mutate();
+            }
+            return chevron;
         }
 
         @Override
         public void bind(final int position) {
-            if (wantsChevron()) {
-                @SuppressWarnings("ConstantConditions")
-                final Drawable chevron = ResourcesCompat.getDrawable(resources,
-                                                                     getChevronRes(),
-                                                                     null).mutate();
+            final Drawable chevron = getChevronDrawable();
+            if(chevron != null) {
                 Drawables.setTintColor(chevron, ContextCompat.getColor(activity, R.color.light_accent));
-                title.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, chevron, null);
-            } else {
-                title.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
             }
+            title.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, chevron, null);
         }
     }
 
@@ -361,6 +370,9 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         final TextView message;
         final Button actionButton;
         boolean wantsChevron = false;
+        static final int COLLAPSED_LEVEL = 0;
+        static final int EXPANDED_LEVEL = 10000;
+
         PlaceholderViewHolder(@NonNull final View view) {
             super(view);
 
@@ -382,7 +394,8 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         @Override
         public void bind(final int position) {
             final PlaceholderDevice device = (PlaceholderDevice) getItem(position);
-            setBodyVisible(device.isCollapsed());
+            final boolean isCollapsed = device.isCollapsed();
+            setBodyVisible(isCollapsed);
             switch (device.type) {
                 case SENSE: {
                     title.setText(R.string.device_sense);
@@ -400,14 +413,12 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                     actionButton.setText(R.string.action_set_up_sense_with_voice);
                     actionButton.setEnabled(true);
                     wantsChevron = true;
-                    final ValueAnimator animation = ValueAnimator.ofInt(0, 10000); //todo max level constantize
+                    final ValueAnimator animation = ValueAnimator.ofInt(COLLAPSED_LEVEL,
+                                                                        EXPANDED_LEVEL);
                     animation.setDuration(Anime.DURATION_NORMAL);
-                    title.setOnClickListener( ignored -> animateChevron(animation,
-                                                                        !device.isCollapsed(),
-                                                                        () -> {
-                                                                            device.toggleCollapsed();
-                                                                            setBodyVisible(device.isCollapsed());
-                                                                        }));
+                    title.setOnClickListener( ignored -> updateChevron(animation,
+                                                                       device.toggleCollapsed(),
+                                                                       () -> PlaceholderViewHolder.this.setBodyVisible(device.isCollapsed())));
                     break;
                 }
 
@@ -424,6 +435,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             actionButton.setTag(device.type);
             Views.setSafeOnClickListener(actionButton, DevicesAdapter.this);
             super.bind(position);
+            updateChevron(isCollapsed);
         }
 
         private void setBodyVisible(final boolean collapsed) {
@@ -436,12 +448,23 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             }
         }
 
-        void animateChevron(@NonNull final ValueAnimator animator,
-                            final boolean reverse,
-                            @NonNull final Runnable onComplete) {
+        void updateChevron(final boolean collapsed) {
             final Drawable chevron = super.getChevronDrawable();
-            if(chevron == null || animator.isRunning()) {
+            if (chevron != null) {
+                chevron.setLevel(collapsed ? COLLAPSED_LEVEL : EXPANDED_LEVEL);
+            }
+        }
+
+        void updateChevron(@NonNull final ValueAnimator animator,
+                           final boolean reverse,
+                           @NonNull final Runnable onComplete) {
+            final Drawable chevron = super.getChevronDrawable();
+            if (chevron == null) {
                 return;
+            }
+
+            if(animator.isRunning()) {
+                animator.cancel();
             }
 
             animator.addUpdateListener(animation1 -> {
