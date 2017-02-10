@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:id="@+id/view_app_settings_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/view_app_settings_my_account"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_account"
+                    style="@style/AppTheme.Card.Item"/>
+
+                <View style="@style/Divider.Horizontal.LeftInset"/>
+
+                <TextView
+                    android:id="@+id/view_app_settings_devices"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_devices"
+                    style="@style/AppTheme.Card.Item"/>
+
+                <View style="@style/Divider.Horizontal.LeftInset"/>
+
+
+                <TextView
+                    android:id="@+id/view_app_settings_notifications"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/x2"
+                    android:text="@string/label_notifications"
+                    style="@style/AppTheme.Card.Item"/>
+
+                <View style="@style/Divider.Horizontal.LeftInset"/>
+
+                <LinearLayout
+                    android:id="@+id/view_app_settings_voice_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/view_app_settings_expansions"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/action_expansions"
+                        style="@style/AppTheme.Card.Item"/>
+
+                    <View style="@style/Divider.Horizontal.LeftInset"/>
+
+                    <TextView
+                        android:id="@+id/view_app_settings_voice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_voice"
+                        style="@style/AppTheme.Card.Item"/>
+
+                    <View style="@style/Divider.Horizontal.LeftInset"/>
+                </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/view_app_settings_support"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/x4"
+                    android:text="@string/action_support"
+                    style="@style/AppTheme.Card.Item"/>
+
+                <View style="@style/Divider.Horizontal.LeftInset"/>
+
+
+                <TextView
+                    android:id="@+id/view_app_settings_share"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_tell_a_friend"
+                    style="@style/AppTheme.Card.Item"/>
+
+                <View style="@style/Divider.Horizontal.LeftInset"/>
+
+                <TextView
+                    android:id="@+id/view_app_settings_debug"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="@dimen/x3"
+                    android:textAppearance="@style/AppTheme.Text.Body.MidSized.New"
+                    tools:text="Sense 0.0.0"/>
+
+            </LinearLayout>
+        </ScrollView>
+
+        <ProgressBar
+            android:id="@+id/view_app_settings_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+    </FrameLayout>
+</layout>
