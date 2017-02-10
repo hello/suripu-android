@@ -3,58 +3,82 @@ package is.hello.sense.notifications;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
 import android.text.TextUtils;
 
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.Locale;
+
 import is.hello.sense.api.ApiService;
-import is.hello.sense.api.gson.Enums;
+import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 
-public enum Notification {
-    TIMELINE,
-    SENSOR,
-    TRENDS,
-    ALARM,
-    SETTINGS,
-    INSIGHTS,
-    CONDITIONS;
+public class Notification extends ApiResponse {
+    static final String REMOTE_TITLE = "hlo_title";
+    static final String REMOTE_BODY = "hlo_body";
+    /**
+     * Member of {@link is.hello.sense.notifications.Notification.Type}
+     */
+    static final String REMOTE_TYPE = "hlo_type";
+    /**
+     * Key to fetch string value that will be empty string
+     * if not used.
+     * ex. hlo_detail = 2017-12-31
+     * if hlo_type = {@link is.hello.sense.notifications.Notification.Type#SLEEP_SCORE}
+     */
+    static final String REMOTE_DETAIL = "hlo_detail";
 
-    //region Creation
+    static final String EXTRA_TYPE = "extra_type";
+    static final String EXTRA_DETAILS = "extra_details";
 
-    public static Notification fromBundle(@NonNull Bundle notifications) {
-        return fromString(notifications.getString(NotificationReceiver.EXTRA_TARGET));
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({SLEEP_SCORE, PILL_BATTERY, UNKNOWN})
+    @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})
+    public @interface Type {
     }
 
-    public static Notification fromString(@Nullable String string) {
-        return Enums.fromString(string, values(), TIMELINE);
+    public static final String SLEEP_SCORE = "SLEEP_SCORE";
+    public static final String PILL_BATTERY = "PILL_BATTERY";
+    public static final String UNKNOWN = "UNKNOWN";
+
+    @Type
+    public static String typeFromBundle(@NonNull final Bundle notifications) {
+        return typeFromString(notifications.getString(EXTRA_TYPE));
     }
-    //region
 
+    @Type
+    public static String typeFromString(@Nullable final String string) {
+        if(string == null) {
+            return UNKNOWN;
+        }
+        switch (string.toUpperCase(Locale.ENGLISH)) {
+            case SLEEP_SCORE: return SLEEP_SCORE;
+            case PILL_BATTERY: return PILL_BATTERY;
+            default: return UNKNOWN;
+        }
+    }
 
-    //region Accessors
-
-    public static @NonNull LocalDate getDate(@NonNull Bundle notification) {
-        String rawDate = notification.getString(NotificationReceiver.EXTRA_DETAILS);
+    public static @NonNull
+    LocalDate getDate(@NonNull final Bundle notification) {
+        final String rawDate = notification.getString(EXTRA_DETAILS);
         if (TextUtils.isEmpty(rawDate)) {
             return DateFormatter.lastNight();
         }
 
         try {
-            DateTimeFormatter formatter = DateTimeFormat.forPattern(ApiService.DATE_FORMAT);
+            final DateTimeFormatter formatter = DateTimeFormat.forPattern(ApiService.DATE_FORMAT);
             return formatter.parseLocalDate(rawDate);
         } catch (UnsupportedOperationException | IllegalArgumentException e) {
             Logger.error(Notification.class.getSimpleName(), "Could not parse timestamp from timeline notification", e);
             return DateFormatter.lastNight();
         }
     }
-
-    public static @NonNull String getSensorName(@NonNull Bundle notification) {
-        return notification.getString(NotificationReceiver.EXTRA_DETAILS, ApiService.SENSOR_NAME_TEMPERATURE);
-    }
-
-    //endregion
 }

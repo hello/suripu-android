@@ -17,7 +17,6 @@ import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.InteractorSubject;
-import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Analytics.ProfilePhoto.Source;
@@ -202,7 +201,6 @@ public class AccountInteractor extends ValueInteractor<Account> {
     //region Logging out
     public void logOut() {
         sessionManager.logOut();
-        NotificationRegistration.resetAppVersion(context);
         Analytics.signOut();
     }
 

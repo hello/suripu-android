@@ -138,6 +138,12 @@ public class HomeActivity extends ScopedInjectionActivity
         extendedViewPager.setAdapter(new StaticFragmentAdapter(getFragmentManager(),
                                                                viewPagerDelegate.getViewPagerItems()));
         setUpTabs(savedInstanceState == null);
+
+        //todo needs testing with server
+        final Intent intent = getIntent();
+        if(intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
+            dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
+        }
     }
 
     @Override
@@ -446,37 +452,22 @@ public class HomeActivity extends ScopedInjectionActivity
         stateSafeExecutor.execute(() -> {
             info(getClass().getSimpleName(), "dispatchNotification(" + notification + ")");
 
-            final Notification target = Notification.fromBundle(notification);
+            @Notification.Type
+            final String target = Notification.typeFromBundle(notification);
             switch (target) {
-                case TIMELINE: {
+                case Notification.SLEEP_SCORE: {
                     selectTab(SLEEP_ICON_KEY);
                     //todo support scrolling to date.
 
                     break;
                 }
-                case SENSOR: {
-                    selectTab(SLEEP_ICON_KEY);
-                    break;
-                }
-                case TRENDS: {
-                    selectTab(TRENDS_ICON_KEY);
-                    break;
-                }
-                case ALARM: {
-                    selectTab(SOUNDS_ICON_KEY);
-                    break;
-                }
-                case SETTINGS: {
-                    //todo start AppSettingsActivity after merging.
-                    break;
-                }
-                case INSIGHTS: {
-                    selectTab(INSIGHTS_ICON_KEY);
-                    break;
-                }
-                case CONDITIONS: {
+                case Notification.PILL_BATTERY: {
+                    //todo handle and pass along
                     selectTab(CONDITIONS_ICON_KEY);
                     break;
+                }
+                default:{
+                    info(getClass().getSimpleName(), "unsupported notification type " + target);
                 }
             }
         });
