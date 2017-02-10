@@ -151,9 +151,10 @@ public class ViewPagerPresenterView extends PresenterView {
 
     //region fab methods
 
-    public void setFabSize(final float size) {
+    public void setFabSizeAndAlpha(final float size) {
         this.fab.setScaleX(size);
         this.fab.setScaleY(size);
+        this.fab.setAlpha(size);
     }
 
     public void setFabVisible(final boolean visible) {

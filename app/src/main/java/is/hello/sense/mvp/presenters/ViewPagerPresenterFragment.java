@@ -229,13 +229,13 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
             }
             if (fabListener.shouldShowFab()) {
                 this.presenterView.setFabRotating(fabListener.shouldFabRotate());
-                this.presenterView.setFabSize(Math.min(1f, Math.abs(1f - positionOffset * 2)));
+                this.presenterView.setFabSizeAndAlpha(Math.min(1f, Math.abs(1f - positionOffset * 2)));
                 this.presenterView.setFabResource(fabListener.getFabDrawableRes());
                 this.presenterView.setFabVisible(true);
                 return;
             }
         }
-        this.presenterView.setFabSize(0);
+        this.presenterView.setFabSizeAndAlpha(0);
         this.presenterView.setFabVisible(false);
     }
 
