@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import is.hello.sense.R;
 import is.hello.sense.databinding.ViewAppSettingsBinding;
 import is.hello.sense.mvp.view.BindedPresenterView;
+import is.hello.sense.ui.widget.util.Views;
 
 @SuppressLint("ViewConstructor")
 public class AppSettingsView extends BindedPresenterView<ViewAppSettingsBinding> {
@@ -24,14 +25,14 @@ public class AppSettingsView extends BindedPresenterView<ViewAppSettingsBinding>
 
     public AppSettingsView(@NonNull final Activity activity) {
         super(activity);
-        this.binding.viewAppSettingsMyAccount.setOnClickListener(v -> onClicked(INDEX_ACCOUNT));
-        this.binding.viewAppSettingsDevices.setOnClickListener(v -> onClicked(INDEX_DEVICES));
-        this.binding.viewAppSettingsNotifications.setOnClickListener(v -> onClicked(INDEX_NOTIFICATIONS));
-        this.binding.viewAppSettingsExpansions.setOnClickListener(v -> onClicked(INDEX_EXPANSIONS));
-        this.binding.viewAppSettingsVoice.setOnClickListener(v -> onClicked(INDEX_VOICE));
-        this.binding.viewAppSettingsSupport.setOnClickListener(v -> onClicked(INDEX_SUPPORT));
-        this.binding.viewAppSettingsShare.setOnClickListener(v -> onClicked(INDEX_SHARE));
-        this.binding.viewAppSettingsDebug.setOnClickListener(v -> onClicked(INDEX_DEBUG));
+        Views.setTimeOffsetOnClickListener(this.binding.viewAppSettingsMyAccount, v -> onClicked(INDEX_ACCOUNT));
+        Views.setTimeOffsetOnClickListener(this.binding.viewAppSettingsDevices, v -> onClicked(INDEX_DEVICES));
+        Views.setTimeOffsetOnClickListener(this.binding.viewAppSettingsNotifications, v -> onClicked(INDEX_NOTIFICATIONS));
+        Views.setTimeOffsetOnClickListener(this.binding.viewAppSettingsExpansions, v -> onClicked(INDEX_EXPANSIONS));
+        Views.setTimeOffsetOnClickListener(this.binding.viewAppSettingsVoice, v -> onClicked(INDEX_VOICE));
+        Views.setTimeOffsetOnClickListener(this.binding.viewAppSettingsSupport, v -> onClicked(INDEX_SUPPORT));
+        Views.setTimeOffsetOnClickListener(this.binding.viewAppSettingsShare, v -> onClicked(INDEX_SHARE));
+        Views.setTimeOffsetOnClickListener(this.binding.viewAppSettingsDebug, v -> onClicked(INDEX_DEBUG));
         showLoading(true);
     }
 
@@ -70,11 +71,9 @@ public class AppSettingsView extends BindedPresenterView<ViewAppSettingsBinding>
 
     public final void showVoiceEnabledRows(final boolean show) {
         if (show) {
-            this.binding.viewAppSettingsExpansions.setVisibility(VISIBLE);
-            this.binding.viewAppSettingsVoice.setVisibility(VISIBLE);
+            this.binding.viewAppSettingsVoiceContainer.setVisibility(VISIBLE);
         } else {
-            this.binding.viewAppSettingsExpansions.setVisibility(GONE);
-            this.binding.viewAppSettingsVoice.setVisibility(GONE);
+            this.binding.viewAppSettingsVoiceContainer.setVisibility(GONE);
         }
         showLoading(false);
     }
