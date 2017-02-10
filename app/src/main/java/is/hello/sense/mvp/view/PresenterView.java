@@ -8,13 +8,10 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.view.ContextThemeWrapper;
-import android.view.LayoutInflater;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.FrameLayout;
 
-import is.hello.sense.R;
 
 import is.hello.sense.ui.recycler.CardItemDecoration;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
@@ -24,9 +21,10 @@ public abstract class PresenterView extends FrameLayout {
 
     public PresenterView(@NonNull final Activity activity) {
         super(activity);
-        activity.getLayoutInflater().inflate(getLayoutRes(), this);
         this.context = activity;
+        activity.getLayoutInflater().inflate(getLayoutRes(), this);
     }
+
 
     protected final String getString(@StringRes final int res) {
         return context.getString(res);
@@ -74,6 +72,7 @@ public abstract class PresenterView extends FrameLayout {
 
     /**
      * Override to change recycler view padding from an edge.
+     *
      * @return distance recycler view should be from edge
      */
     public Rect contentInset() {

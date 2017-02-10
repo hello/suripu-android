@@ -118,7 +118,9 @@
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
         <activity
             android:name=".flows.settings.ui.activities.AppSettingsActivity"
-            android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"
+            android:theme="@style/AppTheme.AppCompat.AppSettingsActivity"/>
+
         <activity
             android:name=".ui.activities.HardwareFragmentActivity"
             android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"/>
@@ -141,6 +143,14 @@
         <activity
             android:name=".flows.voicecommands.ui.activities.VoiceCommandActivity"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+
+        <activity
+            android:label="@string/label_notifications"
+            android:name=".flows.notification.ui.activities.NotificationActivity"
+            android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
+            android:theme="@style/AppTheme.AppCompat.AppSettingsActivity.NotificationActivity"/>
+
+
         <activity
             android:name=".flows.expansions.ui.activities.ExpansionValuePickerActivity"
             android:parentActivityName=".flows.smartalarm.ui.activities.SmartAlarmDetailActivity"

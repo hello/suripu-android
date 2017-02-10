@@ -29,6 +29,8 @@ import is.hello.sense.flows.home.ui.fragments.TimelinePagerPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
 import is.hello.sense.flows.home.ui.fragments.WeekTrendsFragment;
+import is.hello.sense.flows.notification.ui.activities.NotificationActivity;
+import is.hello.sense.flows.notification.ui.fragments.NotificationFragment;
 import is.hello.sense.flows.settings.ui.activities.AppSettingsActivity;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
@@ -142,7 +144,6 @@ import is.hello.sense.zendesk.ZendeskModule;
                 TrendsFragment.class,
                 InsightsFragment.class,
                 VoiceFragment.class,
-                AppSettingsFragment.class,
                 SoundsPresenterFragment.class,
                 HomePresenterFragment.class,
                 SmartAlarmListFragment.class,
@@ -154,7 +155,11 @@ import is.hello.sense.zendesk.ZendeskModule;
 
                 VoiceSettingsInteractor.class,
                 AppSettingsActivity.class,
-                HomeFragment.class
+                HomeFragment.class,
+                AppSettingsActivity.class,
+                AppSettingsFragment.class,
+                NotificationActivity.class,
+                NotificationFragment.class
         }
 )
 @SuppressWarnings("UnusedDeclaration")
