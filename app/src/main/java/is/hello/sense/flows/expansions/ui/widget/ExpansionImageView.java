@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -16,7 +17,8 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.ui.widget.util.RoundedCornersTransformation;
 
-public class ExpansionImageView extends FrameLayout {
+public class ExpansionImageView extends FrameLayout
+        implements Callback {
     private static final int NUMBER_OF_CHARS = 2;
     private final ExpansionTextDrawable drawable;
     private final RoundedCornersTransformation transformation;
@@ -40,6 +42,9 @@ public class ExpansionImageView extends FrameLayout {
         final int padding = context.getResources().getDimensionPixelSize(R.dimen.x2);
         this.progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleSmall);
         this.progressBar.setPadding(padding, padding, padding, padding);
+        final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.gravity = Gravity.CENTER;
+        this.progressBar.setLayoutParams(params);
         this.imageview = new ImageView(context);
         addView(this.progressBar);
         addView(this.imageview);
@@ -64,6 +69,21 @@ public class ExpansionImageView extends FrameLayout {
             this.drawable.setDimensions(width, height);
         }
     }
+
+    //region callback
+    @Override
+    public void onSuccess() {
+        this.progressBar.setVisibility(GONE);
+    }
+
+    @Override
+    public void onError() {
+        this.progressBar.setVisibility(GONE);
+        this.imageview.setImageDrawable(drawable);
+    }
+    //endregion
+
+    //region methods
 
     /**
      * Will show the first two letters of the String passed in.
@@ -92,19 +112,8 @@ public class ExpansionImageView extends FrameLayout {
         picasso.cancelRequest(this.imageview);
         picasso.load(expansion.getIcon().getUrl(getResources()))
                .transform(this.transformation)
-               .into(this.imageview, new Callback() {
-                   @Override
-                   public void onSuccess() {
-                       ExpansionImageView.this.progressBar.setVisibility(GONE);
-                   }
-
-                   @Override
-                   public void onError() {
-                       ExpansionImageView.this.progressBar.setVisibility(GONE);
-                       ExpansionImageView.this.imageview.setImageDrawable(drawable);
-                   }
-               });
-
+               .into(this.imageview, this);
     }
 
+    //endregion
 }
