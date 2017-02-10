@@ -35,6 +35,10 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
     @StringRes
     public abstract int getSubTitleRes();
 
+    @StringRes
+    public abstract int getErrorRes();
+
+
 
     public abstract boolean showSkipButtonOnError();
 
@@ -130,7 +134,7 @@ public abstract class BasePairPillPresenter extends BaseHardwarePresenter<BasePa
             errorDialogBuilder.withOperation("Pair Pill");
             if (e instanceof OperationTimeoutException ||
                     SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.TIME_OUT)) {
-                errorDialogBuilder.withMessage(StringRef.from(R.string.error_message_sleep_pill_scan_timeout));
+                errorDialogBuilder.withMessage(StringRef.from(getErrorRes()));
             } else if (SensePeripheralError.errorTypeEquals(e, SenseCommandProtos.ErrorType.NETWORK_ERROR)) {
                 errorDialogBuilder.withMessage(StringRef.from(R.string.error_network_failure_pair_pill));
                 errorDialogBuilder.withSupportLink();

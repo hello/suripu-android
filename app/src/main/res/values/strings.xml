@@ -117,7 +117,7 @@
     <string name="title_intro_sleep_pill">Clip Sleep Pill to your Pillow</string>
     <string name="info_intro_sleep_pill">Clip Sleep Pill to your pillowcase by pulling the edge of the pillowcase taut.  For best results, place your Sleep Pill on the side of your pillowcase closest to the edge of the bed.</string>
     <string name="title_pair_pill">Pairing your Sleep Pill</string>
-    <string name="info_pair_pill">Shake your Sleep Pill for three seconds to pair it with your Sense. You may need to shake it quickly for it to register.</string>
+    <string name="info_pair_pill">To pair your Sleep Pill, shake it for three seconds and then stop.\n\nYou may need to shake it quickly to register. Be sure to stop after three seconds.</string>
     <string name="title_sense_colors_intro">Sense Colors</string>
     <string name="info_sense_colors_intro">Sense glows to tell you about the conditions in your bedroom – including temperature, humidity, light, and noise. Sense has three different colors.</string>
     <string name="title_sense_colors_good">All good.</string>
@@ -630,7 +630,7 @@
     <string name="unpair_pill_dialog_message">Using the new Sleep Pill will improve the accuracy of your Sleep Timeline, and provide better battery life over the original Sleep Pill.</string>
     <string name="action_dont_pair">No, don\'t pair</string>
     <string name="update_pair_pill_title">Pairing your new Sleep Pill</string>
-    <string name="update_pair_pill_sub_title">Hold the Sleep Pill close to Sense and shake it quickly for three seconds.</string>
+    <string name="update_pair_pill_sub_title">Hold the Sleep Pill close to Sense and shake it quickly for three seconds and then stop.</string>
     <string name="sleep_pill_paired">Sleep Pill paired</string>
     <string name="update_pair_pill_confirmation_title">Attaching Sleep Pill to your pillow</string>
     <string name="update_pair_pill_confirmation_message">Attach the new Sleep Pill to the side of your pillowcase closest to the edge of your bed. You may need to pull your pillowcase taut between two hands.</string>
