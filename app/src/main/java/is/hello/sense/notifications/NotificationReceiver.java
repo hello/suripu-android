@@ -9,8 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-
 import javax.inject.Inject;
 
 import is.hello.buruberi.util.Rx;
@@ -45,7 +43,8 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
+        //todo refactor with firebase
+        /*final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
         final String messageType = gcm.getMessageType(intent);
         switch (messageType) {
             case GoogleCloudMessaging.MESSAGE_TYPE_SEND_ERROR:
@@ -64,7 +63,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 Logger.warn(NotificationReceiver.class.getSimpleName(),
                             "Unrecognized message type: " + messageType);
                 break;
-        }
+        }*/
     }
 
     public void onMessageSendError(@NonNull Context context, @NonNull Intent intent) {
