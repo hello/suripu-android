@@ -2,39 +2,68 @@ package is.hello.sense.notifications;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
 import android.text.TextUtils;
 
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.Locale;
+
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 
-import static is.hello.sense.notifications.NotificationType.fromString;
-
 public class Notification extends ApiResponse {
     static final String REMOTE_TITLE = "hlo_title";
     static final String REMOTE_BODY = "hlo_body";
     /**
-     * Member of {@link NotificationType}
+     * Member of {@link is.hello.sense.notifications.Notification.Type}
      */
     static final String REMOTE_TYPE = "hlo_type";
     /**
      * Key to fetch string value that will be empty string
      * if not used.
      * ex. hlo_detail = 2017-12-31
-     * if hlo_type = {@link NotificationType#SLEEP_SCORE}
+     * if hlo_type = {@link is.hello.sense.notifications.Notification.Type#SLEEP_SCORE}
      */
     static final String REMOTE_DETAIL = "hlo_detail";
 
     static final String EXTRA_TYPE = "extra_type";
     static final String EXTRA_DETAILS = "extra_details";
 
-    public static NotificationType typeFromBundle(@NonNull final Bundle notifications) {
-        return fromString(notifications.getString(EXTRA_TYPE));
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({SLEEP_SCORE, PILL_BATTERY, UNKNOWN})
+    @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})
+    public @interface Type {
+    }
+
+    public static final String SLEEP_SCORE = "SLEEP_SCORE";
+    public static final String PILL_BATTERY = "PILL_BATTERY";
+    public static final String UNKNOWN = "UNKNOWN";
+
+    @Type
+    public static String typeFromBundle(@NonNull final Bundle notifications) {
+        return typeFromString(notifications.getString(EXTRA_TYPE));
+    }
+
+    @Type
+    public static String typeFromString(@Nullable final String string) {
+        if(string == null) {
+            return UNKNOWN;
+        }
+        switch (string.toUpperCase(Locale.ENGLISH)) {
+            case SLEEP_SCORE: return SLEEP_SCORE;
+            case PILL_BATTERY: return PILL_BATTERY;
+            default: return UNKNOWN;
+        }
     }
 
     public static @NonNull
@@ -48,7 +77,7 @@ public class Notification extends ApiResponse {
             final DateTimeFormatter formatter = DateTimeFormat.forPattern(ApiService.DATE_FORMAT);
             return formatter.parseLocalDate(rawDate);
         } catch (UnsupportedOperationException | IllegalArgumentException e) {
-            Logger.error(NotificationType.class.getSimpleName(), "Could not parse timestamp from timeline notification", e);
+            Logger.error(Notification.class.getSimpleName(), "Could not parse timestamp from timeline notification", e);
             return DateFormatter.lastNight();
         }
     }

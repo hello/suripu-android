@@ -42,7 +42,6 @@ import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.mvp.util.FabPresenter;
 import is.hello.sense.mvp.util.FabPresenterProvider;
 import is.hello.sense.notifications.Notification;
-import is.hello.sense.notifications.NotificationType;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.appcompat.ScopedInjectionActivity;
@@ -139,6 +138,12 @@ public class HomeActivity extends ScopedInjectionActivity
         extendedViewPager.setAdapter(new StaticFragmentAdapter(getFragmentManager(),
                                                                viewPagerDelegate.getViewPagerItems()));
         setUpTabs(savedInstanceState == null);
+
+        //todo needs testing with server
+        final Intent intent = getIntent();
+        if(intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
+            dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
+        }
     }
 
     @Override
@@ -447,16 +452,22 @@ public class HomeActivity extends ScopedInjectionActivity
         stateSafeExecutor.execute(() -> {
             info(getClass().getSimpleName(), "dispatchNotification(" + notification + ")");
 
-            final NotificationType target = Notification.typeFromBundle(notification);
+            @Notification.Type
+            final String target = Notification.typeFromBundle(notification);
             switch (target) {
-                case SLEEP_SCORE: {
+                case Notification.SLEEP_SCORE: {
                     selectTab(SLEEP_ICON_KEY);
                     //todo support scrolling to date.
 
                     break;
                 }
-                case PILL_BATTERY: {
+                case Notification.PILL_BATTERY: {
                     //todo handle and pass along
+                    selectTab(CONDITIONS_ICON_KEY);
+                    break;
+                }
+                default:{
+                    info(getClass().getSimpleName(), "unsupported notification type " + target);
                 }
             }
         });

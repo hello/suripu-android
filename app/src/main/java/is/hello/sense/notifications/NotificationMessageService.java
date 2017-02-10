@@ -51,7 +51,8 @@ public class NotificationMessageService extends FirebaseMessagingService {
 
         final CharSequence titleText;
         final CharSequence bodyText;
-        final NotificationType type;
+        @Notification.Type
+        final String type;
         final String detail;
         final Context context = getApplicationContext();
         // currently we ignore any notification object returned from remoteMessage.getNotification();
@@ -59,21 +60,21 @@ public class NotificationMessageService extends FirebaseMessagingService {
             final Map<String, String> dataPayload = remoteMessage.getData();
             titleText = dataPayload.get(Notification.REMOTE_TITLE);
             bodyText = dataPayload.get(Notification.REMOTE_BODY);
-            type = NotificationType.fromString(dataPayload.get(Notification.REMOTE_TYPE));
+            type = Notification.typeFromString(dataPayload.get(Notification.REMOTE_TYPE));
             detail = dataPayload.get(Notification.REMOTE_DETAIL);
         } else {
             titleText = context.getString(R.string.app_name);
             bodyText = getString(R.string.empty);
-            type = NotificationType.SLEEP_SCORE;
+            type = Notification.UNKNOWN;
             detail = Constants.EMPTY_STRING;
         }
 
         final Bundle bundle = new Bundle();
-        bundle.putSerializable(Notification.EXTRA_TYPE, type);
+        bundle.putString(Notification.EXTRA_TYPE, type);
         bundle.putString(Notification.EXTRA_DETAILS, detail);
 
         final Intent activityIntent = new Intent(context, HomeActivity.class);
-        activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         activityIntent.putExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD, bundle);
 
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
