@@ -3,6 +3,7 @@ package is.hello.sense.flows.home.ui.adapters;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentPagerAdapter;
@@ -63,17 +64,22 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
         alertFragmentVisible(lastPosition, true);
     }
 
-    public void restoreSavedInstanceState(@Nullable final Bundle savedInstanceState) {
-        if (savedInstanceState == null) {
-            return;
+    @Override
+    public Parcelable saveState() {
+        final Bundle state = new Bundle();
+        state.putInt(KEY_LAST_POSITION, lastPosition);
+        return state;
+    }
+
+    @Override
+    public void restoreState(@Nullable final Parcelable state,
+                             @Nullable final ClassLoader loader) {
+        if (state instanceof Bundle) {
+            final Bundle bundle = (Bundle) state;
+            bundle.setClassLoader(loader);
+            this.lastPosition = bundle.getInt(KEY_LAST_POSITION, Constants.NONE);
         }
-        this.lastPosition = savedInstanceState.getInt(KEY_LAST_POSITION, Constants.NONE);
     }
-
-    public void saveInstanceState(@NonNull final Bundle outstate) {
-        outstate.putInt(KEY_LAST_POSITION, lastPosition);
-    }
-
 
     private void alertFragmentVisible(final int position,
                                       final boolean isVisible) {
