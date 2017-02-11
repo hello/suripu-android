@@ -441,20 +441,17 @@ public class AccountSettingsFragment extends InjectionFragment
     public void signOut() {
         Analytics.trackEvent(Analytics.Backside.EVENT_SIGN_OUT, null);
 
-        final SenseAlertDialog signOutDialog = new SenseAlertDialog(getActivity());
-        signOutDialog.setTitle(R.string.dialog_title_log_out);
-        signOutDialog.setMessage(R.string.dialog_message_log_out);
-        signOutDialog.setNegativeButton(android.R.string.cancel, null);
-        signOutDialog.setPositiveButton(R.string.action_log_out, (dialog, which) -> {
-            Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_OUT, null);
-            // Let the dialog finish dismissing before we block the main thread.
-            recyclerView.post(() -> {
-                getActivity().finish();
-                accountPresenter.logOut();
-            });
-        });
-        signOutDialog.setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true);
-        signOutDialog.show();
+        new SenseAlertDialog.Builder()
+                .setTitle(R.string.dialog_title_log_out)
+                .setMessage(R.string.dialog_message_log_out)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.action_log_out, () ->
+                        subscribe(accountPresenter.logOut(),
+                                  Functions.NO_OP,
+                                  Functions.LOG_ERROR))
+                .setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true)
+                .build(getActivity())
+                .show();
     }
 
     //endregion

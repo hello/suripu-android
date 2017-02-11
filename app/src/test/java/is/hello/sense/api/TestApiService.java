@@ -124,6 +124,11 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
+    public Observable<VoidResponse> deauthorize() {
+        return safeJust(new VoidResponse());
+    }
+
+    @Override
     public Observable<Account> getAccount(@Query("photo") final Boolean includePhoto) {
         final String accountJson = includePhoto ? "account_with_photo" : "account";
         return loadResponse(accountJson, new TypeToken<Account>() {

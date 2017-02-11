@@ -199,7 +199,17 @@ public class AccountInteractor extends ValueInteractor<Account> {
 
 
     //region Logging out
-    public void logOut() {
+    public Observable<VoidResponse> logOut() {
+        return apiService.deauthorize()
+                         .doOnCompleted(AccountInteractor.this::localLogOut)
+                         .doOnError(e -> {
+                            logEvent("Unable to de-authorize");
+                            localLogOut();
+                         });
+    }
+
+    private void localLogOut() {
+        Analytics.trackEvent(Analytics.Global.EVENT_SIGNED_OUT, null);
         sessionManager.logOut();
         Analytics.signOut();
     }

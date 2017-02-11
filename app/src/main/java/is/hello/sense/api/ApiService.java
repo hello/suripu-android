@@ -93,6 +93,9 @@ public interface ApiService {
     @POST("/v1/oauth2/token")
     Observable<OAuthSession> authorize(@NonNull @Body OAuthCredentials request);
 
+    @DELETE("/v1/oauth2/token")
+    Observable<VoidResponse> deauthorize();
+
     //endregion
 
 
