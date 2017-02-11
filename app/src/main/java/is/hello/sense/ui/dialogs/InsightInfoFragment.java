@@ -4,7 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.Activity;
+import android.app.Fragment;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -191,9 +191,9 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
             bottomContainer.hideRightButton();
         } else if (getActivity() != null && getActivity() instanceof HomeActivity) {
             bottomContainer.setRightButtonOnClickListener((v) -> {
-                ((HomeActivity) getActivity()).showProgressOverlay(true);
+                showProgress(true);
                 apiService.shareInsight(new InsightType(insightId))
-                          .doOnTerminate(() -> shareInsightTerminate((HomeActivity) getActivity()))
+                          .doOnTerminate(() -> showProgress(false))
                           .subscribe(this::shareInsightSuccess,
                                      this::shareInsightError);
             });
@@ -504,11 +504,17 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
     @Nullable
     private Parent getParent() {
-        final Activity activity = getActivity();
-        if (activity instanceof ParentProvider) {
-            return ((ParentProvider) activity).provideInsightInfoParent();
+        final Fragment fragment = getParentFragment();
+        if (fragment instanceof ParentProvider) {
+            return ((ParentProvider) fragment).provideInsightInfoParent();
         } else {
             return null;
+        }
+    }
+
+    public void showProgress(final boolean show) {
+        if (getParent() != null) {
+            getParent().showProgress(show);
         }
     }
 
@@ -568,12 +574,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
 
-    private void shareInsightTerminate(@Nullable final HomeActivity activity) {
-        if (activity == null) {
-            return;
-        }
-        activity.showProgressOverlay(false);
-    }
 
 //region Scroll handling
 
@@ -601,6 +601,8 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
         @Nullable
         Drawable getInsightImage();
+
+        void showProgress(final boolean show);
     }
 
     public interface ParentProvider {

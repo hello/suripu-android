@@ -155,20 +155,12 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     }
 
     @Override
-    public void onAttach(@NonNull final Activity activity) {
-        super.onAttach(activity);
-        if (activity instanceof Parent && this.parent == null) {
-            setParent((Parent) activity);
-        } else if (activity instanceof ParentProvider && this.parent == null) {
-            setParent(((ParentProvider) activity).getTimelineParent());
-        } else if (this.parent == null) {
-            throw new IllegalStateException("A parent is required to control TimelineFragment");
-        }
-    }
-
-    @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (!(getParentFragment() instanceof Parent)) {
+            throw new IllegalStateException("A parent is required to control TimelineFragment");
+        }
+        setParent((Parent) getParentFragment());
         final LocalDate date = getDate();
         final Properties properties = Analytics.createProperties(Analytics.Timeline.PROP_DATE,
                                                                  date.toString());

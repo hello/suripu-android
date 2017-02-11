@@ -94,7 +94,7 @@ public class SenseTabLayout extends TabLayout
         selectTab(SOUNDS_ICON_KEY);
     }
 
-    public void selectHomeTab() {
+    public void selectFeedTab() {
         selectTab(INSIGHTS_ICON_KEY);
     }
 
@@ -111,7 +111,7 @@ public class SenseTabLayout extends TabLayout
     }
 
 
-    public void setHomeTabIndicatorVisible(final boolean show) {
+    public void setFeedTabIndicatorVisible(final boolean show) {
         if (currentItemIndex == INSIGHTS_ICON_KEY) {
             return;
         }
@@ -160,6 +160,11 @@ public class SenseTabLayout extends TabLayout
                                               .setActive(false));
     }
 
+    /**
+     * Will set the tab at this index position to active.
+     *
+     * @param index position to select during {{@link #setUpTabs(boolean)}}.
+     */
     public void setCurrentItemIndex(final int index) {
         this.currentItemIndex = index;
     }

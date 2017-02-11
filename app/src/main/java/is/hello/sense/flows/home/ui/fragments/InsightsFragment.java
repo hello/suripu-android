@@ -98,7 +98,6 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
 
     private boolean questionLoaded = false;
     private boolean insightsLoaded = false;
-    private HomeActivity activity;
 
     @Override
     public final void initializePresenterView() {
@@ -127,10 +126,6 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
-        if (getActivity() instanceof HomeActivity) {
-            activity = (HomeActivity) getActivity();
-        }
-
     }
 
     @Override
@@ -298,7 +293,7 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
         final InsightInfoFragment infoFragment = InsightInfoFragment.newInstance(insight,
                                                                                  getResources());
         infoFragment.show(fragmentManager,
-                          R.id.activity_new_home_container, //todo remove direct reference on activity id
+                          R.id.activity_navigation_container, //todo remove direct reference on activity id
                           InsightInfoFragment.TAG);
 
         this.selectedInsightHolder = viewHolder;
@@ -323,10 +318,9 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
                              });
     }
 
-    private void showProgress(final boolean show) {
-        if (activity != null) {
-            activity.showProgressOverlay(show);
-        }
+    @Override
+    public void showProgress(final boolean show) {
+        //todo fixme
     }
 
     //endregion
