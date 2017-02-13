@@ -1,6 +1,5 @@
 package is.hello.sense.flows.home.ui.fragments;
 
-import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,9 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import org.joda.time.LocalDate;
 
@@ -21,23 +18,20 @@ import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.flows.home.ui.views.TimelinePagerView;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TimelineInteractor;
-import is.hello.sense.mvp.util.ViewPagerPresenterChild;
-import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
+import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
-import is.hello.sense.ui.common.InjectionFragment;
-import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 
-public class TimelinePagerFragment extends InjectionFragment
+public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<TimelinePagerView>
         implements ViewPager.OnPageChangeListener,
         TimelineFragment.Parent,
-        HomeActivity.ScrollUp,
-        ViewPagerPresenterChild {
+        HomeActivity.ScrollUp {
 
     @Inject
     PreferencesInteractor preferences;
@@ -46,29 +40,23 @@ public class TimelinePagerFragment extends InjectionFragment
     @Inject
     TimelineInteractor timelineInteractor;
 
-    private final ViewPagerPresenterChildDelegate viewPagerPresenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
+    private static final String KEY_LAST_UPDATED = TimelinePagerPresenterFragment.class.getSimpleName() + "KEY_LAST_UPDATED";
+    private static final String KEY_LAST_ITEM = TimelinePagerPresenterFragment.class.getSimpleName() + "KEY_LAST_ITEM";
 
-    private static final String KEY_LAST_UPDATED = TimelinePagerFragment.class.getSimpleName() + "KEY_LAST_UPDATED";
-    private static final String KEY_LAST_ITEM = TimelinePagerFragment.class.getSimpleName() + "KEY_LAST_ITEM";
-
-    private ViewPager viewPager;
     public boolean shouldJumpToLastNightOnUserVisible = false;
-    private TimelineFragmentAdapter viewPagerAdapter;
     private final BroadcastReceiver onTimeChanged = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, final Intent intent) {
             final LocalDate newToday = DateFormatter.todayForTimeline();
-            final LocalDate selectedDate = viewPagerAdapter.getItemDate(viewPager.getCurrentItem());
+            final LocalDate selectedDate = TimelinePagerPresenterFragment.this.presenterView.getSelectedDate();
             if (newToday.isBefore(selectedDate)) {
                 // ViewPager does not correctly shrink when the number of items in it
                 // decrease, so we have to clear its adapter, update the adapter, then
                 // re-set the adapter for the update to work correctly.
-                viewPager.setAdapter(null);
-                viewPagerAdapter.setLatestDate(newToday);
-                viewPager.setAdapter(viewPagerAdapter);
-                viewPager.setCurrentItem(viewPagerAdapter.getLastNight(), false);
+                //todo confirm above comment
+                TimelinePagerPresenterFragment.this.presenterView.resetAdapterForLatestDate(newToday);
             } else {
-                viewPagerAdapter.setLatestDate(newToday);
+                TimelinePagerPresenterFragment.this.presenterView.setLatestDate(newToday);
             }
         }
     };
@@ -77,27 +65,31 @@ public class TimelinePagerFragment extends InjectionFragment
     private long lastUpdated = System.currentTimeMillis();
 
 
-    @Nullable
     @Override
-    public View onCreateView(final LayoutInflater inflater,
-                             final ViewGroup container,
-                             final Bundle savedInstanceState) {
+    public void initializePresenterView() {
+        if (this.presenterView == null) {
+            this.presenterView = new TimelinePagerView(getActivity(),
+                                                       createAdapter(),
+                                                       this);
+        }
+    }
 
-        final ViewGroup view = (ViewGroup) inflater.inflate(R.layout.fragment_timeline_pager, container, false);
-        viewPager = (ExtendedViewPager) view.findViewById(R.id.fragment_timeline_view_pager);
-        this.viewPagerAdapter = new TimelineFragmentAdapter(getChildFragmentManager(),
-                                                            preferences.getAccountCreationDate());
-        viewPager.setAdapter(viewPagerAdapter);
-        viewPager.addOnPageChangeListener(this);
+    private TimelineFragmentAdapter createAdapter() {
+        return new TimelineFragmentAdapter(getChildFragmentManager(),
+                                           this.preferences.getAccountCreationDate());
+    }
+
+    @Override
+    public void onViewCreated(final View view,
+                              final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         if (savedInstanceState == null) {
             jumpToLastNight(false);
         } else {
-            viewPager.setCurrentItem(savedInstanceState.getInt(KEY_LAST_ITEM), false);
+            this.presenterView.setCurrentViewPagerItem(savedInstanceState.getInt(KEY_LAST_ITEM), false);
         }
 
-        getActivity().registerReceiver(onTimeChanged, new IntentFilter(Intent.ACTION_TIME_CHANGED));
-        viewPagerPresenterChildDelegate.onViewInitialized();
-        return view;
+        getActivity().registerReceiver(this.onTimeChanged, new IntentFilter(Intent.ACTION_TIME_CHANGED));
     }
 
     @Override
@@ -111,25 +103,24 @@ public class TimelinePagerFragment extends InjectionFragment
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putLong(KEY_LAST_UPDATED, lastUpdated);
-        outState.putInt(KEY_LAST_ITEM, viewPager == null ? 0 : viewPager.getCurrentItem());
+        outState.putLong(KEY_LAST_UPDATED, this.lastUpdated);
+
+        outState.putInt(KEY_LAST_ITEM, this.presenterView == null ? 0 : this.presenterView.getCurrentItem());
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        viewPagerPresenterChildDelegate.onResume();
-        if ((System.currentTimeMillis() - lastUpdated) > Constants.STALE_INTERVAL_MS) {
+        if ((System.currentTimeMillis() - this.lastUpdated) > Constants.STALE_INTERVAL_MS) {
             if (isCurrentFragmentLastNight()) {
                 Logger.info(getClass().getSimpleName(), "Timeline content stale, reloading.");
-                final TimelineFragment fragment =
-                        (TimelineFragment) viewPagerAdapter.getCurrentFragment();
+                final TimelineFragment fragment = this.presenterView.getCurrentTimeline();
                 if (fragment != null) {
                     fragment.update();
                 }
             } else {
                 Logger.info(getClass().getSimpleName(), "Timeline content stale, fast-forwarding to today.");
-                viewPager.setCurrentItem(viewPagerAdapter.getLastNight(), false);
+                this.presenterView.setCurrentItemToLastNight(false);
             }
 
             this.lastUpdated = System.currentTimeMillis();
@@ -140,42 +131,33 @@ public class TimelinePagerFragment extends InjectionFragment
     @Override
     public void onPause() {
         super.onPause();
-        viewPagerPresenterChildDelegate.onPause();
     }
 
     @Override
-    public void onUserVisible() {
-        if (shouldJumpToLastNightOnUserVisible) {
-            shouldJumpToLastNightOnUserVisible = false;
-            jumpToLastNight(false);
+    public void setVisibleToUser(final boolean isVisible) {
+        super.setVisibleToUser(isVisible);
+        if (isVisible) {
+            if (shouldJumpToLastNightOnUserVisible) {
+                shouldJumpToLastNightOnUserVisible = false;
+                jumpToLastNight(false);
+            }
+            final TimelineFragment timelineFragment = this.presenterView.getCurrentTimeline();
+            if (timelineFragment != null) {
+                timelineFragment.setUserVisibleHint(true);
+            }
+        } else {
+            final TimelineFragment timelineFragment = this.presenterView.getCurrentTimeline();
+            if (timelineFragment != null) {
+                timelineFragment.dismissVisibleOverlaysAndDialogs();
+                timelineFragment.setUserVisibleHint(false);
+            }
         }
-        final TimelineFragment timelineFragment = viewPagerAdapter.getCurrentTimeline();
-        if (timelineFragment != null) {
-            timelineFragment.setUserVisibleHint(true);
-        }
-    }
-
-    @Override
-    public void onUserInvisible() {
-        final TimelineFragment timelineFragment = viewPagerAdapter.getCurrentTimeline();
-        if (timelineFragment != null) {
-            timelineFragment.dismissVisibleOverlaysAndDialogs();
-            timelineFragment.setUserVisibleHint(false);
-        }
-    }
-
-    @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        viewPagerPresenterChildDelegate.setUserVisibleHint(isVisibleToUser);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
         getActivity().unregisterReceiver(onTimeChanged);
-        viewPager.removeOnPageChangeListener(this);
         timelineInteractor.clearCache();
     }
 
@@ -196,8 +178,7 @@ public class TimelinePagerFragment extends InjectionFragment
                 state != ViewPager.SCROLL_STATE_IDLE) {
             animatorContext.beginAnimation("Timeline swipe");
 
-            final TimelineFragment currentFragment =
-                    (TimelineFragment) viewPagerAdapter.getCurrentFragment();
+            final TimelineFragment currentFragment = this.presenterView.getCurrentTimeline();
             if (currentFragment != null) {
                 currentFragment.onSwipeBetweenDatesStarted();
             }
@@ -213,16 +194,12 @@ public class TimelinePagerFragment extends InjectionFragment
     //endregion
 
     public boolean isCurrentFragmentLastNight() {
-        final TimelineFragment currentFragment =
-                (TimelineFragment) viewPagerAdapter.getCurrentFragment();
+        final TimelineFragment currentFragment = this.presenterView.getCurrentTimeline();
         return (currentFragment != null && DateFormatter.isLastNight(currentFragment.getDate()));
     }
 
     public void jumpToLastNight(final boolean animate) {
-        if (viewPager == null || viewPagerAdapter == null) {
-            return;
-        }
-        viewPager.setCurrentItem(viewPagerAdapter.getLastNight(), animate);
+        this.presenterView.setCurrentItemToLastNight(animate);
     }
 
 
@@ -240,33 +217,20 @@ public class TimelinePagerFragment extends InjectionFragment
 
     @Override
     public void jumpTo(@NonNull final LocalDate date, @Nullable final Timeline timeline) {
-        final int datePosition = viewPagerAdapter.getDatePosition(date);
-        if (datePosition != viewPager.getCurrentItem()) {
-            viewPagerAdapter.setCachedTimeline(timeline);
-            viewPager.setCurrentItem(datePosition, false);
-        } else {
-            final TimelineFragment currentFragment = viewPagerAdapter.getCurrentTimeline();
-            if (currentFragment != null) {
-                currentFragment.scrollToTop();
-            }
+        if (presenterView == null) {
+            return;
         }
+        this.presenterView.jumpToDate(date, timeline);
     }
 
     //endregion
     //region ScrollUp
     @Override
     public void scrollUp() {
-        if (viewPager == null || viewPagerAdapter == null) {
+        if (presenterView == null) {
             return;
         }
-        if (viewPager.getCurrentItem() == viewPagerAdapter.getLastNight()) {
-            final Fragment fragment = viewPagerAdapter.getCurrentFragment();
-            if (fragment instanceof TimelineFragment) {
-                ((TimelineFragment) fragment).scrollToTop();
-            }
-        } else {
-            jumpToLastNight(true);
-        }
+        this.presenterView.scrollUp();
     }
 
     //endregion

@@ -8,7 +8,7 @@ import is.hello.sense.flows.home.ui.fragments.MonthTrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.QuarterTrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.WeekTrendsFragment;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
-import is.hello.sense.ui.adapter.StaticFragmentAdapter;
+import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 
 public class TrendsViewPagerPresenterDelegate extends BaseViewPagerPresenterDelegate {
     private final Resources resources;

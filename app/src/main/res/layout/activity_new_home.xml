@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.TabLayout
+    <is.hello.sense.flows.home.ui.views.SenseTabLayout
         android:id="@+id/activity_new_home_tab_layout"
         style="@style/AppTheme.AppCompat.NoActionBar.BottomBar"
         android:layout_width="match_parent"

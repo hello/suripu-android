@@ -28,9 +28,7 @@ import is.hello.sense.flows.sensordetails.ui.activities.SensorDetailActivity;
 import is.hello.sense.flows.settings.ui.activities.AppSettingsActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.mvp.presenters.PresenterFragment;
-import is.hello.sense.mvp.util.ViewPagerPresenterChild;
-import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
+import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
@@ -41,11 +39,10 @@ import is.hello.sense.util.Logger;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-public class RoomConditionsPresenterFragment extends PresenterFragment<RoomConditionsView>
+public class RoomConditionsPresenterFragment extends ControllerPresenterFragment<RoomConditionsView>
         implements ArrayRecyclerAdapter.OnItemClickedListener<Sensor>,
         SensorResponseAdapter.ErrorItemClickListener,
-        HomeActivity.ScrollUp,
-        ViewPagerPresenterChild {
+        HomeActivity.ScrollUp {
     private final static long WELCOME_CARD_TIMES_SHOWN_LIMIT = 2;
 
     @Inject
@@ -60,7 +57,6 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
     private UpdateTimer updateTimer;
     @NonNull
     private Subscription postSensorSubscription = Subscriptions.empty();
-    private final ViewPagerPresenterChildDelegate viewPagerPresenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
 
     @Override
     public final void initializePresenterView() {
@@ -72,16 +68,10 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
             }
             this.presenterView = new RoomConditionsView(getActivity(), this.adapter);
             this.presenterView.setSettingsButtonClickListener(this::startSettingsActivity);
-            this.viewPagerPresenterChildDelegate.onViewInitialized();
         }
     }
 
     //region Lifecycle
-    @Override
-    public final void setUserVisibleHint(final boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        viewPagerPresenterChildDelegate.setUserVisibleHint(isVisibleToUser);
-    }
 
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
@@ -109,7 +99,6 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
     public final void onResume() {
         super.onResume();
         this.updateTimer.schedule();
-        viewPagerPresenterChildDelegate.onResume();
     }
 
     @Override
@@ -118,20 +107,8 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
         if (this.updateTimer != null) {
             this.updateTimer.unschedule();
         }
-        viewPagerPresenterChildDelegate.onPause();
     }
 
-    @Override
-    public void onUserVisible() {
-        Analytics.trackEvent(Analytics.Backside.EVENT_CURRENT_CONDITIONS, null);
-        this.sensorResponseInteractor.update();
-
-    }
-
-    @Override
-    public void onUserInvisible() {
-
-    }
 
     @Override
     public void onRelease() {
@@ -247,6 +224,15 @@ public class RoomConditionsPresenterFragment extends PresenterFragment<RoomCondi
         intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
         intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
         this.startActivity(intent);
+    }
+
+    @Override
+    public void setVisibleToUser(final boolean isVisible) {
+        super.setVisibleToUser(isVisible);
+        if (isVisible) {
+            Analytics.trackEvent(Analytics.Backside.EVENT_CURRENT_CONDITIONS, null);
+            this.sensorResponseInteractor.update();
+        }
     }
 
 }

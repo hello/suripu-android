@@ -1,45 +1,27 @@
-package is.hello.sense.ui.fragments;
+package is.hello.sense.flows.home.ui.fragments;
 
 
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
 
+import is.hello.sense.FragmentTest;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.model.v2.sensors.SensorStatus;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
 import is.hello.sense.flows.home.ui.adapters.SensorResponseAdapter;
-import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
-import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.interactors.PreferencesInteractor;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static org.robolectric.util.FragmentTestUtil.startFragment;
-@Ignore
-public class RoomConditionsPresenterFragmentTests extends InjectionTestCase {
-    //todo modifying preferencesInteractor has no effect because fragment doesn't use test module provided interactors
-    @Inject
-    PreferencesInteractor preferencesInteractor;
 
-    private RoomConditionsPresenterFragment fragment;
-
-    @Before
-    public void setUp() throws Exception {
-        /*preferencesInteractor.edit()
-                             .clear()
-                             .commit();*/
-        fragment = new RoomConditionsPresenterFragment();
-        startFragment(fragment);
-    }
-
+public class RoomConditionsPresenterFragmentTests extends FragmentTest<RoomConditionsPresenterFragment> {
 
     @Test
     public void hasAllViews() {
@@ -95,43 +77,34 @@ public class RoomConditionsPresenterFragmentTests extends InjectionTestCase {
     @Test
     public void fragmentShowWelcomeCard() {
         assertEquals(0, fragment.adapter.getItemCount());
-        /*preferencesInteractor
-                .edit()
-                .putInt(PreferencesInteractor.ROOM_CONDITIONS_WELCOME_CARD_TIMES_SHOWN,0)
-                .commit();*/
-        //fragment.onUpdate();
-        //final List<Sensor> sensors = new ArrayList<>(0);
-        //final SensorStatus status = SensorStatus.OK;
-        //final SensorResponse sensorResponse = new SensorResponse(sensors, status);
-        //fragment.bindConditions(sensorResponse);
         fragment.adapter.showWelcomeCard(true);
         assertEquals(1, fragment.adapter.getItemCount());
         assertEquals(SensorResponseAdapter.VIEW_WELCOME_CARD, fragment.adapter.getItemViewType(0));
     }
 
-    @Test @Ignore
+    @Test
     public void sensorViewHolderBindsCorrectly() {
-        /*preferencesInteractor
+       fragment.preferencesInteractor
                 .edit()
                 .putBoolean(PreferencesInteractor.USE_CELSIUS, true)
-                .commit();*/
+                .commit();
 
         final List<Sensor> sensors = Sensor.generateTestCaseList();
         fragment.bindDataResponse(new SensorsDataResponse(), sensors);
 
         final SensorResponseAdapter.SensorViewHolder viewHolder = fragment.adapter.new SensorViewHolder(
-                fragment.getActivity().getLayoutInflater().inflate(R.layout.item_sensor_response, null, false));
+                fragment.getActivity().getLayoutInflater().inflate(R.layout.item_sensor_response, Mockito.any(), false));
 
         viewHolder.bind(0);
-        assertEquals("32 °", viewHolder.value.getText().toString());
+        assertEquals("0°", viewHolder.value.getText().toString());
         viewHolder.bind(1);
-        assertEquals("1 %", viewHolder.value.getText().toString());
+        assertEquals("1%", viewHolder.value.getText().toString());
         viewHolder.bind(2);
         assertEquals("2.0", viewHolder.value.getText().toString());
         assertEquals("lx", viewHolder.descriptor.getText().toString());
         viewHolder.bind(3);
-        assertEquals("4", viewHolder.value.getText().toString());
-        assertEquals("dB", viewHolder.descriptor.getText().toString());
+        assertEquals("3", viewHolder.value.getText().toString());
+        assertEquals("µg/m³", viewHolder.descriptor.getText().toString());
     }
 
 

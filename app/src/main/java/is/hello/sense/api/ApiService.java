@@ -15,8 +15,6 @@ import is.hello.sense.api.model.DevicesInfo;
 import is.hello.sense.api.model.PasswordUpdate;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
-import is.hello.sense.api.model.RoomConditions;
-import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.StoreReview;
@@ -81,12 +79,6 @@ public interface ApiService {
     String SENSOR_NAME_LIGHT = "light";
     @Deprecated
     String SENSOR_NAME_SOUND = "sound";
-
-    /**
-     * Sentinel value used by graphing APIs.
-     */
-    int PLACEHOLDER_VALUE = -1;
-
 
     //region OAuth
 
@@ -170,15 +162,6 @@ public interface ApiService {
     //endregion
 
     //region Room Conditions
-
-    @Deprecated
-    @GET("/v1/room/current")
-    Observable<RoomConditions> currentRoomConditions(@NonNull @Query("temp_unit") String unit);
-
-    @Deprecated
-    @GET("/v1/room/all_sensors/hours")
-    Observable<RoomSensorHistory> roomSensorHistory(@Query("quantity") int numberOfHours,
-                                                    @Query("from_utc") long timestamp);
 
     @GET("/v2/sensors")
     Observable<SensorResponse> getSensors();

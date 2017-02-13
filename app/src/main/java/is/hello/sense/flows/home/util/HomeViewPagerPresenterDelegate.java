@@ -7,7 +7,7 @@ import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.fragments.InsightsFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
-import is.hello.sense.ui.adapter.StaticFragmentAdapter;
+import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 
 public class HomeViewPagerPresenterDelegate extends BaseViewPagerPresenterDelegate {
     private final Resources resources;
