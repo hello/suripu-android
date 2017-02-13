@@ -1,6 +1,8 @@
 package is.hello.sense.flows.expansions.ui.widget;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -10,15 +12,15 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.ui.widget.util.RoundedCornersTransformation;
 
 public class ExpansionImageView extends FrameLayout
-        implements Callback {
+        implements Target {
     private static final int NUMBER_OF_CHARS = 2;
     private final ExpansionTextDrawable drawable;
     private final RoundedCornersTransformation transformation;
@@ -70,17 +72,26 @@ public class ExpansionImageView extends FrameLayout
         }
     }
 
-    //region callback
+    //region Target
     @Override
-    public void onSuccess() {
+    public void onBitmapLoaded(@NonNull final Bitmap bitmap,
+                               @NonNull final Picasso.LoadedFrom from) {
         this.progressBar.setVisibility(GONE);
+        this.imageview.setImageBitmap(bitmap);
     }
 
     @Override
-    public void onError() {
+    public void onBitmapFailed(@Nullable final Drawable errorDrawable) {
         this.progressBar.setVisibility(GONE);
-        this.imageview.setImageDrawable(drawable);
+        this.imageview.setImageDrawable(errorDrawable);
     }
+
+    @Override
+    public void onPrepareLoad(@Nullable final Drawable placeHolderDrawable) {
+        this.imageview.setImageDrawable(placeHolderDrawable);
+        this.progressBar.setVisibility(VISIBLE);
+    }
+
     //endregion
 
     //region methods
@@ -112,7 +123,8 @@ public class ExpansionImageView extends FrameLayout
         picasso.cancelRequest(this.imageview);
         picasso.load(expansion.getIcon().getUrl(getResources()))
                .transform(this.transformation)
-               .into(this.imageview, this);
+               .error(drawable)
+               .into(this.imageview);
     }
 
     //endregion
