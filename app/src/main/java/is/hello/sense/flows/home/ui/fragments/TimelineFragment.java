@@ -157,10 +157,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!(getParentFragment() instanceof Parent)) {
-            throw new IllegalStateException("A parent is required to control TimelineFragment");
-        }
-        setParent((Parent) getParentFragment());
         final LocalDate date = getDate();
         final Properties properties = Analytics.createProperties(Analytics.Timeline.PROP_DATE,
                                                                  date.toString());
@@ -231,7 +227,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         } else if (requestCode == ZOOMED_OUT_TIMELINE_REQUEST && data != null) {
             final LocalDate date = (LocalDate) data.getSerializableExtra(TimelineActivity.EXTRA_LOCAL_DATE);
             final Timeline timeline = (Timeline) data.getSerializableExtra(TimelineActivity.EXTRA_TIMELINE);
-            this.parent.jumpTo(date, timeline);
+            getParentFragmentParent().jumpTo(date, timeline);
         }
     }
 
@@ -247,6 +243,19 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     //endregion
 
     //region Actions
+
+    @VisibleForTesting
+    public Parent getParentFragmentParent() {
+        if (parent != null) {
+            return parent;
+        }
+        if (!(getParentFragment() instanceof Parent)) {
+            throw new IllegalStateException("A parent is required to control TimelineFragment");
+        }
+        parent = (Parent) getParentFragment();
+        return parent;
+    }
+
     public void showTimelineNavigator(@NonNull final LocalDate date,
                                       @Nullable final Timeline timeline) {
         startActivityForResult(TimelineActivity.getZoomedOutIntent(getActivity(),
@@ -345,10 +354,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
     //region Hooks
 
-    public void setParent(@Nullable final Parent parent) {
-        this.parent = parent;
-    }
-
     @SuppressWarnings("ConstantConditions")
     public
     @NonNull
@@ -383,7 +388,8 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     }
 
     private void showHandholdingIfAppropriate() {
-        if (this.parent == null ||
+        final Parent parent = getParentFragmentParent();
+        if (parent == null ||
                 WelcomeDialogFragment.isAnyVisible(getActivity())) {
             return;
         }
@@ -391,9 +397,9 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity()) && !this.presenterView.hasTutorial() && isAtLeastThreeDaysOld()) {
             final TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.SWIPE_TIMELINE);
             overlayView.setOnDismiss(() -> this.presenterView.clearTutorial());
-            overlayView.setAnchorContainer(getActivity().findViewById(this.parent.getTutorialContainerIdRes()));
+            overlayView.setAnchorContainer(getActivity().findViewById(parent.getTutorialContainerIdRes()));
             this.presenterView.showTutorial(overlayView,
-                                            this.parent.getTutorialContainerIdRes());
+                                            parent.getTutorialContainerIdRes());
         }
     }
 
@@ -704,7 +710,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             }
         }
     }
-
 
     public interface Parent {
 
