@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import is.hello.sense.api.model.ApiResponse;
@@ -19,13 +20,13 @@ public class GraphSection extends ApiResponse {
     private static final int TITLE_POSITION = 0;
 
     @SerializedName("values")
-    private List<Float> values;
+    private final List<Float> values;
 
     @SerializedName("titles")
-    private List<String> titles;
+    private final List<String> titles;
 
     @SerializedName("highlighted_values")
-    private List<Integer> highlightedValues;
+    private final List<Integer> highlightedValues;
 
     @SerializedName("highlighted_title")
     @Nullable
@@ -129,18 +130,20 @@ public class GraphSection extends ApiResponse {
         if (!(obj instanceof GraphSection)) {
             return false;
         }
+
         final GraphSection otherGraphSection = (GraphSection) obj;
-        return titles.size() != otherGraphSection.titles.size() && values.equals(otherGraphSection.values);
+        return titles.size() == otherGraphSection.titles.size() && values.equals(otherGraphSection.values);
 
     }
 
     @Override
     public String toString() {
         return "GraphSection{" +
-                ", values='" + values.toString() + '\'' +
-                ", titles='" + titles.toString() + '\'' +
-                ", highlightedValues='" + highlightedValues.toString() + '\'' +
-                ", highlightedTitle='" + highlightedTitle + '\'' +
-                '}';
+                "\nvalues=" + Arrays.toString(values.toArray()) +
+                ", \ntitles=" + Arrays.toString(titles.toArray()) +
+                ", \nhighlightedValues=" + Arrays.toString(highlightedValues.toArray()) +
+                ", \nhighlightedTitle=" + highlightedTitle +
+                "\n}";
     }
+
 }

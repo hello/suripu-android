@@ -228,15 +228,17 @@ public class Graph extends ApiResponse {
     @Override
     public String toString() {
         return "Graph{" +
-                "timeScale=" + timeScale.toString() +
+                "timeScale=" + timeScale +
                 ", title='" + title + '\'' +
-                ", dataType='" + dataType + '\'' +
-                ", graphType='" + graphType.toString() + '\'' +
-                ", minValue='" + minValue + '\'' +
-                ", maxValue='" + maxValue + '\'' +
-                ", sections='" + sections.toString() + '\'' +
-                ", conditionRanges='" + conditionRanges.toString() + '\'' +
-                ", annotations='" + annotations.toString() + '\'' +
+                ", dataType=" + dataType +
+                ", graphType=" + graphType +
+                ", minValue=" + minValue +
+                ", maxValue=" + maxValue +
+                ", sections=" + sections +
+                ", conditionRanges=" + conditionRanges +
+                ", annotations=" + annotations +
+                ", quarterGraphs=" + quarterGraphs +
+                ", quarterSections=" + quarterSections +
                 '}';
     }
 

@@ -6,6 +6,7 @@ import android.support.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Arrays;
 import java.util.List;
 
 import is.hello.sense.R;
@@ -14,14 +15,14 @@ import is.hello.sense.api.model.ApiResponse;
 
 public class Trends extends ApiResponse {
     @SerializedName("available_time_scales")
-    private List<TimeScale> availableTimeScales;
+    private final List<TimeScale> availableTimeScales;
 
     @SerializedName("graphs")
-    private List<Graph> graphs;
+    private final List<Graph> graphs;
 
     @VisibleForTesting
-    public Trends(@NonNull List<TimeScale> availableTimeScales,
-                  @NonNull List<Graph> graphs) {
+    public Trends(@NonNull final List<TimeScale> availableTimeScales,
+                  @NonNull final List<Graph> graphs) {
         this.availableTimeScales = availableTimeScales;
         this.graphs = graphs;
     }
@@ -41,9 +42,9 @@ public class Trends extends ApiResponse {
 
     @Override
     public String toString() {
-        return "Trend{" +
-                "availableTimeScales=" + availableTimeScales.toString() +
-                ", graphs='" + graphs.toString() + '\'' +
+        return "Trends{" +
+                "availableTimeScales=" + availableTimeScales +
+                ", graphs=" + Arrays.toString(graphs.toArray()) +
                 '}';
     }
 
