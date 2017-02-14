@@ -28,7 +28,7 @@ public class EnableNotificationFragment extends SenseFragment {
                 .setSubheadingText(R.string.onboarding_subtitle_enable_notification)
                 .setDiagramImage(R.drawable.diagram_onboarding_notification)
                 .setPrimaryButtonText(R.string.action_allow_notifications)
-                .setSecondaryButtonText(R.string.action_do_later)
+                .setSecondaryButtonText(R.string.action_skip)
                 .setSecondaryOnClickListener(this::onSkip)
                 .setPrimaryOnClickListener(this::onNext);
         return view;
