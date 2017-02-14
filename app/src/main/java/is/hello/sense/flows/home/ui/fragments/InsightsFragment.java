@@ -259,17 +259,11 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
 
         Analytics.trackEvent(Analytics.Backside.EVENT_INSIGHT_DETAIL, null);
 
-        Fragment fragment = getParentFragment(); // this is FeedPresenterFragment
-        if (fragment == null) {
-            return;
-        }
-        fragment = fragment.getParentFragment(); // this is HomePresenterFragment
+        final Fragment fragment = getActivity().getFragmentManager().findFragmentByTag(HomePresenterFragment.class.getSimpleName());
         if (fragment == null) {
             return;
         }
         final InsightInfoFragment infoFragment = InsightInfoFragment.newInstance(insight, getResources());
-        // Use HomePresenterFragments childFragmentManager so getParentFragment returns
-        // HomePresenterFragment instead of null.
         infoFragment.show(fragment.getChildFragmentManager(),
                           R.id.view_home_container,
                           InsightInfoFragment.TAG);
