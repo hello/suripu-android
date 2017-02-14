@@ -231,6 +231,10 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     //endregion
     //region methods
 
+    public void showProgressOverlay(final boolean show){
+        this.presenterView.showProgressOverlay(show);
+    }
+
     /**
      * Use to recover from screen rotations or the fragment being recreated.
      *

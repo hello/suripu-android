@@ -1,7 +1,7 @@
 package is.hello.sense.flows.home.ui.fragments;
 
 import android.app.Activity;
-import android.app.FragmentManager;
+import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -260,6 +260,7 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
     public final InsightInfoFragment.SharedState provideSharedState(final boolean isEnter) {
         if (selectedInsightHolder != null && getActivity() != null) {
             final InsightInfoFragment.SharedState state = new InsightInfoFragment.SharedState();
+            Views.getFrameInWindow(selectedInsightHolder.itemView, state.cardRectInWindow);
             Views.getFrameInWindow(selectedInsightHolder.image, state.imageRectInWindow);
             state.imageParallaxPercent = selectedInsightHolder.image.getParallaxPercent();
             state.parentAnimator = presenterView.getAnimator(isEnter);
@@ -289,13 +290,10 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
         Analytics.trackEvent(Analytics.Backside.EVENT_INSIGHT_DETAIL, null);
 
         // We go right to the root fragment manager to keep things simple.
-        final FragmentManager fragmentManager = getActivity().getFragmentManager();
-        final InsightInfoFragment infoFragment = InsightInfoFragment.newInstance(insight,
-                                                                                 getResources());
-        infoFragment.show(fragmentManager,
-                          R.id.activity_navigation_container, //todo remove direct reference on activity id
-                          InsightInfoFragment.TAG);
 
+        if (getActivity() instanceof InsightInfoFragment.ParentActivity) {
+            ((InsightInfoFragment.ParentActivity) getActivity()).showInsightInfo(insight);
+        }
         this.selectedInsightHolder = viewHolder;
     }
 
@@ -320,7 +318,10 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
 
     @Override
     public void showProgress(final boolean show) {
-        //todo fixme
+        final Fragment fragment = getParentFragment();
+        if (fragment instanceof HomePresenterFragment) {
+            ((HomePresenterFragment) fragment).showProgressOverlay(show);
+        }
     }
 
     //endregion
@@ -447,4 +448,5 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
             }
         }
     };
+
 }

@@ -4,7 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.Fragment;
+import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -260,7 +260,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
 //region Animation
 
-    private void setContentViewAlpha(final float alpha){
+    private void setContentViewAlpha(final float alpha) {
         for (final View contentView : contentViews) {
             contentView.setVisibility(View.VISIBLE);
             contentView.setAlpha(alpha);
@@ -383,7 +383,7 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
         return subscene;
     }
 
-    private Animator[] createContentViewAnimators(final float startAlpha, final float endAlpha){
+    private Animator[] createContentViewAnimators(final float startAlpha, final float endAlpha) {
         final Animator[] animators = new Animator[contentViews.length];
         for (int i = 0, length = contentViews.length; i < length; i++) {
             final View contentView = contentViews[i];
@@ -504,9 +504,10 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
     @Nullable
     private Parent getParent() {
-        final Fragment fragment = getParentFragment();
-        if (fragment instanceof ParentProvider) {
-            return ((ParentProvider) fragment).provideInsightInfoParent();
+        final Activity activity = getActivity();
+        if (activity instanceof ParentProvider) {
+            Parent parent = ((ParentProvider) activity).provideInsightInfoParent();
+            return parent;
         } else {
             return null;
         }
@@ -608,6 +609,10 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     public interface ParentProvider {
         @Nullable
         Parent provideInsightInfoParent();
+    }
+
+    public interface ParentActivity {
+        void showInsightInfo(@NonNull Insight insight);
     }
 
     public static class SharedState {
