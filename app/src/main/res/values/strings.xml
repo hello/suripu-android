@@ -767,4 +767,7 @@
     <string name="action_unmute">Unmute</string>
 
     <string name="indicator">\u2022</string>
+    <string name="onboarding_title_enable_notification">Enable notifications</string>
+    <string name="onboarding_subtitle_enable_notification">Get your daily Sleep Score, as well as other important notifications.</string>
+    <string name="action_allow_notifications">Allow notifications</string>
 </resources>

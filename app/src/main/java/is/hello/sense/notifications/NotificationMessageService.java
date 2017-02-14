@@ -78,7 +78,7 @@ public class NotificationMessageService extends FirebaseMessagingService {
         activityIntent.putExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD, bundle);
 
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-        builder.setSmallIcon(R.drawable.ic_stat_notify_msg);
+        builder.setSmallIcon(R.drawable.icon_sense_24_white);
         builder.setColor(ContextCompat.getColor(context, R.color.light_accent));
         builder.setContentTitle(titleText);
         builder.setContentText(bodyText);
