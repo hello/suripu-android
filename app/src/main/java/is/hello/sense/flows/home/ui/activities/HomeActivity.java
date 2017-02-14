@@ -1,19 +1,15 @@
 package is.hello.sense.flows.home.ui.activities;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.segment.analytics.Properties;
 
 
 import is.hello.buruberi.util.Rx;
-import is.hello.sense.R;
-import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.home.ui.fragments.HomePresenterFragment;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
@@ -22,7 +18,6 @@ import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.appcompat.FragmentNavigationActivity;
-import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
 
@@ -32,9 +27,7 @@ import static is.hello.sense.util.Logger.info;
 
 public class HomeActivity extends FragmentNavigationActivity
         implements
-        OnboardingFlowProvider,
-        InsightInfoFragment.ParentProvider,
-        InsightInfoFragment.ParentActivity{
+        OnboardingFlowProvider {
 
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     private static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
@@ -98,17 +91,6 @@ public class HomeActivity extends FragmentNavigationActivity
     }
     //endregion
 
-    @Nullable
-    @Override
-    public InsightInfoFragment.Parent provideInsightInfoParent() {
-        final Fragment topFragment =getFragmentManager().findFragmentByTag(HomePresenterFragment.class.getSimpleName());
-        if (topFragment instanceof InsightInfoFragment.ParentProvider) {
-            return ((InsightInfoFragment.ParentProvider) topFragment).provideInsightInfoParent();
-        }
-        return null;
-    }
-
-
     //region Notifications
 
     private void dispatchNotification(@NonNull final Bundle notification) {
@@ -121,7 +103,6 @@ public class HomeActivity extends FragmentNavigationActivity
                 case Notification.SLEEP_SCORE: {
                     // this.tabLayout.selectTimelineTab(); todo support again
                     //todo support scrolling to date.
-
                     break;
                 }
                 case Notification.PILL_BATTERY: {
@@ -135,7 +116,6 @@ public class HomeActivity extends FragmentNavigationActivity
             }
         });
     }
-
     //endregion
 
 
@@ -145,17 +125,6 @@ public class HomeActivity extends FragmentNavigationActivity
         if (intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
         }
-    }
-
-    @Override
-    public void showInsightInfo(@NonNull final Insight insight) {
-        final InsightInfoFragment infoFragment = InsightInfoFragment.newInstance(insight,
-                                                                                 getResources());
-        infoFragment.show(getFragmentManager(),
-                          R.id.activity_navigation_container,
-                          InsightInfoFragment.TAG);
-
-
     }
 
 

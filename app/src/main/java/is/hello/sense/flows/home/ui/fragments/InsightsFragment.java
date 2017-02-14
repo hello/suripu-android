@@ -259,11 +259,20 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
 
         Analytics.trackEvent(Analytics.Backside.EVENT_INSIGHT_DETAIL, null);
 
-        // We go right to the root fragment manager to keep things simple.
-
-        if (getActivity() instanceof InsightInfoFragment.ParentActivity) {
-            ((InsightInfoFragment.ParentActivity) getActivity()).showInsightInfo(insight);
+        Fragment fragment = getParentFragment(); // this is FeedPresenterFragment
+        if (fragment == null) {
+            return;
         }
+        fragment = fragment.getParentFragment(); // this is HomePresenterFragment
+        if (fragment == null) {
+            return;
+        }
+        final InsightInfoFragment infoFragment = InsightInfoFragment.newInstance(insight, getResources());
+        // Use HomePresenterFragments childFragmentManager so getParentFragment returns
+        // HomePresenterFragment instead of null.
+        infoFragment.show(fragment.getChildFragmentManager(),
+                          R.id.view_home_container,
+                          InsightInfoFragment.TAG);
         this.selectedInsightHolder = viewHolder;
     }
 

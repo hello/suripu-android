@@ -4,7 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.Activity;
+import android.app.Fragment;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -504,10 +504,9 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
     @Nullable
     private Parent getParent() {
-        final Activity activity = getActivity();
-        if (activity instanceof ParentProvider) {
-            Parent parent = ((ParentProvider) activity).provideInsightInfoParent();
-            return parent;
+        final Fragment fragment = getParentFragment();
+        if (fragment instanceof ParentProvider) {
+            return ((ParentProvider) fragment).provideInsightInfoParent();
         } else {
             return null;
         }
@@ -609,10 +608,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     public interface ParentProvider {
         @Nullable
         Parent provideInsightInfoParent();
-    }
-
-    public interface ParentActivity {
-        void showInsightInfo(@NonNull Insight insight);
     }
 
     public static class SharedState {

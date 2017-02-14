@@ -47,8 +47,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         TimelineFragment.ParentProvider,
         InsightInfoFragment.ParentProvider,
         Alert.ActionHandler {
-    private static boolean IS_FIRST_RUN = true; // changed when paused todo remove this
-    private static final String KEY_CURRENT_ITEM_INDEX = HomeActivity.class.getSimpleName() + "CURRENT_ITEM_INDEX";
+    private static final String KEY_CURRENT_ITEM_INDEX = HomeActivity.class.getSimpleName() + ".KEY_CURRENT_ITEM_INDEX";
 
     @Inject
     ApiService apiService;
@@ -69,6 +68,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
 
     private final HomeViewPagerPresenterDelegate viewPagerDelegate = new HomeViewPagerPresenterDelegate();
     private OnboardingFlowProvider flowProvider;
+    private boolean shouldShowAlerts = true;
 
     //region PresenterFragment
     @Override
@@ -122,7 +122,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     @Override
     public void onPause() {
         super.onPause();
-        IS_FIRST_RUN = false;
+        this.shouldShowAlerts = false;
     }
 
     @Override
@@ -231,7 +231,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     //endregion
     //region methods
 
-    public void showProgressOverlay(final boolean show){
+    public void showProgressOverlay(final boolean show) {
         this.presenterView.showProgressOverlay(show);
     }
 
@@ -242,10 +242,12 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
      */
     private void restoreState(@Nullable final Bundle savedInstanceState) {
         if (savedInstanceState != null) {
+            this.shouldShowAlerts = false;
             this.presenterView.setUpTabs(false);
             this.presenterView.setTabLayoutCurrentItemIndex(savedInstanceState.getInt(KEY_CURRENT_ITEM_INDEX,
                                                                                       this.viewPagerDelegate.getStartingItemPosition()));
         } else {
+            this.shouldShowAlerts = true;
             this.presenterView.setUpTabs(true);
             this.presenterView.setTabLayoutCurrentItemIndex(this.viewPagerDelegate.getStartingItemPosition());
         }
@@ -265,7 +267,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
      * @return true to check for updates.
      */
     private boolean shouldUpdateDeviceIssues() {
-        return IS_FIRST_RUN && shouldUpdateAlerts();
+        return this.shouldShowAlerts && shouldUpdateAlerts();
     }
 
     /**
@@ -301,7 +303,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
      * @return true if this flow is for a registered user.
      */
     private boolean shouldUpdateAlerts() {
-        return flowProvider.getOnboardingFlow() != OnboardingActivity.FLOW_REGISTER;
+        return this.flowProvider.getOnboardingFlow() != OnboardingActivity.FLOW_REGISTER;
     }
 
     /**
@@ -316,7 +318,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
                 return valid && !existingAlert; // always show valid unreacahable alerts whenever we get them
             case SENSE_MUTED:
             default:
-                return valid && !existingAlert && IS_FIRST_RUN;
+                return valid && !existingAlert && this.shouldShowAlerts;
         }
     }
 
@@ -354,17 +356,16 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
      * @param issue important issue to show.
      */
     private void bindDeviceIssue(@NonNull final DeviceIssuesInteractor.Issue issue) {
-        if (issue == DeviceIssuesInteractor.Issue.NONE || this.isShowingAlert()) {
+        if (issue == DeviceIssuesInteractor.Issue.NONE || isShowingAlert() || !this.shouldShowAlerts) {
             return;
         }
-
+        this.shouldShowAlerts = false;
         this.localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
         DeviceIssueDialogFragment.newInstance(issue,
                                               getResources())
                                  .showAllowingStateLoss(getFragmentManager(),
-                                                        R.id.activity_navigation_container,
+                                                        R.id.view_home_bottom_alert_container,
                                                         DeviceIssueDialogFragment.TAG);
-
         this.deviceIssuesInteractor.updateLastShown(issue);
     }
 
