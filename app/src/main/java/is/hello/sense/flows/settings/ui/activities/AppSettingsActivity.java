@@ -29,7 +29,7 @@ public class AppSettingsActivity extends FragmentNavigationActivity
     //region NavigationActivity
     @Override
     protected void onCreateAction() {
-        showAppSettingsFragment();
+        showAppSettings();
     }
     //endregion
 
@@ -41,10 +41,10 @@ public class AppSettingsActivity extends FragmentNavigationActivity
         if (fragment instanceof AppSettingsFragment) {
             switch (responseCode) {
                 case AppSettingsView.INDEX_ACCOUNT:
-                    showAccountSettingsFragment();
+                    showAccountSettings();
                     break;
                 case AppSettingsView.INDEX_DEVICES:
-                    showDevicesFragment();
+                    showDevicesList();
                     break;
                 case AppSettingsView.INDEX_NOTIFICATIONS:
                     showNotifications();
@@ -53,10 +53,10 @@ public class AppSettingsActivity extends FragmentNavigationActivity
                     showExpansions();
                     break;
                 case AppSettingsView.INDEX_VOICE:
-                    showVoiceFragment();
+                    showVoiceSettings();
                     break;
                 case AppSettingsView.INDEX_SUPPORT:
-                    showSupportFragment();
+                    showSupport();
                     break;
                 case AppSettingsView.INDEX_SHARE:
                     showShare();
@@ -70,15 +70,15 @@ public class AppSettingsActivity extends FragmentNavigationActivity
     //endregion
 
     //region methods
-    public void showAppSettingsFragment() {
+    public void showAppSettings() {
         pushFragment(new AppSettingsFragment(), null, false);
     }
 
-    public void showAccountSettingsFragment() {
+    public void showAccountSettings() {
         showFragment(AccountSettingsFragment.class, R.string.label_account, true);
     }
 
-    public void showDevicesFragment() {
+    public void showDevicesList() {
         showFragment(DeviceListFragment.class, R.string.label_devices, false);
     }
 
@@ -90,11 +90,11 @@ public class AppSettingsActivity extends FragmentNavigationActivity
         startActivity(new Intent(this, ExpansionSettingsActivity.class));
     }
 
-    public void showVoiceFragment() {
+    public void showVoiceSettings() {
         startActivity(new Intent(this, VoiceSettingsActivity.class));
     }
 
-    public void showSupportFragment() {
+    public void showSupport() {
         showFragment(SupportFragment.class, R.string.action_support, false);
     }
 

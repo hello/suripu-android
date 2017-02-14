@@ -34,4 +34,5 @@
         <item name="android:secondaryProgress">100</item>
         <item name="android:secondaryProgressTint">@color/gray3</item>
     </style>
+
 </resources>
