@@ -17,6 +17,7 @@
 
     <string name="action_log_in">Log in</string>
     <string name="action_set_up_sense">Set up Sense</string>
+    <string name="action_set_up_sense_with_voice">Set up Sense with voice</string>
 
     <string name="device_sense">Sense</string>
     <string name="device_pill">Sleep Pill</string>
@@ -291,7 +292,7 @@
     <string name="action_replace">Replace</string>
     <string name="action_troubleshoot">Troubleshoot</string>
     <string name="info_connecting_to_sense">Connecting with Sense over Bluetooth…</string>
-
+    <string name="info_set_up_sense_with_voice">Your account is currently linked to an original Sense. If you have a new Sense with Voice, you can set it up here.\n\n<a href="#sense-with-voice-info">Learn more about the new Sense</a>\n</string>
     <string name="devices_support_footer">Setting up a <a href="#second-pill">second Sleep Pill</a> for your partner?</string>
     <string name="action_sense_pairing_mode_help">Sense isn\'t glowing blue or purple</string>
     <string name="label_wifi_network_name">"Wi-Fi network: "</string>

@@ -171,6 +171,11 @@ public class Analytics {
          */
         String EVENT_HELP = "Help";
         String PROP_HELP_STEP = "help_step";
+
+        /**
+         * Whenever directed to features section of hello site
+         */
+        String EVENT_VIEW_FEATURES = "View Features";
     }
 
     public interface Onboarding {
