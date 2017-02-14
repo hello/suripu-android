@@ -96,7 +96,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                           .observeOn(Rx.mainThreadScheduler());
         renderMessage.subscribe(message -> {
             final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-            builder.setSmallIcon(R.drawable.ic_stat_notify_msg);
+            builder.setSmallIcon(R.drawable.icon_sense_24_white);
             builder.setColor(context.getResources().getColor(R.color.light_accent));
             builder.setContentTitle(context.getString(R.string.app_name));
             builder.setContentText(message);

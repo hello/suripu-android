@@ -48,6 +48,7 @@ import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
+import is.hello.sense.ui.fragments.onboarding.EnableNotificationFragment;
 import is.hello.sense.ui.fragments.onboarding.HaveSenseReadyFragment;
 import is.hello.sense.ui.fragments.onboarding.IntroductionFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingCompleteFragment;
@@ -59,6 +60,7 @@ import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSmartAlarmFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingUnsupportedDeviceFragment;
 import is.hello.sense.ui.fragments.onboarding.PairSenseFragment;
+import is.hello.sense.ui.fragments.onboarding.RegisterFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterHeightFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterWeightFragment;
 import is.hello.sense.ui.fragments.onboarding.SenseVoiceFragment;
@@ -152,7 +154,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
 
         if (savedInstanceState != null) {
             this.account = (Account) savedInstanceState.getSerializable("account");
-
+            Log.d(TAG, "restore account state");
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         }
 
@@ -250,6 +252,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
 
         outState.putSerializable("account", account);
         navigationDelegate.onSaveInstanceState(outState);
+        Log.e(TAG,"save account state" + account);
     }
 
     @Override
@@ -308,8 +311,14 @@ public class OnboardingActivity extends ScopedInjectionActivity
             } else if (responseCode == IntroductionFragment.RESPONSE_GET_STARTED) {
                 showGetStarted(false);
             }
+        } else if (fragment instanceof HaveSenseReadyFragment) {
+            showRegistration();
         } else if (fragment instanceof ConnectToWiFiFragment) {
             showPairPill(true);
+        } else if (fragment instanceof EnableNotificationFragment) {
+            if (responseCode == Activity.RESULT_OK) {
+                showSetupSense();
+            }
         } else if (fragment instanceof BluetoothFragment) {
             if (responseCode == OnboardingActivity.RESPONSE_SETUP_SENSE) {
                 showSetupSense();
@@ -429,6 +438,10 @@ public class OnboardingActivity extends ScopedInjectionActivity
         }
     }
 
+    public void showRegistration() {
+        pushFragment(new RegisterFragment(), null, true);
+    }
+
     public void showBirthday(@Nullable final Account account, final boolean withDoneTransition) {
         passedCheckPoint(Constants.ONBOARDING_CHECKPOINT_ACCOUNT);
 
@@ -479,12 +492,16 @@ public class OnboardingActivity extends ScopedInjectionActivity
             final Account account = getAccount();
             bindAndSubscribe(apiService.updateAccount(account, true), ignored -> {
                 LoadingDialogFragment.close(getFragmentManager());
-                showSetupSense();
+                showEnableNotifications();
             }, e -> {
                 LoadingDialogFragment.close(getFragmentManager());
                 ErrorDialogFragment.presentError(this, e);
             });
         }
+    }
+
+    public void showEnableNotifications() {
+        pushFragment(new EnableNotificationFragment(), null, false);
     }
 
     public void showSetLocation() {
