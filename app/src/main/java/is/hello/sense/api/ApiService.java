@@ -69,16 +69,6 @@ public interface ApiService {
 
     String UNIT_TEMPERATURE_CELSIUS = "c";
     String UNIT_TEMPERATURE_US_CUSTOMARY = "f";
-    @Deprecated
-    String SENSOR_NAME_TEMPERATURE = "temperature";
-    @Deprecated
-    String SENSOR_NAME_HUMIDITY = "humidity";
-    @Deprecated
-    String SENSOR_NAME_PARTICULATES = "particulates";
-    @Deprecated
-    String SENSOR_NAME_LIGHT = "light";
-    @Deprecated
-    String SENSOR_NAME_SOUND = "sound";
 
     //region OAuth
 

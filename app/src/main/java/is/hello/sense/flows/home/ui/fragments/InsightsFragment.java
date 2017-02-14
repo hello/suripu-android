@@ -1,6 +1,5 @@
 package is.hello.sense.flows.home.ui.fragments;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -29,7 +28,6 @@ import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.views.InsightsView;
-import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.graph.Scope;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
@@ -39,7 +37,6 @@ import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.interactors.questions.ReviewQuestionProvider;
 import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.rating.LocalUsageTracker;
-import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.ui.common.UserSupport;
@@ -47,7 +44,6 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
-import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -181,16 +177,6 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
 
     //region Data Binding
 
-    @OnboardingActivity.Flow
-    protected int getOnboardingFlow(@Nullable final Activity activity) {
-        if (activity instanceof OnboardingFlowProvider) {
-            return ((OnboardingFlowProvider) activity).getOnboardingFlow();
-        } else {
-            return OnboardingActivity.FLOW_NONE;
-        }
-    }
-
-
     /**
      * Pushes data into the adapter once both questions and insights have loaded.
      * <p>
@@ -203,22 +189,6 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
             return;
         }
         presenterView.showCards(currentQuestion, insights);
- /*
- // todo bring back with tablayout indicators
-        final Activity activity = getActivity();
-       if (getOnboardingFlow(activity) == OnboardingActivity.FLOW_NONE &&
-                tutorialOverlayView == null && Tutorial.TAP_INSIGHT_CARD.shouldShow(activity)) {
-            this.tutorialOverlayView = new TutorialOverlayView(activity,
-                                                               Tutorial.TAP_INSIGHT_CARD);
-            tutorialOverlayView.setOnDismiss(() -> this.tutorialOverlayView = null);
-            //fixme Tutorial never displays despite passing checks. Needs to adjust layout containers used
-            tutorialOverlayView.setAnchorContainer(getView());
-            getAnimatorContext().runWhenIdle(() -> {
-                if (tutorialOverlayView != null && getUserVisibleHint()) {
-                    tutorialOverlayView.postShow(R.id.activity_new_home_extended_view_pager);
-                }
-            });
-        }*/
     }
 
     private void bindInsights(@NonNull final List<Insight> insights) {

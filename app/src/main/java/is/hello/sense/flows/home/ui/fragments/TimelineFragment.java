@@ -31,6 +31,7 @@ import javax.inject.Inject;
 
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
@@ -157,6 +158,10 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //todo create a testfragment that supports subfragments.
+        if (!(getParentFragment() instanceof Parent) && !SenseApplication.isRunningInRobolectric()) {
+            throw new IllegalStateException("A parent is required to control TimelineFragment");
+        }
         final LocalDate date = getDate();
         final Properties properties = Analytics.createProperties(Analytics.Timeline.PROP_DATE,
                                                                  date.toString());
