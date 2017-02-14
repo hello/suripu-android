@@ -17,6 +17,7 @@ import java.util.Map;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.util.Constants;
 
 /**
@@ -73,8 +74,8 @@ public class NotificationMessageService extends FirebaseMessagingService {
         bundle.putString(Notification.EXTRA_TYPE, type);
         bundle.putString(Notification.EXTRA_DETAILS, detail);
 
-        final Intent activityIntent = new Intent(context, HomeActivity.class);
-        activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        final Intent activityIntent = new Intent(context, LaunchActivity.class);
+        activityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         activityIntent.putExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD, bundle);
 
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
@@ -91,5 +92,10 @@ public class NotificationMessageService extends FirebaseMessagingService {
         final NotificationManagerCompat manager =
                 NotificationManagerCompat.from(context);
         manager.notify(type.hashCode(), builder.build());
+    }
+
+    public static void cancelShownMessages(@NonNull final Context context) {
+        NotificationManagerCompat.from(context)
+                                 .cancelAll();
     }
 }
