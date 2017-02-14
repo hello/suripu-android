@@ -154,7 +154,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
 
         if (savedInstanceState != null) {
             this.account = (Account) savedInstanceState.getSerializable("account");
-
+            Log.d(TAG, "restore account state");
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         }
 
@@ -252,6 +252,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
 
         outState.putSerializable("account", account);
         navigationDelegate.onSaveInstanceState(outState);
+        Log.e(TAG,"save account state" + account);
     }
 
     @Override
@@ -489,7 +490,6 @@ public class OnboardingActivity extends ScopedInjectionActivity
             pushFragment(new RegisterWeightFragment(), null, true);
         } else if (updatedBy instanceof RegisterWeightFragment) {
             final Account account = getAccount();
-            //todo update last modified? triggers pre condition failed when returning on back press from notifications
             bindAndSubscribe(apiService.updateAccount(account, true), ignored -> {
                 LoadingDialogFragment.close(getFragmentManager());
                 showEnableNotifications();
@@ -501,7 +501,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
     }
 
     public void showEnableNotifications() {
-        pushFragment(new EnableNotificationFragment(), null, true);
+        pushFragment(new EnableNotificationFragment(), null, false);
     }
 
     public void showSetLocation() {
