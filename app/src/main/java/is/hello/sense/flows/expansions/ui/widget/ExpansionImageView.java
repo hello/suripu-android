@@ -43,8 +43,10 @@ public class ExpansionImageView extends FrameLayout
         super(context, attrs, defStyleAttr);
         final int padding = context.getResources().getDimensionPixelSize(R.dimen.x2);
         this.progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleSmall);
+        this.progressBar.setVisibility(GONE);
         this.progressBar.setPadding(padding, padding, padding, padding);
-        final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                                                             ViewGroup.LayoutParams.WRAP_CONTENT);
         params.gravity = Gravity.CENTER;
         this.progressBar.setLayoutParams(params);
         this.imageview = new ImageView(context);
@@ -120,11 +122,11 @@ public class ExpansionImageView extends FrameLayout
     public void setExpansion(@NonNull final Picasso picasso,
                              @NonNull final Expansion expansion) {
         setText(expansion.getCompanyName());
-        picasso.cancelRequest(this.imageview);
+        picasso.cancelRequest(this);
         picasso.load(expansion.getIcon().getUrl(getResources()))
                .transform(this.transformation)
                .error(drawable)
-               .into(this.imageview);
+               .into(this);
     }
 
     //endregion
