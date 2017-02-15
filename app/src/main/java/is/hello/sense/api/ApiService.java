@@ -12,6 +12,7 @@ import is.hello.sense.api.model.AppUnreadStats;
 import is.hello.sense.api.model.DeviceOTAState;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.DevicesInfo;
+import is.hello.sense.api.model.NotificationSetting;
 import is.hello.sense.api.model.PasswordUpdate;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
@@ -112,6 +113,9 @@ public interface ApiService {
 
     @POST("/v1/notifications/registration")
     Observable<VoidResponse> registerForNotifications(@NonNull @Body PushRegistration registration);
+
+    @GET("/v1/notifications")
+    Observable<ArrayList<NotificationSetting>> getNotificationSettings();
 
     @GET("/v1/timezone")
     Observable<SenseTimeZone> currentTimeZone();
@@ -244,7 +248,7 @@ public interface ApiService {
 
     @POST("/v2/alarms/{client_time_utc}")
     Observable<AlarmGroups> saveSmartAlarms(@Path("client_time_utc") long timestamp,
-                                             @NonNull @Body AlarmGroups alarmGroups);
+                                            @NonNull @Body AlarmGroups alarmGroups);
 
     @GET("/v1/alarms/sounds")
     Observable<ArrayList<Alarm.Sound>> availableSmartAlarmSounds();
