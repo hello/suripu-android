@@ -1,13 +1,10 @@
 package is.hello.sense.notifications;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -16,8 +13,6 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.Map;
 
 import is.hello.sense.R;
-import is.hello.sense.flows.home.ui.activities.HomeActivity;
-import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.util.Constants;
 
 /**
@@ -50,8 +45,8 @@ public class NotificationMessageService extends FirebaseMessagingService {
 
     private void sendNotification(final RemoteMessage remoteMessage) {
 
-        final CharSequence titleText;
-        final CharSequence bodyText;
+        final String titleText;
+        final String bodyText;
         @Notification.Type
         final String type;
         final String detail;
@@ -71,27 +66,13 @@ public class NotificationMessageService extends FirebaseMessagingService {
         }
 
         final Bundle bundle = new Bundle();
+        bundle.putString(Notification.REMOTE_TITLE, titleText);
+        bundle.putString(Notification.REMOTE_BODY, bodyText);
         bundle.putString(Notification.EXTRA_TYPE, type);
         bundle.putString(Notification.EXTRA_DETAILS, detail);
 
-        final Intent activityIntent = new Intent(context, LaunchActivity.class);
-        activityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        activityIntent.putExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD, bundle);
-
-        final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-        builder.setSmallIcon(R.drawable.icon_sense_24_white);
-        builder.setColor(ContextCompat.getColor(context, R.color.light_accent));
-        builder.setContentTitle(titleText);
-        builder.setContentText(bodyText);
-        builder.setStyle(new NotificationCompat.BigTextStyle().bigText(bodyText));
-        builder.setContentIntent(PendingIntent.getActivity(context, 0,
-                                                           activityIntent,
-                                                           PendingIntent.FLAG_ONE_SHOT));
-        builder.setAutoCancel(true);
-
-        final NotificationManagerCompat manager =
-                NotificationManagerCompat.from(context);
-        manager.notify(type.hashCode(), builder.build());
+        final Intent broadcastIntent = NotificationMessageReceiver.getIntent(bundle);
+        sendOrderedBroadcast(broadcastIntent, null);
     }
 
     public static void cancelShownMessages(@NonNull final Context context) {

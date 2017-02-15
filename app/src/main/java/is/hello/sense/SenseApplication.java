@@ -26,6 +26,7 @@ import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.SenseAppModule;
+import is.hello.sense.notifications.NotificationMessageReceiver;
 import is.hello.sense.notifications.NotificationMessageService;
 import is.hello.sense.notifications.NotificationRegistrationBroadcastReceiver;
 import is.hello.sense.rating.LocalUsageTracker;
@@ -99,6 +100,13 @@ public class SenseApplication extends MultiDexApplication {
                              .registerReceiver(
                                      new NotificationRegistrationBroadcastReceiver(),
                                      new IntentFilter(NotificationRegistrationBroadcastReceiver.ACTION_FILTER));
+
+        // cannot send ordered broadcasts with local broadcast manager
+        registerReceiver(
+                new NotificationMessageReceiver(false),
+                NotificationMessageReceiver.getBackgroundPriorityFilter());
+
+
 
         if (!isRunningInRobolectric) {
             localUsageTracker.deleteOldUsageStatsAsync();
