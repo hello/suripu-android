@@ -97,7 +97,7 @@ public class SenseApplication extends MultiDexApplication {
         LocalBroadcastManager.getInstance(this)
                              .registerReceiver(
                                      new NotificationRegistrationBroadcastReceiver(),
-                                     new IntentFilter(NotificationRegistrationBroadcastReceiver.ACTION_FILTER));
+                                     NotificationRegistrationBroadcastReceiver.getIntentFilter());
 
         if (!isRunningInRobolectric) {
             localUsageTracker.deleteOldUsageStatsAsync();
@@ -119,6 +119,9 @@ public class SenseApplication extends MultiDexApplication {
                     InternalPrefManager.clearPrefs(this);
 
                     localUsageTracker.resetAsync();
+
+                    LocalBroadcastManager.getInstance(this)
+                                         .sendBroadcast(NotificationRegistrationBroadcastReceiver.getRemoveTokenIntent());
 
                     final Intent launchIntent = new Intent(this, LaunchActivity.class);
                     launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
