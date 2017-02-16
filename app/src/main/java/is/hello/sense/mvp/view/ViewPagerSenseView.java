@@ -14,7 +14,7 @@ import android.view.animation.AnimationUtils;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
-import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
+import is.hello.sense.mvp.fragments.ViewPagerPresenterFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 
 

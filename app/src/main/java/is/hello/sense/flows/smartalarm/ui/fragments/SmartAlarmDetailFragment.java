@@ -42,7 +42,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.HasVoiceInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
-import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.fragments.PresenterFragment;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;

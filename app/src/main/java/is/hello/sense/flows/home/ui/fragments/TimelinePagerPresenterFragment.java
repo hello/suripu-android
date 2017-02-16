@@ -21,7 +21,7 @@ import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.views.TimelinePagerView;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TimelineInteractor;
-import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
+import is.hello.sense.mvp.fragments.ControllerPresenterFragment;
 import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;

@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import is.hello.sense.flows.home.util.HomeViewPagerPresenterDelegate;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.HasVoiceInteractor;
-import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
+import is.hello.sense.mvp.fragments.ViewPagerPresenterFragment;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 

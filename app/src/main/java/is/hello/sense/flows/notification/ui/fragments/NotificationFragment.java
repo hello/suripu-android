@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.notification.ui.views.NotificationView;
-import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.fragments.PresenterFragment;
 import is.hello.sense.util.Analytics;
 
 public class NotificationFragment extends PresenterFragment<NotificationView> {

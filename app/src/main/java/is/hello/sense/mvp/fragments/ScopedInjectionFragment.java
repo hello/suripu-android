@@ -1,4 +1,4 @@
-package is.hello.sense.mvp.presenters;
+package is.hello.sense.mvp.fragments;
 
 import android.app.Activity;
 import android.content.Context;
