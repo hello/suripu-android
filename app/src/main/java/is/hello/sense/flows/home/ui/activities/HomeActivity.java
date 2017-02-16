@@ -387,7 +387,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
                     break;
                 }
-                case Notification.PILL_BATTERY: {
+                case Notification.SYSTEM: {
                     //todo handle and pass along
                     this.tabLayout.selectConditionsTab();
                     break;
