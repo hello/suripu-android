@@ -38,10 +38,10 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     private Subscription updateSettingsSubscription = Subscriptions.empty();
 
     @Override
-    public void initializePresenterView() {
-        if (presenterView == null) {
-            presenterView = new VoiceSettingsListView(getActivity());
-            presenterView.setVolumeClickListener(this::redirectToVolumeSelection);
+    public void initializeSenseView() {
+        if (senseView == null) {
+            senseView = new VoiceSettingsListView(getActivity());
+            senseView.setVolumeClickListener(this::redirectToVolumeSelection);
         }
     }
 
@@ -89,16 +89,16 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     }
 
     public void bindSettings(@NonNull final SenseVoiceSettings settings) {
-        presenterView.showFirmwareUpdateCard(false);
-        presenterView.updateVolumeTextView(settings);
+        senseView.showFirmwareUpdateCard(false);
+        senseView.updateVolumeTextView(settings);
 
-        presenterView.updateMuteSwitch(settings.isMuteOrDefault(),
-                                       this::onMuteSwitchChanged);
+        senseView.updateMuteSwitch(settings.isMuteOrDefault(),
+                                   this::onMuteSwitchChanged);
 
         if (settings.isPrimaryUserOrDefault()) {
-            presenterView.makePrimaryUser();
+            senseView.makePrimaryUser();
         } else {
-            presenterView.makeSecondaryUser(this::showPrimaryUserDialog);
+            senseView.makeSecondaryUser(this::showPrimaryUserDialog);
         }
         showProgress(false);
     }
@@ -137,9 +137,9 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
             builder.withTitle(StringRef.from(R.string.voice_settings_update_error_title));
             showErrorDialog(builder);
             if (e instanceof VoiceSettingsInteractor.MuteUpdateThrowable) {
-                presenterView.flipMuteSwitch(this::onMuteSwitchChanged);
+                senseView.flipMuteSwitch(this::onMuteSwitchChanged);
             } else if (e instanceof VoiceSettingsInteractor.PrimaryUpdateThrowable) {
-                presenterView.makeSecondaryUser(this::showPrimaryUserDialog);
+                senseView.makeSecondaryUser(this::showPrimaryUserDialog);
             }
         } else {
             showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e));
@@ -148,7 +148,7 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
 
     private void presentDeviceUnavailable(@NonNull final Throwable e) {
         hideBlockingActivity(false, null);
-        presenterView.setVisibility(View.INVISIBLE);
+        senseView.setVisibility(View.INVISIBLE);
         showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e),
                         RESULT_CANCEL_FLOW);
     }
@@ -156,7 +156,7 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
     private void presentSettingsUnavailable(@NonNull final Throwable e) {
         if(ApiException.statusEquals(e, 400) || ApiException.statusEquals(e, 412)) {
             showProgress(false);
-            presenterView.showFirmwareUpdateCard(true);
+            senseView.showFirmwareUpdateCard(true);
         } else {
             presentDeviceUnavailable(e);
         }
@@ -168,11 +168,11 @@ public class VoiceSettingsListFragment extends PresenterFragment<VoiceSettingsLi
 
     private void showProgress(final boolean show) {
         if (show) {
-            presenterView.setVisibility(View.INVISIBLE);
+            senseView.setVisibility(View.INVISIBLE);
             showBlockingActivity(null);
         } else {
             hideBlockingActivity(false, null);
-            presenterView.setVisibility(View.VISIBLE);
+            senseView.setVisibility(View.VISIBLE);
         }
     }
 }

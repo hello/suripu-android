@@ -111,13 +111,13 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     //region PresenterFragment
     @NotTested
     @Override
-    public void initializePresenterView() {
-        if (this.presenterView == null) {
-            this.presenterView = new SmartAlarmDetailView(getActivity(),
-                                                          this::onTimeClicked,
-                                                          this::onHelpClicked,
-                                                          this::onToneClicked,
-                                                          this::onRepeatClicked);
+    public void initializeSenseView() {
+        if (this.senseView == null) {
+            this.senseView = new SmartAlarmDetailView(getActivity(),
+                                                      this::onTimeClicked,
+                                                      this::onHelpClicked,
+                                                      this::onToneClicked,
+                                                      this::onRepeatClicked);
         }
     }
 
@@ -178,7 +178,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         bindAndSubscribe(this.hasVoiceInteractor.hasVoice,
                          hasVoice -> {
                              if (hasVoice) {
-                                 this.presenterView.showExpansionsContainer();
+                                 this.senseView.showExpansionsContainer();
                              }
                          },
                          Functions.LOG_ERROR);
@@ -231,14 +231,14 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
                 final Alarm.Sound selectedSound = this.alarm.getAlarmSoundWithId(soundId);
                 if (selectedSound != null) {
                     this.alarm.setSound(selectedSound);
-                    this.presenterView.setTone(selectedSound.name);
+                    this.senseView.setTone(selectedSound.name);
                 }
             }
             markDirty();
         } else if (requestCode == REPEAT_REQUEST_CODE) {
             final List<Integer> selectedDays = data.getIntegerArrayListExtra(ListActivity.VALUE_ID);
             this.alarm.setDaysOfWeek(selectedDays);
-            this.presenterView.setRepeatDaysTextView(this.alarm.getRepeatSummary(getActivity(), false));
+            this.senseView.setRepeatDaysTextView(this.alarm.getRepeatSummary(getActivity(), false));
             markDirty();
         } else if (requestCode == EXPANSION_VALUE_REQUEST_CODE) {
             final ExpansionAlarm expansionAlarm = (ExpansionAlarm) data.getSerializableExtra(ExpansionValuePickerActivity.EXTRA_EXPANSION_ALARM);
@@ -339,21 +339,21 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
      */
     @NotTested
     private void updateUIForAlarm() {
-        this.presenterView.setTime(this.dateFormatter.formatAsAlarmTime(this.alarm.getTime(),
-                                                                        this.use24Time));
-        this.presenterView.setSmartAlarmToggle(this.alarm.isSmart(),
-                                               this::onSmartAlarmToggled);
-        this.presenterView.setRepeatDaysTextView(this.alarm.getRepeatSummary(getActivity(),
-                                                                             false));
+        this.senseView.setTime(this.dateFormatter.formatAsAlarmTime(this.alarm.getTime(),
+                                                                    this.use24Time));
+        this.senseView.setSmartAlarmToggle(this.alarm.isSmart(),
+                                           this::onSmartAlarmToggled);
+        this.senseView.setRepeatDaysTextView(this.alarm.getRepeatSummary(getActivity(),
+                                                                         false));
         if (this.alarm.getSound() != null && !TextUtils.isEmpty(this.alarm.getSound().name)) {
-            this.presenterView.setTone(this.alarm.getSound().name);
+            this.senseView.setTone(this.alarm.getSound().name);
         } else {
-            this.presenterView.setTone(null);
+            this.senseView.setTone(null);
         }
         if (isNewAlarm()) {
-            this.presenterView.showDeleteRow(null);
+            this.senseView.showDeleteRow(null);
         } else {
-            this.presenterView.showDeleteRow(this::onDeleteClicked);
+            this.senseView.showDeleteRow(this::onDeleteClicked);
         }
     }
 
@@ -561,7 +561,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
                     saveAlarm();
                     return;
                 }
-                this.presenterView.setTone(sound.name);
+                this.senseView.setTone(sound.name);
             }
         }
         if (this.wantsTone) {
@@ -611,14 +611,14 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
         }
         switch (expansion.getCategory()) {
             case TEMPERATURE:
-                this.presenterView.setThermoExpansion(enabled,
-                                                      value,
-                                                      clickListener);
+                this.senseView.setThermoExpansion(enabled,
+                                                  value,
+                                                  clickListener);
                 break;
             case LIGHT:
-                this.presenterView.setLightExpansion(enabled,
-                                                     value,
-                                                     clickListener);
+                this.senseView.setLightExpansion(enabled,
+                                                 value,
+                                                 clickListener);
                 break;
         }
     }

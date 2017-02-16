@@ -70,7 +70,7 @@ public abstract class FragmentTest<T extends PresenterFragment>
     }
 
     protected final void spyOnPresenterView() {
-        fragment.presenterView = Mockito.spy(fragment.presenterView);
+        fragment.senseView = Mockito.spy(fragment.senseView);
     }
 
     /**
@@ -123,7 +123,7 @@ public abstract class FragmentTest<T extends PresenterFragment>
     }
 
     protected final void callInitializePresenterView() {
-        fragment.initializePresenterView();
+        fragment.initializeSenseView();
     }
     //endregion
 

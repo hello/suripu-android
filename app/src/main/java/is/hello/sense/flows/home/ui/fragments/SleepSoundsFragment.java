@@ -96,10 +96,10 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     }
 
     @Override
-    public void initializePresenterView() {
-        if (this.presenterView == null) {
-            this.presenterView = new SleepSoundsView(getActivity(),
-                                                     new SleepSoundsAdapter(
+    public void initializeSenseView() {
+        if (this.senseView == null) {
+            this.senseView = new SleepSoundsView(getActivity(),
+                                                 new SleepSoundsAdapter(
                                                              getActivity(),
                                                              preferencesInteractor,
                                                              this,
@@ -118,8 +118,8 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
                                                                 PreferencesInteractor.SLEEP_SOUNDS_VOLUME_ID,
                                                                 PreferencesInteractor.SLEEP_SOUNDS_DURATION_ID),
                          changedKey -> {
-                             if (presenterView != null) {
-                                 presenterView.notifyAdapter();
+                             if (senseView != null) {
+                                 senseView.notifyAdapter();
                              }
                          },
                          Functions.LOG_ERROR);
@@ -138,7 +138,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
         if (isVisible) {
             Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS, null);
             if (currentState == State.IDLE) {
-                if (presenterView.isShowingPlayer()) {
+                if (senseView.isShowingPlayer()) {
                     displayPlayButton();
                 } else {
                     displayLoadingButton();
@@ -229,7 +229,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     //region Retry
     @Override
     public void retry() {
-        presenterView.setProgressBarVisible(true);
+        senseView.setProgressBarVisible(true);
         updateSensePairedSubscription(() -> {
             sleepSoundsStatusInteractor.resetBackOffIfNeeded();
             sleepSoundsStatusInteractor.startPolling();
@@ -241,10 +241,10 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     //region ScrollUp
     @Override
     public void scrollUp() {
-        if (presenterView == null) {
+        if (senseView == null) {
             return;
         }
-        presenterView.scrollUp();
+        senseView.scrollUp();
     }
 
     //endregion
@@ -293,7 +293,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
 
     //region FabPresenter helpers
     public void adapterSetState(final SleepSoundsAdapter.AdapterState state) {
-        presenterView.adapterSetState(state);
+        senseView.adapterSetState(state);
         displayPlayButton();
     }
 
@@ -344,8 +344,8 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     }
 
     private void bindStatus(final @NonNull SleepSoundStatus status) {
-        presenterView.setProgressBarVisible(false);
-        if (presenterView.isShowingPlayer()) {
+        senseView.setProgressBarVisible(false);
+        if (senseView.isShowingPlayer()) {
             if (status.isPlaying()) {
                 if (userWants != UserWants.STOP) {
                     displayStopButton();
@@ -368,7 +368,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
         } else {
             displayPlayButton();
         }
-        presenterView.adapterBindStatus(status);
+        senseView.adapterBindStatus(status);
         if (sleepSoundsStatusInteractor.resetBackOffIfNeeded()) {
             sleepSoundsStatusInteractor.startPolling();
         }
@@ -406,7 +406,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
                     adapterSetState(SleepSoundsAdapter.AdapterState.SOUNDS_DOWNLOAD);
                     return;
                 case OK:
-                    presenterView.adapterBindState(combinedState);
+                    senseView.adapterBindState(combinedState);
                     displayLoadingButton();
                     return;
                 default:
@@ -436,7 +436,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
         }
         sleepSoundsStatusInteractor.incrementBackoff();
         if (userWants == UserWants.NONE) {
-            presenterView.setProgressBarVisible(false);
+            senseView.setProgressBarVisible(false);
         }
         if (sleepSoundsStatusInteractor.isBackOffMaxed()) {
             final ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(error);
@@ -452,7 +452,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     }
 
     private void presentError(@NonNull final Throwable error) {
-        presenterView.setProgressBarVisible(false);
+        senseView.setProgressBarVisible(false);
         if (error instanceof SenseRequiredException) {
             adapterSetState(SleepSoundsAdapter.AdapterState.SENSE_NOT_PAIRED);
         } else {
@@ -466,14 +466,14 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     private void onPlayClickListener() {
         displayLoadingButton();
         userWants = UserWants.PLAY;
-        if (!presenterView.isShowingPlayer()) {
+        if (!senseView.isShowingPlayer()) {
             displayPlayButton();
             return;
         }
 
-        final Sound sound = presenterView.getDisplayedSound();
-        final Duration duration = presenterView.getDisplayedDuration();
-        final SleepSoundStatus.Volume volume = presenterView.getDisplayedVolume();
+        final Sound sound = senseView.getDisplayedSound();
+        final Duration duration = senseView.getDisplayedDuration();
+        final SleepSoundStatus.Volume volume = senseView.getDisplayedVolume();
         if (sound == null || duration == null || volume == null) {
             displayPlayButton();
             return;

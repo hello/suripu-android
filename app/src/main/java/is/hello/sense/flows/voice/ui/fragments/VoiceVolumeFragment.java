@@ -28,11 +28,11 @@ implements OnBackPressedInterceptor{
     private Subscription updateSettingsSubscription = Subscriptions.empty();
 
     @Override
-    public void initializePresenterView() {
-        if (presenterView == null) {
-            presenterView = new VoiceVolumeView(getActivity());
+    public void initializeSenseView() {
+        if (senseView == null) {
+            senseView = new VoiceVolumeView(getActivity());
         }
-        presenterView.setDoneButtonClickListener(this::postSelectedVolume);
+        senseView.setDoneButtonClickListener(this::postSelectedVolume);
     }
 
     @Override
@@ -57,17 +57,17 @@ implements OnBackPressedInterceptor{
     }
 
     public void bindSettings(@NonNull final SenseVoiceSettings settings) {
-        this.presenterView.setVolume(settings.getVolumeOrDefault());
+        this.senseView.setVolume(settings.getVolumeOrDefault());
     }
 
     private void postSelectedVolume(final View ignore) {
-        final int volume = presenterView.getVolume();
+        final int volume = senseView.getVolume();
         updateSettings(voiceSettingsInteractor.setVolume(volume));
     }
 
     private void updateSettings(@NonNull final Observable<SenseVoiceSettings> updateObservable) {
         showLockedBlockingActivity(R.string.voice_settings_progress_updating);
-        this.presenterView.setVisibility(View.GONE);
+        this.senseView.setVisibility(View.GONE);
         updateSettingsSubscription.unsubscribe();
         updateSettingsSubscription = bind(updateObservable)
                 .subscribe(Functions.NO_OP,
@@ -90,11 +90,11 @@ implements OnBackPressedInterceptor{
 
     private void showProgress(final boolean show) {
         if (show) {
-            presenterView.setVisibility(View.INVISIBLE);
+            senseView.setVisibility(View.INVISIBLE);
             showBlockingActivity(null);
         } else {
             hideBlockingActivity(false, null);
-            presenterView.setVisibility(View.VISIBLE);
+            senseView.setVisibility(View.VISIBLE);
         }
     }
 

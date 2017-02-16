@@ -36,9 +36,9 @@ public abstract class TrendsFragment extends ControllerPresenterFragment<TrendsV
 
     //region PresenterFragment
     @Override
-    public void initializePresenterView() {
-        if (this.presenterView == null) {
-            this.presenterView = new TrendsView(getActivity(), createTrendsAdapter());
+    public void initializeSenseView() {
+        if (this.senseView == null) {
+            this.senseView = new TrendsView(getActivity(), createTrendsAdapter());
         }
     }
 
@@ -94,10 +94,10 @@ public abstract class TrendsFragment extends ControllerPresenterFragment<TrendsV
     //region scrollUp
     @Override
     public void scrollUp() {
-        if (this.presenterView == null) {
+        if (this.senseView == null) {
             return;
         }
-        this.presenterView.scrollUp();
+        this.senseView.scrollUp();
     }
     //endregion
 
@@ -107,12 +107,12 @@ public abstract class TrendsFragment extends ControllerPresenterFragment<TrendsV
 
     @VisibleForTesting
     void bindTrends(@NonNull final Trends trends) {
-        this.presenterView.updateTrends(trends);
+        this.senseView.updateTrends(trends);
     }
 
     @VisibleForTesting
     void presentError(final Throwable e) {
-        this.presenterView.showError();
+        this.senseView.showError();
     }
 
     @VisibleForTesting

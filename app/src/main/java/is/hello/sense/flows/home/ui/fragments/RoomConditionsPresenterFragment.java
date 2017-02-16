@@ -59,15 +59,15 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
     private Subscription postSensorSubscription = Subscriptions.empty();
 
     @Override
-    public final void initializePresenterView() {
-        if (this.presenterView == null) {
+    public final void initializeSenseView() {
+        if (this.senseView == null) {
             if (this.adapter == null) {
                 this.adapter = new SensorResponseAdapter(getActivity().getLayoutInflater(), unitFormatter);
                 this.adapter.setOnItemClickedListener(this);
                 this.adapter.setErrorItemClickListener(this);
             }
-            this.presenterView = new RoomConditionsView(getActivity(), this.adapter);
-            this.presenterView.setSettingsButtonClickListener(this::startSettingsActivity);
+            this.senseView = new RoomConditionsView(getActivity(), this.adapter);
+            this.senseView.setSettingsButtonClickListener(this::startSettingsActivity);
         }
     }
 
@@ -152,7 +152,7 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
     }
 
     public final void bindConditions(@NonNull final SensorResponse currentConditions) {
-        presenterView.showProgress(false);
+        senseView.showProgress(false);
 
         switch (currentConditions.getStatus()) {
             case OK:
@@ -180,7 +180,7 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
     }
 
     public final void conditionsUnavailable(@NonNull final Throwable e) {
-        presenterView.showProgress(false);
+        senseView.showProgress(false);
 
         Logger.error(RoomConditionsPresenterFragment.class.getSimpleName(), "Could not load conditions", e);
         if (ApiException.isNetworkError(e)) {
@@ -206,10 +206,10 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
     //region scrollup
     @Override
     public void scrollUp() {
-        if (presenterView == null) {
+        if (senseView == null) {
             return;
         }
-        presenterView.scrollUp();
+        senseView.scrollUp();
     }
     //endregion
 

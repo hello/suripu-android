@@ -20,7 +20,7 @@ public class SoundsPresenterFragmentTest extends FragmentTest<SoundsPresenterFra
     public void onViewCreatedTest() {
         spyOnPresenterView();
         callOnViewCreated();
-        Mockito.verify(fragment.presenterView).addViewPagerListener(Mockito.eq(fragment));
+        Mockito.verify(fragment.senseView).addViewPagerListener(Mockito.eq(fragment));
     }
 
     @Test

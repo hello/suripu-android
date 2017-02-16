@@ -74,10 +74,10 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     }
 
     @Override
-    public void initializePresenterView() {
-        if (presenterView == null) {
-            presenterView = new ExpansionDetailView(getActivity(),
-                                                    this::onRemoveAccessClicked);
+    public void initializeSenseView() {
+        if (senseView == null) {
+            senseView = new ExpansionDetailView(getActivity(),
+                                                this::onRemoveAccessClicked);
         }
     }
 
@@ -151,7 +151,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
         } else {
             configName = selectedConfig.getName();
         }
-        presenterView.showConfigurationSuccess(configName, this::onConfigureClicked);
+        senseView.showConfigurationSuccess(configName, this::onConfigureClicked);
     }
 
     public void bindExpansion(@Nullable final Expansion expansion) {
@@ -160,19 +160,19 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
             return;
         }
 
-        presenterView.showExpansionInfo(expansion, picasso);
-        presenterView.setExpansionEnabledTextViewClickListener(this.getExpansionInfoDialogClickListener(expansion.getCategory()));
-        presenterView.showConnectedContainer(!expansion.requiresAuthentication());
+        senseView.showExpansionInfo(expansion, picasso);
+        senseView.setExpansionEnabledTextViewClickListener(this.getExpansionInfoDialogClickListener(expansion.getCategory()));
+        senseView.showConnectedContainer(!expansion.requiresAuthentication());
 
         if (expansion.requiresAuthentication()) {
-            presenterView.showConnectButton(this::onConnectClicked);
+            senseView.showConnectButton(this::onConnectClicked);
         } else if (expansion.requiresConfiguration()) {
-            presenterView.showConfigurationSuccess(getString(R.string.expansions_select), this::onConfigureClicked);
-            presenterView.showRemoveAccess();
+            senseView.showConfigurationSuccess(getString(R.string.expansions_select), this::onConfigureClicked);
+            senseView.showRemoveAccess();
         } else {
             configurationsInteractor.update();
-            presenterView.showEnableSwitch(expansion.isConnected(), this);
-            presenterView.showRemoveAccess();
+            senseView.showEnableSwitch(expansion.isConnected(), this);
+            senseView.showRemoveAccess();
         }
     }
 
@@ -200,7 +200,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
      * @param throwable -
      */
     private void presentConfigurationError(final Throwable throwable) {
-        presenterView.showConfigurationsError(this::onConfigurationErrorImageViewClicked);
+        senseView.showConfigurationsError(this::onConfigurationErrorImageViewClicked);
         if (ApiException.isNetworkError(throwable)) {
             showErrorDialog(new ErrorDialogFragment.PresenterBuilder(throwable));
         } else {
@@ -228,7 +228,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
      */
     private void presentUpdateStateError(final Throwable throwable) {
         hideBlockingActivity(false, () -> {
-            this.presenterView.showUpdateSwitchError(this);
+            this.senseView.showUpdateSwitchError(this);
             final ErrorDialogFragment.PresenterBuilder builder = ErrorDialogFragment.newInstance(throwable);
             builder.withTitle(R.string.expansion_detail_error_dialog_title)
                    .withMessage(StringRef.from(R.string.expansion_detail_error_dialog_message))
@@ -272,7 +272,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     }
 
     private void onConfigurationErrorImageViewClicked(final View ignored) {
-        presenterView.showConfigurationSpinner();
+        senseView.showConfigurationSpinner();
         configurationsInteractor.update();
 
     }
@@ -288,7 +288,7 @@ public class ExpansionDetailFragment extends PresenterFragment<ExpansionDetailVi
     public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
         showLockedBlockingActivity(isChecked ? R.string.enabling_expansion : R.string.disabling_expansion);
         updateState(isChecked ? State.CONNECTED_ON : State.CONNECTED_OFF, (ignored) ->
-                hideBlockingActivity(true, ExpansionDetailFragment.this.presenterView::showUpdateSwitchSuccess));
+                hideBlockingActivity(true, ExpansionDetailFragment.this.senseView::showUpdateSwitchSuccess));
     }
 
     @Override

@@ -34,12 +34,12 @@ public abstract class PresenterFragment<T extends SenseView>
      * Reference is removed at {@link  PresenterFragment#onDestroyView()} and {@link PresenterFragment#onDetach()}
      */
     @VisibleForTesting
-    public T presenterView;
+    public T senseView;
 
     /**
      * Only called in {@link PresenterFragment#onCreateView(LayoutInflater, ViewGroup, Bundle)} method.
      */
-    public abstract void initializePresenterView();
+    public abstract void initializeSenseView();
 
     @Nullable
     protected AnimatorContext animatorContext;
@@ -83,17 +83,17 @@ public abstract class PresenterFragment<T extends SenseView>
     @NonNull
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        //debugLog("onCreateView- initializePresenterView"); // useful for debugging
-        initializePresenterView(); // todo force this to return a new instance
-        return presenterView;
+        //debugLog("onCreateView- initializeSenseView"); // useful for debugging
+        initializeSenseView(); // todo force this to return a new instance
+        return senseView;
     }
 
     @CallSuper
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (presenterView != null) { //todo remove check after forcing new instance
-            presenterView.viewCreated();
+        if (senseView != null) { //todo remove check after forcing new instance
+            senseView.viewCreated();
         }
     }
 
@@ -101,8 +101,8 @@ public abstract class PresenterFragment<T extends SenseView>
     @Override
     public void onResume() {
         super.onResume();
-        if (presenterView != null) {//todo remove check after forcing new instance
-            presenterView.resume();
+        if (senseView != null) {//todo remove check after forcing new instance
+            senseView.resume();
         }
     }
 
@@ -110,8 +110,8 @@ public abstract class PresenterFragment<T extends SenseView>
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (presenterView != null) {
-            this.presenterView.destroyView();
+        if (senseView != null) {
+            this.senseView.destroyView();
         }
         onRelease();
     }
@@ -120,8 +120,8 @@ public abstract class PresenterFragment<T extends SenseView>
     @Override
     public void onDetach() {
         super.onDetach();
-        if (presenterView != null) {
-            this.presenterView.detach();
+        if (senseView != null) {
+            this.senseView.detach();
         }
         onRelease();
     }
@@ -130,13 +130,13 @@ public abstract class PresenterFragment<T extends SenseView>
     protected void onRelease() {
         this.animatorContext = null;
         this.animatorContextFromActivity = false;
-        this.presenterView = null;
+        this.senseView = null;
         this.loadingDialogFragment = null;
     }
 
     public final boolean hasPresenterView() {
-       // debugLog("HasPresenterView: " + (presenterView != null)); //useful for debugging
-        return presenterView != null;
+       // debugLog("HasPresenterView: " + (senseView != null)); //useful for debugging
+        return senseView != null;
     }
 
     @NonNull

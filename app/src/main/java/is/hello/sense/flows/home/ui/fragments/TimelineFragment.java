@@ -125,20 +125,20 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
     //region PresenterFragment
     @Override
-    public void initializePresenterView() {
-        if (this.presenterView == null) {
-            this.presenterView = new TimelineView(getActivity(),
-                                                  getAnimatorContext(),
-                                                  createAdapter(),
-                                                  new ScrollListener(),
-                                                  this::showBreakdown);
+    public void initializeSenseView() {
+        if (this.senseView == null) {
+            this.senseView = new TimelineView(getActivity(),
+                                              getAnimatorContext(),
+                                              createAdapter(),
+                                              new ScrollListener(),
+                                              this::showBreakdown);
         }
     }
 
     @Override
     public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (this.presenterView == null) {
+        if (this.senseView == null) {
             return;
         }
         if (isVisibleToUser) {
@@ -146,11 +146,11 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             // setUserVisibleHint called before attached to activity
             // not a reliable way to determine current view pager fragment
             bindIfNeeded();
-            this.presenterView.setAnimationEnabled(true);
+            this.senseView.setAnimationEnabled(true);
         } else {
-            this.presenterView.setAnimationEnabled(false);
+            this.senseView.setAnimationEnabled(false);
             dismissVisibleOverlaysAndDialogs();
-            this.presenterView.clearHeader();
+            this.senseView.clearHeader();
         }
     }
 
@@ -194,7 +194,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         super.onTrimMemory(level);
 
         if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
-            this.presenterView.destroySoundPlayer();
+            this.senseView.destroySoundPlayer();
         }
     }
 
@@ -206,13 +206,13 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             this.infoOverlay.dismiss(false);
         }
 
-        this.presenterView.stopSoundPlayer();
+        this.senseView.stopSoundPlayer();
         if (this.timelineInteractor.hasValidTimeline()) {
             final Timeline timeline = this.timelineInteractor.timeline.getValue();
             if (timeline == null) {
                 return;
             }
-            this.presenterView.renderTimeline(timeline);
+            this.senseView.renderTimeline(timeline);
         }
     }
 
@@ -325,16 +325,16 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             if (!hasSubscriptions()) {
                 this.timelineInteractor.updateIfEmpty();
 
-                this.stateSafeExecutor.execute(this.presenterView::pulseHeaderView);
+                this.stateSafeExecutor.execute(this.senseView::pulseHeaderView);
 
                 bindAndSubscribe(this.timelineInteractor.timeline,
                                  this::bindTimeline,
                                  this::timelineUnavailable);
 
                 bindAndSubscribe(this.preferences.observableUse24Time(),
-                                 this.presenterView::setUse24Time,
+                                 this.senseView::setUse24Time,
                                  Functions.LOG_ERROR);
-            } else if (this.presenterView.inNoDataState()) {
+            } else if (this.senseView.inNoDataState()) {
                 update();
             }
         }
@@ -375,7 +375,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     }
 
     public void scrollToTop() {
-        this.presenterView.scrollToTop();
+        this.senseView.scrollToTop();
     }
 
     public void update() {
@@ -396,12 +396,12 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             return;
         }
 
-        if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity()) && !this.presenterView.hasTutorial() && isAtLeastThreeDaysOld()) {
+        if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity()) && !this.senseView.hasTutorial() && isAtLeastThreeDaysOld()) {
             final TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.SWIPE_TIMELINE);
-            overlayView.setOnDismiss(() -> this.presenterView.clearTutorial());
+            overlayView.setOnDismiss(() -> this.senseView.clearTutorial());
             overlayView.setAnchorContainer(getActivity().findViewById(this.parent.getTutorialContainerIdRes()));
-            this.presenterView.showTutorial(overlayView,
-                                            this.parent.getTutorialContainerIdRes());
+            this.senseView.showTutorial(overlayView,
+                                        this.parent.getTutorialContainerIdRes());
         }
     }
 
@@ -415,7 +415,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             if (finished) {
                 showHandholdingIfAppropriate();
             }
-            TimelineFragment.this.presenterView.removeItemAnimatorListener(this);
+            TimelineFragment.this.senseView.removeItemAnimatorListener(this);
         }
     }
 
@@ -430,20 +430,20 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             Tutorial.SWIPE_TIMELINE.markShown(getActivity());
         }
         if (hasEvents) {
-            this.presenterView.transitionOutOfNoDataState();
+            this.senseView.transitionOutOfNoDataState();
             final Runnable backgroundAnimations = this.stateSafeExecutor.bind(() -> {
                 final int targetColor = ContextCompat.getColor(getActivity(), R.color.timeline_background_fill);
-                this.presenterView.startBackgroundFade(targetColor);
+                this.senseView.startBackgroundFade(targetColor);
             });
             final Runnable adapterAnimations = this.stateSafeExecutor.bind(() -> {
-                this.presenterView.addItemAnimatorListener(new HandholdingOneShotListener());
-                this.presenterView.bindEventsToTimeline(timeline.getEvents());
+                this.senseView.addItemAnimatorListener(new HandholdingOneShotListener());
+                this.senseView.bindEventsToTimeline(timeline.getEvents());
             });
-            this.presenterView.bindTimelineToHeader(timeline, backgroundAnimations, adapterAnimations);
+            this.senseView.bindTimelineToHeader(timeline, backgroundAnimations, adapterAnimations);
 
             this.localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.TIMELINE_SHOWN_WITH_DATA);
         } else {
-            this.presenterView.transitionIntoNoDataState((header -> {
+            this.senseView.transitionIntoNoDataState((header -> {
                 // Indicates on-boarding just ended
                 final LocalDate creationDate =
                         this.preferences.getLocalDate(PreferencesInteractor.ACCOUNT_CREATION_DATE);
@@ -467,13 +467,13 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
                 }
             }));
         }
-        this.presenterView.setHeaderScoreEnabled(!Lists.isEmpty(timeline.getMetrics()) && hasEvents);
+        this.senseView.setHeaderScoreEnabled(!Lists.isEmpty(timeline.getMetrics()) && hasEvents);
     }
 
     public void timelineUnavailable(final Throwable e) {
         Analytics.trackError(e, "Loading Timeline");
         final CharSequence message = getString(R.string.timeline_error_message);
-        if (this.presenterView.adapterHasEvents()) {
+        if (this.senseView.adapterHasEvents()) {
             final Toast toast = new Toast(getActivity().getApplicationContext());
             @SuppressLint("InflateParams")
             final TextView text = (TextView) getActivity().getLayoutInflater()
@@ -483,7 +483,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             toast.setDuration(Toast.LENGTH_SHORT);
             toast.show();
         } else {
-            this.presenterView.transitionIntoNoDataState(header -> {
+            this.senseView.transitionIntoNoDataState(header -> {
                 header.setDiagramResource(R.drawable.timeline_state_error);
                 header.setTitle(R.string.timeline_error_title);
                 header.setMessage(message);
@@ -506,7 +506,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         }
         if (view.getY() < this.toolTipHeight) {
             final int dy = this.toolTipHeight * 2 - (int) view.getY();
-            this.presenterView.scrollForSpace(this, event, view, position, -dy);
+            this.senseView.scrollForSpace(this, event, view, position, -dy);
             return;
         }
         this.infoOverlay = new TimelineInfoOverlay(getActivity(), getAnimatorContext());
@@ -517,7 +517,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         });
         this.infoOverlay.bindEvent(event);
         this.infoOverlay.show(view,
-                              this.presenterView,
+                              this.senseView,
                               Views.getActivityScreenSize(getActivity(), false),
                               animateShow);
 
@@ -685,7 +685,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
         @Override
         public void onScrolled(final RecyclerView recyclerView, final int dx, final int dy) {
-            if (!TimelineFragment.this.presenterView.isAnimating()) {
+            if (!TimelineFragment.this.senseView.isAnimating()) {
                 final int recyclerHeight = recyclerView.getMeasuredHeight(),
                         recyclerCenter = recyclerHeight / 2;
                 for (int i = recyclerView.getChildCount() - 1; i >= 0; i--) {

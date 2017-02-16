@@ -15,8 +15,8 @@ import is.hello.sense.util.Analytics;
 
 public class NotificationFragment extends PresenterFragment<NotificationView> {
     @Override
-    public void initializePresenterView() {
-        presenterView = new NotificationView(getActivity());
+    public void initializeSenseView() {
+        senseView = new NotificationView(getActivity());
         setHasOptionsMenu(true);
     }
 

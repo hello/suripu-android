@@ -29,8 +29,8 @@ public class ConfigSelectionFragmentTest extends SenseTestCase {
         final Expansion testExpansion = Expansion.generateTemperatureTestCase(State.NOT_CONFIGURED);
         configSelectionFragment.bindExpansion(testExpansion);
 
-        assertEquals("Connected to " + testExpansion.getCompanyName(), configSelectionFragment.presenterView.getTitleText());
-        assertEquals("Select the " + testExpansion.getConfigurationType() + " that Sense will control.", configSelectionFragment.presenterView.getSubtitleText());
+        assertEquals("Connected to " + testExpansion.getCompanyName(), configSelectionFragment.senseView.getTitleText());
+        assertEquals("Select the " + testExpansion.getConfigurationType() + " that Sense will control.", configSelectionFragment.senseView.getSubtitleText());
     }
 
 }

@@ -26,12 +26,12 @@ public class VoiceFragment extends ControllerPresenterFragment<VoiceView>
 
     //region PresenterFragment
     @Override
-    public void initializePresenterView() {
-        if (this.presenterView == null) {
+    public void initializeSenseView() {
+        if (this.senseView == null) {
             this.adapter = new VoiceCommandsAdapter(getActivity().getLayoutInflater());
             this.adapter.setOnItemClickedListener(this);
-            this.presenterView = new VoiceView(getActivity(),
-                                               this.adapter);
+            this.senseView = new VoiceView(getActivity(),
+                                           this.adapter);
         }
     }
 
@@ -75,10 +75,10 @@ public class VoiceFragment extends ControllerPresenterFragment<VoiceView>
     //region scrollup
     @Override
     public void scrollUp() {
-        if (presenterView == null) {
+        if (senseView == null) {
             return;
         }
-        presenterView.scrollUp();
+        senseView.scrollUp();
     }
     //endregion
 
@@ -89,7 +89,7 @@ public class VoiceFragment extends ControllerPresenterFragment<VoiceView>
         } else {
             this.adapter.showWelcomeCard(this::onWelcomeCardCloseClicked);
         }
-        this.presenterView.setInsetForWelcomeCard(!wasShown);
+        this.senseView.setInsetForWelcomeCard(!wasShown);
     }
 
     private void onWelcomeCardCloseClicked(@NonNull final View ignored) {

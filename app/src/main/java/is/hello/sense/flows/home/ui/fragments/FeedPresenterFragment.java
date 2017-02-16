@@ -50,9 +50,9 @@ public class FeedPresenterFragment extends ViewPagerPresenterFragment
     @VisibleForTesting
     public void bindVoiceSettings(final boolean hasVoice) {
         if (hasVoice) {
-            presenterView.unlockViewPager(this);
+            senseView.unlockViewPager(this);
         } else {
-            presenterView.lockViewPager(getStartingItemPosition());
+            senseView.lockViewPager(getStartingItemPosition());
         }
     }
 

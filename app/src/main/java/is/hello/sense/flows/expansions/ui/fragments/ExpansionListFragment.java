@@ -31,11 +31,11 @@ public class ExpansionListFragment extends PresenterFragment<ExpansionListView>
     private ExpansionAdapter adapter;
 
     @Override
-    public void initializePresenterView() {
-        if (presenterView == null) {
+    public void initializeSenseView() {
+        if (senseView == null) {
             this.adapter = new ExpansionAdapter(new ArrayList<>(2), picasso);
             this.adapter.setOnItemClickedListener(this);
-            presenterView = new ExpansionListView(getActivity(), adapter);
+            senseView = new ExpansionListView(getActivity(), adapter);
         }
     }
 

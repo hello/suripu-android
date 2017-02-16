@@ -47,7 +47,6 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
-import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -101,9 +100,9 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
     private HomeActivity activity;
 
     @Override
-    public final void initializePresenterView() {
-        if (presenterView == null) {
-            presenterView = new InsightsView(getActivity(), dateFormatter, picasso, this);
+    public final void initializeSenseView() {
+        if (senseView == null) {
+            senseView = new InsightsView(getActivity(), dateFormatter, picasso, this);
         }
     }
 
@@ -111,7 +110,7 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
     public void setVisibleToUser(final boolean isVisible) {
         super.setVisibleToUser(isVisible);
         if (isVisible) {
-            presenterView.updateWhatsNewState();
+            senseView.updateWhatsNewState();
             fetchInsights();
         }
     }
@@ -207,7 +206,7 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
         if (!questionLoaded || !insightsLoaded) {
             return;
         }
-        presenterView.showCards(currentQuestion, insights);
+        senseView.showCards(currentQuestion, insights);
  /*
  // todo bring back with tablayout indicators
         final Activity activity = getActivity();
@@ -236,7 +235,7 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
     }
 
     private void insightsUnavailable(@Nullable final Throwable e) {
-        presenterView.insightsUnavailable(e, this);
+        senseView.insightsUnavailable(e, this);
     }
 
     private void bindQuestion(@Nullable final Question question) {
@@ -251,7 +250,7 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
     }
 
     private void questionUnavailable(@Nullable final Throwable e) {
-        presenterView.questionsUnavailable(e);
+        senseView.questionsUnavailable(e);
     }
 
     //endregion
@@ -267,7 +266,7 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
             final InsightInfoFragment.SharedState state = new InsightInfoFragment.SharedState();
             Views.getFrameInWindow(selectedInsightHolder.image, state.imageRectInWindow);
             state.imageParallaxPercent = selectedInsightHolder.image.getParallaxPercent();
-            state.parentAnimator = presenterView.getAnimator(isEnter);
+            state.parentAnimator = senseView.getAnimator(isEnter);
             return state;
         } else {
             return null;
@@ -382,7 +381,7 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
     public final void onAnswerQuestion() {
         final QuestionsDialogFragment dialogFragment = new QuestionsDialogFragment();
         dialogFragment.showAllowingStateLoss(getActivity().getFragmentManager(), QuestionsDialogFragment.TAG);
-        presenterView.clearCurrentQuestion();
+        senseView.clearCurrentQuestion();
     }
 
     //endregion
@@ -390,10 +389,10 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
     //region scrollup
     @Override
     public void scrollUp() {
-        if (presenterView == null) {
+        if (senseView == null) {
             return;
         }
-        presenterView.scrollUp();
+        senseView.scrollUp();
     }
     //endregion
 

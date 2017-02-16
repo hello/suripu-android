@@ -84,9 +84,9 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
     }
 
     @Override
-    public void initializePresenterView() {
-        if (presenterView == null) {
-            presenterView = new ExpansionDetailPickerView(getActivity());
+    public void initializeSenseView() {
+        if (senseView == null) {
+            senseView = new ExpansionDetailPickerView(getActivity());
         }
     }
 
@@ -194,10 +194,10 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
             configName = selectedConfig.getName();
         }
         lastConfigurationsFetchFailed = false;
-        presenterView.showConfigurationSuccess(configName, this::onConfigureClicked);
-        presenterView.showExpansionRangePicker(expansionCategoryFormatter.getInitialValuePair(expansionCategory,
-                                                                                              selectedConfig.getCapabilities(),
-                                                                                              initialValueRange));
+        senseView.showConfigurationSuccess(configName, this::onConfigureClicked);
+        senseView.showExpansionRangePicker(expansionCategoryFormatter.getInitialValuePair(expansionCategory,
+                                                                                          selectedConfig.getCapabilities(),
+                                                                                          initialValueRange));
 
     }
 
@@ -220,22 +220,22 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
                                                                               expansionValueRange);
         }
 
-        presenterView.setConfigurationTypeText(expansion.getConfigurationType());
-        presenterView.initExpansionRangePicker(min,
-                                               max,
-                                               expansionCategoryFormatter.getSuffix(expansion.getCategory())
-                                              );
+        senseView.setConfigurationTypeText(expansion.getConfigurationType());
+        senseView.initExpansionRangePicker(min,
+                                           max,
+                                           expansionCategoryFormatter.getSuffix(expansion.getCategory())
+                                          );
 
-        presenterView.showConnectedContainer(!expansion.requiresAuthentication());
+        senseView.showConnectedContainer(!expansion.requiresAuthentication());
 
         if (expansion.requiresAuthentication()) {
             //todo handle
             Logger.debug(ExpansionDetailPickerFragment.class.getName(), "expansion that requires auth returned in picker view");
         } else if (expansion.requiresConfiguration()) {
-            presenterView.showConfigurationSuccess(getString(R.string.expansions_select), this::onConfigureClicked);
+            senseView.showConfigurationSuccess(getString(R.string.expansions_select), this::onConfigureClicked);
         } else {
             configurationsInteractor.update();
-            presenterView.showEnableSwitch(isEnabled, this);
+            senseView.showEnableSwitch(isEnabled, this);
         }
     }
 
@@ -244,9 +244,9 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
      * or {@link ExpansionDetailPickerFragment#initialValueRange} if UI is gone.
      */
     public ExpansionValueRange getCurrentExpansionValueRange() {
-        if (presenterView != null && expansionCategoryFormatter != null) {
+        if (senseView != null && expansionCategoryFormatter != null) {
             final UnitConverter unitConverter = expansionCategoryFormatter.getReverseUnitConverter(expansionCategory);
-            final Pair<Integer, Integer> selectedValue = presenterView.getSelectedValuePair();
+            final Pair<Integer, Integer> selectedValue = senseView.getSelectedValuePair();
             final float convertedMinValue = unitConverter.convert((float) selectedValue.first);
             final float convertedMaxValue = unitConverter.convert((float) selectedValue.second);
             return new ExpansionValueRange(convertedMinValue, convertedMaxValue);
@@ -268,7 +268,7 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
         } else {
             showErrorDialog(ErrorDialogFragment.newInstance(throwable));
         }
-        presenterView.hidePickerSpinner();
+        senseView.hidePickerSpinner();
     }
 
     /**
@@ -278,7 +278,7 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
      * @param throwable -
      */
     private void presentConfigurationError(final Throwable throwable) {
-        presenterView.showConfigurationsError(this::onConfigurationErrorImageViewClicked);
+        senseView.showConfigurationsError(this::onConfigurationErrorImageViewClicked);
         if (ApiException.isNetworkError(throwable)) {
             showErrorDialog(new ErrorDialogFragment.PresenterBuilder(throwable));
         } else {
@@ -318,7 +318,7 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
     }
 
     private void onConfigurationErrorImageViewClicked(final View ignored) {
-        presenterView.showConfigurationSpinner();
+        senseView.showConfigurationSpinner();
         configurationsInteractor.update();
     }
 

@@ -12,14 +12,14 @@ public class AppSettingsFragmentTest extends FragmentTest<AppSettingsFragment> {
 
     @Test
     public void initializePresenterViewTest() {
-        fragment.presenterView = null;
-        fragment.initializePresenterView();
-        assertNotNull(fragment.presenterView);
+        fragment.senseView = null;
+        fragment.initializeSenseView();
+        assertNotNull(fragment.senseView);
     }
 
     @Test
     public void onCreateTest() {
-        fragment.initializePresenterView();
+        fragment.initializeSenseView();
         callOnCreate();
         verify(fragment).addInteractor(eq(fragment.hasVoiceInteractor));
     }
@@ -35,7 +35,7 @@ public class AppSettingsFragmentTest extends FragmentTest<AppSettingsFragment> {
 
     @Test
     public void onCreateViewTest() {
-        fragment.presenterView = Mockito.spy(fragment.presenterView);
+        fragment.senseView = Mockito.spy(fragment.senseView);
         fragment.hasVoiceInteractor = Mockito.spy(fragment.hasVoiceInteractor);
         callOnViewCreated();
         verify(fragment).bindAndSubscribe(eq(fragment.hasVoiceInteractor.hasVoice), anyObject(), anyObject());
