@@ -1,5 +1,6 @@
 package is.hello.sense.notifications;
 
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -19,9 +20,8 @@ public class NotificationInstanceIDService extends FirebaseInstanceIdService {
         Log.d(TAG, "Refreshed token: " + refreshedToken);
 
         if(refreshedToken != null) {
-            sendBroadcast(NotificationRegistrationBroadcastReceiver.getIntent(refreshedToken));
+            LocalBroadcastManager.getInstance(this)
+                                 .sendBroadcast(NotificationRegistrationBroadcastReceiver.getRegisterIntent(refreshedToken));
         }
     }
-
-
 }
