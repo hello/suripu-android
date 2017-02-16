@@ -67,6 +67,7 @@ public class NotificationFragment extends PresenterFragment<NotificationView>
     @Override
     protected void onRelease() {
         super.onRelease();
+        notificationSettingsAdapter.setErrorHandler(null);
         saveSubscription.unsubscribe();
     }
 

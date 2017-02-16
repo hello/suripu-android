@@ -25,7 +25,7 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
     private boolean hasError = false;
 
     public NotificationSettingsAdapter() {
-        super(new ArrayList<>());
+        super(new ArrayList<>(2));
     }
 
     //region ArrayRecyclerAdapter
@@ -47,9 +47,10 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
             return new ErrorViewHolder(parent);
         } else if (viewType == HEADER) {
             return new ViewHolder(inflate(R.layout.item_enable_notifications, parent));
+        }else if (viewType == SETTING) {
+            return new SettingsViewHolder(DataBindingUtil.bind(inflate(R.layout.item_notification_settings, parent)));
         }
-
-        return new SettingsViewHolder(DataBindingUtil.bind(inflate(R.layout.item_notification_settings, parent)));
+        throw new IllegalStateException("unknown type");
     }
 
     @Override

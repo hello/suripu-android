@@ -46,6 +46,7 @@ public class NotificationSetting extends ApiResponse {
         return name;
     }
 
+    @Type
     @NonNull
     public String getType() {
         return type;
