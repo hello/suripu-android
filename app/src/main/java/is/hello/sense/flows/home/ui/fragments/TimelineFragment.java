@@ -157,13 +157,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     @Override
     public void onAttach(@NonNull final Activity activity) {
         super.onAttach(activity);
-        if (activity instanceof Parent && this.parent == null) {
-            setParent((Parent) activity);
-        } else if (activity instanceof ParentProvider && this.parent == null) {
-            setParent(((ParentProvider) activity).getTimelineParent());
-        } else if (this.parent == null) {
-            throw new IllegalStateException("A parent is required to control TimelineFragment");
-        }
+        attachParent(activity);
     }
 
     @Override
@@ -239,6 +233,9 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         } else if (requestCode == ZOOMED_OUT_TIMELINE_REQUEST && data != null) {
             final LocalDate date = (LocalDate) data.getSerializableExtra(TimelineActivity.EXTRA_LOCAL_DATE);
             final Timeline timeline = (Timeline) data.getSerializableExtra(TimelineActivity.EXTRA_TIMELINE);
+            if (this.parent == null) {
+                attachParent(getActivity());
+            }
             this.parent.jumpTo(date, timeline);
         }
     }
@@ -261,6 +258,16 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
                                                                    date,
                                                                    timeline),
                                ZOOMED_OUT_TIMELINE_REQUEST);
+    }
+
+    private void attachParent(@NonNull final Activity activity) {
+        if (activity instanceof Parent && this.parent == null) {
+            setParent((Parent) activity);
+        } else if (activity instanceof ParentProvider && this.parent == null) {
+            setParent(((ParentProvider) activity).getTimelineParent());
+        } else if (this.parent == null) {
+            throw new IllegalStateException("A parent is required to control TimelineFragment");
+        }
     }
 
     private void onShareIconClicked(final View ignored) {

@@ -54,6 +54,7 @@ public class ViewPagerPresenterView extends PresenterView {
         this.tabLayout.removeAllViews();
         this.tabLayout.removeAllTabs();
         this.viewPager.removeAllViews();
+        this.viewPager.setAdapter(null);
         this.fab.setOnClickListener(null);
     }
     //endregion
@@ -61,7 +62,7 @@ public class ViewPagerPresenterView extends PresenterView {
     //region methods
 
     public void unlockViewPager(@NonNull final ViewPagerPresenterFragment fragment) {
-        createTabsAndPager(fragment);
+        setTabs(fragment.getViewPagerItems(), fragment.getStartingItemPosition());
         this.viewPager.setScrollingEnabled(true);
     }
 
@@ -71,8 +72,10 @@ public class ViewPagerPresenterView extends PresenterView {
         this.viewPager.setCurrentItem(position);
     }
 
+    /**
+     * Only call once per viewpager creation.
+     */
     private void createTabsAndPager(@NonNull final ViewPagerPresenterFragment fragment) {
-
         final StaticFragmentAdapter.Item[] items = fragment.getViewPagerItems();
 
         // ViewPager
@@ -85,11 +88,16 @@ public class ViewPagerPresenterView extends PresenterView {
         this.viewPager.setEnabled(true);
 
         // TabLayout
+        setTabs(items, fragment.getStartingItemPosition());
+    }
+
+    private void setTabs(@NonNull final StaticFragmentAdapter.Item[] items,
+                         final int startingPosition) {
         this.tabLayout.removeAllTabs();
         for (final StaticFragmentAdapter.Item item : items) {
             this.tabLayout.addTab(this.tabLayout.newTab().setText(item.getTitle()));
         }
-        selectTab(fragment.getStartingItemPosition());
+        selectTab(startingPosition);
         setTabLayoutVisible(true);
     }
 
