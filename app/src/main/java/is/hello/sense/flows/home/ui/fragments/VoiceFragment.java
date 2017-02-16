@@ -10,13 +10,13 @@ import is.hello.sense.flows.home.ui.views.VoiceView;
 import is.hello.sense.flows.voicecommands.ui.activities.VoiceCommandActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountPreferencesInteractor;
-import is.hello.sense.mvp.fragments.ControllerPresenterFragment;
+import is.hello.sense.mvp.fragments.ControllerSenseViewFragment;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.NotTested;
 
 @NotTested // enough
-public class VoiceFragment extends ControllerPresenterFragment<VoiceView>
+public class VoiceFragment extends ControllerSenseViewFragment<VoiceView>
         implements
         ArrayRecyclerAdapter.OnItemClickedListener<VoiceCommandsAdapter.VoiceCommand>,
         HomeActivity.ScrollUp {

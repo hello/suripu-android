@@ -21,13 +21,13 @@ import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.flows.expansions.ui.views.ConfigSelectionView;
-import is.hello.sense.mvp.fragments.PresenterFragment;
+import is.hello.sense.mvp.fragments.SenseViewFragment;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.ConfigurationAdapter;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.util.Logger;
 
-public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionView>
+public class ConfigSelectionFragment extends SenseViewFragment<ConfigSelectionView>
         implements ArrayRecyclerAdapter.OnItemClickedListener<Configuration>,
         OnBackPressedInterceptor {
     public static final String EXPANSION_ID_KEY = ConfigSelectionFragment.class.getSimpleName() + ".expansion_id_key";

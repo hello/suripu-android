@@ -29,8 +29,8 @@ import is.hello.sense.flows.smartalarm.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
-import is.hello.sense.mvp.fragments.ControllerPresenterFragment;
-import is.hello.sense.mvp.fragments.ViewPagerPresenterFragment;
+import is.hello.sense.mvp.fragments.ControllerSenseViewFragment;
+import is.hello.sense.mvp.fragments.ViewPagerSenseViewFragment;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
 import is.hello.sense.ui.common.SenseDialogFragment;
@@ -44,11 +44,11 @@ import is.hello.sense.util.NotTested;
 import rx.Observable;
 
 @NotTested
-public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAlarmListView>
+public class SmartAlarmListFragment extends ControllerSenseViewFragment<SmartAlarmListView>
         implements
         SmartAlarmAdapter.InteractionListener,
         HomeActivity.ScrollUp,
-        ViewPagerPresenterFragment.FabListener {
+        ViewPagerSenseViewFragment.FabListener {
     private static final int DELETE_REQUEST_CODE = 117;
 
     @Inject
@@ -61,7 +61,7 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
     ExpansionCategoryFormatter expansionCategoryFormatter;
     private ArrayList<Alarm> currentAlarms = new ArrayList<>();
     @Nullable
-    private ViewPagerPresenterFragment.NotificationListener notificationListener = null;
+    private ViewPagerSenseViewFragment.NotificationListener notificationListener = null;
 
 
     //region PresenterFragment
@@ -207,7 +207,7 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
     }
 
     @Override
-    public void setNotificationListener(@NonNull final ViewPagerPresenterFragment.NotificationListener notificationListener) {
+    public void setNotificationListener(@NonNull final ViewPagerSenseViewFragment.NotificationListener notificationListener) {
         this.notificationListener = notificationListener;
     }
 

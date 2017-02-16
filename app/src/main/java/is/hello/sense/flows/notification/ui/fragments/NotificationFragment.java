@@ -10,10 +10,10 @@ import android.widget.Toast;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.notification.ui.views.NotificationView;
-import is.hello.sense.mvp.fragments.PresenterFragment;
+import is.hello.sense.mvp.fragments.SenseViewFragment;
 import is.hello.sense.util.Analytics;
 
-public class NotificationFragment extends PresenterFragment<NotificationView> {
+public class NotificationFragment extends SenseViewFragment<NotificationView> {
     @Override
     public void initializeSenseView() {
         senseView = new NotificationView(getActivity());

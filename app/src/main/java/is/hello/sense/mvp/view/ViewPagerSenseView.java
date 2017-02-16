@@ -14,7 +14,7 @@ import android.view.animation.AnimationUtils;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
-import is.hello.sense.mvp.fragments.ViewPagerPresenterFragment;
+import is.hello.sense.mvp.fragments.ViewPagerSenseViewFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 
 
@@ -30,7 +30,7 @@ public class ViewPagerSenseView extends SenseView {
      * @param fragment - Fragment providing initialization settings and callbacks.
      *                 Don't keep a reference to this.
      */
-    public ViewPagerSenseView(@NonNull final ViewPagerPresenterFragment fragment,
+    public ViewPagerSenseView(@NonNull final ViewPagerSenseViewFragment fragment,
                               @Nullable final OnClickListener onFabClickListener) {
         super(fragment.getActivity());
         this.viewPager = (ExtendedViewPager) findViewById(R.id.view_view_pager_extended_view_pager);
@@ -60,7 +60,7 @@ public class ViewPagerSenseView extends SenseView {
 
     //region methods
 
-    public void unlockViewPager(@NonNull final ViewPagerPresenterFragment fragment) {
+    public void unlockViewPager(@NonNull final ViewPagerSenseViewFragment fragment) {
         createTabsAndPager(fragment);
         this.viewPager.setScrollingEnabled(true);
     }
@@ -71,7 +71,7 @@ public class ViewPagerSenseView extends SenseView {
         this.viewPager.setCurrentItem(position);
     }
 
-    private void createTabsAndPager(@NonNull final ViewPagerPresenterFragment fragment) {
+    private void createTabsAndPager(@NonNull final ViewPagerSenseViewFragment fragment) {
 
         final StaticFragmentAdapter.Item[] items = fragment.getViewPagerItems();
 

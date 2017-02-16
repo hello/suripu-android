@@ -8,7 +8,7 @@ import is.hello.sense.flows.home.util.SoundsViewPagerPresenterDelegate;
 
 import static junit.framework.Assert.assertTrue;
 
-public class SoundsPresenterFragmentTest extends FragmentTest<SoundsPresenterFragment> {
+public class SoundsSenseViewFragmentTest extends FragmentTest<SoundsSenseViewFragment> {
 
 
     @Test

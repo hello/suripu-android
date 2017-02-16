@@ -20,12 +20,12 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 
 import is.hello.sense.graph.SenseTestCase;
-import is.hello.sense.mvp.fragments.PresenterFragment;
+import is.hello.sense.mvp.fragments.SenseViewFragment;
 
 import static junit.framework.Assert.assertNotNull;
 import static org.robolectric.util.FragmentTestUtil.startFragment;
 
-public abstract class FragmentTest<T extends PresenterFragment>
+public abstract class FragmentTest<T extends SenseViewFragment>
         extends SenseTestCase {
 
     protected T fragment;

@@ -42,7 +42,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.HasVoiceInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
-import is.hello.sense.mvp.fragments.PresenterFragment;
+import is.hello.sense.mvp.fragments.SenseViewFragment;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -57,7 +57,7 @@ import is.hello.sense.util.GenericListObject;
 import is.hello.sense.util.NotTested;
 import rx.Observable;
 
-public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetailView>
+public class SmartAlarmDetailFragment extends SenseViewFragment<SmartAlarmDetailView>
         implements OnBackPressedInterceptor {
     //region static functions and fields
     public static final String ARG_ALARM = SmartAlarmDetailFragment.class.getName() + ".ARG_ALARM";

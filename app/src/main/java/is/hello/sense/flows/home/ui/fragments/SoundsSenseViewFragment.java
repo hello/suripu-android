@@ -3,10 +3,10 @@ package is.hello.sense.flows.home.ui.fragments;
 import android.support.annotation.NonNull;
 
 import is.hello.sense.flows.home.util.SoundsViewPagerPresenterDelegate;
-import is.hello.sense.mvp.fragments.ViewPagerPresenterFragment;
+import is.hello.sense.mvp.fragments.ViewPagerSenseViewFragment;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 
-public class SoundsPresenterFragment extends ViewPagerPresenterFragment {
+public class SoundsSenseViewFragment extends ViewPagerSenseViewFragment {
 
     //region ViewPagerPresenterFragment
     @NonNull

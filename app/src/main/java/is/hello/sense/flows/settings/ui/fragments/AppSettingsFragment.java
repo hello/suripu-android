@@ -9,10 +9,10 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.flows.settings.ui.views.AppSettingsView;
 import is.hello.sense.interactors.HasVoiceInteractor;
-import is.hello.sense.mvp.fragments.PresenterFragment;
+import is.hello.sense.mvp.fragments.SenseViewFragment;
 import is.hello.sense.util.Analytics;
 
-public class AppSettingsFragment extends PresenterFragment<AppSettingsView> implements
+public class AppSettingsFragment extends SenseViewFragment<AppSettingsView> implements
         AppSettingsView.Listener {
 
     @Inject

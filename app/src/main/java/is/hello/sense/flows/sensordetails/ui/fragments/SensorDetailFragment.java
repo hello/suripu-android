@@ -32,7 +32,7 @@ import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractor;
 import is.hello.sense.flows.sensordetails.ui.activities.SensorDetailActivity;
 import is.hello.sense.flows.sensordetails.ui.views.SensorDetailView;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.mvp.fragments.PresenterFragment;
+import is.hello.sense.mvp.fragments.SenseViewFragment;
 import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
@@ -46,7 +46,7 @@ import is.hello.sense.util.DateFormatter;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-public final class SensorDetailFragment extends PresenterFragment<SensorDetailView>
+public final class SensorDetailFragment extends SenseViewFragment<SensorDetailView>
         implements SelectorView.OnSelectionChangedListener,
         SensorGraphDrawable.ScrubberCallback {
     private static final String ARG_SENSOR = SensorDetailFragment.class.getName() + ".ARG_SENSOR";

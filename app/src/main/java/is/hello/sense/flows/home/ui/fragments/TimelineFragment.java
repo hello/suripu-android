@@ -41,7 +41,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TimelineInteractor;
-import is.hello.sense.mvp.fragments.PresenterFragment;
+import is.hello.sense.mvp.fragments.SenseViewFragment;
 import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.TimelineAdapter;
@@ -66,7 +66,7 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.Share;
 import rx.Observable;
 
-public class TimelineFragment extends PresenterFragment<TimelineView>
+public class TimelineFragment extends SenseViewFragment<TimelineView>
         implements TimelineAdapter.OnItemClickListener {
     // !! Important: Do not use setTargetFragment on TimelineFragment.
     // It is not guaranteed to exist at the time of state restoration.

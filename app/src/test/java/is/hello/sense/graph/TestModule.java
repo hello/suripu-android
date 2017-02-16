@@ -20,7 +20,7 @@ import is.hello.sense.api.sessions.TestApiSessionManager;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractorTests;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatterTest;
-import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
+import is.hello.sense.flows.home.ui.fragments.RoomConditionsSenseViewFragment;
 import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractorTest;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
@@ -125,7 +125,7 @@ import static org.mockito.Mockito.mock;
             SwapSenseInteractor.class,
             SwapSenseInteractorTests.class,
 
-            RoomConditionsPresenterFragment.class,
+            RoomConditionsSenseViewFragment.class,
             RoomConditionsPresenterFragmentTests.class,
 
             SensorLabelInteractorTest.class,

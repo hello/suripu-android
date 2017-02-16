@@ -22,12 +22,12 @@ import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.flows.expansions.ui.views.ExpansionsAuthView;
-import is.hello.sense.mvp.fragments.PresenterFragment;
+import is.hello.sense.mvp.fragments.SenseViewFragment;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.CustomWebViewClient;
 
-public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView>
+public class ExpansionsAuthFragment extends SenseViewFragment<ExpansionsAuthView>
         implements CustomWebViewClient.Listener,
         OnBackPressedInterceptor {
 

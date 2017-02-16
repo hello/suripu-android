@@ -29,7 +29,7 @@ import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionValuePickerActivity;
 import is.hello.sense.flows.expansions.ui.views.ExpansionDetailPickerView;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
-import is.hello.sense.mvp.fragments.PresenterFragment;
+import is.hello.sense.mvp.fragments.SenseViewFragment;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -40,7 +40,7 @@ import is.hello.sense.util.Logger;
 
 import static is.hello.sense.api.model.v2.expansions.Expansion.NO_ID;
 
-public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDetailPickerView>
+public class ExpansionDetailPickerFragment extends SenseViewFragment<ExpansionDetailPickerView>
         implements CompoundButton.OnCheckedChangeListener,
         OnBackPressedInterceptor {
     public static final int RESULT_CONFIGURE_PRESSED = 100;

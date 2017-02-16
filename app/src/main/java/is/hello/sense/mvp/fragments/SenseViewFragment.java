@@ -23,21 +23,21 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Logger;
 
-public abstract class PresenterFragment<T extends SenseView>
+public abstract class SenseViewFragment<T extends SenseView>
         extends ObserverFragment
         implements HelpOutput {
 
     protected boolean animatorContextFromActivity = false;
     protected LoadingDialogFragment loadingDialogFragment;
     /**
-     * Safe to assume this exists at and after {@link PresenterFragment#onViewCreated(View, Bundle)}
-     * Reference is removed at {@link  PresenterFragment#onDestroyView()} and {@link PresenterFragment#onDetach()}
+     * Safe to assume this exists at and after {@link SenseViewFragment#onViewCreated(View, Bundle)}
+     * Reference is removed at {@link  SenseViewFragment#onDestroyView()} and {@link SenseViewFragment#onDetach()}
      */
     @VisibleForTesting
     public T senseView;
 
     /**
-     * Only called in {@link PresenterFragment#onCreateView(LayoutInflater, ViewGroup, Bundle)} method.
+     * Only called in {@link SenseViewFragment#onCreateView(LayoutInflater, ViewGroup, Bundle)} method.
      */
     public abstract void initializeSenseView();
 

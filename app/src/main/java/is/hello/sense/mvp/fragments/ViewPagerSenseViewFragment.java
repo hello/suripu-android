@@ -13,6 +13,7 @@ import android.view.View;
 
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
+import is.hello.sense.flows.home.ui.fragments.SoundsSenseViewFragment;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.mvp.util.ViewPagerPresenter;
 import is.hello.sense.mvp.view.ViewPagerSenseView;
@@ -22,7 +23,7 @@ import is.hello.sense.util.NotTested;
  * Any class Fragment that wants to host fragments should extend this.
  */
 @NotTested
-public abstract class ViewPagerPresenterFragment extends ControllerPresenterFragment<ViewPagerSenseView>
+public abstract class ViewPagerSenseViewFragment extends ControllerSenseViewFragment<ViewPagerSenseView>
         implements ViewPagerPresenter,
         ViewPager.OnPageChangeListener,
         HomeActivity.ScrollUp {
@@ -168,7 +169,7 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
 
     /**
      * @return true will add this class's ViewPager.OnPageScrollListener. Should be false unless the
-     * Fab is needed. See {@link is.hello.sense.flows.home.ui.fragments.SoundsPresenterFragment} for
+     * Fab is needed. See {@link SoundsSenseViewFragment} for
      * example.
      */
     protected boolean shouldAddViewPagerListener() {
@@ -342,8 +343,8 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
 
         @Override
         public void notifyChange() {
-            if (ViewPagerPresenterFragment.this.senseView != null && !isScrolling) {
-                updateFab(ViewPagerPresenterFragment.this.senseView.getCurrentItemPosition());
+            if (ViewPagerSenseViewFragment.this.senseView != null && !isScrolling) {
+                updateFab(ViewPagerSenseViewFragment.this.senseView.getCurrentItemPosition());
             }
         }
     }

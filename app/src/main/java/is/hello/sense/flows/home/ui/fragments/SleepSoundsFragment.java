@@ -29,8 +29,8 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SleepSoundsInteractor;
 import is.hello.sense.interactors.SleepSoundsStatusInteractor;
-import is.hello.sense.mvp.fragments.ControllerPresenterFragment;
-import is.hello.sense.mvp.fragments.ViewPagerPresenterFragment;
+import is.hello.sense.mvp.fragments.ControllerSenseViewFragment;
+import is.hello.sense.mvp.fragments.ViewPagerSenseViewFragment;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -45,12 +45,12 @@ import rx.subscriptions.Subscriptions;
 import static is.hello.sense.util.Constants.EMPTY_STRING;
 
 @NotTested
-public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSoundsView>
+public class SleepSoundsFragment extends ControllerSenseViewFragment<SleepSoundsView>
         implements
         SleepSoundsAdapter.InteractionListener,
         SleepSoundsAdapter.Retry,
         HomeActivity.ScrollUp,
-        ViewPagerPresenterFragment.FabListener {
+        ViewPagerSenseViewFragment.FabListener {
     private static final int SOUNDS_REQUEST_CODE = 123;
     private static final int DURATION_REQUEST_CODE = 231;
     private static final int VOLUME_REQUEST_CODE = 312;
@@ -70,7 +70,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     private UserWants userWants = UserWants.NONE;
     private State currentState = State.IDLE;
     @Nullable
-    private ViewPagerPresenterFragment.NotificationListener notificationListener = null;
+    private ViewPagerSenseViewFragment.NotificationListener notificationListener = null;
 
     enum UserWants {
         PLAY,
@@ -275,7 +275,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     }
 
     @Override
-    public void setNotificationListener(@NonNull final ViewPagerPresenterFragment.NotificationListener notificationListener) {
+    public void setNotificationListener(@NonNull final ViewPagerSenseViewFragment.NotificationListener notificationListener) {
         this.notificationListener = notificationListener;
     }
 

@@ -21,14 +21,14 @@ import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.views.TimelinePagerView;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TimelineInteractor;
-import is.hello.sense.mvp.fragments.ControllerPresenterFragment;
+import is.hello.sense.mvp.fragments.ControllerSenseViewFragment;
 import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 
-public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<TimelinePagerView>
+public class TimelinePagerSenseViewFragment extends ControllerSenseViewFragment<TimelinePagerView>
         implements ViewPager.OnPageChangeListener,
         TimelineFragment.Parent,
         HomeActivity.ScrollUp {
@@ -40,23 +40,23 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
     @Inject
     TimelineInteractor timelineInteractor;
 
-    private static final String KEY_LAST_UPDATED = TimelinePagerPresenterFragment.class.getSimpleName() + "KEY_LAST_UPDATED";
-    private static final String KEY_LAST_ITEM = TimelinePagerPresenterFragment.class.getSimpleName() + "KEY_LAST_ITEM";
+    private static final String KEY_LAST_UPDATED = TimelinePagerSenseViewFragment.class.getSimpleName() + "KEY_LAST_UPDATED";
+    private static final String KEY_LAST_ITEM = TimelinePagerSenseViewFragment.class.getSimpleName() + "KEY_LAST_ITEM";
 
     public boolean shouldJumpToLastNightOnUserVisible = false;
     private final BroadcastReceiver onTimeChanged = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, final Intent intent) {
             final LocalDate newToday = DateFormatter.todayForTimeline();
-            final LocalDate selectedDate = TimelinePagerPresenterFragment.this.senseView.getSelectedDate();
+            final LocalDate selectedDate = TimelinePagerSenseViewFragment.this.senseView.getSelectedDate();
             if (newToday.isBefore(selectedDate)) {
                 // ViewPager does not correctly shrink when the number of items in it
                 // decrease, so we have to clear its adapter, update the adapter, then
                 // re-set the adapter for the update to work correctly.
                 //todo confirm above comment
-                TimelinePagerPresenterFragment.this.senseView.resetAdapterForLatestDate(newToday);
+                TimelinePagerSenseViewFragment.this.senseView.resetAdapterForLatestDate(newToday);
             } else {
-                TimelinePagerPresenterFragment.this.senseView.setLatestDate(newToday);
+                TimelinePagerSenseViewFragment.this.senseView.setLatestDate(newToday);
             }
         }
     };
