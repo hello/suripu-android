@@ -3,7 +3,6 @@ package is.hello.sense.flows.notification.ui.adapters;
 
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -118,13 +117,6 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
             this.binding.itemNotificationSettingsText.setText(setting.getName());
             ((CompoundButton) this.binding.itemNotificationSettingsSwitch.widgetSwitch).setChecked(setting.isEnabled());
             Views.setSafeOnSwitchClickListener(((CompoundButton) this.binding.itemNotificationSettingsSwitch.widgetSwitch), (buttonView, isChecked) -> setting.setEnabled(isChecked));
-        }
-    }
-
-    private class ErrorViewHolder extends ArrayRecyclerAdapter.ErrorViewHolder {
-
-        public ErrorViewHolder(@NonNull final ViewGroup parent) {
-            super(parent);
         }
     }
 

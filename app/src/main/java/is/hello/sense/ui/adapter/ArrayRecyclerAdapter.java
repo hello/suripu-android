@@ -199,7 +199,7 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
     }
 
     //todo replace all error view holders using item_message_card with this.
-    public abstract class ErrorViewHolder extends ViewHolder
+    public class ErrorViewHolder extends ViewHolder
             implements View.OnClickListener {
         protected final ImageView image;
         protected final TextView title;
@@ -208,10 +208,10 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
 
         public ErrorViewHolder(@NonNull final ViewGroup parent) {
             super(inflate(R.layout.item_message_card, parent));
-            this.image = (ImageView) itemView.findViewById(R.id.item_message_card_image);
-            this.title = (TextView) itemView.findViewById(R.id.item_message_card_title);
-            this.message = (TextView) itemView.findViewById(R.id.item_message_card_message);
-            this.button = (Button) itemView.findViewById(R.id.item_message_card_action);
+            this.image = (ImageView) this.itemView.findViewById(R.id.item_message_card_image);
+            this.title = (TextView)  this.itemView.findViewById(R.id.item_message_card_title);
+            this.message = (TextView)  this.itemView.findViewById(R.id.item_message_card_message);
+            this.button = (Button)  this.itemView.findViewById(R.id.item_message_card_action);
             this.button.setText(R.string.action_retry);
             this.button.setOnClickListener(this);
             this.title.setVisibility(View.GONE);
@@ -221,10 +221,10 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
         @Override
         public void onClick(final View ignored) {
             super.onClick(ignored);
-            if (errorHandler == null) {
+            if (ArrayRecyclerAdapter.this.errorHandler == null) {
                 return;
             }
-            errorHandler.retry();
+            ArrayRecyclerAdapter.this.errorHandler.retry();
         }
     }
 
