@@ -202,10 +202,7 @@ public class AccountInteractor extends ValueInteractor<Account> {
     public Observable<VoidResponse> logOut() {
         return apiService.deauthorize()
                          .doOnCompleted(AccountInteractor.this::localLogOut)
-                         .doOnError(e -> {
-                            logEvent("Unable to de-authorize");
-                            localLogOut();
-                         });
+                         .doOnError(e -> logEvent("Unable to de-authorize"));
     }
 
     private void localLogOut() {

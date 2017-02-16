@@ -328,7 +328,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     public void accountUnavailable(final Throwable e) {
         loadingIndicator.setVisibility(View.GONE);
-        final ErrorDialogFragment errorDialogFragment = new ErrorDialogFragment.Builder(e, getActivity()).build();
+        final ErrorDialogFragment errorDialogFragment = ErrorDialogFragment.newInstance(e).build();
         errorDialogFragment.setTargetFragment(this, REQUEST_CODE_ERROR);
         errorDialogFragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
     }
@@ -445,13 +445,17 @@ public class AccountSettingsFragment extends InjectionFragment
                 .setTitle(R.string.dialog_title_log_out)
                 .setMessage(R.string.dialog_message_log_out)
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(R.string.action_log_out, () ->
-                        subscribe(accountPresenter.logOut(),
-                                  Functions.NO_OP,
-                                  Functions.LOG_ERROR))
+                .setPositiveButton(R.string.action_log_out, this::performSignOut)
                 .setButtonDestructive(DialogInterface.BUTTON_POSITIVE, true)
                 .build(getActivity())
                 .show();
+    }
+
+    private void performSignOut() {
+        showLoadingIndicator();
+        bindAndSubscribe(accountPresenter.logOut(),
+                         Functions.NO_OP,
+                         this::accountUnavailable);
     }
 
     //endregion
