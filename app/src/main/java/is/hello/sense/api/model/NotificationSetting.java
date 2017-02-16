@@ -25,7 +25,7 @@ public class NotificationSetting extends ApiResponse {
     private final String type;
 
     @SerializedName("enabled")
-    private final boolean enabled;
+    private boolean enabled;
 
     @Nullable
     @SerializedName("schedule")
@@ -39,6 +39,29 @@ public class NotificationSetting extends ApiResponse {
         this.type = typeFromString(type);
         this.enabled = enabled;
         this.schedule = schedule;
+    }
+
+    @NonNull
+    public String getName() {
+        return name;
+    }
+
+    @NonNull
+    public String getType() {
+        return type;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Nullable
+    public NotificationSchedule getSchedule() {
+        return schedule;
+    }
+
+    public void setEnabled(final boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
@@ -68,7 +91,7 @@ public class NotificationSetting extends ApiResponse {
 
     private static final String SLEEP_SCORE = "sleep_score";
     private static final String SYSTEM = "system";
-    private static final String SLEEP_REMINDER = "sleep_reminder";
+    public static final String SLEEP_REMINDER = "sleep_reminder";
     private static final String UNKNOWN = "UNKNOWN";
     private static final List<String> TYPES = new ArrayList<String>(4) {{
         add(SLEEP_SCORE);

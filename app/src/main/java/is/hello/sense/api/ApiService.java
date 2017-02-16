@@ -117,6 +117,9 @@ public interface ApiService {
     @GET("/v1/notifications")
     Observable<ArrayList<NotificationSetting>> getNotificationSettings();
 
+    @PUT("/v1/notifications")
+    Observable<VoidResponse> putNotificationSettings(@NonNull @Body List<NotificationSetting> settings);
+
     @GET("/v1/timezone")
     Observable<SenseTimeZone> currentTimeZone();
 

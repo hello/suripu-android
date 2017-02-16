@@ -66,7 +66,7 @@ implements OnBackPressedInterceptor{
     }
 
     private void updateSettings(@NonNull final Observable<SenseVoiceSettings> updateObservable) {
-        showLockedBlockingActivity(R.string.voice_settings_progress_updating);
+        showLockedBlockingActivity(R.string.updating);
         this.presenterView.setVisibility(View.GONE);
         updateSettingsSubscription.unsubscribe();
         updateSettingsSubscription = bind(updateObservable)

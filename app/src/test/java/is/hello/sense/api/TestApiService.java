@@ -27,6 +27,7 @@ import is.hello.sense.api.model.AppUnreadStats;
 import is.hello.sense.api.model.DeviceOTAState;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.DevicesInfo;
+import is.hello.sense.api.model.NotificationSetting;
 import is.hello.sense.api.model.PasswordUpdate;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
@@ -183,6 +184,16 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<VoidResponse> registerForNotifications(@NonNull @Body PushRegistration registration) {
         return safeJust(new VoidResponse());
+    }
+
+    @Override
+    public Observable<ArrayList<NotificationSetting>> getNotificationSettings() {
+        return unimplemented();
+    }
+
+    @Override
+    public Observable<VoidResponse> putNotificationSettings(@NonNull @Body List<NotificationSetting> settings) {
+        return unimplemented();
     }
 
     @Override

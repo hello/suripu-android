@@ -2,38 +2,59 @@ package is.hello.sense.flows.notification.ui.fragments;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationManagerCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
-import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.api.model.NotificationSetting;
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.flows.notification.interactors.NotificationSettingsInteractor;
+import is.hello.sense.flows.notification.ui.adapters.NotificationSettingsAdapter;
 import is.hello.sense.flows.notification.ui.views.NotificationView;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
+import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
-public class NotificationFragment extends PresenterFragment<NotificationView> {
+public class NotificationFragment extends PresenterFragment<NotificationView>
+        implements ArrayRecyclerAdapter.ErrorHandler {
 
     @Inject
     NotificationSettingsInteractor notificationSettingsInteractor;
+    private NotificationSettingsAdapter notificationSettingsAdapter;
+    private Subscription saveSubscription = Subscriptions.empty();
 
     @Override
     public void initializePresenterView() {
-        presenterView = new NotificationView(getActivity());
+        notificationSettingsAdapter = createAdapter();
+        presenterView = new NotificationView(getActivity(),
+                                             notificationSettingsAdapter);
         setHasOptionsMenu(true);
     }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState == null){
+            showBlockingActivity(null);
+        }
         addInteractor(notificationSettingsInteractor);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        this.notificationSettingsAdapter.showNotificationHeader(!NotificationManagerCompat.from(getActivity()).areNotificationsEnabled());
     }
 
     @Override
@@ -45,7 +66,16 @@ public class NotificationFragment extends PresenterFragment<NotificationView> {
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         if (item.getItemId() == R.id.save) {
-            Toast.makeText(getActivity(), "Pressed Save", Toast.LENGTH_SHORT).show();
+            if (this.presenterView == null) {
+                return false;
+            }
+            showLockedBlockingActivity(R.string.updating);
+            final List<NotificationSetting> settings = this.notificationSettingsAdapter.getItems();
+            saveSubscription.unsubscribe();
+            saveSubscription = bind(notificationSettingsInteractor.updateNotificationSettings(settings))
+                    .subscribe(
+                            this::bindSave,
+                            this::bindSaveError);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -55,18 +85,70 @@ public class NotificationFragment extends PresenterFragment<NotificationView> {
     public void onViewCreated(final View view,
                               final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        bindAndSubscribe(notificationSettingsInteractor.notificationSettings,
+                         this::bindNotificationSettings,
+                         this::bindNotificationSettingsError);
         if (savedInstanceState == null) {
             Analytics.trackEvent(Analytics.Backside.EVENT_NOTIFICATIONS, null);
+            this.notificationSettingsInteractor.update();
+        } else {
+            this.notificationSettingsAdapter.restoreState(savedInstanceState);
         }
-        bindAndSubscribe(notificationSettingsInteractor.notificationSettings,
-                         notificationSettings -> {
-                             if (notificationSettings == null) {
-                                 debugLog("notification settings is null");
-                                 return;
-                             }
-                             debugLog(Arrays.toString(notificationSettings.toArray()));
-                         },
-                         Functions.LOG_ERROR);
+    }
+
+    @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (this.notificationSettingsAdapter != null) {
+            this.notificationSettingsAdapter.saveState(outState);
+            this.notificationSettingsInteractor.notificationSettings.forget();
+        }
+    }
+
+    private void bindNotificationSettings(@NonNull final List<NotificationSetting> settings) {
+        for (final NotificationSetting setting : settings) {
+            if (NotificationSetting.SLEEP_REMINDER.equalsIgnoreCase(setting.getType())) {
+                settings.remove(setting);
+            }
+        }
+        this.notificationSettingsAdapter.bindSettings(settings);
+        showProgress(false);
+    }
+
+    private void bindNotificationSettingsError(@NonNull final Throwable throwable) {
+        this.notificationSettingsAdapter.setHasError(true);
+        showProgress(false);
+
+    }
+
+    private void bindSave(@NonNull final VoidResponse voidResponse) {
+        hideBlockingActivity(true, this::finishFlow);
+    }
+
+    private void bindSaveError(@NonNull final Throwable throwable) {
+        hideBlockingActivity(false, null);
+        ErrorDialogFragment.newInstance(throwable).build().showAllowingStateLoss(getChildFragmentManager(), ErrorDialogFragment.TAG);
+    }
+
+    private NotificationSettingsAdapter createAdapter() {
+        final NotificationSettingsAdapter adapter = new NotificationSettingsAdapter();
+        adapter.setErrorHandler(this);
+        return adapter;
+    }
+
+    private void showProgress(final boolean show) {
+        if (show) {
+            presenterView.setVisibility(View.INVISIBLE);
+            showBlockingActivity(null);
+        } else {
+            hideBlockingActivity(false, null);
+            presenterView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void retry() {
+        showProgress(true);
         notificationSettingsInteractor.update();
     }
 }
