@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -73,10 +72,5 @@ public class NotificationMessageService extends FirebaseMessagingService {
 
         final Intent broadcastIntent = NotificationMessageReceiver.getIntent(bundle);
         sendOrderedBroadcast(broadcastIntent, null);
-    }
-
-    public static void cancelShownMessages(@NonNull final Context context) {
-        NotificationManagerCompat.from(context)
-                                 .cancelAll();
     }
 }

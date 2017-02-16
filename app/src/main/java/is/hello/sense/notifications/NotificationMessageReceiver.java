@@ -15,6 +15,9 @@ import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 
+/**
+ * Handle display of notifications received
+ */
 public class NotificationMessageReceiver extends BroadcastReceiver {
     private static final String ACTION_FILTER = NotificationMessageReceiver.class.getSimpleName() + ".ACTION_FILTER";
     private static final String EXTRA_NOTIFICATION_PAYLOAD = NotificationMessageReceiver.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
@@ -36,6 +39,11 @@ public class NotificationMessageReceiver extends BroadcastReceiver {
         final IntentFilter filter = new IntentFilter(ACTION_FILTER);
         filter.setPriority(1);
         return filter;
+    }
+
+    public static void cancelShownMessages(@NonNull final Context context) {
+        NotificationManagerCompat.from(context)
+                                 .cancelAll();
     }
 
     /**

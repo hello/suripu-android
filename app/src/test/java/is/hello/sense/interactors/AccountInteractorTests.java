@@ -10,7 +10,9 @@ import java.io.File;
 import javax.inject.Inject;
 
 import is.hello.sense.api.model.Account;
+import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.MultiDensityImage;
+import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.graph.InjectionTestCase;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Sync;
@@ -130,6 +132,14 @@ public class AccountInteractorTests extends InjectionTestCase {
         });
 
         assertNotNull(accountBefore.getProfilePhoto());
+    }
+
+    @Test
+    public void logOut() throws Exception {
+        accountPresenter.sessionManager.setSession(new OAuthSession());
+        assertTrue(accountPresenter.sessionManager.hasSession());
+        final VoidResponse response = Sync.last(accountPresenter.logOut());
+        assertFalse(accountPresenter.sessionManager.hasSession());
     }
 
     //endregion
