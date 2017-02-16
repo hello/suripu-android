@@ -34,6 +34,7 @@ public class NotificationFragment extends PresenterFragment<NotificationView>
     private NotificationSettingsAdapter notificationSettingsAdapter;
     private Subscription saveSubscription = Subscriptions.empty();
 
+    //region PresenterFragment
     @Override
     public void initializePresenterView() {
         notificationSettingsAdapter = createAdapter();
@@ -45,7 +46,7 @@ public class NotificationFragment extends PresenterFragment<NotificationView>
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState == null){
+        if (savedInstanceState == null) {
             showBlockingActivity(null);
         }
         addInteractor(notificationSettingsInteractor);
@@ -61,6 +62,12 @@ public class NotificationFragment extends PresenterFragment<NotificationView>
     public void onCreateOptionsMenu(final Menu menu,
                                     final MenuInflater inflater) {
         inflater.inflate(R.menu.save, menu);
+    }
+
+    @Override
+    protected void onRelease() {
+        super.onRelease();
+        saveSubscription.unsubscribe();
     }
 
     @Override
@@ -101,10 +108,20 @@ public class NotificationFragment extends PresenterFragment<NotificationView>
         super.onSaveInstanceState(outState);
         if (this.notificationSettingsAdapter != null) {
             this.notificationSettingsAdapter.saveState(outState);
-            this.notificationSettingsInteractor.notificationSettings.forget();
         }
     }
 
+    //endregion
+
+    //region ErrorHandler
+    @Override
+    public void retry() {
+        showProgress(true);
+        notificationSettingsInteractor.update();
+    }
+    //endregion
+
+    //region methods
     private void bindNotificationSettings(@NonNull final List<NotificationSetting> settings) {
         for (final NotificationSetting setting : settings) {
             if (NotificationSetting.SLEEP_REMINDER.equalsIgnoreCase(setting.getType())) {
@@ -145,10 +162,5 @@ public class NotificationFragment extends PresenterFragment<NotificationView>
             presenterView.setVisibility(View.VISIBLE);
         }
     }
-
-    @Override
-    public void retry() {
-        showProgress(true);
-        notificationSettingsInteractor.update();
-    }
+    //endregion
 }

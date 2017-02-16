@@ -28,6 +28,7 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
         super(new ArrayList<>());
     }
 
+    //region ArrayRecyclerAdapter
     @Override
     public int getItemViewType(final int position) {
         if (showHeader) {
@@ -72,6 +73,9 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
         return super.getItem(showHeader ? position - 1 : position);
     }
 
+    //endregion
+
+    //region methods
     public void bindSettings(@NonNull final List<NotificationSetting> settings) {
         clear();
         this.hasError = false;
@@ -90,7 +94,9 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
         this.hasError = hasError;
         notifyDataSetChanged();
     }
+    //endregion
 
+    //region ViewHolders
     private class HeaderViewHolder extends ArrayRecyclerAdapter.ViewHolder {
 
         public HeaderViewHolder(@NonNull final View itemView) {
@@ -119,5 +125,6 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
             Views.setSafeOnSwitchClickListener(((CompoundButton) this.binding.itemNotificationSettingsSwitch.widgetSwitch), (buttonView, isChecked) -> setting.setEnabled(isChecked));
         }
     }
+    //endregion
 
 }

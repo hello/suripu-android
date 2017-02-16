@@ -33,4 +33,5 @@ public class NotificationView extends BindedPresenterView<BindableRecyclerviewBi
     public void releaseViews() {
         this.binding.bindableRecyclerview.setAdapter(null);
     }
+    //endregion
 }
