@@ -12,10 +12,10 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.common.InjectionActivity;
-import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -83,6 +83,9 @@ public class LaunchActivity extends InjectionActivity {
         final Intent intent = new Intent(this, HomeActivity.class);
         if (AlarmClock.ACTION_SHOW_ALARMS.equals(getIntent().getAction())) {
             intent.setAction(AlarmClock.ACTION_SHOW_ALARMS);
+        } else if (getIntent().hasExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD)) {
+            intent.putExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD,
+                            getIntent().getBundleExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD));
         }
         startActivity(intent);
     }

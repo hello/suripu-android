@@ -50,7 +50,7 @@ public class EnableNotificationFragment extends SenseFragment {
 
     private void onNext(final View ignored) {
         LocalBroadcastManager.getInstance(getActivity())
-                             .sendBroadcast(NotificationRegistrationBroadcastReceiver.getIntent(null));
+                             .sendBroadcast(NotificationRegistrationBroadcastReceiver.getRegisterIntent(null));
         finishFlow();
     }
 }
