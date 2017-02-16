@@ -46,7 +46,7 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
         if (viewType == ERROR) {
             return new ErrorViewHolder(parent);
         } else if (viewType == HEADER) {
-            return new HeaderViewHolder(inflate(R.layout.item_enable_notifications, parent));
+            return new ViewHolder(inflate(R.layout.item_enable_notifications, parent));
         }
 
         return new SettingsViewHolder(DataBindingUtil.bind(inflate(R.layout.item_notification_settings, parent)));
@@ -97,14 +97,6 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
     //endregion
 
     //region ViewHolders
-    private class HeaderViewHolder extends ArrayRecyclerAdapter.ViewHolder {
-
-        public HeaderViewHolder(@NonNull final View itemView) {
-            super(itemView);
-
-        }
-    }
-
     private class SettingsViewHolder extends ArrayRecyclerAdapter.ViewHolder {
         private final ItemNotificationSettingsBinding binding;
 
