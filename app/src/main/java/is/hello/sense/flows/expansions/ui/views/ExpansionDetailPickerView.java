@@ -13,11 +13,11 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.expansions.ui.widget.ExpansionRangePickerView;
-import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.mvp.view.SenseView;
 import is.hello.sense.ui.widget.util.Views;
 
 @SuppressLint("ViewConstructor")
-public class ExpansionDetailPickerView extends PresenterView {
+public class ExpansionDetailPickerView extends SenseView {
 
     final CompoundButton enabledSwitch;
 

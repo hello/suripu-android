@@ -16,11 +16,11 @@ import com.squareup.picasso.Picasso;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.flows.expansions.ui.widget.ExpansionImageView;
-import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.mvp.view.SenseView;
 import is.hello.sense.ui.widget.util.Views;
 
 @SuppressLint("ViewConstructor")
-public class ExpansionDetailView extends PresenterView {
+public class ExpansionDetailView extends SenseView {
 
     final ViewGroup expansionInfoContainer;
     final TextView deviceNameTextView;

@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import is.hello.go99.animators.AnimatorContext;
-import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.mvp.view.SenseView;
 import is.hello.sense.presenters.outputs.HelpOutput;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -23,7 +23,7 @@ import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Logger;
 
-public abstract class PresenterFragment<T extends PresenterView>
+public abstract class PresenterFragment<T extends SenseView>
         extends ObserverFragment
         implements HelpOutput {
 

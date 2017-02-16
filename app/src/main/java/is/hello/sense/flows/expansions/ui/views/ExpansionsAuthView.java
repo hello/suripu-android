@@ -9,11 +9,11 @@ import android.widget.ProgressBar;
 import java.util.Map;
 
 import is.hello.sense.R;
-import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.mvp.view.SenseView;
 import is.hello.sense.ui.widget.CustomWebViewClient;
 
 @SuppressLint("ViewConstructor")
-public class ExpansionsAuthView extends PresenterView {
+public class ExpansionsAuthView extends SenseView {
     private final WebView webView;
     private final CustomWebViewClient customWebViewClient;
     private final ProgressBar progressBar;

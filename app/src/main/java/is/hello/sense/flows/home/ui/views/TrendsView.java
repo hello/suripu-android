@@ -5,16 +5,14 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.flows.home.ui.adapters.TrendsAdapter;
-import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
-import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.mvp.view.SenseView;
 
 @SuppressLint("ViewConstructor")
-public class TrendsView extends PresenterView {
+public class TrendsView extends SenseView {
     private final RecyclerView recyclerView;
     private final TrendsAdapter trendsAdapter;
 

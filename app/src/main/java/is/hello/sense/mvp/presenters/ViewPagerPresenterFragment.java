@@ -15,14 +15,14 @@ import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.mvp.util.ViewPagerPresenter;
-import is.hello.sense.mvp.view.ViewPagerPresenterView;
+import is.hello.sense.mvp.view.ViewPagerSenseView;
 import is.hello.sense.util.NotTested;
 
 /**
  * Any class Fragment that wants to host fragments should extend this.
  */
 @NotTested
-public abstract class ViewPagerPresenterFragment extends ControllerPresenterFragment<ViewPagerPresenterView>
+public abstract class ViewPagerPresenterFragment extends ControllerPresenterFragment<ViewPagerSenseView>
         implements ViewPagerPresenter,
         ViewPager.OnPageChangeListener,
         HomeActivity.ScrollUp {
@@ -60,8 +60,8 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
         if (this.presenterView == null) {
             this.viewPagerDelegate = newViewPagerDelegateInstance();
 
-            this.presenterView = new ViewPagerPresenterView(this,
-                                                            this::onFabClicked);
+            this.presenterView = new ViewPagerSenseView(this,
+                                                        this::onFabClicked);
         }
     }
 

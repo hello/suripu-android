@@ -7,11 +7,11 @@ import android.support.annotation.Nullable;
 
 import is.hello.sense.R;
 import is.hello.sense.databinding.ViewAppSettingsBinding;
-import is.hello.sense.mvp.view.BindedPresenterView;
+import is.hello.sense.mvp.view.BindedSenseView;
 import is.hello.sense.ui.widget.util.Views;
 
 @SuppressLint("ViewConstructor")
-public class AppSettingsView extends BindedPresenterView<ViewAppSettingsBinding> {
+public class AppSettingsView extends BindedSenseView<ViewAppSettingsBinding> {
     public static final int INDEX_ACCOUNT = 1000;
     public static final int INDEX_DEVICES = 1001;
     public static final int INDEX_NOTIFICATIONS = 1002;

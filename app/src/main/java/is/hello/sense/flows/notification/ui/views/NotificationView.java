@@ -8,10 +8,10 @@ import android.support.v7.widget.LinearLayoutManager;
 
 import is.hello.sense.R;
 import is.hello.sense.databinding.BindableRecyclerviewBinding;
-import is.hello.sense.mvp.view.BindedPresenterView;
+import is.hello.sense.mvp.view.BindedSenseView;
 
 @SuppressLint("ViewConstructor")
-public class NotificationView extends BindedPresenterView<BindableRecyclerviewBinding> {
+public class NotificationView extends BindedSenseView<BindableRecyclerviewBinding> {
     //todo provide adapter
     public NotificationView(@NonNull final Activity activity) {
         super(activity);

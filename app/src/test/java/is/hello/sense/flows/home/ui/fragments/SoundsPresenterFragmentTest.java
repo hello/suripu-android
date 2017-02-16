@@ -5,7 +5,6 @@ import org.mockito.Mockito;
 
 import is.hello.sense.FragmentTest;
 import is.hello.sense.flows.home.util.SoundsViewPagerPresenterDelegate;
-import is.hello.sense.mvp.view.ViewPagerPresenterView;
 
 import static junit.framework.Assert.assertTrue;
 

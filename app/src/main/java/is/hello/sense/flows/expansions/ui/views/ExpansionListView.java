@@ -6,11 +6,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import is.hello.sense.R;
-import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.mvp.view.SenseView;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
 
-public class ExpansionListView extends PresenterView {
+public class ExpansionListView extends SenseView {
 
     private final RecyclerView recyclerView;
 

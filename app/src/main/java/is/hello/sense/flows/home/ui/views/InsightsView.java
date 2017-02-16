@@ -17,7 +17,7 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
-import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.mvp.view.SenseView;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.adapter.ParallaxRecyclerScrollListener;
 import is.hello.sense.util.DateFormatter;
@@ -25,7 +25,7 @@ import is.hello.sense.util.DateFormatter;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 @SuppressLint("ViewConstructor")
-public final class InsightsView extends PresenterView {
+public final class InsightsView extends SenseView {
 
     private static final float UNFOCUSED_CONTENT_SCALE = 0.90f;
     private static final float FOCUSED_CONTENT_SCALE = 1f;

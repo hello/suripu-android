@@ -19,7 +19,7 @@ import is.hello.sense.ui.widget.ExtendedViewPager;
 
 
 @SuppressLint("ViewConstructor")
-public class ViewPagerPresenterView extends PresenterView {
+public class ViewPagerSenseView extends SenseView {
 
     private final ExtendedViewPager viewPager;
     private final TabLayout tabLayout;
@@ -30,8 +30,8 @@ public class ViewPagerPresenterView extends PresenterView {
      * @param fragment - Fragment providing initialization settings and callbacks.
      *                 Don't keep a reference to this.
      */
-    public ViewPagerPresenterView(@NonNull final ViewPagerPresenterFragment fragment,
-                                  @Nullable final OnClickListener onFabClickListener) {
+    public ViewPagerSenseView(@NonNull final ViewPagerPresenterFragment fragment,
+                              @Nullable final OnClickListener onFabClickListener) {
         super(fragment.getActivity());
         this.viewPager = (ExtendedViewPager) findViewById(R.id.view_view_pager_extended_view_pager);
         this.tabLayout = (TabLayout) findViewById(R.id.view_view_pager_tab_layout);
