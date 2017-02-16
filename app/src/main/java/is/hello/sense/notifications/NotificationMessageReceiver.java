@@ -12,7 +12,6 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 
 import is.hello.sense.R;
-import is.hello.sense.SenseApplication;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 
@@ -44,12 +43,6 @@ public class NotificationMessageReceiver extends BroadcastReceiver {
      *                       other receivers from handling message.
      */
     public NotificationMessageReceiver(final boolean abortBroadcast) {
-        // Robolectric implements the application lifecycle wrong and
-        // instantiates all receivers _before_ #onCreate is called.
-        if (!SenseApplication.isRunningInRobolectric()) {
-            SenseApplication.getInstance().inject(this);
-        }
-
         this.abortBroadcast = abortBroadcast;
     }
 
