@@ -33,16 +33,15 @@ public class FeedPresenterFragment extends ViewPagerPresenterFragment
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addInteractor(hasVoiceInteractor);
-
-        bindAndSubscribe(hasVoiceInteractor.hasVoice,
-                         this::bindVoiceSettings,
-                         Functions.LOG_ERROR);
     }
 
     @Override
     public void onViewCreated(final View view,
                               final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        bindAndSubscribe(hasVoiceInteractor.hasVoice,
+                         this::bindVoiceSettings,
+                         Functions.LOG_ERROR);
         hasVoiceInteractor.update();
     }
     //endRegion
@@ -50,9 +49,6 @@ public class FeedPresenterFragment extends ViewPagerPresenterFragment
     //region methods
     @VisibleForTesting
     public void bindVoiceSettings(final boolean hasVoice) {
-        if (!hasPresenterView()) {
-            return;
-        }
         if (hasVoice) {
             presenterView.unlockViewPager(this);
         } else {

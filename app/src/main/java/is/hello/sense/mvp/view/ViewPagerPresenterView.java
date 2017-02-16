@@ -95,7 +95,7 @@ public class ViewPagerPresenterView extends PresenterView {
                          final int startingPosition) {
         this.tabLayout.removeAllTabs();
         for (final StaticFragmentAdapter.Item item : items) {
-            this.tabLayout.addTab(this.tabLayout.newTab().setText(item.getTitle()));
+            this.tabLayout.addTab(this.tabLayout.newTab().setText(item.getTitle()), false);
         }
         selectTab(startingPosition);
         setTabLayoutVisible(true);
