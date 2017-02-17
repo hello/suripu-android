@@ -28,6 +28,7 @@ import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.flows.home.ui.views.InsightsView;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.graph.Scope;
@@ -41,7 +42,6 @@ import is.hello.sense.mvp.fragments.ControllerSenseViewFragment;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
-import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
@@ -97,7 +97,6 @@ public class InsightsFragment extends ControllerSenseViewFragment<InsightsView> 
 
     private boolean questionLoaded = false;
     private boolean insightsLoaded = false;
-    private HomeActivity activity;
 
     @Override
     public final void initializeSenseView() {
@@ -122,14 +121,10 @@ public class InsightsFragment extends ControllerSenseViewFragment<InsightsView> 
         addInteractor(deviceIssuesInteractor);
         addInteractor(questionsInteractor);
         addInteractor(unreadStateInteractor);
-        deviceIssuesInteractor.bindScope((Scope) getActivity());
+        deviceIssuesInteractor.bindScope((Scope) getActivity()); //todo why is this never unbinding scope?
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
-        if (getActivity() instanceof HomeActivity) {
-            activity = (HomeActivity) getActivity();
-        }
-
     }
 
     @Override
@@ -157,7 +152,7 @@ public class InsightsFragment extends ControllerSenseViewFragment<InsightsView> 
             this.tutorialOverlayView = null;
         }
 
-        insightsInteractor.unbindScope();
+        insightsInteractor.unbindScope(); //todo why unbinding scope in ondestroyView but binding scope in onCreate
     }
 
     @Override
@@ -323,8 +318,8 @@ public class InsightsFragment extends ControllerSenseViewFragment<InsightsView> 
     }
 
     private void showProgress(final boolean show) {
-        if (activity != null) {
-            activity.showProgressOverlay(show);
+        if (getActivity() != null) {
+            ((HomeActivity) getActivity()).showProgressOverlay(show);
         }
     }
 

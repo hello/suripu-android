@@ -40,27 +40,59 @@ public class Notification extends ApiResponse {
     static final String EXTRA_DETAILS = "extra_details";
 
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({SLEEP_SCORE, PILL_BATTERY, UNKNOWN})
+    @StringDef({SYSTEM, SLEEP_SCORE, UNKNOWN})
     @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})
     public @interface Type {
     }
 
+    public static final String SYSTEM = "SYSTEM";
     public static final String SLEEP_SCORE = "SLEEP_SCORE";
-    public static final String PILL_BATTERY = "PILL_BATTERY";
     public static final String UNKNOWN = "UNKNOWN";
 
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({PILL_BATTERY, UNKNOWN})
+    @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})
+    public @interface SystemType {
+    }
+
+    public static final String PILL_BATTERY = "PILL_BATTERY";
+
+    @NonNull
     @Type
     public static String typeFromBundle(@NonNull final Bundle notifications) {
         return typeFromString(notifications.getString(EXTRA_TYPE));
     }
 
+    @NonNull
     @Type
     public static String typeFromString(@Nullable final String string) {
         if(string == null) {
             return UNKNOWN;
         }
         switch (string.toUpperCase(Locale.ENGLISH)) {
+            case SYSTEM: return SYSTEM;
             case SLEEP_SCORE: return SLEEP_SCORE;
+            default: return UNKNOWN;
+        }
+    }
+
+    @NonNull
+    @SystemType
+    public static String systemTypeFromBundle(@NonNull final Bundle notifications) {
+        if(SYSTEM.equals(typeFromBundle(notifications))) {
+            return systemTypeFromString(notifications.getString(EXTRA_DETAILS));
+        } else {
+            return UNKNOWN;
+        }
+    }
+
+    @NonNull
+    @SystemType
+    public static String systemTypeFromString(@Nullable final String string) {
+        if(string == null) {
+            return UNKNOWN;
+        }
+        switch (string.toUpperCase(Locale.ENGLISH)) {
             case PILL_BATTERY: return PILL_BATTERY;
             default: return UNKNOWN;
         }

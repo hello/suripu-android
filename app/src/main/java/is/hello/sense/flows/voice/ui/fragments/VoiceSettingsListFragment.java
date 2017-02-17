@@ -121,7 +121,7 @@ public class VoiceSettingsListFragment extends SenseViewFragment<VoiceSettingsLi
     }
 
     private void updateSettings(@NonNull final Observable<SenseVoiceSettings> updateObservable) {
-        showLockedBlockingActivity(R.string.voice_settings_progress_updating);
+        showLockedBlockingActivity(R.string.updating);
         updateSettingsSubscription.unsubscribe();
         updateSettingsSubscription = bind(updateObservable)
                 .subscribe(Functions.NO_OP,

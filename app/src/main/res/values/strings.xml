@@ -727,7 +727,7 @@
     <string name="voice_settings_primary_user_dialog_title">Are you sure?</string>
     <string name="voice_settings_primary_user_dialog_message">Once you set yourself as the primary user of this Sense, you won’t be able to undo it unless another person using this Sense sets themselves as the primary user.</string>
     <string name="voice_settings_primary_user_dialog_positive_button">Become Primary</string>
-    <string name="voice_settings_progress_updating">Updating</string>
+    <string name="updating">Updating</string>
 
     <string name="title_lights">Lights</string>
     <string name="smart_alarm_expansion_state_connected_off">Connect</string>
@@ -771,4 +771,8 @@
     <string name="onboarding_title_enable_notification">Enable notifications</string>
     <string name="onboarding_subtitle_enable_notification">Get your daily Sleep Score, as well as other important notifications.</string>
     <string name="action_allow_notifications">Allow notifications</string>
+
+    <string name="notification_settings_enabled_title">Are notifications enabled?</string>
+    <string name="notification_settings_enabled_body">Check your device settings to make sure notifications are enabled.</string>
+    <string name="notification_settings_enabled_link">Enable notifications for Sense</string>
 </resources>
