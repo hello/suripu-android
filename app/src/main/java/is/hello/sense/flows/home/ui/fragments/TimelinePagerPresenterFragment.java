@@ -19,9 +19,12 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.views.TimelinePagerView;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TimelineInteractor;
 import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
+import is.hello.sense.notifications.Notification;
+import is.hello.sense.notifications.NotificationInteractor;
 import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -39,6 +42,8 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
     DateFormatter dateFormatter;
     @Inject
     TimelineInteractor timelineInteractor;
+    @Inject
+    NotificationInteractor notificationInteractor;
 
     private static final String KEY_LAST_UPDATED = TimelinePagerPresenterFragment.class.getSimpleName() + "KEY_LAST_UPDATED";
     private static final String KEY_LAST_ITEM = TimelinePagerPresenterFragment.class.getSimpleName() + "KEY_LAST_ITEM";
@@ -90,6 +95,12 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
         }
 
         getActivity().registerReceiver(this.onTimeChanged, new IntentFilter(Intent.ACTION_TIME_CHANGED));
+
+        bindAndSubscribe(notificationInteractor.notificationSubject
+                                 .filter( notification -> notification != null
+                                         && Notification.SLEEP_SCORE.equals(notification.type)),
+                         notification -> this.presenterView.jumpToDate(notification.getDate(), null)
+                         , Functions.LOG_ERROR);
     }
 
     @Override

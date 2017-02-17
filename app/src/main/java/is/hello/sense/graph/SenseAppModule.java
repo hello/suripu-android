@@ -52,6 +52,7 @@ import is.hello.sense.interactors.TrendsInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
+import is.hello.sense.notifications.NotificationInteractor;
 import is.hello.sense.notifications.NotificationMessageReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.pill.PillModule;
@@ -196,6 +197,12 @@ public class SenseAppModule {
     @Singleton
     public AlertsInteractor providesAlertsInteractor(@NonNull final ApiService apiService) {
         return new AlertsInteractor(apiService);
+    }
+
+    @Provides
+    @Singleton
+    public NotificationInteractor providesNotificationInteractor() {
+        return new NotificationInteractor();
     }
 
 }

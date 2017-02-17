@@ -41,7 +41,7 @@ public class Notification extends ApiResponse {
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({SLEEP_SCORE, PILL_BATTERY, UNKNOWN})
-    @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})
+    @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.FIELD})
     public @interface Type {
     }
 
@@ -69,6 +69,35 @@ public class Notification extends ApiResponse {
     public static @NonNull
     LocalDate getDate(@NonNull final Bundle notification) {
         final String rawDate = notification.getString(EXTRA_DETAILS);
+        if (TextUtils.isEmpty(rawDate)) {
+            return DateFormatter.lastNight();
+        }
+
+        try {
+            final DateTimeFormatter formatter = DateTimeFormat.forPattern(ApiService.DATE_FORMAT);
+            return formatter.parseLocalDate(rawDate);
+        } catch (UnsupportedOperationException | IllegalArgumentException e) {
+            Logger.error(Notification.class.getSimpleName(), "Could not parse timestamp from timeline notification", e);
+            return DateFormatter.lastNight();
+        }
+    }
+
+    @NonNull
+    @Type
+    public final String type;
+
+    @Nullable
+    public final String detail;
+
+    public Notification(@NonNull @Type final String type,
+                        @Nullable final String detail) {
+        this.type = type;
+        this.detail = detail;
+    }
+
+    @NonNull
+    public LocalDate getDate() {
+        final String rawDate = detail;
         if (TextUtils.isEmpty(rawDate)) {
             return DateFormatter.lastNight();
         }

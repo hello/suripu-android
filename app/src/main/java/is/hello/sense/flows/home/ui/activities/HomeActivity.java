@@ -40,6 +40,7 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.notifications.Notification;
+import is.hello.sense.notifications.NotificationInteractor;
 import is.hello.sense.notifications.NotificationMessageReceiver;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -89,12 +90,16 @@ public class HomeActivity extends ScopedInjectionActivity
     LastNightInteractor lastNightInteractor;
     @Inject
     UnreadStateInteractor unreadStateInteractor;
+    @Inject
+    NotificationInteractor notificationInteractor;
+
     private final HomeViewPagerDelegate viewPagerDelegate = new HomeViewPagerDelegate();
     private View progressOverlay;
     private SpinnerImageView spinner;
     private ExtendedViewPager extendedViewPager;
     private SenseTabLayout tabLayout;
-    private final BroadcastReceiver notificationReceiver = new NotificationMessageReceiver(true);
+    //todo revert to true after testing
+    private final BroadcastReceiver notificationReceiver = new NotificationMessageReceiver(false);
 
     public static Intent getIntent(@NonNull final Context context,
                                    @OnboardingActivity.Flow final int fromFlow) {
@@ -391,7 +396,8 @@ public class HomeActivity extends ScopedInjectionActivity
             switch (target) {
                 case Notification.SLEEP_SCORE: {
                     this.tabLayout.selectTimelineTab();
-                    //todo support scrolling to date.
+                    //todo consider serializing notification in bundle
+                    notificationInteractor.notificationSubject.onNext(new Notification(target, "2017-02-10"));
 
                     break;
                 }
