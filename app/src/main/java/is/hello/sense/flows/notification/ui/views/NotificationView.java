@@ -8,17 +8,22 @@ import android.support.v7.widget.LinearLayoutManager;
 
 import is.hello.sense.R;
 import is.hello.sense.databinding.BindableRecyclerviewBinding;
+import is.hello.sense.flows.notification.ui.adapters.NotificationSettingsAdapter;
 import is.hello.sense.mvp.view.BindedPresenterView;
 
 @SuppressLint("ViewConstructor")
 public class NotificationView extends BindedPresenterView<BindableRecyclerviewBinding> {
     //todo provide adapter
-    public NotificationView(@NonNull final Activity activity) {
+    public NotificationView(@NonNull final Activity activity,
+                            @NonNull final NotificationSettingsAdapter adapter) {
         super(activity);
-        setUpStandardRecyclerViewDecorations(binding.bindableRecyclerview,
-                                             new LinearLayoutManager(activity));
+        this.binding.bindableRecyclerview.setLayoutManager(new LinearLayoutManager(activity));
+        this.binding.bindableRecyclerview.setHasFixedSize(true);
+        this.binding.bindableRecyclerview.setItemAnimator(null);
+        this.binding.bindableRecyclerview.setAdapter(adapter);
     }
 
+    //region BindedPresenterView
     @Override
     protected int getLayoutRes() {
         return R.layout.bindable_recyclerview;
@@ -28,4 +33,5 @@ public class NotificationView extends BindedPresenterView<BindableRecyclerviewBi
     public void releaseViews() {
         this.binding.bindableRecyclerview.setAdapter(null);
     }
+    //endregion
 }
