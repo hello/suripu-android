@@ -51,6 +51,7 @@ import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.SystemAlertDialogFragment;
+import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.util.Analytics;
@@ -135,7 +136,7 @@ public class HomeActivity extends ScopedInjectionActivity
         this.tabLayout.setListener(this);
         //todo needs testing with server
         final Intent intent = getIntent();
-        if(intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
+        if(savedInstanceState == null && intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
         }
 
@@ -387,27 +388,21 @@ public class HomeActivity extends ScopedInjectionActivity
 
     //region Notifications
 
-    private void dispatchNotification(@NonNull final Bundle notification) {
+    private void dispatchNotification(@NonNull final Bundle bundle) {
         this.stateSafeExecutor.execute(() -> {
-            info(getClass().getSimpleName(), "dispatchNotification(" + notification + ")");
-
-            @Notification.Type
-            final String target = Notification.typeFromBundle(notification);
-            switch (target) {
+            final Notification notification = Notification.fromBundle(bundle);
+            notificationInteractor.notificationSubject.onNext(Notification.fromBundle(bundle));
+            switch (notification.getType()) {
                 case Notification.SLEEP_SCORE: {
                     this.tabLayout.selectTimelineTab();
-                    //todo consider serializing notification in bundle
-                    notificationInteractor.notificationSubject.onNext(new Notification(target, "2017-02-10"));
-
                     break;
                 }
                 case Notification.SYSTEM: {
-                    //todo handle and pass along
-                    this.tabLayout.selectConditionsTab();
+                    DeviceListFragment.startStandaloneFrom(this);
                     break;
                 }
                 default:{
-                    info(getClass().getSimpleName(), "unsupported notification type " + target);
+                    info(getClass().getSimpleName(), "unsupported notification type " + notification.getType());
                 }
             }
         });

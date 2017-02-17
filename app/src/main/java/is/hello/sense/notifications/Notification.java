@@ -39,6 +39,10 @@ public class Notification extends ApiResponse {
     static final String EXTRA_TYPE = "extra_type";
     static final String EXTRA_DETAILS = "extra_details";
 
+    public static Notification fromBundle(@NonNull final Bundle bundle) {
+        return new Notification(typeFromBundle(bundle), bundle.getString(EXTRA_DETAILS, UNKNOWN));
+    }
+
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({SYSTEM, SLEEP_SCORE, UNKNOWN})
     @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.FIELD})
@@ -98,33 +102,38 @@ public class Notification extends ApiResponse {
         }
     }
 
-    public static @NonNull
-    LocalDate getDate(@NonNull final Bundle notification) {
-        final String rawDate = notification.getString(EXTRA_DETAILS);
-        if (TextUtils.isEmpty(rawDate)) {
-            return DateFormatter.lastNight();
-        }
-
-        try {
-            final DateTimeFormatter formatter = DateTimeFormat.forPattern(ApiService.DATE_FORMAT);
-            return formatter.parseLocalDate(rawDate);
-        } catch (UnsupportedOperationException | IllegalArgumentException e) {
-            Logger.error(Notification.class.getSimpleName(), "Could not parse timestamp from timeline notification", e);
-            return DateFormatter.lastNight();
-        }
-    }
-
     @NonNull
     @Type
-    public final String type;
+    private final String type;
 
     @Nullable
-    public final String detail;
+    private final String detail;
+
+    private boolean seen;
 
     public Notification(@NonNull @Type final String type,
                         @Nullable final String detail) {
         this.type = type;
         this.detail = detail;
+        this.seen = false;
+    }
+
+    @NonNull
+    public String getType() {
+        return type;
+    }
+
+    @Nullable
+    public String getDetail() {
+        return detail;
+    }
+
+    public void setSeen(final boolean seen) {
+        this.seen = seen;
+    }
+
+    public boolean hasSeen() {
+        return seen;
     }
 
     @NonNull

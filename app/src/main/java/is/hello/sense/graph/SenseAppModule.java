@@ -201,8 +201,8 @@ public class SenseAppModule {
 
     @Provides
     @Singleton
-    public NotificationInteractor providesNotificationInteractor() {
-        return new NotificationInteractor();
+    public NotificationInteractor providesNotificationInteractor(@NonNull final Context context) {
+        return new NotificationInteractor(context);
     }
 
 }

@@ -96,10 +96,15 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
 
         getActivity().registerReceiver(this.onTimeChanged, new IntentFilter(Intent.ACTION_TIME_CHANGED));
 
+        //todo filter against consumed notifications
         bindAndSubscribe(notificationInteractor.notificationSubject
                                  .filter( notification -> notification != null
-                                         && Notification.SLEEP_SCORE.equals(notification.type)),
-                         notification -> this.presenterView.jumpToDate(notification.getDate(), null)
+                                         && !notification.hasSeen()
+                                         && Notification.SLEEP_SCORE.equals(notification.getType())),
+                         notification -> {
+                             this.presenterView.jumpToDate(notification.getDate(), null);
+                             notification.setSeen(true);
+                         }
                          , Functions.LOG_ERROR);
     }
 
