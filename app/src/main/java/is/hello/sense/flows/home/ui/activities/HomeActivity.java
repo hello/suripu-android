@@ -391,14 +391,15 @@ public class HomeActivity extends ScopedInjectionActivity
     private void dispatchNotification(@NonNull final Bundle bundle) {
         this.stateSafeExecutor.execute(() -> {
             final Notification notification = Notification.fromBundle(bundle);
-            notificationInteractor.notificationSubject.onNext(Notification.fromBundle(bundle));
+            notificationInteractor.onNext(Notification.fromBundle(bundle));
             switch (notification.getType()) {
                 case Notification.SLEEP_SCORE: {
                     this.tabLayout.selectTimelineTab();
                     break;
                 }
                 case Notification.SYSTEM: {
-                    DeviceListFragment.startStandaloneFrom(this);
+                    dispatchSystemDetailNotification(
+                            Notification.systemTypeFromString(notification.getDetail()));
                     break;
                 }
                 default:{
@@ -406,6 +407,20 @@ public class HomeActivity extends ScopedInjectionActivity
                 }
             }
         });
+    }
+
+    private void dispatchSystemDetailNotification(@NonNull
+                                                  @Notification.SystemType
+                                                  final String systemType) {
+        switch (systemType) {
+            case Notification.PILL_BATTERY: {
+                DeviceListFragment.startStandaloneFrom(this);
+                break;
+            }
+            default: {
+                info(getClass().getSimpleName(), "unsupported notification detail " + systemType);
+            }
+        }
     }
 
     //endregion

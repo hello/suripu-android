@@ -21,6 +21,7 @@ import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractorTests;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatterTest;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
+import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragmentTests;
 import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractorTest;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
@@ -59,9 +60,10 @@ import is.hello.sense.interactors.questions.ApiQuestionProviderTests;
 import is.hello.sense.interactors.questions.ReviewQuestionProviderTests;
 import is.hello.sense.interactors.settings.SettingsPairSenseInteractorTests;
 import is.hello.sense.interactors.upgrade.UpgradePairSenseInteractorTests;
+import is.hello.sense.notifications.NotificationInteractor;
+import is.hello.sense.notifications.NotificationInteractorTest;
 import is.hello.sense.rating.LocalUsageTrackerTests;
 import is.hello.sense.ui.adapter.SmartAlarmAdapterTests;
-import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragmentTests;
 import is.hello.sense.units.UnitFormatterTests;
 import is.hello.sense.util.BatteryUtil;
 import is.hello.sense.util.DateFormatterTests;
@@ -139,6 +141,8 @@ import static org.mockito.Mockito.mock;
             UpgradePairSenseInteractorTests.class,
 
             ExpansionCategoryFormatterTest.class,
+
+            NotificationInteractorTest.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")
@@ -236,5 +240,11 @@ public final class TestModule {
     @Singleton
     ConfigurationsInteractor providesConfigurationInteractor(final ApiService service){
         return new ConfigurationsInteractor(service);
+    }
+
+    @Provides
+    @Singleton
+    public NotificationInteractor providesNotificationInteractor(@NonNull final Context context) {
+        return new NotificationInteractor(context);
     }
 }

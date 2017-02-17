@@ -39,6 +39,7 @@ public class Notification extends ApiResponse {
     static final String EXTRA_TYPE = "extra_type";
     static final String EXTRA_DETAILS = "extra_details";
 
+    @NonNull
     public static Notification fromBundle(@NonNull final Bundle bundle) {
         return new Notification(typeFromBundle(bundle), bundle.getString(EXTRA_DETAILS, UNKNOWN));
     }
@@ -119,6 +120,7 @@ public class Notification extends ApiResponse {
     }
 
     @NonNull
+    @Type
     public String getType() {
         return type;
     }
@@ -128,11 +130,11 @@ public class Notification extends ApiResponse {
         return detail;
     }
 
-    public void setSeen(final boolean seen) {
+    void setSeen(final boolean seen) {
         this.seen = seen;
     }
 
-    public boolean hasSeen() {
+    boolean hasSeen() {
         return seen;
     }
 
