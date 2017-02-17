@@ -26,6 +26,7 @@ import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.SenseAppModule;
+import is.hello.sense.notifications.NotificationMessageReceiver;
 import is.hello.sense.notifications.NotificationRegistrationBroadcastReceiver;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.LaunchActivity;
@@ -99,6 +100,13 @@ public class SenseApplication extends MultiDexApplication {
                                      new NotificationRegistrationBroadcastReceiver(),
                                      NotificationRegistrationBroadcastReceiver.getIntentFilter());
 
+        // cannot send ordered broadcasts with local broadcast manager
+        registerReceiver(
+                new NotificationMessageReceiver(false),
+                NotificationMessageReceiver.getBackgroundPriorityFilter());
+
+
+
         if (!isRunningInRobolectric) {
             localUsageTracker.deleteOldUsageStatsAsync();
         }
@@ -122,6 +130,8 @@ public class SenseApplication extends MultiDexApplication {
 
                     LocalBroadcastManager.getInstance(this)
                                          .sendBroadcast(NotificationRegistrationBroadcastReceiver.getRemoveTokenIntent());
+
+                    NotificationMessageReceiver.cancelShownMessages(this);
 
                     final Intent launchIntent = new Intent(this, LaunchActivity.class);
                     launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

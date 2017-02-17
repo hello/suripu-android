@@ -2,6 +2,7 @@ package is.hello.sense.ui.activities;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -35,6 +36,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
+import is.hello.sense.notifications.NotificationMessageReceiver;
 import is.hello.sense.onboarding.OnboardingModule;
 import is.hello.sense.onboarding.OnboardingPairSenseModule;
 import is.hello.sense.presenters.PairSensePresenter;
@@ -118,6 +120,8 @@ public class OnboardingActivity extends ScopedInjectionActivity
     SenseOTAStatusInteractor senseOTAStatusPresenter;
 
     private FragmentNavigationDelegate navigationDelegate;
+
+    private final BroadcastReceiver notificationReceiver = new NotificationMessageReceiver(true);
 
     private
     @Nullable
@@ -230,6 +234,8 @@ public class OnboardingActivity extends ScopedInjectionActivity
                         break;
                 }
             }
+
+            registerReceiver(notificationReceiver, NotificationMessageReceiver.getMainPriorityFilter());
         }
 
         //Really not sure why this would ever be needed unless for debugging
@@ -274,6 +280,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
         super.onDestroy();
 
         navigationDelegate.onDestroy();
+        unregisterReceiver(notificationReceiver);
     }
 
     //region SkippableFlow interface

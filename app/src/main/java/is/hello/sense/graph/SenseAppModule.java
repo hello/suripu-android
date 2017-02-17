@@ -17,20 +17,23 @@ import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
-import is.hello.sense.flows.notification.ui.activities.NotificationActivity;
-import is.hello.sense.flows.notification.ui.fragments.NotificationFragment;
-import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
+import is.hello.sense.flows.home.ui.fragments.FeedSenseViewFragment;
 import is.hello.sense.flows.home.ui.fragments.InsightsFragment;
 import is.hello.sense.flows.home.ui.fragments.MonthTrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.QuarterTrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsSenseViewFragment;
 import is.hello.sense.flows.home.ui.fragments.SleepSoundsFragment;
 import is.hello.sense.flows.home.ui.fragments.SmartAlarmListFragment;
+import is.hello.sense.flows.home.ui.fragments.SoundsSenseViewFragment;
+import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerSenseViewFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
 import is.hello.sense.flows.home.ui.fragments.WeekTrendsFragment;
+import is.hello.sense.flows.notification.ui.activities.NotificationActivity;
+import is.hello.sense.flows.notification.ui.fragments.NotificationFragment;
 import is.hello.sense.flows.settings.ui.activities.AppSettingsActivity;
+import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
@@ -48,10 +51,8 @@ import is.hello.sense.interactors.TrendsInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
-import is.hello.sense.flows.home.ui.fragments.FeedSenseViewFragment;
-import is.hello.sense.flows.home.ui.fragments.SoundsSenseViewFragment;
+import is.hello.sense.notifications.NotificationMessageReceiver;
 import is.hello.sense.flows.home.ui.fragments.TrendsSenseViewFragment;
-import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.pill.PillModule;
 import is.hello.sense.presenters.BaseHardwarePresenter;
@@ -63,7 +64,6 @@ import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
-import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPill;
@@ -92,7 +92,7 @@ import is.hello.sense.zendesk.ZendeskModule;
         },
         injects = {
                 SenseApplication.class,
-                NotificationReceiver.class,
+                NotificationMessageReceiver.class,
 
                 DebugActivity.class,
                 PreferencesInteractor.class,
