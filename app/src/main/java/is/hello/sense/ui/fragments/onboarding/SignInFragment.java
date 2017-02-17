@@ -208,7 +208,7 @@ public class SignInFragment extends InjectionFragment
             apiSessionManager.setSession(session);
             devicesInteractor.update();
             LocalBroadcastManager.getInstance(getActivity())
-                                 .sendBroadcast(NotificationRegistrationBroadcastReceiver.getIntent(null));
+                                 .sendBroadcast(NotificationRegistrationBroadcastReceiver.getRegisterIntent(null));
             final Observable<Account> initializeLocalState =
                     Observable.combineLatest(accountPresenter.pullAccountPreferences(),
                                              devicesInteractor.devices,

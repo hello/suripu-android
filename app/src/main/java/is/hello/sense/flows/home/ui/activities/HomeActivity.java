@@ -1,6 +1,7 @@
 package is.hello.sense.flows.home.ui.activities;
 
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -39,7 +40,7 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.notifications.Notification;
-import is.hello.sense.notifications.NotificationReceiver;
+import is.hello.sense.notifications.NotificationMessageReceiver;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.appcompat.ScopedInjectionActivity;
@@ -93,6 +94,7 @@ public class HomeActivity extends ScopedInjectionActivity
     private SpinnerImageView spinner;
     private ExtendedViewPager extendedViewPager;
     private SenseTabLayout tabLayout;
+    private final BroadcastReceiver notificationReceiver = new NotificationMessageReceiver(true);
 
     public static Intent getIntent(@NonNull final Context context,
                                    @OnboardingActivity.Flow final int fromFlow) {
@@ -131,6 +133,10 @@ public class HomeActivity extends ScopedInjectionActivity
         if(intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
         }
+
+        registerReceiver(
+                notificationReceiver,
+                NotificationMessageReceiver.getMainPriorityFilter());
     }
 
     @Override
@@ -198,8 +204,8 @@ public class HomeActivity extends ScopedInjectionActivity
                                                "ACTION_SHOW_ALARMS");
             Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
             this.tabLayout.selectSoundTab();
-        } else if (intent.hasExtra(NotificationReceiver.EXTRA_NOTIFICATION_PAYLOAD)) {
-            dispatchNotification(intent.getBundleExtra(NotificationReceiver.EXTRA_NOTIFICATION_PAYLOAD));
+        } else if (intent.hasExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD)) {
+            dispatchNotification(intent.getBundleExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD));
         }
 
     }
@@ -210,6 +216,8 @@ public class HomeActivity extends ScopedInjectionActivity
         if (this.tabLayout != null) {
             this.tabLayout.clearOnTabSelectedListeners();
         }
+
+        unregisterReceiver(notificationReceiver);
     }
 
     public void checkInForUpdates() {
