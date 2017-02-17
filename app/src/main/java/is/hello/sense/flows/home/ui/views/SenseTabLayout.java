@@ -133,11 +133,11 @@ public class SenseTabLayout extends TabLayout
     public void setUpTabs(final boolean shouldSelect) {
         clearOnTabSelectedListeners();
         removeAllTabs();
-        addTab(createSleepScoreTab(getCurrentTimeline()));
-        addTab(createTabFor(R.drawable.icon_trends_24, R.drawable.icon_trends_active_24));
-        addTab(createTabFor(R.drawable.icon_insight_24, R.drawable.icon_insight_active_24));
-        addTab(createTabFor(R.drawable.icon_sound_24, R.drawable.icon_sound_active_24));
-        addTab(createTabFor(R.drawable.icon_sense_24, R.drawable.icon_sense_active_24));
+        addTab(createSleepScoreTab(getCurrentTimeline()), false);
+        addTab(createTabFor(R.drawable.icon_trends_24, R.drawable.icon_trends_active_24), false);
+        addTab(createTabFor(R.drawable.icon_insight_24, R.drawable.icon_insight_active_24), false);
+        addTab(createTabFor(R.drawable.icon_sound_24, R.drawable.icon_sound_active_24), false);
+        addTab(createTabFor(R.drawable.icon_sense_24, R.drawable.icon_sense_active_24), false);
 
         addOnTabSelectedListener(this);
 
@@ -150,7 +150,8 @@ public class SenseTabLayout extends TabLayout
 
     private Tab createSleepScoreTab(@Nullable final Timeline timeline) {
         return newTab().setCustomView(new SenseTabView(getContext())
-                                              .useSleepScoreIcon(timeline));
+                                              .useSleepScoreIcon(timeline,
+                                                                 SLEEP_ICON_KEY == this.currentItemIndex));
     }
 
     private Tab createTabFor(@DrawableRes final int normal,

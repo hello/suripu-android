@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -126,7 +125,7 @@ public class HomeActivity extends ScopedInjectionActivity
                                                                                 this.extendedViewPager.getId(),
                                                                                 this.viewPagerDelegate.getViewPagerItems());
         this.extendedViewPager.setAdapter(fragmentAdapter);
-        this.tabLayout.setUpTabs(savedInstanceState == null);
+        this.tabLayout.setUpTabs(true);
         this.tabLayout.setListener(this);
         //todo needs testing with server
         final Intent intent = getIntent();
@@ -175,8 +174,8 @@ public class HomeActivity extends ScopedInjectionActivity
     }
 
     @Override
-    public void onSaveInstanceState(final Bundle outState, final PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
         outState.putInt(KEY_CURRENT_ITEM_INDEX, this.tabLayout.getSelectedTabPosition());
     }
 

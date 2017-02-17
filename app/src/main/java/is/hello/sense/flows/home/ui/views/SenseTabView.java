@@ -70,11 +70,9 @@ public class SenseTabView extends FrameLayout {
         return this;
     }
 
-    public SenseTabView useSleepScoreIcon(@Nullable final Timeline timeline) {
-        this.imageView.post(() -> useSleepScoreIcon(timeline,
-                                                    SenseTabView.this.imageView.getMeasuredWidth(),
-                                                    SenseTabView.this.imageView.getMeasuredHeight(),
-                                                    true));
+    public SenseTabView useSleepScoreIcon(@Nullable final Timeline timeline,
+                                          final boolean active) {
+        this.imageView.post(() -> updateSleepScoreIcon(timeline, active));
         return this;
     }
 
