@@ -395,8 +395,8 @@ public class HomeActivity extends ScopedInjectionActivity
 
                     break;
                 }
-                case Notification.PILL_BATTERY: {
-                    //todo does not load sensors if launched from onCreate
+                case Notification.SYSTEM: {
+                    //todo handle and pass along
                     this.tabLayout.selectConditionsTab();
                     break;
                 }

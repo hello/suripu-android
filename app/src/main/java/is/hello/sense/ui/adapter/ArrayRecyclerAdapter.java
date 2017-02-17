@@ -1,20 +1,37 @@
 package is.hello.sense.ui.adapter;
 
+import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+import is.hello.sense.R;
+import is.hello.sense.flows.notification.ui.adapters.NotificationSettingsAdapter;
+
 public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
+
+    private static final String KEY_ITEMS = NotificationSettingsAdapter.class.getSimpleName() + ".KEY_ITEMS";
+
     private final List<T> storage;
     private
     @Nullable
     OnItemClickedListener<T> onItemClickedListener;
+    private ErrorHandler errorHandler = null;
 
-    protected ArrayRecyclerAdapter(@NonNull List<T> storage) {
+    protected ArrayRecyclerAdapter(@NonNull final List<T> storage) {
         this.storage = storage;
     }
 
@@ -29,13 +46,17 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
         return storage.isEmpty();
     }
 
-    public T getItem(int position) {
+    public T getItem(final int position) {
         return storage.get(position);
     }
 
-    public boolean replaceAll(@NonNull Collection<? extends T> collection) {
-        int oldSize = getItemCount();
-        int newSize = collection.size();
+    public List<T> getItems() {
+        return this.storage;
+    }
+
+    public boolean replaceAll(@NonNull final Collection<? extends T> collection) {
+        final int oldSize = getItemCount();
+        final int newSize = collection.size();
 
         storage.clear();
         if (!storage.addAll(collection)) {
@@ -55,8 +76,8 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
         return true;
     }
 
-    public boolean addAll(@NonNull Collection<? extends T> collection) {
-        int oldSize = storage.size();
+    public boolean addAll(@NonNull final Collection<? extends T> collection) {
+        final int oldSize = storage.size();
         if (storage.addAll(collection)) {
             notifyItemRangeInserted(oldSize, collection.size() - oldSize);
             return true;
@@ -65,8 +86,8 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
         }
     }
 
-    public boolean add(T object) {
-        int oldSize = storage.size();
+    public boolean add(final T object) {
+        final int oldSize = storage.size();
         if (storage.add(object)) {
             notifyItemInserted(oldSize);
             return true;
@@ -75,49 +96,70 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
         }
     }
 
-    public void add(T item, int position) {
+    public void add(final T item, final int position) {
         storage.add(position, item);
         notifyItemInserted(position);
     }
 
-    public T remove(int location) {
-        T removed = storage.remove(location);
+    public T remove(final int location) {
+        final T removed = storage.remove(location);
         notifyItemRemoved(location);
         return removed;
     }
 
-    public T set(int location, T object) {
-        T changed = storage.set(location, object);
+    public T set(final int location, final T object) {
+        final T changed = storage.set(location, object);
         notifyItemChanged(location);
         return changed;
     }
 
-    public int indexOf(T needle) {
+    public int indexOf(final T needle) {
         return storage.indexOf(needle);
     }
 
     public void clear() {
-        int oldSize = storage.size();
+        final int oldSize = storage.size();
         storage.clear();
         notifyItemRangeRemoved(0, oldSize);
     }
 
+    public void setErrorHandler(@Nullable final ErrorHandler errorHandler) {
+        this.errorHandler = errorHandler;
+
+    }
+
+    @SuppressWarnings("unchecked")
+    public void restoreState(@NonNull final Bundle savedState) {
+        try {
+            final Serializable serializable = savedState.getSerializable(KEY_ITEMS);
+            if (serializable instanceof Object[]) {
+                Collections.addAll(storage, (T[]) serializable);
+            }
+        } catch (final ClassCastException e) {
+            Log.e(getClass().getSimpleName(), "restoreState failed to cast");
+            storage.clear();
+        }
+    }
+
+    public void saveState(@NonNull final Bundle outState) {
+        outState.putSerializable(KEY_ITEMS, storage.toArray());
+    }
     //endregion
 
 
     //region Selection Support
 
-    public void setOnItemClickedListener(@Nullable OnItemClickedListener<T> onItemClickedListener) {
+    public void setOnItemClickedListener(@Nullable final OnItemClickedListener<T> onItemClickedListener) {
         this.onItemClickedListener = onItemClickedListener;
     }
 
-    protected void dispatchItemClicked(int position) {
+    protected void dispatchItemClicked(final int position) {
         if (onItemClickedListener != null) {
             onItemClickedListener.onItemClicked(position, getItem(position));
         }
     }
 
-    protected void dispatchItemClicked(int position, @NonNull final T item) {
+    protected void dispatchItemClicked(final int position, @NonNull final T item) {
         if (onItemClickedListener != null) {
             onItemClickedListener.onItemClicked(position, item);
         }
@@ -127,20 +169,24 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
         void onItemClicked(int position, T item);
     }
 
+    @NonNull
+    public View inflate(@LayoutRes final int layoutRes, @NonNull final ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext()).inflate(layoutRes, parent, false);
+    }
     //endregion
 
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull final View itemView) {
             super(itemView);
         }
 
-        public void bind(int position) {
+        public void bind(final int position) {
             // Do nothing
         }
 
         @Override
-        public void onClick(View ignored) {
+        public void onClick(final View ignored) {
             // View dispatches OnClickListener#onClick(View) calls on
             // the next looper cycle. It's possible for the adapter's
             // containing recycler view to update and invalidate a
@@ -151,4 +197,39 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
             }
         }
     }
+
+    //todo replace all error view holders using item_message_card with this.
+    public class ErrorViewHolder extends ViewHolder
+            implements View.OnClickListener {
+        protected final ImageView image;
+        protected final TextView title;
+        protected final TextView message;
+        protected final Button button;
+
+        public ErrorViewHolder(@NonNull final ViewGroup parent) {
+            super(inflate(R.layout.item_message_card, parent));
+            this.image = (ImageView) this.itemView.findViewById(R.id.item_message_card_image);
+            this.title = (TextView)  this.itemView.findViewById(R.id.item_message_card_title);
+            this.message = (TextView)  this.itemView.findViewById(R.id.item_message_card_message);
+            this.button = (Button)  this.itemView.findViewById(R.id.item_message_card_action);
+            this.button.setText(R.string.action_retry);
+            this.button.setOnClickListener(this);
+            this.title.setVisibility(View.GONE);
+            this.message.setText(R.string.error_internet_connection_generic_message);
+        }
+
+        @Override
+        public void onClick(final View ignored) {
+            super.onClick(ignored);
+            if (ArrayRecyclerAdapter.this.errorHandler == null) {
+                return;
+            }
+            ArrayRecyclerAdapter.this.errorHandler.retry();
+        }
+    }
+
+    public interface ErrorHandler {
+        void retry();
+    }
+
 }

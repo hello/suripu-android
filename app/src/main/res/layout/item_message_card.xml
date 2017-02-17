@@ -23,7 +23,7 @@
         android:paddingLeft="@dimen/x2"
         android:paddingRight="@dimen/x2"
         android:paddingTop="@dimen/x2"
-        android:singleLine="true"
+        android:maxLines="1"
         android:textAppearance="@style/AppTheme.Text.Body"/>
 
     <TextView
