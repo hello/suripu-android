@@ -1,18 +1,17 @@
 package is.hello.sense.flows.notification.ui.adapters;
 
 
-import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.NotificationSetting;
-import is.hello.sense.databinding.ItemNotificationSettingsBinding;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.widget.util.Views;
 
@@ -31,8 +30,8 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
     //region ArrayRecyclerAdapter
     @Override
     public int getItemViewType(final int position) {
-        if (showHeader) {
-            return position == 0 ? HEADER : hasError ? ERROR : SETTING;
+        if (showHeader && position == 0) {
+            return HEADER;
         }
         if (hasError) {
             return ERROR;
@@ -47,8 +46,8 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
             return new ErrorViewHolder(parent);
         } else if (viewType == HEADER) {
             return new ViewHolder(inflate(R.layout.item_enable_notifications, parent));
-        }else if (viewType == SETTING) {
-            return new SettingsViewHolder(DataBindingUtil.bind(inflate(R.layout.item_notification_settings, parent)));
+        } else if (viewType == SETTING) {
+            return new SettingsViewHolder(inflate(R.layout.item_notification_settings, parent));
         }
         throw new IllegalStateException("unknown type");
     }
@@ -78,10 +77,8 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
 
     //region methods
     public void bindSettings(@NonNull final List<NotificationSetting> settings) {
-        clear();
         this.hasError = false;
-        addAll(settings);
-        notifyDataSetChanged();
+        replaceAll(settings);
     }
 
 
@@ -99,11 +96,13 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
 
     //region ViewHolders
     private class SettingsViewHolder extends ArrayRecyclerAdapter.ViewHolder {
-        private final ItemNotificationSettingsBinding binding;
+        private final TextView name;
+        private final CompoundButton toggleButton;
 
-        public SettingsViewHolder(@NonNull final ItemNotificationSettingsBinding itemView) {
-            super(itemView.getRoot());
-            this.binding = itemView;
+        public SettingsViewHolder(@NonNull final View itemView) {
+            super(itemView);
+            this.name = (TextView) itemView.findViewById(R.id.item_notification_settings_text);
+            this.toggleButton = (CompoundButton) itemView.findViewById(R.id.item_notification_settings_switch);
         }
 
         @SuppressWarnings("RedundantCast")
@@ -113,9 +112,9 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
             if (setting == null) {
                 return;
             }
-            this.binding.itemNotificationSettingsText.setText(setting.getName());
-            ((CompoundButton) this.binding.itemNotificationSettingsSwitch.widgetSwitch).setChecked(setting.isEnabled());
-            Views.setSafeOnSwitchClickListener(((CompoundButton) this.binding.itemNotificationSettingsSwitch.widgetSwitch), (buttonView, isChecked) -> setting.setEnabled(isChecked));
+            this.name.setText(setting.getName());
+            this.toggleButton.setChecked(setting.isEnabled());
+            Views.setSafeOnSwitchClickListener(this.toggleButton, (buttonView, isChecked) -> setting.setEnabled(isChecked));
         }
     }
     //endregion

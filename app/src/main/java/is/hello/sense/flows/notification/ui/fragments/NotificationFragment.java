@@ -37,15 +37,17 @@ public class NotificationFragment extends PresenterFragment<NotificationView>
     //region PresenterFragment
     @Override
     public void initializePresenterView() {
-        notificationSettingsAdapter = createAdapter();
-        presenterView = new NotificationView(getActivity(),
-                                             notificationSettingsAdapter);
-        setHasOptionsMenu(true);
+        if (presenterView == null) {
+            notificationSettingsAdapter = createAdapter();
+            presenterView = new NotificationView(getActivity(),
+                                                 notificationSettingsAdapter);
+        }
     }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         if (savedInstanceState == null) {
             showBlockingActivity(null);
         }
@@ -74,16 +76,7 @@ public class NotificationFragment extends PresenterFragment<NotificationView>
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         if (item.getItemId() == R.id.save) {
-            if (this.presenterView == null) {
-                return false;
-            }
-            showLockedBlockingActivity(R.string.updating);
-            final List<NotificationSetting> settings = this.notificationSettingsAdapter.getItems();
-            saveSubscription.unsubscribe();
-            saveSubscription = bind(notificationSettingsInteractor.updateNotificationSettings(settings))
-                    .subscribe(
-                            this::bindSave,
-                            this::bindSaveError);
+            onSaveSelected();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -145,7 +138,7 @@ public class NotificationFragment extends PresenterFragment<NotificationView>
 
     private void bindSaveError(@NonNull final Throwable throwable) {
         hideBlockingActivity(false, null);
-        ErrorDialogFragment.newInstance(throwable).build().showAllowingStateLoss(getChildFragmentManager(), ErrorDialogFragment.TAG);
+        showErrorDialog(new ErrorDialogFragment.PresenterBuilder(throwable));
     }
 
     private NotificationSettingsAdapter createAdapter() {
@@ -162,6 +155,19 @@ public class NotificationFragment extends PresenterFragment<NotificationView>
             hideBlockingActivity(false, null);
             presenterView.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void onSaveSelected() {
+        if (this.presenterView == null) {
+            return;
+        }
+        showLockedBlockingActivity(R.string.updating);
+        final List<NotificationSetting> settings = this.notificationSettingsAdapter.getItems();
+        saveSubscription.unsubscribe();
+        saveSubscription = bind(notificationSettingsInteractor.updateNotificationSettings(settings))
+                .subscribe(
+                        this::bindSave,
+                        this::bindSaveError);
     }
     //endregion
 }
