@@ -52,6 +52,7 @@ import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.flows.home.ui.fragments.FeedSenseViewFragment;
 import is.hello.sense.flows.home.ui.fragments.SoundsSenseViewFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsSenseViewFragment;
+import is.hello.sense.mvp.interactors.InteractorContainer;
 import is.hello.sense.notifications.NotificationReceiver;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.pill.PillModule;
@@ -159,7 +160,8 @@ import is.hello.sense.zendesk.ZendeskModule;
                 NotificationActivity.class,
                 NotificationFragment.class,
                 
-                AccountSettingsInteractorContainer.class
+                AccountSettingsInteractorContainer.class,
+                InteractorContainer.EmptyInteractorContainer.class
         }
 )
 @SuppressWarnings("UnusedDeclaration")

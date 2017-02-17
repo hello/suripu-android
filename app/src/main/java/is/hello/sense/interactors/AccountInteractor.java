@@ -16,14 +16,14 @@ import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.InteractorSubject;
+import is.hello.sense.mvp.interactors.SenseInteractor;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Analytics.ProfilePhoto.Source;
 import retrofit.mime.TypedFile;
 import rx.Observable;
 
-public class AccountInteractor extends ValueInteractor<Account> {
+public class AccountInteractor extends SenseInteractor<Account> {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^.+@.+\\..+$");
     private static final int MIN_PASSWORD_LENGTH = 6;
 
@@ -36,7 +36,6 @@ public class AccountInteractor extends ValueInteractor<Account> {
 
     private Boolean withPhoto;
 
-    public final InteractorSubject<Account> account = this.subject;
     @NonNull
     private final Context context;
 
@@ -70,7 +69,7 @@ public class AccountInteractor extends ValueInteractor<Account> {
     /**
      * @param withPhoto determines if {@link Account#profilePhoto} is included in api response
      */
-    public void setWithPhoto(@NonNull final Boolean withPhoto){
+    public void setWithPhoto(@NonNull final Boolean withPhoto) {
         this.withPhoto = withPhoto;
     }
 
@@ -105,17 +104,17 @@ public class AccountInteractor extends ValueInteractor<Account> {
 
     //region Updates
 
-    public Observable<Account> saveAccount(@NonNull Account updatedAccount) {
-        return apiService.updateAccount(updatedAccount,withPhoto)
-                         .doOnNext(account::onNext);
+    public Observable<Account> saveAccount(@NonNull final Account updatedAccount) {
+        return apiService.updateAccount(updatedAccount, withPhoto)
+                         .doOnNext(subscriptionSubject::onNext);
     }
 
-    public Observable<Account> updateEmail(@NonNull String email) {
+    public Observable<Account> updateEmail(@NonNull final String email) {
         return latest().flatMap(account -> {
             Account updatedAccount = account.clone();
             updatedAccount.setEmail(email);
             return apiService.updateEmailAddress(updatedAccount)
-                             .doOnNext(this.account::onNext);
+                             .doOnNext(this.subscriptionSubject::onNext);
         });
     }
 
@@ -129,13 +128,13 @@ public class AccountInteractor extends ValueInteractor<Account> {
 
     /**
      * @param picture that will be uploaded
-     * @param event should either come from Onboarding or Account interface of Analytics
-     * @param source where the picture came from
+     * @param event   should either come from Onboarding or Account interface of Analytics
+     * @param source  where the picture came from
      * @return object with link to fetch image stored on server based on screen density
      */
     public Observable<MultiDensityImage> updateProfilePicture(@NonNull final TypedFile picture,
                                                               @NonNull final String event,
-                                                              @NonNull final Source source){
+                                                              @NonNull final Source source) {
         return apiService
                 .uploadProfilePhoto(picture)
                 .doOnNext(ignored -> Analytics.trackEvent(event, Analytics.createProfilePhotoTrackingProperties(source)))

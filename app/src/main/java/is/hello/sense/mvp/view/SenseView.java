@@ -1,5 +1,6 @@
 package is.hello.sense.mvp.view;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
@@ -22,6 +23,9 @@ public abstract class SenseView extends FrameLayout {
     public SenseView(@NonNull final Activity activity) {
         super(activity);
         this.context = activity;
+        if (getLayoutRes() == 0){
+            return;
+        }
         activity.getLayoutInflater().inflate(getLayoutRes(), this);
     }
 
@@ -98,6 +102,24 @@ public abstract class SenseView extends FrameLayout {
                                                                      FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
+    }
+
+
+    @SuppressLint("ViewConstructor")
+    public static class EmptySenseView extends SenseView {
+        public EmptySenseView(@NonNull final Activity activity) {
+            super(activity);
+        }
+
+        @Override
+        protected int getLayoutRes() {
+            return 0;
+        }
+
+        @Override
+        public void releaseViews() {
+
+        }
     }
 
 }

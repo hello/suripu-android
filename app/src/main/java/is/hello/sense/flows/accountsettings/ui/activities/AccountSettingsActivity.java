@@ -13,6 +13,7 @@ public class AccountSettingsActivity extends FragmentNavigationActivity {
         context.startActivity(new Intent(context, AccountSettingsActivity.class));
     }
 
+    //region FragmentNavigationActivity
     @Override
     protected boolean shouldInjectToMainGraphObject() {
         return false;
@@ -20,6 +21,13 @@ public class AccountSettingsActivity extends FragmentNavigationActivity {
 
     @Override
     protected void onCreateAction() {
+        showAccountSettingsFragment();
+    }
+    //endregion
+
+    //region methods
+    private void showAccountSettingsFragment() {
         pushFragment(new AccountSettingsFragment(), "AccountSettingsFragment", false);
     }
+    //endregion
 }

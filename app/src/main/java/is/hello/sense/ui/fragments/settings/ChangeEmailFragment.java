@@ -65,7 +65,7 @@ public class ChangeEmailFragment extends InjectionFragment implements Analytics.
         emailLET.setEnabled(false);
         submitButton.setEnabled(false);
 
-        bindAndSubscribe(accountPresenter.account, this::bindAccount, this::presentError);
+        bindAndSubscribe(accountPresenter.subscriptionSubject, this::bindAccount, this::presentError);
     }
 
     @Override

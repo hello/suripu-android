@@ -48,12 +48,14 @@ public abstract class PresenterFragment<SP extends SensePresenter> extends Sense
     @Override
     public void onResume() {
         super.onResume();
+        getSensePresenterOrEmpty().getInteractorContainer().onResume();
     }
 
     @CallSuper
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        getSensePresenterOrEmpty().getInteractorContainer().onDestroyView();
         onRelease();
     }
 
@@ -61,6 +63,7 @@ public abstract class PresenterFragment<SP extends SensePresenter> extends Sense
     @Override
     public void onDetach() {
         super.onDetach();
+        getSensePresenterOrEmpty().getInteractorContainer().onDetach();
         onRelease();
     }
 
@@ -69,12 +72,18 @@ public abstract class PresenterFragment<SP extends SensePresenter> extends Sense
         this.sensePresenter = null;
     }
 
+    private SensePresenter getSensePresenterOrEmpty() {
+        if (this.sensePresenter == null) {
+            return new SensePresenter.EmptySensePresenter(this);
+        }
+        return this.sensePresenter;
+    }
+
     public SP getSensePresenter() {
         if (this.sensePresenter == null) {
             this.sensePresenter = initializeSensePresenter();
         }
         return this.sensePresenter;
     }
-
 
 }
