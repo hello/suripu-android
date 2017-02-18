@@ -16,7 +16,7 @@ public class AccountSettingsView extends SenseView {
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.static_recycler;
+        return R.layout.view_account_settings;
     }
 
     @Override

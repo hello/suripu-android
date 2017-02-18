@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/x2"
+        android:paddingBottom="@dimen/x2"
+        android:orientation="vertical">
+
+        <is.hello.sense.ui.widget.ProfileImageView
+            android:id="@+id/view_account_settings_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"/>
+
+        <is.hello.sense.flows.accountsettings.ui.widgets.ItemSettingsDetailRow
+            android:id="@+id/view_account_settings_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:ISDR_iconSrc="@drawable/icon_settings_user_24"
+            app:ISDR_labelText="@string/label_name"/>
+
+        <is.hello.sense.flows.accountsettings.ui.widgets.ItemSettingsDetailRow
+            android:id="@+id/view_account_settings_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:ISDR_iconSrc="@drawable/icon_settings_email_24"
+            app:ISDR_labelText="@string/label_email"/>
+
+        <is.hello.sense.flows.accountsettings.ui.widgets.ItemSettingsDetailRow
+            android:id="@+id/view_account_settings_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:ISDR_iconSrc="@drawable/icon_settings_lock_24"
+            app:ISDR_labelText="@string/label_password"/>
+
+        <is.hello.sense.flows.accountsettings.ui.widgets.ItemSettingsDetailRow
+            android:id="@+id/view_account_settings_birthday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x4"
+            app:ISDR_iconSrc="@drawable/icon_settings_calendar_24"
+            app:ISDR_labelText="@string/label_birthday"
+            app:ISDR_valueText="@string/missing_data_placeholder"/>
+
+        <is.hello.sense.flows.accountsettings.ui.widgets.ItemSettingsDetailRow
+            android:id="@+id/view_account_settings_gender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:ISDR_iconSrc="@drawable/icon_settings_gender_24"
+            app:ISDR_labelText="@string/label_gender"
+            app:ISDR_valueText="@string/missing_data_placeholder"/>
+
+        <is.hello.sense.flows.accountsettings.ui.widgets.ItemSettingsDetailRow
+            android:id="@+id/view_account_settings_height"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:ISDR_iconSrc="@drawable/icon_settings_height_24"
+            app:ISDR_labelText="@string/label_height"
+            app:ISDR_valueText="@string/missing_data_placeholder"/>
+
+        <is.hello.sense.flows.accountsettings.ui.widgets.ItemSettingsDetailRow
+            android:id="@+id/view_account_settings_weight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:ISDR_iconSrc="@drawable/icon_settings_weight_24"
+            app:ISDR_labelText="@string/label_weight"
+            app:ISDR_valueText="@string/missing_data_placeholder"/>
+
+        <is.hello.sense.flows.accountsettings.ui.widgets.ItemSettingsDetailRow
+            android:id="@+id/view_account_settings_units"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x3"
+            app:ISDR_iconSrc="@drawable/icon_settings_unitstime_24_fill"
+            app:ISDR_labelText="@string/label_units_and_time"/>
+
+        <is.hello.sense.flows.accountsettings.ui.widgets.ItemSettingsToggleRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x4"
+            app:ISTR_iconSrc="@drawable/icon_settings_enhanced_audio_24"
+            app:ISTR_labelText="@string/label_enhanced_audio"/>
+
+        <is.hello.sense.flows.accountsettings.ui.widgets.ItemSettingsCheckBoxRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:ISCBR_labelText="@string/info_enhanced_audio"/>
+
+        <is.hello.sense.flows.accountsettings.ui.widgets.ItemSettingsDetailRow
+            android:id="@+id/view_account_settings_signout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x3"
+            app:ISDR_iconSrc="@drawable/icon_settings_logout_24"
+            app:ISDR_labelText="@string/action_log_out"/>
+
+    </LinearLayout>
+</ScrollView>

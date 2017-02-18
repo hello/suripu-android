@@ -82,4 +82,20 @@
         <attr name="leftButtonText" format="string"/>
         <attr name="rightButtonText" format="string"/>
     </declare-styleable>
+
+    <declare-styleable name="ItemSettingsDetailRow">
+        <attr name="ISDR_iconSrc" format="reference"/>
+        <attr name="ISDR_labelText" format="reference"/>
+        <attr name="ISDR_valueText" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="ItemSettingsToggleRow">
+        <attr name="ISTR_iconSrc" format="reference"/>
+        <attr name="ISTR_labelText" format="reference"/>
+        <attr name="ISTR_valueText" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="ItemSettingsCheckBoxRow">
+        <attr name="ISCBR_labelText" format="reference"/>
+    </declare-styleable>
 </resources>

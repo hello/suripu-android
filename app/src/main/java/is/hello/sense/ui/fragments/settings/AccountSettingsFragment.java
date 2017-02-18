@@ -79,7 +79,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem =
             new AccountSettingsRecyclerAdapter.CircleItem(
-                stateSafeExecutor.bind(this::changePicture)
+                    stateSafeExecutor.bind(this::changePicture)
             );
 
     private SettingsRecyclerAdapter.DetailItem nameItem;
@@ -94,7 +94,6 @@ public class AccountSettingsFragment extends InjectionFragment
 
     @Nullable
     private Account.Preferences accountPreferences;
-    private RecyclerView recyclerView;
     private ProfileImageManager profileImageManager;
     private Account currentAccount;
     private ProgressBar loadingIndicator;
@@ -124,26 +123,13 @@ public class AccountSettingsFragment extends InjectionFragment
 
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.static_recycler_view_loading);
 
-        this.recyclerView = (RecyclerView) view.findViewById(R.id.static_recycler_view);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setItemAnimator(null);
-
-        final Resources resources = getResources();
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
-                                                                     EnumSet.of(ScrollEdge.TOP), FadingEdgesItemDecoration.Style.STRAIGHT));
 
         final AccountSettingsRecyclerAdapter adapter = new AccountSettingsRecyclerAdapter(getActivity(), picasso);
 
-        final int verticalPadding = resources.getDimensionPixelSize(R.dimen.x2);
-        final int sectionPadding = resources.getDimensionPixelSize(R.dimen.x4);
+        final int verticalPadding = getResources().getDimensionPixelSize(R.dimen.x2);
+        final int sectionPadding = getResources().getDimensionPixelSize(R.dimen.x4);
         final InsetItemDecoration decoration = new InsetItemDecoration();
-        recyclerView.addItemDecoration(decoration);
 
-        decoration.addTopInset(adapter.getItemCount(), verticalPadding);
-
-        adapter.add(profilePictureItem);
         nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
                                                           this::changeName);
         nameItem.setIcon(R.drawable.icon_settings_user_24, R.string.label_name);
@@ -181,7 +167,7 @@ public class AccountSettingsFragment extends InjectionFragment
         decoration.addTopInset(adapter.getItemCount(), sectionPadding);
 
         final SettingsRecyclerAdapter.DetailItem unitsAndTimeItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_units_and_time),
-                                                                                                       this::onUnitsAndTimeClick);
+                                                                                                           this::onUnitsAndTimeClick);
         unitsAndTimeItem.setIcon(R.drawable.icon_settings_unitstime_24_fill, R.string.label_units_and_time);
         adapter.add(unitsAndTimeItem);
 
@@ -200,10 +186,8 @@ public class AccountSettingsFragment extends InjectionFragment
         signOutItem.setIcon(R.drawable.icon_settings_logout_24, R.string.action_log_out);
         adapter.add(signOutItem);
 
-        recyclerView.setAdapter(adapter);
 
         loadingIndicator.setVisibility(View.VISIBLE);
-        recyclerView.setVisibility(View.INVISIBLE);
 
         facebookPresenter.init();
 
@@ -240,7 +224,6 @@ public class AccountSettingsFragment extends InjectionFragment
         this.weightItem = null;
         this.enhancedAudioItem = null;
 
-        this.recyclerView = null;
 
         this.profileImageManager = null;
     }
@@ -287,12 +270,10 @@ public class AccountSettingsFragment extends InjectionFragment
     }
 
     private void showLoadingIndicator() {
-        recyclerView.setVisibility(View.INVISIBLE);
         loadingIndicator.setVisibility(View.VISIBLE);
     }
 
     private void hideLoadingIndicator() {
-        recyclerView.setVisibility(View.VISIBLE);
         loadingIndicator.setVisibility(View.GONE);
     }
 
@@ -550,7 +531,7 @@ public class AccountSettingsFragment extends InjectionFragment
         handleError(error, R.string.error_account_upload_photo_title, R.string.error_internet_connection_generic_message);
     }
 
-    private void  updateProfilePictureSuccess(@NonNull final MultiDensityImage compressedPhoto) {
+    private void updateProfilePictureSuccess(@NonNull final MultiDensityImage compressedPhoto) {
         showProfileLoadingIndicator(false);
         currentAccount.setProfilePhoto(compressedPhoto);
         profileImageManager.addDeleteOption();
