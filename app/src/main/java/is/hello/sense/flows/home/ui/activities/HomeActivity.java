@@ -99,8 +99,7 @@ public class HomeActivity extends ScopedInjectionActivity
     private SpinnerImageView spinner;
     private ExtendedViewPager extendedViewPager;
     private SenseTabLayout tabLayout;
-    //todo revert to true after testing
-    private final BroadcastReceiver notificationReceiver = new NotificationMessageReceiver(false);
+    private final BroadcastReceiver notificationReceiver = new NotificationMessageReceiver(true);
 
     public static Intent getIntent(@NonNull final Context context,
                                    @OnboardingActivity.Flow final int fromFlow) {
@@ -391,7 +390,7 @@ public class HomeActivity extends ScopedInjectionActivity
     private void dispatchNotification(@NonNull final Bundle bundle) {
         this.stateSafeExecutor.execute(() -> {
             final Notification notification = Notification.fromBundle(bundle);
-            notificationInteractor.onNext(Notification.fromBundle(bundle));
+            notificationInteractor.onNext(notification);
             switch (notification.getType()) {
                 case Notification.SLEEP_SCORE: {
                     this.tabLayout.selectTimelineTab();

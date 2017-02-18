@@ -35,7 +35,7 @@ public class NotificationInteractor extends ValueInteractor<Notification> {
 
     @Override
     protected boolean canUpdate() {
-        return true;
+        return false;
     }
 
     @Override

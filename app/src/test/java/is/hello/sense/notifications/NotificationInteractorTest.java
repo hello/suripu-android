@@ -17,10 +17,13 @@ public class NotificationInteractorTest extends InjectionTestCase {
     NotificationInteractor notificationInteractor;
 
     @Test
+    public void canUpdate() throws Exception {
+        assertThat(notificationInteractor.canUpdate(), equalTo(false));
+    }
+
+    @Test
     public void provideUpdateObservable() throws Exception {
-        final Notification result = Sync.wrapAfter(notificationInteractor::update,
-                                             notificationInteractor.notificationSubject)
-                                  .last();
+        final Notification result = Sync.last(notificationInteractor.provideUpdateObservable());
         assertNull(result);
     }
 
