@@ -197,7 +197,7 @@ public class SmartAlarmDetailView extends PresenterView {
         this.lightExpansionContainer.setEnabled(isEnabled);
         this.lightExpansionValue.setCompoundDrawablesWithIntrinsicBounds(0,
                                                                          0,
-                                                                         isEnabled ? R.drawable.disclosure_chevron_small : 0,
+                                                                         isEnabled ? R.drawable.icon_chevron_right_24 : 0,
                                                                          0);
         this.lightExpansionValue.setText(value);
         Views.setSafeOnClickListener(this.lightExpansionContainer, containerClickListener);
@@ -223,7 +223,7 @@ public class SmartAlarmDetailView extends PresenterView {
         this.thermoExpansionContainer.setEnabled(isEnabled);
         this.thermoExpansionValue.setCompoundDrawablesWithIntrinsicBounds(0,
                                                                           0,
-                                                                          isEnabled ? R.drawable.disclosure_chevron_small : 0,
+                                                                          isEnabled ? R.drawable.icon_chevron_right_24 : 0,
                                                                           0);
         this.thermoExpansionValue.setText(value);
         Views.setSafeOnClickListener(this.thermoExpansionContainer, containerClickListener);
