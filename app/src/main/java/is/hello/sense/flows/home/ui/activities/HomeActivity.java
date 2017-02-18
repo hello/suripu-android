@@ -40,6 +40,7 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.notifications.Notification;
+import is.hello.sense.notifications.NotificationInteractor;
 import is.hello.sense.notifications.NotificationMessageReceiver;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -50,6 +51,7 @@ import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.SystemAlertDialogFragment;
+import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 import is.hello.sense.ui.widget.SpinnerImageView;
 import is.hello.sense.util.Analytics;
@@ -89,6 +91,9 @@ public class HomeActivity extends ScopedInjectionActivity
     LastNightInteractor lastNightInteractor;
     @Inject
     UnreadStateInteractor unreadStateInteractor;
+    @Inject
+    NotificationInteractor notificationInteractor;
+
     private final HomeViewPagerDelegate viewPagerDelegate = new HomeViewPagerDelegate();
     private View progressOverlay;
     private SpinnerImageView spinner;
@@ -130,7 +135,7 @@ public class HomeActivity extends ScopedInjectionActivity
         this.tabLayout.setListener(this);
         //todo needs testing with server
         final Intent intent = getIntent();
-        if(intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
+        if(savedInstanceState == null && intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
         }
 
@@ -382,29 +387,39 @@ public class HomeActivity extends ScopedInjectionActivity
 
     //region Notifications
 
-    private void dispatchNotification(@NonNull final Bundle notification) {
+    private void dispatchNotification(@NonNull final Bundle bundle) {
         this.stateSafeExecutor.execute(() -> {
-            info(getClass().getSimpleName(), "dispatchNotification(" + notification + ")");
-
-            @Notification.Type
-            final String target = Notification.typeFromBundle(notification);
-            switch (target) {
+            final Notification notification = Notification.fromBundle(bundle);
+            notificationInteractor.onNext(notification);
+            switch (notification.getType()) {
                 case Notification.SLEEP_SCORE: {
                     this.tabLayout.selectTimelineTab();
-                    //todo support scrolling to date.
-
                     break;
                 }
                 case Notification.SYSTEM: {
-                    //todo handle and pass along
-                    this.tabLayout.selectConditionsTab();
+                    dispatchSystemDetailNotification(
+                            Notification.systemTypeFromString(notification.getDetail()));
                     break;
                 }
                 default:{
-                    info(getClass().getSimpleName(), "unsupported notification type " + target);
+                    info(getClass().getSimpleName(), "unsupported notification type " + notification.getType());
                 }
             }
         });
+    }
+
+    private void dispatchSystemDetailNotification(@NonNull
+                                                  @Notification.SystemType
+                                                  final String systemType) {
+        switch (systemType) {
+            case Notification.PILL_BATTERY: {
+                DeviceListFragment.startStandaloneFrom(this);
+                break;
+            }
+            default: {
+                info(getClass().getSimpleName(), "unsupported notification detail " + systemType);
+            }
+        }
     }
 
     //endregion
