@@ -39,4 +39,16 @@ public class NotificationSettingsInteractor extends ValueInteractor<ArrayList<No
     public Observable<VoidResponse> updateNotificationSettings(@NonNull final List<NotificationSetting> settings) {
         return apiService.putNotificationSettings(settings);
     }
+
+    public Observable<VoidResponse> enableAll() {
+        return latest().map(this::enableAll)
+                       .flatMap(this::updateNotificationSettings);
+    }
+
+    private List<NotificationSetting> enableAll(@NonNull final List<NotificationSetting> settings) {
+        for(final NotificationSetting setting : settings) {
+            setting.setEnabled(true);
+        }
+        return settings;
+    }
 }

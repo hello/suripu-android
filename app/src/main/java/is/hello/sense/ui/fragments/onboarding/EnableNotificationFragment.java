@@ -7,17 +7,41 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
+import javax.inject.Inject;
+
 import is.hello.sense.R;
+import is.hello.sense.api.model.NotificationSetting;
+import is.hello.sense.flows.notification.interactors.NotificationSettingsInteractor;
+import is.hello.sense.functional.Functions;
 import is.hello.sense.notifications.NotificationRegistrationBroadcastReceiver;
-import is.hello.sense.ui.common.SenseFragment;
+import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 
 /**
  * Introduce user to allow receiving push notifications
  */
 
-public class EnableNotificationFragment extends SenseFragment {
+public class EnableNotificationFragment extends InjectionFragment {
+
+    @Inject
+    NotificationSettingsInteractor notificationSettingsInteractor;
 
     OnboardingSimpleStepView view;
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        bindAndSubscribe(notificationSettingsInteractor.notificationSettings,
+                         this::bindSettings,
+                         Functions.LOG_ERROR);
+        notificationSettingsInteractor.update();
+    }
+
+    private void bindSettings(final List<NotificationSetting> settings) {
+
+    }
 
     @Nullable
     @Override
@@ -41,14 +65,19 @@ public class EnableNotificationFragment extends SenseFragment {
             view.destroy();
             view = null;
         }
-
     }
 
     private void onSkip(final View ignored) {
-        finishFlow();
+        finishFlow(); //todo do we still send tokens and disable settings on skip?
     }
 
     private void onNext(final View ignored) {
+        bindAndSubscribe(notificationSettingsInteractor.enableAll(),
+                         voidResponse -> this.onFinish(),
+                         e -> ErrorDialogFragment.presentError(getActivity(), e));
+    }
+
+    private void onFinish() {
         LocalBroadcastManager.getInstance(getActivity())
                              .sendBroadcast(NotificationRegistrationBroadcastReceiver.getRegisterIntent(null));
         finishFlow();
