@@ -258,7 +258,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
 
         outState.putSerializable("account", account);
         navigationDelegate.onSaveInstanceState(outState);
-        Log.e(TAG,"save account state" + account);
+        Log.e(TAG, "save account state" + account);
     }
 
     @Override
@@ -280,7 +280,13 @@ public class OnboardingActivity extends ScopedInjectionActivity
         super.onDestroy();
 
         navigationDelegate.onDestroy();
-        unregisterReceiver(notificationReceiver);
+        // There currently isn't a way to check if a receiver is registered. The safest thing we can
+        // do is catch this error and continue.
+        try {
+            unregisterReceiver(notificationReceiver);
+        } catch (final IllegalArgumentException e) {
+            Logger.debug(TAG, "Tried to unregister non registered notificationReceiver: " + e.getLocalizedMessage());
+        }
     }
 
     //region SkippableFlow interface
