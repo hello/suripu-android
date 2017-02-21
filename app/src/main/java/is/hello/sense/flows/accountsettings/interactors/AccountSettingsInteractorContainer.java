@@ -21,7 +21,7 @@ public class AccountSettingsInteractorContainer extends InteractorContainer {
     @Inject
     Picasso picasso;
     @Inject
-    public AccountInteractor accountInteractor;
+    AccountInteractor accountInteractor;
     @Inject
     DateFormatter dateFormatter;
     @Inject
@@ -29,7 +29,7 @@ public class AccountSettingsInteractorContainer extends InteractorContainer {
     @Inject
     PreferencesInteractor preferences;
     @Inject
-    public FacebookInteractor facebookInteractor;
+    FacebookInteractor facebookInteractor;
     @Inject
     ProfileImageManager.Builder builder;
 
@@ -41,5 +41,33 @@ public class AccountSettingsInteractorContainer extends InteractorContainer {
     public void addInteractors() {
         addInteractor(accountInteractor);
         addInteractor(facebookInteractor);
+    }
+
+    public Picasso getPicasso() {
+        return picasso;
+    }
+
+    public AccountInteractor getAccountInteractor() {
+        return accountInteractor;
+    }
+
+    public DateFormatter getDateFormatter() {
+        return dateFormatter;
+    }
+
+    public UnitFormatter getUnitFormatter() {
+        return unitFormatter;
+    }
+
+    public PreferencesInteractor getPreferences() {
+        return preferences;
+    }
+
+    public FacebookInteractor getFacebookInteractor() {
+        return facebookInteractor;
+    }
+
+    public ProfileImageManager.Builder getBuilder() {
+        return builder;
     }
 }

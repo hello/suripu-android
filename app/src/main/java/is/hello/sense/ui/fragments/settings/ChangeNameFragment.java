@@ -23,6 +23,8 @@ public class ChangeNameFragment extends SenseFragment implements Analytics.OnEve
     private LabelEditText firstNameLET;
     private LabelEditText lastNameLET;
 
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -30,7 +32,7 @@ public class ChangeNameFragment extends SenseFragment implements Analytics.OnEve
 
         this.firstNameLET = (LabelEditText) view.findViewById(R.id.fragment_change_first_name_let);
         firstNameLET.setOnEditorActionListener(new EditorActionHandler(() -> submit(firstNameLET)));
-        firstNameLET.setInputText(AccountEditor.getContainer(this).getAccount().getFirstName());
+//        firstNameLET.setInputText(AccountEditor.getContainer(this).getAccount().getFirstName());
 
         this.lastNameLET = (LabelEditText) view.findViewById(R.id.fragment_change_last_name_let);
         lastNameLET.setOnEditorActionListener(new EditorActionHandler(() -> submit(lastNameLET)));

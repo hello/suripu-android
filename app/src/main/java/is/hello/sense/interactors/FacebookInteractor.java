@@ -35,22 +35,26 @@ import rx.Observable;
 public class FacebookInteractor extends SenseInteractor<FacebookProfile> {
 
 
-    @Inject FacebookApiService apiService;
-    @Inject CallbackManager callbackManager;
-    @Inject ConnectivityManager connectivityManager;
+    @Inject
+    FacebookApiService apiService;
+    @Inject
+    CallbackManager callbackManager;
+    @Inject
+    ConnectivityManager connectivityManager;
 
     private static final String IMAGE_PARAM = "picture.type(large)";
     private static final String PROFILE_PARAM = "first_name,last_name,email,gender";
     private String queryParams;
     private List<String> permissionList;
 
-    public @Inject
-    FacebookInteractor(@NonNull final Context context){
+    public
+    @Inject
+    FacebookInteractor(@NonNull final Context context) {
         this.queryParams = getDefaultQueryParams();
         this.permissionList = getDefaultPermissions();
 
         Rx.fromLocalBroadcast(context, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT))
-        .subscribe( ignored -> logout(), Functions.LOG_ERROR);
+          .subscribe(ignored -> logout(), Functions.LOG_ERROR);
     }
 
     @Override
@@ -79,7 +83,7 @@ public class FacebookInteractor extends SenseInteractor<FacebookProfile> {
     }
 
     //region Updates
-    public void onActivityResult(final int requestCode,final int resultCode,@NonNull final Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, @NonNull final Intent data) {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -121,20 +125,20 @@ public class FacebookInteractor extends SenseInteractor<FacebookProfile> {
     }
 
     public void login(@NonNull final Fragment container, final boolean requestOnlyPhoto) {
-        if(!isConnected()){
+        if (!isConnected()) {
             //Which exception would be more helpful to throw here?
             subscriptionSubject.onError(new Exception("No internet connection found"));
             return;
         }
         requestInfo(requestOnlyPhoto);
-        if(isLoggedIn()){
+        if (isLoggedIn()) {
             this.update();
         } else {
             LoginManager.getInstance().logInWithReadPermissions(container, permissionList);
         }
     }
 
-    public boolean isLoggedIn(){
+    public boolean isLoggedIn() {
         final AccessToken currentToken = AccessToken.getCurrentAccessToken();
         return subscriptionSubject.hasValue() &&
                 currentToken != null &&
@@ -147,7 +151,7 @@ public class FacebookInteractor extends SenseInteractor<FacebookProfile> {
         subscriptionSubject.forget();
     }
 
-    public boolean isConnected(){
+    public boolean isConnected() {
         final NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
         return activeNetwork != null &&
                 activeNetwork.isConnected();
@@ -155,35 +159,34 @@ public class FacebookInteractor extends SenseInteractor<FacebookProfile> {
 
     //endregion
 
-    private void setAuthToken(@Nullable final AccessToken token){
+    private void setAuthToken(@Nullable final AccessToken token) {
         AccessToken.setCurrentAccessToken(token);
     }
 
-    private String getAuthTokenString(){
+    private String getAuthTokenString() {
         final AccessToken token = AccessToken.getCurrentAccessToken();
         return String.format("Bearer %s", token != null ? token.getToken() : "");
     }
 
     /**
-     *
      * @param requestOnlyPhoto determines if only to add photo query param to facebook graph api request
      */
-    private void requestInfo(final boolean requestOnlyPhoto){
-        if(requestOnlyPhoto){
+    private void requestInfo(final boolean requestOnlyPhoto) {
+        if (requestOnlyPhoto) {
             queryParams = IMAGE_PARAM;
             permissionList = Collections.singletonList("public_profile");
-        } else{
+        } else {
             queryParams = getDefaultQueryParams();
             permissionList = getDefaultPermissions();
         }
     }
 
-    private String getDefaultQueryParams(){
-        return String.format("%s,%s",IMAGE_PARAM, PROFILE_PARAM);
+    private String getDefaultQueryParams() {
+        return String.format("%s,%s", IMAGE_PARAM, PROFILE_PARAM);
     }
 
-    private List<String> getDefaultPermissions(){
-        return Arrays.asList("public_profile","email");
+    private List<String> getDefaultPermissions() {
+        return Arrays.asList("public_profile", "email");
     }
 
 }

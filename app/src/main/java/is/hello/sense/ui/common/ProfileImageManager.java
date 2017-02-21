@@ -135,7 +135,7 @@ public class ProfileImageManager {
     /**
      * @return true if requestCode matched.
      */
-    public boolean onActivityResult(final int requestCode, final int resultCode, @NonNull final Intent data) {
+    public boolean onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (resultCode != Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_CAMERA || requestCode == REQUEST_CODE_GALLERY) {
                 setShowOptions(true);
@@ -146,6 +146,9 @@ public class ProfileImageManager {
         }
 
         if (requestCode == REQUEST_CODE_OPTIONS) {
+            if (data == null) {
+                return false;
+            }
             setShowOptions(false);
             final int optionID = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, -1);
             handlePictureOptionSelection(optionID);
@@ -160,6 +163,9 @@ public class ProfileImageManager {
             saveSource(CAMERA); // in case the user took a few days to return.
             getListener().onFromCamera(photoUri);
         } else if (requestCode == REQUEST_CODE_GALLERY) {
+            if (data == null) {
+                return false;
+            }
             saveSource(GALLERY);
             final Uri imageUri = data.getData();
             getListener().onFromGallery(imageUri);

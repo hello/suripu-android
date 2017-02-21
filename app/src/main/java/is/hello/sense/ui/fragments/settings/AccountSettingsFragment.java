@@ -63,8 +63,6 @@ public class AccountSettingsFragment extends InjectionFragment
     private static final String CURRENT_ACCOUNT_INSTANCE_KEY = "currentAccount";
 
     @Inject
-    Picasso picasso;
-    @Inject
     AccountInteractor accountPresenter;
     @Inject
     DateFormatter dateFormatter;
@@ -72,29 +70,18 @@ public class AccountSettingsFragment extends InjectionFragment
     UnitFormatter unitFormatter;
     @Inject
     PreferencesInteractor preferences;
-    @Inject
-    FacebookInteractor facebookPresenter;
-    @Inject
-    ProfileImageManager.Builder builder;
 
     private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem =
             new AccountSettingsRecyclerAdapter.CircleItem(
                     stateSafeExecutor.bind(this::changePicture)
             );
 
-    private SettingsRecyclerAdapter.DetailItem nameItem;
-    private SettingsRecyclerAdapter.DetailItem emailItem;
-    private SettingsRecyclerAdapter.DetailItem birthdayItem;
-    private SettingsRecyclerAdapter.DetailItem genderItem;
-    private SettingsRecyclerAdapter.DetailItem heightItem;
-    private SettingsRecyclerAdapter.DetailItem weightItem;
 
     private SettingsRecyclerAdapter.ToggleItem enhancedAudioItem;
 
 
     @Nullable
     private Account.Preferences accountPreferences;
-    private ProfileImageManager profileImageManager;
     private Account currentAccount;
     private ProgressBar loadingIndicator;
 
@@ -111,7 +98,6 @@ public class AccountSettingsFragment extends InjectionFragment
 
         accountPresenter.update();
         addPresenter(accountPresenter);
-        addPresenter(facebookPresenter);
         //Required so that it is retained after exiting on home button
         setRetainInstance(true);
     }
@@ -123,73 +109,8 @@ public class AccountSettingsFragment extends InjectionFragment
 
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.static_recycler_view_loading);
 
-
-        final AccountSettingsRecyclerAdapter adapter = new AccountSettingsRecyclerAdapter(getActivity(), picasso);
-
-        final int verticalPadding = getResources().getDimensionPixelSize(R.dimen.x2);
-        final int sectionPadding = getResources().getDimensionPixelSize(R.dimen.x4);
-        final InsetItemDecoration decoration = new InsetItemDecoration();
-
-        nameItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder),
-                                                          this::changeName);
-        nameItem.setIcon(R.drawable.icon_settings_user_24, R.string.label_name);
-        adapter.add(nameItem);
-        emailItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.missing_data_placeholder), this::changeEmail);
-        emailItem.setIcon(R.drawable.icon_settings_email_24, R.string.label_email);
-        adapter.add(emailItem);
-
-        decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
-        final SettingsRecyclerAdapter.DetailItem passwordItem =
-                new SettingsRecyclerAdapter.DetailItem(getString(R.string.title_change_password),
-                                                       this::changePassword);
-        passwordItem.setIcon(R.drawable.icon_settings_lock_24, R.string.label_password);
-        adapter.add(passwordItem);
-
-        birthdayItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_birthday), this::changeBirthDate);
-        birthdayItem.setIcon(R.drawable.icon_settings_calendar_24, R.string.label_birthday);
-
-        adapter.add(birthdayItem);
-        this.genderItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_gender),
-                                                                 this::changeGender);
-        genderItem.setIcon(R.drawable.icon_settings_gender_24, R.string.label_gender);
-        adapter.add(genderItem);
-
-        this.heightItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_height),
-                                                                 this::changeHeight);
-        heightItem.setIcon(R.drawable.icon_settings_height_24, R.string.label_height);
-        adapter.add(heightItem);
-
-        this.weightItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_weight),
-                                                                 this::changeWeight);
-        weightItem.setIcon(R.drawable.icon_settings_weight_24, R.string.label_weight);
-        adapter.add(weightItem);
-
-        decoration.addTopInset(adapter.getItemCount(), sectionPadding);
-
-        final SettingsRecyclerAdapter.DetailItem unitsAndTimeItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_units_and_time),
-                                                                                                           this::onUnitsAndTimeClick);
-        unitsAndTimeItem.setIcon(R.drawable.icon_settings_unitstime_24_fill, R.string.label_units_and_time);
-        adapter.add(unitsAndTimeItem);
-
-        decoration.addTopInset(adapter.getItemCount(), sectionPadding);
-        this.enhancedAudioItem = new SettingsRecyclerAdapter.ToggleItem(getString(R.string.label_enhanced_audio),
-                                                                        this::changeEnhancedAudio);
-        this.enhancedAudioItem.setIcon(R.drawable.icon_settings_enhanced_audio_24);
-        adapter.add(enhancedAudioItem);
-
-        adapter.add(new SettingsRecyclerAdapter.CheckBoxItem<>(getString(R.string.info_enhanced_audio), null));
-
-        decoration.addItemInset(adapter.getItemCount(), new Rect(0, sectionPadding, 0, verticalPadding));
-        final SettingsRecyclerAdapter.DetailItem signOutItem =
-                new SettingsRecyclerAdapter.DetailItem(getString(R.string.action_log_out),
-                                                       this::signOut);
-        signOutItem.setIcon(R.drawable.icon_settings_logout_24, R.string.action_log_out);
-        adapter.add(signOutItem);
-
-
         loadingIndicator.setVisibility(View.VISIBLE);
 
-        facebookPresenter.init();
 
         return view;
     }
@@ -206,26 +127,17 @@ public class AccountSettingsFragment extends InjectionFragment
                          this::bindAccountPreferences,
                          Functions.LOG_ERROR);
 
-        profileImageManager = builder.build(this);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
 
-        profileImageManager.hidePictureOptions();
 
         this.loadingIndicator = null;
-        this.nameItem = null;
-        this.emailItem = null;
-        this.genderItem = null;
-        this.birthdayItem = null;
-        this.heightItem = null;
-        this.weightItem = null;
         this.enhancedAudioItem = null;
 
 
-        this.profileImageManager = null;
     }
 
     @Override
@@ -237,11 +149,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (profileImageManager.onActivityResult(requestCode, resultCode, data)) {
-            return;
-        }
-        facebookPresenter.onActivityResult(requestCode, resultCode, data);
+       // facebookPresenter.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode != Activity.RESULT_OK) {
             return;
@@ -253,11 +161,6 @@ public class AccountSettingsFragment extends InjectionFragment
         } else if (requestCode == REQUEST_CODE_UNITS_AND_TIME) {
             bindAccount(currentAccount);
         }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
-        profileImageManager.onRequestPermissionResult(requestCode, permissions, grantResults);
     }
 
     //endregion
@@ -283,24 +186,7 @@ public class AccountSettingsFragment extends InjectionFragment
     //region Binding Data
 
     public void bindAccount(@NonNull final Account account) {
-        final String photoUrl = account.getProfilePhotoUrl(getResources());
-        if (photoUrl.isEmpty()) {
-            profileImageManager.removeDeleteOption();
-        } else {
-            profileImageManager.addDeleteOption();
-        }
-        profilePictureItem.setValue(photoUrl);
-        nameItem.setText(account.getFullName());
-        emailItem.setText(account.getEmail());
 
-        birthdayItem.setValue(dateFormatter.formatAsLocalizedDate(account.getBirthDate()));
-        genderItem.setValue(getString(account.getGender().nameRes));
-
-        final CharSequence weight = unitFormatter.formatWeight(account.getWeight());
-        weightItem.setValue(weight.toString());
-
-        final CharSequence height = unitFormatter.formatHeight(account.getHeight());
-        heightItem.setValue(height.toString());
 
         this.currentAccount = account;
 
@@ -324,9 +210,9 @@ public class AccountSettingsFragment extends InjectionFragment
 
     //region Basic Info
     private void changePicture() {
-        if (profileImageManager != null) {
+       /* if (profileImageManager != null) {
             profileImageManager.showPictureOptions();
-        }
+        }*/
     }
 
     public void changeName() {
@@ -476,25 +362,25 @@ public class AccountSettingsFragment extends InjectionFragment
 
     @Override
     public void onImportFromFacebook() {
-        profileImageManager.setShowOptions(false);
+     /*   profileImageManager.setShowOptions(false);
         if (!facebookPresenter.subscriptionSubject.hasObservers()) {
             bindAndSubscribe(facebookPresenter.subscriptionSubject,
                              this::getFacebookProfileSuccess,
                              this::getFacebookProfileError);
         }
-        facebookPresenter.login(this);
+        facebookPresenter.login(this);*/
     }
 
     @Override
     public void onFromCamera(@NonNull final Uri imageUri) {
         showProfileLoadingIndicator(true);
-        profileImageManager.compressImage(imageUri);
+      //  profileImageManager.compressImage(imageUri);
     }
 
     @Override
     public void onFromGallery(@NonNull final Uri imageUri) {
         showProfileLoadingIndicator(true);
-        profileImageManager.compressImage(imageUri);
+       // profileImageManager.compressImage(imageUri);
     }
 
     @Override
@@ -521,9 +407,9 @@ public class AccountSettingsFragment extends InjectionFragment
         if (!TextUtils.isEmpty(fbImageUri)) {
             final Uri newUri = Uri.parse(fbImageUri);
             showProfileLoadingIndicator(true);
-            profileImageManager.compressImage(newUri);
+          //  profileImageManager.compressImage(newUri);
         } else {
-            profileImageManager.setShowOptions(true);
+         //   profileImageManager.setShowOptions(true);
         }
     }
 
@@ -534,8 +420,8 @@ public class AccountSettingsFragment extends InjectionFragment
     private void updateProfilePictureSuccess(@NonNull final MultiDensityImage compressedPhoto) {
         showProfileLoadingIndicator(false);
         currentAccount.setProfilePhoto(compressedPhoto);
-        profileImageManager.addDeleteOption();
-        profileImageManager.clear();
+       // profileImageManager.addDeleteOption();
+       // profileImageManager.clear();
         profilePictureItem.setValue(currentAccount.getProfilePhotoUrl(getResources()));
     }
 
@@ -544,12 +430,12 @@ public class AccountSettingsFragment extends InjectionFragment
         currentAccount.setProfilePhoto(currentAccount.getProfilePhoto());
         bindAccount(currentAccount);
         onImageCompressedError(e, R.string.error_account_upload_photo_title, R.string.error_account_upload_photo_message);
-        profileImageManager.clear();
+       // profileImageManager.clear();
     }
 
     private void removePhotoSuccess(final VoidResponse response) {
         showProfileLoadingIndicator(false);
-        profileImageManager.removeDeleteOption();
+        //profileImageManager.removeDeleteOption();
         currentAccount.setProfilePhoto(null);
         bindAccount(currentAccount);
         Analytics.trackEvent(Analytics.Account.EVENT_DELETE_PROFILE_PHOTO, null);
@@ -576,11 +462,11 @@ public class AccountSettingsFragment extends InjectionFragment
             final View progressBar = getView().findViewById(R.id.item_profile_progress_bar);
             if (progressBar != null) {
                 progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-                profileImageManager.setShowOptions(!show);
+            //    profileImageManager.setShowOptions(!show);
                 return;
             }
         }
-        profileImageManager.setShowOptions(show);
+        //profileImageManager.setShowOptions(show);
     }
 
 }

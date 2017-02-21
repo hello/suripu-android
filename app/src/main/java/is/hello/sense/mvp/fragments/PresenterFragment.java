@@ -1,6 +1,7 @@
 package is.hello.sense.mvp.fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -42,6 +43,7 @@ public abstract class PresenterFragment<SP extends SensePresenter> extends Sense
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        getSensePresenter().bindAndSubscribeAll();
     }
 
     @CallSuper
@@ -65,6 +67,17 @@ public abstract class PresenterFragment<SP extends SensePresenter> extends Sense
         super.onDetach();
         getSensePresenterOrEmpty().getInteractorContainer().onDetach();
         onRelease();
+    }
+
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        getSensePresenterOrEmpty().onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
+        getSensePresenterOrEmpty().onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @CallSuper
