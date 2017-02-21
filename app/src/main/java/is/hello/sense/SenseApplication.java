@@ -101,9 +101,9 @@ public class SenseApplication extends MultiDexApplication {
                                      NotificationRegistrationBroadcastReceiver.getIntentFilter());
 
         // cannot send ordered broadcasts with local broadcast manager
-        registerReceiver(
+        /*registerReceiver(
                 new NotificationMessageReceiver(false),
-                NotificationMessageReceiver.getBackgroundPriorityFilter());
+                NotificationMessageReceiver.getBackgroundPriorityFilter());*/
 
 
 

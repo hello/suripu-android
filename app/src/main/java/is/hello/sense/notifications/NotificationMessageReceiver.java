@@ -19,7 +19,7 @@ import is.hello.sense.ui.activities.LaunchActivity;
  * Handle display of notifications received
  */
 public class NotificationMessageReceiver extends BroadcastReceiver {
-    private static final String ACTION_FILTER = NotificationMessageReceiver.class.getSimpleName() + ".ACTION_FILTER";
+    private static final String ACTION_FILTER = "is.hello.sense.notifications.MESSAGE_RECEIVED";
     private static final String EXTRA_NOTIFICATION_PAYLOAD = NotificationMessageReceiver.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     private final boolean abortBroadcast;
 
@@ -52,6 +52,10 @@ public class NotificationMessageReceiver extends BroadcastReceiver {
      */
     public NotificationMessageReceiver(final boolean abortBroadcast) {
         this.abortBroadcast = abortBroadcast;
+    }
+
+    public NotificationMessageReceiver() {
+        this(false);
     }
 
     @Override
