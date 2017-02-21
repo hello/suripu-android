@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/x3"
-        android:drawableEnd="@drawable/disclosure_chevron"
+        android:drawableEnd="@drawable/icon_chevron_right_24"
         android:drawablePadding="@dimen/x1"
         android:gravity="start|center_vertical"
         android:textColor="@color/light_accent"
