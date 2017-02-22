@@ -68,7 +68,9 @@ public class EnableNotificationFragment extends InjectionFragment {
     }
 
     private void onSkip(final View ignored) {
-        finishFlow(); //todo do we still send tokens and disable settings on skip?
+        bindAndSubscribe(notificationSettingsInteractor.disableAll(),
+                         voidResponse -> this.onFinish(),
+                         e -> ErrorDialogFragment.presentError(getActivity(), e));
     }
 
     private void onNext(final View ignored) {

@@ -198,7 +198,7 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<VoidResponse> putNotificationSettings(@NonNull @Body List<NotificationSetting> settings) {
-        return unimplemented();
+        return safeJust(new VoidResponse());
     }
 
     @Override

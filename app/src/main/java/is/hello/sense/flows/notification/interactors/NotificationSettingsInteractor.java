@@ -45,9 +45,23 @@ public class NotificationSettingsInteractor extends ValueInteractor<ArrayList<No
                        .flatMap(this::updateNotificationSettings);
     }
 
+    public Observable<VoidResponse> disableAll() {
+        return latest().map(this::disableAll)
+                       .flatMap(this::updateNotificationSettings);
+    }
+
     private List<NotificationSetting> enableAll(@NonNull final List<NotificationSetting> settings) {
-        for(final NotificationSetting setting : settings) {
-            setting.setEnabled(true);
+        return updateAll(settings, true);
+    }
+
+    private List<NotificationSetting> disableAll(@NonNull final List<NotificationSetting> settings) {
+        return updateAll(settings, false);
+    }
+
+    private List<NotificationSetting> updateAll(@NonNull final List<NotificationSetting> settings,
+                                                final boolean enabled) {
+        for (final NotificationSetting setting : settings) {
+            setting.setEnabled(enabled);
         }
         return settings;
     }
