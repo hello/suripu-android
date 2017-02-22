@@ -31,8 +31,6 @@ import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
 import is.hello.sense.flows.home.ui.fragments.WeekTrendsFragment;
-import is.hello.sense.flows.notification.ui.activities.NotificationActivity;
-import is.hello.sense.flows.notification.ui.fragments.NotificationFragment;
 import is.hello.sense.flows.settings.ui.activities.AppSettingsActivity;
 import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
@@ -52,8 +50,7 @@ import is.hello.sense.interactors.TrendsInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
-import is.hello.sense.notifications.NotificationInteractor;
-import is.hello.sense.notifications.NotificationMessageReceiver;
+import is.hello.sense.notifications.NotificationModule;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.pill.PillModule;
 import is.hello.sense.presenters.BaseHardwarePresenter;
@@ -89,11 +86,11 @@ import is.hello.sense.zendesk.ZendeskModule;
                 UtilityModule.class,
                 FacebookApiModule.class,
                 PillModule.class,
-                SenseOTAModule.class, //todo remove after converting fragments to use presenters
+                SenseOTAModule.class, //todo remove after converting fragments to use presenters,
+                NotificationModule.class,
         },
         injects = {
                 SenseApplication.class,
-                NotificationMessageReceiver.class,
 
                 DebugActivity.class,
                 PreferencesInteractor.class,
@@ -156,8 +153,6 @@ import is.hello.sense.zendesk.ZendeskModule;
 
                 VoiceSettingsInteractor.class,
                 AppSettingsActivity.class,
-                NotificationActivity.class,
-                NotificationFragment.class
         }
 )
 @SuppressWarnings("UnusedDeclaration")
@@ -198,11 +193,4 @@ public class SenseAppModule {
     public AlertsInteractor providesAlertsInteractor(@NonNull final ApiService apiService) {
         return new AlertsInteractor(apiService);
     }
-
-    @Provides
-    @Singleton
-    public NotificationInteractor providesNotificationInteractor(@NonNull final Context context) {
-        return new NotificationInteractor(context);
-    }
-
 }

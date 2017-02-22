@@ -60,6 +60,7 @@ import is.hello.sense.interactors.questions.ApiQuestionProviderTests;
 import is.hello.sense.interactors.questions.ReviewQuestionProviderTests;
 import is.hello.sense.interactors.settings.SettingsPairSenseInteractorTests;
 import is.hello.sense.interactors.upgrade.UpgradePairSenseInteractorTests;
+import is.hello.sense.notifications.NotificationActivityLifecycleListener;
 import is.hello.sense.notifications.NotificationInteractor;
 import is.hello.sense.notifications.NotificationInteractorTest;
 import is.hello.sense.rating.LocalUsageTrackerTests;
@@ -246,5 +247,11 @@ public final class TestModule {
     @Singleton
     public NotificationInteractor providesNotificationInteractor(@NonNull final Context context) {
         return new NotificationInteractor(context);
+    }
+
+    @Provides
+    @Singleton
+    public NotificationActivityLifecycleListener providesNotificationActivityLifecycleListener() {
+        return new NotificationActivityLifecycleListener();
     }
 }
