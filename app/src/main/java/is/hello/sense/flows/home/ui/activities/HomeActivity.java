@@ -1,10 +1,12 @@
 package is.hello.sense.flows.home.ui.activities;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.segment.analytics.Properties;
 
@@ -72,7 +74,10 @@ public class HomeActivity extends FragmentNavigationActivity
                     Analytics.createProperties(Analytics.Global.PROP_ALARM_CLOCK_INTENT_NAME,
                                                "ACTION_SHOW_ALARMS");
             Analytics.trackEvent(Analytics.Global.EVENT_ALARM_CLOCK_INTENT, properties);
-            /// this.tabLayout.selectSoundTab(); todo support again
+            final HomePresenterFragment fragment = getHomePresenterFragment();
+            if (fragment != null) {
+                fragment.selectSoundTab();
+            }
         } else if (intent.hasExtra(NotificationReceiver.EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(NotificationReceiver.EXTRA_NOTIFICATION_PAYLOAD));
         }
@@ -97,17 +102,21 @@ public class HomeActivity extends FragmentNavigationActivity
         this.stateSafeExecutor.execute(() -> {
             info(getClass().getSimpleName(), "dispatchNotification(" + notification + ")");
 
+            final HomePresenterFragment fragment = getHomePresenterFragment();
+            if (fragment == null) {
+                return;
+            }
             @Notification.Type
             final String target = Notification.typeFromBundle(notification);
             switch (target) {
                 case Notification.SLEEP_SCORE: {
-                    // this.tabLayout.selectTimelineTab(); todo support again
+                    fragment.selectTimelineTab();
                     //todo support scrolling to date.
                     break;
                 }
                 case Notification.PILL_BATTERY: {
                     //todo handle and pass along
-                    // this.tabLayout.selectConditionsTab(); todo support again
+                    fragment.selectConditionsTab();
                     break;
                 }
                 default: {
@@ -125,6 +134,15 @@ public class HomeActivity extends FragmentNavigationActivity
         if (intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
         }
+    }
+
+    @Nullable
+    private HomePresenterFragment getHomePresenterFragment() {
+        final Fragment fragment = getTopFragment();
+        if (fragment instanceof HomePresenterFragment) {
+            return (HomePresenterFragment) fragment;
+        }
+        return null;
     }
 
 

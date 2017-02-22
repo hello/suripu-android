@@ -31,7 +31,6 @@ public class HomeView extends BindedPresenterView<ViewHomeBinding> {
                                                                                 this.binding.viewHomeExtendedViewPager.getId(),
                                                                                 delegate.getViewPagerItems());
         this.binding.viewHomeExtendedViewPager.setAdapter(fragmentAdapter);
-
     }
 
     //region BindedPresenterView
@@ -149,6 +148,22 @@ public class HomeView extends BindedPresenterView<ViewHomeBinding> {
                 this.binding.viewHomeProgressOverlay.setVisibility(View.GONE);
             }
         });
+    }
+
+    public void selectTimelineTab(){
+        this.binding.viewHomeTabLayout.selectTimelineTab();
+    }
+    public void selectTrendsTab(){
+        this.binding.viewHomeTabLayout.selectTrendsTab();
+    }
+    public void selectFeedTab(){
+        this.binding.viewHomeTabLayout.selectFeedTab();
+    }
+    public void selectSoundTab(){
+        this.binding.viewHomeTabLayout.selectSoundTab();
+    }
+    public void selectConditionsTab(){
+        this.binding.viewHomeTabLayout.selectConditionsTab();
     }
     //endregion
 }

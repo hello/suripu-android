@@ -141,7 +141,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     }
     //endregion
 
-    //region OnBackPressedInteceptor
+    //region OnBackPressedInterceptor
 
     @Override
     public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
@@ -186,7 +186,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
 
     //endregion
 
-    //region Timeline Parent Provider // todo remove this
+    //region Timeline Parent Provider
     @Nullable
     @Override
     public TimelineFragment.Parent getTimelineParent() {
@@ -271,7 +271,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     }
 
     /**
-     * I'm not sure what this is checking. todo find out.
+     * I'm not sure what this is checking.
      */
     public void checkInForUpdates() {
 
@@ -292,7 +292,6 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
      * @return true if an alert is showing.
      */
     private boolean isShowingAlert() {
-        //todo look into using child fragment manager.
         return getFragmentManager().findFragmentByTag(BottomAlertDialogFragment.TAG) != null
                 || getFragmentManager().findFragmentByTag(DeviceIssueDialogFragment.TAG) != null;
     }
@@ -379,6 +378,21 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         this.presenterView.updateSleepScoreIcon(timeLine);
     }
 
+    public void selectTimelineTab(){
+        this.presenterView.selectTimelineTab();
+    }
+    public void selectTrendsTab(){
+        this.presenterView.selectTrendsTab();
+    }
+    public void selectFeedTab(){
+        this.presenterView.selectFeedTab();
+    }
+    public void selectSoundTab(){
+        this.presenterView.selectSoundTab();
+    }
+    public void selectConditionsTab(){
+        this.presenterView.selectConditionsTab();
+    }
 
     //endregion
 
