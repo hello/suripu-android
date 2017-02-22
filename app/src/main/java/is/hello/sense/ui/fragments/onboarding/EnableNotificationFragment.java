@@ -7,17 +7,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import javax.inject.Inject;
+
 import is.hello.sense.R;
+import is.hello.sense.flows.notification.interactors.NotificationSettingsInteractor;
 import is.hello.sense.notifications.NotificationRegistrationBroadcastReceiver;
-import is.hello.sense.ui.common.SenseFragment;
+import is.hello.sense.ui.common.InjectionFragment;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 
 /**
  * Introduce user to allow receiving push notifications
  */
 
-public class EnableNotificationFragment extends SenseFragment {
+public class EnableNotificationFragment extends InjectionFragment {
+
+    @Inject
+    NotificationSettingsInteractor notificationSettingsInteractor;
 
     OnboardingSimpleStepView view;
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        notificationSettingsInteractor.update();
+    }
 
     @Nullable
     @Override
@@ -41,14 +54,23 @@ public class EnableNotificationFragment extends SenseFragment {
             view.destroy();
             view = null;
         }
-
     }
 
     private void onSkip(final View ignored) {
-        finishFlow();
+        notificationSettingsInteractor.updateIfInvalid();
+        bindAndSubscribe(notificationSettingsInteractor.disableAll(),
+                         voidResponse -> this.onFinish(),
+                         e -> ErrorDialogFragment.presentError(getActivity(), e));
     }
 
     private void onNext(final View ignored) {
+        notificationSettingsInteractor.updateIfInvalid();
+        bindAndSubscribe(notificationSettingsInteractor.enableAll(),
+                         voidResponse -> this.onFinish(),
+                         e -> ErrorDialogFragment.presentError(getActivity(), e));
+    }
+
+    private void onFinish() {
         LocalBroadcastManager.getInstance(getActivity())
                              .sendBroadcast(NotificationRegistrationBroadcastReceiver.getRegisterIntent(null));
         finishFlow();

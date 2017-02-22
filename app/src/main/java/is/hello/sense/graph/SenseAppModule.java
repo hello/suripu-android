@@ -67,6 +67,7 @@ import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
+import is.hello.sense.ui.fragments.onboarding.EnableNotificationFragment;
 import is.hello.sense.ui.fragments.onboarding.OnboardingPairPill;
 import is.hello.sense.ui.fragments.onboarding.OnboardingSenseColorsFragment;
 import is.hello.sense.ui.fragments.onboarding.RegisterFragment;
@@ -157,7 +158,9 @@ import is.hello.sense.zendesk.ZendeskModule;
                 VoiceSettingsInteractor.class,
                 AppSettingsActivity.class,
                 NotificationActivity.class,
-                NotificationFragment.class
+                NotificationFragment.class,
+
+                EnableNotificationFragment.class //todo move to NotificationModule when merged
         }
 )
 @SuppressWarnings("UnusedDeclaration")
