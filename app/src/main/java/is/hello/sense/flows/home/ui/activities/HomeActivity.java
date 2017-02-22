@@ -31,6 +31,7 @@ import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelinePagerPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsPresenterFragment;
 import is.hello.sense.flows.home.ui.views.SenseTabLayout;
+import is.hello.sense.flows.home.util.HomeFragmentPagerAdapter;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.functional.Functions;
@@ -118,14 +119,17 @@ public class HomeActivity extends ScopedInjectionActivity
         this.extendedViewPager.setScrollingEnabled(false);
         this.extendedViewPager.setFadePageTransformer(true);
         this.extendedViewPager.setOffscreenPageLimit(this.viewPagerDelegate.getOffscreenPageLimit());
+        if (savedInstanceState == null) {
+            this.extendedViewPager.setCurrentItem(this.viewPagerDelegate.getStartingItemPosition());
+        }
         this.tabLayout = (SenseTabLayout) findViewById(R.id.activity_new_home_tab_layout);
-        restoreState(savedInstanceState);
-        this.tabLayout.setupWithViewPager(this.extendedViewPager);
-        final StaticFragmentAdapter fragmentAdapter = new StaticFragmentAdapter(getFragmentManager(),
-                                                                                this.extendedViewPager.getId(),
-                                                                                this.viewPagerDelegate.getViewPagerItems());
+
+        final HomeFragmentPagerAdapter fragmentAdapter = new HomeFragmentPagerAdapter(getFragmentManager(),
+                                                                                      this.extendedViewPager.getId(),
+                                                                                      this.viewPagerDelegate.getViewPagerItems());
         this.extendedViewPager.setAdapter(fragmentAdapter);
-        this.tabLayout.setUpTabs(true);
+        this.tabLayout.setupWithViewPager(this.extendedViewPager);
+
         this.tabLayout.setListener(this);
         //todo needs testing with server
         final Intent intent = getIntent();
@@ -214,6 +218,7 @@ public class HomeActivity extends ScopedInjectionActivity
         super.onDestroy();
         if (this.tabLayout != null) {
             this.tabLayout.clearOnTabSelectedListeners();
+            this.tabLayout.setListener(null);
         }
 
         unregisterReceiver(notificationReceiver);
@@ -229,16 +234,6 @@ public class HomeActivity extends ScopedInjectionActivity
                              }
                          },
                          e -> Logger.error(HomeActivity.class.getSimpleName(), "Could not run update check in", e));
-    }
-
-
-    private void restoreState(@Nullable final Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            this.tabLayout.setCurrentItemIndex(savedInstanceState.getInt(KEY_CURRENT_ITEM_INDEX,
-                                                                         this.viewPagerDelegate.getStartingItemPosition()));
-        } else {
-            this.tabLayout.setCurrentItemIndex(this.viewPagerDelegate.getStartingItemPosition());
-        }
     }
 
     //region Onboarding flow provider
@@ -448,13 +443,28 @@ public class HomeActivity extends ScopedInjectionActivity
 
         @NonNull
         @Override
-        public StaticFragmentAdapter.Item[] getViewPagerItems() {
-            return new StaticFragmentAdapter.Item[]{
-                    new StaticFragmentAdapter.Item(TimelinePagerPresenterFragment.class, TimelinePagerPresenterFragment.class.getSimpleName()),
-                    new StaticFragmentAdapter.Item(TrendsPresenterFragment.class, TrendsPresenterFragment.class.getSimpleName()),
-                    new StaticFragmentAdapter.Item(FeedPresenterFragment.class, FeedPresenterFragment.class.getSimpleName()),
-                    new StaticFragmentAdapter.Item(SoundsPresenterFragment.class, SoundsPresenterFragment.class.getSimpleName()),
-                    new StaticFragmentAdapter.Item(RoomConditionsPresenterFragment.class, RoomConditionsPresenterFragment.class.getSimpleName())
+        public HomeFragmentPagerAdapter.HomeItem[] getViewPagerItems() {
+            return new HomeFragmentPagerAdapter.HomeItem[]{
+                    new HomeFragmentPagerAdapter.HomeItem(TimelinePagerPresenterFragment.class,
+                                                          TimelinePagerPresenterFragment.class.getSimpleName(),
+                                                          R.drawable.icon_sense_24,
+                                                          R.drawable.icon_sense_active_24),
+                    new HomeFragmentPagerAdapter.HomeItem(TrendsPresenterFragment.class,
+                                                          TrendsPresenterFragment.class.getSimpleName(),
+                                                          R.drawable.icon_trends_24,
+                                                          R.drawable.icon_trends_active_24),
+                    new HomeFragmentPagerAdapter.HomeItem(FeedPresenterFragment.class,
+                                                          FeedPresenterFragment.class.getSimpleName(),
+                                                          R.drawable.icon_insight_24,
+                                                          R.drawable.icon_insight_active_24),
+                    new HomeFragmentPagerAdapter.HomeItem(SoundsPresenterFragment.class,
+                                                          SoundsPresenterFragment.class.getSimpleName(),
+                                                          R.drawable.icon_sound_24,
+                                                          R.drawable.icon_sound_active_24),
+                    new HomeFragmentPagerAdapter.HomeItem(RoomConditionsPresenterFragment.class,
+                                                          RoomConditionsPresenterFragment.class.getSimpleName(),
+                                                          R.drawable.icon_sense_24,
+                                                          R.drawable.icon_sense_active_24)
             };
         }
 
