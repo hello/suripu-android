@@ -56,4 +56,26 @@ public class NotificationSettingsInteractorTest extends InjectionTestCase {
         }
     }
 
+    @Test
+    public void updateIfInvalid() throws Exception {
+        notificationSettingsInteractor.notificationSettings.forget();
+        notificationSettingsInteractor.notificationSettings.onNext(null);
+        final boolean updated = notificationSettingsInteractor.updateIfInvalid();
+        assertThat(updated, equalTo(true));
+        assertThat(notificationSettingsInteractor.notificationSettings.hasValue(), equalTo(true));
+    }
+
+    @Test
+    public void throwInvalidException() throws Exception {
+        notificationSettingsInteractor.notificationSettings.onNext(null);
+
+        Sync.wrap(notificationSettingsInteractor.enableAll())
+            .assertThrows(NotificationSettingsInteractor.InvalidException.class);
+
+        notificationSettingsInteractor.notificationSettings.onNext(new ArrayList<>());
+
+        Sync.wrap(notificationSettingsInteractor.enableAll())
+            .assertThrows(NotificationSettingsInteractor.InvalidException.class);
+    }
+
 }

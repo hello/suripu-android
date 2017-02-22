@@ -7,14 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.NotificationSetting;
 import is.hello.sense.flows.notification.interactors.NotificationSettingsInteractor;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.notifications.NotificationRegistrationBroadcastReceiver;
 import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -33,14 +29,7 @@ public class EnableNotificationFragment extends InjectionFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bindAndSubscribe(notificationSettingsInteractor.notificationSettings,
-                         this::bindSettings,
-                         Functions.LOG_ERROR);
         notificationSettingsInteractor.update();
-    }
-
-    private void bindSettings(final List<NotificationSetting> settings) {
-
     }
 
     @Nullable
@@ -68,12 +57,14 @@ public class EnableNotificationFragment extends InjectionFragment {
     }
 
     private void onSkip(final View ignored) {
+        notificationSettingsInteractor.updateIfInvalid();
         bindAndSubscribe(notificationSettingsInteractor.disableAll(),
                          voidResponse -> this.onFinish(),
                          e -> ErrorDialogFragment.presentError(getActivity(), e));
     }
 
     private void onNext(final View ignored) {
+        notificationSettingsInteractor.updateIfInvalid();
         bindAndSubscribe(notificationSettingsInteractor.enableAll(),
                          voidResponse -> this.onFinish(),
                          e -> ErrorDialogFragment.presentError(getActivity(), e));
