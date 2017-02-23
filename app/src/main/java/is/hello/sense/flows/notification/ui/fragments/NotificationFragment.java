@@ -9,8 +9,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.zendesk.sdk.model.User;
-
 import java.util.List;
 
 import javax.inject.Inject;

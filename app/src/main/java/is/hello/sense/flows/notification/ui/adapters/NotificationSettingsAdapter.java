@@ -14,7 +14,6 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.api.model.NotificationSetting;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
-import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.widget.util.Views;
 
 public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<NotificationSetting, ArrayRecyclerAdapter.ViewHolder> {
