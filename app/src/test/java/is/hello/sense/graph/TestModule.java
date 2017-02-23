@@ -22,6 +22,7 @@ import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractorTests
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatterTest;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragmentTests;
+import is.hello.sense.flows.notification.interactors.NotificationSettingsInteractorTest;
 import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractorTest;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
@@ -144,6 +145,7 @@ import static org.mockito.Mockito.mock;
             ExpansionCategoryFormatterTest.class,
 
             NotificationInteractorTest.class,
+            NotificationSettingsInteractorTest.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")
