@@ -40,7 +40,7 @@ public class NotificationActivityLifecycleListener implements Application.Activi
         try {
             activity.unregisterReceiver(foregroundNotificationReceiver);
         } catch (final IllegalArgumentException e) {
-            Log.e(getClass().getSimpleName(), " failed to unregister foreground notification receiver");
+            Log.w(getClass().getSimpleName(), " failed to unregister foreground notification receiver");
         }
     }
 
