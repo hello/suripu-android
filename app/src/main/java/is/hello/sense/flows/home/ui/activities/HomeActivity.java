@@ -37,6 +37,7 @@ import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.interactors.TimelineInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.notifications.Notification;
@@ -128,9 +129,10 @@ public class HomeActivity extends ScopedInjectionActivity
                                                                                       this.extendedViewPager.getId(),
                                                                                       this.viewPagerDelegate.getViewPagerItems());
         this.extendedViewPager.setAdapter(fragmentAdapter);
-        this.tabLayout.setupWithViewPager(this.extendedViewPager);
 
+        this.tabLayout.setupWithViewPager(this.extendedViewPager);
         this.tabLayout.setListener(this);
+
         //todo needs testing with server
         final Intent intent = getIntent();
         if(intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
@@ -159,7 +161,7 @@ public class HomeActivity extends ScopedInjectionActivity
                          this::bindAlert,
                          Functions.LOG_ERROR);
         bindAndSubscribe(this.lastNightInteractor.timeline,
-                         this.tabLayout::updateSleepScoreTab,
+                         ignore -> this.tabLayout.updateSleepScoreTab(getCurrentTimeline()),
                          Functions.LOG_ERROR);
         bindAndSubscribe(this.unreadStateInteractor.hasUnreadItems,
                          this::bindUnreadItems,
@@ -427,8 +429,10 @@ public class HomeActivity extends ScopedInjectionActivity
     @Nullable
     @Override
     public Timeline getCurrentTimeline() {
-        if (this.lastNightInteractor.timeline.hasValue()) {
-            return this.lastNightInteractor.timeline.getValue();
+        final Timeline timeline = this.lastNightInteractor.timeline.getValue();
+        if (TimelineInteractor.hasValidTimeline(timeline)
+                && TimelineInteractor.hasValidCondition(timeline)) {
+            return timeline;
         }
         return null;
     }

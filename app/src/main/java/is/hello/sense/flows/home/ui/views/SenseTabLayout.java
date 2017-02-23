@@ -137,12 +137,24 @@ public class SenseTabLayout extends TabLayout
         tab.select();
     }
 
-
     public void setHomeTabIndicatorVisible(final boolean show) {
         if (getSelectedTabPosition() == INSIGHTS_ICON_KEY) {
             return;
         }
         setTabIndicatorVisible(INSIGHTS_ICON_KEY, show);
+    }
+
+    public void updateSleepScoreTab(@Nullable final Timeline timeline) {
+        final TabLayout.Tab tab = getTabAt(SLEEP_ICON_KEY);
+        if (tab == null) {
+            return;
+        }
+        final View view = tab.getCustomView();
+        if (view instanceof SenseTabView) {
+            ((SenseTabView) view).useSleepScoreIcon(timeline != null ? timeline.getScore() : null)
+                                 .setActive(tab.isSelected());
+        }
+
     }
 
     private void setTabIndicatorVisible(final int position,
@@ -158,8 +170,10 @@ public class SenseTabLayout extends TabLayout
     }
 
     private SenseTabView createSleepScoreTabView(@Nullable final Timeline timeline) {
+        final Integer score = timeline != null ? timeline.getScore() : null;
         return new SenseTabView(getContext())
-                .useSleepScoreIcon(timeline, SLEEP_ICON_KEY == getSelectedTabPosition());
+                .useSleepScoreIcon(score)
+                .setActive(false);
     }
 
     private SenseTabView createTabFor(@DrawableRes final int normal,
@@ -182,18 +196,6 @@ public class SenseTabLayout extends TabLayout
         if (view instanceof SenseTabView) {
             ((SenseTabView) view).setActive(active);
         }
-    }
-
-    public void updateSleepScoreTab(@Nullable final Timeline timeline) {
-        final TabLayout.Tab tab = getTabAt(SLEEP_ICON_KEY);
-        if (tab == null) {
-            return;
-        }
-        final View view = tab.getCustomView();
-        if (view instanceof SenseTabView) {
-            ((SenseTabView) view).updateSleepScoreIcon(timeline, tab.isSelected());
-        }
-
     }
 
     public interface Listener {
