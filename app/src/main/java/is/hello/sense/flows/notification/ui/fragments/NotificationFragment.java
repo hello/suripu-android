@@ -9,6 +9,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.zendesk.sdk.model.User;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -21,13 +23,15 @@ import is.hello.sense.flows.notification.ui.adapters.NotificationSettingsAdapter
 import is.hello.sense.flows.notification.ui.views.NotificationView;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
+import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
 public class NotificationFragment extends PresenterFragment<NotificationView>
-        implements ArrayRecyclerAdapter.ErrorHandler {
+        implements ArrayRecyclerAdapter.ErrorHandler,
+        NotificationSettingsAdapter.Listener {
 
     @Inject
     NotificationSettingsInteractor notificationSettingsInteractor;
@@ -39,6 +43,7 @@ public class NotificationFragment extends PresenterFragment<NotificationView>
     public void initializePresenterView() {
         if (presenterView == null) {
             notificationSettingsAdapter = createAdapter();
+            notificationSettingsAdapter.setListener(this);
             presenterView = new NotificationView(getActivity(),
                                                  notificationSettingsAdapter);
         }
@@ -69,8 +74,9 @@ public class NotificationFragment extends PresenterFragment<NotificationView>
     @Override
     protected void onRelease() {
         super.onRelease();
-        notificationSettingsAdapter.setErrorHandler(null);
-        saveSubscription.unsubscribe();
+        this.notificationSettingsAdapter.setListener(null);
+        this.notificationSettingsAdapter.setErrorHandler(null);
+        this.saveSubscription.unsubscribe();
     }
 
     @Override
@@ -112,6 +118,13 @@ public class NotificationFragment extends PresenterFragment<NotificationView>
     public void retry() {
         showProgress(true);
         notificationSettingsInteractor.update();
+    }
+    //endregion
+
+    //region NotificationSettingsAdapter.Listener
+    @Override
+    public void showSettings() {
+        UserSupport.showAppSettings(getActivity());
     }
     //endregion
 

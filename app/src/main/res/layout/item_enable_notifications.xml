@@ -29,6 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/x2"
+            android:id="@+id/item_enable_notifications"
             android:text="@string/notification_settings_enabled_link"/>
 
     </LinearLayout>
