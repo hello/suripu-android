@@ -163,6 +163,16 @@
             android:theme="@style/FacebookTheme"
             tools:replace="android:theme"/>
 
+        <receiver
+            android:name=".notifications.NotificationMessageReceiver"
+            android:exported="false"
+            android:label="@string/label_notifications">
+            <intent-filter
+                android:priority="1">
+                <action android:name="is.hello.sense.notifications.MESSAGE_RECEIVED"/>
+            </intent-filter>
+        </receiver>
+
         <service
             android:name=".bluetooth.DfuService"
             android:exported="true">

@@ -9,6 +9,7 @@ import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.Analytics;
 
 public abstract class SenseActivity extends Activity {
+
     @Override
     protected void onResume() {
         super.onResume();
