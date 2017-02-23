@@ -382,6 +382,9 @@ public class HomeActivity extends ScopedInjectionActivity
         this.stateSafeExecutor.execute(() -> {
             final Notification notification = Notification.fromBundle(bundle);
             notificationInteractor.onNext(notification);
+            Analytics.trackEvent(Analytics.Notification.EVENT_OPEN,
+                                 Analytics.createProperties(Analytics.Notification.PROP_TYPE, notification.getType(),
+                                                            Analytics.Notification.PROP_DETAIL, notification.getDetail()));
             switch (notification.getType()) {
                 case Notification.SLEEP_SCORE: {
                     this.tabLayout.selectTimelineTab();
