@@ -814,6 +814,25 @@ public class Analytics {
 
     }
 
+    public interface Notification {
+
+        /**
+         * tracked when app was launched from the notification
+         */
+        String EVENT_OPEN = "Open Notification";
+
+        /**
+         * value should correspond to what is in the payload for {@link is.hello.sense.notifications.Notification#type}
+         */
+        String PROP_TYPE = "type";
+
+        /**
+         * value should correspond to what is in the payload for {@link is.hello.sense.notifications.Notification#detail}
+         */
+        String PROP_DETAIL = "detail";
+
+    }
+
 
     //region Lifecycle
 

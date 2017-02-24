@@ -131,15 +131,15 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             return new SleepSoundsPlayerViewHolder(inflater.inflate(R.layout.item_rounded_linearlayout, parent, false),
                                                    playerView);
         } else if (viewType == AdapterState.FIRMWARE_UPDATE.ordinal()) {
-            return new FwUpdateStateViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
+            return new FwUpdateStateViewHolder(inflater.inflate(R.layout.temp_item_message_card, parent, false));
         } else if (viewType == AdapterState.SOUNDS_DOWNLOAD.ordinal()) {
-            return new NoSoundsStateViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
+            return new NoSoundsStateViewHolder(inflater.inflate(R.layout.temp_item_message_card, parent, false));
         } else if (viewType == AdapterState.OFFLINE.ordinal()) {
-            return new OfflineViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
+            return new OfflineViewHolder(inflater.inflate(R.layout.temp_item_message_card, parent, false));
         } else if (viewType == AdapterState.SENSE_NOT_PAIRED.ordinal()) {
-            return new SenseNotPairedViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
+            return new SenseNotPairedViewHolder(inflater.inflate(R.layout.temp_item_message_card, parent, false));
         }
-        return new ErrorViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
+        return new ErrorViewHolder(inflater.inflate(R.layout.temp_item_message_card, parent, false));
     }
 
 

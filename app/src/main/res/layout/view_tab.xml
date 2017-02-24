@@ -9,6 +9,8 @@
         android:id="@+id/view_tab_icon"
         android:layout_width="@dimen/x3"
         android:layout_height="@dimen/x3"
+        android:minWidth="@dimen/x3"
+        android:minHeight="@dimen/x3"
         android:layout_centerInParent="true"
         tools:src="@drawable/icon_trends_24"/>
 

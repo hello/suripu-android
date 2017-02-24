@@ -20,6 +20,7 @@ import is.hello.sense.api.sessions.TestApiSessionManager;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractorTests;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatterTest;
+import is.hello.sense.flows.home.interactors.LastNightInteractorTest;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragmentTests;
 import is.hello.sense.flows.notification.interactors.NotificationSettingsInteractorTest;
@@ -144,6 +145,9 @@ import static org.mockito.Mockito.mock;
             UpgradePairSenseInteractorTests.class,
 
             ExpansionCategoryFormatterTest.class,
+
+
+            LastNightInteractorTest.class,
 
             NotificationInteractorTest.class,
             NotificationSettingsInteractorTest.class,

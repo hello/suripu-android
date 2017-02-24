@@ -772,7 +772,7 @@
     <string name="onboarding_subtitle_enable_notification">Get your daily Sleep Score, as well as other important notifications.</string>
     <string name="action_allow_notifications">Allow notifications</string>
 
-    <string name="notification_settings_enabled_title">Are notifications enabled?</string>
+    <string name="notification_settings_enabled_title">Notifications not enabled</string>
     <string name="notification_settings_enabled_body">Check your device settings to make sure notifications are enabled.</string>
-    <string name="notification_settings_enabled_link">Enable notifications for Sense</string>
+    <string name="notification_settings_enabled_link">Enable notifications</string>
 </resources>

@@ -2,6 +2,7 @@ package is.hello.sense.flows.notification.ui.adapters;
 
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -22,6 +23,7 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
 
     private boolean showHeader = false;
     private boolean hasError = false;
+    private Listener listener = null;
 
     public NotificationSettingsAdapter() {
         super(new ArrayList<>(2));
@@ -45,7 +47,7 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
         if (viewType == ERROR) {
             return new NoConnectionErrorViewHolder(parent);
         } else if (viewType == HEADER) {
-            return new ViewHolder(inflate(R.layout.item_enable_notifications, parent));
+            return new HeaderViewHolder(parent);
         } else if (viewType == SETTING) {
             return new SettingsViewHolder(inflate(R.layout.item_notification_settings, parent));
         }
@@ -92,10 +94,31 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
         this.hasError = hasError;
         notifyDataSetChanged();
     }
+
+    private void showSettings(final View ignored) {
+        if (this.listener != null) {
+            this.listener.showSettings();
+        }
+    }
+
+    public void setListener(@Nullable final Listener listener) {
+        this.listener = listener;
+    }
     //endregion
 
     //region ViewHolders
-    private class SettingsViewHolder extends ArrayRecyclerAdapter.ViewHolder {
+    private class HeaderViewHolder extends ItemMessageCardViewHolder {
+        public HeaderViewHolder(@NonNull final ViewGroup parent) {
+            super(parent,
+                  R.drawable.icon_warning,
+                  R.string.notification_settings_enabled_title,
+                  R.string.notification_settings_enabled_body,
+                  R.string.notification_settings_enabled_link,
+                  NotificationSettingsAdapter.this::showSettings);
+        }
+    }
+
+    private class SettingsViewHolder extends ViewHolder {
         private final TextView name;
         private final CompoundButton toggleButton;
 
@@ -118,5 +141,9 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
         }
     }
     //endregion
+
+    public interface Listener {
+        void showSettings();
+    }
 
 }
