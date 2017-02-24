@@ -199,7 +199,7 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
     }
 
     //todo replace all error view holders using item_message_card with this.
-    public class ErrorViewHolder extends ViewHolder
+    public abstract class ErrorViewHolder extends ViewHolder
             implements View.OnClickListener {
         protected final ImageView image;
         protected final TextView title;
@@ -212,10 +212,7 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
             this.title = (TextView)  this.itemView.findViewById(R.id.item_message_card_title);
             this.message = (TextView)  this.itemView.findViewById(R.id.item_message_card_message);
             this.button = (Button)  this.itemView.findViewById(R.id.item_message_card_action);
-            this.button.setText(R.string.action_retry);
             this.button.setOnClickListener(this);
-            this.title.setVisibility(View.GONE);
-            this.message.setText(R.string.error_internet_connection_generic_message);
         }
 
         @Override
@@ -224,12 +221,22 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
             if (ArrayRecyclerAdapter.this.errorHandler == null) {
                 return;
             }
-            ArrayRecyclerAdapter.this.errorHandler.retry();
+            ArrayRecyclerAdapter.this.errorHandler.onError();
+        }
+    }
+
+    public class NoConnectionErrorViewHolder extends ErrorViewHolder {
+
+        public NoConnectionErrorViewHolder(@NonNull ViewGroup parent) {
+            super(parent);
+            this.button.setText(R.string.action_retry);
+            this.title.setVisibility(View.GONE);
+            this.message.setText(R.string.error_internet_connection_generic_message);
         }
     }
 
     public interface ErrorHandler {
-        void retry();
+        void onError();
     }
 
 }

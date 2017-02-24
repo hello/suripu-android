@@ -32,6 +32,7 @@ import is.hello.sense.interactors.SleepSoundsStatusInteractor;
 import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
 import is.hello.sense.ui.activities.ListActivity;
+import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
@@ -49,11 +50,13 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
         implements
         SleepSoundsAdapter.InteractionListener,
         SleepSoundsAdapter.Retry,
+        SleepSoundsAdapter.ErrorHandler,
         HomeActivity.ScrollUp,
         ViewPagerPresenterFragment.FabListener {
     private static final int SOUNDS_REQUEST_CODE = 123;
     private static final int DURATION_REQUEST_CODE = 231;
     private static final int VOLUME_REQUEST_CODE = 312;
+    private static final int PAIR_SENSE_REQUEST_CODE = 100;
 
     @Inject
     SleepSoundsStatusInteractor sleepSoundsStatusInteractor;
@@ -98,14 +101,14 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     @Override
     public void initializePresenterView() {
         if (this.presenterView == null) {
+            final SleepSoundsAdapter sleepSoundsAdapter = new SleepSoundsAdapter(getActivity(),
+                                                                                 preferencesInteractor,
+                                                                                 this,
+                                                                                 getAnimatorContext(),
+                                                                                 this);
+            sleepSoundsAdapter.setErrorHandler(this);
             this.presenterView = new SleepSoundsView(getActivity(),
-                                                     new SleepSoundsAdapter(
-                                                             getActivity(),
-                                                             preferencesInteractor,
-                                                             this,
-                                                             getAnimatorContext(),
-                                                             this)
-            );
+                                                     sleepSoundsAdapter);
         }
     }
 
@@ -158,6 +161,12 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (PAIR_SENSE_REQUEST_CODE == requestCode) {
+            setVisibleToUser(true);
+            return;
+        }
+
         if (resultCode == Activity.RESULT_OK) {
             final int value = data.getIntExtra(ListActivity.VALUE_ID, Constants.NONE);
             if (value == Constants.NONE) {
@@ -235,6 +244,14 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
             sleepSoundsStatusInteractor.startPolling();
             sleepSoundsInteractor.update();
         });
+    }
+    //endregion
+
+    //region ErrorHandler
+    @Override
+    public void onError() {
+        startActivityForResult(OnboardingActivity.getPairOnlyIntent(getActivity()),
+                               PAIR_SENSE_REQUEST_CODE);
     }
     //endregion
 

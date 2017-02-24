@@ -109,7 +109,7 @@ public class NotificationFragment extends PresenterFragment<NotificationView>
 
     //region ErrorHandler
     @Override
-    public void retry() {
+    public void onError() {
         showProgress(true);
         notificationSettingsInteractor.update();
     }

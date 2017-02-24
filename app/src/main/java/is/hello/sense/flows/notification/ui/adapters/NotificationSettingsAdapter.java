@@ -43,7 +43,7 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
     public ArrayRecyclerAdapter.ViewHolder onCreateViewHolder(final ViewGroup parent,
                                                               final int viewType) {
         if (viewType == ERROR) {
-            return new ErrorViewHolder(parent);
+            return new NoConnectionErrorViewHolder(parent);
         } else if (viewType == HEADER) {
             return new ViewHolder(inflate(R.layout.item_enable_notifications, parent));
         } else if (viewType == SETTING) {

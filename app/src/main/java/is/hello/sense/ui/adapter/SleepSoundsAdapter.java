@@ -23,7 +23,6 @@ import is.hello.sense.api.model.v2.SleepSounds;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
 import is.hello.sense.util.Constants;
 
@@ -38,6 +37,8 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
     private AdapterState currentState = AdapterState.NONE;
 
     private Retry retry;
+    @Nullable
+    private ErrorHandler errorHandler;
     private final Context context;
     private IDisplayedValues displayedValues;
 
@@ -53,6 +54,10 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         this.animatorContext = animatorContext;
         this.retry = retry;
         this.context = context;
+    }
+
+    public void setErrorHandler(@Nullable final ErrorHandler errorHandler) {
+        this.errorHandler = errorHandler;
     }
 
     public void bindData(final @NonNull SleepSoundsState combinedState) {
@@ -295,7 +300,9 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
         @Override
         public void onClick(final View ignored) {
-            context.startActivity(OnboardingActivity.getPairOnlyIntent(context));
+            if(errorHandler != null) {
+                errorHandler.onError();
+            }
         }
     }
 
@@ -321,6 +328,14 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     public interface Retry {
         void retry();
+    }
+
+    /**
+     * todo modeled after {@link ArrayRecyclerAdapter.ErrorHandler}
+     * remove after extending ErrorHandler.
+     */
+    public interface ErrorHandler {
+        void onError();
     }
 
     public interface IDisplayedValues {

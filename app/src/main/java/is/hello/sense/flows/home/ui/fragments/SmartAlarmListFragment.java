@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -51,6 +50,7 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
         HomeActivity.ScrollUp,
         ViewPagerPresenterFragment.FabListener {
     private static final int DELETE_REQUEST_CODE = 117;
+    private static final int PAIR_SENSE_REQUEST_CODE = 118;
 
     @Inject
     SmartAlarmInteractor smartAlarmInteractor;
@@ -118,6 +118,8 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
             bindAndSubscribe(smartAlarmInteractor.deleteSmartAlarm(position),
                              ignored -> presenterView.setProgressBarVisible(false),
                              this::presentError);
+        } else if (requestCode == PAIR_SENSE_REQUEST_CODE) {
+            this.setVisibleToUser(true);
         }
     }
 
@@ -282,7 +284,7 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
                                                     StringRef.from(R.string.error_smart_alarm_requires_device));
             message.titleIconRes = R.drawable.illustration_no_sense;
             message.actionRes = R.string.action_pair_sense;
-            message.onClickListener = ignored -> startActivity(OnboardingActivity.getPairOnlyIntent(getActivity()));
+            message.onClickListener = ignored -> SmartAlarmListFragment.this.startPairSense();
         } else {
             StringRef errorMessage = Errors.getDisplayMessage(e);
             if (errorMessage == null) {
@@ -299,6 +301,11 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
 
     public void updateAlarms(@Nullable final View ignored) {
         smartAlarmInteractor.update();
+    }
+
+    public void startPairSense() {
+        startActivityForResult(OnboardingActivity.getPairOnlyIntent(getActivity()),
+                               PAIR_SENSE_REQUEST_CODE);
     }
 
     public void presentError(final Throwable e) {
