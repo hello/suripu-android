@@ -47,7 +47,7 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
         if (viewType == ERROR) {
             return new ErrorViewHolder(parent);
         } else if (viewType == HEADER) {
-            return new HeaderViewHolder(inflate(R.layout.item_enable_notifications, parent));
+            return new HeaderViewHolder(parent);
         } else if (viewType == SETTING) {
             return new SettingsViewHolder(inflate(R.layout.item_notification_settings, parent));
         }
@@ -107,10 +107,14 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
     //endregion
 
     //region ViewHolders
-    private class HeaderViewHolder extends ViewHolder {
-        public HeaderViewHolder(@NonNull final View itemView) {
-            super(itemView);
-            itemView.findViewById(R.id.item_enable_notifications).setOnClickListener(NotificationSettingsAdapter.this::showSettings);
+    private class HeaderViewHolder extends ItemMessageCardViewHolder {
+        public HeaderViewHolder(@NonNull final ViewGroup parent) {
+            super(parent,
+                  R.drawable.icon_warning,
+                  R.string.notification_settings_enabled_title,
+                  R.string.notification_settings_enabled_body,
+                  R.string.notification_settings_enabled_link,
+                  NotificationSettingsAdapter.this::showSettings);
         }
     }
 

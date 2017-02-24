@@ -277,7 +277,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                 return new InsightViewHolder(view);
             }
             case TYPE_ERROR: {
-                final View view = inflater.inflate(R.layout.item_message_card, parent, false);
+                final View view = inflater.inflate(R.layout.temp_item_message_card, parent, false);
                 final int margin = resources.getDimensionPixelSize(R.dimen.x1);
                 final RecyclerView.LayoutParams lp = ((RecyclerView.LayoutParams) view.getLayoutParams());
                 lp.setMargins(margin, margin, margin, margin);
