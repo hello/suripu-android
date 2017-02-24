@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.view.View;
 
-
 import org.joda.time.LocalDate;
 
 import javax.inject.Inject;
@@ -60,7 +59,6 @@ public abstract class TrendsFragment extends ControllerPresenterFragment<TrendsV
     @Override
     public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
     }
 
     //endregion
@@ -70,6 +68,7 @@ public abstract class TrendsFragment extends ControllerPresenterFragment<TrendsV
     public void setVisibleToUser(final boolean isVisible) {
         super.setVisibleToUser(isVisible);
         if (isVisible) {
+            Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
             fetchTrends();
         }
     }

@@ -142,9 +142,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             return;
         }
         if (isVisibleToUser) {
-            // For all subsequent fragments running below Nougat
-            // setUserVisibleHint called before attached to activity
-            // not a reliable way to determine current view pager fragment
             bindIfNeeded();
             this.presenterView.setAnimationEnabled(true);
         } else {
@@ -163,13 +160,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final LocalDate date = getDate();
-        final Properties properties = Analytics.createProperties(Analytics.Timeline.PROP_DATE,
-                                                                 date.toString());
-        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE, properties);
-
-
-        this.timelineInteractor.setDateWithTimeline(date, getCachedTimeline());
+        this.timelineInteractor.setDateWithTimeline(getDate(), getCachedTimeline());
         addInteractor(this.timelineInteractor);
     }
 
@@ -329,6 +320,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     @VisibleForTesting
     void bindIfNeeded() {
         if (getView() != null && getUserVisibleHint()) {
+            sendShownAnalyticEvent();
             if (!hasSubscriptions()) {
                 this.timelineInteractor.updateIfEmpty();
 
@@ -678,6 +670,12 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
                              bottomSheet.dismiss();
                              ErrorDialogFragment.presentError(getActivity(), e);
                          });
+    }
+
+    private void sendShownAnalyticEvent() {
+        final Properties properties = Analytics.createProperties(Analytics.Timeline.PROP_DATE,
+                                                                 getDate().toString());
+        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE, properties);
     }
 
     //endregion
