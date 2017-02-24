@@ -28,18 +28,17 @@ import is.hello.sense.api.fb.model.FacebookProfile;
 import is.hello.sense.api.fb.model.FacebookProfilePicture;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.graph.InteractorSubject;
+import is.hello.sense.mvp.interactors.SenseInteractor;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-public class FacebookInteractor extends ValueInteractor<FacebookProfile> {
+public class FacebookInteractor extends SenseInteractor<FacebookProfile> {
 
 
     @Inject FacebookApiService apiService;
     @Inject CallbackManager callbackManager;
     @Inject ConnectivityManager connectivityManager;
 
-    public final InteractorSubject<FacebookProfile> profile = this.subject;
     private static final String IMAGE_PARAM = "picture.type(large)";
     private static final String PROFILE_PARAM = "first_name,last_name,email,gender";
     private String queryParams;
@@ -85,7 +84,7 @@ public class FacebookInteractor extends ValueInteractor<FacebookProfile> {
     }
 
     /**
-     * Required to run before binding and subscribing to {@link FacebookInteractor#profile}
+     * Required to run before binding and subscribing to {@link FacebookInteractor#subscriptionSubject}
      * Otherwise, updates will fail because login callbacks are not handled.
      */
     public void init() {
@@ -101,14 +100,14 @@ public class FacebookInteractor extends ValueInteractor<FacebookProfile> {
 
                                 @Override
                                 public void onCancel() {
-                                    profile.onNext(FacebookProfile.EmptyProfile.newInstance());
+                                    subscriptionSubject.onNext(FacebookProfile.EmptyProfile.newInstance());
                                 }
 
                                 @Override
                                 public void onError(final FacebookException exception) {
                                     // if error is a CONNECTION_FAILURE it may have been caused by using a proxy like Charles
                                     Logger.debug(FacebookInteractor.class.getSimpleName(), "login failed", exception.fillInStackTrace());
-                                    profile.onError(exception);
+                                    subscriptionSubject.onError(exception);
                                 }
                             });
     }
@@ -124,7 +123,7 @@ public class FacebookInteractor extends ValueInteractor<FacebookProfile> {
     public void login(@NonNull final Fragment container, final boolean requestOnlyPhoto) {
         if(!isConnected()){
             //Which exception would be more helpful to throw here?
-            profile.onError(new Exception("No internet connection found"));
+            subscriptionSubject.onError(new Exception("No internet connection found"));
             return;
         }
         requestInfo(requestOnlyPhoto);
@@ -137,7 +136,7 @@ public class FacebookInteractor extends ValueInteractor<FacebookProfile> {
 
     public boolean isLoggedIn(){
         final AccessToken currentToken = AccessToken.getCurrentAccessToken();
-        return profile.hasValue() &&
+        return subscriptionSubject.hasValue() &&
                 currentToken != null &&
                 !currentToken.isExpired() &&
                 currentToken.getPermissions().containsAll(permissionList);
@@ -145,7 +144,7 @@ public class FacebookInteractor extends ValueInteractor<FacebookProfile> {
 
     public void logout() {
         setAuthToken(null);
-        profile.forget();
+        subscriptionSubject.forget();
     }
 
     public boolean isConnected(){
@@ -186,4 +185,5 @@ public class FacebookInteractor extends ValueInteractor<FacebookProfile> {
     private List<String> getDefaultPermissions(){
         return Arrays.asList("public_profile","email");
     }
+
 }

@@ -33,7 +33,7 @@ public class AccountInteractorTests extends InjectionTestCase {
     public void update() throws Exception {
         accountPresenter.update();
 
-        Sync.wrap(accountPresenter.account)
+        Sync.wrap(accountPresenter.subscriptionSubject)
             .forEachAction(Assert::assertNotNull);
     }
 
@@ -98,7 +98,7 @@ public class AccountInteractorTests extends InjectionTestCase {
 
     @Test
     public void updateEmail() throws Exception {
-        final Account accountBefore = Sync.wrapAfter(accountPresenter::update, accountPresenter.account).last();
+        final Account accountBefore = Sync.wrapAfter(accountPresenter::update, accountPresenter.subscriptionSubject).last();
         final Account accountAfter = Sync.last(accountPresenter.updateEmail("test@me.com"));
         assertNotSame(accountBefore.getEmail(), accountAfter.getEmail());
         assertEquals("test@me.com", accountAfter.getEmail());
@@ -109,7 +109,7 @@ public class AccountInteractorTests extends InjectionTestCase {
         final File testFile = new File("src/tests/assets/photos/test_profile_photo.jpg");
         final TypedFile typedFile = new TypedFile("multipart/form-data", testFile);
         accountPresenter.setWithPhoto(false);
-        final Account accountBefore = Sync.wrapAfter(accountPresenter::update, accountPresenter.account).last();
+        final Account accountBefore = Sync.wrapAfter(accountPresenter::update, accountPresenter.subscriptionSubject).last();
         final MultiDensityImage imageUploaded = Sync.last(accountPresenter
                                                          .updateProfilePicture(typedFile,
                                                                                Analytics.Account.EVENT_CHANGE_PROFILE_PHOTO,
@@ -124,7 +124,7 @@ public class AccountInteractorTests extends InjectionTestCase {
     @Test
     public void deleteProfilePhoto() throws Exception {
         accountPresenter.setWithPhoto(true);
-        final Account accountBefore = Sync.wrapAfter(accountPresenter::update, accountPresenter.account).last();
+        final Account accountBefore = Sync.wrapAfter(accountPresenter::update, accountPresenter.subscriptionSubject).last();
         accountPresenter.deleteProfilePicture().doOnNext(ignore -> {
             accountPresenter.setWithPhoto(false);
             final Account accountAfter = Sync.last(accountPresenter.provideUpdateObservable());

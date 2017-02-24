@@ -214,7 +214,7 @@ public class AccountSettingsFragment extends InjectionFragment
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bindAndSubscribe(accountPresenter.account,
+        bindAndSubscribe(accountPresenter.subscriptionSubject,
                          this::bindAccount,
                          this::accountUnavailable);
 
@@ -496,8 +496,8 @@ public class AccountSettingsFragment extends InjectionFragment
     @Override
     public void onImportFromFacebook() {
         profileImageManager.setShowOptions(false);
-        if (!facebookPresenter.profile.hasObservers()) {
-            bindAndSubscribe(facebookPresenter.profile,
+        if (!facebookPresenter.subscriptionSubject.hasObservers()) {
+            bindAndSubscribe(facebookPresenter.subscriptionSubject,
                              this::getFacebookProfileSuccess,
                              this::getFacebookProfileError);
         }

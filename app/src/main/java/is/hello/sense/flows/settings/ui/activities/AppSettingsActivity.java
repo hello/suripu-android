@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 import is.hello.sense.R;
+import is.hello.sense.flows.accountsettings.ui.activities.AccountSettingsActivity;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.flows.notification.ui.activities.NotificationActivity;
 import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
@@ -75,7 +76,7 @@ public class AppSettingsActivity extends FragmentNavigationActivity
     }
 
     public void showAccountSettingsFragment() {
-        showFragment(AccountSettingsFragment.class, R.string.label_account, true);
+        AccountSettingsActivity.startActivity(this);
     }
 
     public void showDevicesFragment() {

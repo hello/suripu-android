@@ -15,6 +15,7 @@ import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
+import is.hello.sense.flows.accountsettings.interactors.AccountSettingsInteractorContainer;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.fragments.FeedSenseViewFragment;
@@ -53,6 +54,7 @@ import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.notifications.NotificationMessageReceiver;
 import is.hello.sense.flows.home.ui.fragments.TrendsSenseViewFragment;
+import is.hello.sense.mvp.interactors.InteractorContainer;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.pill.PillModule;
 import is.hello.sense.presenters.BaseHardwarePresenter;
@@ -156,7 +158,10 @@ import is.hello.sense.zendesk.ZendeskModule;
                 VoiceSettingsInteractor.class,
                 AppSettingsActivity.class,
                 NotificationActivity.class,
-                NotificationFragment.class
+                NotificationFragment.class,
+
+                AccountSettingsInteractorContainer.class,
+                InteractorContainer.EmptyInteractorContainer.class
         }
 )
 @SuppressWarnings("UnusedDeclaration")

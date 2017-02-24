@@ -14,9 +14,9 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
-public abstract class ObserverFragment extends ScopedInjectionFragment implements
-        ObservableContainer,
-        StateSafeExecutor.Resumes {
+public abstract class ObserverFragment extends ScopedInjectionFragment
+        implements
+        ObservableContainer{
     protected StateSafeExecutor stateSafeExecutor = new StateSafeExecutor(this);
     protected static final Func1<Fragment, Boolean> FRAGMENT_VALIDATOR = f -> f.isAdded() && !f.getActivity().isFinishing();
     protected StateSafeScheduler observeScheduler = new StateSafeScheduler(stateSafeExecutor);

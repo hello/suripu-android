@@ -149,6 +149,11 @@
             android:name=".flows.notification.ui.activities.NotificationActivity"
             android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
             android:theme="@style/AppTheme.AppCompat.NotificationActivity"/>
+        <activity
+            android:label="@string/label_account"
+            android:name=".flows.accountsettings.ui.activities.AccountSettingsActivity"
+            android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
+            android:theme="@style/AppTheme.AppCompat.AccountSettingsActivity"/>
 
 
         <activity

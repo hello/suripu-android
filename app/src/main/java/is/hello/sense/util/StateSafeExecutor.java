@@ -19,7 +19,7 @@ public class StateSafeExecutor implements Executor {
      * Constructs a state-safe executor that will
      * execute when a given host is not paused.
      */
-    public StateSafeExecutor(@NonNull Resumes host) {
+    public StateSafeExecutor(@NonNull final Resumes host) {
         this.host = host;
         this.canExecute = true;
     }
@@ -58,7 +58,7 @@ public class StateSafeExecutor implements Executor {
      * work to be run on resume otherwise.
      */
     @Override
-    public void execute(@NonNull Runnable command) {
+    public void execute(@NonNull final Runnable command) {
         if (canExecute()) {
             command.run();
         } else {
@@ -72,7 +72,7 @@ public class StateSafeExecutor implements Executor {
      * Removes a given unit of work from the executor's pending queue.
      * @return true if the unit of work was enqueued and removed; false otherwise.
      */
-    public boolean cancelPending(@NonNull Runnable command) {
+    public boolean cancelPending(@NonNull final Runnable command) {
         synchronized(pending) {
             return pending.remove(command);
         }
@@ -90,7 +90,7 @@ public class StateSafeExecutor implements Executor {
     /**
      * Binds a given unit of work to always be run through this state safe executor.
      */
-    public @NonNull Runnable bind(@NonNull Runnable command) {
+    public @NonNull Runnable bind(@NonNull final Runnable command) {
         return () -> execute(command);
     }
 
