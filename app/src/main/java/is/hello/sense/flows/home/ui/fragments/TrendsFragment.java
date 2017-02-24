@@ -17,13 +17,13 @@ import is.hello.sense.flows.home.ui.adapters.TrendsAdapter;
 import is.hello.sense.flows.home.ui.views.TrendsView;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TrendsInteractor;
-import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
+import is.hello.sense.mvp.fragments.ControllerSenseViewFragment;
 import is.hello.sense.ui.widget.graphing.trends.TrendFeedViewItem;
 import is.hello.sense.ui.widget.graphing.trends.TrendGraphView;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 
-public abstract class TrendsFragment extends ControllerPresenterFragment<TrendsView>
+public abstract class TrendsFragment extends ControllerSenseViewFragment<TrendsView>
         implements
         TrendFeedViewItem.OnRetry,
         TrendGraphView.AnimationCallback,
@@ -36,9 +36,9 @@ public abstract class TrendsFragment extends ControllerPresenterFragment<TrendsV
 
     //region PresenterFragment
     @Override
-    public void initializePresenterView() {
-        if (this.presenterView == null) {
-            this.presenterView = new TrendsView(getActivity(), createTrendsAdapter());
+    public void initializeSenseView() {
+        if (this.senseView == null) {
+            this.senseView = new TrendsView(getActivity(), createTrendsAdapter());
         }
     }
 
@@ -94,10 +94,10 @@ public abstract class TrendsFragment extends ControllerPresenterFragment<TrendsV
     //region scrollUp
     @Override
     public void scrollUp() {
-        if (this.presenterView == null) {
+        if (this.senseView == null) {
             return;
         }
-        this.presenterView.scrollUp();
+        this.senseView.scrollUp();
     }
     //endregion
 
@@ -107,12 +107,12 @@ public abstract class TrendsFragment extends ControllerPresenterFragment<TrendsV
 
     @VisibleForTesting
     void bindTrends(@NonNull final Trends trends) {
-        this.presenterView.updateTrends(trends);
+        this.senseView.updateTrends(trends);
     }
 
     @VisibleForTesting
     void presentError(final Throwable e) {
-        this.presenterView.showError();
+        this.senseView.showError();
     }
 
     @VisibleForTesting

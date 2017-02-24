@@ -9,12 +9,12 @@ import android.widget.TextView;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.voice.SenseVoiceSettings;
 import is.hello.sense.flows.voice.ui.widgets.VolumePickerView;
-import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.mvp.view.SenseView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.units.UnitOperations;
 
 @SuppressLint("ViewConstructor")
-public class VoiceVolumeView extends PresenterView{
+public class VoiceVolumeView extends SenseView {
 
     private final TextView scaleValue;
     private final VolumePickerView scale;

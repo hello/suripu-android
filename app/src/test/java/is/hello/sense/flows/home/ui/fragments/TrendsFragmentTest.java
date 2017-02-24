@@ -13,8 +13,8 @@ public class TrendsFragmentTest extends FragmentTest<WeekTrendsFragment> {
 
     @Test
     public void initializePresenterViewTest() {
-        fragment.presenterView = null;
-        fragment.initializePresenterView();
+        fragment.senseView = null;
+        fragment.initializeSenseView();
         Mockito.verify(fragment).isAccountMoreThan2WeeksOld();
         Mockito.verify(fragment).createTrendsAdapter();
     }
@@ -50,24 +50,24 @@ public class TrendsFragmentTest extends FragmentTest<WeekTrendsFragment> {
 
     @Test
     public void scrollUpTest() {
-        fragment.presenterView = Mockito.spy(fragment.presenterView);
+        fragment.senseView = Mockito.spy(fragment.senseView);
         fragment.scrollUp();
-        Mockito.verify(fragment.presenterView).scrollUp();
+        Mockito.verify(fragment.senseView).scrollUp();
     }
 
     @Test
     public void bindTrendsTest() {
-        fragment.presenterView = Mockito.spy(fragment.presenterView);
+        fragment.senseView = Mockito.spy(fragment.senseView);
         final Trends trends = Mockito.mock(Trends.class);
         fragment.bindTrends(trends);
-        Mockito.verify(fragment.presenterView).updateTrends(Mockito.eq(trends));
+        Mockito.verify(fragment.senseView).updateTrends(Mockito.eq(trends));
     }
 
     @Test
     public void presentErrorTest() {
-        fragment.presenterView = Mockito.spy(fragment.presenterView);
+        fragment.senseView = Mockito.spy(fragment.senseView);
         fragment.presentError(new Throwable());
-        Mockito.verify(fragment.presenterView).showError();
+        Mockito.verify(fragment.senseView).showError();
     }
 
     private void spyOnTrendsInteractor() {

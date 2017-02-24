@@ -19,14 +19,14 @@ import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.flows.notification.interactors.NotificationSettingsInteractor;
 import is.hello.sense.flows.notification.ui.adapters.NotificationSettingsAdapter;
 import is.hello.sense.flows.notification.ui.views.NotificationView;
-import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.fragments.SenseViewFragment;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.Analytics;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-public class NotificationFragment extends PresenterFragment<NotificationView>
+public class NotificationFragment extends SenseViewFragment<NotificationView>
         implements ArrayRecyclerAdapter.ErrorHandler {
 
     @Inject
@@ -36,10 +36,10 @@ public class NotificationFragment extends PresenterFragment<NotificationView>
 
     //region PresenterFragment
     @Override
-    public void initializePresenterView() {
-        if (presenterView == null) {
+    public void initializeSenseView() {
+        if (senseView == null) {
             notificationSettingsAdapter = createAdapter();
-            presenterView = new NotificationView(getActivity(),
+            senseView = new NotificationView(getActivity(),
                                                  notificationSettingsAdapter);
         }
     }
@@ -149,16 +149,16 @@ public class NotificationFragment extends PresenterFragment<NotificationView>
 
     private void showProgress(final boolean show) {
         if (show) {
-            presenterView.setVisibility(View.INVISIBLE);
+            senseView.setVisibility(View.INVISIBLE);
             showBlockingActivity(null);
         } else {
             hideBlockingActivity(false, null);
-            presenterView.setVisibility(View.VISIBLE);
+            senseView.setVisibility(View.VISIBLE);
         }
     }
 
     private void onSaveSelected() {
-        if (this.presenterView == null) {
+        if (this.senseView == null) {
             return;
         }
         showLockedBlockingActivity(R.string.updating);

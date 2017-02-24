@@ -1,7 +1,6 @@
 package is.hello.sense.flows.home.ui.fragments;
 
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -21,7 +20,7 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 
-public class RoomConditionsPresenterFragmentTests extends FragmentTest<RoomConditionsPresenterFragment> {
+public class RoomConditionsPresenterFragmentTests extends FragmentTest<RoomConditionsSenseViewFragment> {
 
     @Test
     public void hasAllViews() {

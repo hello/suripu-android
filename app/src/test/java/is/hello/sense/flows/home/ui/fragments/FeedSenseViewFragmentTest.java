@@ -8,7 +8,7 @@ import is.hello.sense.flows.home.util.HomeViewPagerPresenterDelegate;
 
 import static junit.framework.Assert.assertTrue;
 
-public class FeedPresenterFragmentTest extends FragmentTest<FeedPresenterFragment> {
+public class FeedSenseViewFragmentTest extends FragmentTest<FeedSenseViewFragment> {
 
 
     @Test
@@ -36,9 +36,9 @@ public class FeedPresenterFragmentTest extends FragmentTest<FeedPresenterFragmen
     public void bindVoiceSettingsTest() {
         spyOnPresenterView();
         fragment.bindVoiceSettings(true);
-        Mockito.verify(fragment.presenterView).unlockViewPager(Mockito.eq(fragment));
+        Mockito.verify(fragment.senseView).unlockViewPager(Mockito.eq(fragment));
         fragment.bindVoiceSettings(false);
-        Mockito.verify(fragment.presenterView).lockViewPager(Mockito.eq(fragment.getStartingItemPosition()));
+        Mockito.verify(fragment.senseView).lockViewPager(Mockito.eq(fragment.getStartingItemPosition()));
     }
 
 

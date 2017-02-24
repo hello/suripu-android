@@ -14,12 +14,12 @@ import android.view.animation.AnimationUtils;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
-import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
+import is.hello.sense.mvp.fragments.ViewPagerSenseViewFragment;
 import is.hello.sense.ui.widget.ExtendedViewPager;
 
 
 @SuppressLint("ViewConstructor")
-public class ViewPagerPresenterView extends PresenterView {
+public class ViewPagerSenseView extends SenseView {
 
     private final ExtendedViewPager viewPager;
     private final TabLayout tabLayout;
@@ -30,8 +30,8 @@ public class ViewPagerPresenterView extends PresenterView {
      * @param fragment - Fragment providing initialization settings and callbacks.
      *                 Don't keep a reference to this.
      */
-    public ViewPagerPresenterView(@NonNull final ViewPagerPresenterFragment fragment,
-                                  @Nullable final OnClickListener onFabClickListener) {
+    public ViewPagerSenseView(@NonNull final ViewPagerSenseViewFragment fragment,
+                              @Nullable final OnClickListener onFabClickListener) {
         super(fragment.getActivity());
         this.viewPager = (ExtendedViewPager) findViewById(R.id.view_view_pager_extended_view_pager);
         this.tabLayout = (TabLayout) findViewById(R.id.view_view_pager_tab_layout);
@@ -61,7 +61,7 @@ public class ViewPagerPresenterView extends PresenterView {
 
     //region methods
 
-    public void unlockViewPager(@NonNull final ViewPagerPresenterFragment fragment) {
+    public void unlockViewPager(@NonNull final ViewPagerSenseViewFragment fragment) {
         setTabs(fragment.getViewPagerItems(), fragment.getStartingItemPosition());
         this.viewPager.setScrollingEnabled(true);
     }
@@ -75,7 +75,7 @@ public class ViewPagerPresenterView extends PresenterView {
     /**
      * Only call once per viewpager creation.
      */
-    private void createTabsAndPager(@NonNull final ViewPagerPresenterFragment fragment) {
+    private void createTabsAndPager(@NonNull final ViewPagerSenseViewFragment fragment) {
         final StaticFragmentAdapter.Item[] items = fragment.getViewPagerItems();
 
         // ViewPager

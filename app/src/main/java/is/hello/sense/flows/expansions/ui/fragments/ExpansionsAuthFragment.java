@@ -22,12 +22,12 @@ import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.flows.expansions.ui.views.ExpansionsAuthView;
-import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.fragments.SenseViewFragment;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.CustomWebViewClient;
 
-public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView>
+public class ExpansionsAuthFragment extends SenseViewFragment<ExpansionsAuthView>
         implements CustomWebViewClient.Listener,
         OnBackPressedInterceptor {
 
@@ -60,9 +60,9 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
                 cancelFlow();
                 return true;
             case R.id.expansions_auth_menu_item_refresh:
-                if(presenterView != null){
-                    presenterView.reloadCurrentUrl();
-                    presenterView.showProgress(true);
+                if(senseView != null){
+                    senseView.reloadCurrentUrl();
+                    senseView.showProgress(true);
                     return true;
                 }
                 default:
@@ -71,12 +71,12 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
     }
 
     @Override
-    public void initializePresenterView() {
-        if (presenterView == null) {
+    public void initializeSenseView() {
+        if (senseView == null) {
             this.client = new CustomWebViewClient(Expansion.INVALID_URL,
                                                   Expansion.INVALID_URL);
             client.setListener(this);
-            presenterView = new ExpansionsAuthView(
+            senseView = new ExpansionsAuthView(
                     getActivity(),
                     client
             );
@@ -89,7 +89,7 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
         bindAndSubscribe(expansionDetailsInteractor.expansionSubject,
                          this::bindLatestExpansion,
                          this::presentError);
-        presenterView.showProgress(true);
+        senseView.showProgress(true);
     }
 
     @Override
@@ -113,12 +113,12 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
 
     @Override
     public void onInitialUrlLoaded() {
-        presenterView.showProgress(false);
+        senseView.showProgress(false);
     }
 
     @Override
     public void onCompletionUrlStarted() {
-        presenterView.showProgress(false);
+        senseView.showProgress(false);
         showBlockingActivity(R.string.expansions_completing);
     }
 
@@ -134,14 +134,14 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
 
     @Override
     public void onOtherUrlLoaded() {
-        presenterView.showProgress(false);
+        senseView.showProgress(false);
     }
 
     //end region
 
     @Override
     public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
-        return presenterView != null && presenterView.loadPreviousUrl();
+        return senseView != null && senseView.loadPreviousUrl();
     }
 
     public void setActionBarHomeAsUpIndicator(@DrawableRes final int drawableRes) {
@@ -171,12 +171,12 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
         if (sessionManager.hasSession()) {
             headers.put("Authorization", "Bearer " + sessionManager.getAccessToken());
         }
-        presenterView.loadInitialUrl(headers);
+        senseView.loadInitialUrl(headers);
     }
 
     public void presentError(final Throwable e) {
         //todo handle better
-        presenterView.showProgress(false);
+        senseView.showProgress(false);
         hideBlockingActivity(false, null);
         showErrorDialog(new ErrorDialogFragment.PresenterBuilder(e));
     }

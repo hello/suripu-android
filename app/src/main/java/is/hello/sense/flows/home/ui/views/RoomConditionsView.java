@@ -10,11 +10,11 @@ import android.widget.ProgressBar;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.adapters.SensorResponseAdapter;
-import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.mvp.view.SenseView;
 import is.hello.sense.ui.widget.SenseBar;
 
 @SuppressLint("ViewConstructor")
-public final class RoomConditionsView extends PresenterView {
+public final class RoomConditionsView extends SenseView {
     private final RecyclerView recyclerView;
     private final ProgressBar progressBar;
     private final SenseBar senseBar;

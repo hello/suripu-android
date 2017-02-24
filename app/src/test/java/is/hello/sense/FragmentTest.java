@@ -20,12 +20,12 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 
 import is.hello.sense.graph.SenseTestCase;
-import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.fragments.SenseViewFragment;
 
 import static junit.framework.Assert.assertNotNull;
 import static org.robolectric.util.FragmentTestUtil.startFragment;
 
-public abstract class FragmentTest<T extends PresenterFragment>
+public abstract class FragmentTest<T extends SenseViewFragment>
         extends SenseTestCase {
 
     protected T fragment;
@@ -70,7 +70,7 @@ public abstract class FragmentTest<T extends PresenterFragment>
     }
 
     protected final void spyOnPresenterView() {
-        fragment.presenterView = Mockito.spy(fragment.presenterView);
+        fragment.senseView = Mockito.spy(fragment.senseView);
     }
 
     /**
@@ -123,7 +123,7 @@ public abstract class FragmentTest<T extends PresenterFragment>
     }
 
     protected final void callInitializePresenterView() {
-        fragment.initializePresenterView();
+        fragment.initializeSenseView();
     }
     //endregion
 

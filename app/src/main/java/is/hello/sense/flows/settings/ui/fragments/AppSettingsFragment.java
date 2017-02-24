@@ -9,10 +9,10 @@ import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
 import is.hello.sense.flows.settings.ui.views.AppSettingsView;
 import is.hello.sense.interactors.HasVoiceInteractor;
-import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.fragments.SenseViewFragment;
 import is.hello.sense.util.Analytics;
 
-public class AppSettingsFragment extends PresenterFragment<AppSettingsView> implements
+public class AppSettingsFragment extends SenseViewFragment<AppSettingsView> implements
         AppSettingsView.Listener {
 
     @Inject
@@ -23,10 +23,10 @@ public class AppSettingsFragment extends PresenterFragment<AppSettingsView> impl
     }
 
     @Override
-    public final void initializePresenterView() {
-        if (this.presenterView == null) {
-            this.presenterView = new AppSettingsView(getActivity());
-            this.presenterView.setListener(this);
+    public final void initializeSenseView() {
+        if (this.senseView == null) {
+            this.senseView = new AppSettingsView(getActivity());
+            this.senseView.setListener(this);
         }
     }
 
@@ -49,14 +49,14 @@ public class AppSettingsFragment extends PresenterFragment<AppSettingsView> impl
         super.onViewCreated(view, savedInstanceState);
 
         bindAndSubscribe(this.hasVoiceInteractor.hasVoice,
-                         this.presenterView::showVoiceEnabledRows,
-                         e -> this.presenterView.showVoiceEnabledRows(false));
+                         this.senseView::showVoiceEnabledRows,
+                         e -> this.senseView.showVoiceEnabledRows(false));
 
 
-        this.presenterView.setDebugText(getString(R.string.app_version_fmt,
-                                                  getString(R.string.app_name),
-                                                  BuildConfig.VERSION_NAME));
-        this.presenterView.enableDebug(BuildConfig.DEBUG_SCREEN_ENABLED);
+        this.senseView.setDebugText(getString(R.string.app_version_fmt,
+                                              getString(R.string.app_name),
+                                              BuildConfig.VERSION_NAME));
+        this.senseView.enableDebug(BuildConfig.DEBUG_SCREEN_ENABLED);
         this.hasVoiceInteractor.update();
     }
 

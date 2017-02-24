@@ -12,11 +12,11 @@ import javax.inject.Inject;
 import is.hello.sense.flows.home.util.HomeViewPagerPresenterDelegate;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.HasVoiceInteractor;
-import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
+import is.hello.sense.mvp.fragments.ViewPagerSenseViewFragment;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 
-public class FeedPresenterFragment extends ViewPagerPresenterFragment
+public class FeedSenseViewFragment extends ViewPagerSenseViewFragment
         implements InsightInfoFragment.ParentProvider {
     @Inject
     HasVoiceInteractor hasVoiceInteractor;
@@ -50,9 +50,9 @@ public class FeedPresenterFragment extends ViewPagerPresenterFragment
     @VisibleForTesting
     public void bindVoiceSettings(final boolean hasVoice) {
         if (hasVoice) {
-            presenterView.unlockViewPager(this);
+            senseView.unlockViewPager(this);
         } else {
-            presenterView.lockViewPager(getStartingItemPosition());
+            senseView.lockViewPager(getStartingItemPosition());
         }
     }
 

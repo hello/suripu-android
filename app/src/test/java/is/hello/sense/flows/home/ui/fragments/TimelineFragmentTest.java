@@ -53,26 +53,26 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
 
     @Test
     public void initializePresenterViewTest() {
-        fragment.presenterView = null;
-        fragment.initializePresenterView();
+        fragment.senseView = null;
+        fragment.initializeSenseView();
         verify(fragment).createAdapter();
     }
 
     @Test
     public void setUserVisibleHintBehavior() {
-        fragment.presenterView = null;
+        fragment.senseView = null;
         fragment.setUserVisibleHint(true);
         verify(fragment, times(0)).bindIfNeeded();
-        fragment.initializePresenterView();
+        fragment.initializeSenseView();
         spyOnPresenterView();
         fragment.setUserVisibleHint(true);
         verify(fragment).bindIfNeeded();
-        verify(fragment.presenterView).setAnimationEnabled(eq(true));
+        verify(fragment.senseView).setAnimationEnabled(eq(true));
         fragment.setUserVisibleHint(false);
         verify(fragment).bindIfNeeded();
-        verify(fragment.presenterView).setAnimationEnabled(eq(false));
+        verify(fragment.senseView).setAnimationEnabled(eq(false));
         verify(fragment).dismissVisibleOverlaysAndDialogs();
-        verify(fragment.presenterView).clearHeader();
+        verify(fragment.senseView).clearHeader();
     }
 
     @Test
@@ -93,7 +93,7 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
     public void onPauseTest() {
         spyOnPresenterView();
         callOnPause();
-        verify(fragment.presenterView).stopSoundPlayer();
+        verify(fragment.senseView).stopSoundPlayer();
     }
 
     @Test
@@ -146,8 +146,8 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
         verify(fragment).bindAndSubscribe(eq(fragment.timelineInteractor.timeline), any(), any());
         // preferencesInteractor returns another object that we can't verify. Just make sure bind
         // and subscribe was called twice and assume the second is for preferences.
-        fragment.presenterView = mock(TimelineView.class);
-        when(fragment.presenterView.inNoDataState()).thenReturn(true);
+        fragment.senseView = mock(TimelineView.class);
+        when(fragment.senseView.inNoDataState()).thenReturn(true);
         verify(fragment, times(2)).bindAndSubscribe(any(), any(), any());
         assertTrue(fragment.hasSubscriptions());
         fragment.bindIfNeeded();
@@ -174,7 +174,7 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
         final Timeline timeline = mock(Timeline.class);
         timeline.getEvents().clear();
         fragment.bindTimeline(timeline);
-        verify(fragment.presenterView).transitionIntoNoDataState(any());
+        verify(fragment.senseView).transitionIntoNoDataState(any());
 
     }
 
@@ -187,20 +187,20 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
         when(timeline.getScore()).thenReturn(null);
         spyOnPresenterView();
         fragment.bindTimeline(timeline);
-        verify(fragment.presenterView).bindTimelineToHeader(eq(timeline), any(), any());
-        verify(fragment.presenterView).transitionOutOfNoDataState();
+        verify(fragment.senseView).bindTimelineToHeader(eq(timeline), any(), any());
+        verify(fragment.senseView).transitionOutOfNoDataState();
     }
 
     @Test
     public void timelineUnavailableTest() {
-        fragment.presenterView = mock(TimelineView.class);
-        when(fragment.presenterView.adapterHasEvents()).thenReturn(true);
+        fragment.senseView = mock(TimelineView.class);
+        when(fragment.senseView.adapterHasEvents()).thenReturn(true);
         fragment.timelineUnavailable(mock(Throwable.class));
-        verify(fragment.presenterView, times(0)).transitionIntoNoDataState(any());
+        verify(fragment.senseView, times(0)).transitionIntoNoDataState(any());
 
-        when(fragment.presenterView.adapterHasEvents()).thenReturn(false);
+        when(fragment.senseView.adapterHasEvents()).thenReturn(false);
         fragment.timelineUnavailable(mock(Throwable.class));
-        verify(fragment.presenterView).transitionIntoNoDataState(any());
+        verify(fragment.senseView).transitionIntoNoDataState(any());
     }
 
     @Test
@@ -213,11 +213,11 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
         spyOnPresenterView();
         fragment.onSegmentItemClicked(0, mock(View.class), mock(TimelineEvent.class));
         verify(fragment.infoOverlay).dismiss(eq(false));
-        verify(fragment.presenterView).scrollForSpace(any(),
-                                                      any(),
-                                                      any(),
-                                                      eq(0),
-                                                      eq(scrollY));
+        verify(fragment.senseView).scrollForSpace(any(),
+                                                  any(),
+                                                  any(),
+                                                  eq(0),
+                                                  eq(scrollY));
     }
 
     @Test

@@ -16,7 +16,7 @@ import android.widget.TextView;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.api.model.v2.sensors.SensorType;
-import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.mvp.view.SenseView;
 import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.SensorDetailScrollView;
 import is.hello.sense.ui.widget.SensorScaleList;
@@ -26,7 +26,7 @@ import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
 import is.hello.sense.units.UnitFormatter;
 
 @SuppressLint("ViewConstructor")
-public final class SensorDetailView extends PresenterView
+public final class SensorDetailView extends SenseView
         implements SelectorView.OnSelectionChangedListener {
     /**
      * Scales the graph to consume this much of remaining space below text.

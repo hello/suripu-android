@@ -8,19 +8,25 @@ import android.os.Handler;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.util.Log;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.SenseApplication;
+import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.dialogs.LoadingDialogFragment;
+import is.hello.sense.ui.widget.SenseAlertDialog;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class SenseFragment extends Fragment {
 
+    private LoadingDialogFragment loadingDialogFragment;
     @Override
     public void onDestroy() {
         super.onDestroy();
+        this.loadingDialogFragment = null;
         SenseApplication.getRefWatcher()
                         .watch(this);
     }
@@ -117,4 +123,75 @@ public class SenseFragment extends Fragment {
         }
     }
 
+
+    public void hideBlockingActivity(@StringRes final int text, @Nullable final Runnable onCompletion) {
+        LoadingDialogFragment.closeWithMessageTransition(getFragmentManager(),
+                                                         () -> {
+                                                             loadingDialogFragment = null;
+                                                             if (onCompletion != null) {
+                                                                 onCompletion.run();
+                                                             }
+                                                         },
+                                                         text);
+    }
+
+    public void hideBlockingActivity(final boolean success, @Nullable final Runnable onCompletion) {
+        if (success) {
+            LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {
+                this.loadingDialogFragment = null;
+                if (onCompletion != null) {
+                    onCompletion.run();
+                }
+            });
+        } else {
+            LoadingDialogFragment.close(getFragmentManager());
+            this.loadingDialogFragment = null;
+            if (onCompletion != null) {
+                onCompletion.run();
+            }
+        }
+    }
+
+    public void showLockedBlockingActivity(@StringRes final int titleRes) {
+        showBlockingActivity(titleRes);
+        if (loadingDialogFragment != null) {
+            this.loadingDialogFragment.setLockOrientation();
+        }
+    }
+
+    public void showLockedBlockingActivity(final String title) {
+        showBlockingActivity(title);
+        if (loadingDialogFragment != null) {
+            this.loadingDialogFragment.setLockOrientation();
+        }
+    }
+
+    public void showBlockingActivity(@StringRes final int titleRes) {
+        showBlockingActivity(getString(titleRes));
+    }
+
+    public void showBlockingActivity(final String title) {
+        if (loadingDialogFragment == null) {
+            this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(),
+                                                                    title,
+                                                                    LoadingDialogFragment.OPAQUE_BACKGROUND);
+        } else {
+            loadingDialogFragment.setTitle(title);
+        }
+    }
+
+    public void showErrorDialog(@NonNull final ErrorDialogFragment.PresenterBuilder builder,
+                                final int requestCode) {
+        final ErrorDialogFragment fragment = builder.build();
+        fragment.setTargetFragment(this, requestCode);
+        fragment.showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+    }
+
+    public void showErrorDialog(@NonNull final ErrorDialogFragment.PresenterBuilder builder) {
+        builder.build().showAllowingStateLoss(getFragmentManager(), ErrorDialogFragment.TAG);
+    }
+
+    public void showAlertDialog(@NonNull final SenseAlertDialog.Builder builder) {
+        builder.build(getActivity()).show();
+    }
 }

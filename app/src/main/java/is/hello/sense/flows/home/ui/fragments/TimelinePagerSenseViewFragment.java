@@ -21,14 +21,14 @@ import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.views.TimelinePagerView;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TimelineInteractor;
-import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
+import is.hello.sense.mvp.fragments.ControllerSenseViewFragment;
 import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 
-public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<TimelinePagerView>
+public class TimelinePagerSenseViewFragment extends ControllerSenseViewFragment<TimelinePagerView>
         implements ViewPager.OnPageChangeListener,
         TimelineFragment.Parent,
         HomeActivity.ScrollUp {
@@ -40,23 +40,23 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
     @Inject
     TimelineInteractor timelineInteractor;
 
-    private static final String KEY_LAST_UPDATED = TimelinePagerPresenterFragment.class.getSimpleName() + "KEY_LAST_UPDATED";
-    private static final String KEY_LAST_ITEM = TimelinePagerPresenterFragment.class.getSimpleName() + "KEY_LAST_ITEM";
+    private static final String KEY_LAST_UPDATED = TimelinePagerSenseViewFragment.class.getSimpleName() + "KEY_LAST_UPDATED";
+    private static final String KEY_LAST_ITEM = TimelinePagerSenseViewFragment.class.getSimpleName() + "KEY_LAST_ITEM";
 
     public boolean shouldJumpToLastNightOnUserVisible = false;
     private final BroadcastReceiver onTimeChanged = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, final Intent intent) {
             final LocalDate newToday = DateFormatter.todayForTimeline();
-            final LocalDate selectedDate = TimelinePagerPresenterFragment.this.presenterView.getSelectedDate();
+            final LocalDate selectedDate = TimelinePagerSenseViewFragment.this.senseView.getSelectedDate();
             if (newToday.isBefore(selectedDate)) {
                 // ViewPager does not correctly shrink when the number of items in it
                 // decrease, so we have to clear its adapter, update the adapter, then
                 // re-set the adapter for the update to work correctly.
                 //todo confirm above comment
-                TimelinePagerPresenterFragment.this.presenterView.resetAdapterForLatestDate(newToday);
+                TimelinePagerSenseViewFragment.this.senseView.resetAdapterForLatestDate(newToday);
             } else {
-                TimelinePagerPresenterFragment.this.presenterView.setLatestDate(newToday);
+                TimelinePagerSenseViewFragment.this.senseView.setLatestDate(newToday);
             }
         }
     };
@@ -66,11 +66,11 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
 
 
     @Override
-    public void initializePresenterView() {
-        if (this.presenterView == null) {
-            this.presenterView = new TimelinePagerView(getActivity(),
-                                                       createAdapter(),
-                                                       this);
+    public void initializeSenseView() {
+        if (this.senseView == null) {
+            this.senseView = new TimelinePagerView(getActivity(),
+                                                   createAdapter(),
+                                                   this);
         }
     }
 
@@ -86,7 +86,7 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
         if (savedInstanceState == null) {
             jumpToLastNight(false);
         } else {
-            this.presenterView.setCurrentViewPagerItem(savedInstanceState.getInt(KEY_LAST_ITEM), false);
+            this.senseView.setCurrentViewPagerItem(savedInstanceState.getInt(KEY_LAST_ITEM), false);
         }
 
         getActivity().registerReceiver(this.onTimeChanged, new IntentFilter(Intent.ACTION_TIME_CHANGED));
@@ -105,7 +105,7 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
         super.onSaveInstanceState(outState);
         outState.putLong(KEY_LAST_UPDATED, this.lastUpdated);
 
-        outState.putInt(KEY_LAST_ITEM, this.presenterView == null ? 0 : this.presenterView.getCurrentItem());
+        outState.putInt(KEY_LAST_ITEM, this.senseView == null ? 0 : this.senseView.getCurrentItem());
     }
 
     @Override
@@ -114,13 +114,13 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
         if ((System.currentTimeMillis() - this.lastUpdated) > Constants.STALE_INTERVAL_MS) {
             if (isCurrentFragmentLastNight()) {
                 Logger.info(getClass().getSimpleName(), "Timeline content stale, reloading.");
-                final TimelineFragment fragment = this.presenterView.getCurrentTimeline();
+                final TimelineFragment fragment = this.senseView.getCurrentTimeline();
                 if (fragment != null) {
                     fragment.update();
                 }
             } else {
                 Logger.info(getClass().getSimpleName(), "Timeline content stale, fast-forwarding to today.");
-                this.presenterView.setCurrentItemToLastNight(false);
+                this.senseView.setCurrentItemToLastNight(false);
             }
 
             this.lastUpdated = System.currentTimeMillis();
@@ -141,12 +141,12 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
                 shouldJumpToLastNightOnUserVisible = false;
                 jumpToLastNight(false);
             }
-            final TimelineFragment timelineFragment = this.presenterView.getCurrentTimeline();
+            final TimelineFragment timelineFragment = this.senseView.getCurrentTimeline();
             if (timelineFragment != null) {
                 timelineFragment.setUserVisibleHint(true);
             }
         } else {
-            final TimelineFragment timelineFragment = this.presenterView.getCurrentTimeline();
+            final TimelineFragment timelineFragment = this.senseView.getCurrentTimeline();
             if (timelineFragment != null) {
                 timelineFragment.dismissVisibleOverlaysAndDialogs();
                 timelineFragment.setUserVisibleHint(false);
@@ -178,7 +178,7 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
                 state != ViewPager.SCROLL_STATE_IDLE) {
             animatorContext.beginAnimation("Timeline swipe");
 
-            final TimelineFragment currentFragment = this.presenterView.getCurrentTimeline();
+            final TimelineFragment currentFragment = this.senseView.getCurrentTimeline();
             if (currentFragment != null) {
                 currentFragment.onSwipeBetweenDatesStarted();
             }
@@ -194,12 +194,12 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
     //endregion
 
     public boolean isCurrentFragmentLastNight() {
-        final TimelineFragment currentFragment = this.presenterView.getCurrentTimeline();
+        final TimelineFragment currentFragment = this.senseView.getCurrentTimeline();
         return (currentFragment != null && DateFormatter.isLastNight(currentFragment.getDate()));
     }
 
     public void jumpToLastNight(final boolean animate) {
-        this.presenterView.setCurrentItemToLastNight(animate);
+        this.senseView.setCurrentItemToLastNight(animate);
     }
 
 
@@ -217,20 +217,20 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
 
     @Override
     public void jumpTo(@NonNull final LocalDate date, @Nullable final Timeline timeline) {
-        if (presenterView == null) {
+        if (senseView == null) {
             return;
         }
-        this.presenterView.jumpToDate(date, timeline);
+        this.senseView.jumpToDate(date, timeline);
     }
 
     //endregion
     //region ScrollUp
     @Override
     public void scrollUp() {
-        if (presenterView == null) {
+        if (senseView == null) {
             return;
         }
-        this.presenterView.scrollUp();
+        this.senseView.scrollUp();
     }
 
     //endregion

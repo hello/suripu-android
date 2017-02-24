@@ -12,13 +12,13 @@ import java.util.ArrayList;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.Alarm;
-import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.mvp.view.SenseView;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
 import is.hello.sense.util.NotTested;
 
 @NotTested
 @SuppressLint("ViewConstructor")
-public class SmartAlarmListView extends PresenterView {
+public class SmartAlarmListView extends SenseView {
     private final RecyclerView recyclerView;
     private final ProgressBar progressBar;
     private final SmartAlarmAdapter adapter;

@@ -36,7 +36,8 @@ public abstract class BaseHardwareFragment extends InjectionFragment {
 
     //region Activity
 
-    protected void showBlockingActivity(@StringRes final int titleRes) {
+    @Override
+    public void showBlockingActivity(@StringRes final int titleRes) {
         if (loadingDialogFragment == null) {
             stateSafeExecutor.execute(() -> this.loadingDialogFragment = LoadingDialogFragment.show(getFragmentManager(),
                                                                                                     getString(titleRes),
@@ -46,7 +47,8 @@ public abstract class BaseHardwareFragment extends InjectionFragment {
         }
     }
 
-    protected void hideBlockingActivity(@StringRes final int text, @Nullable final Runnable onCompletion) {
+    @Override
+    public void hideBlockingActivity(@StringRes final int text, @Nullable final Runnable onCompletion) {
         stateSafeExecutor
                 .execute(() -> LoadingDialogFragment
                         .closeWithMessageTransition(getFragmentManager(),
@@ -59,7 +61,8 @@ public abstract class BaseHardwareFragment extends InjectionFragment {
                                                     text));
     }
 
-    protected void hideBlockingActivity(final boolean success, @NonNull final Runnable onCompletion) {
+    @Override
+    public void hideBlockingActivity(final boolean success, @NonNull final Runnable onCompletion) {
         stateSafeExecutor.execute(() -> {
             if (success) {
                 LoadingDialogFragment.closeWithDoneTransition(getFragmentManager(), () -> {

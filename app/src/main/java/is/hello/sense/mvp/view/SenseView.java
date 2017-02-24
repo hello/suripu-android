@@ -16,10 +16,10 @@ import android.widget.FrameLayout;
 import is.hello.sense.ui.recycler.CardItemDecoration;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 
-public abstract class PresenterView extends FrameLayout {
+public abstract class SenseView extends FrameLayout {
     protected final Context context;
 
-    public PresenterView(@NonNull final Activity activity) {
+    public SenseView(@NonNull final Activity activity) {
         super(activity);
         this.context = activity;
         activity.getLayoutInflater().inflate(getLayoutRes(), this);

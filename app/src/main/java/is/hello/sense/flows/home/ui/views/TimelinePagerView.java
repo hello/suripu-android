@@ -13,11 +13,11 @@ import org.joda.time.LocalDate;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
-import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.mvp.view.SenseView;
 import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
 
 @SuppressLint("ViewConstructor")
-public class TimelinePagerView extends PresenterView {
+public class TimelinePagerView extends SenseView {
     private final ViewPager viewPager;
     private final TimelineFragmentAdapter viewPagerAdapter;
 

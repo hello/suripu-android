@@ -17,11 +17,11 @@ import javax.inject.Inject;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.flows.expansions.interactors.ExpansionsInteractor;
 import is.hello.sense.flows.expansions.ui.views.ExpansionListView;
-import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.fragments.SenseViewFragment;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.ExpansionAdapter;
 
-public class ExpansionListFragment extends PresenterFragment<ExpansionListView>
+public class ExpansionListFragment extends SenseViewFragment<ExpansionListView>
         implements ArrayRecyclerAdapter.OnItemClickedListener<Expansion> {
     public static final String EXPANSION_ID_KEY = ExpansionListFragment.class.getSimpleName() + ".expansion_id_key";
     @Inject
@@ -31,11 +31,11 @@ public class ExpansionListFragment extends PresenterFragment<ExpansionListView>
     private ExpansionAdapter adapter;
 
     @Override
-    public void initializePresenterView() {
-        if (presenterView == null) {
+    public void initializeSenseView() {
+        if (senseView == null) {
             this.adapter = new ExpansionAdapter(new ArrayList<>(2), picasso);
             this.adapter.setOnItemClickedListener(this);
-            presenterView = new ExpansionListView(getActivity(), adapter);
+            senseView = new ExpansionListView(getActivity(), adapter);
         }
     }
 

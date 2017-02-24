@@ -9,13 +9,13 @@ import android.support.v7.widget.RecyclerView;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.adapters.VoiceCommandsAdapter;
-import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.mvp.view.SenseView;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.recycler.FirstAndLastItemMarginDecoration;
 import is.hello.sense.ui.recycler.InsetItemDecoration;
 
 @SuppressLint("ViewConstructor")
-public class VoiceView extends PresenterView {
+public class VoiceView extends SenseView {
     private final RecyclerView recyclerView;
     final InsetItemDecoration insetItemDecorationForWelcome = new InsetItemDecoration();
 

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -30,8 +29,8 @@ import is.hello.sense.flows.smartalarm.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
-import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
-import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
+import is.hello.sense.mvp.fragments.ControllerSenseViewFragment;
+import is.hello.sense.mvp.fragments.ViewPagerSenseViewFragment;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
 import is.hello.sense.ui.common.SenseDialogFragment;
@@ -45,11 +44,11 @@ import is.hello.sense.util.NotTested;
 import rx.Observable;
 
 @NotTested
-public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAlarmListView>
+public class SmartAlarmListFragment extends ControllerSenseViewFragment<SmartAlarmListView>
         implements
         SmartAlarmAdapter.InteractionListener,
         HomeActivity.ScrollUp,
-        ViewPagerPresenterFragment.FabListener {
+        ViewPagerSenseViewFragment.FabListener {
     private static final int DELETE_REQUEST_CODE = 117;
 
     @Inject
@@ -62,15 +61,15 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
     ExpansionCategoryFormatter expansionCategoryFormatter;
     private ArrayList<Alarm> currentAlarms = new ArrayList<>();
     @Nullable
-    private ViewPagerPresenterFragment.NotificationListener notificationListener = null;
+    private ViewPagerSenseViewFragment.NotificationListener notificationListener = null;
 
 
     //region PresenterFragment
     @Override
-    public void initializePresenterView() {
-        if (presenterView == null) {
-            this.presenterView = new SmartAlarmListView(getActivity(),
-                                                        new SmartAlarmAdapter(getActivity(),
+    public void initializeSenseView() {
+        if (senseView == null) {
+            this.senseView = new SmartAlarmListView(getActivity(),
+                                                    new SmartAlarmAdapter(getActivity(),
                                                                               this,
                                                                               dateFormatter,
                                                                               expansionCategoryFormatter));
@@ -89,12 +88,12 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         final Observable<Boolean> use24Time = preferences.observableUse24Time();
-        bindAndSubscribe(use24Time, presenterView::updateAdapterTime, Functions.LOG_ERROR);
+        bindAndSubscribe(use24Time, senseView::updateAdapterTime, Functions.LOG_ERROR);
         smartAlarmInteractor.alarms.forget();
         bindAndSubscribe(smartAlarmInteractor.alarms,
                          this::bindAlarms,
                          this::alarmsUnavailable);
-        presenterView.setProgressBarVisible(true);
+        senseView.setProgressBarVisible(true);
         smartAlarmInteractor.update();
 
     }
@@ -114,9 +113,9 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
                 data != null) {
             final int position = data.getIntExtra(DeleteAlarmDialogFragment.ARG_INDEX, 0);
 
-            presenterView.setProgressBarVisible(true);
+            senseView.setProgressBarVisible(true);
             bindAndSubscribe(smartAlarmInteractor.deleteSmartAlarm(position),
-                             ignored -> presenterView.setProgressBarVisible(false),
+                             ignored -> senseView.setProgressBarVisible(false),
                              this::presentError);
         }
     }
@@ -149,13 +148,13 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
                                            Analytics.Backside.PROP_ALARM_MINUTE, smartAlarm.getMinuteOfHour());
         Analytics.trackEvent(Analytics.Backside.EVENT_ALARM_ON_OFF, properties);
 
-        presenterView.setProgressBarVisible(true);
+        senseView.setProgressBarVisible(true);
         bindAndSubscribe(smartAlarmInteractor.saveSmartAlarm(position, smartAlarm),
-                         ignored -> presenterView.setProgressBarVisible(false),
+                         ignored -> senseView.setProgressBarVisible(false),
                          e -> {
                              // Revert on error
                              smartAlarm.setEnabled(!enabled);
-                             presenterView.notifyAdapterUpdate();
+                             senseView.notifyAdapterUpdate();
 
                              presentError(e);
                          });
@@ -180,10 +179,10 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
     //region ScrollUp
     @Override
     public void scrollUp() {
-        if (presenterView == null) {
+        if (senseView == null) {
             return;
         }
-        presenterView.scrollUp();
+        senseView.scrollUp();
     }
     //endregion
 
@@ -208,7 +207,7 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
     }
 
     @Override
-    public void setNotificationListener(@NonNull final ViewPagerPresenterFragment.NotificationListener notificationListener) {
+    public void setNotificationListener(@NonNull final ViewPagerSenseViewFragment.NotificationListener notificationListener) {
         this.notificationListener = notificationListener;
     }
 
@@ -255,17 +254,17 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
     public void bindAlarms(@NonNull final ArrayList<Alarm> alarms) {
         this.currentAlarms = alarms;
 
-        presenterView.updateAdapterAlarms(alarms);
+        senseView.updateAdapterAlarms(alarms);
         if (alarms.isEmpty()) {
             final SmartAlarmAdapter.Message message = new SmartAlarmAdapter.Message(0,
                                                                                     StringRef.from(R.string.message_smart_alarm_placeholder));
             message.actionRes = R.string.action_new_alarm;
             message.titleIconRes = R.drawable.illustration_no_alarm;
             message.onClickListener = this::onAddButtonClicked;
-            presenterView.bindAdapterMessage(message);
+            senseView.bindAdapterMessage(message);
         }
         notifyChange();
-        presenterView.setProgressBarVisible(false);
+        senseView.setProgressBarVisible(false);
     }
 
     public void alarmsUnavailable(final Throwable e) {
@@ -293,8 +292,8 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
             message.onClickListener = this::updateAlarms;
         }
         notifyChange();
-        presenterView.bindAdapterMessage(message);
-        presenterView.setProgressBarVisible(false);
+        senseView.bindAdapterMessage(message);
+        senseView.setProgressBarVisible(false);
     }
 
     public void updateAlarms(@Nullable final View ignored) {
@@ -302,7 +301,7 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
     }
 
     public void presentError(final Throwable e) {
-        presenterView.setProgressBarVisible(false);
+        senseView.setProgressBarVisible(false);
 
         final ErrorDialogFragment.PresenterBuilder builder = new ErrorDialogFragment.PresenterBuilder(e);
         if (e instanceof SmartAlarmInteractor.DayOverlapError) {

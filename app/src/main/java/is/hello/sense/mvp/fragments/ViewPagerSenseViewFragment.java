@@ -1,4 +1,4 @@
-package is.hello.sense.mvp.presenters;
+package is.hello.sense.mvp.fragments;
 
 
 import android.app.Fragment;
@@ -13,16 +13,17 @@ import android.view.View;
 
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
+import is.hello.sense.flows.home.ui.fragments.SoundsSenseViewFragment;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.mvp.util.ViewPagerPresenter;
-import is.hello.sense.mvp.view.ViewPagerPresenterView;
+import is.hello.sense.mvp.view.ViewPagerSenseView;
 import is.hello.sense.util.NotTested;
 
 /**
  * Any class Fragment that wants to host fragments should extend this.
  */
 @NotTested
-public abstract class ViewPagerPresenterFragment extends ControllerPresenterFragment<ViewPagerPresenterView>
+public abstract class ViewPagerSenseViewFragment extends ControllerSenseViewFragment<ViewPagerSenseView>
         implements ViewPagerPresenter,
         ViewPager.OnPageChangeListener,
         HomeActivity.ScrollUp {
@@ -56,12 +57,12 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
 
     //region ControllerPresenterFragment
     @Override
-    public final void initializePresenterView() {
-        if (this.presenterView == null) {
+    public final void initializeSenseView() {
+        if (this.senseView == null) {
             this.viewPagerDelegate = newViewPagerDelegateInstance();
 
-            this.presenterView = new ViewPagerPresenterView(this,
-                                                            this::onFabClicked);
+            this.senseView = new ViewPagerSenseView(this,
+                                                    this::onFabClicked);
         }
     }
 
@@ -71,7 +72,7 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
                               final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (shouldAddViewPagerListener()) {
-            presenterView.addViewPagerListener(this);
+            senseView.addViewPagerListener(this);
         }
     }
 
@@ -86,8 +87,8 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
     public void onDestroyView() {
         super.onDestroyView();
         if (shouldAddViewPagerListener()) {
-            if (this.presenterView != null) {
-                this.presenterView.removeViewPagerListener(this);
+            if (this.senseView != null) {
+                this.senseView.removeViewPagerListener(this);
             }
         }
         super.onDestroyView();
@@ -168,7 +169,7 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
 
     /**
      * @return true will add this class's ViewPager.OnPageScrollListener. Should be false unless the
-     * Fab is needed. See {@link is.hello.sense.flows.home.ui.fragments.SoundsPresenterFragment} for
+     * Fab is needed. See {@link SoundsSenseViewFragment} for
      * example.
      */
     protected boolean shouldAddViewPagerListener() {
@@ -181,10 +182,10 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
 
     @Nullable
     public Fragment getCurrentFragment() {
-        if (this.presenterView == null) {
+        if (this.senseView == null) {
             return null;
         }
-        return this.presenterView.getCurrentFragment();
+        return this.senseView.getCurrentFragment();
     }
 
 
@@ -221,22 +222,22 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
         if (positionOffset < 0 || positionOffset > 1f) { // Hit the edge of the screen. Ignore.
             return;
         }
-        final Fragment fragment = this.presenterView.getFragmentAtPos(position);
+        final Fragment fragment = this.senseView.getFragmentAtPos(position);
         if (fragment instanceof FabListener) {
             final FabListener fabListener = (FabListener) fragment;
             if (!fabListener.hasNotificationListener()) {
                 fabListener.setNotificationListener(notificationListener);
             }
             if (fabListener.shouldShowFab()) {
-                this.presenterView.setFabRotating(fabListener.shouldFabRotate());
-                this.presenterView.setFabSizeAndAlpha(Math.min(1f, Math.abs(1f - positionOffset * 2)));
-                this.presenterView.setFabResource(fabListener.getFabDrawableRes());
-                this.presenterView.setFabVisible(true);
+                this.senseView.setFabRotating(fabListener.shouldFabRotate());
+                this.senseView.setFabSizeAndAlpha(Math.min(1f, Math.abs(1f - positionOffset * 2)));
+                this.senseView.setFabResource(fabListener.getFabDrawableRes());
+                this.senseView.setFabVisible(true);
                 return;
             }
         }
-        this.presenterView.setFabSizeAndAlpha(0);
-        this.presenterView.setFabVisible(false);
+        this.senseView.setFabSizeAndAlpha(0);
+        this.senseView.setFabVisible(false);
     }
 
     @Nullable
@@ -299,7 +300,7 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
 
                 if (positionOffset >= .5f) { // B. We're closer to the next fragment than current.
 
-                    if (lastPosition == this.presenterView.getAdapterChildCount() - 1) { // C. Nothing right of it. Use this.
+                    if (lastPosition == this.senseView.getAdapterChildCount() - 1) { // C. Nothing right of it. Use this.
                         positionToUse = lastPosition;
 
                     } else { // C. Use fragment right of current.
@@ -332,7 +333,7 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
     public void onPageScrollStateChanged(final int state) {
         this.isScrolling = state == ViewPager.SCROLL_STATE_DRAGGING;
         if (!isScrolling) {
-            currentlyScrolledPosition = this.presenterView.getCurrentItemPosition();
+            currentlyScrolledPosition = this.senseView.getCurrentItemPosition();
             updateFab(currentlyScrolledPosition);
         }
     }
@@ -342,8 +343,8 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
 
         @Override
         public void notifyChange() {
-            if (ViewPagerPresenterFragment.this.presenterView != null && !isScrolling) {
-                updateFab(ViewPagerPresenterFragment.this.presenterView.getCurrentItemPosition());
+            if (ViewPagerSenseViewFragment.this.senseView != null && !isScrolling) {
+                updateFab(ViewPagerSenseViewFragment.this.senseView.getCurrentItemPosition());
             }
         }
     }

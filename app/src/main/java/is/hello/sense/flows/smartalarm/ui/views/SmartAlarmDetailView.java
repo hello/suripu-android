@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Category;
-import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.mvp.view.SenseView;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.ui.widget.util.Styles;
@@ -24,7 +24,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.NotTested;
 
 @SuppressLint("ViewConstructor")
-public class SmartAlarmDetailView extends PresenterView {
+public class SmartAlarmDetailView extends SenseView {
 
     private final TextView timeTextView;
     private final CompoundButton smartAlarmToggle;

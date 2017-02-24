@@ -5,11 +5,10 @@ import org.mockito.Mockito;
 
 import is.hello.sense.FragmentTest;
 import is.hello.sense.flows.home.util.SoundsViewPagerPresenterDelegate;
-import is.hello.sense.mvp.view.ViewPagerPresenterView;
 
 import static junit.framework.Assert.assertTrue;
 
-public class SoundsPresenterFragmentTest extends FragmentTest<SoundsPresenterFragment> {
+public class SoundsSenseViewFragmentTest extends FragmentTest<SoundsSenseViewFragment> {
 
 
     @Test
@@ -21,7 +20,7 @@ public class SoundsPresenterFragmentTest extends FragmentTest<SoundsPresenterFra
     public void onViewCreatedTest() {
         spyOnPresenterView();
         callOnViewCreated();
-        Mockito.verify(fragment.presenterView).addViewPagerListener(Mockito.eq(fragment));
+        Mockito.verify(fragment.senseView).addViewPagerListener(Mockito.eq(fragment));
     }
 
     @Test

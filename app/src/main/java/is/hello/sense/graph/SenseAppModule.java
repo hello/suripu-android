@@ -17,18 +17,17 @@ import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
-import is.hello.sense.flows.home.ui.fragments.FeedPresenterFragment;
+import is.hello.sense.flows.home.ui.fragments.FeedSenseViewFragment;
 import is.hello.sense.flows.home.ui.fragments.InsightsFragment;
 import is.hello.sense.flows.home.ui.fragments.MonthTrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.QuarterTrendsFragment;
-import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
+import is.hello.sense.flows.home.ui.fragments.RoomConditionsSenseViewFragment;
 import is.hello.sense.flows.home.ui.fragments.SleepSoundsFragment;
 import is.hello.sense.flows.home.ui.fragments.SmartAlarmListFragment;
-import is.hello.sense.flows.home.ui.fragments.SoundsPresenterFragment;
+import is.hello.sense.flows.home.ui.fragments.SoundsSenseViewFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
-import is.hello.sense.flows.home.ui.fragments.TimelinePagerPresenterFragment;
+import is.hello.sense.flows.home.ui.fragments.TimelinePagerSenseViewFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
-import is.hello.sense.flows.home.ui.fragments.TrendsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
 import is.hello.sense.flows.home.ui.fragments.WeekTrendsFragment;
 import is.hello.sense.flows.notification.ui.activities.NotificationActivity;
@@ -53,6 +52,7 @@ import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.interactors.ZoomedOutTimelineInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.notifications.NotificationMessageReceiver;
+import is.hello.sense.flows.home.ui.fragments.TrendsSenseViewFragment;
 import is.hello.sense.notifications.NotificationRegistration;
 import is.hello.sense.pill.PillModule;
 import is.hello.sense.presenters.BaseHardwarePresenter;
@@ -113,7 +113,7 @@ import is.hello.sense.zendesk.ZendeskModule;
                 SenseDetailsFragment.class,
                 PillDetailsFragment.class,
 
-                TimelinePagerPresenterFragment.class,
+                TimelinePagerSenseViewFragment.class,
                 TimelineFragment.class,
                 TimelineInteractor.class,
                 TimelineInfoFragment.class,
@@ -139,19 +139,19 @@ import is.hello.sense.zendesk.ZendeskModule;
                 //todo remove when fragments use presenters
                 OnboardingSenseColorsFragment.class,
                 OnboardingPairPill.class,
-                RoomConditionsPresenterFragment.class,
+                RoomConditionsSenseViewFragment.class,
                 TrendsFragment.class,
                 InsightsFragment.class,
                 VoiceFragment.class,
                 AppSettingsFragment.class,
-                SoundsPresenterFragment.class,
-                FeedPresenterFragment.class,
+                SoundsSenseViewFragment.class,
+                FeedSenseViewFragment.class,
                 SmartAlarmListFragment.class,
                 SleepSoundsFragment.class,
                 WeekTrendsFragment.class,
                 MonthTrendsFragment.class,
                 QuarterTrendsFragment.class,
-                TrendsPresenterFragment.class,
+                TrendsSenseViewFragment.class,
 
                 VoiceSettingsInteractor.class,
                 AppSettingsActivity.class,

@@ -9,12 +9,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import is.hello.sense.R;
-import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.mvp.view.SenseView;
 import is.hello.sense.ui.adapter.ConfigurationAdapter;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.widget.util.Views;
 
-public class ConfigSelectionView extends PresenterView{
+public class ConfigSelectionView extends SenseView {
 
     private final RecyclerView recyclerView;
     private final TextView titleTextView;

@@ -21,7 +21,7 @@ import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
-import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.mvp.view.SenseView;
 import is.hello.sense.ui.adapter.TimelineAdapter;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.recycler.ExtendedItemAnimator;
@@ -33,7 +33,7 @@ import is.hello.sense.ui.widget.timeline.TimelineNoDataHeaderView;
 import rx.functions.Action1;
 
 @SuppressLint("ViewConstructor")
-public class TimelineView extends PresenterView {
+public class TimelineView extends SenseView {
 
 
     private final RecyclerView recyclerView;

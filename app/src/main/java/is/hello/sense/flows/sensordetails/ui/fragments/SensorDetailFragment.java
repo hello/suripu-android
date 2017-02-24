@@ -1,14 +1,12 @@
 package is.hello.sense.flows.sensordetails.ui.fragments;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.view.ViewTreeObserver;
 
 import com.segment.analytics.Properties;
 
@@ -34,7 +32,7 @@ import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractor;
 import is.hello.sense.flows.sensordetails.ui.activities.SensorDetailActivity;
 import is.hello.sense.flows.sensordetails.ui.views.SensorDetailView;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.fragments.SenseViewFragment;
 import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
@@ -48,7 +46,7 @@ import is.hello.sense.util.DateFormatter;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-public final class SensorDetailFragment extends PresenterFragment<SensorDetailView>
+public final class SensorDetailFragment extends SenseViewFragment<SensorDetailView>
         implements SelectorView.OnSelectionChangedListener,
         SensorGraphDrawable.ScrubberCallback {
     private static final String ARG_SENSOR = SensorDetailFragment.class.getName() + ".ARG_SENSOR";
@@ -85,13 +83,13 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
     private Subscription sensorSubscription = Subscriptions.empty();
 
     @Override
-    public final void initializePresenterView() {
-        if (this.presenterView == null) {
-            this.presenterView = new SensorDetailView(getActivity(),
-                                                      this.unitFormatter,
-                                                      this,
-                                                      this);
-            this.presenterView.updateSensor(this.sensor);
+    public final void initializeSenseView() {
+        if (this.senseView == null) {
+            this.senseView = new SensorDetailView(getActivity(),
+                                                  this.unitFormatter,
+                                                  this,
+                                                  this);
+            this.senseView.updateSensor(this.sensor);
         }
     }
 
@@ -236,24 +234,24 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         changeActionBarColor(this.sensor.getColor());
         this.timestampQuery.setTimestamps(response.getTimestamps());
         this.sensor.setSensorValues(response);
-        this.presenterView.updateSensor(this.sensor);
-        this.presenterView.setGraph(this.sensor,
-                                    SensorGraphView.StartDelay.SHORT,
-                                    queryScope == QueryScope.DAY_5_MINUTE ? sensorLabelInteractor.getDayLabels() : sensorLabelInteractor.getWeekLabels());
+        this.senseView.updateSensor(this.sensor);
+        this.senseView.setGraph(this.sensor,
+                                SensorGraphView.StartDelay.SHORT,
+                                queryScope == QueryScope.DAY_5_MINUTE ? sensorLabelInteractor.getDayLabels() : sensorLabelInteractor.getWeekLabels());
         showTutorialIfNeeded();
 
     }
 
     private void handleError(@NonNull final Throwable throwable) {
         changeActionBarColor(R.color.dim);
-        this.presenterView.bindError();
+        this.senseView.bindError();
     }
 
     private void changeActionBarColor(@ColorRes final int colorRes) {
         final Activity activity = getActivity();
         if (activity instanceof SensorDetailActivity) {
             // Some bug occurs when you try to change the actionbar from the main thread causing everything to freeze but never crash.
-            this.presenterView.post(() -> ((SensorDetailActivity) activity).setActionbarColor(colorRes));
+            this.senseView.post(() -> ((SensorDetailActivity) activity).setActionbarColor(colorRes));
         }
 
     }
@@ -292,7 +290,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
                     tutorialOverlayView.show(container);
                     if (scrollUp) {
                         Views.runWhenLaidOut(tutorialOverlayView, () -> {
-                            SensorDetailFragment.this.presenterView.smoothScrollBy(tutorialOverlayView.getTextViewHeight());
+                            SensorDetailFragment.this.senseView.smoothScrollBy(tutorialOverlayView.getTextViewHeight());
 
                         });
                     }
@@ -327,16 +325,16 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         } else {
             value = getString(R.string.missing_data_placeholder);
         }
-        this.presenterView.setValueAndMessage(value,
-                                              message);
+        this.senseView.setValueAndMessage(value,
+                                          message);
 
     }
 
     @Override
     public void onScrubberReleased() {
-        this.presenterView.setValueAndMessage(unitFormatter.createUnitBuilder(sensor)
-                                                           .buildWithStyle(),
-                                              this.sensor.getMessage());
+        this.senseView.setValueAndMessage(unitFormatter.createUnitBuilder(sensor)
+                                                       .buildWithStyle(),
+                                          this.sensor.getMessage());
     }
 
     private class TimestampQuery {

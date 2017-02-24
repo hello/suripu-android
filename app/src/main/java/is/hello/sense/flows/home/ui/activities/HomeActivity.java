@@ -25,12 +25,12 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
-import is.hello.sense.flows.home.ui.fragments.FeedPresenterFragment;
-import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
-import is.hello.sense.flows.home.ui.fragments.SoundsPresenterFragment;
+import is.hello.sense.flows.home.ui.fragments.FeedSenseViewFragment;
+import is.hello.sense.flows.home.ui.fragments.RoomConditionsSenseViewFragment;
+import is.hello.sense.flows.home.ui.fragments.SoundsSenseViewFragment;
 import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
-import is.hello.sense.flows.home.ui.fragments.TimelinePagerPresenterFragment;
-import is.hello.sense.flows.home.ui.fragments.TrendsPresenterFragment;
+import is.hello.sense.flows.home.ui.fragments.TimelinePagerSenseViewFragment;
+import is.hello.sense.flows.home.ui.fragments.TrendsSenseViewFragment;
 import is.hello.sense.flows.home.ui.views.SenseTabLayout;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
@@ -451,11 +451,11 @@ public class HomeActivity extends ScopedInjectionActivity
         @Override
         public StaticFragmentAdapter.Item[] getViewPagerItems() {
             return new StaticFragmentAdapter.Item[]{
-                    new StaticFragmentAdapter.Item(TimelinePagerPresenterFragment.class, TimelinePagerPresenterFragment.class.getSimpleName()),
-                    new StaticFragmentAdapter.Item(TrendsPresenterFragment.class, TrendsPresenterFragment.class.getSimpleName()),
-                    new StaticFragmentAdapter.Item(FeedPresenterFragment.class, FeedPresenterFragment.class.getSimpleName()),
-                    new StaticFragmentAdapter.Item(SoundsPresenterFragment.class, SoundsPresenterFragment.class.getSimpleName()),
-                    new StaticFragmentAdapter.Item(RoomConditionsPresenterFragment.class, RoomConditionsPresenterFragment.class.getSimpleName())
+                    new StaticFragmentAdapter.Item(TimelinePagerSenseViewFragment.class, TimelinePagerSenseViewFragment.class.getSimpleName()),
+                    new StaticFragmentAdapter.Item(TrendsSenseViewFragment.class, TrendsSenseViewFragment.class.getSimpleName()),
+                    new StaticFragmentAdapter.Item(FeedSenseViewFragment.class, FeedSenseViewFragment.class.getSimpleName()),
+                    new StaticFragmentAdapter.Item(SoundsSenseViewFragment.class, SoundsSenseViewFragment.class.getSimpleName()),
+                    new StaticFragmentAdapter.Item(RoomConditionsSenseViewFragment.class, RoomConditionsSenseViewFragment.class.getSimpleName())
             };
         }
 

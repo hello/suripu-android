@@ -13,13 +13,13 @@ import is.hello.sense.api.model.v2.Duration;
 import is.hello.sense.api.model.v2.SleepSoundStatus;
 import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Sound;
-import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.mvp.view.SenseView;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
 import is.hello.sense.util.NotTested;
 
 @NotTested
 @SuppressLint("ViewConstructor")
-public class SleepSoundsView extends PresenterView {
+public class SleepSoundsView extends SenseView {
 
     private final ProgressBar progressBar;
     private final RecyclerView recyclerView;

@@ -21,13 +21,13 @@ import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.flows.expansions.ui.views.ConfigSelectionView;
-import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.fragments.SenseViewFragment;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.ConfigurationAdapter;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.util.Logger;
 
-public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionView>
+public class ConfigSelectionFragment extends SenseViewFragment<ConfigSelectionView>
         implements ArrayRecyclerAdapter.OnItemClickedListener<Configuration>,
         OnBackPressedInterceptor {
     public static final String EXPANSION_ID_KEY = ConfigSelectionFragment.class.getSimpleName() + ".expansion_id_key";
@@ -57,21 +57,21 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     }
 
     @Override
-    public void initializePresenterView() {
-        if (presenterView == null) {
+    public void initializeSenseView() {
+        if (senseView == null) {
             this.adapter = new ConfigurationAdapter(new ArrayList<>(2));
             this.adapter.setOnItemClickedListener(this);
-            presenterView = new ConfigSelectionView(getActivity(), adapter);
-            presenterView.setDoneButtonClickListener(this::onDoneButtonClicked);
-            presenterView.setVisibility(View.INVISIBLE);
+            senseView = new ConfigSelectionView(getActivity(), adapter);
+            senseView.setDoneButtonClickListener(this::onDoneButtonClicked);
+            senseView.setVisibility(View.INVISIBLE);
         }
     }
 
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        presenterView.postDelayed(stateSafeExecutor.bind( () -> {
-            presenterView.setVisibility(View.VISIBLE);
+        senseView.postDelayed(stateSafeExecutor.bind(() -> {
+            senseView.setVisibility(View.VISIBLE);
             bindAndSubscribe(expansionDetailsInteractor.expansionSubject,
                              this::bindExpansion,
                              this::presentError);
@@ -131,8 +131,8 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
     public void bindExpansion(@Nullable final Expansion expansion) {
         if (expansion != null) {
             this.expansion = expansion;
-            presenterView.setTitle(getString(R.string.expansions_configuration_selection_title_format, expansion.getCompanyName()));
-            presenterView.setSubtitle(getString(R.string.expansions_configuration_selection_subtitle_format, expansion.getConfigurationType()));
+            senseView.setTitle(getString(R.string.expansions_configuration_selection_title_format, expansion.getCompanyName()));
+            senseView.setSubtitle(getString(R.string.expansions_configuration_selection_subtitle_format, expansion.getConfigurationType()));
             configurationsInteractor.setExpansionId(expansion.getId());
 
             if (expansion.requiresConfiguration() || expansion.isConnected()) {
