@@ -8,6 +8,7 @@ import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineBuilder;
 import is.hello.sense.graph.InjectionTestCase;
+import is.hello.sense.util.Sync;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -30,7 +31,9 @@ public class LastNightInteractorTest extends InjectionTestCase {
     @Test
     public void update() throws Exception {
         final LastNightInteractor lastNightInteractorSpy = spy(lastNightInteractor);
-        lastNightInteractorSpy.update();
+        final Timeline result = Sync.wrapAfter(lastNightInteractorSpy::update,
+                                               lastNightInteractorSpy.timeline)
+                                    .last();
         verify(lastNightInteractorSpy).getValidTimeline(any(Timeline.class));
     }
 
