@@ -37,7 +37,6 @@ import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.interactors.TimelineInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 import is.hello.sense.notifications.Notification;
@@ -120,15 +119,16 @@ public class HomeActivity extends ScopedInjectionActivity
         this.extendedViewPager.setScrollingEnabled(false);
         this.extendedViewPager.setFadePageTransformer(true);
         this.extendedViewPager.setOffscreenPageLimit(this.viewPagerDelegate.getOffscreenPageLimit());
-        if (savedInstanceState == null) {
-            this.extendedViewPager.setCurrentItem(this.viewPagerDelegate.getStartingItemPosition());
-        }
+
         this.tabLayout = (SenseTabLayout) findViewById(R.id.activity_new_home_tab_layout);
 
         final HomeFragmentPagerAdapter fragmentAdapter = new HomeFragmentPagerAdapter(getFragmentManager(),
                                                                                       this.extendedViewPager.getId(),
                                                                                       this.viewPagerDelegate.getViewPagerItems());
         this.extendedViewPager.setAdapter(fragmentAdapter);
+        if (savedInstanceState == null) {
+            this.extendedViewPager.setCurrentItem(this.viewPagerDelegate.getStartingItemPosition());
+        }
 
         this.tabLayout.setupWithViewPager(this.extendedViewPager);
         this.tabLayout.setListener(this);
@@ -161,7 +161,7 @@ public class HomeActivity extends ScopedInjectionActivity
                          this::bindAlert,
                          Functions.LOG_ERROR);
         bindAndSubscribe(this.lastNightInteractor.timeline,
-                         ignore -> this.tabLayout.updateSleepScoreTab(getCurrentTimeline()),
+                         validTimeline -> this.tabLayout.updateSleepScoreTab(validTimeline),
                          Functions.LOG_ERROR);
         bindAndSubscribe(this.unreadStateInteractor.hasUnreadItems,
                          this::bindUnreadItems,
@@ -429,12 +429,7 @@ public class HomeActivity extends ScopedInjectionActivity
     @Nullable
     @Override
     public Timeline getCurrentTimeline() {
-        final Timeline timeline = this.lastNightInteractor.timeline.getValue();
-        if (TimelineInteractor.hasValidTimeline(timeline)
-                && TimelineInteractor.hasValidCondition(timeline)) {
-            return timeline;
-        }
-        return null;
+        return this.lastNightInteractor.timeline.getValue();
     }
     //endregion
 

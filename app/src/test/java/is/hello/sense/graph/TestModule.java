@@ -20,7 +20,9 @@ import is.hello.sense.api.sessions.TestApiSessionManager;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractorTests;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatterTest;
+import is.hello.sense.flows.home.interactors.LastNightInteractorTest;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
+import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragmentTests;
 import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractorTest;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
@@ -61,7 +63,6 @@ import is.hello.sense.interactors.settings.SettingsPairSenseInteractorTests;
 import is.hello.sense.interactors.upgrade.UpgradePairSenseInteractorTests;
 import is.hello.sense.rating.LocalUsageTrackerTests;
 import is.hello.sense.ui.adapter.SmartAlarmAdapterTests;
-import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragmentTests;
 import is.hello.sense.units.UnitFormatterTests;
 import is.hello.sense.util.BatteryUtil;
 import is.hello.sense.util.DateFormatterTests;
@@ -139,6 +140,9 @@ import static org.mockito.Mockito.mock;
             UpgradePairSenseInteractorTests.class,
 
             ExpansionCategoryFormatterTest.class,
+
+
+            LastNightInteractorTest.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")

@@ -2,7 +2,6 @@ package is.hello.sense.flows.home.ui.views;
 
 import android.content.Context;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -40,18 +39,27 @@ public class SenseTabLayout extends TabLayout
     }
 
     @Override
-    public void setupWithViewPager(@NonNull final ViewPager viewPager) {
+    public void setupWithViewPager(@Nullable final ViewPager viewPager) {
         super.setupWithViewPager(viewPager);
         clearOnTabSelectedListeners();
 
-        if(viewPager.getAdapter() instanceof HomeFragmentPagerAdapter) {
+        if (viewPager !=null && viewPager.getAdapter() instanceof HomeFragmentPagerAdapter) {
             final HomeFragmentPagerAdapter.HomeItem[] items = ((HomeFragmentPagerAdapter) viewPager.getAdapter()).getHomeItems();
-            for(int position = 0; position < getTabCount(); position++) {
+            final int tabCount = getTabCount();
+            if (items.length != tabCount) {
+                throw new AssertionError(String.format("Tab count mismatch expected %s actual %s", items.length, tabCount));
+            }
+            for (int position = 0; position < tabCount; position++) {
                 final HomeFragmentPagerAdapter.HomeItem item = items[position];
-                if(position == SLEEP_ICON_KEY) {
-                    getTabAt(position).setCustomView(createSleepScoreTabView(getCurrentTimeline()));
+                Tab tab = getTabAt(position);
+                if (tab == null) {
+                    tab = newTab();
+                    addTab(tab, position);
+                }
+                if (position == SLEEP_ICON_KEY) {
+                    tab.setCustomView(createSleepScoreTabView(getCurrentTimeline()));
                 } else {
-                    getTabAt(position).setCustomView(createTabFor(item.normalIcon, item.activeIcon));
+                    tab.setCustomView(createTabFor(item.normalIcon, item.activeIcon));
                 }
             }
         }
