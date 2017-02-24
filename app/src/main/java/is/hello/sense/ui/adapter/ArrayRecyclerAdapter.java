@@ -1,9 +1,12 @@
 package is.hello.sense.ui.adapter;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import is.hello.sense.R;
+import is.hello.sense.databinding.ItemMessageCardBinding;
 import is.hello.sense.flows.notification.ui.adapters.NotificationSettingsAdapter;
 
 public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
@@ -198,24 +202,49 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
         }
     }
 
+    public class BindedViewHolder<T extends android.databinding.ViewDataBinding> extends ViewHolder {
+        protected final T binding;
+
+        public BindedViewHolder(@NonNull final View itemView) {
+            super(itemView);
+            this.binding = DataBindingUtil.bind(itemView);
+        }
+
+        public void bind(final int position) {
+            // Do nothing
+        }
+    }
+
+    public class ItemMessageCardViewHolder extends BindedViewHolder<ItemMessageCardBinding> {
+        public ItemMessageCardViewHolder(@NonNull final ViewGroup parent) {
+            super(inflate(R.layout.item_message_card, parent));
+        }
+
+        public ItemMessageCardViewHolder(@NonNull final ViewGroup parent,
+                                         @DrawableRes final int drawableRes,
+                                         @StringRes final int titleRes,
+                                         @StringRes final int messageRes,
+                                         @StringRes final int actionRes,
+                                         @Nullable final View.OnClickListener clickListener) {
+            super(inflate(R.layout.item_message_card, parent));
+            this.binding.itemMessageCardImageText.setText(titleRes);
+            this.binding.itemMessageCardImageText.setImageResource(drawableRes);
+            this.binding.itemMessageCardMessage.setText(messageRes);
+            this.binding.itemMessageCardAction.setText(actionRes);
+            this.binding.itemMessageCardAction.setOnClickListener(clickListener);
+        }
+    }
+
     //todo replace all error view holders using item_message_card with this.
-    public class ErrorViewHolder extends ViewHolder
+    public class ErrorViewHolder extends ItemMessageCardViewHolder
             implements View.OnClickListener {
-        protected final ImageView image;
-        protected final TextView title;
-        protected final TextView message;
-        protected final Button button;
 
         public ErrorViewHolder(@NonNull final ViewGroup parent) {
-            super(inflate(R.layout.item_message_card, parent));
-            this.image = (ImageView) this.itemView.findViewById(R.id.item_message_card_image);
-            this.title = (TextView)  this.itemView.findViewById(R.id.item_message_card_title);
-            this.message = (TextView)  this.itemView.findViewById(R.id.item_message_card_message);
-            this.button = (Button)  this.itemView.findViewById(R.id.item_message_card_action);
-            this.button.setText(R.string.action_retry);
-            this.button.setOnClickListener(this);
-            this.title.setVisibility(View.GONE);
-            this.message.setText(R.string.error_internet_connection_generic_message);
+            super(parent);
+            this.binding.itemMessageCardAction.setText(R.string.action_retry);
+            this.binding.itemMessageCardAction.setOnClickListener(this);
+            this.binding.itemMessageCardImageText.setVisibility(View.GONE);
+            this.binding.itemMessageCardMessage.setText(R.string.error_internet_connection_generic_message);
         }
 
         @Override
