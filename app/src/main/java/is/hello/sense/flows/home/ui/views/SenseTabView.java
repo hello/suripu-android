@@ -13,8 +13,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.v2.Timeline;
-import is.hello.sense.interactors.TimelineInteractor;
 import is.hello.sense.ui.widget.graphing.drawables.SleepScoreIconDrawable;
 
 public class SenseTabView extends FrameLayout {
@@ -70,37 +68,28 @@ public class SenseTabView extends FrameLayout {
         return this;
     }
 
-    public SenseTabView useSleepScoreIcon(@Nullable final Timeline timeline) {
-        this.imageView.post(() -> useSleepScoreIcon(timeline,
-                                                    SenseTabView.this.imageView.getMeasuredWidth(),
-                                                    SenseTabView.this.imageView.getMeasuredHeight(),
-                                                    true));
+    public SenseTabView useSleepScoreIcon(@Nullable final Integer score) {
+        updateSleepScoreIcon(score);
         return this;
     }
 
-    public void updateSleepScoreIcon(@Nullable final Timeline timeline,
-                                     final boolean active) {
-        useSleepScoreIcon(timeline,
-                          this.imageView.getMeasuredWidth(),
-                          this.imageView.getMeasuredHeight(),
-                          active);
+    private void updateSleepScoreIcon(@Nullable final Integer score) {
+        useSleepScoreIcon(score,
+                          this.imageView.getMinimumWidth(),
+                          this.imageView.getMinimumHeight());
     }
 
-    private void useSleepScoreIcon(@Nullable final Timeline timeline,
+    private void useSleepScoreIcon(@Nullable final Integer score,
                                    final int width,
-                                   final int height,
-                                   final boolean active) {
+                                   final int height) {
         final SleepScoreIconDrawable.Builder builder = new SleepScoreIconDrawable.Builder(getContext());
-        if (timeline != null
-                && timeline.getScore() != null
-                && TimelineInteractor.hasValidCondition(timeline)) {
-            builder.withText(timeline.getScore());
+        if (score != null) {
+            builder.withText(score);
         }
         builder.withSize(width,
                          height);
         this.normalDrawable = builder.build();
         this.activeDrawable = builder.withSelected(true).build();
-        setActive(active);
     }
 
 

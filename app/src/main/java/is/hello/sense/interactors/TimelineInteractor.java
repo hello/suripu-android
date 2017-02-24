@@ -103,7 +103,7 @@ public class TimelineInteractor extends ValueInteractor<Timeline> {
         validTimelineCache.evictAll();
     }
 
-    private static boolean hasValidTimeline(@Nullable final Timeline t) {
+    public static boolean hasValidTimeline(@Nullable final Timeline t) {
         return t != null
                 && t.getScore() != null
                 && t.getScore() > 0;
