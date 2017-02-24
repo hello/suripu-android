@@ -193,12 +193,12 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<ArrayList<NotificationSetting>> getNotificationSettings() {
-        return unimplemented();
+        return loadResponse("notification_settings", new TypeToken<ArrayList<NotificationSetting>>(){}.getType());
     }
 
     @Override
     public Observable<VoidResponse> putNotificationSettings(@NonNull @Body List<NotificationSetting> settings) {
-        return unimplemented();
+        return safeJust(new VoidResponse());
     }
 
     @Override

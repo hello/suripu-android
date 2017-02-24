@@ -39,9 +39,14 @@ public class Notification extends ApiResponse {
     static final String EXTRA_TYPE = "extra_type";
     static final String EXTRA_DETAILS = "extra_details";
 
+    @NonNull
+    public static Notification fromBundle(@NonNull final Bundle bundle) {
+        return new Notification(typeFromBundle(bundle), bundle.getString(EXTRA_DETAILS, UNKNOWN));
+    }
+
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({SYSTEM, SLEEP_SCORE, UNKNOWN})
-    @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})
+    @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.FIELD})
     public @interface Type {
     }
 
@@ -98,9 +103,44 @@ public class Notification extends ApiResponse {
         }
     }
 
-    public static @NonNull
-    LocalDate getDate(@NonNull final Bundle notification) {
-        final String rawDate = notification.getString(EXTRA_DETAILS);
+    @NonNull
+    @Type
+    private final String type;
+
+    @Nullable
+    private final String detail;
+
+    private boolean seen;
+
+    public Notification(@NonNull @Type final String type,
+                        @Nullable final String detail) {
+        this.type = type;
+        this.detail = detail;
+        this.seen = false;
+    }
+
+    @NonNull
+    @Type
+    public String getType() {
+        return type;
+    }
+
+    @Nullable
+    public String getDetail() {
+        return detail;
+    }
+
+    void setSeen(final boolean seen) {
+        this.seen = seen;
+    }
+
+    boolean hasSeen() {
+        return seen;
+    }
+
+    @NonNull
+    public LocalDate getDate() {
+        final String rawDate = detail;
         if (TextUtils.isEmpty(rawDate)) {
             return DateFormatter.lastNight();
         }

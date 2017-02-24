@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:background="@drawable/selectable_dark_bounded"
@@ -16,7 +17,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            tools:text="@string/air_quality"/>
 
         <TextView
             android:id="@+id/item_chevron_view_title"
@@ -34,10 +36,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toStartOf="@+id/item_chevron_view_circle"/>
+            android:layout_toStartOf="@+id/item_chevron_view_circle"
+            tools:text="@string/condition_short_hand_warning_airquality"/>
 
         <ImageView
-            android:src="@drawable/disclosure_chevron"
+            android:src="@drawable/icon_chevron_right_24"
             android:id="@+id/item_chevron_view_circle"
             android:layout_width="@dimen/x1"
             android:layout_height="@dimen/x1"

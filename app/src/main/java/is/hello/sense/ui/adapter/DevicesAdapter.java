@@ -154,7 +154,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
 
         @DrawableRes
         int getChevronRes() {
-            return R.drawable.disclosure_chevron;
+            return R.drawable.icon_chevron_right_24;
         }
 
         @Nullable

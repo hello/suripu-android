@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            android:drawableEnd="@drawable/disclosure_chevron_small"
+            android:drawableEnd="@drawable/icon_chevron_right_24"
             android:drawablePadding="@dimen/x1"
             android:text="@string/missing_data_placeholder"
             android:visibility="visible"/>

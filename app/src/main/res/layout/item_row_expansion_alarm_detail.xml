@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
             android:visibility="gone"
-            android:drawableEnd="@drawable/disclosure_chevron_small"
+            android:drawableEnd="@drawable/icon_chevron_right_24"
             android:drawablePadding="@dimen/x1"
             android:fontFamily="sans-serif"
             style="@style/AppTheme.Text.Body.MidSized"
