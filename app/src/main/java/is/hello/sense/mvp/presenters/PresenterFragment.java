@@ -101,9 +101,17 @@ public abstract class PresenterFragment<T extends PresenterView>
     @Override
     public void onResume() {
         super.onResume();
+        //debugLog("onResume");
         if (presenterView != null) {//todo remove check after forcing new instance
             presenterView.resume();
         }
+    }
+
+    @CallSuper
+    @Override
+    public void onPause() {
+        super.onPause();
+        //debugLog("onPause");
     }
 
     @CallSuper
