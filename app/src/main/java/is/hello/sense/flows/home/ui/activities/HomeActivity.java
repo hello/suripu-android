@@ -137,7 +137,7 @@ public class HomeActivity extends ScopedInjectionActivity
 
         //todo needs testing with server
         final Intent intent = getIntent();
-        if(savedInstanceState == null && intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
+        if (savedInstanceState == null && intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
         }
     }
@@ -190,12 +190,20 @@ public class HomeActivity extends ScopedInjectionActivity
         if (shouldUpdateAlerts()) {
             this.alertsInteractor.update();
         }
+        //todo make pretty
+        if (extendedViewPager != null && extendedViewPager.getAdapter() instanceof StaticFragmentAdapter) {
+            ((StaticFragmentAdapter) extendedViewPager.getAdapter()).onResume();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         isFirstActivityRun = false;
+        //todo make pretty
+        if (extendedViewPager != null && extendedViewPager.getAdapter() instanceof StaticFragmentAdapter) {
+            ((StaticFragmentAdapter) extendedViewPager.getAdapter()).onPause();
+        }
     }
 
     @Override
@@ -391,7 +399,7 @@ public class HomeActivity extends ScopedInjectionActivity
                             Notification.systemTypeFromString(notification.getDetail()));
                     break;
                 }
-                default:{
+                default: {
                     info(getClass().getSimpleName(), "unsupported notification type " + notification.getType());
                 }
             }

@@ -81,6 +81,14 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
         }
     }
 
+    public void onResume() {
+        alertFragmentVisible(lastPosition, true);
+    }
+
+    public void onPause() {
+        alertFragmentVisible(lastPosition, false);
+    }
+
     private void alertFragmentVisible(final int position,
                                       final boolean isVisible) {
         final Fragment fragment = getFragment(position);
