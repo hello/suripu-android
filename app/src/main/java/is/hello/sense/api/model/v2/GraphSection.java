@@ -130,7 +130,7 @@ public class GraphSection extends ApiResponse {
             return false;
         }
         final GraphSection otherGraphSection = (GraphSection) obj;
-        return titles.size() != otherGraphSection.titles.size() && values.equals(otherGraphSection.values);
+        return titles.size() == otherGraphSection.titles.size() && values.equals(otherGraphSection.values);
 
     }
 
