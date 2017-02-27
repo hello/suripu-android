@@ -4,11 +4,12 @@ import android.content.Context;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.View;
 
-import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.flows.home.util.HomeFragmentPagerAdapter;
 
 public class SenseTabLayout extends TabLayout
         implements TabLayout.OnTabSelectedListener {
@@ -19,8 +20,8 @@ public class SenseTabLayout extends TabLayout
     public static final int SOUNDS_ICON_KEY = 3;
     public static final int CONDITIONS_ICON_KEY = 4;
 
+    @Nullable
     private Listener listener = null;
-    private int currentItemIndex;
 
     public SenseTabLayout(final Context context) {
         this(context, null, 0);
@@ -37,14 +38,48 @@ public class SenseTabLayout extends TabLayout
         super(context, attrs, defStyleAttr);
     }
 
+    @Override
+    public void setupWithViewPager(@Nullable final ViewPager viewPager) {
+        super.setupWithViewPager(viewPager);
+        clearOnTabSelectedListeners();
+
+        if (viewPager !=null && viewPager.getAdapter() instanceof HomeFragmentPagerAdapter) {
+            final HomeFragmentPagerAdapter.HomeItem[] items = ((HomeFragmentPagerAdapter) viewPager.getAdapter()).getHomeItems();
+            final int tabCount = getTabCount();
+            if (items.length != tabCount) {
+                throw new AssertionError(String.format("Tab count mismatch expected %s actual %s", items.length, tabCount));
+            }
+            for (int position = 0; position < tabCount; position++) {
+                final HomeFragmentPagerAdapter.HomeItem item = items[position];
+                Tab tab = getTabAt(position);
+                if (tab == null) {
+                    tab = newTab();
+                    addTab(tab, position);
+                }
+                if (position == SLEEP_ICON_KEY) {
+                    tab.setCustomView(createSleepScoreTabView(getCurrentTimeline()));
+                } else {
+                    tab.setCustomView(createTabFor(item.normalIcon, item.activeIcon));
+                }
+            }
+        }
+
+        addOnTabSelectedListener(this);
+
+        final TabLayout.Tab tab = getTabAt(getSelectedTabPosition());
+        if (tab != null) {
+            setTabActive(tab, true);
+            tab.select();
+        }
+    }
+
     //region TabSelectedListener
     @Override
     public void onTabSelected(final Tab tab) {
         if (tab == null) {
             return;
         }
-        this.currentItemIndex = tab.getPosition();
-        tabChanged(this.currentItemIndex);
+        tabChanged(tab.getPosition());
         setTabActive(tab, true);
     }
 
@@ -110,12 +145,24 @@ public class SenseTabLayout extends TabLayout
         tab.select();
     }
 
-
     public void setFeedTabIndicatorVisible(final boolean show) {
-        if (currentItemIndex == INSIGHTS_ICON_KEY) {
+        if (getSelectedTabPosition() == INSIGHTS_ICON_KEY) {
             return;
         }
         setTabIndicatorVisible(INSIGHTS_ICON_KEY, show);
+    }
+
+    public void updateSleepScoreTab(@Nullable final Timeline timeline) {
+        final TabLayout.Tab tab = getTabAt(SLEEP_ICON_KEY);
+        if (tab == null) {
+            return;
+        }
+        final View view = tab.getCustomView();
+        if (view instanceof SenseTabView) {
+            ((SenseTabView) view).useSleepScoreIcon(timeline != null ? timeline.getScore() : null)
+                                 .setActive(tab.isSelected());
+        }
+
     }
 
     private void setTabIndicatorVisible(final int position,
@@ -130,43 +177,18 @@ public class SenseTabLayout extends TabLayout
 
     }
 
-    public void setUpTabs(final boolean shouldSelect) {
-        clearOnTabSelectedListeners();
-        removeAllTabs();
-        addTab(createSleepScoreTab(getCurrentTimeline()));
-        addTab(createTabFor(R.drawable.icon_trends_24, R.drawable.icon_trends_active_24));
-        addTab(createTabFor(R.drawable.icon_insight_24, R.drawable.icon_insight_active_24));
-        addTab(createTabFor(R.drawable.icon_sound_24, R.drawable.icon_sound_active_24));
-        addTab(createTabFor(R.drawable.icon_sense_24, R.drawable.icon_sense_active_24));
-
-        addOnTabSelectedListener(this);
-
-        final TabLayout.Tab tab = getTabAt(this.currentItemIndex);
-        if (shouldSelect && tab != null) {
-            setTabActive(tab, true);
-            tab.select();
-        }
+    private SenseTabView createSleepScoreTabView(@Nullable final Timeline timeline) {
+        final Integer score = timeline != null ? timeline.getScore() : null;
+        return new SenseTabView(getContext())
+                .useSleepScoreIcon(score)
+                .setActive(false);
     }
 
-    private Tab createSleepScoreTab(@Nullable final Timeline timeline) {
-        return newTab().setCustomView(new SenseTabView(getContext())
-                                              .useSleepScoreIcon(timeline));
-    }
-
-    private Tab createTabFor(@DrawableRes final int normal,
+    private SenseTabView createTabFor(@DrawableRes final int normal,
                              @DrawableRes final int active) {
-        return newTab().setCustomView(new SenseTabView(getContext())
-                                              .setDrawables(normal, active)
-                                              .setActive(false));
-    }
-
-    /**
-     * Will set the tab at this index position to active.
-     *
-     * @param index position to select during {{@link #setUpTabs(boolean)}}.
-     */
-    public void setCurrentItemIndex(final int index) {
-        this.currentItemIndex = index;
+        return new SenseTabView(getContext())
+                .setDrawables(normal, active)
+                .setActive(false);
     }
 
     public void setListener(@Nullable final Listener listener) {
@@ -182,18 +204,6 @@ public class SenseTabLayout extends TabLayout
         if (view instanceof SenseTabView) {
             ((SenseTabView) view).setActive(active);
         }
-    }
-
-    public void updateSleepScoreTab(@Nullable final Timeline timeline) {
-        final TabLayout.Tab tab = getTabAt(SLEEP_ICON_KEY);
-        if (tab == null) {
-            return;
-        }
-        final View view = tab.getCustomView();
-        if (view instanceof SenseTabView) {
-            ((SenseTabView) view).updateSleepScoreIcon(timeline, tab.isSelected());
-        }
-
     }
 
     public interface Listener {

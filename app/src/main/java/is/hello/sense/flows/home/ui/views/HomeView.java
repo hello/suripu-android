@@ -14,6 +14,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.databinding.ViewHomeBinding;
 import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
+import is.hello.sense.flows.home.util.HomeFragmentPagerAdapter;
 import is.hello.sense.flows.home.util.HomeViewPagerPresenterDelegate;
 import is.hello.sense.mvp.view.BindedPresenterView;
 
@@ -25,7 +26,6 @@ public class HomeView extends BindedPresenterView<ViewHomeBinding> {
         this.binding.viewHomeExtendedViewPager.setScrollingEnabled(false);
         this.binding.viewHomeExtendedViewPager.setFadePageTransformer(true);
         this.binding.viewHomeExtendedViewPager.setOffscreenPageLimit(offScreenLimit);
-        this.binding.viewHomeTabLayout.setupWithViewPager(this.binding.viewHomeExtendedViewPager);
     }
 
     //region BindedPresenterView
@@ -40,39 +40,40 @@ public class HomeView extends BindedPresenterView<ViewHomeBinding> {
         this.binding.viewHomeTabLayout.setListener(null);
         this.binding.viewHomeTabLayout.clearOnTabSelectedListeners();
         this.binding.viewHomeExtendedViewPager.setAdapter(null);
+    }
+
+    @Override
+    public void resume() {
+        super.resume();
+        resumeAdapter(true);
 
     }
 
+    @Override
+    public void pause() {
+        super.pause();
+        resumeAdapter(false);
+    }
     //endregion
 
     //region methods
+    private void resumeAdapter(final boolean resume) {
+        if (this.binding.viewHomeExtendedViewPager.getAdapter() instanceof StaticFragmentAdapter) {
+            if (resume) {
+                ((StaticFragmentAdapter) this.binding.viewHomeExtendedViewPager.getAdapter()).onResume();
+            } else {
+                ((StaticFragmentAdapter) this.binding.viewHomeExtendedViewPager.getAdapter()).onPause();
+            }
+        }
+    }
+
     public int getViewPagerId() {
         return this.binding.viewHomeExtendedViewPager.getId();
     }
 
-    public void setAdapter(@NonNull final StaticFragmentAdapter fragmentAdapter) {
+    public void setAdapter(@NonNull final HomeFragmentPagerAdapter fragmentAdapter) {
         this.binding.viewHomeExtendedViewPager.setAdapter(fragmentAdapter);
-    }
-
-    /**
-     * Forwards the index position of the starting fragment. Will not have an immediate effect until
-     * {@link #setUpTabs(boolean)} is called.
-     *
-     * @param itemIndex index position of the starting fragment to show.
-     */
-    public void setTabLayoutCurrentItemIndex(final int itemIndex) {
-        this.binding.viewHomeTabLayout.setCurrentItemIndex(itemIndex);
-    }
-
-    /**
-     * Will create the tabs.
-     *
-     * @param shouldSelect if true will select the tab at the position provided with
-     *                     {@link #setTabLayoutCurrentItemIndex(int)}. If none were given, 0 will be
-     *                     default.
-     */
-    public void setUpTabs(final boolean shouldSelect) {
-        this.binding.viewHomeTabLayout.setUpTabs(shouldSelect);
+        this.binding.viewHomeTabLayout.setupWithViewPager(this.binding.viewHomeExtendedViewPager);
     }
 
     /**
@@ -125,7 +126,7 @@ public class HomeView extends BindedPresenterView<ViewHomeBinding> {
      *
      * @param timeline if null will default to no data state.
      */
-    public void updateSleepScoreIcon(@Nullable final Timeline timeline) {
+    public void updateSleepScoreTab(@Nullable final Timeline timeline) {
         this.binding.viewHomeTabLayout.updateSleepScoreTab(timeline);
     }
 

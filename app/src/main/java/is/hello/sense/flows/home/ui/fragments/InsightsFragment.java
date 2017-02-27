@@ -27,6 +27,7 @@ import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.flows.home.ui.views.InsightsView;
 import is.hello.sense.graph.Scope;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
@@ -38,7 +39,6 @@ import is.hello.sense.interactors.questions.ReviewQuestionProvider;
 import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.InsightsAdapter;
-import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
@@ -118,7 +118,7 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
         addInteractor(deviceIssuesInteractor);
         addInteractor(questionsInteractor);
         addInteractor(unreadStateInteractor);
-        deviceIssuesInteractor.bindScope((Scope) getActivity());
+        deviceIssuesInteractor.bindScope((Scope) getActivity()); //todo why is this never unbinding scope?
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
@@ -149,7 +149,7 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
             this.tutorialOverlayView = null;
         }
 
-        insightsInteractor.unbindScope();
+        insightsInteractor.unbindScope(); //todo why unbinding scope in ondestroyView but binding scope in onCreate
     }
 
     @Override
@@ -421,5 +421,4 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
             }
         }
     };
-
 }

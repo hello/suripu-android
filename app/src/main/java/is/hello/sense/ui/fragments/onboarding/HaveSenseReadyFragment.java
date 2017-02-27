@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.util.Analytics;
@@ -59,12 +58,8 @@ public class HaveSenseReadyFragment extends SenseFragment {
 
     //region Actions
 
-    private OnboardingActivity getOnboardingActivity() {
-        return (OnboardingActivity) getActivity();
-    }
-
     public void pairSense(@NonNull View sender) {
-        getOnboardingActivity().pushFragment(new RegisterFragment(), null, true);
+        finishFlow();
     }
 
     public void showBuySense(@NonNull View sender) {

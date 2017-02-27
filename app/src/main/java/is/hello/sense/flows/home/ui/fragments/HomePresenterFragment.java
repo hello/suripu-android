@@ -20,6 +20,7 @@ import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.flows.home.ui.views.HomeView;
 import is.hello.sense.flows.home.ui.views.SenseTabLayout;
+import is.hello.sense.flows.home.util.HomeFragmentPagerAdapter;
 import is.hello.sense.flows.home.util.HomeViewPagerPresenterDelegate;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
@@ -49,7 +50,6 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         InsightInfoFragment.ParentProvider,
         Alert.ActionHandler {
     public static final String TAG = HomePresenterFragment.class.getSimpleName();
-    private static final String KEY_CURRENT_ITEM_INDEX = HomeActivity.class.getSimpleName() + ".KEY_CURRENT_ITEM_INDEX";
 
     @Inject
     ApiService apiService;
@@ -98,7 +98,14 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         addInteractor(this.alertsInteractor);
         addInteractor(this.lastNightInteractor);
         addInteractor(this.unreadStateInteractor);
-        restoreState(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            this.shouldShowAlerts = true;
+            this.presenterView.setExtendedViewPagerCurrentItem(this.viewPagerDelegate.getStartingItemPosition());
+        } else {
+            this.shouldShowAlerts = false;
+        }
+
         this.presenterView.setTabListener(this);
 
         if (shouldUpdateDeviceIssues()) {
@@ -135,11 +142,6 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         }
     }
 
-    @Override
-    public void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(KEY_CURRENT_ITEM_INDEX, this.presenterView.getTabLayoutSelectedPosition());
-    }
     //endregion
 
     //region OnBackPressedInterceptor
@@ -236,23 +238,6 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         this.presenterView.showProgressOverlay(show);
     }
 
-    /**
-     * Use to recover from screen rotations or the fragment being recreated.
-     *
-     * @param savedInstanceState bundle of saved instance variables.
-     */
-    private void restoreState(@Nullable final Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            this.shouldShowAlerts = false;
-            this.presenterView.setUpTabs(false);
-            this.presenterView.setTabLayoutCurrentItemIndex(savedInstanceState.getInt(KEY_CURRENT_ITEM_INDEX,
-                                                                                      this.viewPagerDelegate.getStartingItemPosition()));
-        } else {
-            this.shouldShowAlerts = true;
-            this.presenterView.setUpTabs(true);
-            this.presenterView.setTabLayoutCurrentItemIndex(this.viewPagerDelegate.getStartingItemPosition());
-        }
-    }
 
     /**
      * Immediately go to the {@link TimelineFragment} for last night.
@@ -376,12 +361,12 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
      * @param timeLine for last night.
      */
     private void bindLastNightTimeline(@Nullable final Timeline timeLine) {
-        this.presenterView.updateSleepScoreIcon(timeLine);
+        this.presenterView.updateSleepScoreTab(timeLine);
     }
 
     @NonNull
-    private StaticFragmentAdapter createAdapter(final int viewPagerId) {
-        return new StaticFragmentAdapter(getChildFragmentManager(),
+    private HomeFragmentPagerAdapter createAdapter(final int viewPagerId) {
+        return new HomeFragmentPagerAdapter(getChildFragmentManager(),
                                          viewPagerId,
                                          viewPagerDelegate.getViewPagerItems());
     }

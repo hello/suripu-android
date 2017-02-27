@@ -11,15 +11,18 @@ import android.support.annotation.Nullable;
 import com.segment.analytics.Properties;
 
 
+import javax.inject.Inject;
+
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.home.ui.fragments.HomePresenterFragment;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.notifications.Notification;
-import is.hello.sense.notifications.NotificationReceiver;
+import is.hello.sense.notifications.NotificationInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.appcompat.FragmentNavigationActivity;
+import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.util.Analytics;
 import rx.Observable;
 
@@ -33,6 +36,8 @@ public class HomeActivity extends FragmentNavigationActivity
 
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     private static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
+    @Inject
+    NotificationInteractor notificationInteractor;
 
     public static Intent getIntent(@NonNull final Context context,
                                    @OnboardingActivity.Flow final int fromFlow) {
@@ -75,9 +80,10 @@ public class HomeActivity extends FragmentNavigationActivity
             if (fragment != null) {
                 fragment.selectSoundTab();
             }
-        } else if (intent.hasExtra(NotificationReceiver.EXTRA_NOTIFICATION_PAYLOAD)) {
-            dispatchNotification(intent.getBundleExtra(NotificationReceiver.EXTRA_NOTIFICATION_PAYLOAD));
+        } else if (intent.hasExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD)) {
+            dispatchNotification(intent.getBundleExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD));
         }
+
 
     }
 
@@ -95,33 +101,48 @@ public class HomeActivity extends FragmentNavigationActivity
 
     //region Notifications
 
-    private void dispatchNotification(@NonNull final Bundle notification) {
+    private void dispatchNotification(@NonNull final Bundle bundle) {
         this.stateSafeExecutor.execute(() -> {
-            info(getClass().getSimpleName(), "dispatchNotification(" + notification + ")");
-
-            final HomePresenterFragment fragment = getHomePresenterFragment();
-            if (fragment == null) {
-                return;
-            }
-            @Notification.Type
-            final String target = Notification.typeFromBundle(notification);
-            switch (target) {
+            final Notification notification = Notification.fromBundle(bundle);
+            notificationInteractor.onNext(notification);
+            Analytics.trackEvent(Analytics.Notification.EVENT_OPEN,
+                                 Analytics.createProperties(Analytics.Notification.PROP_TYPE, notification.getType(),
+                                                            Analytics.Notification.PROP_DETAIL, notification.getDetail()));
+            switch (notification.getType()) {
                 case Notification.SLEEP_SCORE: {
+                    final HomePresenterFragment fragment = getHomePresenterFragment();
+                    if (fragment == null) {
+                        return;
+                    }
                     fragment.selectTimelineTab();
-                    //todo support scrolling to date.
                     break;
                 }
-                case Notification.PILL_BATTERY: {
-                    //todo handle and pass along
-                    fragment.selectConditionsTab();
+                case Notification.SYSTEM: {
+                    dispatchSystemDetailNotification(
+                            Notification.systemTypeFromString(notification.getDetail()));
                     break;
                 }
                 default: {
-                    info(getClass().getSimpleName(), "unsupported notification type " + target);
+                    info(getClass().getSimpleName(), "unsupported notification type " + notification.getType());
                 }
             }
         });
     }
+
+    private void dispatchSystemDetailNotification(@NonNull
+                                                  @Notification.SystemType
+                                                  final String systemType) {
+        switch (systemType) {
+            case Notification.PILL_BATTERY: {
+                DeviceListFragment.startStandaloneFrom(this);
+                break;
+            }
+            default: {
+                info(getClass().getSimpleName(), "unsupported notification detail " + systemType);
+            }
+        }
+    }
+
     //endregion
 
 

@@ -589,9 +589,12 @@
         <item name="senseBackgroundSecondary">@color/background_light</item>
 
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
+        <!-- remove actionbar elevation for kitkat and older -->
+        <item name="android:windowContentOverlay">@null</item>
         <item name="actionBarStyle">@style/ActionBar</item>
         <item name="actionMenuTextColor">@color/white</item>
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
+        <item name="homeAsUpIndicator">@drawable/app_style_ab_up</item>
     </style>
 
     <style name="ActionBar" parent="@style/Widget.AppCompat.ActionBar.Solid">
@@ -630,9 +633,6 @@
         <item name="senseBackgroundSecondary">@color/background_light</item>
 
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
-        <item name="actionBarStyle">@style/ActionBar</item>
-        <item name="actionMenuTextColor">@color/white</item>
-        <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
     </style>
 
     <style name="AppTheme.AppCompat.ProgressBar" parent="Widget.AppCompat.ProgressBar">
@@ -672,8 +672,9 @@
         <item name="android:windowBackground">@color/background_light</item>
     </style>
 
-    <style name="AppTheme.AppCompat.AppSettingsActivity.NotificationActivity">
+    <style name="AppTheme.AppCompat.NotificationActivity" parent="AppTheme.AppCompat.AppSettingsActivity">
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_cancel</item>
+        <item name="homeAsUpIndicator">@drawable/app_style_ab_cancel</item>
     </style>
 
 </resources>

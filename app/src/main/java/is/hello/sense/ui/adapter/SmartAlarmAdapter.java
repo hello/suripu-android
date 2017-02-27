@@ -117,7 +117,7 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case VIEW_ID_MESSAGE: {
-                View view = inflater.inflate(R.layout.item_message_card, parent, false);
+                View view = inflater.inflate(R.layout.temp_item_message_card, parent, false);
                 return new MessageViewHolder(view);
             }
             case VIEW_ID_ALARM: {

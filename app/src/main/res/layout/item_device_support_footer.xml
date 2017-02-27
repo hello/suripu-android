@@ -4,7 +4,7 @@
     android:id="@+id/item_device_support_footer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/gap_outer"
+    android:padding="@dimen/x3"
     android:gravity="center"
     android:textAppearance="@style/AppTheme.Text.Body.MidSized.New"
     android:text="@string/devices_support_footer"

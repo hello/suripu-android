@@ -29,6 +29,7 @@ import is.hello.sense.util.Logger;
 public class UserSupport {
     public static final String TAG = UserSupport.class.getName();
     public static final String ORDER_URL = "https://store.hello.is";
+    public static final String FEATURES_URL = "https://hello.is/features";
     public static final String VIDEO_URL = "http://player.vimeo.com/external/101139949.hd.mp4?s=28ac378e29847b77e9fb7431f05d2772";
     public static final String FORGOT_PASSWORD_URL = "https://account.hello.is";
 
@@ -129,6 +130,11 @@ public class UserSupport {
         Analytics.trackEvent(Analytics.Backside.EVENT_TROUBLESHOOTING_LINK, properties);
 
         openUri(from, issue.getUri());
+    }
+
+    public static void showDeviceFeatures(@NonNull final Activity from) {
+        Analytics.trackEvent(Analytics.Global.EVENT_VIEW_FEATURES, null);
+        openUri(from, Uri.parse("https://hello.is/features"));
     }
 
     public static void showReplaceBattery(@NonNull final Activity from) {

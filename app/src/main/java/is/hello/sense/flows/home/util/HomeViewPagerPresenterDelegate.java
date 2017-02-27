@@ -2,6 +2,7 @@ package is.hello.sense.flows.home.util;
 
 import android.support.annotation.NonNull;
 
+import is.hello.sense.R;
 import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.flows.home.ui.fragments.FeedPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
@@ -13,13 +14,28 @@ import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 public class HomeViewPagerPresenterDelegate extends BaseViewPagerPresenterDelegate {
     @NonNull
     @Override
-    public StaticFragmentAdapter.Item[] getViewPagerItems() {
-        return new StaticFragmentAdapter.Item[]{
-                new StaticFragmentAdapter.Item(TimelinePagerPresenterFragment.class, TimelinePagerPresenterFragment.class.getSimpleName()),
-                new StaticFragmentAdapter.Item(TrendsPresenterFragment.class, TrendsPresenterFragment.class.getSimpleName()),
-                new StaticFragmentAdapter.Item(FeedPresenterFragment.class, FeedPresenterFragment.class.getSimpleName()),
-                new StaticFragmentAdapter.Item(SoundsPresenterFragment.class, SoundsPresenterFragment.class.getSimpleName()),
-                new StaticFragmentAdapter.Item(RoomConditionsPresenterFragment.class, RoomConditionsPresenterFragment.class.getSimpleName())
+    public HomeFragmentPagerAdapter.HomeItem[] getViewPagerItems() {
+        return new HomeFragmentPagerAdapter.HomeItem[]{
+                new HomeFragmentPagerAdapter.HomeItem(TimelinePagerPresenterFragment.class,
+                                                      TimelinePagerPresenterFragment.class.getSimpleName(),
+                                                      R.drawable.icon_sense_24,
+                                                      R.drawable.icon_sense_active_24),
+                new HomeFragmentPagerAdapter.HomeItem(TrendsPresenterFragment.class,
+                                                      TrendsPresenterFragment.class.getSimpleName(),
+                                                      R.drawable.icon_trends_24,
+                                                      R.drawable.icon_trends_active_24),
+                new HomeFragmentPagerAdapter.HomeItem(FeedPresenterFragment.class,
+                                                      FeedPresenterFragment.class.getSimpleName(),
+                                                      R.drawable.icon_insight_24,
+                                                      R.drawable.icon_insight_active_24),
+                new HomeFragmentPagerAdapter.HomeItem(SoundsPresenterFragment.class,
+                                                      SoundsPresenterFragment.class.getSimpleName(),
+                                                      R.drawable.icon_sound_24,
+                                                      R.drawable.icon_sound_active_24),
+                new HomeFragmentPagerAdapter.HomeItem(RoomConditionsPresenterFragment.class,
+                                                      RoomConditionsPresenterFragment.class.getSimpleName(),
+                                                      R.drawable.icon_sense_24,
+                                                      R.drawable.icon_sense_active_24)
         };
     }
 
@@ -27,4 +43,5 @@ public class HomeViewPagerPresenterDelegate extends BaseViewPagerPresenterDelega
     public int getOffscreenPageLimit() {
         return 4;
     }
+
 }

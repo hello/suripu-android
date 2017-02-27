@@ -154,7 +154,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         switch (viewType) {
             case VIEW_ID_MESSAGE:
             case VIEW_SENSE_MISSING:
-                return new ErrorViewHolder(this.inflater.inflate(R.layout.item_message_card, parent, false));
+                return new ErrorViewHolder(this.inflater.inflate(R.layout.temp_item_message_card, parent, false));
             case VIEW_SENSOR:
                 return new SensorViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_sensor_response, parent, false));
             case VIEW_SENSOR_GROUP:
@@ -256,6 +256,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             this.imageView = (ImageView) view.findViewById(R.id.item_message_card_image);
             this.button = (Button) view.findViewById(R.id.item_message_card_action);
             if (SensorResponseAdapter.this.showSenseMissingCard) {
+                this.titleTextView.setVisibility(View.GONE);
                 this.imageView.setImageResource(R.drawable.illustration_no_sense);
                 this.messageTextView.setText(R.string.error_room_conditions_no_sense);
                 this.button.setText(R.string.action_pair_sense);

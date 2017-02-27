@@ -27,6 +27,7 @@ import is.hello.sense.api.model.AppUnreadStats;
 import is.hello.sense.api.model.DeviceOTAState;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.DevicesInfo;
+import is.hello.sense.api.model.NotificationSetting;
 import is.hello.sense.api.model.PasswordUpdate;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
@@ -122,6 +123,11 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
+    public Observable<VoidResponse> deauthorize() {
+        return safeJust(new VoidResponse());
+    }
+
+    @Override
     public Observable<Account> getAccount(@Query("photo") final Boolean includePhoto) {
         final String accountJson = includePhoto ? "account_with_photo" : "account";
         return loadResponse(accountJson, new TypeToken<Account>() {
@@ -182,6 +188,16 @@ public final class TestApiService implements ApiService {
 
     @Override
     public Observable<VoidResponse> registerForNotifications(@NonNull @Body PushRegistration registration) {
+        return safeJust(new VoidResponse());
+    }
+
+    @Override
+    public Observable<ArrayList<NotificationSetting>> getNotificationSettings() {
+        return loadResponse("notification_settings", new TypeToken<ArrayList<NotificationSetting>>(){}.getType());
+    }
+
+    @Override
+    public Observable<VoidResponse> putNotificationSettings(@NonNull @Body List<NotificationSetting> settings) {
         return safeJust(new VoidResponse());
     }
 

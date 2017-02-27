@@ -1,8 +1,6 @@
 package is.hello.sense.ui.activities.appcompat;
 
 import android.support.annotation.ColorRes;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
@@ -11,6 +9,7 @@ import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.Analytics;
 
 public abstract class SenseActivity extends AppCompatActivity {
+
     @Override
     protected void onResume() {
         super.onResume();

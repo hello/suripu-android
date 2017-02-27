@@ -171,6 +171,11 @@ public class Analytics {
          */
         String EVENT_HELP = "Help";
         String PROP_HELP_STEP = "help_step";
+
+        /**
+         * Whenever directed to features section of hello site
+         */
+        String EVENT_VIEW_FEATURES = "View Features";
     }
 
     public interface Onboarding {
@@ -806,6 +811,25 @@ public class Analytics {
         String EVENT_PURCHASE_SENSE_VOICE = "Purchase Sense Voice";
 
         String EVENT_UPGRADE_SENSE = "Upgrade Sense";
+
+    }
+
+    public interface Notification {
+
+        /**
+         * tracked when app was launched from the notification
+         */
+        String EVENT_OPEN = "Open Notification";
+
+        /**
+         * value should correspond to what is in the payload for {@link is.hello.sense.notifications.Notification#type}
+         */
+        String PROP_TYPE = "type";
+
+        /**
+         * value should correspond to what is in the payload for {@link is.hello.sense.notifications.Notification#detail}
+         */
+        String PROP_DETAIL = "detail";
 
     }
 

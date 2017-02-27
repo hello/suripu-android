@@ -1,23 +1,31 @@
 package is.hello.sense.flows.expansions.ui.widget;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.ui.widget.util.RoundedCornersTransformation;
 
-public class ExpansionImageView extends ImageView {
+public class ExpansionImageView extends FrameLayout
+        implements Target {
     private static final int NUMBER_OF_CHARS = 2;
     private final ExpansionTextDrawable drawable;
     private final RoundedCornersTransformation transformation;
+    private final ProgressBar progressBar;
+    private final ImageView imageview;
 
     public ExpansionImageView(final Context context) {
         this(context, null);
@@ -33,13 +41,26 @@ public class ExpansionImageView extends ImageView {
                               final AttributeSet attrs,
                               final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        final int padding = context.getResources().getDimensionPixelSize(R.dimen.x2);
+        this.progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleSmall);
+        this.progressBar.setVisibility(GONE);
+        this.progressBar.setPadding(padding, padding, padding, padding);
+        final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                                                             ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.gravity = Gravity.CENTER;
+        this.progressBar.setLayoutParams(params);
+        this.imageview = new ImageView(context);
+        addView(this.progressBar);
+        addView(this.imageview);
+
         this.drawable = new ExpansionTextDrawable(context);
         this.transformation = new RoundedCornersTransformation(this.drawable.getRadius(),
                                                                this.drawable.getBorderWidth(),
                                                                this.drawable.getBorderColor());
-        setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                     ViewGroup.LayoutParams.MATCH_PARENT));
+        this.imageview.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                                    ViewGroup.LayoutParams.MATCH_PARENT));
         this.drawable.setDimensions(getMinimumWidth(), getMinimumHeight());
+
     }
 
     @Override
@@ -48,10 +69,34 @@ public class ExpansionImageView extends ImageView {
                                  final int oldWidth,
                                  final int oldHeight) {
         super.onSizeChanged(width, height, oldWidth, oldHeight);
-        if(width != oldWidth || height != oldHeight) {
+        if (width != oldWidth || height != oldHeight) {
             this.drawable.setDimensions(width, height);
         }
     }
+
+    //region Target
+    @Override
+    public void onBitmapLoaded(@NonNull final Bitmap bitmap,
+                               @NonNull final Picasso.LoadedFrom from) {
+        this.progressBar.setVisibility(GONE);
+        this.imageview.setImageBitmap(bitmap);
+    }
+
+    @Override
+    public void onBitmapFailed(@Nullable final Drawable errorDrawable) {
+        this.progressBar.setVisibility(GONE);
+        this.imageview.setImageDrawable(errorDrawable);
+    }
+
+    @Override
+    public void onPrepareLoad(@Nullable final Drawable placeHolderDrawable) {
+        this.imageview.setImageDrawable(placeHolderDrawable);
+        this.progressBar.setVisibility(VISIBLE);
+    }
+
+    //endregion
+
+    //region methods
 
     /**
      * Will show the first two letters of the String passed in.
@@ -60,7 +105,7 @@ public class ExpansionImageView extends ImageView {
      */
     public void setText(@Nullable final String text) {
         if (text == null || text.isEmpty()) {
-            setImageResource(R.drawable.icon_expansions_default);
+            this.imageview.setImageResource(R.drawable.icon_expansions_default);
         } else if (text.length() > NUMBER_OF_CHARS) {
             this.drawable.setText(text.substring(0, NUMBER_OF_CHARS).toUpperCase());
         } else {
@@ -79,10 +124,10 @@ public class ExpansionImageView extends ImageView {
         setText(expansion.getCompanyName());
         picasso.cancelRequest(this);
         picasso.load(expansion.getIcon().getUrl(getResources()))
-               .transform(transformation)
-               .placeholder(this.drawable)
+               .transform(this.transformation)
+               .error(drawable)
                .into(this);
-
     }
 
+    //endregion
 }

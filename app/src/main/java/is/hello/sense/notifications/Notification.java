@@ -39,36 +39,108 @@ public class Notification extends ApiResponse {
     static final String EXTRA_TYPE = "extra_type";
     static final String EXTRA_DETAILS = "extra_details";
 
+    @NonNull
+    public static Notification fromBundle(@NonNull final Bundle bundle) {
+        return new Notification(typeFromBundle(bundle), bundle.getString(EXTRA_DETAILS, UNKNOWN));
+    }
+
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({SLEEP_SCORE, PILL_BATTERY, UNKNOWN})
-    @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})
+    @StringDef({SYSTEM, SLEEP_SCORE, UNKNOWN})
+    @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.FIELD})
     public @interface Type {
     }
 
+    public static final String SYSTEM = "SYSTEM";
     public static final String SLEEP_SCORE = "SLEEP_SCORE";
-    public static final String PILL_BATTERY = "PILL_BATTERY";
     public static final String UNKNOWN = "UNKNOWN";
 
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({PILL_BATTERY, UNKNOWN})
+    @Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})
+    public @interface SystemType {
+    }
+
+    public static final String PILL_BATTERY = "PILL_BATTERY";
+
+    @NonNull
     @Type
     public static String typeFromBundle(@NonNull final Bundle notifications) {
         return typeFromString(notifications.getString(EXTRA_TYPE));
     }
 
+    @NonNull
     @Type
     public static String typeFromString(@Nullable final String string) {
         if(string == null) {
             return UNKNOWN;
         }
         switch (string.toUpperCase(Locale.ENGLISH)) {
+            case SYSTEM: return SYSTEM;
             case SLEEP_SCORE: return SLEEP_SCORE;
+            default: return UNKNOWN;
+        }
+    }
+
+    @NonNull
+    @SystemType
+    public static String systemTypeFromBundle(@NonNull final Bundle notifications) {
+        if(SYSTEM.equals(typeFromBundle(notifications))) {
+            return systemTypeFromString(notifications.getString(EXTRA_DETAILS));
+        } else {
+            return UNKNOWN;
+        }
+    }
+
+    @NonNull
+    @SystemType
+    public static String systemTypeFromString(@Nullable final String string) {
+        if(string == null) {
+            return UNKNOWN;
+        }
+        switch (string.toUpperCase(Locale.ENGLISH)) {
             case PILL_BATTERY: return PILL_BATTERY;
             default: return UNKNOWN;
         }
     }
 
-    public static @NonNull
-    LocalDate getDate(@NonNull final Bundle notification) {
-        final String rawDate = notification.getString(EXTRA_DETAILS);
+    @NonNull
+    @Type
+    private final String type;
+
+    @Nullable
+    private final String detail;
+
+    private boolean seen;
+
+    public Notification(@NonNull @Type final String type,
+                        @Nullable final String detail) {
+        this.type = type;
+        this.detail = detail;
+        this.seen = false;
+    }
+
+    @NonNull
+    @Type
+    public String getType() {
+        return type;
+    }
+
+    @Nullable
+    public String getDetail() {
+        return detail;
+    }
+
+    void setSeen(final boolean seen) {
+        this.seen = seen;
+    }
+
+    boolean hasSeen() {
+        return seen;
+    }
+
+    @NonNull
+    public LocalDate getDate() {
+        final String rawDate = detail;
         if (TextUtils.isEmpty(rawDate)) {
             return DateFormatter.lastNight();
         }

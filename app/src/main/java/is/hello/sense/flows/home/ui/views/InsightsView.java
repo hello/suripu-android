@@ -45,9 +45,9 @@ public final class InsightsView extends PresenterView {
         this.progressBar = (ProgressBar) findViewById(R.id.fragment_insights_progress);
         this.recyclerView = (RecyclerView) findViewById(R.id.fragment_insights_recycler);
         setUpStandardRecyclerViewDecorations(recyclerView,
-                                             new LinearLayoutManager(context));
+                                             new LinearLayoutManager(activity));
         recyclerView.addOnScrollListener(new ParallaxRecyclerScrollListener());
-        this.insightsAdapter = new InsightsAdapter(context, dateFormatter, listener, picasso);
+        this.insightsAdapter = new InsightsAdapter(activity, dateFormatter, listener, picasso);
         recyclerView.setAdapter(insightsAdapter);
     }
 
@@ -58,6 +58,7 @@ public final class InsightsView extends PresenterView {
 
     @Override
     public final void releaseViews() {
+        this.recyclerView.setAdapter(null);
     }
 
     public void scrollUp() {
