@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import com.segment.analytics.Properties;
 
 
-import javax.inject.Inject;
 
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.sessions.ApiSessionManager;
@@ -19,7 +18,6 @@ import is.hello.sense.flows.home.ui.fragments.HomePresenterFragment;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.notifications.Notification;
-import is.hello.sense.notifications.NotificationInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.appcompat.FragmentNavigationActivity;
 import is.hello.sense.ui.fragments.settings.DeviceListFragment;
@@ -36,8 +34,7 @@ public class HomeActivity extends FragmentNavigationActivity
 
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     private static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
-    @Inject
-    NotificationInteractor notificationInteractor;
+
 
     public static Intent getIntent(@NonNull final Context context,
                                    @OnboardingActivity.Flow final int fromFlow) {
@@ -104,16 +101,17 @@ public class HomeActivity extends FragmentNavigationActivity
     private void dispatchNotification(@NonNull final Bundle bundle) {
         this.stateSafeExecutor.execute(() -> {
             final Notification notification = Notification.fromBundle(bundle);
-            notificationInteractor.onNext(notification);
             Analytics.trackEvent(Analytics.Notification.EVENT_OPEN,
                                  Analytics.createProperties(Analytics.Notification.PROP_TYPE, notification.getType(),
                                                             Analytics.Notification.PROP_DETAIL, notification.getDetail()));
+
+            final HomePresenterFragment fragment = getHomePresenterFragment();
+            if (fragment == null) {
+                return;
+            }
+            fragment.forwardNotification(notification);
             switch (notification.getType()) {
                 case Notification.SLEEP_SCORE: {
-                    final HomePresenterFragment fragment = getHomePresenterFragment();
-                    if (fragment == null) {
-                        return;
-                    }
                     fragment.selectTimelineTab();
                     break;
                 }

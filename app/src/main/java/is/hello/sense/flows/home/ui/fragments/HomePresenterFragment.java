@@ -30,6 +30,8 @@ import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.notifications.Notification;
+import is.hello.sense.notifications.NotificationInteractor;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
@@ -67,6 +69,8 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     LastNightInteractor lastNightInteractor;
     @Inject
     UnreadStateInteractor unreadStateInteractor;
+    @Inject
+    NotificationInteractor notificationInteractor;
 
     private final HomeViewPagerPresenterDelegate viewPagerDelegate = new HomeViewPagerPresenterDelegate();
     private OnboardingFlowProvider flowProvider;
@@ -98,6 +102,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         addInteractor(this.alertsInteractor);
         addInteractor(this.lastNightInteractor);
         addInteractor(this.unreadStateInteractor);
+        addInteractor(notificationInteractor);
 
         if (savedInstanceState == null) {
             this.shouldShowAlerts = true;
@@ -231,8 +236,15 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
                                                      () -> this.presenterView.showProgressOverlay(false))
              );
     }
+
     //endregion
     //region methods
+    public void forwardNotification(@NonNull final Notification notification) {
+        if (this.notificationInteractor == null) {
+            return;
+        }
+        this.notificationInteractor.onNext(notification);
+    }
 
     public void showProgressOverlay(final boolean show) {
         this.presenterView.showProgressOverlay(show);
@@ -328,7 +340,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
             SystemAlertDialogFragment.newInstance(alert,
                                                   getResources())
                                      .showAllowingStateLoss(getFragmentManager(),
-                                                            R.id.activity_navigation_container,
+                                                            R.id.view_home_bottom_alert_container,
                                                             BottomAlertDialogFragment.TAG);
         } else if (shouldUpdateDeviceIssues()) {
             this.deviceIssuesInteractor.update();
@@ -367,8 +379,8 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     @NonNull
     private HomeFragmentPagerAdapter createAdapter(final int viewPagerId) {
         return new HomeFragmentPagerAdapter(getChildFragmentManager(),
-                                         viewPagerId,
-                                         viewPagerDelegate.getViewPagerItems());
+                                            viewPagerId,
+                                            viewPagerDelegate.getViewPagerItems());
     }
 
     public void selectTimelineTab() {
