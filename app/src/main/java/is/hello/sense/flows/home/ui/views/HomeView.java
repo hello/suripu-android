@@ -20,17 +20,12 @@ import is.hello.sense.mvp.view.BindedPresenterView;
 @SuppressLint("ViewConstructor")
 public class HomeView extends BindedPresenterView<ViewHomeBinding> {
     public HomeView(@NonNull final Activity activity,
-                    @NonNull final HomeViewPagerPresenterDelegate delegate,
-                    @NonNull final FragmentManager fragmentManager) {
+                    final int offScreenLimit) {
         super(activity);
         this.binding.viewHomeExtendedViewPager.setScrollingEnabled(false);
         this.binding.viewHomeExtendedViewPager.setFadePageTransformer(true);
-        this.binding.viewHomeExtendedViewPager.setOffscreenPageLimit(delegate.getOffscreenPageLimit());
+        this.binding.viewHomeExtendedViewPager.setOffscreenPageLimit(offScreenLimit);
         this.binding.viewHomeTabLayout.setupWithViewPager(this.binding.viewHomeExtendedViewPager);
-        final StaticFragmentAdapter fragmentAdapter = new StaticFragmentAdapter(fragmentManager,
-                                                                                this.binding.viewHomeExtendedViewPager.getId(),
-                                                                                delegate.getViewPagerItems());
-        this.binding.viewHomeExtendedViewPager.setAdapter(fragmentAdapter);
     }
 
     //region BindedPresenterView
@@ -51,6 +46,13 @@ public class HomeView extends BindedPresenterView<ViewHomeBinding> {
     //endregion
 
     //region methods
+    public int getViewPagerId() {
+        return this.binding.viewHomeExtendedViewPager.getId();
+    }
+
+    public void setAdapter(@NonNull final StaticFragmentAdapter fragmentAdapter) {
+        this.binding.viewHomeExtendedViewPager.setAdapter(fragmentAdapter);
+    }
 
     /**
      * Forwards the index position of the starting fragment. Will not have an immediate effect until
@@ -150,19 +152,23 @@ public class HomeView extends BindedPresenterView<ViewHomeBinding> {
         });
     }
 
-    public void selectTimelineTab(){
+    public void selectTimelineTab() {
         this.binding.viewHomeTabLayout.selectTimelineTab();
     }
-    public void selectTrendsTab(){
+
+    public void selectTrendsTab() {
         this.binding.viewHomeTabLayout.selectTrendsTab();
     }
-    public void selectFeedTab(){
+
+    public void selectFeedTab() {
         this.binding.viewHomeTabLayout.selectFeedTab();
     }
-    public void selectSoundTab(){
+
+    public void selectSoundTab() {
         this.binding.viewHomeTabLayout.selectSoundTab();
     }
-    public void selectConditionsTab(){
+
+    public void selectConditionsTab() {
         this.binding.viewHomeTabLayout.selectConditionsTab();
     }
     //endregion

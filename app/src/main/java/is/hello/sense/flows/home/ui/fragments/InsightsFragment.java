@@ -259,7 +259,7 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
 
         Analytics.trackEvent(Analytics.Backside.EVENT_INSIGHT_DETAIL, null);
 
-        final Fragment fragment = getActivity().getFragmentManager().findFragmentByTag(HomePresenterFragment.class.getSimpleName());
+        final Fragment fragment = getActivity().getFragmentManager().findFragmentByTag(HomePresenterFragment.TAG);
         if (fragment == null) {
             return;
         }

@@ -17,6 +17,7 @@ import is.hello.sense.api.model.v2.alerts.Alert;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.flows.home.ui.views.HomeView;
 import is.hello.sense.flows.home.ui.views.SenseTabLayout;
 import is.hello.sense.flows.home.util.HomeViewPagerPresenterDelegate;
@@ -47,6 +48,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         TimelineFragment.ParentProvider,
         InsightInfoFragment.ParentProvider,
         Alert.ActionHandler {
+    public static final String TAG = HomePresenterFragment.class.getSimpleName();
     private static final String KEY_CURRENT_ITEM_INDEX = HomeActivity.class.getSimpleName() + ".KEY_CURRENT_ITEM_INDEX";
 
     @Inject
@@ -74,9 +76,8 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     @Override
     public void initializePresenterView() {
         if (presenterView == null) {
-            presenterView = new HomeView(getActivity(),
-                                         viewPagerDelegate,
-                                         getChildFragmentManager());
+            presenterView = new HomeView(getActivity(), this.viewPagerDelegate.getOffscreenPageLimit());
+            presenterView.setAdapter(createAdapter(this.presenterView.getViewPagerId()));
         }
     }
 
@@ -378,19 +379,30 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         this.presenterView.updateSleepScoreIcon(timeLine);
     }
 
-    public void selectTimelineTab(){
+    @NonNull
+    private StaticFragmentAdapter createAdapter(final int viewPagerId) {
+        return new StaticFragmentAdapter(getChildFragmentManager(),
+                                         viewPagerId,
+                                         viewPagerDelegate.getViewPagerItems());
+    }
+
+    public void selectTimelineTab() {
         this.presenterView.selectTimelineTab();
     }
-    public void selectTrendsTab(){
+
+    public void selectTrendsTab() {
         this.presenterView.selectTrendsTab();
     }
-    public void selectFeedTab(){
+
+    public void selectFeedTab() {
         this.presenterView.selectFeedTab();
     }
-    public void selectSoundTab(){
+
+    public void selectSoundTab() {
         this.presenterView.selectSoundTab();
     }
-    public void selectConditionsTab(){
+
+    public void selectConditionsTab() {
         this.presenterView.selectConditionsTab();
     }
 

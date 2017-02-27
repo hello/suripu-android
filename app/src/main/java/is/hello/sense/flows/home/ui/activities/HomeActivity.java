@@ -44,14 +44,11 @@ public class HomeActivity extends FragmentNavigationActivity
 
     @Override
     protected void onCreateAction() {
-        initialize();
+        final Intent intent = getIntent();
+        if (intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
+            dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
+        }
         pushFragment(new HomePresenterFragment(), null, false);
-    }
-
-    @Override
-    protected void onReCreateAction(@NonNull final Bundle savedInstanceState) {
-        super.onReCreateAction(savedInstanceState);
-        initialize();
     }
 
 
@@ -127,14 +124,6 @@ public class HomeActivity extends FragmentNavigationActivity
     }
     //endregion
 
-
-    private void initialize() {
-        //todo needs testing with server
-        final Intent intent = getIntent();
-        if (intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
-            dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
-        }
-    }
 
     @Nullable
     private HomePresenterFragment getHomePresenterFragment() {
