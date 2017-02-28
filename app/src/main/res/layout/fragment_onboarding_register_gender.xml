@@ -1,115 +1,174 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <!-- Must have android:clickable="true" to work with
+         FragmentNavigationFragment#overlayFragmentAllowingStateLoss(...) -->
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/background_onboarding"
+                    android:clickable="true"
+                    android:orientation="vertical">
 
-<!-- Must have android:clickable="true" to work with
-     FragmentNavigationFragment#overlayFragmentAllowingStateLoss(...) -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background_onboarding"
-    android:clickable="true">
-
-    <Button
-        android:id="@+id/fragment_onboarding_next"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_outer"
-        android:layout_alignParentBottom="true"
-        android:text="@string/action_continue"
-        style="@style/AppTheme.Button.Rounded"/>
-
-    <Button
-        android:id="@+id/fragment_onboarding_skip"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
-        android:layout_above="@id/fragment_onboarding_next"
-        android:text="@string/action_skip"
-        style="@style/AppTheme.Button.Borderless.Accent.Bounded.Lowercase"/>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/fragment_onboarding_skip"
-        android:fillViewport="true"
-        style="@style/AppTheme.FadingScrollView">
-
-        <LinearLayout
+        <Button
+            android:id="@+id/fragment_onboarding_next"
+            style="@style/AppTheme.Button.Rounded"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/background_onboarding">
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/x3"
+            android:layout_marginLeft="@dimen/x3"
+            android:layout_marginRight="@dimen/x3"
+            android:layout_marginTop="@dimen/x1"
+            android:text="@string/action_continue"/>
 
-            <TextView
-                android:id="@+id/fragment_onboarding_register_gender_title"
+        <Button
+            android:id="@+id/fragment_onboarding_skip"
+            style="@style/AppTheme.Button.Borderless.Accent.Bounded.Lowercase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/fragment_onboarding_next"
+            android:layout_marginTop="@dimen/x1"
+            android:text="@string/action_skip"/>
+
+        <ScrollView
+            style="@style/AppTheme.FadingScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/fragment_onboarding_skip"
+            android:fillViewport="true">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/gap_outer"
-                android:layout_marginLeft="@dimen/gap_outer"
-                android:layout_marginRight="@dimen/gap_outer"
-                android:layout_marginBottom="@dimen/gap_small"
-                android:textAppearance="?attr/senseTextAppearanceHeading"
-                android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-                android:text="@string/title_register_gender"/>
+                android:background="@color/background_onboarding"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/fragment_onboarding_register_gender_subtitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/gap_outer"
-                android:layout_marginRight="@dimen/gap_outer"
-                android:textAppearance="?attr/senseTextAppearanceSubheading"
-                android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
-                android:text="@string/onboarding_register_info_explanation"/>
+                <TextView
+                    android:id="@+id/fragment_onboarding_register_gender_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/x1"
+                    android:layout_marginEnd="@dimen/x3"
+                    android:layout_marginStart="@dimen/x3"
+                    android:layout_marginTop="@dimen/x3"
+                    android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+                    android:text="@string/title_register_gender"
+                    android:textAppearance="?attr/senseTextAppearanceHeading"/>
 
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:minHeight="@dimen/gap_small"/>
+                <TextView
+                    android:id="@+id/fragment_onboarding_register_gender_subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/x3"
+                    android:layout_marginStart="@dimen/x3"
+                    android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
+                    android:text="@string/onboarding_register_info_explanation"
+                    android:textAppearance="?attr/senseTextAppearanceSubheading"/>
 
-            <is.hello.sense.ui.widget.SelectorView
-                android:id="@+id/fragment_onboarding_register_gender_mode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/gap_outer"
-                android:layout_marginRight="@dimen/gap_outer"
-                android:orientation="horizontal"
-                android:gravity="center">
+                <View
+                    style="@style/Divider.Horizontal"
+                    android:layout_marginEnd="@dimen/x3"
+                    android:layout_marginStart="@dimen/x3"
+                    android:layout_marginTop="@dimen/x3"/>
 
-                <ToggleButton
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/gender_male"
-                    android:drawablePadding="@dimen/gap_large"
-                    android:textOn="@string/gender_male"
-                    android:textOff="@string/gender_male"
-                    style="@style/AppTheme.Button.Gender.Left"/>
+                <LinearLayout
+                    android:id="@+id/fragment_onboarding_gender_male_row"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selectable_dark_bounded"
+                    android:clickable="true"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/x3">
 
-                <ToggleButton
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/gender_female"
-                    android:drawablePadding="@dimen/gap_large"
-                    android:textOn="@string/gender_female"
-                    android:textOff="@string/gender_female"
-                    style="@style/AppTheme.Button.Gender.Right"/>
+                    <ImageView
+                        android:id="@+id/fragment_onboarding_gender_male_imageview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/radio_on"/>
 
-            </is.hello.sense.ui.widget.SelectorView>
+                    <TextView
+                        style="@style/AppTheme.Text.Body.Bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/x3"
+                        android:gravity="center_vertical"
+                        android:text="@string/gender_male"/>
+                </LinearLayout>
 
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:minHeight="@dimen/gap_small"/>
+                <View
+                    style="@style/Divider.Horizontal"
+                    android:layout_marginEnd="@dimen/x3"
+                    android:layout_marginStart="@dimen/x3"/>
 
-        </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/fragment_onboarding_gender_female_row"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selectable_dark_bounded"
+                    android:clickable="true"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/x3">
 
-    </ScrollView>
+                    <ImageView
+                        android:id="@+id/fragment_onboarding_gender_female_imageview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/radio_off"/>
 
-</RelativeLayout>
+                    <TextView
+                        style="@style/AppTheme.Text.Body.Bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/x3"
+                        android:gravity="center_vertical"
+                        android:text="@string/gender_female"/>
+                </LinearLayout>
+
+                <View
+                    style="@style/Divider.Horizontal"
+                    android:layout_marginEnd="@dimen/x3"
+                    android:layout_marginStart="@dimen/x3"/>
+
+                <LinearLayout
+                    android:id="@+id/fragment_onboarding_gender_other_row"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selectable_dark_bounded"
+                    android:clickable="true"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/x3">
+
+                    <ImageView
+                        android:id="@+id/fragment_onboarding_gender_other_imageview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/radio_off"/>
+
+                    <TextView
+                        style="@style/AppTheme.Text.Body.Bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/x3"
+                        android:gravity="center_vertical"
+                        android:text="@string/gender_custom"/>
+
+                    <TextView
+                        style="@style/AppTheme.Text.Body.Link"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/x3"
+                        android:gravity="end|center_vertical"
+                        android:text="@string/action_select"/>
+                </LinearLayout>
+
+                <View
+                    style="@style/Divider.Horizontal"
+                    android:layout_marginEnd="@dimen/x3"
+                    android:layout_marginStart="@dimen/x3"/>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </RelativeLayout>
+</layout>

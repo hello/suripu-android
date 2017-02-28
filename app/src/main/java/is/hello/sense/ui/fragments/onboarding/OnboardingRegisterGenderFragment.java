@@ -1,6 +1,8 @@
 package is.hello.sense.ui.fragments.onboarding;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +12,7 @@ import android.widget.Button;
 import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Gender;
+import is.hello.sense.databinding.FragmentOnboardingRegisterGenderBinding;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.SenseFragment;
@@ -19,8 +22,16 @@ import is.hello.sense.util.Analytics;
 
 public class OnboardingRegisterGenderFragment extends SenseFragment
         implements SelectorView.OnSelectionChangedListener {
+    FragmentOnboardingRegisterGenderBinding binding;
+    private Account account;
+    @DrawableRes
+    private static final int ON_IMAGE_RES = R.drawable.radio_on;
+    @DrawableRes
+    private static final int OFF_IMAGE_RES = R.drawable.radio_off;
+
+
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null && getActivity() instanceof OnboardingActivity) {
@@ -30,46 +41,66 @@ public class OnboardingRegisterGenderFragment extends SenseFragment
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater,
+                             final ViewGroup container,
+                             final Bundle savedInstanceState) {
+        account = AccountEditor.getContainer(this).getAccount();
         final View view = inflater.inflate(R.layout.fragment_onboarding_register_gender, container, false);
-
-        final SelectorView genderSelector = (SelectorView) view.findViewById(R.id.fragment_onboarding_register_gender_mode);
-        genderSelector.setOnSelectionChangedListener(this);
-
-        final Account account = AccountEditor.getContainer(this).getAccount();
-        if (account.getGender() != null) {
-            if (account.getGender() == Gender.OTHER) {
-                genderSelector.setSelectedIndex(SelectorView.EMPTY_SELECTION);
-            } else {
-                genderSelector.setSelectedIndex(account.getGender().ordinal());
-            }
-        }
-
         final Button nextButton = (Button) view.findViewById(R.id.fragment_onboarding_next);
-        Views.setSafeOnClickListener(nextButton, ignored -> {
-            AccountEditor.getContainer(this).onAccountUpdated(this);
-        });
-
         final Button skipButton = (Button) view.findViewById(R.id.fragment_onboarding_skip);
-        if (AccountEditor.getWantsSkipButton(this)) {
-            Views.setSafeOnClickListener(skipButton, ignored -> {
-                Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "gender"));
-
-                account.setGender(Gender.OTHER);
-                AccountEditor.getContainer(this).onAccountUpdated(this);
-            });
-        } else {
-            skipButton.setVisibility(View.GONE);
-            nextButton.setText(R.string.action_done);
-        }
-
+        Views.setSafeOnClickListener(nextButton,
+                                     this::onNextClick);
+        Views.setSafeOnClickListener(skipButton,
+                                     this::onSkipClick);
         return view;
+
     }
 
+    @Override
+    public void onViewCreated(final View view,
+                              final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        this.binding = DataBindingUtil.bind(view);
+        Views.setSafeOnClickListener(this.binding.fragmentOnboardingGenderMaleRow,
+                                     this::onMaleClick);
+        Views.setSafeOnClickListener(this.binding.fragmentOnboardingGenderFemaleRow,
+                                     this::onFemaleClick);
+        Views.setSafeOnClickListener(this.binding.fragmentOnboardingGenderOtherRow,
+                                     this::onOtherClick);
+
+    }
 
     @Override
-    public void onSelectionChanged(int newSelectionIndex) {
+    public void onSelectionChanged(final int newSelectionIndex) {
         final AccountEditor.Container container = AccountEditor.getContainer(this);
         container.getAccount().setGender(Gender.values()[newSelectionIndex]);
+    }
+
+    private void onNextClick(final View ignored) {
+        AccountEditor.getContainer(this).onAccountUpdated(this);
+    }
+
+    private void onSkipClick(final View ignored) {
+        Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "gender"));
+        account.setGender(Gender.OTHER);
+        AccountEditor.getContainer(this).onAccountUpdated(this);
+    }
+
+    private void onMaleClick(final View ignored) {
+        this.binding.fragmentOnboardingGenderMaleImageview.setImageResource(ON_IMAGE_RES);
+        this.binding.fragmentOnboardingGenderFemaleImageview.setImageResource(OFF_IMAGE_RES);
+        this.binding.fragmentOnboardingGenderOtherImageview.setImageResource(OFF_IMAGE_RES);
+    }
+
+    private void onFemaleClick(final View ignored) {
+        this.binding.fragmentOnboardingGenderMaleImageview.setImageResource(OFF_IMAGE_RES);
+        this.binding.fragmentOnboardingGenderFemaleImageview.setImageResource(ON_IMAGE_RES);
+        this.binding.fragmentOnboardingGenderOtherImageview.setImageResource(OFF_IMAGE_RES);
+    }
+
+    private void onOtherClick(final View ignored) {
+        this.binding.fragmentOnboardingGenderMaleImageview.setImageResource(OFF_IMAGE_RES);
+        this.binding.fragmentOnboardingGenderFemaleImageview.setImageResource(OFF_IMAGE_RES);
+        this.binding.fragmentOnboardingGenderOtherImageview.setImageResource(ON_IMAGE_RES);
     }
 }
