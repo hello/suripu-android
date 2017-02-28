@@ -17,13 +17,13 @@ import is.hello.sense.flows.generic.ui.activities.ListActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.SenseFragment;
-import is.hello.sense.ui.widget.SelectorView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
-public class OnboardingRegisterGenderFragment extends SenseFragment
-        implements SelectorView.OnSelectionChangedListener {
+public class OnboardingRegisterGenderFragment extends SenseFragment {
+
     FragmentOnboardingRegisterGenderBinding binding;
+
     private Account account;
     @DrawableRes
     private static final int ON_IMAGE_RES = R.drawable.radio_on;
@@ -53,6 +53,14 @@ public class OnboardingRegisterGenderFragment extends SenseFragment
                                      this::onNextClick);
         Views.setSafeOnClickListener(skipButton,
                                      this::onSkipClick);
+
+        if (AccountEditor.getWantsSkipButton(this)) {
+            Views.setSafeOnClickListener(skipButton,
+                                         this::onSkipClick);
+        } else {
+            skipButton.setVisibility(View.GONE);
+            nextButton.setText(R.string.action_done);
+        }
         return view;
 
     }
@@ -69,12 +77,6 @@ public class OnboardingRegisterGenderFragment extends SenseFragment
         Views.setSafeOnClickListener(this.binding.fragmentOnboardingGenderOtherRow,
                                      this::onOtherClick);
 
-    }
-
-    @Override
-    public void onSelectionChanged(final int newSelectionIndex) {
-        final AccountEditor.Container container = AccountEditor.getContainer(this);
-        container.getAccount().setGender(Gender.values()[newSelectionIndex]);
     }
 
     private void onNextClick(final View ignored) {
