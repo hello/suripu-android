@@ -13,6 +13,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Gender;
 import is.hello.sense.databinding.FragmentOnboardingRegisterGenderBinding;
+import is.hello.sense.flows.generic.ui.activities.ListActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.SenseFragment;
@@ -61,9 +62,9 @@ public class OnboardingRegisterGenderFragment extends SenseFragment
                               final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.binding = DataBindingUtil.bind(view);
-        Views.setSafeOnClickListener(this.binding.fragmentOnboardingGenderMaleRow,
+        Views.setSafeOnClickListener(this.binding.fragmentOnboardingGenderMaleImagetextview,
                                      this::onMaleClick);
-        Views.setSafeOnClickListener(this.binding.fragmentOnboardingGenderFemaleRow,
+        Views.setSafeOnClickListener(this.binding.fragmentOnboardingGenderFemaleImagetextview,
                                      this::onFemaleClick);
         Views.setSafeOnClickListener(this.binding.fragmentOnboardingGenderOtherRow,
                                      this::onOtherClick);
@@ -87,20 +88,21 @@ public class OnboardingRegisterGenderFragment extends SenseFragment
     }
 
     private void onMaleClick(final View ignored) {
-        this.binding.fragmentOnboardingGenderMaleImageview.setImageResource(ON_IMAGE_RES);
-        this.binding.fragmentOnboardingGenderFemaleImageview.setImageResource(OFF_IMAGE_RES);
-        this.binding.fragmentOnboardingGenderOtherImageview.setImageResource(OFF_IMAGE_RES);
+        this.binding.fragmentOnboardingGenderMaleImagetextview.setImageResource(ON_IMAGE_RES);
+        this.binding.fragmentOnboardingGenderFemaleImagetextview.setImageResource(OFF_IMAGE_RES);
+        this.binding.fragmentOnboardingGenderOtherImagetextview.setImageResource(OFF_IMAGE_RES);
     }
 
     private void onFemaleClick(final View ignored) {
-        this.binding.fragmentOnboardingGenderMaleImageview.setImageResource(OFF_IMAGE_RES);
-        this.binding.fragmentOnboardingGenderFemaleImageview.setImageResource(ON_IMAGE_RES);
-        this.binding.fragmentOnboardingGenderOtherImageview.setImageResource(OFF_IMAGE_RES);
+        this.binding.fragmentOnboardingGenderMaleImagetextview.setImageResource(OFF_IMAGE_RES);
+        this.binding.fragmentOnboardingGenderFemaleImagetextview.setImageResource(ON_IMAGE_RES);
+        this.binding.fragmentOnboardingGenderOtherImagetextview.setImageResource(OFF_IMAGE_RES);
     }
 
     private void onOtherClick(final View ignored) {
-        this.binding.fragmentOnboardingGenderMaleImageview.setImageResource(OFF_IMAGE_RES);
-        this.binding.fragmentOnboardingGenderFemaleImageview.setImageResource(OFF_IMAGE_RES);
-        this.binding.fragmentOnboardingGenderOtherImageview.setImageResource(ON_IMAGE_RES);
+        this.binding.fragmentOnboardingGenderMaleImagetextview.setImageResource(OFF_IMAGE_RES);
+        this.binding.fragmentOnboardingGenderFemaleImagetextview.setImageResource(OFF_IMAGE_RES);
+        this.binding.fragmentOnboardingGenderOtherImagetextview.setImageResource(ON_IMAGE_RES);
+        ListActivity.startActivity(getActivity(), ListActivity.GENDER_LIST);
     }
 }

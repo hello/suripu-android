@@ -5,6 +5,8 @@
     <attr name="senseTextAppearanceSubheading" format="reference"/>
     <attr name="senseTextAppearanceFieldLabel" format="reference"/>
 
+    <attr name="labelText" format="string"/>
+    <attr name="textStyle" format="reference"/>
     <attr name="senseBackgroundSecondary" format="reference"/>
 
     <declare-styleable name="GraphView">
@@ -73,7 +75,7 @@
 
 
     <declare-styleable name="LabelEditText">
-        <attr name="labelText" format="string"/>
+        <attr name="labelText"/>
         <attr name="inputText" format="string"/>
         <attr name="isPassword" format="boolean"/>
     </declare-styleable>
@@ -81,5 +83,12 @@
     <declare-styleable name="SplitButtonLayout">
         <attr name="leftButtonText" format="string"/>
         <attr name="rightButtonText" format="string"/>
+    </declare-styleable>
+
+    <declare-styleable name="ImageTextView">
+        <attr name="textStyle" />
+        <attr name="leftImage" format="reference"/>
+        <attr name="labelText"/>
+        <attr name="leftTextPadding" format="reference"/>
     </declare-styleable>
 </resources>
