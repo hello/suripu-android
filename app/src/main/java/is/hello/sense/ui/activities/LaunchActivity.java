@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.AlarmClock;
+import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
@@ -14,6 +15,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
 import is.hello.sense.interactors.PreferencesInteractor;
+import is.hello.sense.notifications.NotificationPressedInterceptorCounter;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -30,6 +32,8 @@ public class LaunchActivity extends InjectionActivity {
     PreferencesInteractor preferences;
     @Inject
     LocalUsageTracker localUsageTracker;
+    @Inject
+    NotificationPressedInterceptorCounter notificationPressedInterceptorCounter;
 
     /**
      * Included to force {@link ApiService} to be initialized before
@@ -83,20 +87,34 @@ public class LaunchActivity extends InjectionActivity {
         final Intent intent = new Intent(this, HomeActivity.class);
         if (AlarmClock.ACTION_SHOW_ALARMS.equals(getIntent().getAction())) {
             intent.setAction(AlarmClock.ACTION_SHOW_ALARMS);
-        } else if (getIntent().hasExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD)) {
-            intent.putExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD,
-                            getIntent().getBundleExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD));
+        } else {
+            addNotificationFlagsIfNeeded(intent, true);
         }
         startActivity(intent);
     }
 
     private void showOnboardingActivity() {
-        startActivity(new Intent(this, OnboardingActivity.class));
+        final Intent intent = new Intent(this, OnboardingActivity.class);
+        addNotificationFlagsIfNeeded(intent, false);
+        startActivity(intent);
+    }
+
+    private void addNotificationFlagsIfNeeded(@NonNull final Intent intent,
+                                              final boolean includePayload) {
+        if (getIntent().hasExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD)) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            if (includePayload) {
+                intent.putExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD,
+                                getIntent().getBundleExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD));
+            }
+        }
     }
 
     private void bounce() {
         if (sessionManager.hasSession() && preferences.getBoolean(PreferencesInteractor.ONBOARDING_COMPLETED, false)) {
-            showHomeActivity();
+            if (!shouldFinish()) {
+                showHomeActivity();
+            }
         } else {
             if (!sessionManager.hasSession()) {
                 preferences
@@ -111,6 +129,11 @@ public class LaunchActivity extends InjectionActivity {
         }
 
         finish();
+    }
+
+    private boolean shouldFinish() {
+        return notificationPressedInterceptorCounter != null
+                && notificationPressedInterceptorCounter.hasActiveInterceptors();
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)

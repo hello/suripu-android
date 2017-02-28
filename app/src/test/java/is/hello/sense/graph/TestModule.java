@@ -23,7 +23,6 @@ import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatterTest;
 import is.hello.sense.flows.home.interactors.LastNightInteractorTest;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragmentTests;
-import is.hello.sense.flows.notification.interactors.NotificationSettingsInteractorTest;
 import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractorTest;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
@@ -62,10 +61,7 @@ import is.hello.sense.interactors.questions.ApiQuestionProviderTests;
 import is.hello.sense.interactors.questions.ReviewQuestionProviderTests;
 import is.hello.sense.interactors.settings.SettingsPairSenseInteractorTests;
 import is.hello.sense.interactors.upgrade.UpgradePairSenseInteractorTests;
-import is.hello.sense.notifications.NotificationActivityLifecycleListener;
-import is.hello.sense.notifications.NotificationActivityLifecycleListenerTest;
-import is.hello.sense.notifications.NotificationInteractor;
-import is.hello.sense.notifications.NotificationInteractorTest;
+import is.hello.sense.notifications.TestNotificationModule;
 import is.hello.sense.rating.LocalUsageTrackerTests;
 import is.hello.sense.ui.adapter.SmartAlarmAdapterTests;
 import is.hello.sense.units.UnitFormatterTests;
@@ -78,7 +74,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 @Module(
-    library = true,
+        library = true,
+        includes = {TestNotificationModule.class},
     injects = {
             TimelineInteractorTests.class,
             TimelineInteractor.class,
@@ -148,10 +145,6 @@ import static org.mockito.Mockito.mock;
 
 
             LastNightInteractorTest.class,
-
-            NotificationInteractorTest.class,
-            NotificationSettingsInteractorTest.class,
-            NotificationActivityLifecycleListenerTest.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")
@@ -249,17 +242,5 @@ public final class TestModule {
     @Singleton
     ConfigurationsInteractor providesConfigurationInteractor(final ApiService service){
         return new ConfigurationsInteractor(service);
-    }
-
-    @Provides
-    @Singleton
-    public NotificationInteractor providesNotificationInteractor(@NonNull final Context context) {
-        return new NotificationInteractor(context);
-    }
-
-    @Provides
-    @Singleton
-    public NotificationActivityLifecycleListener providesNotificationActivityLifecycleListener() {
-        return new NotificationActivityLifecycleListener();
     }
 }
