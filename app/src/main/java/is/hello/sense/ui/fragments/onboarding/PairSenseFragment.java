@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,7 +88,7 @@ public class PairSenseFragment extends BasePresenterFragment
         this.view = new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(presenter.getTitleRes())
                 .setSubheadingText(presenter.getSubtitleRes())
-                .setDiagramImage(R.drawable.onboarding_pair_sense)
+                .setDiagramImage(R.drawable.pair_sense)
                 .setSecondaryButtonText(R.string.action_sense_pairing_mode_help)
                 .setSecondaryOnClickListener(presenter::showPairingModeHelp)
                 .setPrimaryOnClickListener(ignored -> onPrimaryButtonClicked()) // todo move to presenter
