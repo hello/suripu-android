@@ -1,6 +1,5 @@
 package is.hello.sense.ui.activities.appcompat;
 
-import android.app.Activity;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +9,7 @@ import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.Analytics;
 
 public abstract class SenseActivity extends AppCompatActivity {
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -35,4 +35,5 @@ public abstract class SenseActivity extends AppCompatActivity {
     public void setStatusBarColor(final int color) {
         Windows.setStatusBarColor(getWindow(), color);
     }
+
 }

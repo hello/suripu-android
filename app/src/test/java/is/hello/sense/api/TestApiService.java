@@ -27,11 +27,10 @@ import is.hello.sense.api.model.AppUnreadStats;
 import is.hello.sense.api.model.DeviceOTAState;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.DevicesInfo;
+import is.hello.sense.api.model.NotificationSetting;
 import is.hello.sense.api.model.PasswordUpdate;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
-import is.hello.sense.api.model.RoomConditions;
-import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.StoreReview;
@@ -124,6 +123,11 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
+    public Observable<VoidResponse> deauthorize() {
+        return safeJust(new VoidResponse());
+    }
+
+    @Override
     public Observable<Account> getAccount(@Query("photo") final Boolean includePhoto) {
         final String accountJson = includePhoto ? "account_with_photo" : "account";
         return loadResponse(accountJson, new TypeToken<Account>() {
@@ -188,6 +192,16 @@ public final class TestApiService implements ApiService {
     }
 
     @Override
+    public Observable<ArrayList<NotificationSetting>> getNotificationSettings() {
+        return loadResponse("notification_settings", new TypeToken<ArrayList<NotificationSetting>>(){}.getType());
+    }
+
+    @Override
+    public Observable<VoidResponse> putNotificationSettings(@NonNull @Body List<NotificationSetting> settings) {
+        return safeJust(new VoidResponse());
+    }
+
+    @Override
     public Observable<Timeline> timelineForDate(@NonNull @Path("date") String date) {
         LocalDate dateTime = LocalDate.parse(date, DateTimeFormat.forPattern(ApiService.DATE_FORMAT));
         return safeJust(new TimelineBuilder()
@@ -246,12 +260,6 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<ArrayList<Insight>> currentInsights() {
         return loadResponse("insights", new TypeToken<ArrayList<Insight>>() {
-        }.getType());
-    }
-
-    @Override
-    public Observable<RoomConditions> currentRoomConditions(@NonNull @Query("temp_unit") String unit) {
-        return loadResponse("current_conditions", new TypeToken<RoomConditions>() {
         }.getType());
     }
 
@@ -355,12 +363,6 @@ public final class TestApiService implements ApiService {
     @Override
     public Observable<ArrayList<InsightInfo>> insightInfo(@NonNull @Path("category") String category) {
         return unimplemented();
-    }
-
-    @Override
-    public Observable<RoomSensorHistory> roomSensorHistory(@Query("quantity") int numberOfHours,
-                                                           @Query("from_utc") long timestamp) {
-        return loadResponse("room_sensor_history", new TypeToken<RoomSensorHistory>(){}.getType());
     }
 
     @Override

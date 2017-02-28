@@ -2,7 +2,7 @@ package is.hello.sense.mvp.util;
 
 import android.support.annotation.NonNull;
 
-import is.hello.sense.ui.adapter.StaticFragmentAdapter;
+import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.util.NotTested;
 
 /**
@@ -27,4 +27,5 @@ public abstract class BaseViewPagerPresenterDelegate implements ViewPagerPresent
     public int getOffscreenPageLimit() {
         return DEFAULT_OFFSCREEN_PAGE_LIMIT;
     }
+
 }

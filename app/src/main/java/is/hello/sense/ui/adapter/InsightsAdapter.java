@@ -131,13 +131,13 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
 
         final String message;
         if (ApiException.isNetworkError(e)) {
-            message = context.getString(R.string.error_insights_unavailable);
+            message = resources.getString(R.string.error_insights_unavailable);
         } else {
             final StringRef messageRef = Errors.getDisplayMessage(e);
             if (messageRef != null) {
                 message = messageRef.resolve(context);
             } else {
-                message = context.getString(R.string.dialog_error_generic_message);
+                message = resources.getString(R.string.dialog_error_generic_message);
             }
         }
         final Insight errorInsight = Insight.createError(message);
@@ -277,8 +277,8 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                 return new InsightViewHolder(view);
             }
             case TYPE_ERROR: {
-                final View view = inflater.inflate(R.layout.item_message_card, parent, false);
-                final int margin = context.getResources().getDimensionPixelSize(R.dimen.x1);
+                final View view = inflater.inflate(R.layout.temp_item_message_card, parent, false);
+                final int margin = resources.getDimensionPixelSize(R.dimen.x1);
                 final RecyclerView.LayoutParams lp = ((RecyclerView.LayoutParams) view.getLayoutParams());
                 lp.setMargins(margin, margin, margin, margin);
                 return new ErrorViewHolder(view);
@@ -415,7 +415,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             } else {
                 final CharSequence insightDate = dateFormatter.formatAsRelativeTime(insightCreated);
                 date.setText(insightDate);
-                final String url = insight.getImageUrl(context.getResources());
+                final String url = insight.getImageUrl(resources);
                 if (url != null) {
                     final int maxWidth = resources.getDisplayMetrics().widthPixels;
                     final int maxHeight = Math.round(maxWidth * image.getAspectRatioScale());

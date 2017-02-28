@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:tools="http://schemas.android.com/tools"
-    package="is.hello.sense"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest package="is.hello.sense"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
@@ -28,9 +26,9 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="false"
         android:theme="@style/AppTheme"
-        android:networkSecurityConfig="@xml/network_security_config"
         tools:ignore="UnusedAttribute">
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -46,19 +44,17 @@
             android:name=".ui.activities.LaunchActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.onClick.SHOW_ALARMS"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
-
         </activity>
-
         <activity
             android:name=".flows.home.ui.activities.HomeActivity"
             android:label="@string/app_name"
@@ -66,16 +62,15 @@
             android:theme="@style/AppTheme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.SHOW_ALARMS"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-
         <activity
             android:name=".flows.timeline.ui.activities.TimelineActivity"
             android:label="@string/action_timeline"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
-
         <activity
             android:name=".ui.activities.OnboardingActivity"
             android:label="@string/app_name"
@@ -83,7 +78,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Onboarding"
             android:windowSoftInputMode="adjustResize"/>
-
         <activity
             android:name=".ui.activities.PillUpdateActivity"
             android:launchMode="singleTop"
@@ -91,7 +85,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Onboarding"
             android:windowSoftInputMode="adjustResize"/>
-
         <activity
             android:name=".ui.activities.SenseUpgradeActivity"
             android:launchMode="singleTop"
@@ -99,76 +92,69 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Onboarding"
             android:windowSoftInputMode="adjustResize"/>
-
         <activity
             android:name=".flows.sensordetails.ui.activities.SensorDetailActivity"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
-
         <activity
             android:name=".flows.smartalarm.ui.activities.SmartAlarmDetailActivity"
             android:label="@string/app_name">
-
             <intent-filter>
                 <action android:name="android.intent.action.SET_ALARM"/>
                 <action android:name="android.intent.onClick.SET_ALARM"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
-
         </activity>
-
         <activity
             android:name=".ui.activities.SessionLogViewerActivity"
             android:label="Session Log"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
-
         <activity
             android:name=".ui.fragments.VideoPlayerActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
             android:theme="@style/AppTheme.NoActionBar.Black"/>
-
         <activity
             android:name=".ui.common.FragmentNavigationActivity"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
-
         <activity
             android:name=".flows.settings.ui.activities.AppSettingsActivity"
-            android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"
+            android:theme="@style/AppTheme.AppCompat.AppSettingsActivity"/>
 
         <activity
             android:name=".ui.activities.HardwareFragmentActivity"
             android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"/>
-
         <activity
             android:name=".ui.activities.ListActivity"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
-
         <activity
             android:name=".ui.activities.SettingsActivity"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
-
         <activity
             android:name=".flows.expansions.ui.activities.ExpansionSettingsActivity"
             android:label="@string/expansion_list_title"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"
             android:theme="@style/AppTheme.Expansions"/>
-
         <activity
             android:name=".flows.voice.ui.activities.VoiceSettingsActivity"
             android:label="@string/voice_settings_title"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"
             android:theme="@style/AppTheme.Expansions"/>
-
         <activity
             android:name=".flows.voicecommands.ui.activities.VoiceCommandActivity"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+
+        <activity
+            android:label="@string/label_notifications"
+            android:name=".flows.notification.ui.activities.NotificationActivity"
+            android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
+            android:theme="@style/AppTheme.AppCompat.NotificationActivity"/>
 
 
         <activity
             android:name=".flows.expansions.ui.activities.ExpansionValuePickerActivity"
             android:parentActivityName=".flows.smartalarm.ui.activities.SmartAlarmDetailActivity"
             android:theme="@style/AppTheme.Expansions"/>
-
         <activity
             android:name="com.facebook.FacebookActivity"
             xmlns:tools="http://schemas.android.com/tools"
@@ -176,6 +162,16 @@
             android:label="@string/app_name"
             android:theme="@style/FacebookTheme"
             tools:replace="android:theme"/>
+
+        <receiver
+            android:name=".notifications.NotificationMessageReceiver"
+            android:exported="false"
+            android:label="@string/label_notifications">
+            <intent-filter
+                android:priority="1">
+                <action android:name="is.hello.sense.notifications.MESSAGE_RECEIVED"/>
+            </intent-filter>
+        </receiver>
 
         <service
             android:name=".bluetooth.DfuService"
@@ -187,18 +183,46 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name=".notifications.NotificationMessageService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".notifications.NotificationInstanceIDService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"/>
-
         <meta-data
             android:name="com.bugsnag.android.API_KEY"
             android:value="85d0ec0c255e061ee72fb2992bda94d0"/>
-
-
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/FACEBOOK_APP_ID"/>
+
+        <!--
+            Set custom default icon. This is used when no icon is set for incoming notification messages.
+            See README(https://goo.gl/l4GJaQ) for more.
+        -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/icon_sense_24_white"/>
+        <!--
+             Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/primary"/>
 
     </application>
 

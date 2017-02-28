@@ -10,21 +10,17 @@ import is.hello.sense.flows.home.ui.views.VoiceView;
 import is.hello.sense.flows.voicecommands.ui.activities.VoiceCommandActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountPreferencesInteractor;
-import is.hello.sense.mvp.presenters.PresenterFragment;
-import is.hello.sense.mvp.util.ViewPagerPresenterChild;
-import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
+import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.NotTested;
 
 @NotTested // enough
-public class VoiceFragment extends PresenterFragment<VoiceView>
+public class VoiceFragment extends ControllerPresenterFragment<VoiceView>
         implements
         ArrayRecyclerAdapter.OnItemClickedListener<VoiceCommandsAdapter.VoiceCommand>,
-        ViewPagerPresenterChild,
-        HomeActivity.ScrollUp{
+        HomeActivity.ScrollUp {
 
-    private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
     private VoiceCommandsAdapter adapter;
     private AccountPreferencesInteractor sharedPreferences;
 
@@ -36,7 +32,6 @@ public class VoiceFragment extends PresenterFragment<VoiceView>
             this.adapter.setOnItemClickedListener(this);
             this.presenterView = new VoiceView(getActivity(),
                                                this.adapter);
-            this.presenterChildDelegate.onViewInitialized();
         }
     }
 
@@ -55,35 +50,15 @@ public class VoiceFragment extends PresenterFragment<VoiceView>
                          Functions.LOG_ERROR);
     }
 
-    @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        this.presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
-    }
-
     //endRegion
-    //region ViewPagerPresenterChild
+    //region Controller
     @Override
-    public void onUserInvisible() {
-
+    public void setVisibleToUser(final boolean isVisible) {
+        super.setVisibleToUser(isVisible);
+        if (isVisible) {
+            Analytics.trackEvent(Analytics.Backside.EVENT_VOICE_TAB, null);
+        }
     }
-
-    @Override
-    public void onUserVisible() {
-        Analytics.trackEvent(Analytics.Backside.EVENT_VOICE_TAB, null);
-    }
-    @Override
-    public void onResume() {
-        super.onResume();
-        this.presenterChildDelegate.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        this.presenterChildDelegate.onPause();
-    }
-
     //endregion
 
     //region  ArrayRecyclerAdapter.OnItemClickedListener

@@ -59,6 +59,7 @@ import static is.hello.sense.ui.common.UserSupport.DeviceIssue;
 import static is.hello.sense.ui.common.UserSupport.HelpStep;
 import static is.hello.sense.ui.common.UserSupport.showAppSettings;
 import static is.hello.sense.ui.common.UserSupport.showContactForm;
+import static is.hello.sense.ui.common.UserSupport.showDeviceFeatures;
 import static is.hello.sense.ui.common.UserSupport.showForDeviceIssue;
 import static is.hello.sense.ui.common.UserSupport.showForHelpStep;
 import static is.hello.sense.ui.common.UserSupport.showSupportedDevices;
@@ -298,6 +299,11 @@ public final class Styles {
 
                 case "#second-pill": {
                     clickableSpan = new SimpleClickableSpan(v -> showForDeviceIssue(activity, DeviceIssue.PAIRING_2ND_PILL));
+                    break;
+                }
+
+                case "#sense-with-voice-info": {
+                    clickableSpan = new SimpleClickableSpan(v -> showDeviceFeatures(activity));
                     break;
                 }
 

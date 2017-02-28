@@ -28,6 +28,7 @@ import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.flows.home.ui.views.InsightsView;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.graph.Scope;
@@ -35,10 +36,9 @@ import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.QuestionsInteractor;
+import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.interactors.questions.ReviewQuestionProvider;
-import is.hello.sense.mvp.presenters.PresenterFragment;
-import is.hello.sense.mvp.util.ViewPagerPresenterChild;
-import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
+import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
@@ -47,7 +47,6 @@ import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
-import is.hello.sense.ui.handholding.Tutorial;
 import is.hello.sense.ui.handholding.TutorialOverlayView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
@@ -58,11 +57,11 @@ import is.hello.sense.util.Share;
 import rx.Observable;
 
 @NotTested //enough
-public class InsightsFragment extends PresenterFragment<InsightsView> implements
+public class InsightsFragment extends ControllerPresenterFragment<InsightsView> implements
         InsightsAdapter.InteractionListener,
         InsightInfoFragment.Parent,
         InsightsAdapter.OnRetry,
-        ViewPagerPresenterChild,
+        StaticFragmentAdapter.Controller,
         HomeActivity.ScrollUp {
 
     @Inject
@@ -81,9 +80,8 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     Picasso picasso;
     @Inject
     ApiService apiService;
-
-    private final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
-
+    @Inject
+    UnreadStateInteractor unreadStateInteractor;
 
     @Nullable
     private TutorialOverlayView tutorialOverlayView;
@@ -99,31 +97,21 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
 
     private boolean questionLoaded = false;
     private boolean insightsLoaded = false;
-    private HomeActivity activity;
 
     @Override
     public final void initializePresenterView() {
         if (presenterView == null) {
             presenterView = new InsightsView(getActivity(), dateFormatter, picasso, this);
-            this.presenterChildDelegate.onViewInitialized();
         }
     }
 
     @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        this.presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
-    }
-
-    @Override
-    public void onUserVisible() {
-        presenterView.updateWhatsNewState();
-        fetchInsights();
-    }
-
-    @Override
-    public void onUserInvisible() {
-
+    public void setVisibleToUser(final boolean isVisible) {
+        super.setVisibleToUser(isVisible);
+        if (isVisible) {
+            presenterView.updateWhatsNewState();
+            fetchInsights();
+        }
     }
 
     @Override
@@ -132,14 +120,11 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
         addInteractor(insightsInteractor);
         addInteractor(deviceIssuesInteractor);
         addInteractor(questionsInteractor);
-        deviceIssuesInteractor.bindScope((Scope) getActivity());
+        addInteractor(unreadStateInteractor);
+        deviceIssuesInteractor.bindScope((Scope) getActivity()); //todo why is this never unbinding scope?
         LocalBroadcastManager.getInstance(getActivity())
                              .registerReceiver(REVIEW_ACTION_RECEIVER,
                                                new IntentFilter(ReviewQuestionProvider.ACTION_COMPLETED));
-        if (getActivity() instanceof HomeActivity) {
-            activity = (HomeActivity) getActivity();
-        }
-
     }
 
     @Override
@@ -167,20 +152,13 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
             this.tutorialOverlayView = null;
         }
 
-        insightsInteractor.unbindScope();
+        insightsInteractor.unbindScope(); //todo why unbinding scope in ondestroyView but binding scope in onCreate
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        this.presenterChildDelegate.onResume();
         update();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        this.presenterChildDelegate.onPause();
     }
 
     @Override
@@ -245,6 +223,9 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     private void bindInsights(@NonNull final List<Insight> insights) {
         this.insights = insights;
         this.insightsLoaded = true;
+        if (isVisibleToUser()) {
+            unreadStateInteractor.updateInsightsLastViewed();
+        }
         bindPendingIfReady();
     }
 
@@ -337,8 +318,8 @@ public class InsightsFragment extends PresenterFragment<InsightsView> implements
     }
 
     private void showProgress(final boolean show) {
-        if (activity != null) {
-            activity.showProgressOverlay(show);
+        if (getActivity() != null) {
+            ((HomeActivity) getActivity()).showProgressOverlay(show);
         }
     }
 

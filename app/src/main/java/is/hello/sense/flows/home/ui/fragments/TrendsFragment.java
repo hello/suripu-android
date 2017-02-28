@@ -17,19 +17,16 @@ import is.hello.sense.flows.home.ui.adapters.TrendsAdapter;
 import is.hello.sense.flows.home.ui.views.TrendsView;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TrendsInteractor;
-import is.hello.sense.mvp.presenters.PresenterFragment;
-import is.hello.sense.mvp.util.ViewPagerPresenterChild;
-import is.hello.sense.mvp.util.ViewPagerPresenterChildDelegate;
+import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.ui.widget.graphing.trends.TrendFeedViewItem;
 import is.hello.sense.ui.widget.graphing.trends.TrendGraphView;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 
-public abstract class TrendsFragment extends PresenterFragment<TrendsView>
+public abstract class TrendsFragment extends ControllerPresenterFragment<TrendsView>
         implements
         TrendFeedViewItem.OnRetry,
         TrendGraphView.AnimationCallback,
-        ViewPagerPresenterChild,
         HomeActivity.ScrollUp {
 
     @Inject
@@ -37,15 +34,11 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     @Inject
     PreferencesInteractor preferencesInteractor;
 
-    @VisibleForTesting
-    public final ViewPagerPresenterChildDelegate presenterChildDelegate = new ViewPagerPresenterChildDelegate(this);
-
     //region PresenterFragment
     @Override
     public void initializePresenterView() {
         if (this.presenterView == null) {
             this.presenterView = new TrendsView(getActivity(), createTrendsAdapter());
-            this.presenterChildDelegate.onViewInitialized();
         }
     }
 
@@ -68,32 +61,19 @@ public abstract class TrendsFragment extends PresenterFragment<TrendsView>
     public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         Analytics.trackEvent(Analytics.Backside.EVENT_TRENDS, null);
-        this.presenterChildDelegate.setUserVisibleHint(isVisibleToUser);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        this.presenterChildDelegate.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        this.presenterChildDelegate.onPause();
     }
 
     //endregion
-    //region ViewPagerPresenterChild
-    @Override
-    public void onUserVisible() {
-        fetchTrends();
-    }
+    //region Controller
 
     @Override
-    public void onUserInvisible() {
-
+    public void setVisibleToUser(final boolean isVisible) {
+        super.setVisibleToUser(isVisible);
+        if (isVisible) {
+            fetchTrends();
+        }
     }
+
     //endregion
 
     //region onRetry

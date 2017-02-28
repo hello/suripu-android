@@ -12,11 +12,10 @@ import is.hello.sense.api.model.AppUnreadStats;
 import is.hello.sense.api.model.DeviceOTAState;
 import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.DevicesInfo;
+import is.hello.sense.api.model.NotificationSetting;
 import is.hello.sense.api.model.PasswordUpdate;
 import is.hello.sense.api.model.PushRegistration;
 import is.hello.sense.api.model.Question;
-import is.hello.sense.api.model.RoomConditions;
-import is.hello.sense.api.model.RoomSensorHistory;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SenseTimeZone;
 import is.hello.sense.api.model.StoreReview;
@@ -82,16 +81,13 @@ public interface ApiService {
     @Deprecated
     String SENSOR_NAME_SOUND = "sound";
 
-    /**
-     * Sentinel value used by graphing APIs.
-     */
-    int PLACEHOLDER_VALUE = -1;
-
-
     //region OAuth
 
     @POST("/v1/oauth2/token")
     Observable<OAuthSession> authorize(@NonNull @Body OAuthCredentials request);
+
+    @DELETE("/v1/oauth2/token")
+    Observable<VoidResponse> deauthorize();
 
     //endregion
 
@@ -120,6 +116,12 @@ public interface ApiService {
 
     @POST("/v1/notifications/registration")
     Observable<VoidResponse> registerForNotifications(@NonNull @Body PushRegistration registration);
+
+    @GET("/v1/notifications")
+    Observable<ArrayList<NotificationSetting>> getNotificationSettings();
+
+    @PUT("/v1/notifications")
+    Observable<VoidResponse> putNotificationSettings(@NonNull @Body List<NotificationSetting> settings);
 
     @GET("/v1/timezone")
     Observable<SenseTimeZone> currentTimeZone();
@@ -170,15 +172,6 @@ public interface ApiService {
     //endregion
 
     //region Room Conditions
-
-    @Deprecated
-    @GET("/v1/room/current")
-    Observable<RoomConditions> currentRoomConditions(@NonNull @Query("temp_unit") String unit);
-
-    @Deprecated
-    @GET("/v1/room/all_sensors/hours")
-    Observable<RoomSensorHistory> roomSensorHistory(@Query("quantity") int numberOfHours,
-                                                    @Query("from_utc") long timestamp);
 
     @GET("/v2/sensors")
     Observable<SensorResponse> getSensors();
@@ -261,7 +254,7 @@ public interface ApiService {
 
     @POST("/v2/alarms/{client_time_utc}")
     Observable<AlarmGroups> saveSmartAlarms(@Path("client_time_utc") long timestamp,
-                                             @NonNull @Body AlarmGroups alarmGroups);
+                                            @NonNull @Body AlarmGroups alarmGroups);
 
     @GET("/v1/alarms/sounds")
     Observable<ArrayList<Alarm.Sound>> availableSmartAlarmSounds();

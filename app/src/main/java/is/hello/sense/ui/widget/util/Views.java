@@ -137,7 +137,7 @@ public final class Views {
     public static void runWhenLaidOut(@NonNull final View view, @NonNull final Runnable runnable) {
         if (ViewCompat.isLaidOut(view)) {
             runnable.run();
-        } else if (view.isInLayout()) {
+        } else if (ViewCompat.isInLayout(view)) {
             view.post(runnable);
         } else {
             final ViewTreeObserver.OnGlobalLayoutListener listener = new ViewTreeObserver.OnGlobalLayoutListener() {

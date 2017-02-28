@@ -87,7 +87,7 @@ public class VoiceSettingsListView extends PresenterView {
         primaryUserGroup.setEnabled(true);
         primaryUserValueTextView.setText(R.string.voice_settings_primary_user_false);
         primaryUserValueTextView.setEnabled(true);  // required to change text color
-        primaryUserValueTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.disclosure_chevron_small, 0);
+        primaryUserValueTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.icon_chevron_right_24, 0);
         this.primaryUserValueTextView.setVisibility(VISIBLE);
     }
 

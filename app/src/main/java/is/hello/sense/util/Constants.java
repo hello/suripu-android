@@ -12,13 +12,11 @@ public final class Constants {
     public static final String INTERNAL_PREF_BACKSIDE_CURRENT_ITEM_LAST_UPDATED = "underside_current_item_last_updated";
     public static final String INTERNAL_PREF_ACCOUNT_ID = "INTERNAL_PREF_ACCOUNT_ID";
 
+    //todo remove if no longer storing locally
     public static final String NOTIFICATION_PREFS = "notification_prefs";
-    public static final String NOTIFICATION_PREF_REGISTRATION_ID = "registration_id";
-    public static final String NOTIFICATION_PREF_APP_VERSION = "app_version_code";
 
     public static final String HANDHOLDING_PREFS = "handholding_prefs";
     public static final String HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO = "has_shown_timeline_adjust_intro";
-    public static final String HANDHOLDING_NUMBER_TIMELINES_SHOWN = "number_timelines_shown";
 
     public static final String WHATS_NEW_LAYOUT_SHOULD_SHOW_PREFS = "WHATS_NEW_LAYOUT_SHOULD_SHOW_PREFS";
     public static final String WHATS_NEW_LAYOUT_LAST_VERSION_SHOWN = "WHATS_NEW_LAYOUT_LAST_VERSION_SHOWN";

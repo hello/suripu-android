@@ -36,6 +36,11 @@ public class UpgradePairPillPresenter extends BasePairPillPresenter {
     }
 
     @Override
+    public int getErrorRes() {
+        return R.string.error_message_sleep_pill_upgrade_scan_timeout;
+    }
+
+    @Override
     public void trackOnSkip() {
         final Properties properties =
                 Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "pill_pairing");

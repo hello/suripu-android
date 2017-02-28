@@ -85,6 +85,10 @@ public class DeviceListFragment extends InjectionFragment
         if (savedInstanceState == null) {
             Analytics.trackEvent(Analytics.Backside.EVENT_DEVICES, null);
         }
+
+        this.adapter = new DevicesAdapter(getActivity());
+        adapter.setOnItemClickedListener(this);
+        adapter.setOnDeviceInteractionListener(this);
     }
 
     @Nullable
@@ -102,10 +106,6 @@ public class DeviceListFragment extends InjectionFragment
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      EnumSet.of(ScrollEdge.TOP), FadingEdgesItemDecoration.Style.STRAIGHT));
-
-        this.adapter = new DevicesAdapter(getActivity());
-        adapter.setOnItemClickedListener(this);
-        adapter.setOnDeviceInteractionListener(this);
 
         this.supportInfoFooter = (TextView) inflater.inflate(R.layout.item_device_support_footer, recyclerView, false);
         supportInfoFooter.setVisibility(View.INVISIBLE);
@@ -140,8 +140,17 @@ public class DeviceListFragment extends InjectionFragment
         super.onDestroyView();
 
         this.loadingIndicator = null;
-        this.adapter = null;
         this.supportInfoFooter = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(this.adapter != null) {
+            this.adapter.setOnItemClickedListener(null);
+            this.adapter.setOnDeviceInteractionListener(null);
+            this.adapter = null;
+        }
     }
 
     @Override
@@ -167,7 +176,7 @@ public class DeviceListFragment extends InjectionFragment
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (locationPermission.isGrantedFromResult(requestCode, permissions, grantResults)) {
-            onPairNewDevice(PlaceholderDevice.Type.SLEEP_PILL);
+            onPlaceholderInteraction(PlaceholderDevice.Type.SLEEP_PILL);
         } else {
             locationPermission.showEnableInstructionsDialog();
         }
@@ -224,13 +233,12 @@ public class DeviceListFragment extends InjectionFragment
     }
 
     @Override
-    public void onPairNewDevice(@NonNull final PlaceholderDevice.Type type) {
-        final Intent intent = new Intent(getActivity(), OnboardingActivity.class);
+    public void onPlaceholderInteraction(@NonNull final PlaceholderDevice.Type type) {
         switch (type) {
             case SENSE: {
-                //todo make separate activity to handle pairing only
+                final Intent intent = OnboardingActivity.getPairOnlyIntent(getActivity());
                 intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
-                intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
+                startActivityForResult(intent, PAIR_DEVICE_REQUEST_CODE);
                 break;
             }
 
@@ -239,8 +247,15 @@ public class DeviceListFragment extends InjectionFragment
                     locationPermission.requestPermission();
                     return;
                 }
+                final Intent intent = OnboardingActivity.getPairOnlyIntent(getActivity());
                 intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_PILL);
-                intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
+                startActivityForResult(intent, PAIR_DEVICE_REQUEST_CODE);
+                break;
+            }
+
+            case SENSE_WITH_VOICE: {
+                startActivityForResult(new Intent(getActivity(), SenseUpgradeActivity.class),
+                                       UPGRADE_SENSE_DEVICE_REQUEST_CODE);
                 break;
             }
 
@@ -248,15 +263,12 @@ public class DeviceListFragment extends InjectionFragment
                 throw new IllegalStateException();
             }
         }
-        startActivityForResult(intent, PAIR_DEVICE_REQUEST_CODE);
     }
 
     @Override
     public void onUpdateDevice(@NonNull final BaseDevice device) {
         if(device instanceof SleepPillDevice) {
             UserSupport.showUpdatePill(this, device.deviceId);
-        } else if(device instanceof SenseDevice){
-            startActivityForResult(new Intent(getActivity(), SenseUpgradeActivity.class), UPGRADE_SENSE_DEVICE_REQUEST_CODE);
         }
 
     }

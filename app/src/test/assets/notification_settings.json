@@ -1,0 +1,13 @@
+[{
+  "type": "SLEEP_SCORE",
+  "enabled": true,
+  "name": "Sleep Score"
+}, {
+  "type": "SYSTEM",
+  "enabled": true,
+  "name": "System Alerts"
+}, {
+  "type": "SLEEP_REMINDER",
+  "enabled": true,
+  "name": "Sleep Reminder"
+}]

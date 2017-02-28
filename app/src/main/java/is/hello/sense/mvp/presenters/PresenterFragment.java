@@ -83,6 +83,7 @@ public abstract class PresenterFragment<T extends PresenterView>
     @NonNull
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        //debugLog("onCreateView- initializePresenterView"); // useful for debugging
         initializePresenterView(); // todo force this to return a new instance
         return presenterView;
     }
@@ -100,9 +101,17 @@ public abstract class PresenterFragment<T extends PresenterView>
     @Override
     public void onResume() {
         super.onResume();
+        //debugLog("onResume");
         if (presenterView != null) {//todo remove check after forcing new instance
             presenterView.resume();
         }
+    }
+
+    @CallSuper
+    @Override
+    public void onPause() {
+        super.onPause();
+        //debugLog("onPause");
     }
 
     @CallSuper
@@ -131,6 +140,11 @@ public abstract class PresenterFragment<T extends PresenterView>
         this.animatorContextFromActivity = false;
         this.presenterView = null;
         this.loadingDialogFragment = null;
+    }
+
+    public final boolean hasPresenterView() {
+       // debugLog("HasPresenterView: " + (presenterView != null)); //useful for debugging
+        return presenterView != null;
     }
 
     @NonNull

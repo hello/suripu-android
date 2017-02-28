@@ -52,8 +52,8 @@ public class GraphSection extends ApiResponse {
         this.values.add(value);
     }
 
-    public void addTitle(@Nullable final String title){
-        if(title == null){
+    public void addTitle(@Nullable final String title) {
+        if (title == null) {
             return;
         }
         titles.add(title);
@@ -69,7 +69,7 @@ public class GraphSection extends ApiResponse {
 
     @Nullable
     public Float getValue(final int index) {
-        if(index < 0 || index >= values.size()) {
+        if (index < 0 || index >= values.size()) {
             Log.e(getClass().getName(), String.format("GraphSection.values %d out of bounds index", index));
             return null;
         }
@@ -92,9 +92,10 @@ public class GraphSection extends ApiResponse {
     /**
      * todo propagate throw errors to display dialog to error and not render graph
      * currently defaults to 0 if any expected errors are caught
+     *
      * @return int 0 to 6 representing first day of week Sun to Sat of first month
      */
-     int getFirstDayOfMonthOffset(){
+    int getFirstDayOfMonthOffset() {
         int offset = 0;
         try {
             if (titles == null || titles.isEmpty()) {
@@ -121,6 +122,16 @@ public class GraphSection extends ApiResponse {
             values.add(DO_NOT_SHOW_VALUE);
         }
         return this;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof GraphSection)) {
+            return false;
+        }
+        final GraphSection otherGraphSection = (GraphSection) obj;
+        return titles.size() == otherGraphSection.titles.size() && values.equals(otherGraphSection.values);
+
     }
 
     @Override
