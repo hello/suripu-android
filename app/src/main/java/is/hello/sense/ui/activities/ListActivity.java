@@ -32,6 +32,7 @@ import is.hello.sense.util.SenseCache.AudioCache;
 
 import static is.hello.sense.util.Constants.NONE;
 
+@Deprecated // Doesn't follow any architecture.
 public class ListActivity extends InjectionActivity implements Player.OnEventListener {
 
     private enum PlayerStatus {

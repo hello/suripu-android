@@ -145,10 +145,15 @@
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
 
         <activity
-            android:label="@string/label_notifications"
             android:name=".flows.notification.ui.activities.NotificationActivity"
+            android:label="@string/label_notifications"
             android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
             android:theme="@style/AppTheme.AppCompat.NotificationActivity"/>
+
+        <activity
+            android:name=".flows.generic.ui.activities.ListActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.AppCompat.ListActivity"/>
 
 
         <activity

@@ -153,6 +153,7 @@ import is.hello.sense.zendesk.ZendeskModule;
 
                 VoiceSettingsInteractor.class,
                 AppSettingsActivity.class,
+                is.hello.sense.flows.generic.ui.activities.ListActivity.class
         }
 )
 @SuppressWarnings("UnusedDeclaration")
