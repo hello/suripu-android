@@ -151,6 +151,14 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
     public void onDestroyView() {
         super.onDestroyView();
         Views.removeAllClickListeners(keys);
+        keys = null;
+        dayText = null;
+        monthText = null;
+        yearText = null;
+
+        for(int i=0;i<fields.length;i++) {
+            fields[i] = null;
+        }
     }
 
     private int parseString(@NonNull final CharSequence value) throws NumberFormatException {
