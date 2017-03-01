@@ -30,6 +30,7 @@ public class OnboardingRegisterGenderFragment extends SenseFragment {
     @DrawableRes
     private static final int OFF_IMAGE_RES = R.drawable.radio_off;
 
+    private Gender currentGender = Gender.MALE;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -77,9 +78,24 @@ public class OnboardingRegisterGenderFragment extends SenseFragment {
         Views.setSafeOnClickListener(this.binding.fragmentOnboardingGenderOtherRow,
                                      this::onOtherClick);
 
+        final Account account = AccountEditor.getContainer(this).getAccount();
+        if (account.getGender() != null) {
+            this.currentGender = account.getGender();
+            if (account.getGender() == Gender.MALE) {
+                setImages(ON_IMAGE_RES, OFF_IMAGE_RES, OFF_IMAGE_RES);
+            } else if (account.getGender() == Gender.FEMALE) {
+                setImages(OFF_IMAGE_RES, ON_IMAGE_RES, OFF_IMAGE_RES);
+            } else {
+                setImages(OFF_IMAGE_RES, OFF_IMAGE_RES, ON_IMAGE_RES);
+
+            }
+        }
+
     }
 
     private void onNextClick(final View ignored) {
+        final AccountEditor.Container container = AccountEditor.getContainer(this);
+        container.getAccount().setGender(currentGender);
         AccountEditor.getContainer(this).onAccountUpdated(this);
     }
 
@@ -90,21 +106,27 @@ public class OnboardingRegisterGenderFragment extends SenseFragment {
     }
 
     private void onMaleClick(final View ignored) {
-        this.binding.fragmentOnboardingGenderMaleImagetextview.setImageResource(ON_IMAGE_RES);
-        this.binding.fragmentOnboardingGenderFemaleImagetextview.setImageResource(OFF_IMAGE_RES);
-        this.binding.fragmentOnboardingGenderOtherImagetextview.setImageResource(OFF_IMAGE_RES);
+        setImages(ON_IMAGE_RES, OFF_IMAGE_RES, OFF_IMAGE_RES);
+        this.currentGender = Gender.MALE;
     }
 
     private void onFemaleClick(final View ignored) {
-        this.binding.fragmentOnboardingGenderMaleImagetextview.setImageResource(OFF_IMAGE_RES);
-        this.binding.fragmentOnboardingGenderFemaleImagetextview.setImageResource(ON_IMAGE_RES);
-        this.binding.fragmentOnboardingGenderOtherImagetextview.setImageResource(OFF_IMAGE_RES);
+        setImages(OFF_IMAGE_RES, ON_IMAGE_RES, OFF_IMAGE_RES);
+        this.currentGender = Gender.FEMALE;
     }
 
     private void onOtherClick(final View ignored) {
-        this.binding.fragmentOnboardingGenderMaleImagetextview.setImageResource(OFF_IMAGE_RES);
-        this.binding.fragmentOnboardingGenderFemaleImagetextview.setImageResource(OFF_IMAGE_RES);
-        this.binding.fragmentOnboardingGenderOtherImagetextview.setImageResource(ON_IMAGE_RES);
+        setImages(OFF_IMAGE_RES, OFF_IMAGE_RES, ON_IMAGE_RES);
         ListActivity.startActivity(getActivity(), ListActivity.GENDER_LIST);
+        this.currentGender = Gender.OTHER;
+    }
+
+    public void setImages(@DrawableRes final int maleRes,
+                          @DrawableRes final int femaleRes,
+                          @DrawableRes final int otherRes) {
+        this.binding.fragmentOnboardingGenderMaleImagetextview.setImageResource(maleRes);
+        this.binding.fragmentOnboardingGenderFemaleImagetextview.setImageResource(femaleRes);
+        this.binding.fragmentOnboardingGenderOtherImagetextview.setImageResource(otherRes);
+
     }
 }
