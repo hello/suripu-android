@@ -59,15 +59,11 @@ public class ImageTextView extends LinearLayout {
             }
 
             // TextView
-            if (textAppearanceRes != Constants.NONE) {
-                Styles.setTextAppearance(textView, textAppearanceRes);
-            }
-            if (leftTextPaddingRes != Constants.NONE) {
-                setTextPaddingRes(leftTextPaddingRes,
-                                  Constants.NONE,
-                                  Constants.NONE,
-                                  Constants.NONE);
-            }
+            Styles.setTextAppearance(textView, textAppearanceRes);
+            setTextPaddingRes(leftTextPaddingRes,
+                              Constants.NONE,
+                              Constants.NONE,
+                              Constants.NONE);
             setText(text);
 
         } finally {
@@ -106,6 +102,7 @@ public class ImageTextView extends LinearLayout {
                        right != Constants.NONE ? resources.getDimensionPixelSize(right) : 0,
                        bottom != Constants.NONE ? resources.getDimensionPixelSize(bottom) : 0);
     }
+
     public void setTextPadding(final int left,
                                final int top,
                                final int right,
