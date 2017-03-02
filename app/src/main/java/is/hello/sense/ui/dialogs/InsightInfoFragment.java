@@ -157,7 +157,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
         addPresenter(presenter);
 
-        setRetainInstance(true);
     }
 
     @Nullable

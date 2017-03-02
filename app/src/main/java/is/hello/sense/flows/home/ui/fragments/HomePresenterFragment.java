@@ -17,7 +17,6 @@ import is.hello.sense.api.model.v2.alerts.Alert;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
-import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.flows.home.ui.views.HomeView;
 import is.hello.sense.flows.home.ui.views.SenseTabLayout;
 import is.hello.sense.flows.home.util.HomeFragmentPagerAdapter;
@@ -52,6 +51,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         InsightInfoFragment.ParentProvider,
         Alert.ActionHandler {
     public static final String TAG = HomePresenterFragment.class.getSimpleName();
+    private HomeFragmentPagerAdapter adapter = null;
 
     @Inject
     ApiService apiService;
@@ -73,15 +73,15 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     NotificationInteractor notificationInteractor;
 
     private final HomeViewPagerPresenterDelegate viewPagerDelegate = new HomeViewPagerPresenterDelegate();
-    private OnboardingFlowProvider flowProvider;
     private boolean shouldShowAlerts = true;
 
     //region PresenterFragment
     @Override
     public void initializePresenterView() {
-        if (presenterView == null) {
-            presenterView = new HomeView(getActivity(), this.viewPagerDelegate.getOffscreenPageLimit());
-            presenterView.setAdapter(createAdapter(this.presenterView.getViewPagerId()));
+        if (this.presenterView == null) {
+            this.presenterView = new HomeView(getActivity(), this.viewPagerDelegate.getOffscreenPageLimit());
+            this.adapter = createAdapter(this.presenterView.getViewPagerId());
+            this.presenterView.setAdapter(this.adapter);
         }
     }
 
@@ -96,7 +96,6 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         if (!(getActivity() instanceof OnboardingFlowProvider)) {
             throw new IllegalStateException("Activity must implement OnboardingFlowProvider ");
         }
-        this.flowProvider = (OnboardingFlowProvider) getActivity();
         this.deviceIssuesInteractor.bindScope((Scope) getActivity());
         addInteractor(this.deviceIssuesInteractor);
         addInteractor(this.alertsInteractor);
@@ -106,7 +105,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
 
         if (savedInstanceState == null) {
             this.shouldShowAlerts = true;
-            this.presenterView.setExtendedViewPagerCurrentItem(this.viewPagerDelegate.getStartingItemPosition());
+            this.presenterView.setCurrentItem(this.viewPagerDelegate.getStartingItemPosition());
         } else {
             this.shouldShowAlerts = false;
         }
@@ -136,18 +135,29 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     public void onPause() {
         super.onPause();
         this.shouldShowAlerts = false;
+        if (this.adapter != null) {
+            this.adapter.onPause();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        if (this.adapter != null) {
+            this.adapter.onResume();
+        }
         this.lastNightInteractor.update();
         if (shouldUpdateAlerts()) {
             this.alertsInteractor.update();
         }
     }
 
-    //endregion
+    @Override
+    protected void onRelease() {
+        super.onRelease();
+        this.adapter = null;
+    }
+//endregion
 
     //region OnBackPressedInterceptor
 
@@ -177,7 +187,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
             this.lastNightInteractor.update();
         }
         this.unreadStateInteractor.update();
-        this.presenterView.setExtendedViewPagerCurrentItem(fragmentPosition);
+        this.presenterView.setCurrentItem(fragmentPosition);
         if (fragmentPosition == SenseTabLayout.SLEEP_ICON_KEY) {
             jumpToLastNight();
         }
@@ -300,7 +310,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
      * @return true if this flow is for a registered user.
      */
     private boolean shouldUpdateAlerts() {
-        return this.flowProvider.getOnboardingFlow() != OnboardingActivity.FLOW_REGISTER;
+        return ((OnboardingFlowProvider) getActivity()).getOnboardingFlow() != OnboardingActivity.FLOW_REGISTER;
     }
 
     /**

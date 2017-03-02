@@ -41,32 +41,9 @@ public class HomeView extends BindedPresenterView<ViewHomeBinding> {
         this.binding.viewHomeTabLayout.clearOnTabSelectedListeners();
         this.binding.viewHomeExtendedViewPager.setAdapter(null);
     }
-
-    @Override
-    public void resume() {
-        super.resume();
-        resumeAdapter(true);
-
-    }
-
-    @Override
-    public void pause() {
-        super.pause();
-        resumeAdapter(false);
-    }
     //endregion
 
     //region methods
-    private void resumeAdapter(final boolean resume) {
-        if (this.binding.viewHomeExtendedViewPager.getAdapter() instanceof StaticFragmentAdapter) {
-            if (resume) {
-                ((StaticFragmentAdapter) this.binding.viewHomeExtendedViewPager.getAdapter()).onResume();
-            } else {
-                ((StaticFragmentAdapter) this.binding.viewHomeExtendedViewPager.getAdapter()).onPause();
-            }
-        }
-    }
-
     public int getViewPagerId() {
         return this.binding.viewHomeExtendedViewPager.getId();
     }
@@ -84,18 +61,11 @@ public class HomeView extends BindedPresenterView<ViewHomeBinding> {
     }
 
     /**
-     * @return index position of the currently selected tab.
-     */
-    public int getTabLayoutSelectedPosition() {
-        return this.binding.viewHomeTabLayout.getSelectedTabPosition();
-    }
-
-    /**
      * Sets the ExtendedViewPagers current item.
      *
      * @param item index of fragment to show.
      */
-    public void setExtendedViewPagerCurrentItem(final int item) {
+    public void setCurrentItem(final int item) {
         this.binding.viewHomeExtendedViewPager.setCurrentItem(item);
     }
 
