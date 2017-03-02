@@ -16,12 +16,14 @@ import is.hello.sense.ui.recycler.DividerItemDecoration;
 @SuppressLint("ViewConstructor")
 public class ListView extends BindedPresenterView<BindableRecyclerviewBinding> {
 
-    public ListView(@NonNull final Activity activity) {
+    public ListView(@NonNull final Activity activity,
+                    @NonNull final ArrayRecyclerAdapter adapter) {
         super(activity);
         this.binding.bindableRecyclerview.setLayoutManager(new LinearLayoutManager(activity));
         this.binding.bindableRecyclerview.setHasFixedSize(true);
         this.binding.bindableRecyclerview.setItemAnimator(null);
         this.binding.bindableRecyclerview.addItemDecoration(new DividerItemDecoration(getContext()));
+        this.binding.bindableRecyclerview.setAdapter(adapter);
     }
 
     @Override
@@ -32,10 +34,6 @@ public class ListView extends BindedPresenterView<BindableRecyclerviewBinding> {
     @Override
     public void releaseViews() {
         this.binding.bindableRecyclerview.setAdapter(null);
-    }
-
-    public void setAdapter(@Nullable final ArrayRecyclerAdapter adapter) {
-        this.binding.bindableRecyclerview.setAdapter(adapter);
     }
 
 }
