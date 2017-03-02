@@ -48,7 +48,7 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> impleme
     @Override
     protected void extraSetUp() {
         super.extraSetUp();
-        fragment.parent = mock(TimelineFragment.Parent.class);
+        when(fragment.getParentFragmentParent()).thenReturn(mock(TimelineFragment.Parent.class));
     }
 
     @Test
@@ -114,7 +114,7 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> impleme
         data.putExtra(TimelineActivity.class.getSimpleName() + "EXTRA_TIMELINE", timeline);
 
         fragment.onActivityResult(101, Activity.RESULT_OK, data);
-        verify(fragment.parent).jumpTo(eq(date), eq(timeline));
+        verify(fragment.getParentFragmentParent()).jumpTo(eq(date), eq(timeline));
     }
 
     @Test

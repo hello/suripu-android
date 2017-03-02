@@ -119,9 +119,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     TimelineInfoOverlay infoOverlay;
 
     @VisibleForTesting
-    Parent parent;
-
-    @VisibleForTesting
     int toolTipHeight;
 
     //region PresenterFragment
@@ -209,7 +206,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     @Override
     public void onDetach() {
         super.onDetach();
-        this.parent = null;
     }
 
     @Override
@@ -242,14 +238,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
     @VisibleForTesting
     protected Parent getParentFragmentParent() {
-        if (parent != null) {
-            return parent;
-        }
-        if (!(getParentFragment() instanceof Parent)) {
-            throw new IllegalStateException("A parent is required to control TimelineFragment");
-        }
-        parent = (Parent) getParentFragment();
-        return parent;
+        return (Parent) getParentFragment();
     }
 
     public void showTimelineNavigator(@NonNull final LocalDate date,

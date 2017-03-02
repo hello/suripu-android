@@ -101,7 +101,6 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         addInteractor(this.alertsInteractor);
         addInteractor(this.lastNightInteractor);
         addInteractor(this.unreadStateInteractor);
-        addInteractor(notificationInteractor);
 
         if (savedInstanceState == null) {
             this.shouldShowAlerts = true;

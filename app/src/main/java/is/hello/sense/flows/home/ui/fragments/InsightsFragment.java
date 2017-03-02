@@ -290,7 +290,8 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
 
     @Override
     public void showProgress(final boolean show) {
-        final Fragment fragment = getParentFragment();
+        // todo abstract relationship
+        final Fragment fragment = getParentFragment().getParentFragment();
         if (fragment instanceof HomePresenterFragment) {
             ((HomePresenterFragment) fragment).showProgressOverlay(show);
         }
