@@ -157,8 +157,6 @@ import is.hello.sense.zendesk.ZendeskModule;
 
                 VoiceSettingsInteractor.class,
                 AppSettingsActivity.class,
-                NotificationActivity.class,
-                NotificationFragment.class,
                 HomePresenterFragment.class
         }
 )

@@ -241,7 +241,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     //region Actions
 
     @VisibleForTesting
-    public Parent getParentFragmentParent() {
+    protected Parent getParentFragmentParent() {
         if (parent != null) {
             return parent;
         }

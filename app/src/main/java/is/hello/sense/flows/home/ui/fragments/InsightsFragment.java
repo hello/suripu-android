@@ -58,7 +58,6 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
         InsightsAdapter.InteractionListener,
         InsightInfoFragment.Parent,
         InsightsAdapter.OnRetry,
-        StaticFragmentAdapter.Controller,
         HomeActivity.ScrollUp {
 
     @Inject
