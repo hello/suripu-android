@@ -18,6 +18,10 @@ import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.fragments.FeedPresenterFragment;
+import is.hello.sense.flows.home.ui.fragments.HomePresenterFragment;
+import is.hello.sense.flows.notification.ui.activities.NotificationActivity;
+import is.hello.sense.flows.notification.ui.fragments.NotificationFragment;
+import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.home.ui.fragments.InsightsFragment;
 import is.hello.sense.flows.home.ui.fragments.MonthTrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.QuarterTrendsFragment;
@@ -153,6 +157,7 @@ import is.hello.sense.zendesk.ZendeskModule;
 
                 VoiceSettingsInteractor.class,
                 AppSettingsActivity.class,
+                HomePresenterFragment.class
         }
 )
 @SuppressWarnings("UnusedDeclaration")

@@ -22,8 +22,6 @@ import is.hello.sense.ui.widget.timeline.TimelineInfoOverlay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
@@ -33,15 +31,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
+public class TimelineFragmentTest extends FragmentTest<TimelineFragment> implements
+        TimelineFragment.Parent {
 
     private static final LocalDate date = LocalDate.now();
 
-    @NonNull
-    @Override
-    protected Class<? extends FragmentTestActivity> activityCreatingFragment() {
-        return ActivityWithParent.class;
-    }
 
     @Nullable
     @Override
@@ -49,6 +43,12 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
         final Bundle args = new Bundle();
         args.putSerializable(TimelineFragment.class.getName() + ".ARG_DATE", date);
         return args;
+    }
+
+    @Override
+    protected void extraSetUp() {
+        super.extraSetUp();
+        when(fragment.getParentFragmentParent()).thenReturn(mock(TimelineFragment.Parent.class));
     }
 
     @Test
@@ -103,25 +103,18 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
     }
 
     @Test
-    public void onDetachTest() {
-        assertNotNull(fragment.parent);
-        callOnDetach();
-        assertNull(fragment.parent);
-    }
-
-    @Test
     public void onActivityResultTest() {
         spyOnTimelineInteractor();
         fragment.onActivityResult(80, Activity.RESULT_OK, null);
         verify(fragment.timelineInteractor).update();
 
-        fragment.parent = spy(fragment.parent);
         final Timeline timeline = mock(Timeline.class);
         final Intent data = new Intent();
         data.putExtra(TimelineActivity.class.getSimpleName() + "EXTRA_LOCAL_DATE", date);
         data.putExtra(TimelineActivity.class.getSimpleName() + "EXTRA_TIMELINE", timeline);
+
         fragment.onActivityResult(101, Activity.RESULT_OK, data);
-        verify(fragment.parent).jumpTo(eq(date), eq(timeline));
+        verify(fragment.getParentFragmentParent()).jumpTo(eq(date), eq(timeline));
     }
 
     @Test
@@ -236,28 +229,20 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> {
         fragment.timelineInteractor = spy(fragment.timelineInteractor);
     }
 
-    public static class ActivityWithParent extends FragmentTestActivity
-            implements TimelineFragment.Parent {
 
-        public ActivityWithParent() {
-
-        }
-
-        @Override
-        public int getTutorialContainerIdRes() {
-            return 0;
-        }
-
-        @Override
-        public void jumpToLastNight() {
-
-        }
-
-        @Override
-        public void jumpTo(@NonNull final LocalDate date,
-                           @Nullable final Timeline timeline) {
-
-        }
+    @Override
+    public int getTutorialContainerIdRes() {
+        return 0;
     }
 
+    @Override
+    public void jumpToLastNight() {
+
+    }
+
+    @Override
+    public void jumpTo(@NonNull final LocalDate date,
+                       @Nullable final Timeline timeline) {
+
+    }
 }

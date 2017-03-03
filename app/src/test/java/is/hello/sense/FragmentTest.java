@@ -1,6 +1,7 @@
 package is.hello.sense;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.IdRes;
@@ -23,6 +24,8 @@ import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 
 import static junit.framework.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.robolectric.util.FragmentTestUtil.startFragment;
 
 public abstract class FragmentTest<T extends PresenterFragment>
@@ -55,6 +58,7 @@ public abstract class FragmentTest<T extends PresenterFragment>
     }
 
     private void startFragmentAndSpy(@Nullable final Bundle args) {
+
         fragment = getInstanceOfT();
 
         if (args != null) {
@@ -64,13 +68,17 @@ public abstract class FragmentTest<T extends PresenterFragment>
         if (Looper.myLooper() == null) {
             Looper.prepare();
         }
-
         startFragment(fragment, activityCreatingFragment());
         fragment = Mockito.spy(fragment);
+        extraSetUp();
+    }
+
+    protected void extraSetUp() {
+
     }
 
     protected final void spyOnPresenterView() {
-        fragment.presenterView = Mockito.spy(fragment.presenterView);
+        fragment.presenterView = spy(fragment.presenterView);
     }
 
     /**
@@ -103,7 +111,7 @@ public abstract class FragmentTest<T extends PresenterFragment>
     }
 
     protected final void callOnViewCreated() {
-        fragment.onViewCreated(Mockito.mock(View.class), null);
+        fragment.onViewCreated(mock(View.class), null);
     }
 
     protected final void callOnResume() {

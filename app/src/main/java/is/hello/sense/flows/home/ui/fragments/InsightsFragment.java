@@ -1,7 +1,6 @@
 package is.hello.sense.flows.home.ui.fragments;
 
-import android.app.Activity;
-import android.app.FragmentManager;
+import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -30,7 +29,6 @@ import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.flows.home.ui.views.InsightsView;
-import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.graph.Scope;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
@@ -40,7 +38,6 @@ import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.interactors.questions.ReviewQuestionProvider;
 import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.rating.LocalUsageTracker;
-import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -61,7 +58,6 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
         InsightsAdapter.InteractionListener,
         InsightInfoFragment.Parent,
         InsightsAdapter.OnRetry,
-        StaticFragmentAdapter.Controller,
         HomeActivity.ScrollUp {
 
     @Inject
@@ -180,16 +176,6 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
 
     //region Data Binding
 
-    @OnboardingActivity.Flow
-    protected int getOnboardingFlow(@Nullable final Activity activity) {
-        if (activity instanceof OnboardingFlowProvider) {
-            return ((OnboardingFlowProvider) activity).getOnboardingFlow();
-        } else {
-            return OnboardingActivity.FLOW_NONE;
-        }
-    }
-
-
     /**
      * Pushes data into the adapter once both questions and insights have loaded.
      * <p>
@@ -202,22 +188,6 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
             return;
         }
         presenterView.showCards(currentQuestion, insights);
- /*
- // todo bring back with tablayout indicators
-        final Activity activity = getActivity();
-       if (getOnboardingFlow(activity) == OnboardingActivity.FLOW_NONE &&
-                tutorialOverlayView == null && Tutorial.TAP_INSIGHT_CARD.shouldShow(activity)) {
-            this.tutorialOverlayView = new TutorialOverlayView(activity,
-                                                               Tutorial.TAP_INSIGHT_CARD);
-            tutorialOverlayView.setOnDismiss(() -> this.tutorialOverlayView = null);
-            //fixme Tutorial never displays despite passing checks. Needs to adjust layout containers used
-            tutorialOverlayView.setAnchorContainer(getView());
-            getAnimatorContext().runWhenIdle(() -> {
-                if (tutorialOverlayView != null && getUserVisibleHint()) {
-                    tutorialOverlayView.postShow(R.id.activity_new_home_extended_view_pager);
-                }
-            });
-        }*/
     }
 
     private void bindInsights(@NonNull final List<Insight> insights) {
@@ -259,6 +229,7 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
     public final InsightInfoFragment.SharedState provideSharedState(final boolean isEnter) {
         if (selectedInsightHolder != null && getActivity() != null) {
             final InsightInfoFragment.SharedState state = new InsightInfoFragment.SharedState();
+            Views.getFrameInWindow(selectedInsightHolder.itemView, state.cardRectInWindow);
             Views.getFrameInWindow(selectedInsightHolder.image, state.imageRectInWindow);
             state.imageParallaxPercent = selectedInsightHolder.image.getParallaxPercent();
             state.parentAnimator = presenterView.getAnimator(isEnter);
@@ -287,14 +258,14 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
 
         Analytics.trackEvent(Analytics.Backside.EVENT_INSIGHT_DETAIL, null);
 
-        // We go right to the root fragment manager to keep things simple.
-        final FragmentManager fragmentManager = getActivity().getFragmentManager();
-        final InsightInfoFragment infoFragment = InsightInfoFragment.newInstance(insight,
-                                                                                 getResources());
-        infoFragment.show(fragmentManager,
-                          R.id.activity_new_home_container, //todo remove direct reference on activity id
+        final Fragment fragment = getActivity().getFragmentManager().findFragmentByTag(HomePresenterFragment.TAG);
+        if (fragment == null) {
+            return;
+        }
+        final InsightInfoFragment infoFragment = InsightInfoFragment.newInstance(insight, getResources());
+        infoFragment.show(fragment.getChildFragmentManager(),
+                          R.id.view_home_container,
                           InsightInfoFragment.TAG);
-
         this.selectedInsightHolder = viewHolder;
     }
 
@@ -317,9 +288,12 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
                              });
     }
 
-    private void showProgress(final boolean show) {
-        if (getActivity() != null) {
-            ((HomeActivity) getActivity()).showProgressOverlay(show);
+    @Override
+    public void showProgress(final boolean show) {
+        // todo abstract relationship
+        final Fragment fragment = getParentFragment().getParentFragment();
+        if (fragment instanceof HomePresenterFragment) {
+            ((HomePresenterFragment) fragment).showProgressOverlay(show);
         }
     }
 
