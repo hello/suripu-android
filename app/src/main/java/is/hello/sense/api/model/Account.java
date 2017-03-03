@@ -34,6 +34,9 @@ public class Account extends ApiResponse implements Cloneable {
     @SerializedName("gender")
     private Gender gender;
 
+    @SerializedName("gender_other")
+    private String genderOther;
+
     @SerializedName("height")
     private Integer height;
 
@@ -133,6 +136,14 @@ public class Account extends ApiResponse implements Cloneable {
 
     public void setGender(Gender gender) {
         this.gender = gender;
+    }
+
+    public String getGenderOther() {
+        return genderOther;
+    }
+
+    public void setGenderOther(final String genderOther) {
+        this.genderOther = genderOther;
     }
 
     public Integer getHeight() {

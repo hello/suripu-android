@@ -45,6 +45,7 @@
     <string name="gender_male">Male</string>
     <string name="gender_female">Female</string>
     <string name="gender_other">Other</string>
+    <string name="gender_custom">Custom</string>
     <string name="label_new_question">New Question</string>
     <string name="action_skip_question">Skip This Question</string>
 
@@ -53,6 +54,7 @@
     <string name="action_log_out">Sign Out</string>
 
     <string name="action_alarm">Alarm</string>
+    <string name="action_select">Select</string>
 
     <string name="action_forgot_password">Forgot Password?</string>
 
@@ -112,7 +114,7 @@
     <string name="welcome">Welcome</string>
     <string name="title_register_birthday">What is your birthday?</string>
     <string name="action_next">Next</string>
-    <string name="title_register_gender">Are you male or female?</string>
+    <string name="title_register_gender">Confirm your gender</string>
     <string name="title_register_weight">How much do you weigh?</string>
     <string name="title_register_height">How tall are you?</string>
     <string name="title_intro_sleep_pill">Clip Sleep Pill to your Pillow</string>
@@ -223,7 +225,7 @@
     <string name="title_smart_alarm">Smart Alarm</string>
     <string name="title_checking_connectivity">Checking connectivity</string>
 
-    <string name="onboarding_register_info_explanation">This is used to provide you with more personalized sleep insights.</string>
+    <string name="onboarding_register_info_explanation">This is used to provide you with more personalized recommendations about your sleep.</string>
 
     <string name="dialog_title_smart_alarm_new_cancel">Discard Alarm</string>
     <string name="dialog_message_smart_alarm_new_cancel">Are you sure you want to discard this alarm?</string>

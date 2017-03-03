@@ -29,7 +29,6 @@
             android:id="@+id/fragment_onboarding_sign_in_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/background_onboarding"
             android:orientation="vertical"
             android:padding="@dimen/x3">
 

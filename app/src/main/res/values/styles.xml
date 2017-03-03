@@ -500,7 +500,6 @@
         <item name="android:fadingEdge">vertical</item>
         <item name="android:requiresFadingEdge">vertical</item>
         <item name="android:fadingEdgeLength">@dimen/shadow_size</item>
-        <item name="android:background">@color/shadow_end</item>
     </style>
 
     <style name="AppTheme.Text.VolumePicker.Title" parent="AppTheme.Text.Header.H5">

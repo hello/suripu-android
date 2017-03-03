@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         style="@style/AppTheme.Card.Clickable"
@@ -21,9 +21,12 @@
             android:id="@+id/item_message_card_image_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/x3"
+            android:layout_gravity="center_vertical"
             android:layout_marginEnd="@dimen/x3"
-            android:layout_marginTop="@dimen/x2"/>
+            android:layout_marginStart="@dimen/x3"
+            android:layout_marginTop="@dimen/x2"
+            app:leftTextPadding="@dimen/x2"
+            app:textStyle="@style/AppTheme.Text.Body.Bold"/>
 
         <TextView
             android:id="@+id/item_message_card_message"

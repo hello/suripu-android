@@ -51,6 +51,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Trends;
 import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.util.Constants;
 import is.hello.sense.util.SuperscriptSpanAdjuster;
 import is.hello.sense.util.markup.text.MarkupString;
 import is.hello.sense.util.markup.text.MarkupStyleSpan;
@@ -454,7 +455,11 @@ public final class Styles {
     }
 
 
-    public static void setTextAppearance(@NonNull TextView textView, @StyleRes int styleRes) {
+    public static void setTextAppearance(@NonNull final TextView textView,
+                                         @StyleRes final int styleRes) {
+        if (styleRes == Constants.NONE) {
+            return;
+        }
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
             textView.setTextAppearance(styleRes);
         } else {
@@ -525,7 +530,7 @@ public final class Styles {
     }
 
     public static Spanned fromHtml(@NonNull final String string) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return Html.fromHtml(string, Html.FROM_HTML_MODE_LEGACY);
         } else {
             return Html.fromHtml(string);
