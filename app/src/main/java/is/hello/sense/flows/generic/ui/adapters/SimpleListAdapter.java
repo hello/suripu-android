@@ -19,11 +19,14 @@ public class SimpleListAdapter extends ArrayRecyclerAdapter<String, ArrayRecycle
     private String searchParameters = Constants.EMPTY_STRING;
     private final ArrayList<String> entireList = new ArrayList<>();
     private String selectedGender = null;
+    private int selectedGenderPosition = Constants.NONE;
+    private Listener listener = null;
 
     public SimpleListAdapter() {
         super(new ArrayList<>());
     }
 
+    //region ArrayRecyclerAdapter
     @Override
     public ViewHolder onCreateViewHolder(final ViewGroup parent,
                                          final int viewType) {
@@ -42,6 +45,13 @@ public class SimpleListAdapter extends ArrayRecyclerAdapter<String, ArrayRecycle
         this.entireList.addAll(collection);
         applySearchParams();
         return true;
+    }
+    //endregion
+
+    //region methods
+
+    public void setListener(@Nullable final Listener listener) {
+        this.listener = listener;
     }
 
     public void setSelectedGender(@Nullable final String selectedGender) {
@@ -69,22 +79,46 @@ public class SimpleListAdapter extends ArrayRecyclerAdapter<String, ArrayRecycle
         }
         super.addAll(tempList);
         notifyDataSetChanged();
-
     }
 
+    private void onSelected(@NonNull final String item) {
+        if (listener == null) {
+            return;
+        }
+        listener.onSelected(item);
+    }
+    //endregion
+
     private class SimpleViewHolder extends ViewHolder {
-        private final ImageTextView textView;
+        private final ImageTextView imageTextView;
 
         private SimpleViewHolder(@NonNull final View itemView) {
             super(itemView);
-            this.textView = (ImageTextView) itemView.findViewById(R.id.item_row_basic_list_item_text);
+            this.imageTextView = (ImageTextView) itemView.findViewById(R.id.item_row_basic_list_item_text);
         }
 
         @Override
         public void bind(final int position) {
             super.bind(position);
-            this.textView.setText(getItem(position));
-            this.textView.setImageResource(R.drawable.radio_off);
+            final String item = getItem(position);
+            this.imageTextView.setText(item);
+            if (item.equals(selectedGender)) {
+                SimpleListAdapter.this.selectedGenderPosition = position;
+                this.imageTextView.setImageResource(R.drawable.radio_on);
+            } else {
+                this.imageTextView.setImageResource(R.drawable.radio_off);
+            }
+            this.itemView.setOnClickListener(v -> {
+                selectedGender = item;
+                notifyItemChanged(selectedGenderPosition);
+                notifyItemChanged(position);
+                onSelected(item);
+            });
         }
+
+    }
+
+    public interface Listener {
+        void onSelected(@NonNull String selection);
     }
 }

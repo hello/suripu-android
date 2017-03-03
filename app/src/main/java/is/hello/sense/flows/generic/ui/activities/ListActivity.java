@@ -1,10 +1,11 @@
 package is.hello.sense.flows.generic.ui.activities;
 
 
-import android.content.Context;
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import is.hello.sense.flows.generic.ui.fragments.ListFragment;
 import is.hello.sense.ui.activities.appcompat.FragmentNavigationActivity;
@@ -15,14 +16,16 @@ public class ListActivity extends FragmentNavigationActivity {
     public static final int GENDER_LIST = 0;
     private static final String KEY_LIST_TYPE = ListActivity.class.getSimpleName() + ".KEY_LIST_TYPE";
 
-    public static void startActivity(@NonNull final Context context,
-                                     final int listType) {
+    public static void startActivityForResult(@NonNull final Fragment fragment,
+                                              final int listType,
+                                              @Nullable final String initialSelection,
+                                              final int requestCode) {
         if (!isValidListType(listType)) {
             return;
         }
-        final Intent intent = new Intent(context, ListActivity.class);
+        final Intent intent = new Intent(fragment.getActivity(), ListActivity.class);
         intent.putExtra(KEY_LIST_TYPE, listType);
-        context.startActivity(intent);
+        fragment.startActivityForResult(intent, requestCode);
     }
 
     /**
@@ -39,6 +42,7 @@ public class ListActivity extends FragmentNavigationActivity {
     protected boolean shouldInjectToMainGraphObject() {
         return false;
     }
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -63,6 +67,14 @@ public class ListActivity extends FragmentNavigationActivity {
             return;
         }
         showListFragment(listType);
+    }
+
+    @Override
+    public void flowFinished(@NonNull final Fragment fragment,
+                             final int responseCode,
+                             @Nullable final Intent data) {
+        setResult(responseCode, data);
+        finish();
     }
 
     private void showListFragment(final int listType) {

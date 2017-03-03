@@ -5,6 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/selectable_dark_bounded"
     android:gravity="center_vertical">
 
     <is.hello.sense.ui.widget.ImageTextView
@@ -12,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        app:textStyle="@style/AppTheme.Text.Body"
         android:drawableStart="@drawable/radio_off"
-        app:leftTextPadding="@dimen/x3"/>
+        app:leftTextPadding="@dimen/x3"
+        app:textStyle="@style/AppTheme.Text.Body"/>
 </RelativeLayout>
