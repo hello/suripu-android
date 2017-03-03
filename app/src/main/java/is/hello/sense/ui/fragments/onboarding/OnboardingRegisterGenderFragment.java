@@ -13,7 +13,6 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Gender;
 import is.hello.sense.databinding.FragmentOnboardingRegisterGenderBinding;
-import is.hello.sense.flows.generic.ui.activities.ListActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.SenseFragment;
@@ -128,7 +127,7 @@ public class OnboardingRegisterGenderFragment extends SenseFragment {
 
     private void onOtherClick(final View ignored) {
         setImages(OFF_IMAGE_RES, OFF_IMAGE_RES, ON_IMAGE_RES);
-        ListActivity.startActivity(getActivity(), ListActivity.GENDER_LIST);
+        //ListActivity.startActivity(getActivity(), ListActivity.GENDER_LIST);
         this.currentGender = Gender.OTHER;
     }
 

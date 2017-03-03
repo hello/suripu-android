@@ -7,9 +7,8 @@ import android.support.annotation.DimenRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -39,6 +38,8 @@ public class ImageTextView extends LinearLayout {
         setOrientation(HORIZONTAL);
         this.imageView = new ImageView(context);
         this.textView = new TextView(context);
+        this.textView.setMaxLines(1);
+        this.textView.setEllipsize(TextUtils.TruncateAt.END);
         addView(this.imageView);
         addView(this.textView);
 
