@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 
 import com.squareup.picasso.Picasso;
 
+import java.lang.ref.WeakReference;
 import java.util.EnumSet;
 
 import javax.inject.Inject;
@@ -54,6 +55,9 @@ import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 import retrofit.mime.TypedFile;
+import rx.Subscription;
+import rx.functions.Action1;
+import rx.subscriptions.Subscriptions;
 
 public class AccountSettingsFragment extends InjectionFragment
         implements AccountEditor.Container, ProfileImageManager.Listener {
@@ -98,6 +102,7 @@ public class AccountSettingsFragment extends InjectionFragment
     private ProfileImageManager profileImageManager;
     private Account currentAccount;
     private ProgressBar loadingIndicator;
+    private Subscription accountUpdateSubscription = Subscriptions.empty();
 
 
     @Override
@@ -243,6 +248,7 @@ public class AccountSettingsFragment extends InjectionFragment
         this.recyclerView = null;
 
         this.profileImageManager = null;
+        this.accountUpdateSubscription.unsubscribe();
     }
 
     @Override
@@ -373,7 +379,7 @@ public class AccountSettingsFragment extends InjectionFragment
     public void changeBirthDate() {
         final OnboardingRegisterBirthdayFragment fragment = new OnboardingRegisterBirthdayFragment();
         AccountEditor.setWantsSkipButton(fragment, false);
-        fragment.setTargetFragment(this, 0x00);
+        fragment.setTargetFragment(AccountSettingsFragment.this, 0x00);
         getNavigationContainer().overlayFragmentAllowingStateLoss(fragment, getString(R.string.label_birthday), true);
     }
 
@@ -472,20 +478,38 @@ public class AccountSettingsFragment extends InjectionFragment
     @Override
     public void onAccountUpdated(@NonNull final SenseFragment updatedBy) {
         stateSafeExecutor.execute(() -> {
-            LoadingDialogFragment.show(getFragmentManager());
-            bindAndSubscribe(accountPresenter.saveAccount(currentAccount),
-                             ignored -> {
-                                 if (updatedBy instanceof Analytics.OnEventListener) {
-                                     ((Analytics.OnEventListener) updatedBy).onSuccess();
-                                 }
-                                 LoadingDialogFragment.close(getFragmentManager());
-                                 updatedBy.getFragmentManager().popBackStackImmediate();
-                             },
-                             e -> {
-                                 LoadingDialogFragment.close(getFragmentManager());
-                                 ErrorDialogFragment.presentError(getActivity(), e);
-                             });
+            final AccountUpdatedAction accountUpdatedAction = new AccountUpdatedAction(updatedBy);
+            accountUpdateSubscription.unsubscribe();
+            accountUpdateSubscription = bind(accountPresenter.saveAccount(currentAccount))
+                    .doOnRequest(ignored -> LoadingDialogFragment.show(getFragmentManager()))
+                    .finallyDo( () -> {
+                        accountUpdateSubscription.unsubscribe();
+                        LoadingDialogFragment.close(getFragmentManager());
+                    })
+                    .subscribe(
+                            accountUpdatedAction,
+                         e -> {
+                             ErrorDialogFragment.presentError(getActivity(), e);
+                         });
         });
+    }
+
+    static class AccountUpdatedAction implements Action1<Account> {
+        final WeakReference<SenseFragment> updatedByRef;
+        AccountUpdatedAction(final SenseFragment updatedBy) {
+            this.updatedByRef = new WeakReference<>(updatedBy);
+        }
+
+        @Override
+        public void call(final Account ignored) {
+            final SenseFragment fragment = Functions.extract(updatedByRef);
+            if (fragment instanceof Analytics.OnEventListener) {
+                ((Analytics.OnEventListener) fragment).onSuccess();
+            }
+            if (fragment !=null) {
+                fragment.getFragmentManager().popBackStackImmediate();
+            }
+        }
     }
 
     //endregion

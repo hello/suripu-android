@@ -13,6 +13,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.CompoundButton;
@@ -168,6 +169,17 @@ public final class Views {
     public static void setSafeOnSwitchClickListener(@NonNull final CompoundButton compoundButton,
                                                     @NonNull final CompoundButton.OnCheckedChangeListener checkChangeListener) {
         compoundButton.setOnCheckedChangeListener(new SafeOnCheckedChangeListener(null, checkChangeListener));
+    }
+
+    public static void removeAllClickListeners(@Nullable final View root) {
+        if (root instanceof ViewGroup) {
+            final int total = ((ViewGroup)root).getChildCount();
+            for(int position = 0; position < total; position++) {
+                removeAllClickListeners(((ViewGroup) root).getChildAt(position));
+            }
+        } else if (root !=null) {
+            root.setOnClickListener(null);
+        }
     }
 
 
