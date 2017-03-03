@@ -2,11 +2,17 @@ package is.hello.sense.api.model;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
 import android.support.annotation.StringRes;
 
 import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
@@ -22,6 +28,11 @@ public class SleepPillDevice extends BaseDevice {
     @SerializedName("firmware_update_url")
     public final String firmwareUpdateUrl;
 
+    @NonNull
+    @BatteryType
+    @SerializedName("battery_type")
+    public final String batteryType;
+
     private boolean shouldUpdateOverride;
 
 
@@ -36,6 +47,7 @@ public class SleepPillDevice extends BaseDevice {
         this.color = color;
         this.batteryLevel = batteryLevel;
         this.firmwareUpdateUrl = "";
+        this.batteryType = UNKNOWN;
         this.shouldUpdateOverride = false;
     }
 
@@ -62,6 +74,10 @@ public class SleepPillDevice extends BaseDevice {
                 '}';
     }
 
+    public boolean hasRemovableBattery() {
+        return REMOVABLE.equalsIgnoreCase(batteryType);
+    }
+
     public enum Color implements Enums.FromString {
         BLUE(R.string.device_color_blue),
         RED(R.string.device_color_red),
@@ -79,4 +95,12 @@ public class SleepPillDevice extends BaseDevice {
             return Enums.fromString(string, values(), UNKNOWN);
         }
     }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @Target({ElementType.FIELD, ElementType.CONSTRUCTOR})
+    @StringDef({REMOVABLE, SEALED, UNKNOWN})
+    public @interface BatteryType {}
+    static final String REMOVABLE = "REMOVABLE"; //1.0 version Pills
+    static final String SEALED = "SEALED"; //1.5 version Pills
+    static final String UNKNOWN = "UNKNOWN";
 }
