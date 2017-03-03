@@ -33,9 +33,9 @@ public abstract class ScopedInjectionFragment extends SenseFragment {
     }
 
     @CallSuper
-    public final void inject(@NonNull final Context context) {
+    public void inject() {
         try {
-            ((ScopedInjectionActivity) context).injectToScopedGraph(this);
+            ((ScopedInjectionActivity) getActivity()).injectToScopedGraph(this);
             onInjected();
         } catch (final ClassCastException e) {
             SenseApplication.getInstance().inject(this); //todo temporary until we phase out old ScopedInjectionActivity
@@ -43,12 +43,13 @@ public abstract class ScopedInjectionFragment extends SenseFragment {
         }
     }
 
+
     @CallSuper
     @Override
     public void onAttach(final Context context) {
         super.onAttach(context);
         if (shouldInject()) {
-            inject(context);
+            inject();
         }else {
             onInjected();
         }
@@ -65,7 +66,7 @@ public abstract class ScopedInjectionFragment extends SenseFragment {
             return;
         }
         if (shouldInject()) {
-            inject(activity);
+            inject();
         }else {
             onInjected();
         }

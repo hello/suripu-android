@@ -7,6 +7,6 @@
     </item>
     <item android:bottom="@dimen/onboarding_sense_inset_bottom">
         <bitmap android:gravity="center"
-                android:src="@drawable/onboarding_sense_purple" />
+                android:src="@drawable/pair_sense_blue" />
     </item>
 </layer-list>

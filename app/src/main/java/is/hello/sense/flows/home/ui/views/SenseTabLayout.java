@@ -129,7 +129,7 @@ public class SenseTabLayout extends TabLayout
         selectTab(SOUNDS_ICON_KEY);
     }
 
-    public void selectHomeTab() {
+    public void selectFeedTab() {
         selectTab(INSIGHTS_ICON_KEY);
     }
 
@@ -145,7 +145,7 @@ public class SenseTabLayout extends TabLayout
         tab.select();
     }
 
-    public void setHomeTabIndicatorVisible(final boolean show) {
+    public void setFeedTabIndicatorVisible(final boolean show) {
         if (getSelectedTabPosition() == INSIGHTS_ICON_KEY) {
             return;
         }
