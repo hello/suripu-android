@@ -15,6 +15,7 @@ import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.bluetooth.BluetoothModule;
+import is.hello.sense.flows.generic.ui.activities.SearchListActivity;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.fragments.FeedPresenterFragment;
@@ -154,7 +155,7 @@ import is.hello.sense.zendesk.ZendeskModule;
 
                 VoiceSettingsInteractor.class,
                 AppSettingsActivity.class,
-                is.hello.sense.flows.generic.ui.activities.ListActivity.class,
+                SearchListActivity.class,
                 HomePresenterFragment.class
         }
 )

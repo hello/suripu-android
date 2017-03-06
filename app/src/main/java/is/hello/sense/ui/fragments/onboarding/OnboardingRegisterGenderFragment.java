@@ -16,8 +16,8 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Gender;
 import is.hello.sense.databinding.FragmentOnboardingRegisterGenderBinding;
-import is.hello.sense.flows.generic.ui.activities.ListActivity;
-import is.hello.sense.flows.generic.ui.fragments.ListFragment;
+import is.hello.sense.flows.generic.ui.activities.SearchListActivity;
+import is.hello.sense.flows.generic.ui.fragments.SearchListFragment;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.SenseFragment;
@@ -96,7 +96,7 @@ public class OnboardingRegisterGenderFragment extends SenseFragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == GENDER_REQUEST) {
             if (resultCode == Activity.RESULT_OK && data != null) {
-                final String selectedGender = data.getStringExtra(ListFragment.KEY_SELECTION);
+                final String selectedGender = data.getStringExtra(SearchListFragment.KEY_SELECTION);
                 if (selectedGender != null) {
                     // currentGender is set to OTHER from onOtherClick
                     this.currentOtherGender = selectedGender;
@@ -166,10 +166,10 @@ public class OnboardingRegisterGenderFragment extends SenseFragment {
 
     private void onOtherClick(final View ignored) {
         setImages(OFF_IMAGE_RES, OFF_IMAGE_RES, ON_IMAGE_RES);
-        ListActivity.startActivityForResult(this,
-                                            ListActivity.GENDER_LIST,
-                                            null,
-                                            GENDER_REQUEST);
+        SearchListActivity.startActivityForResult(this,
+                                                  SearchListActivity.GENDER_LIST,
+                                                  this.currentOtherGender,
+                                                  GENDER_REQUEST);
         this.currentGender = Gender.OTHER;
     }
 

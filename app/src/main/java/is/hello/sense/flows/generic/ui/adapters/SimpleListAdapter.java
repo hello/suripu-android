@@ -18,8 +18,8 @@ import is.hello.sense.util.Constants;
 public class SimpleListAdapter extends ArrayRecyclerAdapter<String, ArrayRecyclerAdapter.ViewHolder> {
     private String searchParameters = Constants.EMPTY_STRING;
     private final ArrayList<String> entireList = new ArrayList<>();
-    private String selectedGender = null;
-    private int selectedGenderPosition = Constants.NONE;
+    private String initialSelection = null;
+    private int selectedItemPosition = Constants.NONE;
     private Listener listener = null;
 
     public SimpleListAdapter() {
@@ -54,8 +54,8 @@ public class SimpleListAdapter extends ArrayRecyclerAdapter<String, ArrayRecycle
         this.listener = listener;
     }
 
-    public void setSelectedGender(@Nullable final String selectedGender) {
-        this.selectedGender = selectedGender;
+    public void setInitialSelection(@Nullable final String initialSelection) {
+        this.initialSelection = initialSelection;
         notifyDataSetChanged();
     }
 
@@ -102,15 +102,15 @@ public class SimpleListAdapter extends ArrayRecyclerAdapter<String, ArrayRecycle
             super.bind(position);
             final String item = getItem(position);
             this.imageTextView.setText(item);
-            if (item.equals(selectedGender)) {
-                SimpleListAdapter.this.selectedGenderPosition = position;
+            if (item.equals(initialSelection)) {
+                SimpleListAdapter.this.selectedItemPosition = position;
                 this.imageTextView.setImageResource(R.drawable.radio_on);
             } else {
                 this.imageTextView.setImageResource(R.drawable.radio_off);
             }
             this.itemView.setOnClickListener(v -> {
-                selectedGender = item;
-                notifyItemChanged(selectedGenderPosition);
+                initialSelection = item;
+                notifyItemChanged(selectedItemPosition);
                 notifyItemChanged(position);
                 onSelected(item);
             });

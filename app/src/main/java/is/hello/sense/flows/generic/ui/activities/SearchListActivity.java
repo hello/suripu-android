@@ -7,14 +7,15 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import is.hello.sense.flows.generic.ui.fragments.ListFragment;
+import is.hello.sense.flows.generic.ui.fragments.SearchListFragment;
 import is.hello.sense.ui.activities.appcompat.FragmentNavigationActivity;
 import is.hello.sense.util.Constants;
 
-public class ListActivity extends FragmentNavigationActivity {
+public class SearchListActivity extends FragmentNavigationActivity {
 
     public static final int GENDER_LIST = 0;
-    private static final String KEY_LIST_TYPE = ListActivity.class.getSimpleName() + ".KEY_LIST_TYPE";
+    private static final String KEY_LIST_TYPE = SearchListActivity.class.getSimpleName() + ".KEY_LIST_TYPE";
+    private static final String KEY_INITIAL_SELECTION = SearchListActivity.class.getSimpleName() + ".KEY_INITIAL_SELECTION";
 
     public static void startActivityForResult(@NonNull final Fragment fragment,
                                               final int listType,
@@ -23,8 +24,9 @@ public class ListActivity extends FragmentNavigationActivity {
         if (!isValidListType(listType)) {
             return;
         }
-        final Intent intent = new Intent(fragment.getActivity(), ListActivity.class);
+        final Intent intent = new Intent(fragment.getActivity(), SearchListActivity.class);
         intent.putExtra(KEY_LIST_TYPE, listType);
+        intent.putExtra(KEY_INITIAL_SELECTION, initialSelection);
         fragment.startActivityForResult(intent, requestCode);
     }
 
@@ -78,6 +80,6 @@ public class ListActivity extends FragmentNavigationActivity {
     }
 
     private void showListFragment(final int listType) {
-        pushFragment(ListFragment.newInstance(listType), null, false);
+        pushFragment(SearchListFragment.newInstance(listType, getIntent().getStringExtra(KEY_INITIAL_SELECTION)), null, false);
     }
 }
