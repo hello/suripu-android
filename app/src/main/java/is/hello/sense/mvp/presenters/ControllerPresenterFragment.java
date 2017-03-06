@@ -1,6 +1,5 @@
 package is.hello.sense.mvp.presenters;
 
-import android.os.Bundle;
 import android.support.annotation.CallSuper;
 
 import is.hello.sense.mvp.view.PresenterView;
@@ -14,7 +13,7 @@ public abstract class ControllerPresenterFragment<T extends PresenterView> exten
     @CallSuper
     @Override
     public void setVisibleToUser(final boolean isVisible) {
-        debugLog("setVisibleToUser: [ " + isVisible + " ]"); //useful for debugging
+        //debugLog("setVisibleToUser: [ " + isVisible + " ]"); //useful for debugging
         this.isVisible = isVisible;
     }
 
