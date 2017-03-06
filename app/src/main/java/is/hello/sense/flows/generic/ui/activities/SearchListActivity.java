@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import is.hello.sense.R;
 import is.hello.sense.flows.generic.ui.fragments.SearchListFragment;
 import is.hello.sense.ui.activities.appcompat.FragmentNavigationActivity;
 import is.hello.sense.util.Constants;
@@ -68,6 +69,9 @@ public class SearchListActivity extends FragmentNavigationActivity {
             finish();
             return;
         }
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(getActionbarTitleForType(listType));
+        }
         showListFragment(listType);
     }
 
@@ -81,5 +85,15 @@ public class SearchListActivity extends FragmentNavigationActivity {
 
     private void showListFragment(final int listType) {
         pushFragment(SearchListFragment.newInstance(listType, getIntent().getStringExtra(KEY_INITIAL_SELECTION)), null, false);
+    }
+
+
+    private String getActionbarTitleForType(final int listType) {
+        switch (listType) {
+            case GENDER_LIST:
+                return getString(R.string.label_gender);
+            default:
+                return getString(R.string.app_name);
+        }
     }
 }
