@@ -187,7 +187,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         }
         this.unreadStateInteractor.update();
         this.presenterView.setCurrentItem(fragmentPosition);
-        if (fragmentPosition == SenseTabLayout.SLEEP_ICON_KEY) {
+        if (fragmentPosition == this.viewPagerDelegate.SLEEP_ICON_KEY) {
             jumpToLastNight();
         }
     }
@@ -207,7 +207,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     @Nullable
     @Override
     public TimelineFragment.Parent getTimelineParent() {
-        final Fragment fragment = this.presenterView.getFragmentWithIndex(SenseTabLayout.SLEEP_ICON_KEY);
+        final Fragment fragment = this.presenterView.getFragmentWithIndex(this.viewPagerDelegate.SLEEP_ICON_KEY);
         if (fragment instanceof TimelineFragment.Parent) {
             return (TimelineFragment.Parent) fragment;
         }
@@ -219,7 +219,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     @Nullable
     @Override
     public InsightInfoFragment.Parent provideInsightInfoParent() {
-        final Fragment parentProvider = this.presenterView.getFragmentWithIndex(SenseTabLayout.INSIGHTS_ICON_KEY);
+        final Fragment parentProvider = this.presenterView.getFragmentWithIndex(this.viewPagerDelegate.FEED_ICON_KEY);
         if (parentProvider instanceof InsightInfoFragment.ParentProvider) {
             return ((InsightInfoFragment.ParentProvider) parentProvider).provideInsightInfoParent();
         } else {
@@ -335,7 +335,8 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
      * @param hasUnreadItems true to show indicator.
      */
     private void bindUnreadItems(final boolean hasUnreadItems) {
-        this.presenterView.showUnreadIndicatorOnFeedTab(hasUnreadItems);
+        this.presenterView.showUnreadIndicatorOnTab(hasUnreadItems,
+                                                    this.viewPagerDelegate.FEED_ICON_KEY);
     }
 
     /**
@@ -382,7 +383,8 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
      * @param timeLine for last night.
      */
     private void bindLastNightTimeline(@Nullable final Timeline timeLine) {
-        this.presenterView.updateSleepScoreTab(timeLine);
+        this.presenterView.updateTabWithSleepScore(timeLine,
+                                                   this.viewPagerDelegate.SLEEP_ICON_KEY);
     }
 
     @NonNull
@@ -393,23 +395,23 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     }
 
     public void selectTimelineTab() {
-        this.presenterView.selectTimelineTab();
+        this.presenterView.setCurrentItem(this.viewPagerDelegate.SLEEP_ICON_KEY);
     }
 
     public void selectTrendsTab() {
-        this.presenterView.selectTrendsTab();
+        this.presenterView.setCurrentItem(this.viewPagerDelegate.TRENDS_ICON_KEY);
     }
 
-    public void selectFeedTab() {
-        this.presenterView.selectFeedTab();
+    public void selectFeedTab(){
+        this.presenterView.setCurrentItem(this.viewPagerDelegate.FEED_ICON_KEY);
     }
 
     public void selectSoundTab() {
-        this.presenterView.selectSoundTab();
+        this.presenterView.setCurrentItem(this.viewPagerDelegate.SOUNDS_ICON_KEY);
     }
 
     public void selectConditionsTab() {
-        this.presenterView.selectConditionsTab();
+        this.presenterView.setCurrentItem(this.viewPagerDelegate.CONDITIONS_ICON_KEY);
     }
 
     //endregion

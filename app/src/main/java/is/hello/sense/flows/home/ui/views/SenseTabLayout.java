@@ -14,11 +14,7 @@ import is.hello.sense.flows.home.util.HomeFragmentPagerAdapter;
 public class SenseTabLayout extends TabLayout
         implements TabLayout.OnTabSelectedListener {
 
-    public static final int SLEEP_ICON_KEY = 0;
-    public static final int TRENDS_ICON_KEY = 1;
-    public static final int INSIGHTS_ICON_KEY = 2;
-    public static final int SOUNDS_ICON_KEY = 3;
-    public static final int CONDITIONS_ICON_KEY = 4;
+    static final int SLEEP_ICON_KEY = 0;
 
     @Nullable
     private Listener listener = null;
@@ -56,7 +52,7 @@ public class SenseTabLayout extends TabLayout
                     tab = newTab();
                     addTab(tab, position);
                 }
-                if (position == SLEEP_ICON_KEY) {
+                if (position == SLEEP_ICON_KEY) {//todo refactor out reference
                     tab.setCustomView(createSleepScoreTabView(getCurrentTimeline()));
                 } else {
                     tab.setCustomView(createTabFor(item.normalIcon, item.activeIcon));
@@ -117,43 +113,16 @@ public class SenseTabLayout extends TabLayout
 
     }
 
-    public void selectTimelineTab() {
-        selectTab(SLEEP_ICON_KEY);
+    public void setTabIndicatorVisible(final boolean show, final int position) {
+        if (getSelectedTabPosition() == position) {
+            return;
+        }
+        setTabIndicatorVisible(position, show);
     }
 
-    public void selectTrendsTab() {
-        selectTab(TRENDS_ICON_KEY);
-    }
-
-    public void selectSoundTab() {
-        selectTab(SOUNDS_ICON_KEY);
-    }
-
-    public void selectFeedTab() {
-        selectTab(INSIGHTS_ICON_KEY);
-    }
-
-    public void selectConditionsTab() {
-        selectTab(CONDITIONS_ICON_KEY);
-    }
-
-    private void selectTab(final int position) {
+    public void updateTabWithSleepScore(@Nullable final Timeline timeline,
+                                        final int position) {
         final TabLayout.Tab tab = getTabAt(position);
-        if (tab == null) {
-            return;
-        }
-        tab.select();
-    }
-
-    public void setFeedTabIndicatorVisible(final boolean show) {
-        if (getSelectedTabPosition() == INSIGHTS_ICON_KEY) {
-            return;
-        }
-        setTabIndicatorVisible(INSIGHTS_ICON_KEY, show);
-    }
-
-    public void updateSleepScoreTab(@Nullable final Timeline timeline) {
-        final TabLayout.Tab tab = getTabAt(SLEEP_ICON_KEY);
         if (tab == null) {
             return;
         }

@@ -3,7 +3,6 @@ package is.hello.sense.flows.home.util;
 import android.support.annotation.NonNull;
 
 import is.hello.sense.R;
-import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.flows.home.ui.fragments.FeedPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.SoundsPresenterFragment;
@@ -12,10 +11,16 @@ import is.hello.sense.flows.home.ui.fragments.TrendsPresenterFragment;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 
 public class HomeViewPagerPresenterDelegate extends BaseViewPagerPresenterDelegate {
-    @NonNull
-    @Override
-    public HomeFragmentPagerAdapter.HomeItem[] getViewPagerItems() {
-        return new HomeFragmentPagerAdapter.HomeItem[]{
+    public final int SLEEP_ICON_KEY = 0;
+    public final int TRENDS_ICON_KEY = 1;
+    public final int FEED_ICON_KEY = 2;
+    public final int SOUNDS_ICON_KEY = 3;
+    public final int CONDITIONS_ICON_KEY = 4;
+
+    private final HomeFragmentPagerAdapter.HomeItem[] items;
+
+    public HomeViewPagerPresenterDelegate() {
+        items = new HomeFragmentPagerAdapter.HomeItem[]{
                 new HomeFragmentPagerAdapter.HomeItem(TimelinePagerPresenterFragment.class,
                                                       TimelinePagerPresenterFragment.class.getSimpleName(),
                                                       R.drawable.icon_sense_24,
@@ -39,9 +44,14 @@ public class HomeViewPagerPresenterDelegate extends BaseViewPagerPresenterDelega
         };
     }
 
+    @NonNull
+    @Override
+    public HomeFragmentPagerAdapter.HomeItem[] getViewPagerItems() {
+        return items;
+    }
+
     @Override
     public int getOffscreenPageLimit() {
         return 4;
     }
-
 }
