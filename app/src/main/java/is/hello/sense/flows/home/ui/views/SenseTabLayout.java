@@ -14,8 +14,6 @@ import is.hello.sense.flows.home.util.HomeFragmentPagerAdapter;
 public class SenseTabLayout extends TabLayout
         implements TabLayout.OnTabSelectedListener {
 
-    static final int SLEEP_ICON_KEY = 0;
-
     @Nullable
     private Listener listener = null;
 
@@ -40,7 +38,9 @@ public class SenseTabLayout extends TabLayout
         clearOnTabSelectedListeners();
 
         if (viewPager !=null && viewPager.getAdapter() instanceof HomeFragmentPagerAdapter) {
-            final HomeFragmentPagerAdapter.HomeItem[] items = ((HomeFragmentPagerAdapter) viewPager.getAdapter()).getHomeItems();
+            final HomeFragmentPagerAdapter adapter = (HomeFragmentPagerAdapter) viewPager.getAdapter();
+            final HomeFragmentPagerAdapter.HomeItem[] items = adapter.getHomeItems();
+            final int timelineItemPosition = adapter.getTimelineItemPosition();
             final int tabCount = getTabCount();
             if (items.length != tabCount) {
                 throw new AssertionError(String.format("Tab count mismatch expected %s actual %s", items.length, tabCount));
@@ -52,7 +52,7 @@ public class SenseTabLayout extends TabLayout
                     tab = newTab();
                     addTab(tab, position);
                 }
-                if (position == SLEEP_ICON_KEY) {//todo refactor out reference
+                if (position == timelineItemPosition) {
                     tab.setCustomView(createSleepScoreTabView(getCurrentTimeline()));
                 } else {
                     tab.setCustomView(createTabFor(item.normalIcon, item.activeIcon));

@@ -17,10 +17,10 @@ public class HomeViewPagerPresenterDelegate extends BaseViewPagerPresenterDelega
     public final int SOUNDS_ICON_KEY = 3;
     public final int CONDITIONS_ICON_KEY = 4;
 
-    private final HomeFragmentPagerAdapter.HomeItem[] items;
-
-    public HomeViewPagerPresenterDelegate() {
-        items = new HomeFragmentPagerAdapter.HomeItem[]{
+    @NonNull
+    @Override
+    public HomeFragmentPagerAdapter.HomeItem[] getViewPagerItems() {
+        return new HomeFragmentPagerAdapter.HomeItem[]{
                 new HomeFragmentPagerAdapter.HomeItem(TimelinePagerPresenterFragment.class,
                                                       TimelinePagerPresenterFragment.class.getSimpleName(),
                                                       R.drawable.icon_sense_24,
@@ -42,12 +42,6 @@ public class HomeViewPagerPresenterDelegate extends BaseViewPagerPresenterDelega
                                                       R.drawable.icon_sense_24,
                                                       R.drawable.icon_sense_active_24)
         };
-    }
-
-    @NonNull
-    @Override
-    public HomeFragmentPagerAdapter.HomeItem[] getViewPagerItems() {
-        return items;
     }
 
     @Override

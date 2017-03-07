@@ -35,6 +35,10 @@ public class PaintUtil {
         if (textBounds.width() > width) {
             return false;
         }
+        //during robolectric testing bounds is 0 so just quit
+        if (textBounds.width() <= 0 || textBounds.height() <= 0) {
+            return false;
+        }
         return true;
     }
 

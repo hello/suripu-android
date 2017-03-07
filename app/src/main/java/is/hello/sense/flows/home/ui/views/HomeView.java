@@ -122,9 +122,5 @@ public class HomeView extends BindedPresenterView<ViewHomeBinding> {
             }
         });
     }
-
-    public void selectTab(final int position) {
-        this.binding.viewHomeExtendedViewPager.setCurrentItem(position);
-    }
     //endregion
 }
