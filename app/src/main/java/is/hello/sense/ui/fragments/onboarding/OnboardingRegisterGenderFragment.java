@@ -96,7 +96,7 @@ public class OnboardingRegisterGenderFragment extends SenseFragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == GENDER_REQUEST) {
             if (resultCode == Activity.RESULT_OK && data != null) {
-                final String selectedGender = data.getStringExtra(SearchListFragment.KEY_SELECTION);
+                final String selectedGender = data.getStringExtra(SearchListFragment.EXTRA_SELECTION);
                 if (selectedGender != null) {
                     // currentGender is set to OTHER from onOtherClick
                     this.currentOtherGender = selectedGender;

@@ -21,8 +21,9 @@ public abstract class FragmentNavigationActivity extends ScopedInjectionActivity
     //region ScopedInjectionActivity
     @CallSuper
     @Override
-    protected  void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getIntentValues();
         setContentView(R.layout.activity_navigation);
         this.navigationDelegate = new FragmentNavigationDelegate(this,
                                                                  R.id.activity_navigation_container,
@@ -117,4 +118,8 @@ public abstract class FragmentNavigationActivity extends ScopedInjectionActivity
     protected void onReCreateAction(@NonNull final Bundle savedInstanceState) {
 
     }
+
+    protected void getIntentValues() {
+    }
+
 }

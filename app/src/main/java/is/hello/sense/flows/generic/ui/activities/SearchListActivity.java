@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.generic.ui.fragments.SearchListFragment;
@@ -15,8 +16,9 @@ import is.hello.sense.util.Constants;
 public class SearchListActivity extends FragmentNavigationActivity {
 
     public static final int GENDER_LIST = 0;
-    private static final String KEY_LIST_TYPE = SearchListActivity.class.getSimpleName() + ".KEY_LIST_TYPE";
-    private static final String KEY_INITIAL_SELECTION = SearchListActivity.class.getSimpleName() + ".KEY_INITIAL_SELECTION";
+    private static final String EXTRA_LIST_TYPE = SearchListActivity.class.getSimpleName() + ".EXTRA_LIST_TYPE";
+    private static final String EXTRA_INITIAL_SELECTION = SearchListActivity.class.getSimpleName() + ".EXTRA_INITIAL_SELECTION";
+    private int listType = Constants.NONE;
 
     public static void startActivityForResult(@NonNull final Fragment fragment,
                                               final int listType,
@@ -26,8 +28,8 @@ public class SearchListActivity extends FragmentNavigationActivity {
             return;
         }
         final Intent intent = new Intent(fragment.getActivity(), SearchListActivity.class);
-        intent.putExtra(KEY_LIST_TYPE, listType);
-        intent.putExtra(KEY_INITIAL_SELECTION, initialSelection);
+        intent.putExtra(EXTRA_LIST_TYPE, listType);
+        intent.putExtra(EXTRA_INITIAL_SELECTION, initialSelection);
         fragment.startActivityForResult(intent, requestCode);
     }
 
@@ -52,26 +54,31 @@ public class SearchListActivity extends FragmentNavigationActivity {
         super.onCreate(savedInstanceState);
         // Would be nice if this worked via styles without having to give the activity a parent
         // from the manifest declaration.
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(getActionbarTitleForType(listType));
+        }
+        if (savedInstanceState == null){
+            showListFragment(listType);
+        }
+    }
+
+    @Override
+    protected void getIntentValues() {
+        super.getIntentValues();
+        final Intent intent = getIntent();
+        if (intent == null) {
+            throw new IllegalStateException(getClass().getSimpleName() + " requires an intent.");
+        }
+        this.listType = intent.getIntExtra(EXTRA_LIST_TYPE, Constants.NONE);
+        if (!isValidListType(listType)) {
+            throw new IllegalStateException(getClass().getSimpleName() + " requires a list type.");
         }
     }
 
     @Override
     protected void onCreateAction() {
-        final Intent intent = getIntent();
-        if (intent == null) {
-            finish();
-            return;
-        }
-        final int listType = intent.getIntExtra(KEY_LIST_TYPE, Constants.NONE);
-        if (!isValidListType(listType)) {
-            finish();
-            return;
-        }
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(getActionbarTitleForType(listType));
-        }
         showListFragment(listType);
     }
 
@@ -84,7 +91,7 @@ public class SearchListActivity extends FragmentNavigationActivity {
     }
 
     private void showListFragment(final int listType) {
-        pushFragment(SearchListFragment.newInstance(listType, getIntent().getStringExtra(KEY_INITIAL_SELECTION)), null, false);
+        pushFragment(SearchListFragment.newInstance(listType, getIntent().getStringExtra(EXTRA_INITIAL_SELECTION)), null, false);
     }
 
 

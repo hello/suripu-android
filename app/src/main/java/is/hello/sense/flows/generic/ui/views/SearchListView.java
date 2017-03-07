@@ -13,15 +13,15 @@ import android.text.TextWatcher;
 import java.util.List;
 
 import is.hello.sense.R;
-import is.hello.sense.databinding.ViewSearchListBinding;
-import is.hello.sense.flows.generic.ui.adapters.SimpleListAdapter;
-import is.hello.sense.mvp.view.BindedPresenterView;
+import is.hello.sense.databinding.*;
+import is.hello.sense.flows.generic.ui.adapters.SearchListAdapter;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
+import is.hello.sense.mvp.view.BindedPresenterView;
 
 @SuppressLint("ViewConstructor")
 public class SearchListView extends BindedPresenterView<ViewSearchListBinding>
         implements TextWatcher {
-    private final SimpleListAdapter adapter;
+    private final SearchListAdapter adapter;
     private final RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(final RecyclerView recyclerView,
@@ -36,13 +36,12 @@ public class SearchListView extends BindedPresenterView<ViewSearchListBinding>
     private Listener listener = null;
 
     public SearchListView(@NonNull final Activity activity,
-                          @NonNull final SimpleListAdapter adapter) {
+                          @NonNull final SearchListAdapter adapter) {
         super(activity);
         this.adapter = adapter;
         this.binding.viewSearchListRecyclerview.setLayoutManager(new LinearLayoutManager(activity));
         this.binding.viewSearchListRecyclerview.setHasFixedSize(true);
         this.binding.viewSearchListRecyclerview.setItemAnimator(null);
-        this.binding.viewSearchListRecyclerview.addItemDecoration(new DividerItemDecoration(getContext()));
         this.binding.viewSearchListRecyclerview.setAdapter(adapter);
         this.binding.viewSearchListSearch.addTextChangedListener(this);
         this.binding.viewSearchListClose.setOnClickListener(v -> SearchListView.this.binding.viewSearchListSearch.setText(null));

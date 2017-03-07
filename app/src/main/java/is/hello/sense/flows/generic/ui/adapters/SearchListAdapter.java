@@ -15,14 +15,14 @@ import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.widget.ImageTextView;
 import is.hello.sense.util.Constants;
 
-public class SimpleListAdapter extends ArrayRecyclerAdapter<String, ArrayRecyclerAdapter.ViewHolder> {
+public class SearchListAdapter extends ArrayRecyclerAdapter<String, ArrayRecyclerAdapter.ViewHolder> {
     private String searchParameters = Constants.EMPTY_STRING;
     private final ArrayList<String> entireList = new ArrayList<>();
     private String initialSelection = null;
     private int selectedItemPosition = Constants.NONE;
     private Listener listener = null;
 
-    public SimpleListAdapter() {
+    public SearchListAdapter() {
         super(new ArrayList<>());
     }
 
@@ -68,7 +68,6 @@ public class SimpleListAdapter extends ArrayRecyclerAdapter<String, ArrayRecycle
         clear();
         if (searchParameters.isEmpty()) {
             super.addAll(this.entireList);
-            notifyDataSetChanged();
             return;
         }
         final ArrayList<String> tempList = new ArrayList<>();
@@ -78,7 +77,6 @@ public class SimpleListAdapter extends ArrayRecyclerAdapter<String, ArrayRecycle
             }
         }
         super.addAll(tempList);
-        notifyDataSetChanged();
     }
 
     private void onSelected(@NonNull final String item) {
@@ -103,7 +101,7 @@ public class SimpleListAdapter extends ArrayRecyclerAdapter<String, ArrayRecycle
             final String item = getItem(position);
             this.imageTextView.setText(item);
             if (item.equals(initialSelection)) {
-                SimpleListAdapter.this.selectedItemPosition = position;
+                SearchListAdapter.this.selectedItemPosition = position;
                 this.imageTextView.setImageResource(R.drawable.radio_on);
             } else {
                 this.imageTextView.setImageResource(R.drawable.radio_off);

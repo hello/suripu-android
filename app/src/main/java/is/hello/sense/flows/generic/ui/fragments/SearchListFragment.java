@@ -16,16 +16,16 @@ import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.generic.ui.activities.SearchListActivity;
-import is.hello.sense.flows.generic.ui.adapters.SimpleListAdapter;
+import is.hello.sense.flows.generic.ui.adapters.SearchListAdapter;
 import is.hello.sense.flows.generic.ui.views.SearchListView;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.util.Constants;
 
 public class SearchListFragment extends PresenterFragment<SearchListView>
         implements
-        SimpleListAdapter.Listener,
+        SearchListAdapter.Listener,
         SearchListView.Listener {
-    public static final String KEY_SELECTION = SearchListFragment.class.getSimpleName() + ".KEY_SELECTION";
+    public static final String EXTRA_SELECTION = SearchListFragment.class.getSimpleName() + ".EXTRA_SELECTION";
     private static final String ARG_LIST_TYPE = SearchListFragment.class.getSimpleName() + ".ARG_LIST_TYPE";
     private static final String ARG_INITIAL_SELECTION = SearchListFragment.class.getSimpleName() + ".ARG_INITIAL_SELECTION";
 
@@ -49,7 +49,7 @@ public class SearchListFragment extends PresenterFragment<SearchListView>
     @Override
     public void initializePresenterView() {
         if (this.presenterView == null) {
-            final SimpleListAdapter adapter = new SimpleListAdapter();
+            final SearchListAdapter adapter = new SearchListAdapter();
             adapter.setListener(this);
             this.presenterView = new SearchListView(getActivity(), adapter);
             this.presenterView.setListener(this);
@@ -83,7 +83,7 @@ public class SearchListFragment extends PresenterFragment<SearchListView>
     @Override
     public void onSelected(@NonNull final String selection) {
         final Intent data = new Intent();
-        data.putExtra(KEY_SELECTION, selection);
+        data.putExtra(EXTRA_SELECTION, selection);
         finishFlowWithResult(Activity.RESULT_OK, data);
     }
     //endregion
