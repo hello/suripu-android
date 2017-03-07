@@ -18,21 +18,24 @@
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:padding="@dimen/x2"
                 android:layout_height="wrap_content"
-                android:src="@drawable/icon_search"/>
+                android:padding="@dimen/x2"
+                android:src="@drawable/icon_search"
+                android:tint="@color/gray5"/>
 
             <EditText
                 android:id="@+id/view_search_list_search"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.82"
+                android:layout_weight="1"
                 android:background="@color/transparent"
                 android:ellipsize="start"
                 android:hint="@string/label_search"
                 android:imeOptions="actionDone"
-                android:inputType="text"
-                android:maxLines="1"/>
+                android:inputType="textNoSuggestions"
+                android:maxLines="1"
+                android:textColor="@color/gray6"
+                android:textColorHint="@color/gray4"/>
 
             <ImageView
                 android:id="@+id/view_search_list_close"
