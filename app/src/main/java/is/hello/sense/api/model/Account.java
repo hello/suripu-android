@@ -17,7 +17,7 @@ import is.hello.sense.api.model.v2.MultiDensityImage;
 import is.hello.sense.util.Constants;
 
 public class Account extends ApiResponse implements Cloneable {
-    @SerializedName("external-id")
+    @Expose(deserialize = false, serialize = true)
     private String id;
 
     @SerializedName("email")
