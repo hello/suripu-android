@@ -1,4 +1,5 @@
 import java.text.SimpleDateFormat
+import java.util.regex.Pattern
 
 buildscript {
     repositories {
@@ -167,8 +168,8 @@ retrolambda {
  * <a href="https://github.com/evant/android-studio-unit-test-plugin/issues/35">this bug</a>
  */
 tasks.whenTaskAdded { theTask ->
-    def taskName = theTask.name.toString()
-    if ("testDebugUnitTest".toString().equals(taskName)) {
+    def taskName = theTask.name
+    if (Pattern.matches("^test(Predev|Dev|Prod)DebugUnitTest", taskName)) {
         /**
          * Listen for when robolectric adds the 'testDebug' task and when it does, add the -noverify
          * option to that task's jvmArgs.  This allows us to turn off byte code verification when
