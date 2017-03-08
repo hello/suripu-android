@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
@@ -39,7 +40,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
     private static final int TYPE_PLACEHOLDER = 0;
     private static final int TYPE_SENSE = 1;
     private static final int TYPE_SLEEP_PILL = 2;
-    private static final int TYPE_SUPPORT = 3;
+    private static final int TYPE_SUPPORT_PAIR_SECOND_PILL = 3;
 
     private final LayoutInflater inflater;
     private final Resources resources;
@@ -65,35 +66,40 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
     }
 
     public void bindDevices(@NonNull final Devices devices) {
-        BaseDevice sense = devices.getSense();
-        BaseDevice sleepPill = devices.getSleepPill();
+        final SenseDevice sense = devices.getSense();
+        final SleepPillDevice sleepPill = devices.getSleepPill();
+        final List<BaseDevice> deviceList = new ArrayList<>(3);
+        this.hasSense = sense != null;
 
         if (sense == null) {
-            sense = new PlaceholderDevice(PlaceholderDevice.Type.SENSE);
-        } else if (sleepPill == null) {
-            sleepPill = new PlaceholderDevice(PlaceholderDevice.Type.SLEEP_PILL);
-        }
-
-        final List<BaseDevice> deviceList = new ArrayList<>(3);
-        deviceList.add(sense);
-        if (sleepPill != null) {
-            deviceList.add(sleepPill);
-        }
-
-        this.hasSense = sense instanceof SenseDevice;
-        if (hasSense) {
+            deviceList.add(new PlaceholderDevice(PlaceholderDevice.Type.SENSE));
+            if (sleepPill != null) {
+                deviceList.add(sleepPill);
+            }
+        } else {
+            deviceList.add(sense);
+            if (sleepPill == null) {
+                deviceList.add(new PlaceholderDevice(PlaceholderDevice.Type.SLEEP_PILL));
+            } else {
+                deviceList.add(sleepPill);
+            }
             deviceList.add(new PlaceholderDevice(PlaceholderDevice.Type.SUPPORT_PAIR_SECOND_PILL));
 
-            if (((SenseDevice) sense).shouldUpgrade()) {
-                if (senseWithVoicePlaceholder == null) {
-                    this.senseWithVoicePlaceholder = new PlaceholderDevice(PlaceholderDevice.Type.SENSE_WITH_VOICE);
-                    senseWithVoicePlaceholder.toggleCollapsed();
-                }
-                deviceList.add(senseWithVoicePlaceholder);
+            if (sense.shouldUpgrade()) {
+                deviceList.add(getSenseWithVoicePlaceHolder());
             }
         }
 
         replaceAll(deviceList);
+    }
+
+    @VisibleForTesting
+    protected PlaceholderDevice getSenseWithVoicePlaceHolder() {
+        if (this.senseWithVoicePlaceholder == null) {
+            this.senseWithVoicePlaceholder = new PlaceholderDevice(PlaceholderDevice.Type.SENSE_WITH_VOICE);
+            senseWithVoicePlaceholder.toggleCollapsed();
+        }
+        return this.senseWithVoicePlaceholder;
     }
 
     public void devicesUnavailable(@SuppressWarnings("UnusedParameters") Throwable e) {
@@ -105,7 +111,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         final BaseDevice item = getItem(position);
         if (item instanceof PlaceholderDevice) {
             if(PlaceholderDevice.Type.SUPPORT_PAIR_SECOND_PILL.equals(((PlaceholderDevice) item).type)) {
-                return TYPE_SUPPORT;
+                return TYPE_SUPPORT_PAIR_SECOND_PILL;
             } else {
                 return TYPE_PLACEHOLDER;
             }
@@ -133,7 +139,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 final View view = inflater.inflate(R.layout.item_device, parent, false);
                 return new SleepPillViewHolder(view);
             }
-            case TYPE_SUPPORT: {
+            case TYPE_SUPPORT_PAIR_SECOND_PILL: {
                 final View view = inflater.inflate(R.layout.item_device_support_footer, parent, false);
                 return new SupportViewHolder(view);
             }
