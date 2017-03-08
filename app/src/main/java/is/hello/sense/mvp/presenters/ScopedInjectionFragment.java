@@ -28,6 +28,10 @@ public abstract class ScopedInjectionFragment extends SenseFragment {
 
     }
 
+    public boolean shouldInject() {
+        return true;
+    }
+
     @CallSuper
     public void inject() {
         try {
@@ -44,7 +48,11 @@ public abstract class ScopedInjectionFragment extends SenseFragment {
     @Override
     public void onAttach(final Context context) {
         super.onAttach(context);
-        inject();
+        if (shouldInject()) {
+            inject();
+        }else {
+            onInjected();
+        }
     }
 
     /**
@@ -57,7 +65,11 @@ public abstract class ScopedInjectionFragment extends SenseFragment {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return;
         }
-        inject();
+        if (shouldInject()) {
+            inject();
+        }else {
+            onInjected();
+        }
     }
 
 

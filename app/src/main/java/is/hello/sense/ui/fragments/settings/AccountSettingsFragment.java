@@ -83,7 +83,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem =
             new AccountSettingsRecyclerAdapter.CircleItem(
-                stateSafeExecutor.bind(this::changePicture)
+                    stateSafeExecutor.bind(this::changePicture)
             );
 
     private SettingsRecyclerAdapter.DetailItem nameItem;
@@ -186,7 +186,7 @@ public class AccountSettingsFragment extends InjectionFragment
         decoration.addTopInset(adapter.getItemCount(), sectionPadding);
 
         final SettingsRecyclerAdapter.DetailItem unitsAndTimeItem = new SettingsRecyclerAdapter.DetailItem(getString(R.string.label_units_and_time),
-                                                                                                       this::onUnitsAndTimeClick);
+                                                                                                           this::onUnitsAndTimeClick);
         unitsAndTimeItem.setIcon(R.drawable.icon_settings_unitstime_24_fill, R.string.label_units_and_time);
         adapter.add(unitsAndTimeItem);
 
@@ -319,7 +319,18 @@ public class AccountSettingsFragment extends InjectionFragment
         emailItem.setText(account.getEmail());
 
         birthdayItem.setValue(dateFormatter.formatAsLocalizedDate(account.getBirthDate()));
-        genderItem.setValue(getString(account.getGender().nameRes));
+        @StringRes
+        final int genderRes = account.getGender().nameRes;
+        if (genderRes == R.string.gender_other) {
+            final String genderOtherValue = account.getGenderOther();
+            if (genderOtherValue == null || genderOtherValue.isEmpty()) {
+                genderItem.setValue(getString(R.string.missing_data_placeholder));
+            } else {
+                genderItem.setValue(genderOtherValue);
+            }
+        } else {
+            genderItem.setValue(getString(genderRes));
+        }
 
         final CharSequence weight = unitFormatter.formatWeight(account.getWeight());
         weightItem.setValue(weight.toString());
@@ -574,7 +585,7 @@ public class AccountSettingsFragment extends InjectionFragment
         handleError(error, R.string.error_account_upload_photo_title, R.string.error_internet_connection_generic_message);
     }
 
-    private void  updateProfilePictureSuccess(@NonNull final MultiDensityImage compressedPhoto) {
+    private void updateProfilePictureSuccess(@NonNull final MultiDensityImage compressedPhoto) {
         showProfileLoadingIndicator(false);
         currentAccount.setProfilePhoto(compressedPhoto);
         profileImageManager.addDeleteOption();

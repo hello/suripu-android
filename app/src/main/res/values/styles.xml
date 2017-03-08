@@ -676,4 +676,10 @@
         <item name="homeAsUpIndicator">@drawable/app_style_ab_cancel</item>
     </style>
 
+    <style name="AppTheme.AppCompat.SearchListActivity">
+        <item name="android:statusBarColor" tools:targetApi="lollipop">
+            @color/light_accent_darkened
+        </item>
+    </style>
+
 </resources>

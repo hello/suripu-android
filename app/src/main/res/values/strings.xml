@@ -777,4 +777,6 @@
     <string name="notification_settings_enabled_title">Notifications not enabled</string>
     <string name="notification_settings_enabled_body">Check your device settings to make sure notifications are enabled.</string>
     <string name="notification_settings_enabled_link">Enable notifications</string>
+    <string name="label_search">Search</string>
+
 </resources>
