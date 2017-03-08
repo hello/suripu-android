@@ -6,7 +6,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
 
 import is.hello.sense.SenseApplication;
 import is.hello.sense.interactors.Interactor;
@@ -117,7 +116,6 @@ public abstract class ScopedInjectionFragment extends SenseFragment {
         interactorContainer.onTrimMemory(level);
     }
 
-    @VisibleForTesting
     public void addInteractor(@NonNull final Interactor interactor) {
         interactorContainer.addInteractor(interactor);
     }

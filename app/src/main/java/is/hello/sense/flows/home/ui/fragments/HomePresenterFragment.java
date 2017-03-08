@@ -346,11 +346,12 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     private void bindAlert(@NonNull final Alert alert) {
         if (shouldShow(alert)) {
             this.localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.SYSTEM_ALERT_SHOWN);
-            SystemAlertDialogFragment.newInstance(alert,
-                                                  getResources())
-                                     .showAllowingStateLoss(getFragmentManager(),
-                                                            R.id.view_home_bottom_alert_container,
-                                                            BottomAlertDialogFragment.TAG);
+            final SystemAlertDialogFragment alertDialogFragment = SystemAlertDialogFragment.newInstance(alert,
+                                                                                                        getResources());
+            alertDialogFragment.setTargetFragment(this, 0);
+            alertDialogFragment.showAllowingStateLoss(getFragmentManager(),
+                                                      R.id.view_home_bottom_alert_container,
+                                                      BottomAlertDialogFragment.TAG);
         } else if (shouldUpdateDeviceIssues()) {
             this.deviceIssuesInteractor.update();
         }
