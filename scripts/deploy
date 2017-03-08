@@ -79,15 +79,6 @@ end
 
 #endregion
 
-#region Dry Run
-
-if options.dry_run
-  puts "-- Finished dry run".green
-  exit
-end
-
-#endregion
-
 #region Building
 
 flavor_names.each do |flavor_name|
@@ -126,6 +117,15 @@ flavor_names.each do |flavor_name|
   puts "-- Build Completed".green
 
   #endregion
+
+  #region Dry Run
+
+if options.dry_run
+  puts "-- Finished dry run".green
+  exit
+end
+
+#endregion
 
 
   #region Uploading
