@@ -139,19 +139,21 @@ public class OnboardingRegisterGenderFragment extends SenseFragment {
             return;
         }
         final AccountEditor.Container container = AccountEditor.getContainer(this);
-        container.getAccount().setGender(currentGender);
+        final Account account = container.getAccount();
+        account.setGender(currentGender);
         if (currentGender == Gender.OTHER) {
-            container.getAccount().setGenderOther(currentOtherGender);
+            account.setGenderOther(currentOtherGender);
         }
-        AccountEditor.getContainer(this).onAccountUpdated(this);
+        container.onAccountUpdated(this);
     }
 
     private void onSkipClick(final View ignored) {
         Analytics.trackEvent(Analytics.Onboarding.EVENT_SKIP, Analytics.createProperties(Analytics.Onboarding.PROP_SKIP_SCREEN, "gender"));
-        final Account account = AccountEditor.getContainer(this).getAccount();
+        final AccountEditor.Container container = AccountEditor.getContainer(this);
+        final Account account = container.getAccount();
         account.setGender(Gender.OTHER);
         account.setGenderOther(Constants.EMPTY_STRING);
-        AccountEditor.getContainer(this).onAccountUpdated(this);
+        container.onAccountUpdated(this);
     }
 
     private void onMaleClick(final View ignored) {

@@ -95,8 +95,11 @@ public class SearchListFragment extends PresenterFragment<SearchListView>
         if (getActivity().getCurrentFocus() == null) {
             return;
         }
+        if (this.presenterView == null) {
+            return;
+        }
         inputManager.hideSoftInputFromWindow(
-                (getActivity()).getCurrentFocus().getWindowToken(),
+                this.presenterView.getWindowToken(),
                 InputMethodManager.HIDE_NOT_ALWAYS);
 
     }
