@@ -67,6 +67,20 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     private Subscription stopOperationSubscriber = Subscriptions.empty();
     private Subscription hasSensePairedSubscription = Subscriptions.empty();
 
+    private final Runnable retryRunnable = new Runnable() {
+        @Override
+        public void run() {
+            sleepSoundsStatusInteractor.resetBackOffIfNeeded();
+            sleepSoundsInteractor.update();
+        }
+    };
+    public final Runnable getCombinedStateRunnable = new Runnable() {
+        @Override
+        public void run() {
+            sleepSoundsInteractor.update();
+        }
+    };
+
     private UserWants userWants = UserWants.NONE;
     private State currentState = State.IDLE;
     @Nullable
@@ -83,7 +97,8 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
         PLAYING,
         IDLE,
         LOADING,
-        ERROR
+        ERROR,
+        UPDATING
     }
 
     //region PresenterFragment
@@ -113,7 +128,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bindAndSubscribe(sleepSoundsStatusInteractor.state, this::bindStatus, this::presentStatusError);
-        bindAndSubscribe(sleepSoundsInteractor.sub, this::bind, this::presentError);
+        bindAndSubscribe(sleepSoundsInteractor.combinedState, this::bind, this::presentError);
         bindAndSubscribe(preferencesInteractor.observeChangesOn(PreferencesInteractor.SLEEP_SOUNDS_SOUND_ID,
                                                                 PreferencesInteractor.SLEEP_SOUNDS_VOLUME_ID,
                                                                 PreferencesInteractor.SLEEP_SOUNDS_DURATION_ID),
@@ -144,11 +159,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
                     displayLoadingButton();
                 }
             }
-            updateSensePairedSubscription(() -> {
-                sleepSoundsStatusInteractor.resetBackOffIfNeeded();
-                sleepSoundsStatusInteractor.startPolling();
-                sleepSoundsInteractor.update();
-            });
+            updateSensePairedSubscription(getCombinedStateRunnable::run);
         } else {
             sleepSoundsStatusInteractor.stopPolling();
         }
@@ -230,11 +241,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     @Override
     public void retry() {
         presenterView.setProgressBarVisible(true);
-        updateSensePairedSubscription(() -> {
-            sleepSoundsStatusInteractor.resetBackOffIfNeeded();
-            sleepSoundsStatusInteractor.startPolling();
-            sleepSoundsInteractor.update();
-        });
+        updateSensePairedSubscription(retryRunnable::run);
     }
     //endregion
 
@@ -261,7 +268,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
 
     @Override
     public boolean shouldShowFab() {
-        return currentState != State.ERROR;
+        return currentState != State.ERROR && currentState != State.UPDATING;
     }
 
     @Override
@@ -293,8 +300,16 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
 
     //region FabPresenter helpers
     public void adapterSetState(final SleepSoundsAdapter.AdapterState state) {
+        if (state == SleepSoundsAdapter.AdapterState.FIRMWARE_UPDATE
+                || state == SleepSoundsAdapter.AdapterState.SOUNDS_DOWNLOAD
+                || state == SleepSoundsAdapter.AdapterState.OFFLINE) {
+            this.currentState = State.UPDATING;
+            this.sleepSoundsStatusInteractor.stopPolling();
+        } else {
+            displayPlayButton();
+        }
         presenterView.adapterSetState(state);
-        displayPlayButton();
+        this.notifyChange();
     }
 
     private void notifyChange() {
@@ -375,6 +390,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     }
 
     private void bind(final @NonNull SleepSoundsStateDevice stateDevice) {
+        this.presenterView.setProgressBarVisible(false);
         final Devices devices = stateDevice.getDevices();
         final SleepSoundsState combinedState = stateDevice.getSleepSoundsState();
         if (devices == null || combinedState == null || devices.getSense() == null) {
@@ -406,6 +422,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
                     adapterSetState(SleepSoundsAdapter.AdapterState.SOUNDS_DOWNLOAD);
                     return;
                 case OK:
+                    sleepSoundsStatusInteractor.startPolling();
                     presenterView.adapterBindState(combinedState);
                     displayLoadingButton();
                     return;

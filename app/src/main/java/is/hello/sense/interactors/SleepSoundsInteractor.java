@@ -17,7 +17,7 @@ public class SleepSoundsInteractor extends ScopedValueInteractor<SleepSoundsStat
     @Inject
     ApiService apiService;
 
-    public final InteractorSubject<SleepSoundsStateDevice> sub = this.subject;
+    public final InteractorSubject<SleepSoundsStateDevice> combinedState = this.subject;
 
     @Override
     protected boolean isDataDisposable() {
