@@ -74,7 +74,7 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
 
         this.actionsContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_actions);
 
-        TextView footer = (TextView) view.findViewById(R.id.item_device_support_footer);
+        TextView footer = (TextView) view.findViewById(R.id.item_device_name);
         Styles.initializeSupportFooter(getActivity(), footer);
 
         return view;

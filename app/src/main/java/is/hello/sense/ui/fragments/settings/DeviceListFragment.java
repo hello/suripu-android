@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -34,7 +33,6 @@ import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.activities.SenseUpgradeActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.DevicesAdapter;
-import is.hello.sense.ui.adapter.FooterRecyclerAdapter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.common.InjectionFragment;
@@ -43,7 +41,6 @@ import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
 
@@ -63,8 +60,8 @@ public class DeviceListFragment extends InjectionFragment
 
     private ProgressBar loadingIndicator;
     private DevicesAdapter adapter;
-    private TextView supportInfoFooter;
     private final LocationPermission locationPermission = new LocationPermission(this);
+    private RecyclerView recyclerView;
 
     public static void startStandaloneFrom(@NonNull Activity activity) {
         final FragmentNavigationActivity.Builder builder =
@@ -96,7 +93,7 @@ public class DeviceListFragment extends InjectionFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_settings_device_list, container, false);
 
-        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.fragment_settings_device_list_recycler);
+        recyclerView = (RecyclerView) view.findViewById(R.id.fragment_settings_device_list_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
 
@@ -107,13 +104,7 @@ public class DeviceListFragment extends InjectionFragment
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      EnumSet.of(ScrollEdge.TOP), FadingEdgesItemDecoration.Style.STRAIGHT));
 
-        this.supportInfoFooter = (TextView) inflater.inflate(R.layout.item_device_support_footer, recyclerView, false);
-        supportInfoFooter.setVisibility(View.INVISIBLE);
-        Styles.initializeSupportFooter(getActivity(), supportInfoFooter);
-
-        recyclerView.setAdapter(new FooterRecyclerAdapter(adapter)
-                                        .addFooter(supportInfoFooter)
-                                        .setFlattenChanges(true));
+        recyclerView.setAdapter(adapter);
 
 
         this.loadingIndicator = (ProgressBar) view.findViewById(R.id.fragment_settings_device_list_progress);
@@ -140,7 +131,10 @@ public class DeviceListFragment extends InjectionFragment
         super.onDestroyView();
 
         this.loadingIndicator = null;
-        this.supportInfoFooter = null;
+        if (this.recyclerView != null) {
+            this.recyclerView.setAdapter(null);
+            this.recyclerView = null;
+        }
     }
 
     @Override
@@ -162,7 +156,6 @@ public class DeviceListFragment extends InjectionFragment
                 || requestCode == UPGRADE_SENSE_DEVICE_REQUEST_CODE) {
             adapter.clear();
 
-            supportInfoFooter.setVisibility(View.INVISIBLE);
             animatorFor(loadingIndicator)
                     .fadeIn()
                     .start();
@@ -185,7 +178,6 @@ public class DeviceListFragment extends InjectionFragment
     public void bindDevices(@NonNull final Devices devices) {
         adapter.bindDevices(shouldUpdateDevices(devices));
         loadingIndicator.setVisibility(View.GONE);
-        supportInfoFooter.setVisibility(View.VISIBLE);
     }
 
     private Devices shouldUpdateDevices(final Devices devices) {
@@ -232,6 +224,8 @@ public class DeviceListFragment extends InjectionFragment
                                                          true);
     }
 
+    //region DeviceInteractionListener
+
     @Override
     public void onPlaceholderInteraction(@NonNull final PlaceholderDevice.Type type) {
         switch (type) {
@@ -272,4 +266,13 @@ public class DeviceListFragment extends InjectionFragment
         }
 
     }
+
+    @Override
+    public void onScrollBy(final int x, final int y) {
+        if (recyclerView != null) {
+            recyclerView.scrollBy(x, y);
+        }
+    }
+
+    //endregion
 }
