@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
 
+import is.hello.sense.SenseApplication;
+
 public class PaintUtil {
 
     public static void getCorrectTextSize(@NonNull final TextPaint paint,
@@ -17,7 +19,8 @@ public class PaintUtil {
             return;
         }
         paint.setTextSize(0);
-        while (doesTextFit(paint, text, maxWidth, maxHeight)) {
+        final Rect textBounds = new Rect();
+        while (doesTextFit(paint, text, textBounds, maxWidth, maxHeight)) {
             paint.setTextSize(paint.getTextSize() + 1);
         }
     }
@@ -25,18 +28,18 @@ public class PaintUtil {
     @SuppressWarnings("RedundantIfStatement")
     private static boolean doesTextFit(@NonNull final TextPaint paint,
                                        @NonNull final String text,
+                                       @NonNull final Rect textBounds,
                                        final int width,
                                        final int height) {
-        final Rect textBounds = new Rect();
+        //during robolectric testing bounds is always 0 so just quit
+        if (SenseApplication.isRunningInRobolectric()) {
+            return false;
+        }
         paint.getTextBounds(text, 0, text.length(), textBounds);
         if (textBounds.height() > height) {
             return false;
         }
         if (textBounds.width() > width) {
-            return false;
-        }
-        //during robolectric testing bounds is 0 so just quit
-        if (textBounds.width() <= 0 || textBounds.height() <= 0) {
             return false;
         }
         return true;
