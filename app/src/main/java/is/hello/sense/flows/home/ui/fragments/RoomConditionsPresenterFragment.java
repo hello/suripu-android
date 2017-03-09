@@ -34,7 +34,6 @@ import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
 import is.hello.sense.units.UnitFormatter;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.Logger;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -44,6 +43,8 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
         SensorResponseAdapter.ErrorItemClickListener,
         HomeActivity.ScrollUp {
     private final static long WELCOME_CARD_TIMES_SHOWN_LIMIT = 2;
+    private static final int PAIR_SENSE_REQUEST_CODE = 999;
+    private static final int APP_SETTINGS_REQUEST_CODE = 888;
 
     @Inject
     SensorResponseInteractor sensorResponseInteractor;
@@ -131,10 +132,22 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
         this.updateTimer = null;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case APP_SETTINGS_REQUEST_CODE:
+            case PAIR_SENSE_REQUEST_CODE:
+                setVisibleToUser(true);
+                break;
+        }
+    }
+
     //endregion
 
     private void startSettingsActivity(final View ignore) {
-        startActivity(new Intent(getActivity(), AppSettingsActivity.class));
+        startActivityForResult(new Intent(getActivity(), AppSettingsActivity.class),
+                               APP_SETTINGS_REQUEST_CODE);
     }
 
 
@@ -220,10 +233,7 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
 
     @Override
     public void onErrorItemClicked() {
-        final Intent intent = new Intent(getActivity(), OnboardingActivity.class);
-        intent.putExtra(OnboardingActivity.EXTRA_START_CHECKPOINT, Constants.ONBOARDING_CHECKPOINT_SENSE);
-        intent.putExtra(OnboardingActivity.EXTRA_PAIR_ONLY, true);
-        this.startActivity(intent);
+        this.startActivityForResult(OnboardingActivity.getPairOnlyIntent(getActivity()), PAIR_SENSE_REQUEST_CODE);
     }
 
     @Override
