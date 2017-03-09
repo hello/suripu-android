@@ -291,8 +291,14 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
                 if (tutorialOverlayView != null && getUserVisibleHint()) {
                     tutorialOverlayView.show(container);
                     if (scrollUp) {
+                        if (this.tutorialOverlayView == null) {
+                            return;
+                        }
                         Views.runWhenLaidOut(tutorialOverlayView, () -> {
-                            SensorDetailFragment.this.presenterView.smoothScrollBy(tutorialOverlayView.getTextViewHeight());
+                            if (this.presenterView == null || this.tutorialOverlayView == null) {
+                                return;
+                            }
+                            this.presenterView.smoothScrollBy(tutorialOverlayView.getTextViewHeight());
 
                         });
                     }
