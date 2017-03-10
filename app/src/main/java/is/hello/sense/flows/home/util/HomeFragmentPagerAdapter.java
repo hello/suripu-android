@@ -32,16 +32,16 @@ public class HomeFragmentPagerAdapter extends StaticFragmentAdapter {
 
     public static class HomeItem extends Item {
 
-        public final int normalIcon;
-        public final int activeIcon;
+        public final int normalIconRes;
+        public final int activeIconRes;
 
         public HomeItem(@NonNull final Class<? extends Fragment> fragmentClass,
                         @NonNull final String title,
-                        @DrawableRes final int normalIcon,
-                        @DrawableRes final int activeIcon) {
+                        @DrawableRes final int normalIconRes,
+                        @DrawableRes final int activeIconRes) {
             super(fragmentClass, title);
-            this.normalIcon = normalIcon;
-            this.activeIcon = activeIcon;
+            this.normalIconRes = normalIconRes;
+            this.activeIconRes = activeIconRes;
         }
     }
 }

@@ -18,8 +18,8 @@ import is.hello.sense.api.model.v2.alerts.Alert;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.flows.home.ui.views.HomeTabLayout;
 import is.hello.sense.flows.home.ui.views.HomeView;
-import is.hello.sense.flows.home.ui.views.SenseTabLayout;
 import is.hello.sense.flows.home.util.HomeFragmentPagerAdapter;
 import is.hello.sense.flows.home.util.HomeViewPagerPresenterDelegate;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
@@ -47,7 +47,7 @@ import is.hello.sense.util.Logger;
 public class HomePresenterFragment extends PresenterFragment<HomeView>
         implements
         OnBackPressedInterceptor,
-        SenseTabLayout.Listener,
+        HomeTabLayout.Listener,
         TimelineFragment.ParentProvider,
         InsightInfoFragment.ParentProvider,
         Alert.ActionHandler {

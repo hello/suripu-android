@@ -1,21 +1,22 @@
 package is.hello.sense.flows.home.ui.views;
 
 import android.content.Context;
+import android.support.annotation.CallSuper;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.View;
 
-import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.flows.home.util.HomeFragmentPagerAdapter;
 
 public class SenseTabLayout extends TabLayout
         implements TabLayout.OnTabSelectedListener {
 
     @Nullable
-    private Listener listener = null;
+    protected Listener listener = null;
 
     public SenseTabLayout(final Context context) {
         this(context, null, 0);
@@ -35,12 +36,35 @@ public class SenseTabLayout extends TabLayout
     @Override
     public void setupWithViewPager(@Nullable final ViewPager viewPager) {
         super.setupWithViewPager(viewPager);
+        setUpInternal(viewPager);
+    }
+
+    @Override
+    public void setupWithViewPager(@Nullable final ViewPager viewPager,
+                                   final boolean autoRefresh) {
+        super.setupWithViewPager(viewPager, autoRefresh);
+        setUpInternal(viewPager);
+    }
+
+    /**
+     * Called during {@link SenseTabLayout#setUpInternal(ViewPager)} for each tab to be updated
+     * @param position of tab
+     * @param adapter used to populate tabs
+     * @param item at position provided by adapter
+     * @return {@link View} which will be used as custom view for tab at position
+     */
+    protected View createTabCustomView(final int position,
+                                       @NonNull final HomeFragmentPagerAdapter adapter,
+                                       @NonNull final HomeFragmentPagerAdapter.HomeItem item) {
+        return createTabFor(item.normalIconRes, item.activeIconRes);
+    }
+
+    private void setUpInternal(@Nullable final ViewPager viewPager) {
         clearOnTabSelectedListeners();
 
         if (viewPager !=null && viewPager.getAdapter() instanceof HomeFragmentPagerAdapter) {
             final HomeFragmentPagerAdapter adapter = (HomeFragmentPagerAdapter) viewPager.getAdapter();
             final HomeFragmentPagerAdapter.HomeItem[] items = adapter.getHomeItems();
-            final int timelineItemPosition = adapter.getTimelineItemPosition();
             final int tabCount = getTabCount();
             if (items.length != tabCount) {
                 throw new AssertionError(String.format("Tab count mismatch expected %s actual %s", items.length, tabCount));
@@ -52,11 +76,7 @@ public class SenseTabLayout extends TabLayout
                     tab = newTab();
                     addTab(tab, position);
                 }
-                if (position == timelineItemPosition) {
-                    tab.setCustomView(createSleepScoreTabView(getCurrentTimeline()));
-                } else {
-                    tab.setCustomView(createTabFor(item.normalIcon, item.activeIcon));
-                }
+                tab.setCustomView(createTabCustomView(position, adapter, item));
             }
         }
 
@@ -103,63 +123,14 @@ public class SenseTabLayout extends TabLayout
         }
     }
 
-
-    @Nullable
-    private Timeline getCurrentTimeline() {
-        if (this.listener != null) {
-            return this.listener.getCurrentTimeline();
-        }
-        return null;
-
-    }
-
-    public void setTabIndicatorVisible(final boolean show, final int position) {
-        if (getSelectedTabPosition() == position) {
-            return;
-        }
-        setTabIndicatorVisible(position, show);
-    }
-
-    public void updateTabWithSleepScore(@Nullable final Timeline timeline,
-                                        final int position) {
-        final TabLayout.Tab tab = getTabAt(position);
-        if (tab == null) {
-            return;
-        }
-        final View view = tab.getCustomView();
-        if (view instanceof SenseTabView) {
-            ((SenseTabView) view).useSleepScoreIcon(timeline != null ? timeline.getScore() : null)
-                                 .setActive(tab.isSelected());
-        }
-
-    }
-
-    private void setTabIndicatorVisible(final int position,
-                                        final boolean visible) {
-        final TabLayout.Tab tab = getTabAt(position);
-        if (tab == null) {
-            return;
-        }
-        if (tab.getCustomView() instanceof SenseTabView) {
-            ((SenseTabView) tab.getCustomView()).setIndicatorVisible(visible);
-        }
-
-    }
-
-    private SenseTabView createSleepScoreTabView(@Nullable final Timeline timeline) {
-        final Integer score = timeline != null ? timeline.getScore() : null;
-        return new SenseTabView(getContext())
-                .useSleepScoreIcon(score)
-                .setActive(false);
-    }
-
     private SenseTabView createTabFor(@DrawableRes final int normal,
-                             @DrawableRes final int active) {
+                                      @DrawableRes final int active) {
         return new SenseTabView(getContext())
                 .setDrawables(normal, active)
                 .setActive(false);
     }
 
+    @CallSuper
     public void setListener(@Nullable final Listener listener) {
         this.listener = listener;
     }
@@ -179,8 +150,5 @@ public class SenseTabLayout extends TabLayout
         void scrollUp(int fragmentPosition);
 
         void tabChanged(int fragmentPosition);
-
-        @Nullable
-        Timeline getCurrentTimeline();
     }
 }
