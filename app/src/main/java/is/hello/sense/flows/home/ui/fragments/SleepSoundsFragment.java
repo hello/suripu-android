@@ -40,6 +40,7 @@ import is.hello.sense.util.NotTested;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.subscriptions.Subscriptions;
 
 import static is.hello.sense.util.Constants.EMPTY_STRING;
@@ -67,16 +68,16 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     private Subscription stopOperationSubscriber = Subscriptions.empty();
     private Subscription hasSensePairedSubscription = Subscriptions.empty();
 
-    private final Runnable retryRunnable = new Runnable() {
+    private final Action0 retryRunnable = new Action0() {
         @Override
-        public void run() {
+        public void call() {
             sleepSoundsStatusInteractor.resetBackOffIfNeeded();
             sleepSoundsInteractor.update();
         }
     };
-    public final Runnable getCombinedStateRunnable = new Runnable() {
+    public final Action0 getCombinedStateRunnable = new Action0() {
         @Override
-        public void run() {
+        public void call() {
             sleepSoundsInteractor.update();
         }
     };
@@ -155,7 +156,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
             if (presenterView.isShowingPlayer()) {
                 displayLoadingButton();
             }
-            updateSensePairedSubscription(getCombinedStateRunnable::run);
+            updateSensePairedSubscription(getCombinedStateRunnable);
         } else {
             sleepSoundsStatusInteractor.stopPolling();
         }
@@ -237,7 +238,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     @Override
     public void retry() {
         presenterView.setProgressBarVisible(true);
-        updateSensePairedSubscription(retryRunnable::run);
+        updateSensePairedSubscription(retryRunnable);
     }
     //endregion
 
