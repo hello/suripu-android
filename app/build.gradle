@@ -108,6 +108,29 @@ android {
             minifyEnabled false // when we hit the 0xffff method limit, switch this to true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
         }
+
+        development {
+            buildConfigField TYPE_INT, MIN_LOGGING_LEVEL, "android.util.Log.VERBOSE"
+            buildConfigField TYPE_BOOLEAN, DEBUG_SCREEN_ENABLED, TRUE
+            buildConfigField TYPE_STRING, CLIENT_ID, '"' + "android_dev" + '"'
+            buildConfigField TYPE_STRING, CLIENT_SECRET, '"' + "99999secret" + '"'
+            buildConfigField TYPE_STRING, BASE_URL, '"' + "https://dev-api.hello.is" + '"'
+            buildConfigField TYPE_STRING, HOCKEY_API_KEY, '"' + "805427569ce2035dcda0b99e4d984256" + '"'
+            buildConfigField TYPE_STRING, SEGMENT_API_KEY, '"' + "AnMchQr1VXQhPKjeYuoEEQ7pPRlow9SO" + '"'
+            resValue TYPE_RES_STRING, FACEBOOK_APP_ID, '"' + "372438546161587" + '"'
+            buildConfigField TYPE_STRING, GCM_AUTH_ENTITY_IDS, '"' + "88512303154,222711285636" + '"'
+            buildConfigField TYPE_BOOLEAN, IS_BETA, TRUE
+
+            signingConfig signingConfigs.debug
+
+            applicationIdSuffix ".development"
+            minifyEnabled false // when we hit the 0xffff method limit, switch this to true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
+
+
+
+        }
+
         release {
             buildConfigField TYPE_INT, MIN_LOGGING_LEVEL, "android.util.Log.WARN"
             buildConfigField TYPE_BOOLEAN, DEBUG_SCREEN_ENABLED, FALSE
@@ -162,10 +185,9 @@ tasks.whenTaskAdded { theTask ->
 }
 
 dependencies {
-    
 
     // Is there anything we don't depend on?
-    
+
     compile fileTree(include: ['*.jar'], dir: 'libs')
     // !! If you remove this, remove the above workaround.
     compile('com.zendesk:sdk:1.4.1.1') {
@@ -215,6 +237,8 @@ dependencies {
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     debugCompile 'net.hockeyapp.android:HockeySDK:3.5.0'
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
+    developmentCompile 'net.hockeyapp.android:HockeySDK:3.5.0'
+    developmentCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     provided 'com.squareup.dagger:dagger-compiler:1.2.2'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
 }
