@@ -152,12 +152,8 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
         super.setVisibleToUser(isVisible);
         if (isVisible) {
             Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS, null);
-            if (currentState == State.IDLE) {
-                if (presenterView.isShowingPlayer()) {
-                    displayPlayButton();
-                } else {
-                    displayLoadingButton();
-                }
+            if (presenterView.isShowingPlayer()) {
+                displayLoadingButton();
             }
             updateSensePairedSubscription(getCombinedStateRunnable::run);
         } else {
@@ -268,7 +264,10 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
 
     @Override
     public boolean shouldShowFab() {
-        return currentState != State.ERROR && currentState != State.UPDATING;
+        return currentState != State.ERROR
+                && currentState != State.UPDATING
+                && hasPresenterView()
+                && presenterView.isShowingPlayer();
     }
 
     @Override
