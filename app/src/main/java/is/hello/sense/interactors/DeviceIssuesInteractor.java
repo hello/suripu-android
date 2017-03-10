@@ -125,7 +125,7 @@ public class DeviceIssuesInteractor extends ScopedValueInteractor<DeviceIssuesIn
 
     boolean shouldReportPillUpdate() {
         final DateTime lastShown = getPillUpdateAlertLastShown();
-        return lastShown == null || Hours.hoursBetween(lastShown, DateTime.now()).isGreaterThan(Hours.TWO);
+        return lastShown == null || Hours.hoursBetween(lastShown, DateTime.now()).isGreaterThan(Hours.ONE);
     }
 
     public boolean shouldShowUpdateFirmwareAction(@NonNull final String deviceId) {
