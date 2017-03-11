@@ -40,7 +40,6 @@ import is.hello.sense.util.NotTested;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.subscriptions.Subscriptions;
 
 import static is.hello.sense.util.Constants.EMPTY_STRING;
@@ -405,6 +404,10 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
             return;
         }
 
+        if (combinedState.getSounds() == null) {
+            adapterSetState(SleepSoundsAdapter.AdapterState.ERROR);
+            return;
+        }
         final SleepSounds.State currentState = combinedState.getSounds().getState();
         switch (currentState) {
             case SENSE_UPDATE_REQUIRED:
