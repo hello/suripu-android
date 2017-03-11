@@ -35,6 +35,7 @@ import is.hello.sense.SenseApplication;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
+import is.hello.sense.flows.generic.ui.adapters.BaseFragmentPagerAdapter;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.views.TimelineView;
 import is.hello.sense.flows.timeline.ui.activities.TimelineActivity;
@@ -68,7 +69,8 @@ import is.hello.sense.util.Share;
 import rx.Observable;
 
 public class TimelineFragment extends PresenterFragment<TimelineView>
-        implements TimelineAdapter.OnItemClickListener {
+        implements TimelineAdapter.OnItemClickListener,
+        BaseFragmentPagerAdapter.Controller{
     // !! Important: Do not use setTargetFragment on TimelineFragment.
     // It is not guaranteed to exist at the time of state restoration.
 
@@ -121,6 +123,23 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     @VisibleForTesting
     int toolTipHeight;
 
+    //region BaseFragmentPagerAdapter.Controller
+    @Override
+    public void setVisibleToUser(final boolean isVisible) {
+        if (this.presenterView == null) {
+            return;
+        }
+        if (isVisible) {
+            bindIfNeeded();
+            this.presenterView.setAnimationEnabled(true);
+        } else {
+            this.presenterView.setAnimationEnabled(false);
+            dismissVisibleOverlaysAndDialogs();
+            this.presenterView.clearHeader();
+        }
+    }
+    //endregion
+
     //region PresenterFragment
     @Override
     public void initializePresenterView() {
@@ -130,22 +149,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
                                                   createAdapter(),
                                                   new ScrollListener(),
                                                   this::showBreakdown);
-        }
-    }
-
-    @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (this.presenterView == null) {
-            return;
-        }
-        if (isVisibleToUser) {
-            bindIfNeeded();
-            this.presenterView.setAnimationEnabled(true);
-        } else {
-            this.presenterView.setAnimationEnabled(false);
-            dismissVisibleOverlaysAndDialogs();
-            this.presenterView.clearHeader();
         }
     }
 

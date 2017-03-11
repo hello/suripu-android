@@ -15,8 +15,8 @@ import org.junit.Test;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineBuilder;
-import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
+import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.PagerAdapterTesting;
@@ -89,14 +89,14 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
         adapter.setCachedTimeline(timeline);
 
 
-        final TimelineFragment fragment1 = (TimelineFragment) adapter.createFragment(adapter.getLastNight() - 1);
+        final TimelineFragment fragment1 = adapter.getItem(adapter.getLastNight() - 1);
         assertThat(fragment1.getDate(), is(not(equalTo(lastNight))));
         assertThat(fragment1.getCachedTimeline(), is(nullValue()));
 
         assertThat(adapter.cachedTimeline, is(notNullValue()));
 
 
-        final TimelineFragment fragment2 = (TimelineFragment) adapter.createFragment(adapter.getLastNight());
+        final TimelineFragment fragment2 = adapter.getItem(adapter.getLastNight());
         assertThat(fragment2.getDate(), is(equalTo(lastNight)));
         assertThat(fragment2.getCachedTimeline().getDate(), is(equalTo(lastNight)));
 

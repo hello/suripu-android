@@ -9,10 +9,11 @@ import org.joda.time.Days;
 import org.joda.time.LocalDate;
 
 import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.flows.generic.ui.adapters.BaseFragmentPagerAdapter;
 import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
 import is.hello.sense.util.DateFormatter;
 
-public class TimelineFragmentAdapter extends FragmentPagerAdapter {
+public class TimelineFragmentAdapter extends BaseFragmentPagerAdapter {
     private final LocalDate oldestDate;
     private int count;
     @VisibleForTesting LocalDate latestDate;
@@ -83,7 +84,7 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
 
     @NonNull
     @Override
-    public TimelineFragment createFragment(final int position) {
+    public TimelineFragment getItem(final int position) {
         final LocalDate timelineDate = getItemDate(position);
 
         final Timeline cachedTimeline;
@@ -100,7 +101,7 @@ public class TimelineFragmentAdapter extends FragmentPagerAdapter {
 
     @Nullable
     public TimelineFragment getCurrentTimeline(){
-        return (TimelineFragment) getCurrentFragment();
+        return (TimelineFragment) getCurrentObject();
     }
 
     //endregion

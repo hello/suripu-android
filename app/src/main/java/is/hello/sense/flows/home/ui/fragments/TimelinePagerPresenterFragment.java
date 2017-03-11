@@ -46,7 +46,6 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
     NotificationInteractor notificationInteractor;
 
     private static final String KEY_LAST_UPDATED = TimelinePagerPresenterFragment.class.getSimpleName() + "KEY_LAST_UPDATED";
-    private static final String KEY_LAST_ITEM = TimelinePagerPresenterFragment.class.getSimpleName() + "KEY_LAST_ITEM";
 
     public boolean shouldJumpToLastNightOnUserVisible = false;
     private final BroadcastReceiver onTimeChanged = new BroadcastReceiver() {
@@ -90,8 +89,6 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
         super.onViewCreated(view, savedInstanceState);
         if (savedInstanceState == null) {
             jumpToLastNight(false);
-        } else {
-            this.presenterView.setCurrentViewPagerItem(savedInstanceState.getInt(KEY_LAST_ITEM), false);
         }
 
         getActivity().registerReceiver(this.onTimeChanged, new IntentFilter(Intent.ACTION_TIME_CHANGED));
@@ -113,8 +110,6 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putLong(KEY_LAST_UPDATED, this.lastUpdated);
-
-        outState.putInt(KEY_LAST_ITEM, this.presenterView == null ? 0 : this.presenterView.getCurrentItem());
     }
 
     @Override
@@ -152,13 +147,13 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
             }
             final TimelineFragment timelineFragment = this.presenterView.getCurrentTimeline();
             if (timelineFragment != null) {
-                timelineFragment.setUserVisibleHint(true);
+                timelineFragment.setVisibleToUser(true);
             }
         } else {
             final TimelineFragment timelineFragment = this.presenterView.getCurrentTimeline();
             if (timelineFragment != null) {
                 timelineFragment.dismissVisibleOverlaysAndDialogs();
-                timelineFragment.setUserVisibleHint(false);
+                timelineFragment.setVisibleToUser(false);
             }
         }
     }

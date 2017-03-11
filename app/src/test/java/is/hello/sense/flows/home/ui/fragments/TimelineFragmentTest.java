@@ -59,16 +59,16 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> impleme
     }
 
     @Test
-    public void setUserVisibleHintBehavior() {
+    public void setVisibleToUserBehavior() {
         fragment.presenterView = null;
-        fragment.setUserVisibleHint(true);
+        fragment.setVisibleToUser(true);
         verify(fragment, times(0)).bindIfNeeded();
         fragment.initializePresenterView();
         spyOnPresenterView();
-        fragment.setUserVisibleHint(true);
+        fragment.setVisibleToUser(true);
         verify(fragment).bindIfNeeded();
         verify(fragment.presenterView).setAnimationEnabled(eq(true));
-        fragment.setUserVisibleHint(false);
+        fragment.setVisibleToUser(false);
         verify(fragment).bindIfNeeded();
         verify(fragment.presenterView).setAnimationEnabled(eq(false));
         verify(fragment).dismissVisibleOverlaysAndDialogs();
