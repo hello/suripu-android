@@ -389,32 +389,25 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
             return;
         }
 
-        if (combinedState.getSounds() != null) {
-            //setState download sounds if combined state sounds is empty
-            if (combinedState.getSounds().getSounds().isEmpty()) {
+        final SleepSounds.State currentState = combinedState.getSounds().getState();
+        switch (currentState) {
+            case SENSE_UPDATE_REQUIRED:
+                adapterSetState(SleepSoundsAdapter.AdapterState.FIRMWARE_UPDATE);
+                return;
+            case SOUNDS_NOT_DOWNLOADED:
                 adapterSetState(SleepSoundsAdapter.AdapterState.SOUNDS_DOWNLOAD);
                 return;
-            }
-
-
-            final SleepSounds.State currentState = combinedState.getSounds().getState();
-            switch (currentState) {
-                case SENSE_UPDATE_REQUIRED:
-                    adapterSetState(SleepSoundsAdapter.AdapterState.FIRMWARE_UPDATE);
-                    return;
-                case SOUNDS_NOT_DOWNLOADED:
+            case OK:
+                if (combinedState.getSounds() == null || combinedState.getSounds().getSounds().isEmpty()) {
                     adapterSetState(SleepSoundsAdapter.AdapterState.SOUNDS_DOWNLOAD);
                     return;
-                case OK:
-                    presenterView.adapterBindState(combinedState);
-                    displayLoadingButton();
-                    return;
-                default:
-                    adapterSetState(SleepSoundsAdapter.AdapterState.ERROR);
-                    return;
-            }
+                }
+                presenterView.adapterBindState(combinedState);
+                displayLoadingButton();
+                return;
+            default:
+                adapterSetState(SleepSoundsAdapter.AdapterState.ERROR);
         }
-        adapterSetState(SleepSoundsAdapter.AdapterState.NONE);
 
     }
 
