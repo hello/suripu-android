@@ -110,22 +110,10 @@ android {
         }
 
         development {
-            buildConfigField TYPE_INT, MIN_LOGGING_LEVEL, "android.util.Log.VERBOSE"
-            buildConfigField TYPE_BOOLEAN, DEBUG_SCREEN_ENABLED, TRUE
-            buildConfigField TYPE_STRING, CLIENT_ID, '"' + "android_dev" + '"'
-            buildConfigField TYPE_STRING, CLIENT_SECRET, '"' + "99999secret" + '"'
-            buildConfigField TYPE_STRING, BASE_URL, '"' + "https://dev-api.hello.is" + '"'
-            buildConfigField TYPE_STRING, HOCKEY_API_KEY, '"' + "805427569ce2035dcda0b99e4d984256" + '"'
-            buildConfigField TYPE_STRING, SEGMENT_API_KEY, '"' + "AnMchQr1VXQhPKjeYuoEEQ7pPRlow9SO" + '"'
-            resValue TYPE_RES_STRING, FACEBOOK_APP_ID, '"' + "372438546161587" + '"'
-            buildConfigField TYPE_STRING, GCM_AUTH_ENTITY_IDS, '"' + "88512303154,222711285636" + '"'
-            buildConfigField TYPE_BOOLEAN, IS_BETA, TRUE
-
+            initWith debug
             signingConfig signingConfigs.debug
 
             applicationIdSuffix ".development"
-            minifyEnabled false // when we hit the 0xffff method limit, switch this to true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
 
 
 
@@ -146,6 +134,16 @@ android {
 
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
+        }
+
+
+    }
+
+    sourceSets {
+        development {
+            java.srcDirs = ['src/debug/java']
+            res.srcDirs = ['src/debug/res']
+            assets.srcDirs = ['src/debug/assets']
         }
     }
 }
@@ -173,8 +171,8 @@ retrolambda {
  * <a href="https://github.com/evant/android-studio-unit-test-plugin/issues/35">this bug</a>
  */
 tasks.whenTaskAdded { theTask ->
-    def taskName = theTask.name.toString()
-    if ("testDebugUnitTest".toString().equals(taskName)) {
+    def taskName = theTask.name
+    if (Pattern.matches("^test(Debug|Development)UnitTest", taskName)) {
         /**
          * Listen for when robolectric adds the 'testDebug' task and when it does, add the -noverify
          * option to that task's jvmArgs.  This allows us to turn off byte code verification when
