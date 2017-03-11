@@ -40,7 +40,6 @@ import is.hello.sense.util.NotTested;
 import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.subscriptions.Subscriptions;
 
 import static is.hello.sense.util.Constants.EMPTY_STRING;
@@ -405,33 +404,30 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
             return;
         }
 
-        if (combinedState.getSounds() != null) {
-            //setState download sounds if combined state sounds is empty
-            if (combinedState.getSounds().getSounds().isEmpty()) {
+        if (combinedState.getSounds() == null) {
+            adapterSetState(SleepSoundsAdapter.AdapterState.ERROR);
+            return;
+        }
+        final SleepSounds.State currentState = combinedState.getSounds().getState();
+        switch (currentState) {
+            case SENSE_UPDATE_REQUIRED:
+                adapterSetState(SleepSoundsAdapter.AdapterState.FIRMWARE_UPDATE);
+                return;
+            case SOUNDS_NOT_DOWNLOADED:
                 adapterSetState(SleepSoundsAdapter.AdapterState.SOUNDS_DOWNLOAD);
                 return;
-            }
-
-
-            final SleepSounds.State currentState = combinedState.getSounds().getState();
-            switch (currentState) {
-                case SENSE_UPDATE_REQUIRED:
-                    adapterSetState(SleepSoundsAdapter.AdapterState.FIRMWARE_UPDATE);
-                    return;
-                case SOUNDS_NOT_DOWNLOADED:
+            case OK:
+                if (combinedState.getSounds() == null || combinedState.getSounds().getSounds().isEmpty()) {
                     adapterSetState(SleepSoundsAdapter.AdapterState.SOUNDS_DOWNLOAD);
                     return;
-                case OK:
-                    sleepSoundsStatusInteractor.startPolling();
-                    presenterView.adapterBindState(combinedState);
-                    displayLoadingButton();
-                    return;
-                default:
-                    adapterSetState(SleepSoundsAdapter.AdapterState.ERROR);
-                    return;
-            }
+                }
+                sleepSoundsStatusInteractor.startPolling();
+                presenterView.adapterBindState(combinedState);
+                displayLoadingButton();
+                return;
+            default:
+                adapterSetState(SleepSoundsAdapter.AdapterState.ERROR);
         }
-        adapterSetState(SleepSoundsAdapter.AdapterState.NONE);
 
     }
 
