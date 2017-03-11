@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments;
 
-import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,7 +25,8 @@ import is.hello.sense.ui.common.ZoomedOutTimelineLayoutManager;
 import is.hello.sense.ui.widget.timeline.ZoomedOutTimelineDecoration;
 import is.hello.sense.util.DateFormatter;
 
-public class ZoomedOutTimelineFragment extends InjectionFragment implements ZoomedOutTimelineAdapter.OnItemClickedListener {
+public class ZoomedOutTimelineFragment extends InjectionFragment
+        implements ZoomedOutTimelineAdapter.OnItemClickedListener {
     public static final String TAG = ZoomedOutTimelineFragment.class.getSimpleName();
 
     private static final String ARG_START_DATE = ZoomedOutTimelineFragment.class.getName() + ".ARG_START_DATE";
@@ -39,9 +39,13 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
     @Inject
     PreferencesInteractor preferences;
 
+    @Nullable
     private TextView monthText;
+    @Nullable
     private RecyclerView recyclerView;
+    @Nullable
     private ZoomedOutTimelineLayoutManager layoutManager;
+    private ZoomedOutTimelineAdapter adapter;
     private LocalDate startDate;
 
     public static ZoomedOutTimelineFragment newInstance(@NonNull LocalDate startTime, @Nullable Timeline firstTimeline) {
@@ -90,11 +94,10 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
         this.layoutManager = new ZoomedOutTimelineLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        final ZoomedOutTimelineAdapter adapter =
-                new ZoomedOutTimelineAdapter(getActivity(),
-                                             presenter,
+        this.adapter =
+                new ZoomedOutTimelineAdapter(presenter,
                                              preferences.getAccountCreationDate());
-        adapter.setOnItemClickedListener(this);
+        this.adapter.setOnItemClickedListener(this);
         recyclerView.setAdapter(adapter);
 
         final Button todayButton = (Button) view.findViewById(R.id.fragment_zoomed_out_timeline_today);
@@ -109,7 +112,7 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
             // a specific offset if we want it to be centered. Of course,
             // we can only get the offset after layout.
 
-            layoutManager.postLayout(() -> recyclerView.post(() -> {
+            layoutManager.postLayout(() -> recyclerView.post( () -> {
                 recyclerView.scrollBy(-layoutManager.getItemWidth(), 0);
                 presenter.retrieveTimelines();
             }));
@@ -125,38 +128,48 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
     public void onDestroyView() {
         super.onDestroyView();
 
-        recyclerView.clearOnScrollListeners();
+        adapter.setOnItemClickedListener(null);
+        if (layoutManager != null) {
+            layoutManager.postLayout(null);
+            layoutManager = null;
+        }
+        if (recyclerView != null) {
+            recyclerView.clearOnScrollListeners();
+            recyclerView.setAdapter(null);
+            recyclerView = null;
+        }
+        monthText = null;
     }
 
-    public void jumpToToday(@NonNull View sender) {
+    public void jumpToToday(@NonNull final View sender) {
         final LinearSmoothScroller smoothScroller = new LinearSmoothScroller(getActivity()) {
             @Override
-            public PointF computeScrollVectorForPosition(int targetPosition) {
-                return layoutManager.computeScrollVectorForPosition(targetPosition);
-            }
-
-            @Override
-            protected int calculateTimeForScrolling(int dx) {
+            protected int calculateTimeForScrolling(final int dx) {
                 return super.calculateTimeForScrolling(dx) / 4;
             }
 
             @Override
-            protected int calculateTimeForDeceleration(int dx) {
+            protected int calculateTimeForDeceleration(final int dx) {
                 return super.calculateTimeForDeceleration(dx) / 4;
             }
         };
         smoothScroller.setTargetPosition(0);
-        layoutManager.startSmoothScroll(smoothScroller);
+        if (layoutManager != null) {
+            layoutManager.startSmoothScroll(smoothScroller);
+        }
     }
 
     @Override
-    public void onItemClicked(@NonNull View itemView, int position) {
+    public void onItemClicked(@NonNull final View itemView,
+                              final int position) {
         // Tried implementing this using the first/last visible items
         // from the linear layout manager, the children of the recycler
         // view, and neither worked 100% of the time. This does.
 
         // Guard against rapid taps
-        if (!isVisible()) {
+        if (!isVisible()
+                || recyclerView == null
+                || layoutManager == null) {
             return;
         }
 
@@ -168,26 +181,32 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
                 recyclerView.smoothScrollBy(layoutManager.getItemWidth(), 0);
             }
         } else {
-            LocalDate newDate = presenter.getDateAt(position);
-            Timeline timeline = presenter.getCachedTimeline(newDate);
+            final LocalDate newDate = presenter.getDateAt(position);
+            final Timeline timeline = presenter.getCachedTimeline(newDate);
             ((OnTimelineDateSelectedListener) getActivity()).onTimelineSelected(newDate, timeline);
         }
     }
 
 
-    class SnappingScrollListener extends RecyclerView.OnScrollListener {
+    private class SnappingScrollListener extends RecyclerView.OnScrollListener {
         int previousState = RecyclerView.SCROLL_STATE_IDLE;
 
         @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        public void onScrolled(final RecyclerView recyclerView,
+                               final int dx,
+                               final int dy) {
             final View centerChild = recyclerView.findChildViewUnder(recyclerView.getWidth() / 2, 0);
             final ZoomedOutTimelineAdapter.ViewHolder holder =
                     (ZoomedOutTimelineAdapter.ViewHolder) recyclerView.getChildViewHolder(centerChild);
-            monthText.setText(dateFormatter.formatAsTimelineNavigatorDate(holder.getDate()));
+
+            if (monthText != null) {
+                monthText.setText(dateFormatter.formatAsTimelineNavigatorDate(holder.getDate()));
+            }
         }
 
         @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        public void onScrollStateChanged(final RecyclerView recyclerView,
+                                         final int newState) {
             if (previousState != RecyclerView.SCROLL_STATE_IDLE && newState == RecyclerView.SCROLL_STATE_IDLE) {
                 snapToNearestItem(recyclerView);
                 presenter.retrieveTimelines();
@@ -196,7 +215,7 @@ public class ZoomedOutTimelineFragment extends InjectionFragment implements Zoom
             this.previousState = newState;
         }
 
-        public void snapToNearestItem(RecyclerView recyclerView) {
+        private void snapToNearestItem(@NonNull final RecyclerView recyclerView) {
             final int containerMidX = recyclerView.getWidth() / 2;
             final View centerView = recyclerView.findChildViewUnder(containerMidX, 0);
             final int centerViewMidX = (centerView.getLeft() + centerView.getRight()) / 2;

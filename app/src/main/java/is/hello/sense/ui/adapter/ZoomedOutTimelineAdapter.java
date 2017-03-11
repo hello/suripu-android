@@ -1,9 +1,8 @@
 package is.hello.sense.ui.adapter;
 
-import android.content.Context;
-import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,22 +23,16 @@ import is.hello.sense.ui.widget.SleepScoreDrawable;
 import is.hello.sense.ui.widget.TimelinePreviewView;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
+import rx.functions.Action1;
 
 public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTimelineAdapter.ViewHolder> {
-    private final Context context;
-    private final LayoutInflater inflater;
-    private final Resources resources;
     private final ZoomedOutTimelineInteractor presenter;
     private final int count;
 
     private @Nullable OnItemClickedListener onItemClickedListener;
 
-    public ZoomedOutTimelineAdapter(@NonNull Context context,
-                                    @NonNull ZoomedOutTimelineInteractor presenter,
-                                    @NonNull LocalDate oldestDate) {
-        this.context = context;
-        this.resources = context.getResources();
-        this.inflater = LayoutInflater.from(context);
+    public ZoomedOutTimelineAdapter(@NonNull final ZoomedOutTimelineInteractor presenter,
+                                    @NonNull final LocalDate oldestDate) {
         this.presenter = presenter;
 
         LocalDate today = DateFormatter.todayForTimeline();
@@ -59,14 +52,16 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int position) {
-        View itemView = inflater.inflate(R.layout.item_zoomed_out_timeline, viewGroup, false);
-        return new ViewHolder(itemView);
+        final View itemView = LayoutInflater.from(viewGroup.getContext())
+                                      .inflate(R.layout.item_zoomed_out_timeline, viewGroup, false);
+        return new ViewHolder(itemView,
+                              ZoomedOutTimelineAdapter.this::dispatchClick);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        LocalDate date = presenter.getDateAt(position);
-        Timeline timeline = presenter.getCachedTimeline(date);
+        final LocalDate date = presenter.getDateAt(position);
+        final Timeline timeline = presenter.getCachedTimeline(date);
         holder.bind(date, timeline);
 
         presenter.addDataView(holder);
@@ -119,7 +114,8 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
     //endregion
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, ZoomedOutTimelineInteractor.DataView {
+    public static class ViewHolder extends RecyclerView.ViewHolder
+            implements ZoomedOutTimelineInteractor.DataView {
         public final TextView dayNumber;
         public final TextView dayName;
         public final TextView score;
@@ -143,15 +139,19 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
             this.preview = (TimelinePreviewView) itemView.findViewById(R.id.item_zoomed_out_timeline_preview);
             this.progressBar = (ProgressBar) itemView.findViewById(R.id.item_zoomed_out_timeline_progress);
 
-            this.scoreDrawable = new SleepScoreDrawable(context.getResources(), false);
+            this.scoreDrawable = new SleepScoreDrawable(itemView.getResources(), false);
 
             scoreContainer = itemView.findViewById(R.id.item_zoomed_out_timeline_score_container);
             scoreContainer.setBackground(scoreDrawable);
-
-            itemView.setOnClickListener(this);
         }
 
-        private boolean isTimelineEmpty(@NonNull Timeline timeline) {
+        protected ViewHolder(@NonNull final View itemView,
+                          @NonNull final Action1<ViewHolder> dispatchClick) {
+            this(itemView);
+            itemView.setOnClickListener( ignored -> dispatchClick.call(this));
+        }
+
+        private boolean isTimelineEmpty(@NonNull Timeline timeline) { //todo use TimelineInteractor static isValid methods
             return (timeline.getScore() == null ||
                     timeline.getScoreCondition() == ScoreCondition.UNAVAILABLE ||
                     timeline.getScoreCondition() == ScoreCondition.INCOMPLETE);
@@ -167,7 +167,8 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
             }else {
                 showScore = true;
                 if (isTimelineEmpty(timeline)) {
-                    int sleepScoreColor = resources.getColor(ScoreCondition.UNAVAILABLE.colorRes);
+                    final int sleepScoreColor = ContextCompat.getColor(itemView.getContext(),
+                                                                 ScoreCondition.UNAVAILABLE.colorRes);
                     score.setText(null);
                     score.setTextColor(sleepScoreColor);
                     scoreDrawable.setFillColor(sleepScoreColor);
@@ -176,8 +177,9 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
                     preview.setTimelineEvents(null);
 
                 } else {
-                    int sleepScore = timeline.getScore();
-                    int sleepScoreColor = resources.getColor(timeline.getScoreCondition().colorRes);
+                    final Integer sleepScore = timeline.getScore();
+                    final int sleepScoreColor = ContextCompat.getColor(itemView.getContext(),
+                                                                 timeline.getScoreCondition().colorRes);
                     score.setText(Integer.toString(sleepScore));
                     score.setTextColor(sleepScoreColor);
                     scoreDrawable.setFillColor(sleepScoreColor);
@@ -257,16 +259,6 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
             Anime.cancelAll(progressBar, scoreContainer, preview);
             showLoading(showLoading);
         }
-        //endregion
-
-
-        //region Click Support
-
-        @Override
-        public void onClick(View ignored) {
-            dispatchClick(this);
-        }
-
         //endregion
 
         //region view support
