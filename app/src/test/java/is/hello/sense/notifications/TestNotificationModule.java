@@ -7,20 +7,15 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import is.hello.sense.SenseApplication;
-import is.hello.sense.flows.home.ui.fragments.TimelinePagerPresenterFragment;
-import is.hello.sense.flows.notification.ui.activities.NotificationActivity;
-import is.hello.sense.flows.notification.ui.fragments.NotificationFragment;
-import is.hello.sense.ui.fragments.onboarding.EnableNotificationFragment;
+import is.hello.sense.flows.notification.interactors.NotificationSettingsInteractorTest;
 
 @Module(complete = false, injects = {
-        SenseApplication.class,
-        EnableNotificationFragment.class,
-        TimelinePagerPresenterFragment.class,
-        NotificationActivity.class,
-        NotificationFragment.class
+        NotificationInteractorTest.class,
+        NotificationSettingsInteractorTest.class,
+        NotificationActivityLifecycleListenerTest.class,
+        NotificationPressedInterceptorCounterTest.class,
 })
-public class NotificationModule {
+public class TestNotificationModule {
     @Provides
     @Singleton
     public NotificationInteractor providesNotificationInteractor(@NonNull final Context context) {

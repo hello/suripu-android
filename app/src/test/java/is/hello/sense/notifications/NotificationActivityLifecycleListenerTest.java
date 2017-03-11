@@ -34,4 +34,22 @@ public class NotificationActivityLifecycleListenerTest extends InjectionTestCase
         verify(mockActivity).unregisterReceiver(any(NotificationMessageReceiver.class));
     }
 
+    @Test
+    public void onActivityCreated() throws Exception {
+        final Activity mockActivity = mock(Activity.class);
+        final NotificationPressedInterceptorCounter mockCounter = mock(NotificationPressedInterceptorCounter.class);
+        final NotificationActivityLifecycleListener lifecycleListener = new NotificationActivityLifecycleListener(mockCounter);
+        lifecycleListener.onActivityCreated(mockActivity, null);
+        verify(mockCounter).updateCounter(mockActivity, true);
+    }
+
+    @Test
+    public void onActivityDestroyed() throws Exception {
+        final Activity mockActivity = mock(Activity.class);
+        final NotificationPressedInterceptorCounter mockCounter = mock(NotificationPressedInterceptorCounter.class);
+        final NotificationActivityLifecycleListener lifecycleListener = new NotificationActivityLifecycleListener(mockCounter);
+        lifecycleListener.onActivityDestroyed(mockActivity);
+        verify(mockCounter).updateCounter(mockActivity, false);
+    }
+
 }
