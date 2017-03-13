@@ -70,6 +70,14 @@
                     <View style="@style/Divider.Horizontal.LeftInset"/>
                 </LinearLayout>
 
+                <TextView
+                    android:id="@+id/view_app_settings_night_mode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_night_mode"
+                    style="@style/AppTheme.Card.Item"/>
+
+                <View style="@style/Divider.Horizontal.LeftInset"/>
 
                 <TextView
                     android:id="@+id/view_app_settings_support"

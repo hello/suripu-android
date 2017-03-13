@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <RadioGroup
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/view_night_mode_radio_group"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RadioButton
+            android:id="@+id/view_night_mode_off_rb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:button="@null"
+            android:drawableStart="@drawable/radio_selector"
+            android:drawablePadding="@dimen/x2"
+            android:text="@string/action_off"
+            android:textAppearance="@style/Body.New"
+            style="@style/AppTheme.Card.Item"/>
+
+        <RadioButton
+            android:id="@+id/view_night_mode_always_on_rb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:button="@null"
+            android:drawableStart="@drawable/radio_selector"
+            android:drawablePadding="@dimen/x2"
+            android:text="@string/action_always_on"
+            android:textAppearance="@style/Body.New"
+            style="@style/AppTheme.Card.Item"/>
+
+        <RadioButton
+            android:id="@+id/view_night_mode_scheduled_rb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:button="@null"
+            android:drawableStart="@drawable/radio_selector"
+            android:drawablePadding="@dimen/x2"
+            android:text="@string/action_scheduled"
+            android:textAppearance="@style/Body.New"
+            style="@style/AppTheme.Card.Item"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/x7"
+            android:text="@string/night_mode_scheduled_description"
+            android:layout_marginEnd="@dimen/x2"/>
+    </RadioGroup>
+</layout>

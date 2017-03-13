@@ -156,6 +156,12 @@
             android:theme="@style/AppTheme.AppCompat.SearchListActivity">
         </activity>
 
+        <activity android:name=".flows.nightmode.ui.activities.NightModeActivity"
+                  android:label="@string/action_night_mode"
+                  android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
+                  android:theme="@style/AppTheme.AppCompat.NightModeActivity"
+            />
+
 
         <activity
             android:name=".flows.expansions.ui.activities.ExpansionValuePickerActivity"
