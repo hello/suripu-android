@@ -48,7 +48,7 @@ public class SleepSoundsInteractor extends ScopedValueInteractor<SleepSoundsStat
 
         return apiService.registeredDevices()
                          .flatMap(devices -> {
-                             final boolean paired = !(devices.getSense() == null || devices.getSense().isMissing());
+                             final boolean paired = devices.getSense() != null;
                              if(paired) {
                                 return Observable.just(true);
                              } else {
