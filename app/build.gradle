@@ -116,7 +116,6 @@ android {
             applicationIdSuffix ".development"
 
 
-
         }
 
         release {
@@ -141,9 +140,16 @@ android {
 
     sourceSets {
         development {
-            java.srcDirs = ['src/debug/java']
-            res.srcDirs = ['src/debug/res']
-            assets.srcDirs = ['src/debug/assets']
+            manifest.srcFile 'src/debug_menu/AndroidManifest.xml'
+            java.srcDirs = ['src/debug_menu/java', 'src/development/java']
+            res.srcDirs = ['src/debug_menu/res', 'src/development/res']
+            assets.srcDirs = ['src/debug_menu/assets', 'src/development/assets']
+        }
+        debug {
+            manifest.srcFile 'src/debug_menu/AndroidManifest.xml'
+            java.srcDirs = ['src/debug_menu/java', 'src/debug/java']
+            res.srcDirs = ['src/debug_menu/res', 'src/debug/res']
+            assets.srcDirs = ['src/debug_menu/assets', 'src/debug/assets']
         }
     }
 }
@@ -172,7 +178,7 @@ retrolambda {
  */
 tasks.whenTaskAdded { theTask ->
     def taskName = theTask.name
-    if (Pattern.matches("^test(Debug|Development)UnitTest", taskName)) {
+    if (Pattern.matches("^test(Debug)UnitTest", taskName)) {
         /**
          * Listen for when robolectric adds the 'testDebug' task and when it does, add the -noverify
          * option to that task's jvmArgs.  This allows us to turn off byte code verification when

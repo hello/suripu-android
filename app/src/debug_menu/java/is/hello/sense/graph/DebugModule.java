@@ -1,8 +1,8 @@
 package is.hello.sense.graph;
 
 import dagger.Module;
-import is.hello.sense.debug.EnvironmentActivity;
-import is.hello.sense.debug.PiruPeaActivity;
+import is.hello.sense.debug_menu_ui.EnvironmentActivity;
+import is.hello.sense.debug_menu_ui.PiruPeaActivity;
 
 @Module(complete = false,
         library = true,
