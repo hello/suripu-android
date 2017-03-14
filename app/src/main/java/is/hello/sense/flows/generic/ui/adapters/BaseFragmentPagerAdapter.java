@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
 
-import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.util.Constants;
 
 public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
@@ -66,10 +65,10 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
     private void alertFragmentVisible(final int position,
                                       final boolean isVisible) {
         final Fragment fragment = getFragment(position);
-        if (!(fragment instanceof StaticFragmentAdapter.Controller)) {
+        if (!(fragment instanceof BaseFragmentPagerAdapter.Controller)) {
             return;
         }
-        final StaticFragmentAdapter.Controller controller = (StaticFragmentAdapter.Controller) fragment;
+        final BaseFragmentPagerAdapter.Controller controller = (BaseFragmentPagerAdapter.Controller) fragment;
         if (!controller.hasPresenterView()) {
             return;
         }
