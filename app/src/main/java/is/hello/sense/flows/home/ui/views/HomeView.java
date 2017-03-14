@@ -52,9 +52,9 @@ public class HomeView extends BindedPresenterView<ViewHomeBinding> {
     }
 
     /**
-     * @param listener listener for SenseTabLayout events.
+     * @param listener for {@link is.hello.sense.flows.home.ui.views.HomeTabLayout.Listener} events.
      */
-    public void setTabListener(@NonNull final SenseTabLayout.Listener listener) {
+    public void setTabListener(@NonNull final HomeTabLayout.Listener listener) {
         this.binding.viewHomeTabLayout.setListener(listener);
     }
 

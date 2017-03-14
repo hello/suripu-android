@@ -1,7 +1,6 @@
 package is.hello.sense.flows.home.ui.views;
 
 import android.content.Context;
-import android.support.annotation.CallSuper;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,11 +11,11 @@ import android.view.View;
 
 import is.hello.sense.flows.home.util.HomeFragmentPagerAdapter;
 
-public class SenseTabLayout extends TabLayout
+public class SenseTabLayout<T extends SenseTabLayout.Listener> extends TabLayout
         implements TabLayout.OnTabSelectedListener {
 
     @Nullable
-    protected Listener listener = null;
+    protected T listener = null;
 
     public SenseTabLayout(final Context context) {
         this(context, null, 0);
@@ -31,12 +30,6 @@ public class SenseTabLayout extends TabLayout
                           final AttributeSet attrs,
                           final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-    }
-
-    @Override
-    public void setupWithViewPager(@Nullable final ViewPager viewPager) {
-        super.setupWithViewPager(viewPager);
-        setUpInternal(viewPager);
     }
 
     @Override
@@ -130,8 +123,7 @@ public class SenseTabLayout extends TabLayout
                 .setActive(false);
     }
 
-    @CallSuper
-    public void setListener(@Nullable final Listener listener) {
+    public final void setListener(@Nullable final T listener) {
         this.listener = listener;
     }
 

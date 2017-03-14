@@ -15,31 +15,18 @@ import is.hello.sense.flows.home.util.HomeFragmentPagerAdapter;
  * Handles updating sleep score tab and tab unread indicator
  */
 
-public class HomeTabLayout extends SenseTabLayout {
+public class HomeTabLayout extends SenseTabLayout<HomeTabLayout.Listener> {
 
-    @Nullable
-    private Listener listener = null;
-
-    public HomeTabLayout(Context context) {
-        super(context);
+    public HomeTabLayout(final Context context) {
+        this(context, null, 0);
     }
 
-    public HomeTabLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public HomeTabLayout(final Context context, final AttributeSet attrs) {
+        this(context, attrs, 0);
     }
 
-    public HomeTabLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public HomeTabLayout(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-    }
-
-    @Override
-    public void setListener(@Nullable final SenseTabLayout.Listener listener) {
-        super.setListener(listener);
-        if (listener instanceof Listener) {
-            this.listener = (HomeTabLayout.Listener) listener;
-        } else {
-            this.listener = null;
-        }
     }
 
     @Override
