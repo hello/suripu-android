@@ -42,23 +42,22 @@ public class HomeTabLayout extends SenseTabLayout<HomeTabLayout.Listener> {
 
     //region tab indicator
 
-    public void setTabIndicatorVisible(final boolean show, final int position) {
+    /**
+     * Note: does nothing if current tab position equals position
+     * or no tab was found at position
+     */
+    public void setTabIndicatorVisible(final boolean show,
+                                       final int position) {
         if (getSelectedTabPosition() == position) {
             return;
         }
-        setTabIndicatorVisible(position, show);
-    }
-
-    private void setTabIndicatorVisible(final int position,
-                                        final boolean visible) {
         final TabLayout.Tab tab = getTabAt(position);
         if (tab == null) {
             return;
         }
         if (tab.getCustomView() instanceof SenseTabView) {
-            ((SenseTabView) tab.getCustomView()).setIndicatorVisible(visible);
+            ((SenseTabView) tab.getCustomView()).setIndicatorVisible(show);
         }
-
     }
 
     //endregion
