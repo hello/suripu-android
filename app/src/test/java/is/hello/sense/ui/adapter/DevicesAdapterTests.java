@@ -27,6 +27,8 @@ import is.hello.sense.util.RecyclerAdapterTesting;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class DevicesAdapterTests extends SenseTestCase {
     private Activity parent;
@@ -61,6 +63,24 @@ public class DevicesAdapterTests extends SenseTestCase {
                                SenseDevice.HardwareVersion.SENSE_WITH_VOICE);
     }
 
+    public static class TestDeviceInteractionListener implements DevicesAdapter.OnDeviceInteractionListener {
+
+        @Override
+        public void onPlaceholderInteraction(@NonNull PlaceholderDevice.Type type) {
+            //override
+        }
+
+        @Override
+        public void onUpdateDevice(@NonNull BaseDevice device) {
+            //override
+        }
+
+        @Override
+        public void onScrollBy(int x, int y) {
+            //override
+        }
+    }
+
     //endregion
 
 
@@ -72,7 +92,7 @@ public class DevicesAdapterTests extends SenseTestCase {
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
         final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
-                                                    fakeParent, 1);
+                                                    fakeParent, 0);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sense")));
         assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
@@ -97,7 +117,7 @@ public class DevicesAdapterTests extends SenseTestCase {
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
         final DevicesAdapter.SenseViewHolder senseHolder = RecyclerAdapterTesting.createAndBindView(adapter,
-                fakeParent, 1);
+                fakeParent, 0);
 
         assertThat(senseHolder.title.getText().toString(), is(equalTo("Sense")));
         assertThat(senseHolder.lastSeen.getText().toString(), is(equalTo("5 days ago")));
@@ -121,7 +141,7 @@ public class DevicesAdapterTests extends SenseTestCase {
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
         final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
-                                                                                               fakeParent, 1);
+                                                                                               fakeParent, 0);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sense")));
         assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
@@ -145,7 +165,7 @@ public class DevicesAdapterTests extends SenseTestCase {
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
         final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
-                                                                                               fakeParent, 1);
+                                                                                               fakeParent, 0);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sense")));
         assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
@@ -170,7 +190,7 @@ public class DevicesAdapterTests extends SenseTestCase {
 
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), Lists.newArrayList(sleepPill)));
 
-        final DevicesAdapter.SleepPillViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 2);
+        final DevicesAdapter.SleepPillViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 1);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
         assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
@@ -193,7 +213,7 @@ public class DevicesAdapterTests extends SenseTestCase {
 
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), Lists.newArrayList(sleepPill)));
 
-        final DevicesAdapter.SleepPillViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 2);
+        final DevicesAdapter.SleepPillViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 1);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
         assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
@@ -216,7 +236,7 @@ public class DevicesAdapterTests extends SenseTestCase {
 
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), Lists.newArrayList(sleepPill)));
 
-        final DevicesAdapter.SleepPillViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 2);
+        final DevicesAdapter.SleepPillViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 1);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
         assertThat(holder.lastSeen.getText().toString(), is(equalTo("5 days ago")));
@@ -231,15 +251,10 @@ public class DevicesAdapterTests extends SenseTestCase {
         adapter.bindDevices(new Devices(new ArrayList<>(), new ArrayList<>()));
 
         final LambdaVar<PlaceholderDevice.Type> clickedType = LambdaVar.empty();
-        adapter.setOnDeviceInteractionListener(new DevicesAdapter.OnDeviceInteractionListener() {
+        adapter.setOnDeviceInteractionListener(new TestDeviceInteractionListener() {
             @Override
             public void onPlaceholderInteraction(@NonNull PlaceholderDevice.Type type) {
                 clickedType.set(type);
-            }
-
-            @Override
-            public void onUpdateDevice(@NonNull BaseDevice device) {
-                //do nothing
             }
         });
 
@@ -276,19 +291,14 @@ public class DevicesAdapterTests extends SenseTestCase {
         adapter.bindDevices(new Devices(Lists.newArrayList(sense), new ArrayList<>()));
 
         final LambdaVar<PlaceholderDevice.Type> clickedType = LambdaVar.empty();
-        adapter.setOnDeviceInteractionListener(new DevicesAdapter.OnDeviceInteractionListener() {
+        adapter.setOnDeviceInteractionListener(new TestDeviceInteractionListener() {
             @Override
             public void onPlaceholderInteraction(@NonNull PlaceholderDevice.Type type) {
                 clickedType.set(type);
             }
-
-            @Override
-            public void onUpdateDevice(@NonNull BaseDevice device) {
-                //do nothing
-            }
         });
 
-        final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 2);
+        final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 1);
 
         assertThat(holder.title.getText().toString(), is(equalTo("Sleep Pill")));
         assertThat(holder.actionButton.getText().toString(), is(equalTo("Pair New Pill")));
@@ -315,12 +325,7 @@ public class DevicesAdapterTests extends SenseTestCase {
         adapter.bindDevices(new Devices(new ArrayList<>(), Lists.newArrayList(sleepPill)));
 
         final LambdaVar<BaseDevice> clickedDevice = LambdaVar.empty();
-        adapter.setOnDeviceInteractionListener(new DevicesAdapter.OnDeviceInteractionListener() {
-            @Override
-            public void onPlaceholderInteraction(@NonNull PlaceholderDevice.Type type) {
-                //do nothing
-            }
-
+        adapter.setOnDeviceInteractionListener(new TestDeviceInteractionListener() {
             @Override
             public void onUpdateDevice(@NonNull BaseDevice device) {
                 clickedDevice.set(device);
@@ -347,20 +352,12 @@ public class DevicesAdapterTests extends SenseTestCase {
 
         adapter.bindDevices(new Devices(Lists.newArrayList(senseDevice), new ArrayList<>()));
 
-        final LambdaVar<PlaceholderDevice.Type> clickedPlaceholder = LambdaVar.empty();
-        adapter.setOnDeviceInteractionListener(new DevicesAdapter.OnDeviceInteractionListener() {
-            @Override
-            public void onPlaceholderInteraction(@NonNull PlaceholderDevice.Type type) {
-                clickedPlaceholder.set(type);
-            }
+        final TestDeviceInteractionListener mockListener = mock(TestDeviceInteractionListener.class);
+        adapter.setOnDeviceInteractionListener(mockListener);
 
-            @Override
-            public void onUpdateDevice(@NonNull BaseDevice device) {
-                //do nothing
-            }
-        });
-
-        final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 0);
+        final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                                                                                                     fakeParent,
+                                                                                                     adapter.getItemCount() - 1);
 
         assertThat(holder.title.getText().toString(), is(equalTo(getString(R.string.device_hardware_version_sense_with_voice))));
         assertThat(holder.actionButton.getText().toString(), is(equalTo(getString(R.string.action_upgrade_sense))));
@@ -369,7 +366,27 @@ public class DevicesAdapterTests extends SenseTestCase {
         // For SafeOnClickListener to function properly
         ShadowSystemClock.setCurrentTimeMillis(1000);
         holder.actionButton.performClick();
-        assertThat(clickedPlaceholder.get(), is(PlaceholderDevice.Type.SENSE_WITH_VOICE));
+        verify(mockListener).onPlaceholderInteraction(PlaceholderDevice.Type.SENSE_WITH_VOICE);
+    }
+
+    @Test
+    public void scrollByClickSenseUpgradeCard() throws Exception {
+
+        final SenseDevice senseDevice = createOkSense();
+
+        adapter.bindDevices(new Devices(Lists.newArrayList(senseDevice), new ArrayList<>()));
+
+        final TestDeviceInteractionListener mockListener = mock(TestDeviceInteractionListener.class);
+        adapter.setOnDeviceInteractionListener(mockListener);
+
+        final DevicesAdapter.PlaceholderViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                                                                                                     fakeParent,
+                                                                                                     adapter.getItemCount() - 1);
+
+        // For SafeOnClickListener to function properly
+        ShadowSystemClock.setCurrentTimeMillis(1000);
+        holder.title.performClick();
+        verify(mockListener).onScrollBy(0, holder.itemView.getHeight());
     }
 
     @Test
@@ -379,11 +396,27 @@ public class DevicesAdapterTests extends SenseTestCase {
 
         adapter.bindDevices(new Devices(Lists.newArrayList(senseDevice), new ArrayList<>()));
 
-        final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter, fakeParent, 0);
+        final DevicesAdapter.SenseViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                                                                                               fakeParent,
+                                                                                               0);
 
         assertThat(holder.title.getText().toString(), is(equalTo(getString(R.string.device_hardware_version_sense_with_voice))));
         assertThat(holder.actionButton.isEnabled(), is(false));
         assertThat(holder.actionButton.getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void showPairSecondPillSupport() throws Exception {
+        final SenseDevice senseDevice = createOkSense();
+
+        adapter.bindDevices(new Devices(Lists.newArrayList(senseDevice), new ArrayList<>()));
+
+        final DevicesAdapter.SupportViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
+                                                                                               fakeParent,
+                                                                                               adapter.getItemCount() - 2);
+
+        assertThat(holder.title.getText().toString(), is(equalTo(getString(R.string.devices_support_footer))));
+        assertThat(holder.wantsChevron(), is(equalTo(false)));
     }
 
     //endregion

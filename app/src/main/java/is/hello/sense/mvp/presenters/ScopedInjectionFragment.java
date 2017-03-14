@@ -6,7 +6,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
 
 import is.hello.sense.SenseApplication;
 import is.hello.sense.interactors.Interactor;
@@ -28,10 +27,14 @@ public abstract class ScopedInjectionFragment extends SenseFragment {
 
     }
 
+    public boolean shouldInject() {
+        return true;
+    }
+
     @CallSuper
-    public final void inject(@NonNull final Context context) {
+    public void inject() {
         try {
-            ((ScopedInjectionActivity) context).injectToScopedGraph(this);
+            ((ScopedInjectionActivity) getActivity()).injectToScopedGraph(this);
             onInjected();
         } catch (final ClassCastException e) {
             SenseApplication.getInstance().inject(this); //todo temporary until we phase out old ScopedInjectionActivity
@@ -39,11 +42,16 @@ public abstract class ScopedInjectionFragment extends SenseFragment {
         }
     }
 
+
     @CallSuper
     @Override
     public void onAttach(final Context context) {
         super.onAttach(context);
-        inject(context);
+        if (shouldInject()) {
+            inject();
+        }else {
+            onInjected();
+        }
     }
 
     /**
@@ -56,7 +64,11 @@ public abstract class ScopedInjectionFragment extends SenseFragment {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return;
         }
-        inject(activity);
+        if (shouldInject()) {
+            inject();
+        }else {
+            onInjected();
+        }
     }
 
 
@@ -104,7 +116,6 @@ public abstract class ScopedInjectionFragment extends SenseFragment {
         interactorContainer.onTrimMemory(level);
     }
 
-    @VisibleForTesting
     public void addInteractor(@NonNull final Interactor interactor) {
         interactorContainer.addInteractor(interactor);
     }

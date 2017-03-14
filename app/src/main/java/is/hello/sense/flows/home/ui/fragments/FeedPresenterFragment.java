@@ -9,7 +9,7 @@ import android.view.View;
 
 import javax.inject.Inject;
 
-import is.hello.sense.flows.home.util.HomeViewPagerPresenterDelegate;
+import is.hello.sense.flows.home.util.FeedViewPagerPresenterDelegate;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.HasVoiceInteractor;
 import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
@@ -26,7 +26,7 @@ public class FeedPresenterFragment extends ViewPagerPresenterFragment
     @NonNull
     @Override
     protected BaseViewPagerPresenterDelegate newViewPagerDelegateInstance() {
-        return new HomeViewPagerPresenterDelegate(getResources());
+        return new FeedViewPagerPresenterDelegate(getResources());
     }
 
     @Override

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="genders">
+        <item>Agender</item>
+        <item>Androgyne</item>
+        <item>Androgynous</item>
+        <item>Bigender</item>
+        <item>Cis</item>
+        <item>Cisgender</item>
+        <item>Cis Female</item>
+        <item>Cis Male</item>
+        <item>Cis Man</item>
+        <item>Cis Woman</item>
+        <item>Cisgender Female</item>
+        <item>Cisgender Male</item>
+        <item>Cisgender Man</item>
+        <item>Cisgender Woman</item>
+        <item>Female to Male</item>
+        <item>FTM</item>
+        <item>Gender Fluid</item>
+        <item>Gender Nonconforming</item>
+        <item>Gender Questioning</item>
+        <item>Gender Variant</item>
+        <item>Genderqueer</item>
+        <item>Intersex</item>
+        <item>Male to Female</item>
+        <item>MTF</item>
+        <item>Neither</item>
+        <item>Neutrois</item>
+        <item>Non-binary</item>
+        <item>Other</item>
+        <item>Pangender</item>
+        <item>Trans</item>
+        <item>Trans*</item>
+        <item>Trans Female</item>
+        <item>Trans* Female</item>
+        <item>Trans Male</item>
+        <item>Trans* Male</item>
+        <item>Trans Man</item>
+        <item>Trans* Man</item>
+        <item>Trans Person</item>
+        <item>Trans* Person</item>
+        <item>Trans Woman</item>
+        <item>Trans* Woman</item>
+        <item>Transfeminine</item>
+        <item>Transgender</item>
+        <item>Transgender Female</item>
+        <item>Transgender Male</item>
+        <item>Transgender Man</item>
+        <item>Transgender Person</item>
+        <item>Transgender Woman</item>
+        <item>Transmasculine</item>
+        <item>Transsexual</item>
+        <item>Transsexual Female</item>
+        <item>Transsexual Male</item>
+        <item>Transsexual Man</item>
+        <item>Transsexual Person</item>
+        <item>Transsexual Woman</item>
+        <item>Two-Spirit</item>
+    </string-array>
+</resources>

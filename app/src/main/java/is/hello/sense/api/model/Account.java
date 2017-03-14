@@ -14,6 +14,7 @@ import org.joda.time.LocalDate;
 
 import is.hello.sense.api.gson.Exclude;
 import is.hello.sense.api.model.v2.MultiDensityImage;
+import is.hello.sense.util.Constants;
 
 public class Account extends ApiResponse implements Cloneable {
     @Expose(deserialize = false, serialize = true)
@@ -33,6 +34,9 @@ public class Account extends ApiResponse implements Cloneable {
 
     @SerializedName("gender")
     private Gender gender;
+
+    @SerializedName("gender_other")
+    private String genderOther;
 
     @SerializedName("height")
     private Integer height;
@@ -133,6 +137,23 @@ public class Account extends ApiResponse implements Cloneable {
 
     public void setGender(Gender gender) {
         this.gender = gender;
+    }
+
+    public void useDefaultGenderIfNull() {
+        if (gender == null ) {
+            this.gender = Gender.OTHER;
+            this.genderOther = Constants.EMPTY_STRING;
+        } else if (genderOther == null) {
+            this.genderOther = Constants.EMPTY_STRING;
+        }
+    }
+
+    public String getGenderOther() {
+        return genderOther;
+    }
+
+    public void setGenderOther(final String genderOther) {
+        this.genderOther = genderOther;
     }
 
     public Integer getHeight() {

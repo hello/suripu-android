@@ -1,10 +1,13 @@
 package is.hello.sense.interactors;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import javax.inject.Inject;
 
 import is.hello.sense.api.ApiService;
+import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.VoidResponse;
 import is.hello.sense.api.model.v2.SleepSoundActionPlay;
 import is.hello.sense.api.model.v2.SleepSoundActionStop;
@@ -17,7 +20,7 @@ public class SleepSoundsInteractor extends ScopedValueInteractor<SleepSoundsStat
     @Inject
     ApiService apiService;
 
-    public final InteractorSubject<SleepSoundsStateDevice> sub = this.subject;
+    public final InteractorSubject<SleepSoundsStateDevice> combinedState = this.subject;
 
     @Override
     protected boolean isDataDisposable() {
@@ -45,15 +48,17 @@ public class SleepSoundsInteractor extends ScopedValueInteractor<SleepSoundsStat
     }
 
     public Observable<Boolean> hasSensePaired() {
-
         return apiService.registeredDevices()
-                         .flatMap(devices -> {
-                             final boolean paired = !(devices.getSense() == null || devices.getSense().isMissing());
-                             if(paired) {
-                                return Observable.just(true);
-                             } else {
-                                 return Observable.error(new SenseRequiredException());
-                             }
-                         });
+                         .flatMap(SleepSoundsInteractor.this::hasSensePaired);
+    }
+
+    @VisibleForTesting
+    protected Observable<Boolean> hasSensePaired(@Nullable final Devices devices) {
+        final boolean paired = !(devices == null || devices.getSense() == null);
+        if(paired) {
+            return Observable.just(true);
+        } else {
+            return Observable.error(new SenseRequiredException());
+        }
     }
 }

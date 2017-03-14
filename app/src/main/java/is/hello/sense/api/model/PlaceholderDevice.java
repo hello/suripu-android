@@ -36,6 +36,7 @@ public class PlaceholderDevice extends BaseDevice {
     public enum Type {
         SENSE,
         SLEEP_PILL,
-        SENSE_WITH_VOICE
+        SENSE_WITH_VOICE,
+        SUPPORT_PAIR_SECOND_PILL
     }
 }

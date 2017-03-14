@@ -11,6 +11,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
+import is.hello.sense.notifications.OnNotificationPressedInterceptor;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.InjectionActivity;
@@ -22,7 +23,8 @@ import is.hello.sense.ui.fragments.pill.UpdateReadyPillFragment;
 import is.hello.sense.util.Analytics;
 
 public class PillUpdateActivity extends InjectionActivity
-        implements FragmentNavigation {
+        implements FragmentNavigation,
+        OnNotificationPressedInterceptor {
     public static final String ARG_NEEDS_BLUETOOTH = PillUpdateActivity.class.getName() + ".ARG_NEEDS_BLUETOOTH";
     public static final String EXTRA_DEVICE_ID = PillUpdateActivity.class.getName() + ".EXTRA_DEVICE_ID";
     public static final int REQUEST_CODE = 0xfeed;

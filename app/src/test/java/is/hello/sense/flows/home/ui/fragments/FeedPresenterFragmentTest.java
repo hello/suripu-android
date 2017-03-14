@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import is.hello.sense.FragmentTest;
-import is.hello.sense.flows.home.util.HomeViewPagerPresenterDelegate;
+import is.hello.sense.flows.home.util.FeedViewPagerPresenterDelegate;
 
 import static junit.framework.Assert.assertTrue;
 
@@ -13,7 +13,7 @@ public class FeedPresenterFragmentTest extends FragmentTest<FeedPresenterFragmen
 
     @Test
     public void newViewPagerDelegateInstanceTest() {
-        assertTrue(fragment.newViewPagerDelegateInstance() instanceof HomeViewPagerPresenterDelegate);
+        assertTrue(fragment.newViewPagerDelegateInstance() instanceof FeedViewPagerPresenterDelegate);
     }
 
     @Test

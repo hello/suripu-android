@@ -31,6 +31,7 @@ import javax.inject.Inject;
 
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
@@ -118,9 +119,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     TimelineInfoOverlay infoOverlay;
 
     @VisibleForTesting
-    Parent parent;
-
-    @VisibleForTesting
     int toolTipHeight;
 
     //region PresenterFragment
@@ -142,9 +140,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             return;
         }
         if (isVisibleToUser) {
-            // For all subsequent fragments running below Nougat
-            // setUserVisibleHint called before attached to activity
-            // not a reliable way to determine current view pager fragment
             bindIfNeeded();
             this.presenterView.setAnimationEnabled(true);
         } else {
@@ -155,21 +150,13 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     }
 
     @Override
-    public void onAttach(@NonNull final Activity activity) {
-        super.onAttach(activity);
-        attachParent(activity);
-    }
-
-    @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final LocalDate date = getDate();
-        final Properties properties = Analytics.createProperties(Analytics.Timeline.PROP_DATE,
-                                                                 date.toString());
-        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE, properties);
-
-
-        this.timelineInteractor.setDateWithTimeline(date, getCachedTimeline());
+        //todo create a testfragment that supports subfragments.
+        if (!(getParentFragment() instanceof Parent) && !SenseApplication.isRunningInRobolectric()) {
+            throw new IllegalStateException("A parent is required to control TimelineFragment");
+        }
+        this.timelineInteractor.setDateWithTimeline(getDate(), getCachedTimeline());
         addInteractor(this.timelineInteractor);
     }
 
@@ -219,7 +206,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     @Override
     public void onDetach() {
         super.onDetach();
-        this.parent = null;
     }
 
     @Override
@@ -233,10 +219,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         } else if (requestCode == ZOOMED_OUT_TIMELINE_REQUEST && data != null) {
             final LocalDate date = (LocalDate) data.getSerializableExtra(TimelineActivity.EXTRA_LOCAL_DATE);
             final Timeline timeline = (Timeline) data.getSerializableExtra(TimelineActivity.EXTRA_TIMELINE);
-            if (this.parent == null) {
-                attachParent(getActivity());
-            }
-            this.parent.jumpTo(date, timeline);
+            getParentFragmentParent().jumpTo(date, timeline);
         }
     }
 
@@ -252,22 +235,18 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     //endregion
 
     //region Actions
+
+    @VisibleForTesting
+    protected Parent getParentFragmentParent() {
+        return (Parent) getParentFragment();
+    }
+
     public void showTimelineNavigator(@NonNull final LocalDate date,
                                       @Nullable final Timeline timeline) {
         startActivityForResult(TimelineActivity.getZoomedOutIntent(getActivity(),
                                                                    date,
                                                                    timeline),
                                ZOOMED_OUT_TIMELINE_REQUEST);
-    }
-
-    private void attachParent(@NonNull final Activity activity) {
-        if (activity instanceof Parent && this.parent == null) {
-            setParent((Parent) activity);
-        } else if (activity instanceof ParentProvider && this.parent == null) {
-            setParent(((ParentProvider) activity).getTimelineParent());
-        } else if (this.parent == null) {
-            throw new IllegalStateException("A parent is required to control TimelineFragment");
-        }
     }
 
     private void onShareIconClicked(final View ignored) {
@@ -329,6 +308,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     @VisibleForTesting
     void bindIfNeeded() {
         if (getView() != null && getUserVisibleHint()) {
+            sendShownAnalyticEvent();
             if (!hasSubscriptions()) {
                 this.timelineInteractor.updateIfEmpty();
 
@@ -359,10 +339,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     }
 
     //region Hooks
-
-    public void setParent(@Nullable final Parent parent) {
-        this.parent = parent;
-    }
 
     @SuppressWarnings("ConstantConditions")
     public
@@ -398,7 +374,8 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     }
 
     private void showHandholdingIfAppropriate() {
-        if (this.parent == null ||
+        final Parent parent = getParentFragmentParent();
+        if (parent == null ||
                 WelcomeDialogFragment.isAnyVisible(getActivity())) {
             return;
         }
@@ -406,9 +383,9 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         if (Tutorial.SWIPE_TIMELINE.shouldShow(getActivity()) && !this.presenterView.hasTutorial() && isAtLeastThreeDaysOld()) {
             final TutorialOverlayView overlayView = new TutorialOverlayView(getActivity(), Tutorial.SWIPE_TIMELINE);
             overlayView.setOnDismiss(() -> this.presenterView.clearTutorial());
-            overlayView.setAnchorContainer(getActivity().findViewById(this.parent.getTutorialContainerIdRes()));
+            overlayView.setAnchorContainer(getActivity().findViewById(parent.getTutorialContainerIdRes()));
             this.presenterView.showTutorial(overlayView,
-                                            this.parent.getTutorialContainerIdRes());
+                                            parent.getTutorialContainerIdRes());
         }
     }
 
@@ -680,6 +657,12 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
                          });
     }
 
+    private void sendShownAnalyticEvent() {
+        final Properties properties = Analytics.createProperties(Analytics.Timeline.PROP_DATE,
+                                                                 getDate().toString());
+        Analytics.trackEvent(Analytics.Timeline.EVENT_TIMELINE, properties);
+    }
+
     //endregion
 
     private class ScrollListener extends RecyclerView.OnScrollListener {
@@ -719,7 +702,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
             }
         }
     }
-
 
     public interface Parent {
 

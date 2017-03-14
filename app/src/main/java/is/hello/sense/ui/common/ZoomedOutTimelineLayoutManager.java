@@ -2,13 +2,15 @@ package is.hello.sense.ui.common;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 
 public class ZoomedOutTimelineLayoutManager extends LinearLayoutManager {
-    public static final int NUMBER_ITEMS_ON_SCREEN = 3;
+    @VisibleForTesting
+    static final int NUMBER_ITEMS_ON_SCREEN = 3;
 
     private @Nullable Runnable onPostLayout;
 
@@ -26,6 +28,11 @@ public class ZoomedOutTimelineLayoutManager extends LinearLayoutManager {
         }
     }
 
+    @Override
+    public void onDetachedFromWindow(RecyclerView view, RecyclerView.Recycler recycler) {
+        super.onDetachedFromWindow(view, recycler);
+        this.onPostLayout = null;
+    }
 
     public int getItemWidth() {
         return getWidth() / NUMBER_ITEMS_ON_SCREEN;
@@ -45,7 +52,7 @@ public class ZoomedOutTimelineLayoutManager extends LinearLayoutManager {
         return params;
     }
 
-    public void postLayout(@Nullable Runnable onPostLayout) {
+    public void postLayout(@Nullable final Runnable onPostLayout) {
         this.onPostLayout = onPostLayout;
     }
 }

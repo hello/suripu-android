@@ -67,6 +67,20 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     private Subscription stopOperationSubscriber = Subscriptions.empty();
     private Subscription hasSensePairedSubscription = Subscriptions.empty();
 
+    private final Action0 retryRunnable = new Action0() {
+        @Override
+        public void call() {
+            sleepSoundsStatusInteractor.resetBackOffIfNeeded();
+            sleepSoundsInteractor.update();
+        }
+    };
+    public final Action0 getCombinedStateRunnable = new Action0() {
+        @Override
+        public void call() {
+            sleepSoundsInteractor.update();
+        }
+    };
+
     private UserWants userWants = UserWants.NONE;
     private State currentState = State.IDLE;
     @Nullable
@@ -83,7 +97,8 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
         PLAYING,
         IDLE,
         LOADING,
-        ERROR
+        ERROR,
+        UPDATING
     }
 
     //region PresenterFragment
@@ -113,7 +128,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bindAndSubscribe(sleepSoundsStatusInteractor.state, this::bindStatus, this::presentStatusError);
-        bindAndSubscribe(sleepSoundsInteractor.sub, this::bind, this::presentError);
+        bindAndSubscribe(sleepSoundsInteractor.combinedState, this::bind, this::presentError);
         bindAndSubscribe(preferencesInteractor.observeChangesOn(PreferencesInteractor.SLEEP_SOUNDS_SOUND_ID,
                                                                 PreferencesInteractor.SLEEP_SOUNDS_VOLUME_ID,
                                                                 PreferencesInteractor.SLEEP_SOUNDS_DURATION_ID),
@@ -137,18 +152,10 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
         super.setVisibleToUser(isVisible);
         if (isVisible) {
             Analytics.trackEvent(Analytics.SleepSounds.EVENT_SLEEP_SOUNDS, null);
-            if (currentState == State.IDLE) {
-                if (presenterView.isShowingPlayer()) {
-                    displayPlayButton();
-                } else {
-                    displayLoadingButton();
-                }
+            if (presenterView.isShowingPlayer()) {
+                displayLoadingButton();
             }
-            updateSensePairedSubscription(() -> {
-                sleepSoundsStatusInteractor.resetBackOffIfNeeded();
-                sleepSoundsStatusInteractor.startPolling();
-                sleepSoundsInteractor.update();
-            });
+            updateSensePairedSubscription(getCombinedStateRunnable);
         } else {
             sleepSoundsStatusInteractor.stopPolling();
         }
@@ -230,11 +237,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     @Override
     public void retry() {
         presenterView.setProgressBarVisible(true);
-        updateSensePairedSubscription(() -> {
-            sleepSoundsStatusInteractor.resetBackOffIfNeeded();
-            sleepSoundsStatusInteractor.startPolling();
-            sleepSoundsInteractor.update();
-        });
+        updateSensePairedSubscription(retryRunnable);
     }
     //endregion
 
@@ -261,7 +264,10 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
 
     @Override
     public boolean shouldShowFab() {
-        return currentState != State.ERROR;
+        return currentState != State.ERROR
+                && currentState != State.UPDATING
+                && hasPresenterView()
+                && presenterView.isShowingPlayer();
     }
 
     @Override
@@ -293,8 +299,16 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
 
     //region FabPresenter helpers
     public void adapterSetState(final SleepSoundsAdapter.AdapterState state) {
+        if (state == SleepSoundsAdapter.AdapterState.FIRMWARE_UPDATE
+                || state == SleepSoundsAdapter.AdapterState.SOUNDS_DOWNLOAD
+                || state == SleepSoundsAdapter.AdapterState.OFFLINE) {
+            this.currentState = State.UPDATING;
+            this.sleepSoundsStatusInteractor.stopPolling();
+        } else {
+            displayPlayButton();
+        }
         presenterView.adapterSetState(state);
-        displayPlayButton();
+        this.notifyChange();
     }
 
     private void notifyChange() {
@@ -375,6 +389,7 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
     }
 
     private void bind(final @NonNull SleepSoundsStateDevice stateDevice) {
+        this.presenterView.setProgressBarVisible(false);
         final Devices devices = stateDevice.getDevices();
         final SleepSoundsState combinedState = stateDevice.getSleepSoundsState();
         if (devices == null || combinedState == null || devices.getSense() == null) {
@@ -389,32 +404,30 @@ public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSounds
             return;
         }
 
-        if (combinedState.getSounds() != null) {
-            //setState download sounds if combined state sounds is empty
-            if (combinedState.getSounds().getSounds().isEmpty()) {
+        if (combinedState.getSounds() == null) {
+            adapterSetState(SleepSoundsAdapter.AdapterState.ERROR);
+            return;
+        }
+        final SleepSounds.State currentState = combinedState.getSounds().getState();
+        switch (currentState) {
+            case SENSE_UPDATE_REQUIRED:
+                adapterSetState(SleepSoundsAdapter.AdapterState.FIRMWARE_UPDATE);
+                return;
+            case SOUNDS_NOT_DOWNLOADED:
                 adapterSetState(SleepSoundsAdapter.AdapterState.SOUNDS_DOWNLOAD);
                 return;
-            }
-
-
-            final SleepSounds.State currentState = combinedState.getSounds().getState();
-            switch (currentState) {
-                case SENSE_UPDATE_REQUIRED:
-                    adapterSetState(SleepSoundsAdapter.AdapterState.FIRMWARE_UPDATE);
-                    return;
-                case SOUNDS_NOT_DOWNLOADED:
+            case OK:
+                if (combinedState.getSounds() == null || combinedState.getSounds().getSounds().isEmpty()) {
                     adapterSetState(SleepSoundsAdapter.AdapterState.SOUNDS_DOWNLOAD);
                     return;
-                case OK:
-                    presenterView.adapterBindState(combinedState);
-                    displayLoadingButton();
-                    return;
-                default:
-                    adapterSetState(SleepSoundsAdapter.AdapterState.ERROR);
-                    return;
-            }
+                }
+                sleepSoundsStatusInteractor.startPolling();
+                presenterView.adapterBindState(combinedState);
+                displayLoadingButton();
+                return;
+            default:
+                adapterSetState(SleepSoundsAdapter.AdapterState.ERROR);
         }
-        adapterSetState(SleepSoundsAdapter.AdapterState.NONE);
 
     }
 

@@ -35,6 +35,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
+import is.hello.sense.notifications.OnNotificationPressedInterceptor;
 import is.hello.sense.onboarding.OnboardingModule;
 import is.hello.sense.onboarding.OnboardingPairSenseModule;
 import is.hello.sense.presenters.PairSensePresenter;
@@ -86,7 +87,8 @@ public class OnboardingActivity extends ScopedInjectionActivity
         implements FragmentNavigation,
         SkippableFlow,
         SimpleStepFragment.ExitAnimationProviderActivity,
-        AccountEditor.Container {
+        AccountEditor.Container,
+        OnNotificationPressedInterceptor {
     public static final String TAG = OnboardingActivity.class.getName();
     public static final String EXTRA_START_CHECKPOINT = TAG + ".EXTRA_START_CHECKPOINT";
     public static final String EXTRA_PAIR_ONLY = TAG + ".EXTRA_PAIR_ONLY";

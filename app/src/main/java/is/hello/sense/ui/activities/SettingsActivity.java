@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import is.hello.sense.R;
+import is.hello.sense.notifications.OnNotificationPressedInterceptor;
 import is.hello.sense.settings.SettingsPairSenseModule;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -32,7 +33,9 @@ import is.hello.sense.util.Logger;
 
 //todo decide how to phase out fragment navigation activity
 public class SettingsActivity extends ScopedInjectionActivity
-        implements FragmentNavigation, FragmentManager.OnBackStackChangedListener {
+        implements FragmentNavigation,
+        FragmentManager.OnBackStackChangedListener,
+        OnNotificationPressedInterceptor {
 
     @Override
     protected List<Object> getModules() {

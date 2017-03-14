@@ -29,7 +29,14 @@ public class NotificationModule {
 
     @Provides
     @Singleton
-    public NotificationActivityLifecycleListener providesNotificationActivityLifecycleListener() {
-        return new NotificationActivityLifecycleListener();
+    public NotificationActivityLifecycleListener providesNotificationActivityLifecycleListener(@NonNull final NotificationPressedInterceptorCounter counter) {
+        final NotificationActivityLifecycleListener listener = new NotificationActivityLifecycleListener(counter);
+        return listener;
+    }
+
+    @Provides
+    @Singleton
+    public NotificationPressedInterceptorCounter providesNotificationPressedInterceptorCounter() {
+        return new NotificationPressedInterceptorCounter();
     }
 }

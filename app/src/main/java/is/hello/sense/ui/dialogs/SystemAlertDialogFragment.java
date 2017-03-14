@@ -3,6 +3,9 @@ package is.hello.sense.ui.dialogs;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.view.View;
 
 import com.segment.analytics.Properties;
 
@@ -26,6 +29,12 @@ public class SystemAlertDialogFragment extends BottomAlertDialogFragment<AlertDi
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getActionHandler(); //check it exists
+    }
+
+    @Override
     AlertDialogViewModel getEmptyDialogViewModelInstance() {
         return AlertDialogViewModel.NewEmptyInstance(getResources());
     }
@@ -42,14 +51,25 @@ public class SystemAlertDialogFragment extends BottomAlertDialogFragment<AlertDi
         Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT_ACTION, properties);
         switch (alert.getAnalyticPropertyType()){
             case SENSE_MUTED:
-                if(getActivity() instanceof Alert.ActionHandler){
-                    ((Alert.ActionHandler) getActivity()).unMuteSense();
-                }
+                getActionHandler().unMuteSense();
                 break;
             case EXPANSION_UNREACHABLE:
             case UNKNOWN:
             default:
                 //do nothing
+        }
+    }
+
+    @VisibleForTesting
+    @NonNull
+    protected Alert.ActionHandler getActionHandler() {
+        if (getTargetFragment() instanceof Alert.ActionHandler) {
+            return (Alert.ActionHandler) getTargetFragment();
+        } else if (getActivity() instanceof Alert.ActionHandler) {
+            return (Alert.ActionHandler) getActivity();
+        } else {
+            throw new IllegalStateException(String.format("%s required to handle actions",
+                                                          Alert.ActionHandler.class.getName()));
         }
     }
 

@@ -43,6 +43,7 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
     private TextView monthText;
     private TextView dayText;
     private TextView yearText;
+    private TableLayout keys;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -118,7 +119,7 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
         }
 
 
-        final TableLayout keys = (TableLayout) view.findViewById(R.id.fragment_onboarding_register_birthday_keys);
+        this.keys = (TableLayout) view.findViewById(R.id.fragment_onboarding_register_birthday_keys);
 
         final Button skip = (Button) keys.findViewById(R.id.fragment_onboarding_register_birthday_skip);
         Views.setSafeOnClickListener(skip, this::skip);
@@ -137,7 +138,6 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
                 if ("-1".equals(columnButton.getTag())) {
                     continue;
                 }
-
                 Views.setTimeOffsetOnClickListener(columnButton, appendNumber);
             }
         }
@@ -147,6 +147,19 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Views.removeAllClickListeners(keys);
+        keys = null;
+        dayText = null;
+        monthText = null;
+        yearText = null;
+
+        for(int i=0;i<fields.length;i++) {
+            fields[i] = null;
+        }
+    }
 
     private int parseString(@NonNull final CharSequence value) throws NumberFormatException {
         return Integer.valueOf(value.toString(), 10);

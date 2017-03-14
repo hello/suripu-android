@@ -3,6 +3,7 @@ package is.hello.sense.ui.activities.appcompat;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.MenuItem;
@@ -18,15 +19,18 @@ public abstract class FragmentNavigationActivity extends ScopedInjectionActivity
     protected FragmentNavigationDelegate navigationDelegate;
 
     //region ScopedInjectionActivity
+    @CallSuper
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getIntentValues();
         setContentView(R.layout.activity_navigation);
         this.navigationDelegate = new FragmentNavigationDelegate(this,
                                                                  R.id.activity_navigation_container,
                                                                  stateSafeExecutor);
         if (savedInstanceState != null) {
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
+            onReCreateAction(savedInstanceState);
         } else {
             onCreateAction();
         }
@@ -105,4 +109,17 @@ public abstract class FragmentNavigationActivity extends ScopedInjectionActivity
      * Called if the activity is just starting.
      */
     protected abstract void onCreateAction();
+
+    /**
+     * Called when the activity is recreated.
+     *
+     * @param savedInstanceState a nonnull bundle to restore state from.
+     */
+    protected void onReCreateAction(@NonNull final Bundle savedInstanceState) {
+
+    }
+
+    protected void getIntentValues() {
+    }
+
 }
