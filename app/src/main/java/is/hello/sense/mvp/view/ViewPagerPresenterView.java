@@ -150,7 +150,7 @@ public class ViewPagerPresenterView extends PresenterView {
     @Nullable
     public Fragment getFragmentAtPos(final int pos) {
         if (getAdapterChildCount() > pos) {
-            return getAdapter().getFragment(pos);
+            return getAdapter().findFragment(pos);
         }
         return null;
     }

@@ -104,7 +104,7 @@ public class TimelineFragmentAdapter extends BaseFragmentPagerAdapter {
 
     @Nullable
     public TimelineFragment getCurrentTimeline() {
-        return (TimelineFragment) getCurrentFragment();
+        return (TimelineFragment) findCurrentFragment();
     }
 
     //endregion

@@ -5,20 +5,50 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
 
+import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.util.Constants;
 
+import android.support.v4.view.ViewPager;
+
+/**
+ * Use this adapter with a {@link ViewPager} that will be showing multiple {@link Fragment}.
+ * <p>
+ * Each Fragment used should implement {@link Controller} for better control over knowing when it is
+ * visible or invisible to the user.  This adapter takes responsibility for telling the fragment
+ * when it has become visible or invisible by calling {@link Controller#setVisibleToUser(boolean)}.
+ * <p>
+ * You can extend {@link ControllerPresenterFragment} which already implements the Controller interface
+ * and has a helper instance field tracking if the fragment is visible or not. Read the field by using
+ * {@link ControllerPresenterFragment#isVisibleToUser()}.
+ */
 public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
     private static final String KEY_LAST_POSITION = BaseFragmentPagerAdapter.class.getSimpleName() + ".KEY_LAST_POSITION";
 
     private final FragmentManager fragmentManager;
+    /**
+     * As of right now only one containerId is ever used. Store it here.
+     */
     private final int containerId;
+    /**
+     * This is very important for {@link #setPrimaryItem(ViewGroup, int, Object)} and
+     * {@link #findFragment(int)}.
+     */
+    private int lastPosition = Constants.NONE;
 
-    protected int lastPosition = Constants.NONE;
-
+    /**
+     * A known hack for mimicking {@link FragmentPagerAdapter#makeFragmentName(int, long)}.
+     * <p>
+     * This may break in future releases of Android.
+     *
+     * @param viewId usually the id of the ViewPager displaying the fragments.
+     * @param id     this is the position of the fragment. Think of it like an array.
+     * @return the tag name created by default in {@link FragmentPagerAdapter#instantiateItem(ViewGroup, int)}
+     */
     private static String makeFragmentName(final int viewId,
                                            final long id) {
         return "android:switcher:" + viewId + ":" + id;
@@ -32,6 +62,15 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
 
     }
 
+    /**
+     * This is an important override. By default the adapter can repeatedly call this method which
+     * will perform multiple {@link Controller#setVisibleToUser(boolean)} calls. We use {@link #lastPosition}
+     * to make sure it's only called once.
+     *
+     * @param container
+     * @param position
+     * @param object
+     */
     @Override
     public void setPrimaryItem(final ViewGroup container,
                                final int position,
@@ -45,6 +84,7 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
         alertFragmentVisible(lastPosition, true);
     }
 
+    @CallSuper
     @Override
     public Parcelable saveState() {
         final Bundle state = new Bundle();
@@ -52,6 +92,7 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
         return state;
     }
 
+    @CallSuper
     @Override
     public void restoreState(@Nullable final Parcelable state,
                              @Nullable final ClassLoader loader) {
@@ -62,9 +103,17 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
         }
     }
 
-    private void alertFragmentVisible(final int position,
-                                      final boolean isVisible) {
-        final Fragment fragment = getFragment(position);
+    /**
+     * Alerts the fragment at the given position that it is visible or invisible. Will check if
+     * the fragment implements {@link Controller} and it will make sure that fragment's PresenterView
+     * isn't null.
+     *
+     * @param position
+     * @param isVisible
+     */
+    private final void alertFragmentVisible(final int position,
+                                            final boolean isVisible) {
+        final Fragment fragment = findFragment(position);
         if (!(fragment instanceof BaseFragmentPagerAdapter.Controller)) {
             return;
         }
@@ -75,24 +124,47 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
         controller.setVisibleToUser(isVisible);
     }
 
+    /**
+     * This will specifically find an existing fragment. This SHOULD NOT create one. Use
+     * {@link #getItem(int)} to create one.
+     *
+     * @param id position of fragment. Will be used to convert into the correct fragment tag
+     *           with {@link #makeFragmentName(int, long)}.
+     * @return null if no fragment has been made with that id yet.
+     */
     @Nullable
-    public Fragment getFragment(final int id) {
+    public final Fragment findFragment(final int id) {
         return fragmentManager.findFragmentByTag(makeFragmentName(containerId, id));
     }
 
+    /**
+     * Returns the current visible fragment.
+     *
+     * @return null if no fragment exists with id of {{@link #lastPosition}}
+     */
     @Nullable
-    public Fragment getCurrentFragment() {
+    public final Fragment findCurrentFragment() {
         if (lastPosition == Constants.NONE) {
             return null;
         }
         return fragmentManager.findFragmentByTag(makeFragmentName(containerId, lastPosition));
     }
 
-    public void onResume() {
+    /**
+     * In order to strictly rely on the {@link Controller} to determine our user visibility state we
+     * need to make sure the Activity/Fragment that created this adapter calls this when it resumes
+     * to tell the current Fragment it is now visible.
+     */
+    public final void onResume() {
         alertFragmentVisible(lastPosition, true);
     }
 
-    public void onPause() {
+    /**
+     * In order to strictly rely on the {@link Controller} to determine our user visibility state we
+     * need to make sure the Activity/Fragment that created this adapter calls this when it pauses
+     * to tell the current Fragment it is now invisible.
+     */
+    public final void onPause() {
         alertFragmentVisible(lastPosition, false);
     }
 
