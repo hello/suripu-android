@@ -1,7 +1,7 @@
 {
     "alpha": {
-        "apk_name": "app-debug",
-        "assemble_command": "assembleDebug",
+        "apk_name": "app-development",
+        "assemble_command": "assembleDevelopment",
         "hockey_app_id": "7403b3eb474522963df93184fae37404",
         "reveal": false
     },
@@ -19,9 +19,10 @@
         "reveal": true
     },
     "synonyms": {
-        "debug": "alpha",
+        "dev": "alpha",
         "feature-branch": "feature",
         "rc": "store",
-        "store": "release"
+        "store": "release",
+        "prod": "release"
     }
 }
