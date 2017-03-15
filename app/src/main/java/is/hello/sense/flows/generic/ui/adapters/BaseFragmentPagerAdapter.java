@@ -8,6 +8,7 @@ import android.os.Parcelable;
 import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentPagerAdapter;
+import android.view.View;
 import android.view.ViewGroup;
 
 import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
@@ -34,7 +35,7 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
     /**
      * Containing views ID.
      */
-    private int containerId;
+    private int containerId = View.NO_ID;
     /**
      * This is very important for {@link #setPrimaryItem(ViewGroup, int, Object)} and
      * {@link #findFragment(int)}.
@@ -141,6 +142,9 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
      */
     @Nullable
     public final Fragment findFragment(final int id) {
+        if (containerId == View.NO_ID){
+            return null;
+        }
         return fragmentManager.findFragmentByTag(makeFragmentName(containerId, getItemId(id)));
     }
 
@@ -151,6 +155,9 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
      */
     @Nullable
     public final Fragment findCurrentFragment() {
+        if (containerId == View.NO_ID){
+            return null;
+        }
         if (lastPosition == Constants.NONE) {
             return null;
         }
