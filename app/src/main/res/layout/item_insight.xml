@@ -34,9 +34,9 @@
         android:layout_below="@+id/item_insight_image"
         android:layout_marginStart="@dimen/x2"
         android:layout_marginTop="@dimen/x2"
-        android:singleLine="true"
+        android:maxLines="1"
         android:textAllCaps="true"
-        android:textColor="@color/gray6"
+        android:textColor="@color/text_dark"
         tools:text="@string/action_insights"/>
 
     <TextView
@@ -49,8 +49,8 @@
         android:layout_marginTop="@dimen/x2"
         android:layout_toEndOf="@id/item_insight_category"
         android:gravity="end"
-        android:singleLine="true"
-        android:textColor="@color/gray3"
+        android:maxLines="1"
+        android:textColor="@color/text_extra_light"
         tools:text="@string/action_today"/>
 
     <TextView

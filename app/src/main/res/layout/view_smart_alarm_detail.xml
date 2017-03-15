@@ -186,7 +186,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center_vertical"
                         android:fontFamily="sans-serif"
-                        android:textColor="@color/text_color_selector_light_accent"
+                        android:textColor="@color/text_link_color_selector"
                         android:visibility="gone"/>
 
                     <ImageView
@@ -252,7 +252,7 @@
                         android:layout_gravity="end|center_vertical"
                         android:drawablePadding="@dimen/x1"
                         android:fontFamily="sans-serif"
-                        android:textColor="@color/text_color_selector_light_accent"
+                        android:textColor="@color/text_link_color_selector"
                         android:visibility="gone"/>
 
                     <ImageView

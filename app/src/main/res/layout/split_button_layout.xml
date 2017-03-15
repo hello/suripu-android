@@ -23,7 +23,7 @@
 
         <Button
             android:id="@+id/button_left"
-            style="@style/Body"
+            style="@style/Body1"
             android:layout_width="0dp"
             android:layout_height="@dimen/x7"
             android:layout_weight="1"
@@ -34,7 +34,7 @@
 
         <Button
             android:id="@+id/button_right"
-            style="@style/Body.Link"
+            style="@style/Body1.Link"
             android:layout_width="0dp"
             android:layout_height="@dimen/x7"
             android:layout_weight="1"

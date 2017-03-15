@@ -69,7 +69,7 @@
             android:layout_centerVertical="true"
             android:gravity="end|center_vertical"
             android:text="@string/action_copy"
-            android:textAppearance="@style/Body.Link"/>
+            android:textAppearance="@style/Body1.Link"/>
     </RelativeLayout>
 
     <RelativeLayout

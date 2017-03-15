@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="primary_text">@color/black_87</color>
+    <color name="secondary_text">@color/black_54</color>
+    <color name="hint_text">@color/black_38</color>
+    <color name="divider_color">@color/black_12</color>
+
+
     <!-- start Nathan's official colors -->
     <color name="dark">@color/gray6</color>
     <color name="standard">@color/gray5</color>
@@ -10,7 +16,6 @@
     <color name="success">@color/green6</color>
 
     <!-- end Nathan's official colors -->
-
     <color name="transparent">@color/white_00</color>
     <color name="transparent_overlay">@color/black_25</color>
     <color name="light_accent">@color/blue6</color>
@@ -70,7 +75,7 @@
     <color name="edit_text_bottom_line_normal">@color/gray3</color>
     <color name="edit_text_bottom_line_disabled">@color/gray3</color>
 
-    <color name="text_white_button">@color/white</color>
+    <color name="text_white">@color/white</color>
     <color name="text_white_button_pressed">@color/gray3</color>
 
     <color name="background_button_white_pressed">@color/gray2_15</color>

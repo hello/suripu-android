@@ -15,30 +15,27 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/gap_xsmall"
+        android:layout_marginBottom="@dimen/x1"
         android:gravity="center"
-        android:textSize="@dimen/text_size_heading_large"
-        android:textAppearance="@style/AppTheme.Text.Heading"
+        style="@style/Display1.Primary"
         android:text="@string/onboarding_intro_heading" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
+        android:layout_marginTop="@dimen/x1"
         android:gravity="center"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"
-        android:textAppearance="@style/AppTheme.Text.Body.MidSized.Dim"
+        style="@style/Body1.Secondary"
         android:text="@string/onboarding_intro_subheading" />
 
     <Button
         android:id="@+id/item_onboarding_intro_first_watch_video"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
+        android:layout_marginTop="@dimen/x1"
         android:drawableStart="@drawable/onboarding_intro_play"
-        android:drawablePadding="@dimen/gap_small"
-        android:textColor="#8b8b8b"
+        android:drawablePadding="@dimen/x1"
         android:text="@string/action_watch_video"
-        style="@style/AppTheme.Button.Borderless.Accent.Bounded.Lowercase" />
+        style="@style/Button.Flat" />
 
 </LinearLayout>

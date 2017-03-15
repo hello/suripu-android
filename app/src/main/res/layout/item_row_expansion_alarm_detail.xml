@@ -36,7 +36,7 @@
             android:drawablePadding="@dimen/x1"
             android:fontFamily="sans-serif"
             style="@style/AppTheme.Text.Body.MidSized"
-            android:textColor="@color/text_color_selector_light_accent"/>
+            android:textColor="@color/text_link_color_selector"/>
 
         <ImageView
             android:id="@+id/item_row_expansion_alarm_error"

@@ -1,19 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="Display1" parent="AppTheme.Text.Header.H3.Light">
+
+    </style>
+
+    <style name="Display1.Primary">
+        <item name="android:textColor">@color/primary_text</item>
+    </style>
+
+    <style name="Display2" parent="AppTheme.Text.Header.H2.Light">
+
+    </style>
+
+    <style name="Display3" parent="AppTheme.Text.Header.H1.Thin">
+        <item name="android:textSize">@dimen/text_h1_2</item>
+    </style>
+
+    <style name="Display4" parent="AppTheme.Text.Header.H1.Thin">
+    </style>
+
+    <style name="Headline" parent="AppTheme.Text.Header.H4">
+
+    </style>
+
+    <style name="Title1" parent="AppTheme.Text.Header.H5">
+
+    </style>
+
+    <style name="Title2" parent="AppTheme.Text.Header.H5">
+        <item name="android:textSize">@dimen/text_h6_2</item>
+    </style>
+
+    <style name="Button" parent="AppTheme.Text.Header.H6.Medium">
+        <item name="android:paddingTop">@dimen/x1</item>
+        <item name="android:paddingBottom">@dimen/x1</item>
+        <item name="android:paddingLeft">@dimen/x3</item>
+        <item name="android:paddingRight">@dimen/x3</item>
+        <item name="android:textSize">@dimen/text_h6_5</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">@color/text_white</item>
+        <item name="android:background">@null</item>
+    </style>
+
+    <style name="Button.Raised">
+        <item name="android:background">@drawable/selector_button_rounded</item>
+    </style>
+
+    <style name="Button.Flat">
+        <item name="android:textColor">@color/primary</item>
+    </style>
+
     <style name="Heading" parent="AppTheme.Text.Header.H1">
     </style>
 
     <style name="Heading.Light" parent="AppTheme.Text.Header.H1.Light">
     </style>
 
-    <style name="Title" parent="AppTheme.Text.Header.H6.Medium">
-        <item name="android:textColor">@color/dark</item>
+    <style name="Body1" parent="AppTheme.Text.Body">
+
     </style>
 
-    <style name="Body" parent="AppTheme.Text.Body">
-        <item name="android:background">@color/background_light</item>
+    <style name="Body1.Secondary">
+        <item name="android:textColor">@color/secondary_text</item>
     </style>
+
+    <style name="Body2" parent="Body1">
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="Body1.Small">
+        <item name="android:textSize">@dimen/text_h6_6</item>
+    </style>
+
+    <style name="Caption1" parent="AppTheme.Text.Header.H7.Medium">
+
+    </style>
+
+    <style name="Caption2" parent="AppTheme.Text.Header.H8">
+
+    </style>
+
 
     <style name="Body.Dim" parent="AppTheme.Text.Body">
         <item name="android:textColor">@color/dim</item>
@@ -28,7 +96,7 @@
     </style>
 
     <style name="Body.Accent" parent="AppTheme.Text.Body">
-        <item name="android:textColor">@color/text_color_selector_light_accent</item>
+        <item name="android:textColor">@color/text_link_color_selector</item>
     </style>
 
     <style name="Label" parent="AppTheme.Text.Header.H7">
@@ -39,7 +107,7 @@
         <item name="android:textColor">@color/error</item>
     </style>
 
-    <style name="Body.Link">
+    <style name="Body1.Link">
         <item name="android:textColor">@color/primary</item>
     </style>
 

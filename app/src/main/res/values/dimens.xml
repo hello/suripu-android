@@ -44,16 +44,22 @@
 
     <dimen name="text_body">15sp</dimen>
     <dimen name="text_h1">64sp</dimen>
+    <dimen name="text_h1_2">56sp</dimen>
     <dimen name="text_h2">40sp</dimen>
     <dimen name="text_h3">32sp</dimen>
     <dimen name="text_h4">24sp</dimen>
     <dimen name="text_h5">20sp</dimen>
     <dimen name="text_h6">18sp</dimen>
+    <dimen name="text_h6_2">17sp</dimen>
+    <dimen name="text_h6_3">16sp</dimen>
+    <dimen name="text_h6_4">15sp</dimen>
+    <dimen name="text_h6_5">14sp</dimen>
+    <dimen name="text_h6_6">13sp</dimen>
     <dimen name="text_h7">12sp</dimen>
     <dimen name="text_h8">10sp</dimen>
 
     <dimen name="text_body_line_height">24px</dimen>
-
+    <item name="line_multiple_body" format="float" type="dimen">1.3</item>
     <item name="line_multiple_small" format="float" type="dimen">1.4</item>
     <item name="line_multiple_medium" format="float" type="dimen">1.5</item>
     <item name="line_multiple_large" format="float" type="dimen">1.6</item>
@@ -96,8 +102,7 @@
     <item name="line_multiple_heading" format="float" type="dimen">1.2</item>
     <item name="line_multiple_subheading" format="float" type="dimen">1.4</item>
     <item name="line_multiple_paragraph_heading" format="float" type="dimen">1.2</item>
-    <item name="line_multiple_body" format="float" type="dimen">1.3</item>
-    <item name="line_multiple_body_medium" format="float" type="dimen">1.4</item>
+     <item name="line_multiple_body_medium" format="float" type="dimen">1.4</item>
     <item name="line_multiple_body_small" format="float" type="dimen">1.2</item>
 
     <dimen name="edit_text_min_height">45dp</dimen>

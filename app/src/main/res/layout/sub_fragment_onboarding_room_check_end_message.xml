@@ -17,6 +17,7 @@
         android:layout_marginBottom="@dimen/x1"
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.Heading"
+        android:textColor="@color/primary_text"
         android:textStyle="bold"
         android:lineSpacingMultiplier="@dimen/line_multiple_heading"
         android:text="@string/onboarding_room_check_title_success"/>
@@ -30,7 +31,7 @@
         android:layout_marginRight="@dimen/x3"
         android:gravity="center"
         android:textAppearance="@style/AppTheme.Text.Body.New"
-        android:textColor="@color/gray4"
+        android:textColor="@color/secondary_text"
         android:text="@string/onboarding_room_check_info_success"
         android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
 

@@ -33,5 +33,5 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="@dimen/gap_outer"
-        android:textColor="@color/text_color_selector_light_accent"/>
+        android:textColor="@color/text_link_color_selector"/>
 </is.hello.sense.ui.widget.RoundedRelativeLayout>
