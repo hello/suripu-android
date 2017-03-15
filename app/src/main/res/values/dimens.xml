@@ -59,6 +59,7 @@
     <dimen name="text_h8">10sp</dimen>
 
     <dimen name="text_body_line_height">24px</dimen>
+    <dimen name="button_height">48dp</dimen>
     <item name="line_multiple_body" format="float" type="dimen">1.3</item>
     <item name="line_multiple_small" format="float" type="dimen">1.4</item>
     <item name="line_multiple_medium" format="float" type="dimen">1.5</item>

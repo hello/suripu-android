@@ -8,15 +8,15 @@
     <LinearLayout
         android:id="@+id/fragment_onboarding_introduction_button_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/button_rounded_min_height"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@color/light_accent"
+        android:background="@color/primary"
         android:layout_alignParentBottom="true">
 
         <Button
             android:id="@+id/fragment_onboarding_introduction_sign_in"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/action_log_in"
             android:maxLines="1"
@@ -34,7 +34,7 @@
         <Button
             android:id="@+id/fragment_onboarding_introduction_get_started"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/action_get_started"
             android:maxLines="1"

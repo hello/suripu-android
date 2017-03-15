@@ -25,11 +25,15 @@
     </style>
 
     <style name="Title1" parent="AppTheme.Text.Header.H5">
+        <item name="android:textSize">@dimen/text_h6_2</item>
 
     </style>
 
     <style name="Title2" parent="AppTheme.Text.Header.H5">
-        <item name="android:textSize">@dimen/text_h6_2</item>
+    </style>
+
+    <style name="Title2.Primary">
+        <item name="android:textColor">@color/primary_text</item>
     </style>
 
     <style name="Button" parent="AppTheme.Text.Header.H6.Medium">
@@ -42,6 +46,7 @@
         <item name="android:textAlignment">center</item>
         <item name="android:textColor">@color/text_white</item>
         <item name="android:background">@null</item>
+        <item name="android:height">@dimen/button_height</item>
     </style>
 
     <style name="Button.Raised">
@@ -152,7 +157,7 @@
     </style>
 
     <style name="AppTheme.Text.Heading.New">
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif-regular</item>
         <item name="android:textSize">@dimen/text_size_heading_new</item>
         <item name="android:textColor">@color/text_heading_major</item>
     </style>
