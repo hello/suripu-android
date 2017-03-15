@@ -60,9 +60,6 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> impleme
 
     @Test
     public void setVisibleToUserBehavior() {
-        fragment.presenterView = null;
-        fragment.setVisibleToUser(true);
-        verify(fragment, times(0)).bindIfNeeded();
         fragment.initializePresenterView();
         spyOnPresenterView();
         fragment.setVisibleToUser(true);

@@ -16,11 +16,12 @@ import is.hello.sense.util.DateFormatter;
 public class TimelineFragmentAdapter extends BaseFragmentPagerAdapter {
     private final LocalDate oldestDate;
     private int count;
-    @VisibleForTesting LocalDate latestDate;
-    @VisibleForTesting @Nullable Timeline cachedTimeline;
+    @VisibleForTesting
+    LocalDate latestDate;
+    @VisibleForTesting
+    @Nullable
+    Timeline cachedTimeline;
 
-
-    //region Lifecycle
 
     public TimelineFragmentAdapter(@NonNull final FragmentManager fragmentManager,
                                    @NonNull final LocalDate oldestDate) {
@@ -37,49 +38,11 @@ public class TimelineFragmentAdapter extends BaseFragmentPagerAdapter {
         }
         setLatestDate(today);
     }
-    //endregion
 
-
-    //region Attributes
-
-    public void setCachedTimeline(@Nullable Timeline cachedTimeline) {
-        this.cachedTimeline = cachedTimeline;
-    }
-
-    public void ensureLatestDateIsLastNight() {
-        LocalDate today = DateFormatter.todayForTimeline();
-        if (latestDate.isBefore(today)) {
-            setLatestDate(today);
-        }
-    }
-
-    public void setLatestDate(@NonNull LocalDate latestDate) {
-        this.latestDate = latestDate;
-        this.count = Days.daysBetween(oldestDate, this.latestDate).getDays();
-        notifyDataSetChanged();
-    }
-
-    public int getDatePosition(@NonNull LocalDate date) {
-        return Days.daysBetween(oldestDate, date).getDays();
-    }
-
-    public int getLastNight() {
-        ensureLatestDateIsLastNight();
-        return getCount() - 1;
-    }
-
-    //endregion
-
-
-    //region Binding
-
+    //region DavidsBaseFragmentPagerAdapter
     @Override
     public int getCount() {
         return count;
-    }
-
-    public LocalDate getItemDate(int position) {
-        return oldestDate.plusDays(position);
     }
 
     @NonNull
@@ -98,10 +61,49 @@ public class TimelineFragmentAdapter extends BaseFragmentPagerAdapter {
         return TimelineFragment.newInstance(timelineDate,
                                             cachedTimeline);
     }
+    //endregion
+
+    //region Attributes
+
+    public void setCachedTimeline(@Nullable final Timeline cachedTimeline) {
+        this.cachedTimeline = cachedTimeline;
+    }
+
+    public void ensureLatestDateIsLastNight() {
+        LocalDate today = DateFormatter.todayForTimeline();
+        if (latestDate.isBefore(today)) {
+            setLatestDate(today);
+        }
+    }
+
+    public void setLatestDate(@NonNull final LocalDate latestDate) {
+        this.latestDate = latestDate;
+        this.count = Days.daysBetween(oldestDate, this.latestDate).getDays();
+        notifyDataSetChanged();
+    }
+
+    public int getDatePosition(@NonNull final LocalDate date) {
+        return Days.daysBetween(oldestDate, date).getDays();
+    }
+
+    public int getLastNight() {
+        ensureLatestDateIsLastNight();
+        return getCount() - 1;
+    }
+
+    //endregion
+
+
+    //region Binding
+
+    public LocalDate getItemDate(final int position) {
+        return oldestDate.plusDays(position);
+    }
+
 
     @Nullable
-    public TimelineFragment getCurrentTimeline(){
-        return (TimelineFragment) getCurrentObject();
+    public TimelineFragment getCurrentTimeline() {
+        return (TimelineFragment) findCurrentFragment();
     }
 
     //endregion

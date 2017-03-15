@@ -43,7 +43,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TimelineInteractor;
-import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.TimelineAdapter;
@@ -68,9 +68,9 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.Share;
 import rx.Observable;
 
-public class TimelineFragment extends PresenterFragment<TimelineView>
+public class TimelineFragment extends ControllerPresenterFragment<TimelineView>
         implements TimelineAdapter.OnItemClickListener,
-        BaseFragmentPagerAdapter.Controller{
+        BaseFragmentPagerAdapter.Controller {
     // !! Important: Do not use setTargetFragment on TimelineFragment.
     // It is not guaranteed to exist at the time of state restoration.
 
@@ -126,9 +126,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     //region BaseFragmentPagerAdapter.Controller
     @Override
     public void setVisibleToUser(final boolean isVisible) {
-        if (this.presenterView == null) {
-            return;
-        }
+        super.setVisibleToUser(isVisible);
         if (isVisible) {
             bindIfNeeded();
             this.presenterView.setAnimationEnabled(true);

@@ -4,7 +4,6 @@ package is.hello.sense.flows.home.ui.views;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
@@ -15,17 +14,19 @@ import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.databinding.ViewHomeBinding;
 import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.flows.home.util.HomeFragmentPagerAdapter;
-import is.hello.sense.flows.home.util.HomeViewPagerPresenterDelegate;
 import is.hello.sense.mvp.view.BindedPresenterView;
 
 @SuppressLint("ViewConstructor")
 public class HomeView extends BindedPresenterView<ViewHomeBinding> {
     public HomeView(@NonNull final Activity activity,
-                    final int offScreenLimit) {
+                    final int offScreenLimit,
+                    @NonNull final HomeFragmentPagerAdapter fragmentAdapter) {
         super(activity);
         this.binding.viewHomeExtendedViewPager.setScrollingEnabled(false);
         this.binding.viewHomeExtendedViewPager.setFadePageTransformer(true);
         this.binding.viewHomeExtendedViewPager.setOffscreenPageLimit(offScreenLimit);
+        this.binding.viewHomeExtendedViewPager.setAdapter(fragmentAdapter);
+        this.binding.viewHomeTabLayout.setupWithViewPager(this.binding.viewHomeExtendedViewPager);
     }
 
     //region BindedPresenterView
@@ -44,14 +45,6 @@ public class HomeView extends BindedPresenterView<ViewHomeBinding> {
     //endregion
 
     //region methods
-    public int getViewPagerId() {
-        return this.binding.viewHomeExtendedViewPager.getId();
-    }
-
-    public void setAdapter(@NonNull final HomeFragmentPagerAdapter fragmentAdapter) {
-        this.binding.viewHomeExtendedViewPager.setAdapter(fragmentAdapter);
-        this.binding.viewHomeTabLayout.setupWithViewPager(this.binding.viewHomeExtendedViewPager);
-    }
 
     /**
      * @param listener listener for SenseTabLayout events.
@@ -77,7 +70,7 @@ public class HomeView extends BindedPresenterView<ViewHomeBinding> {
     public Fragment getFragmentWithIndex(final int index) {
         final PagerAdapter adapter = this.binding.viewHomeExtendedViewPager.getAdapter();
         if (adapter instanceof StaticFragmentAdapter) {
-            return ((StaticFragmentAdapter) adapter).getFragment(index);
+            return ((StaticFragmentAdapter) adapter).findFragment(index);
         }
         return null;
     }

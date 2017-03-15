@@ -16,6 +16,7 @@ import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineBuilder;
 import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
+import is.hello.sense.flows.home.ui.views.TimelinePagerView;
 import is.hello.sense.graph.SenseTestCase;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
@@ -42,7 +43,8 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
     public void setUp() {
         final FragmentTransaction transaction = PagerAdapterTesting.createMockTransaction();
         final FragmentManager fragmentManager = PagerAdapterTesting.createMockFragmentManager(transaction);
-        this.adapter = spy(new TimelineFragmentAdapter(fragmentManager, Constants.TIMELINE_EPOCH));
+        this.adapter = spy(new TimelineFragmentAdapter(fragmentManager,
+                                                       Constants.TIMELINE_EPOCH));
     }
 
     @After

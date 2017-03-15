@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
+import is.hello.sense.flows.generic.ui.adapters.BaseFragmentPagerAdapter;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
@@ -96,7 +97,7 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
     @Override
     public void setVisibleToUser(final boolean isVisible) {
         super.setVisibleToUser(isVisible);
-        final StaticFragmentAdapter.Controller controller = getCurrentController();
+        final BaseFragmentPagerAdapter.Controller controller = getCurrentController();
         if (controller == null || !controller.hasPresenterView()) {
             return;
         }
@@ -240,10 +241,10 @@ public abstract class ViewPagerPresenterFragment extends ControllerPresenterFrag
     }
 
     @Nullable
-    private StaticFragmentAdapter.Controller getCurrentController() {
+    private BaseFragmentPagerAdapter.Controller getCurrentController() {
         final Fragment fragment = getCurrentFragment();
-        if (fragment instanceof StaticFragmentAdapter.Controller) {
-            return (StaticFragmentAdapter.Controller) fragment;
+        if (fragment instanceof BaseFragmentPagerAdapter.Controller) {
+            return (BaseFragmentPagerAdapter.Controller) fragment;
         }
         return null;
     }
