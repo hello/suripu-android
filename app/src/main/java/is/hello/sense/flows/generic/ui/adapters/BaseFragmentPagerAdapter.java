@@ -141,7 +141,7 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
      */
     @Nullable
     public final Fragment findFragment(final int id) {
-        return fragmentManager.findFragmentByTag(makeFragmentName(containerId, getItemId(lastPosition)));
+        return fragmentManager.findFragmentByTag(makeFragmentName(containerId, getItemId(id)));
     }
 
     /**
