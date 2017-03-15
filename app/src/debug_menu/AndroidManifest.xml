@@ -5,7 +5,7 @@
     <application>
 
         <activity
-            android:name="is.hello.sense.debug.EnvironmentActivity"
+            android:name="is.hello.sense.debug_menu_ui.EnvironmentActivity"
             android:theme="@style/AppTheme.Dialog.Simple"/>
 
         <activity
@@ -20,7 +20,7 @@
             android:name="net.hockeyapp.android.FeedbackActivity"/>
 
         <activity
-            android:name="is.hello.sense.debug.PiruPeaActivity"
+            android:name="is.hello.sense.debug_menu_ui.PiruPeaActivity"
             android:label="Piru-Pea"
             android:screenOrientation="portrait"/>
 
