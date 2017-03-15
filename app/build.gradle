@@ -1,4 +1,5 @@
 import java.text.SimpleDateFormat
+import java.util.regex.Pattern
 
 buildscript {
     repositories {
@@ -26,6 +27,11 @@ def generateVersionCode() {
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.1"
+
+    def TYPE_INT = "int"
+    def TYPE_BOOLEAN = "boolean"
+    def TYPE_STRING = "String"
+    def TYPE_RES_STRING = "string"
 
     signingConfigs {
         debug {
@@ -70,11 +76,6 @@ android {
     }
 
     buildTypes {
-        def TYPE_INT = "int"
-        def TYPE_BOOLEAN = "boolean"
-        def TYPE_STRING = "String"
-        def TYPE_RES_STRING = "string"
-
         def MIN_LOGGING_LEVEL = "MIN_LOGGING_LEVEL"
         def DEBUG_SCREEN_ENABLED = "DEBUG_SCREEN_ENABLED"
         def CLIENT_ID = "CLIENT_ID"
@@ -104,7 +105,6 @@ android {
 
             signingConfig signingConfigs.debug
 
-            applicationIdSuffix ".debug"
             minifyEnabled false // when we hit the 0xffff method limit, switch this to true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
         }
@@ -123,6 +123,24 @@ android {
 
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
+        }
+    }
+
+    productFlavors {
+        def REPORT_CRASHES_RELEASE = "REPORT_CRASHES_RELEASE"
+
+        predev {
+            buildConfigField TYPE_STRING, REPORT_CRASHES_RELEASE, '"debug"'
+            applicationIdSuffix ".debug"
+        }
+
+        dev {
+            buildConfigField TYPE_STRING, REPORT_CRASHES_RELEASE, '"development"'
+            applicationIdSuffix ".dev"
+        }
+
+        prod {
+            buildConfigField TYPE_STRING, REPORT_CRASHES_RELEASE, '"release"'
         }
     }
 }
@@ -150,8 +168,8 @@ retrolambda {
  * <a href="https://github.com/evant/android-studio-unit-test-plugin/issues/35">this bug</a>
  */
 tasks.whenTaskAdded { theTask ->
-    def taskName = theTask.name.toString()
-    if ("testDebugUnitTest".toString().equals(taskName)) {
+    def taskName = theTask.name
+    if (Pattern.matches("^test(Predev|Dev|Prod)DebugUnitTest", taskName)) {
         /**
          * Listen for when robolectric adds the 'testDebug' task and when it does, add the -noverify
          * option to that task's jvmArgs.  This allows us to turn off byte code verification when

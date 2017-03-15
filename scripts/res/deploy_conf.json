@@ -1,27 +1,28 @@
 {
     "alpha": {
-        "apk_name": "app-debug",
-        "assemble_command": "assembleDebug",
+        "apk_name": "app-dev-debug",
+        "assemble_command": "assembleDevDebug",
         "hockey_app_id": "7403b3eb474522963df93184fae37404",
         "reveal": false
     },
     "feature": {
-        "apk_name": "app-release",
-        "assemble_command": "assembleRelease",
+        "apk_name": "app-prod-release",
+        "assemble_command": "assembleProdRelease",
         "block_main_branches": true,
         "hockey_app_id": "7473e43cfbb717125f660002969bd448"
     },
     "release": {
-        "apk_name": "app-release",
-        "assemble_command": "assembleRelease",
+        "apk_name": "app-prod-release",
+        "assemble_command": "assembleProdRelease",
         "hockey_app_id": "8e00a608839500c49187c67bb20d5826",
         "requires_branch": "master",
         "reveal": true
     },
     "synonyms": {
-        "debug": "alpha",
+        "dev": "alpha",
         "feature-branch": "feature",
         "rc": "store",
-        "store": "release"
+        "store": "release",
+        "prod": "release"
     }
 }

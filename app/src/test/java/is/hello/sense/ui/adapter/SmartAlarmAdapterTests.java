@@ -80,7 +80,7 @@ public class SmartAlarmAdapterTests extends InjectionTestCase {
 
         final SmartAlarmAdapter.MessageViewHolder holder = RecyclerAdapterTesting.createAndBindView(adapter,
                 fakeParent, SmartAlarmAdapter.VIEW_ID_MESSAGE, 0);
-        assertThat(holder.titleText.getText().toString(), is(equalTo("Sense")));
+        assertThat(holder.titleText.getText().toString(), is(equalTo(getString(R.string.app_name))));
         assertThat(holder.messageText.getText().toString(), is(equalTo("Blah blah blah")));
         assertThat(holder.actionButton.getText().toString(), is(equalTo("OK")));
 

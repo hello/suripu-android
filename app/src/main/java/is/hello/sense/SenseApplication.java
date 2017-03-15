@@ -82,8 +82,8 @@ public class SenseApplication extends MultiDexApplication {
         final boolean isRunningInRobolectric = isRunningInRobolectric();
         if (!isRunningInRobolectric) {
             Bugsnag.init(this);
-            Bugsnag.setReleaseStage(BuildConfig.BUILD_TYPE);
-            Bugsnag.setNotifyReleaseStages("release");
+            Bugsnag.setReleaseStage(BuildConfig.REPORT_CRASHES_RELEASE);
+            Bugsnag.setNotifyReleaseStages("release", "development");
         }
 
         FacebookSdk.sdkInitialize(getApplicationContext());

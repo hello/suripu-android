@@ -8,20 +8,12 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:690036150552:android:1125c5f55decaa9a",
+        "mobilesdk_app_id": "1:690036150552:android:d7948bdcb0e61f77",
         "android_client_info": {
-          "package_name": "is.hello.sense.debug"
+          "package_name": "is.hello.sense.dev"
         }
       },
       "oauth_client": [
-        {
-          "client_id": "690036150552-opm5fmbaagmeu3lr8b1fgvgbmhs1gmva.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "is.hello.sense.debug",
-            "certificate_hash": "6fa03d6da855f4b632bb4482b51af97891964f7a"
-          }
-        },
         {
           "client_id": "690036150552-5buhq8a3u7vr4ttf0f89pntftp9m6gsi.apps.googleusercontent.com",
           "client_type": 3
@@ -37,13 +29,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "690036150552-5buhq8a3u7vr4ttf0f89pntftp9m6gsi.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2
