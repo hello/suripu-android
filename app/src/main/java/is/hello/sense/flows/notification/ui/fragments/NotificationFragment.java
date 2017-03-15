@@ -53,6 +53,8 @@ public class NotificationFragment extends PresenterFragment<NotificationView>
         setHasOptionsMenu(true);
         if (savedInstanceState == null) {
             showBlockingActivity(null);
+        } else {
+            hideBlockingActivity(false, null);
         }
         addInteractor(notificationSettingsInteractor);
     }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- start Nathan's official colors -->
-    <color name="dark">@color/gray6</color>
-    <color name="standard">@color/gray5</color>
-    <color name="dim">@color/gray4</color>
+    <color name="dark">@color/white</color>
+    <color name="standard">@color/white</color>
+    <color name="dim">@color/white</color>
     <color name="primary">@color/blue6</color>
     <color name="error">@color/red6</color>
     <color name="warning">@color/yellow6</color>
@@ -18,20 +18,22 @@
     <color name="light_accent_extra_dimmed">@color/blue2</color>
     <color name="light_accent_darkened">@color/blue7</color>
     <color name="destructive_accent">@color/red6</color>
-    <color name="status_bar_color">@color/gray3</color>
-    <!-- todo replace all uses with status_bar_color-->
-    <color name="status_bar_grey">@color/gray3</color>
-    <color name="status_bar_illustration">@color/gray3</color>
+    <color name="status_bar_color">@color/gray7</color>
+    <color name="status_bar_illustration">@color/gray7</color>
 
-    <color name="background">@color/gray2</color>
-    <color name="insight_card_background">@color/gray2</color>
-    <color name="background_light">@color/white</color>
-    <color name="background_light_overlay">@color/white_60</color>
+    <color name="background">@color/gray9</color>
+    <color name="card">@color/gray8</color>
+    <color name="divider">@color/white_12</color>
+
+    <color name="insight_card_background">@color/card</color>
+    <color name="background_light">@color/card</color>
+    <color name="background_light_overlay">@color/card</color>
     <color name="background_dark_overlay">@color/black_50</color>
-    <color name="background_timeline">@color/white</color>
-    <color name="background_onboarding">@color/white</color>
-    <color name="background_expansions">@color/white</color>
-    <color name="background_insight_illustration">@color/gray3</color>
+    <color name="background_timeline">@color/card</color>
+    <color name="background_onboarding">@color/card</color>
+    <color name="background_expansions">@color/card</color>
+    <color name="background_insight_illustration">@color/background</color>
+
 
     <color name="background_dark_item_clicked">@color/blue2</color>
 
@@ -45,12 +47,12 @@
     <color name="timeline_background_fill">@color/blue2</color>
     <color name="timeline_segment_stripe">@color/blue6_30</color>
 
-    <color name="text_dark">@color/gray6</color>
-    <color name="text_medium">@color/gray5</color>
+    <color name="text_dark">@color/white</color>
+    <color name="text_medium">@color/white_75</color>
     <color name="text_light">@color/gray4</color>
     <color name="text_extra_light">@color/gray3</color>
-    <color name="text_dark_disabled">@color/black_27</color>
-    <color name="text_dim">@color/black_53</color>
+    <color name="text_dark_disabled">@color/white_50</color>
+    <color name="text_dim">@color/white_50</color>
     <color name="text_dim_light">@color/white_75</color>
     <color name="text_detail_grey">@color/black_25</color>
     <color name="text_section_header">@color/gray4</color>
@@ -60,18 +62,18 @@
     <color name="text_link_pressed">@color/blue7</color>
     <color name="text_link_disabled">@color/blue6_50</color>
 
-    <color name="text_body_new">@color/gray5</color>
-    <color name="text_heading_major">@color/gray6</color>
+    <color name="text_body_new">@color/white_70</color>
+    <color name="text_heading_major">@color/standard</color>
 
     <color name="text_rotary_picker_focused">@color/light_accent</color>
     <color name="text_rotary_picker_unfocused">@color/gray4</color>
     <color name="text_rotary_picker_almost_gone">@color/gray2</color>
 
-    <color name="edit_text_bottom_line_normal">@color/gray3</color>
-    <color name="edit_text_bottom_line_disabled">@color/gray3</color>
+    <color name="edit_text_bottom_line_normal">@color/divider</color>
+    <color name="edit_text_bottom_line_disabled">@color/divider</color>
 
     <color name="text_white_button">@color/white</color>
-    <color name="text_white_button_pressed">@color/gray3</color>
+    <color name="text_white_button_pressed">@color/background</color>
 
     <color name="background_button_white_pressed">@color/gray2_15</color>
     <color name="background_button_dark_pressed">@color/blue3_93</color>
@@ -100,7 +102,7 @@
     <color name="view_scale_tick_emphasized">@color/gray3</color>
 
     <color name="trends_title">@color/gray4</color>
-    <color name="trends_line_divider">@color/gray2_50</color>
+    <color name="trends_line_divider">@color/white_12</color>
     <color name="trends_line_divider_shimmer">@color/gray3</color>
     <color name="trends_bargraph_dashedline">@color/gray7</color>
     <color name="trends_bargraph">@color/gray3</color>

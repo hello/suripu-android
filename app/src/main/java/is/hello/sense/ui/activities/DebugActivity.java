@@ -2,8 +2,10 @@ package is.hello.sense.ui.activities;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
@@ -18,15 +20,14 @@ import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
-import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountPreferencesInteractor;
 import is.hello.sense.interactors.PersistentPreferencesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.rating.LocalUsageTracker;
+import is.hello.sense.ui.activities.appcompat.InjectionActivity;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter.DetailItem;
-import is.hello.sense.ui.common.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.handholding.Tutorial;
@@ -112,6 +113,7 @@ public class DebugActivity extends InjectionActivity {
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
         adapter.add(new DetailItem("Reset app usage stats", this::resetAppUsage));
         adapter.add(new DetailItem("View Room Conditions Welcome Card", this::viewRoomConditionsWelcomeCard));
+        adapter.add(new DetailItem("Toggle Night Mode", this::toggleNightMode));
         adapter.add(new DetailItem("Log Out", this::logOut));
 
         recyclerView.setAdapter(adapter);
@@ -236,6 +238,24 @@ public class DebugActivity extends InjectionActivity {
 
     public void showExpansion() {
         startActivity(new Intent(this, ExpansionSettingsActivity.class));
+    }
+
+    public void toggleNightMode() {
+        final int currentNightMode = getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK;
+        switch (currentNightMode) {
+            case Configuration.UI_MODE_NIGHT_NO:
+                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+            case Configuration.UI_MODE_NIGHT_YES:
+                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                // We don't know what mode we're in, assume notnight
+                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+        }
+        recreate();
     }
 
     public void logOut() {
