@@ -44,7 +44,6 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
         final FragmentTransaction transaction = PagerAdapterTesting.createMockTransaction();
         final FragmentManager fragmentManager = PagerAdapterTesting.createMockFragmentManager(transaction);
         this.adapter = spy(new TimelineFragmentAdapter(fragmentManager,
-                                                       TimelinePagerView.getContainerRes(),
                                                        Constants.TIMELINE_EPOCH));
     }
 
@@ -61,7 +60,6 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
         final FragmentTransaction transaction = PagerAdapterTesting.createMockTransaction();
         final FragmentManager fragmentManager = PagerAdapterTesting.createMockFragmentManager(transaction);
         final TimelineFragmentAdapter adapter = new TimelineFragmentAdapter(fragmentManager,
-                                                                            TimelinePagerView.getContainerRes(),
                                                                             Constants.TIMELINE_EPOCH);
         assertThat(adapter.getCount(), is(equalTo(1)));
         assertThat(adapter.getItemDate(0), is(equalTo(Constants.TIMELINE_EPOCH.minusDays(1))));
@@ -75,7 +73,6 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
         final FragmentTransaction transaction = PagerAdapterTesting.createMockTransaction();
         final FragmentManager fragmentManager = PagerAdapterTesting.createMockFragmentManager(transaction);
         final TimelineFragmentAdapter adapter = new TimelineFragmentAdapter(fragmentManager,
-                                                                            TimelinePagerView.getContainerRes(),
                                                                             Constants.TIMELINE_EPOCH);
         assertThat(adapter.getCount(), is(equalTo(1)));
         assertThat(adapter.getItemDate(0), is(equalTo(Constants.TIMELINE_EPOCH.minusDays(2))));
@@ -124,7 +121,6 @@ public class TimelineFragmentAdapterTests extends SenseTestCase {
         final FragmentTransaction transaction = PagerAdapterTesting.createMockTransaction();
         final FragmentManager fragmentManager = PagerAdapterTesting.createMockFragmentManager(transaction);
         final TimelineFragmentAdapter adapter = new TimelineFragmentAdapter(fragmentManager,
-                                                                            TimelinePagerView.getContainerRes(),
                                                                             DateFormatter.todayForTimeline());
         assertThat(adapter.getCount(), is(equalTo(1)));
     }
