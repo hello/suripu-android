@@ -28,12 +28,13 @@ import android.support.v4.view.ViewPager;
  */
 public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
     private static final String KEY_LAST_POSITION = BaseFragmentPagerAdapter.class.getSimpleName() + ".KEY_LAST_POSITION";
+    private static final String KEY_CONTAINER_ID = BaseFragmentPagerAdapter.class.getSimpleName() + ".KEY_CONTAINER_ID";
 
     private final FragmentManager fragmentManager;
     /**
-     * As of right now only one containerId is ever used. Store it here.
+     * Containing views ID.
      */
-    private final int containerId;
+    private int containerId;
     /**
      * This is very important for {@link #setPrimaryItem(ViewGroup, int, Object)} and
      * {@link #findFragment(int)}.
@@ -54,12 +55,16 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
         return "android:switcher:" + viewId + ":" + id;
     }
 
-    public BaseFragmentPagerAdapter(final FragmentManager fragmentManager,
-                                    final int containerId) {
+    public BaseFragmentPagerAdapter(final FragmentManager fragmentManager) {
         super(fragmentManager);
         this.fragmentManager = fragmentManager;
-        this.containerId = containerId;
 
+    }
+
+    @Override
+    public void startUpdate(final ViewGroup container) {
+        super.startUpdate(container);
+        this.containerId = container.getId();
     }
 
     /**
@@ -89,6 +94,7 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
     public Parcelable saveState() {
         final Bundle state = new Bundle();
         state.putInt(KEY_LAST_POSITION, lastPosition);
+        state.putInt(KEY_CONTAINER_ID, containerId);
         return state;
     }
 
@@ -100,6 +106,7 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
             final Bundle bundle = (Bundle) state;
             bundle.setClassLoader(loader);
             this.lastPosition = bundle.getInt(KEY_LAST_POSITION, Constants.NONE);
+            this.containerId = bundle.getInt(KEY_CONTAINER_ID, Constants.NONE);
         }
     }
 
@@ -134,7 +141,7 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
      */
     @Nullable
     public final Fragment findFragment(final int id) {
-        return fragmentManager.findFragmentByTag(makeFragmentName(containerId, id));
+        return fragmentManager.findFragmentByTag(makeFragmentName(containerId, getItemId(lastPosition)));
     }
 
     /**
@@ -147,7 +154,7 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
         if (lastPosition == Constants.NONE) {
             return null;
         }
-        return fragmentManager.findFragmentByTag(makeFragmentName(containerId, lastPosition));
+        return fragmentManager.findFragmentByTag(makeFragmentName(containerId, getItemId(lastPosition)));
     }
 
     /**

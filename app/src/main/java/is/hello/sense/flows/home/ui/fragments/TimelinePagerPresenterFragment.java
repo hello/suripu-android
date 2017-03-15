@@ -80,7 +80,6 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
 
     private TimelineFragmentAdapter createAdapter() {
         return new TimelineFragmentAdapter(getChildFragmentManager(),
-                                           TimelinePagerView.getContainerRes(),
                                            this.preferences.getAccountCreationDate());
     }
 

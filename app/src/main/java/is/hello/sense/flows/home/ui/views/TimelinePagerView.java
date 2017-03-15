@@ -20,10 +20,6 @@ public class TimelinePagerView extends PresenterView {
     private final ViewPager viewPager;
     private final TimelineFragmentAdapter viewPagerAdapter;
 
-    public static int getContainerRes() {
-        return R.id.fragment_timeline_view_pager;
-    }
-
     public TimelinePagerView(@NonNull final Activity activity,
                              @NonNull final TimelineFragmentAdapter viewPagerAdapter,
                              @NonNull final ViewPager.OnPageChangeListener listener) {

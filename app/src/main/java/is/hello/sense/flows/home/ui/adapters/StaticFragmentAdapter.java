@@ -11,9 +11,8 @@ public class StaticFragmentAdapter extends BaseFragmentPagerAdapter {
     private final Item[] items;
 
     public StaticFragmentAdapter(@NonNull final FragmentManager fm,
-                                 final int containerId,
                                  @NonNull final Item... items) {
-        super(fm, containerId);
+        super(fm);
         this.items = items;
     }
 

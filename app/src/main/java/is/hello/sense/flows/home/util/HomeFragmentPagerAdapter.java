@@ -13,9 +13,8 @@ public class HomeFragmentPagerAdapter extends StaticFragmentAdapter {
 
     public HomeFragmentPagerAdapter(
             @NonNull final FragmentManager fm,
-            final int containerId,
             @NonNull final HomeItem... items) {
-        super(fm, containerId, items);
+        super(fm, items);
         this.homeItems = items;
     }
 

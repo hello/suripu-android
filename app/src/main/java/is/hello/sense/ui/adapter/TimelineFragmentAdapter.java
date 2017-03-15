@@ -24,9 +24,8 @@ public class TimelineFragmentAdapter extends BaseFragmentPagerAdapter {
 
 
     public TimelineFragmentAdapter(@NonNull final FragmentManager fragmentManager,
-                                   final int containerId,
                                    @NonNull final LocalDate oldestDate) {
-        super(fragmentManager, containerId);
+        super(fragmentManager);
 
         final LocalDate today = DateFormatter.todayForTimeline();
         final int dateRelation = today.compareTo(oldestDate);

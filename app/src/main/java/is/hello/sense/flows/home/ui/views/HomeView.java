@@ -19,11 +19,14 @@ import is.hello.sense.mvp.view.BindedPresenterView;
 @SuppressLint("ViewConstructor")
 public class HomeView extends BindedPresenterView<ViewHomeBinding> {
     public HomeView(@NonNull final Activity activity,
-                    final int offScreenLimit) {
+                    final int offScreenLimit,
+                    @NonNull final HomeFragmentPagerAdapter fragmentAdapter) {
         super(activity);
         this.binding.viewHomeExtendedViewPager.setScrollingEnabled(false);
         this.binding.viewHomeExtendedViewPager.setFadePageTransformer(true);
         this.binding.viewHomeExtendedViewPager.setOffscreenPageLimit(offScreenLimit);
+        this.binding.viewHomeExtendedViewPager.setAdapter(fragmentAdapter);
+        this.binding.viewHomeTabLayout.setupWithViewPager(this.binding.viewHomeExtendedViewPager);
     }
 
     //region BindedPresenterView
@@ -42,14 +45,6 @@ public class HomeView extends BindedPresenterView<ViewHomeBinding> {
     //endregion
 
     //region methods
-    public int getViewPagerId() {
-        return this.binding.viewHomeExtendedViewPager.getId();
-    }
-
-    public void setAdapter(@NonNull final HomeFragmentPagerAdapter fragmentAdapter) {
-        this.binding.viewHomeExtendedViewPager.setAdapter(fragmentAdapter);
-        this.binding.viewHomeTabLayout.setupWithViewPager(this.binding.viewHomeExtendedViewPager);
-    }
 
     /**
      * @param listener listener for SenseTabLayout events.
