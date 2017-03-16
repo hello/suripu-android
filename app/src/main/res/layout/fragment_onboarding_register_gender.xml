@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
     <!-- Must have android:clickable="true" to work with
          FragmentNavigationFragment#overlayFragmentAllowingStateLoss(...) -->
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/background_onboarding"
+                    android:background="@color/background_card"
                     android:clickable="true"
                     android:orientation="vertical">
 
@@ -53,7 +52,6 @@
                     android:layout_marginEnd="@dimen/x3"
                     android:layout_marginStart="@dimen/x3"
                     android:layout_marginTop="@dimen/x3"
-                    android:lineSpacingMultiplier="@dimen/line_multiple_heading"
                     android:text="@string/title_register_gender"
                     style="@style/Title2.Primary"/>
 
@@ -63,7 +61,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/x3"
                     android:layout_marginStart="@dimen/x3"
-                    android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
                     android:text="@string/onboarding_register_info_explanation"
                     style="@style/Body1.Secondary"/>
 
