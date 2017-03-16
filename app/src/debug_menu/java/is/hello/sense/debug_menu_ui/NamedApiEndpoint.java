@@ -1,4 +1,4 @@
-package is.hello.sense.debug;
+package is.hello.sense.debug_menu_ui;
 
 import android.support.annotation.NonNull;
 

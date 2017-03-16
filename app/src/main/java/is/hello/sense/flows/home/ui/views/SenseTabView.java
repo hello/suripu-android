@@ -63,8 +63,14 @@ public class SenseTabView extends FrameLayout {
 
     public SenseTabView setDrawables(@DrawableRes final int normal,
                                      @DrawableRes final int active) {
-        this.normalDrawable = ContextCompat.getDrawable(getContext(), normal);
-        this.activeDrawable = ContextCompat.getDrawable(getContext(), active);
+        return setDrawables(ContextCompat.getDrawable(getContext(), normal),
+                            ContextCompat.getDrawable(getContext(), active));
+    }
+
+    public SenseTabView setDrawables(@NonNull final Drawable normal,
+                                     @NonNull final Drawable active) {
+        this.normalDrawable = normal;
+        this.activeDrawable = active;
         return this;
     }
 
