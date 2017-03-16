@@ -20,7 +20,6 @@ import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.fragments.FeedPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.HomePresenterFragment;
-import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.home.ui.fragments.InsightsFragment;
 import is.hello.sense.flows.home.ui.fragments.MonthTrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.QuarterTrendsFragment;
@@ -34,7 +33,9 @@ import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
 import is.hello.sense.flows.home.ui.fragments.WeekTrendsFragment;
+import is.hello.sense.flows.nightmode.NightModeModule;
 import is.hello.sense.flows.settings.ui.activities.AppSettingsActivity;
+import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
@@ -90,6 +91,7 @@ import is.hello.sense.zendesk.ZendeskModule;
                 PillModule.class,
                 SenseOTAModule.class, //todo remove after converting fragments to use presenters,
                 NotificationModule.class,
+                NightModeModule.class,
         },
         injects = {
                 SenseApplication.class,
