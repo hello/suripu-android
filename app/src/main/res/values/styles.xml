@@ -254,7 +254,7 @@
 
     <style name="AppTheme.Button.Rounded">
         <item name="android:minHeight">@dimen/button_rounded_min_height</item>
-        <item name="android:background">@drawable/sense_button_selector</item>
+        <item name="android:background">@drawable/sense_raised_button_selector</item>
         <item name="android:textColor">@color/text_white</item>
         <item name="android:textSize">@dimen/text_size_button</item>
         <item name="android:textAllCaps">true</item>

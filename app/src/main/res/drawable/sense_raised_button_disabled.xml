@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <inset xmlns:android="http://schemas.android.com/apk/res/android"
        android:insetBottom="@dimen/button_inset"
        android:insetLeft="@dimen/button_inset"
@@ -7,6 +6,6 @@
     <shape android:shape="rectangle">
         <size android:height="@dimen/button_height"/>
         <corners android:radius="@dimen/button_corner_radius"/>
-        <solid android:color="@color/sense_button_pressed"/>
+        <solid android:color="@color/sense_raised_button_disabled"/>
     </shape>
 </inset>

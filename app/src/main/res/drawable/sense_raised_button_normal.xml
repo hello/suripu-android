@@ -6,9 +6,9 @@
             <size android:height="@dimen/button_height"/>
             <gradient
                 android:angle="0"
-                android:centerColor="@color/sense_button_shadow_dark"
-                android:endColor="@color/sense_button_shadow_light"
-                android:startColor="@color/sense_button_shadow_light"
+                android:centerColor="@color/sense_raised_button_shadow_dark"
+                android:endColor="@color/sense_raised_button_shadow_light"
+                android:startColor="@color/sense_raised_button_shadow_light"
                 android:type="linear"/>
             <corners
                 android:bottomLeftRadius="@dimen/button_shadow_top_corner_radius"
@@ -25,7 +25,7 @@
             <shape android:shape="rectangle">
                 <size android:height="@dimen/button_height"/>
                 <corners android:radius="@dimen/button_corner_radius"/>
-                <solid android:color="@color/sense_button_normal"/>
+                <solid android:color="@color/sense_raised_button_normal"/>
 
             </shape>
         </inset>

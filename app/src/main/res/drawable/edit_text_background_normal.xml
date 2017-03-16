@@ -3,13 +3,13 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/edit_text_bottom_line_normal" />
+            <solid android:color="@color/sense_edittext_bottom_line_normal"/>
         </shape>
     </item>
 
     <item android:bottom="@dimen/divider_size_thick">
         <shape android:shape="rectangle">
-            <solid android:color="@color/background_light" />
+            <solid android:color="@color/sense_edittext_background_normal"/>
         </shape>
     </item>
 </layer-list>

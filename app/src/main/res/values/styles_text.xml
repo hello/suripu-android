@@ -11,19 +11,21 @@
         <item name="android:textColor">@color/text_white</item>
         <item name="android:background">@null</item>
         <item name="android:height">@dimen/button_height</item>
+        <item name="android:hapticFeedbackEnabled">true</item>
     </style>
 
     <style name="Button.Raised">
-        <item name="android:background">@drawable/sense_button_selector</item>
+        <item name="android:background">@drawable/sense_raised_button_selector</item>
     </style>
 
     <!-- Special case for fragment_onboarding_register.xml. Requires an activated state -->
     <style name="Button.Raised.Onboarding">
-        <item name="android:background">@drawable/sense_button_selector_onboarding</item>
+        <item name="android:background">@drawable/sense_raised_button_selector_onboarding</item>
     </style>
 
     <style name="Button.Flat">
         <item name="android:textColor">@color/primary</item>
+        <item name="android:background">@drawable/sense_flat_button_selector</item>
     </style>
 
     <style name="Display1" parent="AppTheme.Text.Header.H3.Light">
@@ -61,12 +63,6 @@
         <item name="android:textColor">@color/primary_text</item>
     </style>
 
-    <style name="Heading" parent="AppTheme.Text.Header.H1">
-    </style>
-
-    <style name="Heading.Light" parent="AppTheme.Text.Header.H1.Light">
-    </style>
-
     <style name="Body1" parent="AppTheme.Text.Body">
 
     </style>
@@ -102,6 +98,13 @@
 
     <!-- Todo delete everything below -->
 
+
+    <style name="Heading" parent="AppTheme.Text.Header.H1">
+    </style>
+
+    <style name="Heading.Light" parent="AppTheme.Text.Header.H1.Light">
+    </style>
+\
     <style name="Body.Dim" parent="AppTheme.Text.Body">
         <item name="android:textColor">@color/dim</item>
     </style>
