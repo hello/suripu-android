@@ -29,6 +29,11 @@
         <item name="android:background">@drawable/sense_flat_button_selector</item>
     </style>
 
+    <style name="Button.Flat.Primary">
+        <item name="android:textColor">@color/text_white</item>
+        <item name="android:background">@color/primary</item>
+    </style>
+
     <style name="Display1" parent="AppTheme.Text.Header.H3.Light">
 
     </style>

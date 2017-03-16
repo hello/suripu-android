@@ -554,7 +554,6 @@ public class OnboardingActivity extends ScopedInjectionActivity
             builder.setHeadingText(R.string.onboarding_title_sleep_pill_intro);
             builder.setSubheadingText(R.string.onboarding_message_sleep_pill_intro);
             builder.setDiagramImage(R.drawable.onboarding_sleep_pill);
-            builder.setHideToolbar(true);
             if (isPairOnly()) {
                 builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO_IN_APP);
             } else {

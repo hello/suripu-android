@@ -15,14 +15,13 @@
 
         <Button
             android:id="@+id/fragment_onboarding_introduction_sign_in"
-            style="@style/Button.Flat"
+            style="@style/Button.Flat.Primary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="none"
             android:maxLines="1"
-            android:text="@string/action_log_in"
-            android:textColor="@color/text_white"/>
+            android:text="@string/action_log_in"/>
 
         <View
             android:id="@+id/fragment_onboarding_introduction_button_divider"
@@ -34,14 +33,13 @@
 
         <Button
             android:id="@+id/fragment_onboarding_introduction_get_started"
-            style="@style/Button.Flat"
+            style="@style/Button.Flat.Primary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="none"
             android:maxLines="1"
-            android:text="@string/action_get_started"
-            android:textColor="@color/text_white"/>
+            android:text="@string/action_get_started"/>
 
     </LinearLayout>
 
