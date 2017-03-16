@@ -1,7 +1,6 @@
 package is.hello.sense;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.IdRes;

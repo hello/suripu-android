@@ -15,7 +15,7 @@ import javax.inject.Inject;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.api.ApiEndpoint;
-import is.hello.sense.debug.NamedApiEndpoint;
+import is.hello.sense.debug_menu_ui.NamedApiEndpoint;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.interactors.Interactor;
 import is.hello.sense.util.Logger;

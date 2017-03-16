@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.util.Views;
@@ -85,10 +84,10 @@ public class SplitButtonLayout extends FrameLayout{
         centerDivider.setVisibility(GONE);
     }
 
-    private void expandButton(@NonNull final Button button){
-        final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                                                   ViewGroup.LayoutParams.MATCH_PARENT);
-        params.addRule(RelativeLayout.BELOW, R.id.top_divider_horizontal);
+    private void expandButton(@NonNull final Button button) {
+        final ViewGroup.LayoutParams params = button.getLayoutParams();
+        params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        params.width = ViewGroup.LayoutParams.MATCH_PARENT;
         button.setLayoutParams(params);
     }
 

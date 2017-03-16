@@ -4,19 +4,23 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 public class NotificationActivityLifecycleListener implements Application.ActivityLifecycleCallbacks {
 
     private final BroadcastReceiver foregroundNotificationReceiver;
+    private final NotificationPressedInterceptorCounter counter;
 
-    public NotificationActivityLifecycleListener() {
+    public NotificationActivityLifecycleListener(@NonNull final NotificationPressedInterceptorCounter counter) {
         this.foregroundNotificationReceiver = new NotificationMessageReceiver(true);
+        this.counter = counter;
     }
 
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
 
+        this.counter.updateCounter(activity, true);
     }
 
     @Override
@@ -51,6 +55,6 @@ public class NotificationActivityLifecycleListener implements Application.Activi
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-
+        this.counter.updateCounter(activity, false);
     }
 }

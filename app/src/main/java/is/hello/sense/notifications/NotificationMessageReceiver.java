@@ -80,7 +80,7 @@ public class NotificationMessageReceiver extends BroadcastReceiver {
         @is.hello.sense.notifications.Notification.Type
         final String type = Notification.typeFromBundle(bundle);
         final Intent activityIntent = new Intent(context, LaunchActivity.class);
-        activityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         activityIntent.putExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD, bundle);
 
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);

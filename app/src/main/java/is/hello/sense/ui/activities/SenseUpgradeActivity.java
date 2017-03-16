@@ -19,6 +19,7 @@ import is.hello.sense.interactors.CurrentSenseInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
+import is.hello.sense.notifications.OnNotificationPressedInterceptor;
 import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -42,7 +43,8 @@ import is.hello.sense.util.SkippableFlow;
 
 public class SenseUpgradeActivity extends ScopedInjectionActivity
         implements FragmentNavigation,
-        SkippableFlow {
+        SkippableFlow,
+        OnNotificationPressedInterceptor {
     public static final String ARG_NEEDS_BLUETOOTH = SenseUpgradeActivity.class.getName() + ".ARG_NEEDS_BLUETOOTH";
 
     private FragmentNavigationDelegate navigationDelegate;

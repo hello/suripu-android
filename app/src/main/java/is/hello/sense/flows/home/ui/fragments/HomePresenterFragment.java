@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.view.View;
 
 import javax.inject.Inject;
@@ -17,8 +18,8 @@ import is.hello.sense.api.model.v2.alerts.Alert;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.flows.home.ui.views.HomeTabLayout;
 import is.hello.sense.flows.home.ui.views.HomeView;
-import is.hello.sense.flows.home.ui.views.SenseTabLayout;
 import is.hello.sense.flows.home.util.HomeFragmentPagerAdapter;
 import is.hello.sense.flows.home.util.HomeViewPagerPresenterDelegate;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
@@ -46,7 +47,7 @@ import is.hello.sense.util.Logger;
 public class HomePresenterFragment extends PresenterFragment<HomeView>
         implements
         OnBackPressedInterceptor,
-        SenseTabLayout.Listener,
+        HomeTabLayout.Listener,
         TimelineFragment.ParentProvider,
         InsightInfoFragment.ParentProvider,
         Alert.ActionHandler {
@@ -95,7 +96,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
             throw new IllegalStateException("Activity must implement Scope");
         }
         if (!(getActivity() instanceof OnboardingFlowProvider)) {
-            throw new IllegalStateException("Activity must implement OnboardingFlowProvider ");
+            throw new IllegalStateException("Activity must implement OnboardingFlowProvider");
         }
         this.deviceIssuesInteractor.bindScope((Scope) getActivity());
         addInteractor(this.deviceIssuesInteractor);
@@ -188,7 +189,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         }
         this.unreadStateInteractor.update();
         this.presenterView.setCurrentItem(fragmentPosition);
-        if (fragmentPosition == SenseTabLayout.SLEEP_ICON_KEY) {
+        if (fragmentPosition == this.viewPagerDelegate.SLEEP_ICON_KEY) {
             jumpToLastNight();
         }
     }
@@ -208,7 +209,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     @Nullable
     @Override
     public TimelineFragment.Parent getTimelineParent() {
-        final Fragment fragment = this.presenterView.getFragmentWithIndex(SenseTabLayout.SLEEP_ICON_KEY);
+        final Fragment fragment = this.presenterView.getFragmentWithIndex(this.viewPagerDelegate.SLEEP_ICON_KEY);
         if (fragment instanceof TimelineFragment.Parent) {
             return (TimelineFragment.Parent) fragment;
         }
@@ -220,7 +221,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     @Nullable
     @Override
     public InsightInfoFragment.Parent provideInsightInfoParent() {
-        final Fragment parentProvider = this.presenterView.getFragmentWithIndex(SenseTabLayout.INSIGHTS_ICON_KEY);
+        final Fragment parentProvider = this.presenterView.getFragmentWithIndex(this.viewPagerDelegate.FEED_ICON_KEY);
         if (parentProvider instanceof InsightInfoFragment.ParentProvider) {
             return ((InsightInfoFragment.ParentProvider) parentProvider).provideInsightInfoParent();
         } else {
@@ -336,7 +337,8 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
      * @param hasUnreadItems true to show indicator.
      */
     private void bindUnreadItems(final boolean hasUnreadItems) {
-        this.presenterView.showUnreadIndicatorOnFeedTab(hasUnreadItems);
+        this.presenterView.showUnreadIndicatorOnTab(hasUnreadItems,
+                                                    this.viewPagerDelegate.FEED_ICON_KEY);
     }
 
     /**
@@ -384,33 +386,36 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
      * @param timeLine for last night.
      */
     private void bindLastNightTimeline(@Nullable final Timeline timeLine) {
-        this.presenterView.updateSleepScoreTab(timeLine);
+        this.presenterView.updateTabWithSleepScore(timeLine,
+                                                   this.viewPagerDelegate.SLEEP_ICON_KEY);
     }
 
+    @VisibleForTesting
     @NonNull
     private HomeFragmentPagerAdapter createAdapter() {
         return new HomeFragmentPagerAdapter(getChildFragmentManager(),
+                                            viewPagerDelegate.SLEEP_ICON_KEY,
                                             viewPagerDelegate.getViewPagerItems());
     }
 
     public void selectTimelineTab() {
-        this.presenterView.selectTimelineTab();
+        this.presenterView.setCurrentItem(this.viewPagerDelegate.SLEEP_ICON_KEY);
     }
 
     public void selectTrendsTab() {
-        this.presenterView.selectTrendsTab();
+        this.presenterView.setCurrentItem(this.viewPagerDelegate.TRENDS_ICON_KEY);
     }
 
-    public void selectFeedTab() {
-        this.presenterView.selectFeedTab();
+    public void selectFeedTab(){
+        this.presenterView.setCurrentItem(this.viewPagerDelegate.FEED_ICON_KEY);
     }
 
     public void selectSoundTab() {
-        this.presenterView.selectSoundTab();
+        this.presenterView.setCurrentItem(this.viewPagerDelegate.SOUNDS_ICON_KEY);
     }
 
     public void selectConditionsTab() {
-        this.presenterView.selectConditionsTab();
+        this.presenterView.setCurrentItem(this.viewPagerDelegate.CONDITIONS_ICON_KEY);
     }
 
     //endregion
