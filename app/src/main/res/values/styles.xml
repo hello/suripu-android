@@ -378,6 +378,17 @@
         <item name="android:background">@drawable/button_oval_selector</item>
     </style>
 
+    <!-- Radio Buttons -->
+
+    <style name="AppTheme.RadioButton" parent="AppTheme.Card.VerticalPaddingItem">
+        <item name="android:paddingRight">@dimen/x3</item>
+        <item name="android:paddingStart">@dimen/x3</item>
+        <item name="android:button">@null</item>
+        <item name="android:drawableStart">@drawable/radio_selector</item>
+        <item name="android:drawablePadding">@dimen/x3</item>
+        <item name="android:textAppearance">@style/Body.New</item>
+    </style>
+
     <!-- Spinners -->
 
     <style name="AppTheme.Spinner" parent="Platform.Spinner">
@@ -412,8 +423,8 @@
     </style>
 
     <style name="Divider.Horizontal.Padded">
-        <item name="android:layout_marginTop">@dimen/gap_small</item>
-        <item name="android:layout_marginBottom">@dimen/gap_small</item>
+        <item name="android:layout_marginTop">@dimen/x1</item>
+        <item name="android:layout_marginBottom">@dimen/x1</item>
     </style>
 
     <style name="Divider.Vertical">
@@ -667,8 +678,8 @@
     </style>
 
     <style name="AppTheme.AppCompat.AppSettingsActivity">
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/primary</item>
-        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/light_accent_darkened</item>
+        <item name="android:windowBackground">?attr/senseBackgroundSecondary</item>
     </style>
 
     <style name="AppTheme.AppCompat.NotificationActivity" parent="AppTheme.AppCompat.AppSettingsActivity">
@@ -680,6 +691,9 @@
         <item name="android:statusBarColor" tools:targetApi="lollipop">
             @color/light_accent_darkened
         </item>
+    </style>
+
+    <style name="AppTheme.AppCompat.NightModeActivity" parent="AppTheme.AppCompat.AppSettingsActivity">
     </style>
 
 </resources>

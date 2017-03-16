@@ -9,6 +9,7 @@ import android.support.annotation.StringRes;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
+import is.hello.sense.flows.nightmode.ui.activities.NightModeActivity;
 import is.hello.sense.flows.notification.ui.activities.NotificationActivity;
 import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.settings.ui.views.AppSettingsView;
@@ -55,6 +56,9 @@ public class AppSettingsActivity extends FragmentNavigationActivity
                 case AppSettingsView.INDEX_VOICE:
                     showVoiceFragment();
                     break;
+                case AppSettingsView.INDEX_NIGHT_MODE:
+                    showNightModeSettings();
+                    break;
                 case AppSettingsView.INDEX_SUPPORT:
                     showSupportFragment();
                     break;
@@ -66,6 +70,10 @@ public class AppSettingsActivity extends FragmentNavigationActivity
                     break;
             }
         }
+    }
+
+    private void showNightModeSettings() {
+        startActivity(new Intent(this, NightModeActivity.class));
     }
     //endregion
 
