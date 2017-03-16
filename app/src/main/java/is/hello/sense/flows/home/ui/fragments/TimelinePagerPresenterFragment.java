@@ -141,10 +141,6 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
     public void setVisibleToUser(final boolean isVisible) {
         super.setVisibleToUser(isVisible);
         if (isVisible) {
-            if (shouldJumpToLastNightOnUserVisible) {
-                shouldJumpToLastNightOnUserVisible = false;
-                jumpToLastNight(false);
-            }
             final TimelineFragment timelineFragment = this.presenterView.getCurrentTimeline();
             if (timelineFragment != null) {
                 timelineFragment.setVisibleToUser(true);
@@ -203,7 +199,9 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
     }
 
     public void jumpToLastNight(final boolean animate) {
-        this.presenterView.setCurrentItemToLastNight(animate);
+        if (hasPresenterView()) {
+            this.presenterView.setCurrentItemToLastNight(animate);
+        }
     }
 
 
@@ -216,7 +214,7 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
 
     @Override
     public void jumpToLastNight() {
-        shouldJumpToLastNightOnUserVisible = true;
+        jumpToLastNight(false);
     }
 
     @Override

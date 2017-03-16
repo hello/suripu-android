@@ -392,7 +392,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
 
     @VisibleForTesting
     @NonNull
-    private HomeFragmentPagerAdapter createAdapter() {
+    protected HomeFragmentPagerAdapter createAdapter() {
         return new HomeFragmentPagerAdapter(getChildFragmentManager(),
                                             viewPagerDelegate.SLEEP_ICON_KEY,
                                             viewPagerDelegate.getViewPagerItems());

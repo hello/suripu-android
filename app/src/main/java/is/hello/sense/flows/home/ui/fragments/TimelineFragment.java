@@ -168,7 +168,13 @@ public class TimelineFragment extends ControllerPresenterFragment<TimelineView>
                                                               getResources().getDimensionPixelSize(R.dimen.x2),
                                                               getResources().getDisplayMetrics()) * TOOL_TIP_HEIGHT_MULTIPLIER);
         // For the first fragment
-        bindIfNeeded();
+        /*todo checking savedInstanceState == null prevents loading data for jumpToLastNight after rotation
+        * but only checking getUserVisibleHint will call bindIfNeeded() after first rotation from different tab
+        * however only after swiping timeline.
+        * */
+        if (getUserVisibleHint()) {
+            bindIfNeeded();
+        }
     }
 
     @Override
@@ -308,23 +314,25 @@ public class TimelineFragment extends ControllerPresenterFragment<TimelineView>
 
     @VisibleForTesting
     void bindIfNeeded() {
-        if (getView() != null && getUserVisibleHint()) {
-            sendShownAnalyticEvent();
-            if (!hasSubscriptions()) {
-                this.timelineInteractor.updateIfEmpty();
+        if(!hasPresenterView()) {
+            return;
+        }
 
-                this.stateSafeExecutor.execute(this.presenterView::pulseHeaderView);
+        sendShownAnalyticEvent();
+        if (!hasSubscriptions()) {
+            this.timelineInteractor.updateIfEmpty();
 
-                bindAndSubscribe(this.timelineInteractor.timeline,
-                                 this::bindTimeline,
-                                 this::timelineUnavailable);
+            this.stateSafeExecutor.execute(this.presenterView::pulseHeaderView);
 
-                bindAndSubscribe(this.preferences.observableUse24Time(),
-                                 this.presenterView::setUse24Time,
-                                 Functions.LOG_ERROR);
-            } else if (this.presenterView.inNoDataState()) {
-                update();
-            }
+            bindAndSubscribe(this.timelineInteractor.timeline,
+                             this::bindTimeline,
+                             this::timelineUnavailable);
+
+            bindAndSubscribe(this.preferences.observableUse24Time(),
+                             this.presenterView::setUse24Time,
+                             Functions.LOG_ERROR);
+        } else if (this.presenterView.inNoDataState()) {
+            update();
         }
     }
 
