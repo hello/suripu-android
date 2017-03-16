@@ -14,12 +14,11 @@ public class HomeFragmentPagerAdapter extends StaticFragmentAdapter {
 
     public HomeFragmentPagerAdapter(
             @NonNull final FragmentManager fm,
-            final int containerId,
             final int timelineItemPosition,
             @NonNull final HomeItem... items) {
-        super(fm, containerId, items);
-        this.timelineItemPosition = timelineItemPosition;
+        super(fm, items);
         this.homeItems = items;
+        this.timelineItemPosition = timelineItemPosition;
     }
 
     public HomeItem[] getHomeItems() {

@@ -31,7 +31,7 @@ public class HomePresenterFragmentTest extends FragmentTest<HomePresenterFragmen
     public void initializePresenterView()  {
         fragment.presenterView = null;
         callInitializePresenterView();
-        verify(fragment).createAdapter(fragment.presenterView.getViewPagerId());
+        verify(fragment).createAdapter();
     }
 
     @Test

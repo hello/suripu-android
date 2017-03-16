@@ -35,6 +35,7 @@ import is.hello.sense.SenseApplication;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.TimelineEvent;
+import is.hello.sense.flows.generic.ui.adapters.BaseFragmentPagerAdapter;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.views.TimelineView;
 import is.hello.sense.flows.timeline.ui.activities.TimelineActivity;
@@ -42,7 +43,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TimelineInteractor;
-import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.permissions.ExternalStoragePermission;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.TimelineAdapter;
@@ -67,8 +68,9 @@ import is.hello.sense.util.Logger;
 import is.hello.sense.util.Share;
 import rx.Observable;
 
-public class TimelineFragment extends PresenterFragment<TimelineView>
-        implements TimelineAdapter.OnItemClickListener {
+public class TimelineFragment extends ControllerPresenterFragment<TimelineView>
+        implements TimelineAdapter.OnItemClickListener,
+        BaseFragmentPagerAdapter.Controller {
     // !! Important: Do not use setTargetFragment on TimelineFragment.
     // It is not guaranteed to exist at the time of state restoration.
 
@@ -121,6 +123,21 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
     @VisibleForTesting
     int toolTipHeight;
 
+    //region BaseFragmentPagerAdapter.Controller
+    @Override
+    public void setVisibleToUser(final boolean isVisible) {
+        super.setVisibleToUser(isVisible);
+        if (isVisible) {
+            bindIfNeeded();
+            this.presenterView.setAnimationEnabled(true);
+        } else {
+            this.presenterView.setAnimationEnabled(false);
+            dismissVisibleOverlaysAndDialogs();
+            this.presenterView.clearHeader();
+        }
+    }
+    //endregion
+
     //region PresenterFragment
     @Override
     public void initializePresenterView() {
@@ -130,22 +147,6 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
                                                   createAdapter(),
                                                   new ScrollListener(),
                                                   this::showBreakdown);
-        }
-    }
-
-    @Override
-    public void setUserVisibleHint(final boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (this.presenterView == null) {
-            return;
-        }
-        if (isVisibleToUser) {
-            bindIfNeeded();
-            this.presenterView.setAnimationEnabled(true);
-        } else {
-            this.presenterView.setAnimationEnabled(false);
-            dismissVisibleOverlaysAndDialogs();
-            this.presenterView.clearHeader();
         }
     }
 
@@ -167,7 +168,13 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
                                                               getResources().getDimensionPixelSize(R.dimen.x2),
                                                               getResources().getDisplayMetrics()) * TOOL_TIP_HEIGHT_MULTIPLIER);
         // For the first fragment
-        bindIfNeeded();
+        /*todo checking savedInstanceState == null prevents loading data for jumpToLastNight after rotation
+        * but only checking getUserVisibleHint will call bindIfNeeded() after first rotation from different tab
+        * however only after swiping timeline.
+        * */
+        if (getUserVisibleHint()) {
+            bindIfNeeded();
+        }
     }
 
     @Override
@@ -307,23 +314,25 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
 
     @VisibleForTesting
     void bindIfNeeded() {
-        if (getView() != null && getUserVisibleHint()) {
-            sendShownAnalyticEvent();
-            if (!hasSubscriptions()) {
-                this.timelineInteractor.updateIfEmpty();
+        if(!hasPresenterView()) {
+            return;
+        }
 
-                this.stateSafeExecutor.execute(this.presenterView::pulseHeaderView);
+        sendShownAnalyticEvent();
+        if (!hasSubscriptions()) {
+            this.timelineInteractor.updateIfEmpty();
 
-                bindAndSubscribe(this.timelineInteractor.timeline,
-                                 this::bindTimeline,
-                                 this::timelineUnavailable);
+            this.stateSafeExecutor.execute(this.presenterView::pulseHeaderView);
 
-                bindAndSubscribe(this.preferences.observableUse24Time(),
-                                 this.presenterView::setUse24Time,
-                                 Functions.LOG_ERROR);
-            } else if (this.presenterView.inNoDataState()) {
-                update();
-            }
+            bindAndSubscribe(this.timelineInteractor.timeline,
+                             this::bindTimeline,
+                             this::timelineUnavailable);
+
+            bindAndSubscribe(this.preferences.observableUse24Time(),
+                             this.presenterView::setUse24Time,
+                             Functions.LOG_ERROR);
+        } else if (this.presenterView.inNoDataState()) {
+            update();
         }
     }
 

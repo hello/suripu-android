@@ -80,9 +80,10 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     @Override
     public void initializePresenterView() {
         if (this.presenterView == null) {
-            this.presenterView = new HomeView(getActivity(), this.viewPagerDelegate.getOffscreenPageLimit());
-            this.adapter = createAdapter(this.presenterView.getViewPagerId());
-            this.presenterView.setAdapter(this.adapter);
+            this.adapter = createAdapter();
+            this.presenterView = new HomeView(getActivity(),
+                                              this.viewPagerDelegate.getOffscreenPageLimit(),
+                                              this.adapter);
         }
     }
 
@@ -391,9 +392,8 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
 
     @VisibleForTesting
     @NonNull
-    protected HomeFragmentPagerAdapter createAdapter(final int viewPagerId) {
+    protected HomeFragmentPagerAdapter createAdapter() {
         return new HomeFragmentPagerAdapter(getChildFragmentManager(),
-                                            viewPagerId,
                                             viewPagerDelegate.SLEEP_ICON_KEY,
                                             viewPagerDelegate.getViewPagerItems());
     }

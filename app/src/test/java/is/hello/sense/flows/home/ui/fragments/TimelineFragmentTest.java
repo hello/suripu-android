@@ -59,16 +59,13 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> impleme
     }
 
     @Test
-    public void setUserVisibleHintBehavior() {
-        fragment.presenterView = null;
-        fragment.setUserVisibleHint(true);
-        verify(fragment, times(0)).bindIfNeeded();
+    public void setVisibleToUserBehavior() {
         fragment.initializePresenterView();
         spyOnPresenterView();
-        fragment.setUserVisibleHint(true);
+        fragment.setVisibleToUser(true);
         verify(fragment).bindIfNeeded();
         verify(fragment.presenterView).setAnimationEnabled(eq(true));
-        fragment.setUserVisibleHint(false);
+        fragment.setVisibleToUser(false);
         verify(fragment).bindIfNeeded();
         verify(fragment.presenterView).setAnimationEnabled(eq(false));
         verify(fragment).dismissVisibleOverlaysAndDialogs();
@@ -86,6 +83,7 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> impleme
     public void onViewCreatedTest() {
         callOnViewCreated();
         assertNotEquals(0, fragment.toolTipHeight);
+        assertTrue(fragment.getUserVisibleHint());
         verify(fragment).bindIfNeeded();
     }
 
@@ -126,9 +124,7 @@ public class TimelineFragmentTest extends FragmentTest<TimelineFragment> impleme
     @Test
     public void bindIfNeededTest() {
         spyOnTimelineInteractor();
-        fragment.setUserVisibleHint(true);
-        assertTrue(fragment.getView() != null);
-        assertTrue(fragment.getUserVisibleHint());
+        assertTrue(fragment.hasPresenterView());
         fragment.observableContainer.clearSubscriptions();
         assertFalse(fragment.hasSubscriptions());
         // Multiple calls, should only bind once.
