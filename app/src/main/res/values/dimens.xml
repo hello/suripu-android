@@ -123,7 +123,7 @@
 
     <dimen name="shadow_size">3dp</dimen>
     <dimen name="bottom_line">1dp</dimen>
-    <dimen name="divider_size">1px</dimen>
+    <dimen name="divider_size">1dp</dimen>
     <!-- px is not a typo -->
     <dimen name="divider_size_thick">1dp</dimen>
     <dimen name="pie_graph_stroke_width">1dp</dimen>

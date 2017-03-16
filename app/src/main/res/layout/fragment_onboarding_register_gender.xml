@@ -12,7 +12,7 @@
 
         <Button
             android:id="@+id/fragment_onboarding_next"
-            style="@style/AppTheme.Button.Rounded"
+            style="@style/Button.Raised"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -24,7 +24,9 @@
 
         <Button
             android:id="@+id/fragment_onboarding_skip"
-            style="@style/AppTheme.Button.Borderless.Accent.Bounded.Lowercase"
+            style="@style/Button.Flat"
+            android:layout_marginLeft="@dimen/x3"
+            android:layout_marginRight="@dimen/x3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@id/fragment_onboarding_next"
@@ -53,7 +55,7 @@
                     android:layout_marginTop="@dimen/x3"
                     android:lineSpacingMultiplier="@dimen/line_multiple_heading"
                     android:text="@string/title_register_gender"
-                    android:textAppearance="?attr/senseTextAppearanceHeading"/>
+                    style="@style/Title2.Primary"/>
 
                 <TextView
                     android:id="@+id/fragment_onboarding_register_gender_subtitle"
@@ -63,12 +65,8 @@
                     android:layout_marginStart="@dimen/x3"
                     android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
                     android:text="@string/onboarding_register_info_explanation"
-                    android:textAppearance="?attr/senseTextAppearanceSubheading"/>
+                    style="@style/Body1.Secondary"/>
 
-                <View
-                    style="@style/Divider.Horizontal"
-                    android:layout_marginStart="@dimen/x3"
-                    android:layout_marginTop="@dimen/x3"/>
 
 
                 <is.hello.sense.ui.widget.ImageTextView
@@ -78,10 +76,11 @@
                     android:background="@drawable/selectable_dark_bounded"
                     android:clickable="true"
                     android:padding="@dimen/x3"
+                    android:layout_marginTop="@dimen/x3"
                     app:labelText="@string/gender_male"
                     app:leftImage="@drawable/radio_on"
                     app:leftTextPadding="@dimen/x3"
-                    app:textStyle="@style/AppTheme.Text.Body.Bold"/>
+                    app:textStyle="@style/Body1.Primary"/>
 
                 <View
                     style="@style/Divider.Horizontal"
@@ -97,7 +96,7 @@
                     app:labelText="@string/gender_female"
                     app:leftImage="@drawable/radio_off"
                     app:leftTextPadding="@dimen/x3"
-                    app:textStyle="@style/AppTheme.Text.Body.Bold"/>
+                    app:textStyle="@style/Body1.Primary"/>
 
                 <View
                     style="@style/Divider.Horizontal"
@@ -120,11 +119,11 @@
                         app:labelText="@string/gender_custom"
                         app:leftImage="@drawable/radio_off"
                         app:leftTextPadding="@dimen/x3"
-                        app:textStyle="@style/AppTheme.Text.Body.Bold"/>
+                        app:textStyle="@style/Body1.Primary"/>
 
                     <TextView
                         android:id="@+id/fragment_onboarding_gender_select"
-                        style="@style/AppTheme.Text.Body.Link"
+                        style="@style/Body1.Link"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"

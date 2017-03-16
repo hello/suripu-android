@@ -14,6 +14,7 @@
     <color name="warning">@color/yellow6</color>
     <color name="success">@color/green6</color>
     <!-- end Nathan's official colors -->
+
     <color name="background">@color/gray3</color>
     <color name="background_card">@color/white</color>
     <color name="background_navigation">@color/white</color>
