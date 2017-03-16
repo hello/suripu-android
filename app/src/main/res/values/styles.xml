@@ -254,7 +254,7 @@
 
     <style name="AppTheme.Button.Rounded">
         <item name="android:minHeight">@dimen/button_rounded_min_height</item>
-        <item name="android:background">@drawable/selector_button_rounded</item>
+        <item name="android:background">@drawable/sense_button_selector</item>
         <item name="android:textColor">@color/text_white</item>
         <item name="android:textSize">@dimen/text_size_button</item>
         <item name="android:textAllCaps">true</item>
@@ -298,10 +298,6 @@
         <item name="android:minHeight">@dimen/button_rounded_min_height</item>
         <item name="android:background">@drawable/button_selector_number</item>
         <item name="android:hapticFeedbackEnabled">true</item>
-    </style>
-
-    <style name="AppTheme.Button.Rounded.Onboarding">
-        <item name="android:background">@drawable/onboarding_button_selector</item>
     </style>
 
     <style name="AppTheme.Button.Facebook">
@@ -422,17 +418,16 @@
     </style>
 
     <!-- EditText -->
+    <!-- todo confirm this is needed -->
     <style name="EditText" parent="Platform.EditText">
-        <item name="android:paddingTop">@dimen/gap_small</item>
-        <item name="android:paddingBottom">@dimen/gap_small</item>
-        <item name="android:paddingLeft">@dimen/gap_tiny</item>
-        <item name="android:paddingRight">@dimen/gap_tiny</item>
+        <item name="android:paddingTop">@dimen/x1</item>
+        <item name="android:paddingBottom">@dimen/x1</item>
+        <item name="android:paddingLeft">@dimen/x.25</item>
+        <item name="android:paddingRight">@dimen/x.25</item>
 
         <item name="android:background">@drawable/edit_text_background_selector</item>
-        <item name="android:fontFamily">sans-serif</item>
-
-        <item name="android:textSize">@dimen/text_body</item>
-        <item name="android:textColor">@drawable/edit_text_selector</item>
+        <item name="android:fontFamily">sans-serif-regular</item>
+        <item name="android:textAppearance">@style/Body1.Primary</item>
         <item name="android:minHeight">@dimen/text_body_line_height</item>
     </style>
 

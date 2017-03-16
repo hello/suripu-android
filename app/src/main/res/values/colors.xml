@@ -16,6 +16,16 @@
     <color name="success">@color/green6</color>
 
     <!-- end Nathan's official colors -->
+    <!-- Button Colors -->
+    <color name="sense_button_ripple">@color/black_25</color>
+    <color name="sense_button_normal">@color/primary</color>
+    <color name="sense_button_pressed">@color/blue7</color>
+    <color name="sense_button_disabled">@color/dim</color>
+    <color name="sense_button_shadow_light">@color/black_10</color>
+    <color name="sense_button_shadow_dark">@color/black_20</color>
+
+
+    <!-- Todo remove / replace all colors below -->
     <color name="transparent">@color/white_00</color>
     <color name="transparent_overlay">@color/black_25</color>
     <color name="light_accent">@color/blue6</color>

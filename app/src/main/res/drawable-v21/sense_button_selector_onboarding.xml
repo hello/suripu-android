@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+        android:color="@color/sense_button_ripple">
+    <item>
+        <selector>
+            <item android:state_enabled="false" android:drawable="@drawable/sense_button_disabled" />
+            <item android:state_activated="true" android:drawable="@drawable/sense_button_normal" />
+            <item android:drawable="@drawable/sense_button_disabled" />
+        </selector>
+    </item>
+</ripple>
