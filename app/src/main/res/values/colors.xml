@@ -40,6 +40,9 @@
     <color name="birthday_text_active">@color/primary</color>
     <color name="birthday_text_inactive">@color/primary_text</color>
 
+    <!-- fragment_onboarding_register_height.xml -->
+    <color name="height_display_text">@color/primary</color>
+
     <!-- Todo remove / replace all colors below -->
     <color name="transparent">@color/white_00</color>
     <color name="transparent_overlay">@color/black_25</color>
