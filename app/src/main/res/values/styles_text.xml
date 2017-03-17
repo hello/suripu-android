@@ -142,16 +142,6 @@
     <!-- End Text Styles -->
 
 
-    <style name="Card" parent="AppTheme.Text.Body">
-
-    </style>
-
-    <style name="Card.Unit">
-        <item name="android:textSize">@dimen/text_h8</item>
-        <item name="android:textColor">@color/standard</item>
-    </style>
-
-
     ​<!-- Generic -->
     <style name="AppTheme.Text.Heading">
         <item name="android:fontFamily">sans-serif-thin</item>
