@@ -2,10 +2,10 @@
 
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/selectable_dark_bounded"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/x3">
 
     <TextView
@@ -16,10 +16,10 @@
         android:drawableEnd="@drawable/icon_chevron_right_24"
         android:drawablePadding="@dimen/x1"
         android:gravity="start|center_vertical"
-        android:textColor="@color/light_accent"
-        android:textAppearance="@style/AppTheme.Text.Body"
+        android:maxLines="1"
         android:text="@string/app_name"
-        android:maxLines="1"/>
+        android:textAppearance="@style/AppTheme.Text.Body"
+        android:textColor="@color/light_accent"/>
 
     <TextView
         android:id="@+id/item_device_last_seen_label"
@@ -27,33 +27,33 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_below="@id/item_device_name"
-        android:layout_marginStart="@dimen/x3"
         android:layout_marginEnd="@dimen/x2"
-        android:textAppearance="@style/Body1.Secondary"
-        android:text="@string/label_last_seen"/>
+        android:layout_marginStart="@dimen/x3"
+        android:text="@string/label_last_seen"
+        android:textAppearance="@style/Body1.Secondary"/>
 
     <TextView
         android:id="@+id/item_device_last_seen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/item_device_last_seen_label"
-        android:layout_toEndOf="@id/item_device_last_seen_label"
         android:layout_marginEnd="@dimen/x3"
+        android:layout_toEndOf="@id/item_device_last_seen_label"
         android:gravity="end|center_vertical"
-        android:textAppearance="@style/AppTheme.Text.Body"
+        android:maxLines="1"
         android:text="@string/missing_data_placeholder"
-        android:maxLines="1"/>
+        android:textAppearance="@style/AppTheme.Text.Body"/>
 
     <TextView
         android:id="@+id/item_device_status_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/item_device_last_seen_label"
-        android:layout_marginTop="@dimen/x1"
-        android:layout_marginStart="@dimen/x3"
         android:layout_marginEnd="@dimen/x2"
-        android:textAppearance="@style/Body1.Secondary"
-        android:text="@string/label_wifi"/>
+        android:layout_marginStart="@dimen/x3"
+        android:layout_marginTop="@dimen/x1"
+        android:text="@string/label_wifi"
+        android:textAppearance="@style/Body1.Secondary"/>
 
     <TextView
         android:id="@+id/item_device_status"
@@ -63,44 +63,44 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="@dimen/x3"
         android:drawablePadding="@dimen/x1"
-        android:textAppearance="@style/AppTheme.Text.Body"
         android:gravity="end|center_vertical"
+        android:maxLines="1"
         android:text="@string/device_unknown"
-        android:maxLines="1"/>
+        android:textAppearance="@style/AppTheme.Text.Body"/>
 
     <TextView
         android:id="@+id/item_device_status2_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/item_device_status_label"
-        android:layout_marginTop="@dimen/x1"
-        android:layout_marginStart="@dimen/x3"
         android:layout_marginEnd="@dimen/x1"
-        android:textAppearance="@style/Body1.Secondary"
-        android:text="@string/label_firmware_version"/>
+        android:layout_marginStart="@dimen/x3"
+        android:layout_marginTop="@dimen/x1"
+        android:text="@string/label_firmware_version"
+        android:textAppearance="@style/Body1.Secondary"/>
 
     <TextView
         android:id="@+id/item_device_status2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/item_device_status2_label"
-        android:layout_toEndOf="@id/item_device_status2_label"
         android:layout_marginEnd="@dimen/x3"
-        android:textAppearance="@style/AppTheme.Text.Body"
+        android:layout_toEndOf="@id/item_device_status2_label"
         android:gravity="end|center_vertical"
+        android:maxLines="1"
         android:text="@string/missing_data_placeholder"
-        android:maxLines="1"/>
+        android:textAppearance="@style/AppTheme.Text.Body"/>
 
     <TextView
         android:id="@+id/item_device_status3_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/item_device_status2_label"
-        android:layout_marginTop="@dimen/x1"
-        android:layout_marginStart="@dimen/x3"
         android:layout_marginEnd="@dimen/x1"
-        android:textAppearance="@style/Body1.Secondary"
+        android:layout_marginStart="@dimen/x3"
+        android:layout_marginTop="@dimen/x1"
         android:text="@string/label_firmware_version"
+        android:textAppearance="@style/Body1.Secondary"
         android:visibility="gone"/>
 
     <TextView
@@ -108,24 +108,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/item_device_status3_label"
-        android:layout_toEndOf="@id/item_device_status3_label"
         android:layout_marginEnd="@dimen/x3"
-        android:textAppearance="@style/AppTheme.Text.Body"
+        android:layout_toEndOf="@id/item_device_status3_label"
         android:gravity="end|center_vertical"
-        android:text="@string/missing_data_placeholder"
         android:maxLines="1"
+        android:text="@string/missing_data_placeholder"
+        android:textAppearance="@style/AppTheme.Text.Body"
         android:visibility="gone"/>
 
     <Button
         android:id="@+id/item_device_action_button"
+        style="@style/Button.Raised"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/x3"
-        android:layout_marginStart="@dimen/x3"
-        android:layout_marginEnd="@dimen/x3"
         android:layout_below="@id/item_device_status3_label"
+        android:layout_marginEnd="@dimen/x3"
+        android:layout_marginStart="@dimen/x3"
+        android:layout_marginTop="@dimen/x3"
         android:text="@string/missing_data_placeholder"
-        style="@style/Button.Raised"
         android:visibility="gone"/>
 
 </RelativeLayout>

@@ -102,6 +102,7 @@
     <style name="Body2" parent="Body1">
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
+
     <style name="Caption1" parent="AppTheme.Text.Header.H8">
 
     </style>
