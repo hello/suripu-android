@@ -72,7 +72,7 @@
     <color name="edit_text_bottom_line_normal">@color/divider</color>
     <color name="edit_text_bottom_line_disabled">@color/divider</color>
 
-    <color name="text_white">@color/white</color>
+    <color name="white_text">@color/white</color>
     <color name="text_white_button_pressed">@color/background</color>
 
     <color name="background_button_white_pressed">@color/gray2_15</color>

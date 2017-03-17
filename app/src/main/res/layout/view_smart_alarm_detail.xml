@@ -30,7 +30,7 @@
                 android:layout_marginBottom="@dimen/x1"
                 android:background="@drawable/background_alarm_time"
                 android:includeFontPadding="false"
-                android:textColor="@color/text_white"/>
+                android:textColor="@color/white_text"/>
 
         </FrameLayout>
 

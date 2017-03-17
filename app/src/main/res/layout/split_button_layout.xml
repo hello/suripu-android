@@ -2,7 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/x7"
+    android:layout_height="wrap_content"
     android:background="@color/white"
     android:gravity="center_vertical"
     android:orientation="vertical">
@@ -23,25 +23,21 @@
 
         <Button
             android:id="@+id/button_left"
-            style="@style/Body1"
+            style="@style/Button.Flat"
             android:layout_width="0dp"
-            android:layout_height="@dimen/x7"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/action_close"
-            android:textAllCaps="true"
-            android:textColor="@color/split_button_left_text_color"/>
+            android:text="@string/action_close"/>
 
         <Button
             android:id="@+id/button_right"
-            style="@style/Body1.Link"
+            style="@style/Button.Flat"
             android:layout_width="0dp"
-            android:layout_height="@dimen/x7"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/action_ok"
-            android:textAllCaps="true"
-            android:textColor="@color/split_button_right_text_color"/>
+            android:text="@string/action_ok"/>
 
     </LinearLayout>
 
@@ -50,7 +46,7 @@
         android:id="@+id/center_divider_vertical"
         style="@style/Divider.Vertical"
         android:layout_width="@dimen/divider_size"
-        android:layout_height="@dimen/x7"
+        android:layout_height="match_parent"
         android:layout_below="@id/top_divider_horizontal"
         android:layout_centerInParent="true"/>
 

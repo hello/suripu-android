@@ -15,12 +15,13 @@
     <color name="success">@color/green6</color>
     <!-- end Nathan's official colors -->
 
-    <color name="background">@color/gray3</color>
+    <color name="background">@color/gray2</color>
     <color name="background_card">@color/white</color>
     <color name="background_navigation">@color/white</color>
     <color name="background_overlay">@color/primary</color>
     <color name="background_drawer">@color/primary</color>
     <color name="error_text">@color/error</color>
+    <color name="white_text">@color/white</color>
 
 
     <!-- Button Colors -->
@@ -107,7 +108,6 @@
     <color name="edit_text_bottom_line_normal">@color/gray3</color>
     <color name="edit_text_bottom_line_disabled">@color/gray3</color>
 
-    <color name="text_white">@color/white</color>
     <color name="text_white_button_pressed">@color/gray3</color>
 
     <color name="background_button_white_pressed">@color/gray2_15</color>
