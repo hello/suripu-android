@@ -47,7 +47,7 @@
             android:minLines="2"
             android:ellipsize="end"
             android:gravity="center"
-            android:textAppearance="@style/Body.New"
+            style="@style/Body1.Primary"
             android:lineSpacingMultiplier="@dimen/line_multiple_body_small"
             android:text="@string/missing_data_placeholder"/>
 

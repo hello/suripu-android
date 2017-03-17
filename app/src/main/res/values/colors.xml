@@ -20,6 +20,8 @@
     <color name="background_navigation">@color/white</color>
     <color name="background_overlay">@color/primary</color>
     <color name="background_drawer">@color/primary</color>
+    <color name="error_text">@color/error</color>
+
 
     <!-- Button Colors -->
     <color name="sense_button_ripple">@color/divider_color</color>
@@ -42,6 +44,9 @@
 
     <!-- fragment_onboarding_register_height.xml & fragment_onboarding_register_weight.xml-->
     <color name="scale_display_text">@color/primary</color>
+
+    <!-- view_smart_alarm_detail.xml-->
+    <color name="smart_alarm_header_background">@color/primary</color>
 
     <!-- Todo remove / replace all colors below -->
     <color name="transparent">@color/white_00</color>

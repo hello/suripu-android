@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/x1"
-        android:textAppearance="@style/Body.New"
+        android:textAppearance="@style/Body1.Primary"
         android:gravity="start|center_vertical"
         android:layout_gravity="center_vertical"
         android:drawableStart="@drawable/icon_alarm_light"

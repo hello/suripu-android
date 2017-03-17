@@ -45,7 +45,7 @@
     </style>
 
     <style name="Display1.Primary">
-        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
     <style name="Display2" parent="AppTheme.Text.Header.H2.Light">
@@ -64,7 +64,7 @@
     </style>
 
     <style name="Headline.Primary">
-        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
     <style name="Title1" parent="AppTheme.Text.Header.H5">
@@ -76,7 +76,15 @@
     </style>
 
     <style name="Title2.Primary">
-        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textColor">@color/primary_text_selector</item>
+    </style>
+
+    <style name="BodySmall" parent="AppTheme.Text.Header.H6">
+        <item name="android:textSize">@dimen/text_h6_6</item>
+    </style>
+
+    <style name="BodySmall.Secondary">
+        <item name="android:textColor">@color/secondary_text_selector</item>
     </style>
 
     <style name="Body1" parent="AppTheme.Text.Body">
@@ -84,11 +92,11 @@
     </style>
 
     <style name="Body1.Primary" parent="AppTheme.Text.Body">
-        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
     <style name="Body1.Secondary">
-        <item name="android:textColor">@color/secondary_text</item>
+        <item name="android:textColor">@color/secondary_text_selector</item>
     </style>
 
     <style name="Body1.Hint">
@@ -96,7 +104,7 @@
     </style>
 
     <style name="Body1.Link">
-        <item name="android:textColor">@color/primary</item>
+        <item name="android:textColor">@color/link_text_selector</item>
     </style>
 
     <style name="Body2" parent="Body1">
@@ -104,7 +112,7 @@
     </style>
 
     <style name="Body2.Primary">
-        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
     <style name="Caption1" parent="AppTheme.Text.Header.H8">
@@ -112,7 +120,7 @@
     </style>
 
     <style name="Caption1.Secondary">
-        <item name="android:textColor">@color/secondary_text</item>
+        <item name="android:textColor">@color/secondary_text_selector</item>
     </style>
 
     <style name="Caption2" parent="AppTheme.Text.Header.H7.Medium">
@@ -120,25 +128,14 @@
     </style>
 
     <style name="Caption2.Primary">
-        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
     <style name="Caption2.Secondary">
-        <item name="android:textColor">@color/secondary_text</item>
+        <item name="android:textColor">@color/secondary_text_selector</item>
     </style>
 
     <!-- End Text Styles -->
-    <!-- Todo delete everything below -->
-
-    <style name="Body.New" parent="AppTheme.Text.Body">
-        <item name="android:textColor">@color/text_color_selector_body_new</item>
-    </style>
-
-    <style name="Body.Accent" parent="AppTheme.Text.Body">
-        <item name="android:textColor">@color/text_link_color_selector</item>
-    </style>
-
-    <!-- Todo replace with caption-->
     <style name="Label" parent="AppTheme.Text.Header.H7">
         <item name="android:textColor">@color/dim</item>
     </style>
