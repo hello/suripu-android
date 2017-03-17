@@ -16,10 +16,7 @@
         android:layout_marginRight="@dimen/x3"
         android:layout_marginBottom="@dimen/x1"
         android:gravity="center"
-        android:textAppearance="@style/AppTheme.Text.Heading"
-        android:textColor="@color/primary_text"
-        android:textStyle="bold"
-        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+        style="@style/Title2.Primary"
         android:text="@string/onboarding_room_check_title_success"/>
 
     <TextView
@@ -30,10 +27,9 @@
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
         android:gravity="center"
-        android:textAppearance="@style/AppTheme.Text.Body.New"
-        android:textColor="@color/secondary_text"
+        style="@style/Body1.Secondary"
         android:text="@string/onboarding_room_check_info_success"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
+        />
 
     <Space
         android:layout_width="match_parent"
@@ -47,6 +43,6 @@
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
         android:text="@string/action_continue"
-        style="@style/AppTheme.Button.Rounded"/>
+        style="@style/Button.Raised"/>
 
 </merge>

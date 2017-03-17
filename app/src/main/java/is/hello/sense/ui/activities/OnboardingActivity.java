@@ -597,7 +597,6 @@ public class OnboardingActivity extends ScopedInjectionActivity
         introBuilder.setHeadingText(R.string.onboarding_title_room_check);
         introBuilder.setSubheadingText(R.string.onboarding_info_room_check);
         introBuilder.setDiagramImage(R.drawable.onboarding_sense_intro);
-        introBuilder.setHideToolbar(true);
         introBuilder.setExitAnimationName(ANIMATION_ROOM_CHECK);
         introBuilder.setNextWantsBackStackEntry(false);
         introBuilder.setAnalyticsEvent(Analytics.Onboarding.EVENT_ROOM_CHECK);
