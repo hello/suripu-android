@@ -54,8 +54,8 @@
                 android:textColor="@color/text_dark"
                 android:textSize="@dimen/text_size_heading"
                 android:visibility="gone"
-                tools:visibility="visible"
-                tools:text="@string/action_insights"/>
+                tools:text="@string/action_insights"
+                tools:visibility="visible"/>
 
             <TextView
                 android:id="@+id/fragment_insight_info_message"
@@ -68,24 +68,22 @@
                 android:textAppearance="@style/AppTheme.Text.Body"
                 android:textColor="@color/text_medium"
                 android:visibility="gone"
-                tools:visibility="visible"
-                tools:text="@string/lorem_ipsum"/>
+                tools:text="@string/lorem_ipsum"
+                tools:visibility="visible"/>
 
             <TextView
                 android:id="@+id/fragment_insight_info_summary_header"
+                style="@style/Caption2.Secondary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/x2"
                 android:layout_marginLeft="@dimen/x3"
                 android:layout_marginRight="@dimen/x3"
                 android:layout_marginTop="@dimen/x2"
-                android:fontFamily="sans-serif-medium"
                 android:text="@string/title_about_you"
-                android:textAllCaps="true"
-                android:textAppearance="@style/AppTheme.Text.SectionHeading.Large"
                 android:visibility="gone"
-                tools:visibility="visible"
-                tools:text="@string/action_insights"/>
+                tools:text="@string/action_insights"
+                tools:visibility="visible"/>
 
             <TextView
                 android:id="@+id/fragment_insight_info_summary"
@@ -98,8 +96,8 @@
                 android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"
                 android:textAppearance="@style/AppTheme.Text.Body.MidSized.Dim"
                 android:visibility="gone"
-                tools:visibility="visible"
-                tools:text="@string/lorem_ipsum"/>
+                tools:text="@string/lorem_ipsum"
+                tools:visibility="visible"/>
 
         </LinearLayout>
 
@@ -110,9 +108,9 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/button_height"
         android:layout_alignParentBottom="true"
+        android:visibility="visible"
         app:leftButtonText="@string/action_close"
-        app:rightButtonText="@string/action_share"
-        android:visibility="visible"/>
+        app:rightButtonText="@string/action_share"/>
 
     <ImageView
         android:id="@+id/fragment_insight_info_top_shadow"

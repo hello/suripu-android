@@ -159,15 +159,6 @@
         <item name="android:textColor">@color/text_section_header</item>
     </style>
 
-    <style name="AppTheme.Text.SectionHeading.Accent">
-        <item name="android:textColor">@color/light_accent</item>
-    </style>
-
-    <style name="AppTheme.Text.SectionHeading.Large">
-        <item name="android:textSize">@dimen/text_size_section_heading_large</item>
-    </style>
-
-
     <style name="AppTheme.Text.ScreenTitle">
         <item name="android:textSize">@dimen/action_bar_title_text_size</item>
         <item name="android:textColor">@color/text_dark</item>
