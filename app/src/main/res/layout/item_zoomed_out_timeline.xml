@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/x.5"
         android:gravity="center"
-        android:textAppearance="@style/Body2"
+        android:textAppearance="@style/Body2.Primary"
         android:text="@string/missing_data_placeholder" />
 
     <TextView

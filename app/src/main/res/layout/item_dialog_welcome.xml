@@ -53,7 +53,7 @@
                 android:layout_marginTop="@dimen/x3"
                 android:layout_marginLeft="@dimen/x3"
                 android:layout_marginRight="@dimen/x3"
-                android:textAppearance="@style/Title1.Primary" />
+                android:textAppearance="@style/Title2.Primary" />
 
             <TextView
                 android:id="@+id/fragment_dialog_welcome_item_message"
