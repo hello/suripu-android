@@ -63,7 +63,8 @@
 
             <TextView
                 android:id="@+id/view_expansion_detail_configuration_selection_tv"
-                style="@style/AppTheme.Text.Body.Dim.Ellipsize"
+                style="@style/Body1.Secondary"
+                android:ellipsize="end"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"

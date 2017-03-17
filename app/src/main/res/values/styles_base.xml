@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <!-- The following define empirical names of our styles. They should not be used directly. They
+         should be referenced in styles_text.xml with a proper design 'term'. The design term is
+         what should be used with your views. -->
     <style name="AppTheme.Text" parent="android:TextAppearance">
         <item name="android:textColor">@color/standard</item>
         <item name="android:textColorLink">@color/text_color_link</item>
@@ -95,43 +97,6 @@
 
     <style name="AppTheme.Text.Body.Paragraph">
         <item name="android:lineSpacingMultiplier">@dimen/line_multiple_body</item>
-    </style>
-
-    <!-- Start Button Styles -->
-    <style name="Button" parent="AppTheme.Text.Header.H6.Medium">
-        <item name="android:paddingTop">@dimen/x1</item>
-        <item name="android:paddingBottom">@dimen/x1</item>
-        <item name="android:paddingLeft">@dimen/x3</item>
-        <item name="android:paddingRight">@dimen/x3</item>
-        <item name="android:textSize">@dimen/text_h6_5</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textAlignment">center</item>
-        <item name="android:textColor">@color/text_white</item>
-        <item name="android:background">@null</item>
-        <item name="android:height">@dimen/button_height</item>
-        <item name="android:hapticFeedbackEnabled">true</item>
-    </style>
-
-    <style name="Button.Raised">
-        <item name="android:background">@drawable/sense_raised_button_selector</item>
-    </style>
-
-    <!-- Special case for fragment_onboarding_register.xml. Requires an activated state -->
-    <style name="Button.Raised.Onboarding">
-        <item name="android:background">@drawable/sense_raised_button_selector_onboarding</item>
-    </style>
-
-    <style name="Button.Flat">
-        <item name="android:textColor">@color/primary</item>
-        <item name="android:background">@drawable/sense_flat_button_selector</item>
-    </style>
-
-    <style name="Button.Flat.Primary">
-        <item name="android:textColor">@color/text_white</item>
-        <item name="android:background">@color/primary</item>
-    </style>
-
-    <!-- End Button Styles -->
-    ​
+    </style>    ​
     ​ ​
 </resources>

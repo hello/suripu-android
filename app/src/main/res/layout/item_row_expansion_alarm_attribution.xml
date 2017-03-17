@@ -31,8 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start|center_vertical"
             android:visibility="visible"
-            android:fontFamily="sans-serif"
-            android:textAppearance="@style/Body.Dim"/>
+            android:textAppearance="@style/Body1.Secondary"/>
 
         <ImageView
             android:id="@+id/item_row_expansion_alarm_error"

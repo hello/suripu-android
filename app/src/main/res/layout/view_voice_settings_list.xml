@@ -23,7 +23,7 @@
 
         <TextView
             android:id="@+id/view_voice_settings_list_volume_value_tv"
-            style="@style/AppTheme.Text.Body.Dim"
+            style="@style/Body1.Secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"

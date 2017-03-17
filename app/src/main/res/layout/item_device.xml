@@ -29,7 +29,7 @@
         android:layout_below="@id/item_device_name"
         android:layout_marginStart="@dimen/x3"
         android:layout_marginEnd="@dimen/x2"
-        android:textAppearance="@style/AppTheme.Text.Body.Dim"
+        android:textAppearance="@style/Body1.Secondary"
         android:text="@string/label_last_seen"/>
 
     <TextView
@@ -52,7 +52,7 @@
         android:layout_marginTop="@dimen/x1"
         android:layout_marginStart="@dimen/x3"
         android:layout_marginEnd="@dimen/x2"
-        android:textAppearance="@style/AppTheme.Text.Body.Dim"
+        android:textAppearance="@style/Body1.Secondary"
         android:text="@string/label_wifi"/>
 
     <TextView
@@ -76,7 +76,7 @@
         android:layout_marginTop="@dimen/x1"
         android:layout_marginStart="@dimen/x3"
         android:layout_marginEnd="@dimen/x1"
-        android:textAppearance="@style/AppTheme.Text.Body.Dim"
+        android:textAppearance="@style/Body1.Secondary"
         android:text="@string/label_firmware_version"/>
 
     <TextView
@@ -99,7 +99,7 @@
         android:layout_marginTop="@dimen/x1"
         android:layout_marginStart="@dimen/x3"
         android:layout_marginEnd="@dimen/x1"
-        android:textAppearance="@style/AppTheme.Text.Body.Dim"
+        android:textAppearance="@style/Body1.Secondary"
         android:text="@string/label_firmware_version"
         android:visibility="gone"/>
 
@@ -125,7 +125,7 @@
         android:layout_marginEnd="@dimen/x3"
         android:layout_below="@id/item_device_status3_label"
         android:text="@string/missing_data_placeholder"
-        style="@style/AppTheme.Button.Rounded"
+        style="@style/Button.Raised"
         android:visibility="gone"/>
 
 </RelativeLayout>
