@@ -22,7 +22,7 @@
 
             <TextView
                 android:id="@+id/item_sensor_group_title"
-                style="@style/Caption2.Primary"
+                style="@style/Body2.Primary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:focusable="false"
