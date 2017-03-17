@@ -1,39 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Button" parent="AppTheme.Text.Header.H6.Medium">
-        <item name="android:paddingTop">@dimen/x1</item>
-        <item name="android:paddingBottom">@dimen/x1</item>
-        <item name="android:paddingLeft">@dimen/x3</item>
-        <item name="android:paddingRight">@dimen/x3</item>
-        <item name="android:textSize">@dimen/text_h6_5</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textAlignment">center</item>
-        <item name="android:textColor">@color/text_white</item>
-        <item name="android:background">@null</item>
-        <item name="android:height">@dimen/button_height</item>
-        <item name="android:hapticFeedbackEnabled">true</item>
-    </style>
-
-    <style name="Button.Raised">
-        <item name="android:background">@drawable/sense_raised_button_selector</item>
-    </style>
-
-    <!-- Special case for fragment_onboarding_register.xml. Requires an activated state -->
-    <style name="Button.Raised.Onboarding">
-        <item name="android:background">@drawable/sense_raised_button_selector_onboarding</item>
-    </style>
-
-    <style name="Button.Flat">
-        <item name="android:textColor">@color/primary</item>
-        <item name="android:background">@drawable/sense_flat_button_selector</item>
-    </style>
-
-    <style name="Button.Flat.Primary">
-        <item name="android:textColor">@color/text_white</item>
-        <item name="android:background">@color/primary</item>
-    </style>
-
     <style name="Display1" parent="AppTheme.Text.Header.H3.Light">
 
     </style>
@@ -117,7 +83,6 @@
 
     <style name="Heading.Light" parent="AppTheme.Text.Header.H1.Light">
     </style>
-    \
 
     <style name="Body.Dim" parent="AppTheme.Text.Body">
         <item name="android:textColor">@color/dim</item>

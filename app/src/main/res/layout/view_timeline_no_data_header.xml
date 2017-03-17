@@ -39,7 +39,7 @@
 
     <Button
         android:id="@+id/view_timeline_no_data_header_action"
-        style="@style/AppTheme.Button.Primary"
+        style="@style/Button.Raised"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
