@@ -111,13 +111,20 @@
 
     </style>
 
+    <style name="Caption1.Secondary">
+        <item name="android:textColor">@color/secondary_text</item>
+    </style>
+
     <style name="Caption2" parent="AppTheme.Text.Header.H7.Medium">
 
     </style>
 
+    <style name="Caption2.Primary">
+        <item name="android:textColor">@color/primary_text</item>
+    </style>
+
     <style name="Caption2.Secondary">
         <item name="android:textColor">@color/secondary_text</item>
-
     </style>
 
     <!-- End Text Styles -->

@@ -391,7 +391,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         final TextView body;
         final TextView date;
         final TextView category;
-        final LinearLayout share;
+        final Button share;
         public final ParallaxImageView image;
 
         InsightViewHolder(@NonNull final View view) {
@@ -400,7 +400,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             this.date = (TextView) view.findViewById(R.id.item_insight_date);
             this.category = (TextView) view.findViewById(R.id.item_insight_category);
             this.image = (ParallaxImageView) view.findViewById(R.id.item_insight_image);
-            this.share = (LinearLayout) view.findViewById(R.id.item_insight_share);
+            this.share = (Button) view.findViewById(R.id.item_insight_share_button);
 
             view.setOnClickListener(this);
         }
