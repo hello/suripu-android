@@ -14,10 +14,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/x2"
+        android:layout_marginBottom="@dimen/x1"
         android:layout_marginLeft="@dimen/x2"
         android:layout_marginRight="@dimen/x2"
-        android:layout_marginBottom="@dimen/x1"
+        android:layout_marginTop="@dimen/x2"
         android:baselineAligned="false"
         android:focusable="false"
         android:orientation="horizontal">
@@ -31,11 +31,11 @@
 
             <TextView
                 android:id="@+id/item_server_response_title"
-                style="@style/Card.Title"
+                style="@style/Caption2.Primary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:focusable="false"
                 android:layout_marginBottom="@dimen/x1"
+                android:focusable="false"
                 tools:text="Barometric Pressure"/>
 
             <TextView
@@ -64,8 +64,8 @@
                 style="@style/Card.Value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:focusable="false"
                 android:layout_gravity="center_horizontal"
+                android:focusable="false"
                 tools:text="2017"/>
 
             <TextView

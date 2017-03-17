@@ -146,13 +146,6 @@
 
     </style>
 
-    <style name="Card.Title">
-        <item name="android:textSize">@dimen/text_h7</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/dark</item>
-        <item name="android:textAllCaps">true</item>
-    </style>
-
     <style name="Card.WelcomeTitle">
         <item name="android:textSize">@dimen/text_h5</item>
         <item name="android:textStyle">normal</item>
