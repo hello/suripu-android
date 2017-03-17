@@ -1,75 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<is.hello.sense.ui.widget.RoundedRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<is.hello.sense.ui.widget.RoundedRelativeLayout
+    style="@style/AppTheme.Card"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="@dimen/gap_xlarge"
     android:layout_marginBottom="@dimen/gap_xlarge"
     android:layout_marginLeft="@dimen/gap_small"
     android:layout_marginRight="@dimen/gap_small"
-    android:paddingBottom="@dimen/gap_medium"
-    style="@style/AppTheme.Card">
+    android:layout_marginTop="@dimen/gap_xlarge"
+    android:paddingBottom="@dimen/gap_medium">
 
     <TextView
         android:id="@+id/dialog_sense_list_message"
+        style="@style/Title2.Primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_marginBottom="@dimen/gap_medium"
         android:layout_marginLeft="@dimen/gap_outer"
         android:layout_marginRight="@dimen/gap_outer"
         android:layout_marginTop="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_medium"
-        android:textAppearance="@style/AppTheme.Text.Heading.New"
-        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
     <View
         android:id="@+id/dialog_sense_list_message_divider"
+        style="@style/Divider.Horizontal"
         android:layout_below="@id/dialog_sense_list_message"
-        android:visibility="gone"
-        style="@style/Divider.Horizontal" />
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/dialog_sense_list_positive"
+        style="@style/AppTheme.Button.Dialog.Alert"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/gap_outer_dialog_buttons"
-        android:layout_marginTop="@dimen/gap_medium"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:text="@android:string/ok"
-        style="@style/AppTheme.Button.Dialog.Alert"/>
+        android:layout_marginEnd="@dimen/gap_outer_dialog_buttons"
+        android:layout_marginTop="@dimen/gap_medium"
+        android:text="@android:string/ok"/>
 
     <Button
         android:id="@+id/dialog_sense_list_negative"
+        style="@style/AppTheme.Button.Dialog.Alert"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/gap_outer_dialog_buttons"
-        android:layout_marginEnd="@dimen/gap_small"
-        android:layout_marginTop="@dimen/gap_medium"
         android:layout_alignParentBottom="true"
+        android:layout_marginEnd="@dimen/gap_small"
+        android:layout_marginStart="@dimen/gap_outer_dialog_buttons"
+        android:layout_marginTop="@dimen/gap_medium"
         android:layout_toStartOf="@id/dialog_sense_list_positive"
         android:text="@android:string/cancel"
-        android:textColor="@color/text_medium"
-        style="@style/AppTheme.Button.Dialog.Alert"/>
+        android:textColor="@color/text_medium"/>
 
     <View
         android:id="@+id/dialog_sense_list_button_divider"
-        android:layout_above="@id/dialog_sense_list_positive"
-        style="@style/Divider.Horizontal" />
+        style="@style/Divider.Horizontal"
+        android:layout_above="@id/dialog_sense_list_positive"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/dialog_sense_list_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/dialog_sense_list_message_divider"
-        android:layout_above="@id/dialog_sense_list_button_divider" />
+        android:layout_above="@id/dialog_sense_list_button_divider"
+        android:layout_below="@id/dialog_sense_list_message_divider"/>
 
     <ProgressBar
         android:id="@+id/dialog_sense_list_loading"
+        style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:visibility="gone"
-        style="?android:attr/progressBarStyle" />
+        android:visibility="gone"/>
 
 </is.hello.sense.ui.widget.RoundedRelativeLayout>

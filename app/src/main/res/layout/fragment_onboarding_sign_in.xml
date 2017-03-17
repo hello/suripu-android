@@ -37,9 +37,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/x2"
-                android:lineSpacingMultiplier="@dimen/line_multiple_heading"
                 android:text="@string/title_sign_in"
-                android:textAppearance="@style/AppTheme.Text.Heading.New"/>
+                style="@style/Title2.Primary"/>
 
 
             <is.hello.sense.ui.widget.LabelEditText
