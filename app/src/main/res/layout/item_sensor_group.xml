@@ -30,7 +30,7 @@
 
             <TextView
                 android:id="@+id/item_sensor_group_body"
-                style="@style/Card.Body"
+                style="@style/Body1.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:focusable="false"/>

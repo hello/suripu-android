@@ -146,11 +146,6 @@
 
     </style>
 
-    <style name="Card.Body">
-        <item name="android:textSize">@dimen/text_body</item>
-        <item name="android:textColor">@color/standard</item>
-    </style>
-
     <style name="Card.Value">
         <item name="android:textSize">@dimen/text_h4</item>
     </style>
