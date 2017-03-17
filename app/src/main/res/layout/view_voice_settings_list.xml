@@ -96,7 +96,7 @@
             android:layout_gravity="start|center_vertical"
             android:padding="@dimen/x2"
             android:text="@string/voice_settings_primary_user_about"
-            android:textAppearance="@style/Label"/>
+            style="@style/Caption2.Secondary"/>
     </LinearLayout>
 
 </LinearLayout>
