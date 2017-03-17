@@ -103,6 +103,10 @@
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
+    <style name="Body2.Primary">
+        <item name="android:textColor">@color/primary_text</item>
+    </style>
+
     <style name="Caption1" parent="AppTheme.Text.Header.H8">
 
     </style>
@@ -118,10 +122,6 @@
 
     <!-- End Text Styles -->
     <!-- Todo delete everything below -->
-
-    <style name="Body.Dark" parent="AppTheme.Text.Body">
-        <item name="android:textColor">@color/dark</item>
-    </style>
 
     <style name="Body.New" parent="AppTheme.Text.Body">
         <item name="android:textColor">@color/text_color_selector_body_new</item>

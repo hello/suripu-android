@@ -40,7 +40,6 @@
     <style name="AppTheme.Text.Header.H3">
         <item name="android:textSize">@dimen/text_h3</item>
     </style>
-    ​
 
     <style name="AppTheme.Text.Header.H3.Light">
         <item name="android:fontFamily">sans-serif-light</item>
