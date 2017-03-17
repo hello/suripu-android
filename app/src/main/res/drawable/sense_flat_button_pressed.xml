@@ -2,7 +2,5 @@
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
        android:shape="rectangle">
-    <size android:height="@dimen/button_height"/>
     <solid android:color="@color/sense_flat_button_pressed"/>
-
 </shape>

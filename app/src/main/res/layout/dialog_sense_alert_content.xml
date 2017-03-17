@@ -18,16 +18,15 @@
          it has to be included here to render correctly. -->
     <TextView
         android:id="@+id/dialog_sense_alert_message"
+        style="@style/Body1.Secondary"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="@dimen/x2"
+        android:layout_marginBottom="@dimen/x1"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
         android:layout_weight="1"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"
         android:overScrollMode="ifContentScrolls"
         android:scrollbars="vertical"
-        android:textAppearance="@style/AppTheme.Text.Body.New"
         android:textColorLink="@color/text_link"
         android:visibility="gone"/>
 
@@ -35,34 +34,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/x2"
-        android:layout_marginLeft="@dimen/gap_outer_dialog_buttons"
-        android:layout_marginRight="@dimen/gap_outer_dialog_buttons"
+        android:layout_marginLeft="@dimen/x2"
+        android:layout_marginRight="@dimen/x2"
         android:layout_marginTop="@dimen/x1"
-        android:gravity="end|center_vertical"
+        android:gravity="end"
         android:orientation="horizontal">
-
-        <!-- Todo change style to be gray instead of blue -->
         <Button
             android:id="@+id/dialog_sense_alert_cancel"
-            style="@style/AppTheme.Button.Dialog.Alert"
+            style="@style/Button.Flat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@android:string/cancel"
             android:visibility="gone"/>
 
-        <View
-            android:id="@+id/dialog_sense_alert_button_divider"
-            android:layout_width="@dimen/x1"
-            android:layout_height="match_parent"
-            android:visibility="gone"/>
-
         <Button
             android:id="@+id/dialog_sense_alert_ok"
-            style="@style/AppTheme.Button.Dialog.Alert"
+            style="@style/Button.Flat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@android:string/ok"
             android:visibility="gone"/>
+
 
     </LinearLayout>
 

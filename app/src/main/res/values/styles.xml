@@ -479,7 +479,7 @@
         <item name="android:background">@drawable/raised_item_selector</item>
     </style>
 
-    <style name="AppTheme.Card.VerticalPaddingItem" parent="AppTheme.Text.Body.New">
+    <style name="AppTheme.Card.VerticalPaddingItem">
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:paddingTop">@dimen/x2</item>
         <item name="android:paddingBottom">@dimen/x2</item>
