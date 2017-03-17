@@ -57,6 +57,10 @@
 
     </style>
 
+    <style name="Headline.Primary">
+        <item name="android:textColor">@color/primary_text</item>
+    </style>
+
     <style name="Title1" parent="AppTheme.Text.Header.H5">
         <item name="android:textSize">@dimen/text_h6_2</item>
 
