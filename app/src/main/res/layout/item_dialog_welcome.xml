@@ -50,11 +50,10 @@
                 android:id="@+id/fragment_dialog_welcome_item_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/gap_large"
-                android:layout_marginLeft="@dimen/gap_outer"
-                android:layout_marginRight="@dimen/gap_outer"
-                android:textAppearance="@style/AppTheme.Text.ParagraphHeading"
-                android:lineSpacingMultiplier="@dimen/line_multiple_paragraph_heading" />
+                android:layout_marginTop="@dimen/x3"
+                android:layout_marginLeft="@dimen/x3"
+                android:layout_marginRight="@dimen/x3"
+                android:textAppearance="@style/Title1.Primary" />
 
             <TextView
                 android:id="@+id/fragment_dialog_welcome_item_message"
