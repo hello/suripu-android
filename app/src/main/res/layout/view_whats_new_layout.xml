@@ -19,7 +19,7 @@
         android:src="@drawable/close"/>
 
     <TextView
-        style="@style/AppTheme.Text.Header.H5"
+        style="@style/Title2.Primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="@dimen/x4"
@@ -28,7 +28,7 @@
         android:gravity="center_horizontal"/>
 
     <TextView
-        style="@style/Body1"
+        style="@style/Body1.Secondary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/x2"
