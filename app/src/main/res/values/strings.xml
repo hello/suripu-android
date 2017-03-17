@@ -787,7 +787,7 @@
     <string name="night_mode_scheduled_description">Automatic from sunset to sunrise.</string>
     <string name="night_mode_location_permission_disabled_msg"><a href="#settings">Location Services</a> must be enabled for Sense to know local sunset and sunrise times.</string>
     <string name="night_mode_location_permission_message">Allow Sense to use your location to know sunrise and sunset times, local weather, and more?</string>
-    <string name="night_mode_location_permission_required_message">This is temporary copy that needs to be replaced with link to <a href="#settings">Settings</a></string>
+    <string name="night_mode_location_permission_required_message">Sense needs your location to know sunset and sunrise times. Please enable Location Services in <a href="#settings">Settings</a> to continue.</string>
 
     <!-- endregion -->
 
