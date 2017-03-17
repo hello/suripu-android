@@ -386,10 +386,15 @@
         <item name="android:paddingBottom">@dimen/x2</item>
         <item name="android:paddingRight">@dimen/x3</item>
         <item name="android:paddingStart">@dimen/x3</item>
+        <item name="android:button">@drawable/radio_selector</item>
+        <item name="android:textAppearance">@style/Body.New</item>
+    </style>
+
+    <!-- In order to allow left padding of radio selector but has issues syncing state with recyclerview adapters when first rendered-->
+    <style name="AppTheme.RadioButton.Drawable">
         <item name="android:button">@null</item>
         <item name="android:drawableStart">@drawable/radio_selector</item>
         <item name="android:drawablePadding">@dimen/x3</item>
-        <item name="android:textAppearance">@style/Body.New</item>
     </style>
 
     <!-- Spinners -->

@@ -8,7 +8,7 @@
         android:layout_height="match_parent">
 
         <RadioButton
-            style="@style/AppTheme.RadioButton"
+            style="@style/AppTheme.RadioButton.Drawable"
             android:id="@+id/view_night_mode_off_rb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -18,7 +18,7 @@
             android:layout_marginStart="@dimen/x9"/>
 
         <RadioButton
-            style="@style/AppTheme.RadioButton"
+            style="@style/AppTheme.RadioButton.Drawable"
             android:id="@+id/view_night_mode_always_on_rb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
               android:layout_marginStart="@dimen/x9"/>
 
         <RadioButton
-            style="@style/AppTheme.RadioButton"
+            style="@style/AppTheme.RadioButton.Drawable"
             android:id="@+id/view_night_mode_scheduled_rb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
