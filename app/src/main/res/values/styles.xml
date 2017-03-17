@@ -380,7 +380,10 @@
 
     <!-- Radio Buttons -->
 
-    <style name="AppTheme.RadioButton" parent="AppTheme.Card.VerticalPaddingItem">
+    <style name="AppTheme.RadioButton" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:background">@drawable/selectable_dark_bounded</item>
+        <item name="android:paddingTop">@dimen/x2</item>
+        <item name="android:paddingBottom">@dimen/x2</item>
         <item name="android:paddingRight">@dimen/x3</item>
         <item name="android:paddingStart">@dimen/x3</item>
         <item name="android:button">@null</item>
