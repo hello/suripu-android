@@ -97,7 +97,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="@dimen/x3"
-                    android:textAppearance="@style/AppTheme.Text.Body.MidSized.New"
+                    style="@style/Caption2.Hint"
                     tools:text="Sense 0.0.0"/>
 
             </LinearLayout>

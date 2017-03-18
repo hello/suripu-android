@@ -34,8 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/gap_medium"
             android:layout_gravity="center"
-            android:textAppearance="@style/AppTheme.Text.Body.MidSized"
-            android:lineSpacingMultiplier="@dimen/line_multiple_body" />
+            style="@style/Body1.Secondary" />
 
     </LinearLayout>
 

@@ -9,33 +9,32 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/x3"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
+        android:layout_marginTop="@dimen/x3"
         android:scaleType="centerInside"
         tools:ignore="ContentDescription"/>
 
     <TextView
         android:id="@+id/view_timeline_no_data_header_title"
+        style="@style/Title2.Primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/x2"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
         android:layout_marginTop="@dimen/x2"
-        android:gravity="center"
-        android:textAppearance="@style/AppTheme.Text.Body.Bold"/>
+        android:gravity="center"/>
 
     <TextView
         android:id="@+id/view_timeline_no_data_header_message"
+        style="@style/Body1.Secondary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/x3"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
-        android:gravity="center"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"
-        android:textAppearance="@style/AppTheme.Text.Body.MidSized.New"/>
+        android:gravity="center"/>
 
     <Button
         android:id="@+id/view_timeline_no_data_header_action"

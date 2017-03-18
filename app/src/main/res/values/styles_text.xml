@@ -126,8 +126,15 @@
         <item name="android:textColor">@color/secondary_text_selector</item>
     </style>
 
+    <style name="Caption1.Hint">
+        <item name="android:textColor">@color/hint_text</item>
+    </style>
+
     <style name="Caption2" parent="AppTheme.Text.Header.H7.Medium">
 
+    </style>
+    <style name="Caption2.Blue" parent="AppTheme.Text.Header.H7.Medium">
+        <item name="android:textColor">@color/primary</item>
     </style>
 
     <style name="Caption2.Primary">
@@ -136,6 +143,10 @@
 
     <style name="Caption2.Secondary">
         <item name="android:textColor">@color/secondary_text_selector</item>
+    </style>
+
+    <style name="Caption2.Hint">
+        <item name="android:textColor">@color/hint_text</item>
     </style>
 
     <style name="Caption2.Error">
@@ -157,22 +168,6 @@
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textSize">@dimen/text_size_section_heading</item>
         <item name="android:textColor">@color/text_section_header</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.MidSized">
-        <item name="android:textSize">@dimen/text_size_body_mid_sized</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.MidSized.DarkText">
-        <item name="android:textColor">@color/black_70</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.MidSized.New">
-        <item name="android:textColor">@color/text_body_new</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.MidSized.Dim">
-        <item name="android:textColor">@color/text_dim</item>
     </style>
 
     <style name="AppTheme.Text.Body.Small">
@@ -221,11 +216,6 @@
     </style>
 
     <!-- Non-generic -->
-
-    <style name="AppTheme.Text.Timeline.Summary.Title" parent="@style/AppTheme.Text.Body.MidSized">
-        <item name="android:textColor">@color/dim</item>
-        <item name="android:textAllCaps">true</item>
-    </style>
 
     <style name="AppTheme.Text.Score"/>
 
@@ -315,20 +305,6 @@
 
         <item name="android:textSize">@dimen/text_size_heading</item>
         <item name="android:fontFamily">sans-serif-light</item>
-    </style>
-
-    <style name="AppTheme.Text.Timeline" parent="AppTheme.Text.Body.MidSized"/>
-
-    <style name="AppTheme.Text.Timeline.Timestamp">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textSize">@dimen/text_size_timeline_time</item>
-        <item name="android:textColor">@color/light_accent</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:ellipsize">end</item>
-    </style>
-
-    <style name="AppTheme.Text.Timeline.Timestamp.Event">
-        <item name="android:textColor">@color/text_dim</item>
     </style>
 
     <style name="AppTheme.Text.GridGraphCell">

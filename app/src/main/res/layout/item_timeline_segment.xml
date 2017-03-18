@@ -3,15 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingEnd="@dimen/timeline_segment_item_end_inset"
+    android:paddingEnd="@dimen/x5"
     tools:ignore="RtlSymmetry">
 
     <RelativeLayout
         android:id="@+id/item_timeline_segment_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/timeline_segment_event_offset_max"
-        android:layout_marginBottom="@dimen/timeline_segment_event_offset_max"
+        android:layout_marginTop="@dimen/x1"
+        android:layout_marginBottom="@dimen/x1"
         android:background="@drawable/background_timeline_event_selector"
         tools:ignore="UselessParent">
 
@@ -24,7 +24,8 @@
             android:layout_marginEnd="@dimen/gap_medium"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
-            android:textAppearance="@style/AppTheme.Text.Timeline.Timestamp.Event" />
+            android:textAllCaps="true"
+            style="@style/Caption1.Hint" />
 
         <ImageView
             android:id="@+id/item_timeline_segment_icon"
@@ -39,15 +40,14 @@
             android:id="@+id/item_timeline_segment_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/timeline_event_end_inset"
-            android:paddingTop="@dimen/timeline_event_text_top_inset"
-            android:paddingBottom="@dimen/timeline_event_text_bottom_inset"
+            android:layout_marginEnd="@dimen/x1"
+            android:paddingTop="@dimen/x1"
+            android:paddingBottom="@dimen/x1"
             android:layout_toEndOf="@id/item_timeline_segment_icon"
             android:layout_toStartOf="@id/item_timeline_segment_date"
             android:layout_centerVertical="true"
             android:gravity="start|center_vertical"
-            android:textAppearance="@style/AppTheme.Text.Timeline"
-            android:lineSpacingMultiplier="@dimen/line_multiple_body_small"
+            style="@style/Body1.Secondary"
             android:maxLines="2" />
 
     </RelativeLayout>
