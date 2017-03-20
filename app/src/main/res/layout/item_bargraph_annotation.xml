@@ -16,7 +16,7 @@
         android:id="@+id/item_bargraph_annotation_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/Trends.BarGraph.Hours"/>
+        android:textAppearance="@style/Display1"/>
 
 
 </LinearLayout>

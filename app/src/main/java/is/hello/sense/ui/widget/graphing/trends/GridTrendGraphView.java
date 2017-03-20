@@ -196,9 +196,10 @@ public class GridTrendGraphView extends TrendGraphView {
                                   @NonNull final Graph graph,
                                   @NonNull final AnimatorContext animatorContext) {
             super(context, graph, animatorContext);
-            Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.AppTheme_Text_Trends_GridGraph);
-            Drawing.updateTextPaintFromStyle(textCellPaint, context, R.style.AppTheme_Text_Trends_GridGraph_Cell);
+            Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.Caption1_Hint);
+            Drawing.updateTextPaintFromStyle(textCellPaint, context, R.style.BodySmall);
             whitePaint.setColor(ContextCompat.getColor(getContext(), R.color.white));
+            textCellPaint.setColor(whitePaint.getColor());
             final Rect bounds = new Rect();
             textLabelPaint.getTextBounds("A", 0, 1, bounds);
             textHeight = bounds.height();
