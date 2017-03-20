@@ -161,15 +161,6 @@
 
     <style name="AppTheme.Text.Score"/>
 
-    <style name="AppTheme.Text.Score.Big">
-        <item name="android:textSize">@dimen/text_size_big_score</item>
-        <item name="android:fontFamily">sans-serif-thin</item>
-    </style>
-
-    <style name="AppTheme.Text.Score.Small">
-        <item name="android:textSize">@dimen/text_size_small_score</item>
-        <item name="android:fontFamily">sans-serif-thin</item>
-    </style>
 
     <style name="AppTheme.Text.Score.Tiny">
         <item name="android:textSize">@dimen/text_size_tiny_score</item>
