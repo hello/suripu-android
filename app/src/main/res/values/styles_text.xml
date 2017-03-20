@@ -157,13 +157,6 @@
 
 
     ​<!-- Generic -->
-    <style name="AppTheme.Text.Heading">
-        <item name="android:fontFamily">sans-serif-thin</item>
-        <item name="android:textSize">@dimen/text_size_heading</item>
-        <item name="android:lineSpacingMultiplier">@dimen/line_multiple_heading</item>
-        <item name="android:textColor">@color/text_dark</item>
-    </style>
-
     <style name="AppTheme.Text.SectionHeading">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textSize">@dimen/text_size_section_heading</item>
