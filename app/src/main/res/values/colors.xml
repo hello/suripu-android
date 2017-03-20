@@ -23,6 +23,8 @@
     <color name="error_text">@color/error</color>
     <color name="white_text">@color/white</color>
     <color name="link_text">@color/primary</color>
+    <color name="link_text_pressed">@color/blue7</color>
+    <color name="link_text_disabled">@color/blue6_50</color>
 
 
     <!-- Button Colors -->
@@ -96,8 +98,6 @@
     <color name="text_dim_placeholder">@color/gray2</color>
 
     <color name="text_link">@color/blue6</color>
-    <color name="text_link_pressed">@color/blue7</color>
-    <color name="text_link_disabled">@color/blue6_50</color>
 
     <color name="text_body_new">@color/gray5</color>
     <color name="text_heading_major">@color/gray6</color>
