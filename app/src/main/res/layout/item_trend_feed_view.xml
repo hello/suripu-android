@@ -11,7 +11,7 @@
         android:layout_height="@dimen/trends_title_height"
         android:gravity="center"
         android:maxLines="1"
-        android:textAppearance="@style/AppTheme.Text.Trends.Title"/>
+        style="@style/Body2.Primary"/>
 
     <View
         android:id="@+id/item_trend_feed_view_divider"

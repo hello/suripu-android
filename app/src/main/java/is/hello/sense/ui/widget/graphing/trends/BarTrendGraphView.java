@@ -111,8 +111,8 @@ public class BarTrendGraphView extends TrendGraphView {
                                 @NonNull final AnimatorContext animatorContext) {
             super(context, graph, animatorContext);
 
-            Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.AppTheme_Text_Trends_BarGraph);
-            Drawing.updateTextPaintFromStyle(highlightTextPaint, context, R.style.AppTheme_Text_Trends_BarGraph_HighLight);
+            Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.Caption1_Hint);
+            Drawing.updateTextPaintFromStyle(highlightTextPaint, context, R.style.Trends_BarGraph_HighLight);
 
 
             this.highlightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bargraph_hightlight));
