@@ -162,15 +162,6 @@
     <style name="AppTheme.Text.Score"/>
 
 
-    <style name="AppTheme.Text.Condition">
-        <item name="android:fontFamily">sans-serif-thin</item>
-        <item name="android:textSize">@dimen/text_size_condition</item>
-    </style>
-
-    <style name="AppTheme.Text.Condition.Large">
-        <item name="android:textSize">@dimen/text_size_big_score</item>
-    </style>
-
     <style name="AppTheme.Text.Score.Share"/>
 
     <style name="AppTheme.Text.Score.Share.Title">
