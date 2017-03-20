@@ -29,7 +29,7 @@ import is.hello.sense.ui.widget.util.Views;
 
 public class RotaryPickerView extends RecyclerView implements View.OnClickListener {
     public static final int DEFAULT_UNFOCUSED_ITEM_COUNT = 2;
-    public static final @StyleRes int ITEM_TEXT_APPEARANCE = R.style.AppTheme_Text_RotaryPickerItem;
+    public static final @StyleRes int ITEM_TEXT_APPEARANCE = R.style.Display1;
     public static final @StyleRes int ITEM_TEXT_APPEARANCE_FOCUSED = R.style.AppTheme_Text_RotaryPickerItem_Focused;
 
     //region Internal
