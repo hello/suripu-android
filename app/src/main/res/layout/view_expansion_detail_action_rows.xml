@@ -14,11 +14,11 @@
 
     <LinearLayout
         android:id="@+id/view_expansion_detail_enabled_container"
+        style="@style/AppTheme.Card.Item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:visibility="gone"
-        style="@style/AppTheme.Card.Item"
         tools:visibility="visible">
 
         <TextView
@@ -42,9 +42,9 @@
 
     <FrameLayout
         android:id="@+id/view_expansion_detail_configuration_selection_container"
+        style="@style/AppTheme.Card.Item"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/AppTheme.Card.Item">
+        android:layout_height="wrap_content">
 
         <RelativeLayout
             android:id="@+id/view_expansion_detail_configuration_selection_text"
@@ -63,13 +63,14 @@
 
             <TextView
                 android:id="@+id/view_expansion_detail_configuration_selection_tv"
-                style="@style/AppTheme.Text.Body.Dim.Ellipsize"
+                style="@style/Body1.Secondary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_toEndOf="@+id/view_expansion_detail_configuration_type_tv"
                 android:drawableEnd="@drawable/icon_chevron_right_24"
                 android:drawablePadding="@dimen/x1"
+                android:ellipsize="end"
                 android:gravity="end"
                 android:visibility="gone"
                 tools:text="@string/expansions_configuration_selection_configured"
@@ -96,11 +97,11 @@
 
     <LinearLayout
         android:id="@+id/view_expansion_detail_remove_access_container"
+        style="@style/AppTheme.Card.Item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:visibility="gone"
-        style="@style/AppTheme.Card.Item"
         tools:visibility="visible">
 
         <TextView

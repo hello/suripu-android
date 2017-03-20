@@ -22,9 +22,9 @@
             android:id="@+id/fragment_onboarding_sense_colors_continue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/gap_outer"
+            android:layout_margin="@dimen/x3"
             android:text="@string/action_continue"
-            style="@style/AppTheme.Button.Rounded"/>
+            style="@style/Button.Raised"/>
 
     </FrameLayout>
 
@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignBottom="@id/fragment_onboarding_sense_colors_background"
-        android:paddingBottom="@dimen/onboarding_sense_inset_bottom"
+        android:paddingBottom="@dimen/x3"
         android:src="@drawable/onboarding_sense_yellow"
         android:contentDescription="@string/accessibility_sense_color_yellow" />
 
@@ -53,7 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignBottom="@id/fragment_onboarding_sense_colors_background"
-        android:paddingBottom="@dimen/onboarding_sense_inset_bottom"
+        android:paddingBottom="@dimen/x3"
         android:src="@drawable/onboarding_sense_red"
         android:contentDescription="@string/accessibility_sense_color_red" />
 
@@ -63,7 +63,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_alignBottom="@id/fragment_onboarding_sense_colors_background"
-        android:paddingBottom="@dimen/onboarding_sense_inset_bottom"
+        android:paddingBottom="@dimen/x3"
         android:src="@drawable/onboarding_sense_green"
         android:contentDescription="@string/accessibility_sense_color_green" />
 

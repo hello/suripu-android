@@ -38,10 +38,10 @@ public class ExpansionRotaryPickerView extends RecyclerView implements View.OnCl
     public static final int FLING_DAMPING_FACTOR = 3;
     public static final
     @StyleRes
-    int ITEM_TEXT_APPEARANCE = R.style.AppTheme_Text_Header_H1_Thin;
+    int ITEM_TEXT_APPEARANCE = R.style.Display4;
     public static final
     @StyleRes
-    int ITEM_TEXT_APPEARANCE_FOCUSED =  R.style.AppTheme_Text_Header_H1_Thin;
+    int ITEM_TEXT_APPEARANCE_FOCUSED =  R.style.Display4;
 
     //region Internal
 

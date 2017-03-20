@@ -24,6 +24,7 @@
             android:layout_marginBottom="@dimen/x2"
             android:gravity="start"
             android:textAppearance="@style/AppTheme.Text.Heading.New"
+            android:textColor="@color/primary_text"
             tools:text="@string/dialog_title_replace_sense"/>
 
         <TextView
@@ -65,7 +66,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@color/blue6"
+                android:textColor="@color/text_link"
                 style="@style/AppTheme.Button.Dialog.Positive"
                 tools:text="@string/action_okay"/>
 

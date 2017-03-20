@@ -3,61 +3,59 @@
 <!-- Must have android:clickable="true" to work with
      FragmentNavigationFragment#overlayFragmentAllowingStateLoss(...) -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="@dimen/gap_outer"
-    android:background="@color/background_onboarding"
-    android:clickable="true">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/background_card"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:padding="@dimen/x3">
 
     <TextView
         android:id="@+id/fragment_onboarding_register_height_heading"
+        style="@style/Title2.Primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:textAppearance="?attr/senseTextAppearanceHeading"
-        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+        android:layout_alignParentTop="true"
         android:text="@string/title_register_height"/>
 
     <TextView
         android:id="@+id/fragment_onboarding_register_height_subheading"
+        style="@style/Body1.Secondary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/fragment_onboarding_register_height_heading"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="@dimen/gap_small"
-        android:textAppearance="?attr/senseTextAppearanceSubheading"
-        android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
+        android:layout_below="@id/fragment_onboarding_register_height_heading"
+        android:layout_marginTop="@dimen/x1"
         android:text="@string/onboarding_register_info_explanation"/>
 
     <Button
         android:id="@+id/fragment_onboarding_next"
+        style="@style/Button.Raised"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
-        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:text="@string/action_continue"
-        style="@style/AppTheme.Button.Rounded"/>
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="@dimen/x1"
+        android:text="@string/action_continue"/>
 
     <Button
         android:id="@+id/fragment_onboarding_skip"
+        style="@style/Button.Flat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
-        android:layout_alignParentStart="true"
         android:layout_above="@id/fragment_onboarding_next"
-        android:text="@string/action_skip"
-        style="@style/AppTheme.Button.Borderless.Accent.Bounded.Lowercase"/>
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="@dimen/x1"
+        android:text="@string/action_skip"/>
 
     <RelativeLayout
         android:id="@+id/fragment_onboarding_register_height_scale_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
         android:layout_above="@id/fragment_onboarding_skip"
+        android:layout_alignParentStart="true"
         android:layout_below="@id/fragment_onboarding_register_height_subheading">
 
         <is.hello.sense.ui.widget.ScaleView
@@ -65,20 +63,21 @@
             android:layout_width="@dimen/scale_view_size"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
-            app:scaleOrientation="vertical"
-            app:scaleMinValue="91"
             app:scaleMaxValue="244"
+            app:scaleMinValue="91"
+            app:scaleOrientation="vertical"
             app:scaleValue="160"/>
 
         <TextView
             android:id="@+id/fragment_onboarding_register_height_scale_reading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             android:layout_toStartOf="@id/fragment_onboarding_register_height_scale"
-            android:textAppearance="@style/AppTheme.Text.ScaleReading"
-            android:gravity="center" />
+            android:gravity="center"
+            android:textAppearance="@style/Display4"
+            android:textColor="@color/scale_display_text"/>
 
     </RelativeLayout>
 

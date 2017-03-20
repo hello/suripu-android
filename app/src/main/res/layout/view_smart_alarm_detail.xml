@@ -16,19 +16,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/x1"
-            android:background="@color/light_accent"
-            android:paddingBottom="@dimen/x3"
+            android:background="@color/smart_alarm_header_background"
+            android:paddingBottom="@dimen/x2"
             android:paddingEnd="@dimen/x3"
-            android:paddingStart="@dimen/x8">
+            android:paddingStart="@dimen/x8"
+            android:paddingTop="@dimen/x1">
 
             <TextView
                 android:id="@+id/view_smart_alarm_detail_time"
-                style="@style/AppTheme.Text.SmartAlarm.Time.Big"
+                style="@style/Display4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/x1"
                 android:background="@drawable/background_alarm_time"
-                android:includeFontPadding="false"/>
+                android:includeFontPadding="false"
+                android:textColor="@color/white_text"/>
 
         </FrameLayout>
 
@@ -43,13 +45,13 @@
             android:paddingRight="@dimen/x3">
 
             <TextView
+                style="@style/Body1.Primary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawablePadding="@dimen/x3"
                 android:drawableStart="@drawable/icon_alarm_smart"
                 android:gravity="start|center_vertical"
-                android:text="@string/title_smart_alarm"
-                android:textAppearance="@style/AppTheme.Text.Body"/>
+                android:text="@string/title_smart_alarm"/>
 
             <ImageButton
                 android:id="@+id/view_smart_alarm_detail_smart_help"
@@ -92,16 +94,14 @@
                 android:drawableStart="@drawable/icon_alarm_tone"
                 android:gravity="start|center_vertical"
                 android:text="@string/title_alarm_tone"
-                android:textAppearance="@style/AppTheme.Text.Body"/>
+                style="@style/Body1.Primary"/>
 
             <TextView
                 android:id="@+id/view_smart_alarm_detail_tone_name"
-                style="@style/AppTheme.Text.Body.MidSized"
+                style="@style/Body1.Link"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif"
-                android:text="@string/no_sound_placeholder"
-                android:textColor="@color/light_accent"/>
+                android:text="@string/no_sound_placeholder" />
 
         </LinearLayout>
 
@@ -126,15 +126,13 @@
                 android:drawableStart="@drawable/icon_alarm_repeat"
                 android:gravity="start|center_vertical"
                 android:text="@string/title_alarm_repeat"
-                android:textAppearance="@style/AppTheme.Text.Body"/>
+                style="@style/Body1.Primary"/>
 
             <TextView
                 android:id="@+id/view_smart_alarm_detail_repeat_days"
-                style="@style/AppTheme.Text.Body.MidSized"
+                style="@style/Body1.Link"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif"
-                android:textColor="@color/light_accent"/>
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 
@@ -172,7 +170,7 @@
                     android:layout_marginEnd="@dimen/x1"
                     android:gravity="start|center_vertical"
                     android:text="@string/expansion_category_lights"
-                    android:textAppearance="@style/Body.New"/>
+                    style="@style/Body1.Primary"/>
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -181,12 +179,10 @@
 
                     <TextView
                         android:id="@+id/view_smart_alarm_detail_expansions_light_value"
-                        style="@style/AppTheme.Text.Body.MidSized"
+                        style="@style/Body1.Link"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center_vertical"
-                        android:fontFamily="sans-serif"
-                        android:textColor="@color/text_color_selector_light_accent"
                         android:visibility="gone"/>
 
                     <ImageView
@@ -237,7 +233,7 @@
                     android:layout_marginEnd="@dimen/x1"
                     android:gravity="start|center_vertical"
                     android:text="@string/expansion_category_thermostat"
-                    android:textAppearance="@style/Body.New"/>
+                    style="@style/Body1.Primary"/>
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -246,13 +242,11 @@
 
                     <TextView
                         android:id="@+id/view_smart_alarm_detail_expansions_temp_value"
-                        style="@style/AppTheme.Text.Body.MidSized"
+                        style="@style/Body1.Link"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center_vertical"
                         android:drawablePadding="@dimen/x1"
-                        android:fontFamily="sans-serif"
-                        android:textColor="@color/text_color_selector_light_accent"
                         android:visibility="gone"/>
 
                     <ImageView
@@ -298,7 +292,8 @@
                 android:drawableStart="@drawable/icon_alarm_delete"
                 android:gravity="start|center_vertical"
                 android:text="@string/label_delete_alarm"
-                android:textAppearance="@style/AppTheme.Text.Body"/>
+                android:textColor="@color/error_text"
+                style="@style/Body1"/>
 
 
         </LinearLayout>

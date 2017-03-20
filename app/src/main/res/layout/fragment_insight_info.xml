@@ -108,7 +108,7 @@
     <is.hello.sense.ui.widget.SplitButtonLayout
         android:id="@+id/fragment_insight_info_bottom"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/x7"
+        android:layout_height="@dimen/button_height"
         android:layout_alignParentBottom="true"
         app:leftButtonText="@string/action_close"
         app:rightButtonText="@string/action_share"

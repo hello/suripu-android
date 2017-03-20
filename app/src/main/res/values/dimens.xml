@@ -26,8 +26,10 @@
     <!-- Text -->
 
     <!-- Official text sizes provided by Nathan -->
+    <dimen name="x.1">1dp</dimen>
     <dimen name="x.25">2dp</dimen>
     <dimen name="x.5">4dp</dimen>
+    <dimen name="x.75">6dp</dimen>
     <dimen name="x1">8dp</dimen>
     <dimen name="x2">16dp</dimen>
     <dimen name="x3">24dp</dimen>
@@ -44,19 +46,34 @@
 
     <dimen name="text_body">15sp</dimen>
     <dimen name="text_h1">64sp</dimen>
+    <dimen name="text_h1_2">56sp</dimen>
     <dimen name="text_h2">40sp</dimen>
     <dimen name="text_h3">32sp</dimen>
     <dimen name="text_h4">24sp</dimen>
     <dimen name="text_h5">20sp</dimen>
     <dimen name="text_h6">18sp</dimen>
+    <dimen name="text_h6_2">17sp</dimen>
+    <dimen name="text_h6_3">16sp</dimen>
+    <dimen name="text_h6_4">15sp</dimen>
+    <dimen name="text_h6_5">14sp</dimen>
+    <dimen name="text_h6_6">13sp</dimen>
     <dimen name="text_h7">12sp</dimen>
     <dimen name="text_h8">10sp</dimen>
 
     <dimen name="text_body_line_height">24px</dimen>
-
+    <item name="line_multiple_body" format="float" type="dimen">1.3</item>
     <item name="line_multiple_small" format="float" type="dimen">1.4</item>
     <item name="line_multiple_medium" format="float" type="dimen">1.5</item>
     <item name="line_multiple_large" format="float" type="dimen">1.6</item>
+
+    <dimen name="action_bar_height">@dimen/x6</dimen>
+
+    <!-- Button Dimens -->
+    <dimen name="button_height">@dimen/x6</dimen>
+    <dimen name="button_inset">@dimen/x.1</dimen>
+    <dimen name="button_shadow_top_corner_radius">@dimen/x1</dimen>
+    <dimen name="button_shadow_bottom_corner_radius">@dimen/x.75</dimen>
+    <dimen name="button_corner_radius">@dimen/x.5</dimen>
 
 
     <dimen name="text_size_body">16sp</dimen>
@@ -96,7 +113,6 @@
     <item name="line_multiple_heading" format="float" type="dimen">1.2</item>
     <item name="line_multiple_subheading" format="float" type="dimen">1.4</item>
     <item name="line_multiple_paragraph_heading" format="float" type="dimen">1.2</item>
-    <item name="line_multiple_body" format="float" type="dimen">1.3</item>
     <item name="line_multiple_body_medium" format="float" type="dimen">1.4</item>
     <item name="line_multiple_body_small" format="float" type="dimen">1.2</item>
 
@@ -109,7 +125,7 @@
 
     <dimen name="shadow_size">3dp</dimen>
     <dimen name="bottom_line">1dp</dimen>
-    <dimen name="divider_size">1px</dimen>
+    <dimen name="divider_size">1dp</dimen>
     <!-- px is not a typo -->
     <dimen name="divider_size_thick">1dp</dimen>
     <dimen name="pie_graph_stroke_width">1dp</dimen>
@@ -242,7 +258,6 @@
     <dimen name="button_min_size">40dp</dimen>
     <dimen name="button_min_size_small">32dp</dimen>
     <dimen name="button_rounded_min_height">50dp</dimen>
-    <dimen name="button_corner_radius">3dp</dimen>
     <dimen name="button_bottom_alert">48dp</dimen>
     <dimen name="button_circular_area">54dp</dimen>
 
@@ -253,7 +268,6 @@
 
     <!-- Action Bar -->
 
-    <dimen name="action_bar_height">60dp</dimen>
     <dimen name="action_bar_height_compact">@dimen/x6</dimen>
     <dimen name="action_bar_title_text_size">20dp</dimen>
     <dimen name="action_bar_subtitle_text_size">15dp</dimen>

@@ -1,45 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/item_row_expansion_alarm_container"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/smart_alarm_expansion_attribution_row_height"
     android:gravity="center_vertical"
+    android:orientation="horizontal"
     android:paddingLeft="@dimen/x3"
-    android:paddingRight="@dimen/x3"
-    android:orientation="horizontal">
+    android:paddingRight="@dimen/x3">
 
     <TextView
         android:id="@+id/item_row_expansion_alarm_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/x.5"
-        android:textAppearance="@style/AppTheme.Text.Body"
-        android:gravity="start|center_vertical"
         android:layout_gravity="center_vertical"
+        android:layout_marginEnd="@dimen/x.5"
+        android:drawablePadding="@dimen/x2"
         android:drawableStart="@drawable/icon_alarm_light"
-        android:drawablePadding="@dimen/x2"/>
+        android:gravity="start|center_vertical"
+        android:textAppearance="@style/AppTheme.Text.Body"/>
 
     <FrameLayout
-        android:gravity="center_vertical|start"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:gravity="center_vertical|start">
 
         <TextView
             android:id="@+id/item_row_expansion_alarm_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start|center_vertical"
-            android:visibility="visible"
-            android:fontFamily="sans-serif"
-            android:textAppearance="@style/Body.Dim"/>
+            android:textAppearance="@style/Body1.Secondary"
+            android:visibility="visible"/>
 
         <ImageView
             android:id="@+id/item_row_expansion_alarm_error"
-            android:src="@drawable/icon_warning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start|center_vertical"
+            android:src="@drawable/icon_warning"
             android:visibility="gone"/>
 
     </FrameLayout>

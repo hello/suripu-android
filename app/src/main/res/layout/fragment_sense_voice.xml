@@ -22,11 +22,9 @@
             android:id="@+id/fragment_sense_voice_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/x1"
-            android:layout_marginBottom="@dimen/x2"
+            android:layout_marginBottom="@dimen/x1"
             android:layout_alignParentTop="true"
-            android:textAppearance="?attr/senseTextAppearanceHeading"
-            android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+            style="@style/Title2.Primary"
             android:text="@string/title_sense_voice"
             android:visibility="visible"/>
 
@@ -35,8 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/fragment_sense_voice_title"
-            android:textAppearance="?attr/senseTextAppearanceSubheading"
-            android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
+            style="@style/Body1.Secondary"
             android:text="@string/info_sense_voice_intro"
             android:visibility="visible"/>
 
@@ -87,7 +84,7 @@
                 android:layout_marginBottom="@dimen/x2"
                 android:gravity="center"
                 android:text="@string/try_it_now"
-                android:textAppearance="?attr/senseTextAppearanceSubheading"
+                style="@style/Caption2.Secondary"
                 android:visibility="invisible"/>
 
             <TextView
@@ -97,8 +94,7 @@
                 android:gravity="center_horizontal"
                 android:text="@string/sense_voice_question_temperature"
                 android:minLines="2"
-                android:textAppearance="@style/AppTheme.Text.Header.H4"
-                android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+                android:textAppearance="@style/Headline.Primary"
                 android:visibility="invisible"/>
 
 
@@ -115,7 +111,7 @@
         android:layout_marginTop="@dimen/x3"
         android:layout_marginBottom="@dimen/x1"
         android:text="@string/action_do_later"
-        style="@style/AppTheme.Button.Borderless.Accent.Bounded.Lowercase"/>
+        style="@style/Button.Flat"/>
 
     <Button
         android:id="@+id/fragment_sense_voice_retry"
@@ -125,6 +121,6 @@
         android:layout_marginRight="@dimen/x3"
         android:layout_marginBottom="@dimen/x3"
         android:text="@string/action_continue"
-        style="@style/AppTheme.Button.Rounded"/>
+        style="@style/Button.Raised"/>
 
 </LinearLayout>

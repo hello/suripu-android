@@ -60,7 +60,7 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
         final View view = inflater.inflate(R.layout.fragment_onboarding_register_birthday, container, false);
 
         final LinearLayout fieldContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_birthday_fields);
-        final int hintColor = ContextCompat.getColor(getActivity(), R.color.text_dim_placeholder);
+        final int hintColor = ContextCompat.getColor(getActivity(), R.color.birthday_text_hint);
 
         final char[] dateFormat = DateFormatter.getDateFormatOrder(getActivity());
         int index = 0;
@@ -156,7 +156,7 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
         monthText = null;
         yearText = null;
 
-        for(int i=0;i<fields.length;i++) {
+        for (int i = 0; i < fields.length; i++) {
             fields[i] = null;
         }
     }
@@ -212,8 +212,8 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
     }
 
     private void setActiveField(final int activeField) {
-        final int activeColor = ContextCompat.getColor(getActivity(), R.color.light_accent);
-        final int inactiveColor = ContextCompat.getColor(getActivity(), R.color.text_dark);
+        final int activeColor = ContextCompat.getColor(getActivity(), R.color.birthday_text_active);
+        final int inactiveColor = ContextCompat.getColor(getActivity(), R.color.birthday_text_inactive);
         for (int i = 0; i < fields.length; i++) {
             final TextView field = fields[i];
             final int padding = field.getPaddingTop();

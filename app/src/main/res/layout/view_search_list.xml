@@ -34,8 +34,8 @@
                 android:imeOptions="actionDone"
                 android:inputType="textNoSuggestions"
                 android:maxLines="1"
-                android:textColor="@color/gray6"
-                android:textColorHint="@color/gray4"/>
+                android:textColor="@color/text_dark"
+                android:textColorHint="@color/text_light"/>
 
             <ImageView
                 android:id="@+id/view_search_list_close"

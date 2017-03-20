@@ -219,7 +219,7 @@
     </style>
 
     <style name="AppTheme.Button.Borderless.Accent">
-        <item name="android:textColor">@color/text_color_selector_light_accent</item>
+        <item name="android:textColor">@color/text_link_color_selector</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.Accent.Bounded">
@@ -243,7 +243,7 @@
     </style>
 
     <style name="AppTheme.Button.Borderless.Question.Choice">
-        <item name="android:textColor">@color/text_color_selector_light_accent</item>
+        <item name="android:textColor">@color/text_link_color_selector</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.White">
@@ -254,8 +254,8 @@
 
     <style name="AppTheme.Button.Rounded">
         <item name="android:minHeight">@dimen/button_rounded_min_height</item>
-        <item name="android:background">@drawable/selector_button_rounded</item>
-        <item name="android:textColor">@color/text_white_button</item>
+        <item name="android:background">@drawable/sense_raised_button_selector</item>
+        <item name="android:textColor">@color/white_text</item>
         <item name="android:textSize">@dimen/text_size_button</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:fontFamily">sans-serif</item>
@@ -264,7 +264,7 @@
 
     <style name="AppTheme.Button.Rounded.Light">
         <item name="android:background">@drawable/selector_button_rounded_white</item>
-        <item name="android:textColor">@color/text_white_button</item>
+        <item name="android:textColor">@color/white_text</item>
     </style>
 
     <style name="AppTheme.Button.ModeSelector">
@@ -300,10 +300,6 @@
         <item name="android:hapticFeedbackEnabled">true</item>
     </style>
 
-    <style name="AppTheme.Button.Rounded.Onboarding">
-        <item name="android:background">@drawable/onboarding_button_selector</item>
-    </style>
-
     <style name="AppTheme.Button.Facebook">
         <item name="android:paddingTop">@dimen/gap_medium</item>
         <item name="android:paddingBottom">@dimen/gap_medium</item>
@@ -323,13 +319,13 @@
         <item name="android:paddingLeft">@dimen/gap_small</item>
         <item name="android:paddingRight">@dimen/gap_small</item>
         <item name="android:background">@drawable/raised_item_selector</item>
-        <item name="android:textColor">@color/text_color_selector_light_accent</item>
+        <item name="android:textColor">@color/text_link_color_selector</item>
         <item name="android:textAppearance">@style/AppTheme.Text.SectionHeading</item>
     </style>
 
     <style name="AppTheme.Button.Dialog" parent="AppTheme.Button.Borderless">
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/text_color_selector_light_accent</item>
+        <item name="android:textColor">@color/text_link_color_selector</item>
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:textSize">@dimen/text_size_button_large</item>
         <item name="android:singleLine">true</item>
@@ -360,7 +356,7 @@
         <item name="android:textSize">@dimen/text_size_body</item>
         <item name="android:textStyle">normal</item>
         <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textColor">@color/text_color_selector_light_accent</item>
+        <item name="android:textColor">@color/text_link_color_selector</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.Primary.Bottom">
@@ -401,7 +397,7 @@
     <style name="Divider.Horizontal">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_size</item>
-        <item name="android:color">@color/border</item>
+        <item name="android:color">@color/divider_color</item>
     </style>
 
 
@@ -422,17 +418,16 @@
     </style>
 
     <!-- EditText -->
+    <!-- todo confirm this is needed -->
     <style name="EditText" parent="Platform.EditText">
-        <item name="android:paddingTop">@dimen/gap_small</item>
-        <item name="android:paddingBottom">@dimen/gap_small</item>
-        <item name="android:paddingLeft">@dimen/gap_tiny</item>
-        <item name="android:paddingRight">@dimen/gap_tiny</item>
+        <item name="android:paddingTop">@dimen/x1</item>
+        <item name="android:paddingBottom">@dimen/x1</item>
+        <item name="android:paddingLeft">@dimen/x.25</item>
+        <item name="android:paddingRight">@dimen/x.25</item>
 
         <item name="android:background">@drawable/edit_text_background_selector</item>
-        <item name="android:fontFamily">sans-serif</item>
-
-        <item name="android:textSize">@dimen/text_body</item>
-        <item name="android:textColor">@drawable/edit_text_selector</item>
+        <item name="android:fontFamily">sans-serif-regular</item>
+        <item name="android:textAppearance">@style/Body1.Primary</item>
         <item name="android:minHeight">@dimen/text_body_line_height</item>
     </style>
 

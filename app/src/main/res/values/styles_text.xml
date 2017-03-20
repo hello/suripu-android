@@ -1,36 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Todo rename file to typography.xml -->
 
-    <style name="Heading" parent="AppTheme.Text.Header.H1">
+    <!-- Start Button Styles -->
+    <style name="Button" >
+        <item name="android:paddingTop">@dimen/x1</item>
+        <item name="android:paddingBottom">@dimen/x1</item>
+        <item name="android:paddingLeft">@dimen/x3</item>
+        <item name="android:paddingRight">@dimen/x3</item>
+        <item name="android:textSize">@dimen/text_h6_5</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textAppearance">@style/AppTheme.Text.Header.H6.Medium</item>
+        <item name="android:textColor">@color/white_text</item>
+        <item name="android:background">@null</item>
+        <item name="android:height">@dimen/button_height</item>
+        <item name="android:hapticFeedbackEnabled">true</item>
     </style>
 
-    <style name="Heading.Light" parent="AppTheme.Text.Header.H1.Light">
+    <style name="Button.Raised">
+        <item name="android:background">@drawable/sense_raised_button_selector</item>
     </style>
 
-    <style name="Title" parent="AppTheme.Text.Header.H6.Medium">
-        <item name="android:textColor">@color/dark</item>
+    <!-- Special case for fragment_onboarding_register.xml. Requires an activated state -->
+    <style name="Button.Raised.Onboarding">
+        <item name="android:background">@drawable/sense_raised_button_selector_onboarding</item>
     </style>
 
-    <style name="Body" parent="AppTheme.Text.Body">
-        <item name="android:background">@color/background_light</item>
+    <style name="Button.Flat">
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:background">@drawable/sense_flat_button_selector</item>
     </style>
 
-    <style name="Body.Dim" parent="AppTheme.Text.Body">
-        <item name="android:textColor">@color/dim</item>
+    <style name="Button.Flat.Primary">
+        <item name="android:textColor">@color/white_text</item>
+        <item name="android:background">@color/primary</item>
     </style>
 
-    <style name="Body.Dark" parent="AppTheme.Text.Body">
-        <item name="android:textColor">@color/dark</item>
+    <!-- End Button Styles -->
+
+
+    <!-- Start Text Styles -->
+    <style name="Display1" parent="AppTheme.Text.Header.H3.Light">
+
     </style>
 
-    <style name="Body.New" parent="AppTheme.Text.Body">
-        <item name="android:textColor">@color/text_color_selector_body_new</item>
+    <style name="Display1.Primary">
+        <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
-    <style name="Body.Accent" parent="AppTheme.Text.Body">
-        <item name="android:textColor">@color/text_color_selector_light_accent</item>
+    <style name="Display2" parent="AppTheme.Text.Header.H2.Light">
+
     </style>
 
+    <style name="Display3" parent="AppTheme.Text.Header.H1.Thin">
+        <item name="android:textSize">@dimen/text_h1_2</item>
+    </style>
+
+    <style name="Display4" parent="AppTheme.Text.Header.H1.Thin">
+    </style>
+
+    <style name="Headline" parent="AppTheme.Text.Header.H4">
+
+    </style>
+
+    <style name="Headline.Primary">
+        <item name="android:textColor">@color/primary_text_selector</item>
+    </style>
+
+    <style name="Title1" parent="AppTheme.Text.Header.H5">
+        <item name="android:textSize">@dimen/text_h6_2</item>
+
+    </style>
+
+    <style name="Title2" parent="AppTheme.Text.Header.H5">
+    </style>
+
+    <style name="Title2.Primary">
+        <item name="android:textColor">@color/primary_text_selector</item>
+    </style>
+
+    <style name="BodySmall" parent="AppTheme.Text.Header.H6">
+        <item name="android:textSize">@dimen/text_h6_6</item>
+    </style>
+
+    <style name="BodySmall.Secondary">
+        <item name="android:textColor">@color/secondary_text_selector</item>
+    </style>
+
+    <style name="Body1" parent="AppTheme.Text.Body">
+
+    </style>
+
+    <style name="Body1.Primary" parent="AppTheme.Text.Body">
+        <item name="android:textColor">@color/primary_text_selector</item>
+    </style>
+
+    <style name="Body1.Secondary">
+        <item name="android:textColor">@color/secondary_text_selector</item>
+    </style>
+
+    <style name="Body1.Hint">
+        <item name="android:textColor">@color/hint_text</item>
+    </style>
+
+    <style name="Body1.Link">
+        <item name="android:textColor">@color/link_text_selector</item>
+    </style>
+
+    <style name="Body2" parent="Body1">
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="Body2.Primary">
+        <item name="android:textColor">@color/primary_text_selector</item>
+    </style>
+
+    <style name="Caption1" parent="AppTheme.Text.Header.H8">
+
+    </style>
+
+    <style name="Caption1.Secondary">
+        <item name="android:textColor">@color/secondary_text_selector</item>
+    </style>
+
+    <style name="Caption2" parent="AppTheme.Text.Header.H7.Medium">
+
+    </style>
+
+    <style name="Caption2.Primary">
+        <item name="android:textColor">@color/primary_text_selector</item>
+    </style>
+
+    <style name="Caption2.Secondary">
+        <item name="android:textColor">@color/secondary_text_selector</item>
+    </style>
+
+    <!-- End Text Styles -->
     <style name="Label" parent="AppTheme.Text.Header.H7">
         <item name="android:textColor">@color/dim</item>
     </style>
@@ -39,9 +145,6 @@
         <item name="android:textColor">@color/error</item>
     </style>
 
-    <style name="Body.Link">
-        <item name="android:textColor">@color/primary</item>
-    </style>
 
     <style name="Card" parent="AppTheme.Text.Body">
 
@@ -84,7 +187,7 @@
     </style>
 
     <style name="AppTheme.Text.Heading.New">
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif-regular</item>
         <item name="android:textSize">@dimen/text_size_heading_new</item>
         <item name="android:textColor">@color/text_heading_major</item>
     </style>
@@ -178,15 +281,6 @@
 
     <style name="AppTheme.Text.Body.Link">
         <item name="android:textColor">@color/text_color_link</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.Dim">
-        <item name="android:textColor">@color/text_dim</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.Dim.Ellipsize">
-        <item name="android:ellipsize">end</item>
-        <item name="android:singleLine">true</item>
     </style>
 
     <style name="AppTheme.Text.Body.New.Ellipsize">

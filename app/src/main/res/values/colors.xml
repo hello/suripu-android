@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- start Nathan's official colors -->
+    <color name="primary_text">@color/black_87</color>
+    <color name="secondary_text">@color/black_54</color>
+    <color name="hint_text">@color/black_38</color>
+    <color name="divider_color">@color/black_12</color>
+
     <color name="dark">@color/gray6</color>
     <color name="standard">@color/gray5</color>
     <color name="dim">@color/gray4</color>
@@ -8,9 +13,46 @@
     <color name="error">@color/red6</color>
     <color name="warning">@color/yellow6</color>
     <color name="success">@color/green6</color>
-
     <!-- end Nathan's official colors -->
 
+    <color name="background">@color/gray2</color>
+    <color name="background_card">@color/white</color>
+    <color name="background_navigation">@color/white</color>
+    <color name="background_overlay">@color/primary</color>
+    <color name="background_drawer">@color/primary</color>
+    <color name="error_text">@color/error</color>
+    <color name="white_text">@color/white</color>
+    <color name="link_text">@color/primary</color>
+    <color name="link_text_pressed">@color/blue7</color>
+    <color name="link_text_disabled">@color/blue6_50</color>
+
+
+    <!-- Button Colors -->
+    <color name="sense_button_ripple">@color/divider_color</color>
+    <color name="sense_flat_button_normal">@color/background_card</color>
+    <color name="sense_flat_button_pressed">@color/divider_color</color>
+    <color name="sense_raised_button_normal">@color/primary</color>
+    <color name="sense_raised_button_pressed">@color/blue7</color>
+    <color name="sense_raised_button_disabled">@color/dim</color>
+    <color name="sense_raised_button_shadow_light">@color/black_10</color>
+    <color name="sense_raised_button_shadow_dark">@color/black_20</color>
+
+    <!-- EditText Colors -->
+    <color name="sense_edittext_bottom_line_normal">@color/divider_color</color>
+    <color name="sense_edittext_background_normal">@color/background_card</color>
+
+    <!-- OnboardingRegisterBirthdayFragment.java -->
+    <color name="birthday_text_hint">@color/hint_text</color>
+    <color name="birthday_text_active">@color/primary</color>
+    <color name="birthday_text_inactive">@color/primary_text</color>
+
+    <!-- fragment_onboarding_register_height.xml & fragment_onboarding_register_weight.xml-->
+    <color name="scale_display_text">@color/primary</color>
+
+    <!-- view_smart_alarm_detail.xml-->
+    <color name="smart_alarm_header_background">@color/primary</color>
+
+    <!-- Todo remove / replace all colors below -->
     <color name="transparent">@color/white_00</color>
     <color name="transparent_overlay">@color/black_25</color>
     <color name="light_accent">@color/blue6</color>
@@ -23,7 +65,6 @@
     <color name="status_bar_grey">@color/gray3</color>
     <color name="status_bar_illustration">@color/gray3</color>
 
-    <color name="background">@color/gray2</color>
     <color name="insight_card_background">@color/gray2</color>
     <color name="background_light">@color/white</color>
     <color name="background_light_overlay">@color/white_60</color>
@@ -57,8 +98,6 @@
     <color name="text_dim_placeholder">@color/gray2</color>
 
     <color name="text_link">@color/blue6</color>
-    <color name="text_link_pressed">@color/blue7</color>
-    <color name="text_link_disabled">@color/blue6_50</color>
 
     <color name="text_body_new">@color/gray5</color>
     <color name="text_heading_major">@color/gray6</color>
@@ -70,7 +109,6 @@
     <color name="edit_text_bottom_line_normal">@color/gray3</color>
     <color name="edit_text_bottom_line_disabled">@color/gray3</color>
 
-    <color name="text_white_button">@color/white</color>
     <color name="text_white_button_pressed">@color/gray3</color>
 
     <color name="background_button_white_pressed">@color/gray2_15</color>
