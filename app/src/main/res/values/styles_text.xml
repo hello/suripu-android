@@ -157,19 +157,6 @@
     <!-- End Text Styles -->
 
 
-    ​<!-- Generic -->
-
-
-    <style name="AppTheme.Text.FieldLabel">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textSize">@dimen/text_size_body</item>
-    </style>
-
-    <style name="AppTheme.Text.Button">
-        <item name="android:textSize">@dimen/text_size_button</item>
-    </style>
-
     <!-- Non-generic -->
 
     <style name="AppTheme.Text.Score"/>

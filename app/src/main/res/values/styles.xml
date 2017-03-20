@@ -205,7 +205,7 @@
 
     <style name="AppTheme.Button" parent="Platform.Button">
         <item name="android:minHeight">@dimen/button_min_size</item>
-        <item name="android:textAppearance">@style/AppTheme.Text.Button</item>
+        <item name="android:textAppearance">@style/AppTheme.Text.Header.H6.Medium</item>
         <item name="android:background">@drawable/button_background_selector_simple</item>
     </style>
 
