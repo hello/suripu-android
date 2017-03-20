@@ -161,10 +161,6 @@
 
     <style name="AppTheme.Text.Score"/>
 
-    <style name="AppTheme.Text.Score.Unit">
-        <item name="android:textSize">@dimen/text_h4</item>
-        <item name="android:fontFamily">sans-serif-thin</item>
-    </style>
 
     <style name="AppTheme.Text.Condition">
         <item name="android:fontFamily">sans-serif-thin</item>
