@@ -26,6 +26,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
+import is.hello.sense.ui.widget.ImageTextView;
 import is.hello.sense.ui.widget.ParallaxImageView;
 import is.hello.sense.ui.widget.WhatsNewLayout;
 import is.hello.sense.ui.widget.util.Styles;
@@ -391,7 +392,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         final TextView body;
         final TextView date;
         final TextView category;
-        final Button share;
+        final ImageTextView share;
         public final ParallaxImageView image;
 
         InsightViewHolder(@NonNull final View view) {
@@ -400,7 +401,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             this.date = (TextView) view.findViewById(R.id.item_insight_date);
             this.category = (TextView) view.findViewById(R.id.item_insight_category);
             this.image = (ParallaxImageView) view.findViewById(R.id.item_insight_image);
-            this.share = (Button) view.findViewById(R.id.item_insight_share_button);
+            this.share = (ImageTextView) view.findViewById(R.id.item_insight_share_button);
 
             view.setOnClickListener(this);
         }
