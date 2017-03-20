@@ -8,7 +8,7 @@
         android:id="@+id/fragment_zoomed_out_timeline_month"
         style="@style/Title2.Primary"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/action_bar_height_compact"
+        android:layout_height="@dimen/action_bar_height"
         android:layout_alignParentTop="true"
         android:ellipsize="end"
         android:gravity="center"
@@ -23,12 +23,12 @@
 
     <Button
         android:id="@+id/fragment_zoomed_out_timeline_today"
-        style="@style/AppTheme.Button.Raised"
+        style="@style/Button.Flat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_margin="@dimen/gap_outer"
+        android:layout_margin="@dimen/x3"
         android:text="@string/action_last_night"/>
 
 </RelativeLayout>
