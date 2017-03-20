@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Constants;
 
 public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.BaseViewHolder> {
@@ -195,13 +197,8 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             action.setVisibility(View.GONE);
 
             title.setGravity(Gravity.CENTER_HORIZONTAL);
+            Styles.setTextAppearance(message, R.style.Body1_Secondary);
 
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                //noinspection deprecation
-                message.setTextAppearance(view.getContext(), R.style.AppTheme_Text_Body_Small_New);
-            } else {
-                message.setTextAppearance(R.style.AppTheme_Text_Body_Small_New);
-            }
         }
     }
 
@@ -281,6 +278,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     public class SenseNotPairedViewHolder extends ErrorViewHolder {
         protected final ImageView image;
+
         SenseNotPairedViewHolder(final @NonNull View view) {
             super(view);
             this.image = (ImageView) view.findViewById(R.id.item_message_card_image);

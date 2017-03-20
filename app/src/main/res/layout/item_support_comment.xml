@@ -23,7 +23,6 @@
         android:layout_marginBottom="@dimen/x2"
         android:layout_marginLeft="@dimen/x2"
         android:layout_marginRight="@dimen/x2"
-        android:textAppearance="@style/AppTheme.Text.Body.Small"
-        android:textColor="@color/text_medium"/>
+        style="@style/Body1.Primary"/>
 
 </LinearLayout>
