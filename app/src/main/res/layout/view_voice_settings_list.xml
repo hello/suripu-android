@@ -15,7 +15,7 @@
 
         <TextView
             android:id="@+id/view_voice_settings_list_volume_tv"
-            style="@style/Body1.Secondary"
+            style="@style/Body1.Primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start|center_vertical"
@@ -27,8 +27,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            android:drawableEnd="@drawable/icon_chevron_right_24"
-            android:drawablePadding="@dimen/x1"
             android:text="@string/missing_data_placeholder"
             android:visibility="visible"/>
 
@@ -46,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/voice_settings_list_mute"
-            style="@style/Body1.Secondary"/>
+            style="@style/Body1.Primary"/>
 
         <Space
             android:layout_width="0dp"
@@ -72,7 +70,7 @@
 
             <TextView
                 android:id="@+id/view_voice_settings_list_primary_user_tv"
-                style="@style/Body1.Secondary"
+                style="@style/Body1.Primary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|center_vertical"
@@ -80,7 +78,7 @@
 
             <TextView
                 android:id="@+id/view_voice_settings_list_primary_user_value_tv"
-                style="@style/AppTheme.Text.Body.Link"
+                style="@style/Body1.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|center_vertical"
@@ -96,7 +94,7 @@
             android:layout_gravity="start|center_vertical"
             android:padding="@dimen/x2"
             android:text="@string/voice_settings_primary_user_about"
-            style="@style/Caption2.Secondary"/>
+            style="@style/BodySmall.Secondary"/>
     </LinearLayout>
 
 </LinearLayout>
