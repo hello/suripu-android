@@ -53,6 +53,10 @@
 
     </style>
 
+    <style name="Display2.Primary">
+        <item name="android:textColor">@color/primary_text_selector</item>
+    </style>
+
     <style name="Display3" parent="AppTheme.Text.Header.H1.Thin">
         <item name="android:textSize">@dimen/text_h1_2</item>
     </style>
@@ -123,7 +127,7 @@
         <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
-    <style name="Caption1" parent="AppTheme.Text.Header.H8">
+    <style name="Caption1" parent="AppTheme.Text.Header.H8.Medium">
 
     </style>
 
@@ -167,32 +171,6 @@
 
 
     <!-- Non-generic -->
-
-    <style name="AppTheme.Text.Score"/>
-
-
-    <style name="AppTheme.Text.Score.Share"/>
-
-
-    <style name="AppTheme.Text.SmartAlarm"/>
-
-    <style name="AppTheme.Text.SmartAlarm.Time">
-        <item name="android:fontFamily">sans-serif-thin</item>
-        <item name="android:textSize">@dimen/text_size_smart_alarm_time</item>
-    </style>
-
-    <style name="AppTheme.Text.SmartAlarm.Repeat">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textSize">@dimen/text_h7</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/text_extra_light</item>
-    </style>
-
-    <style name="AppTheme.Text.SmartAlarm.Time.Big">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">@dimen/text_size_smart_alarm_time_big</item>
-    </style>
-
     <style name="AppTheme.Text.ScaleReading">
         <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textColor">@color/light_accent</item>

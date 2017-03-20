@@ -24,24 +24,24 @@
 
         <TextView
             android:id="@+id/item_smart_alarm_time"
+            style="@style/Display2.Primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_marginEnd="@dimen/x.5"
             android:layout_marginStart="@dimen/x3"
-            android:layout_marginTop="@dimen/x2"
-            android:textAppearance="@style/AppTheme.Text.SmartAlarm.Time"/>
+            android:layout_marginTop="@dimen/x1"/>
 
         <TextView
             android:id="@+id/item_smart_alarm_repeat"
+            style="@style/Caption1.Hint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/item_smart_alarm_time"
-            android:layout_marginBottom="@dimen/x4"
+            android:layout_marginBottom="@dimen/x2"
             android:layout_marginStart="@dimen/x3"
-            android:layout_marginTop="@dimen/x1"
             android:layout_toStartOf="@id/item_smart_alarm_enabled"
-            android:textAppearance="@style/AppTheme.Text.SmartAlarm.Repeat"/>
+            android:textAllCaps="true"/>
 
     </RelativeLayout>
 
