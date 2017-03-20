@@ -390,7 +390,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             }
             status1.setText(state.nameRes);
             if (state == BaseDevice.State.UNKNOWN) {
-                Styles.setTextAppearance(status1, R.style.AppTheme_Text_Body_Bold);
+                Styles.setTextAppearance(status1, R.style.Body1_Secondary);
             } else {
                 Styles.setTextAppearance(status1, R.style.AppTheme_Text_Body);
             }

@@ -159,18 +159,6 @@
 
     ​<!-- Generic -->
 
-    <style name="AppTheme.Text.Body.Bold">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.Bold.Italic">
-        <item name="android:textStyle">bold|italic</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.Bold.Small">
-        <item name="android:textSize">@dimen/text_size_body_small</item>
-    </style>
 
     <style name="AppTheme.Text.RotaryPickerItem" parent="AppTheme.Text.Body">
         <item name="android:textSize">@dimen/view_rotary_picker_text</item>

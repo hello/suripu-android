@@ -325,7 +325,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
     private void applyButtonStyles(@NonNull final ToggleButton optionButton, final boolean isSelected) {
         final Resources resources = getResources();
         if (isSelected) {
-            Styles.setTextAppearance(optionButton, R.style.AppTheme_Text_Body_Bold);
+            Styles.setTextAppearance(optionButton, R.style.Body1_Secondary);
             optionButton.setTextColor(Styles.getColorStateList(resources, buttonSelectedColorRes, null));
         } else {
             Styles.setTextAppearance(optionButton, R.style.AppTheme_Text_Body);
