@@ -51,23 +51,24 @@
 
             <Button
                 style="@style/Button.Flat"
-                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:tag="1"
                 android:text="@string/number_1"/>
 
             <Button
                 style="@style/Button.Flat"
-                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/x3"
-                android:layout_marginStart="@dimen/x3"
                 android:tag="2"
                 android:text="@string/number_2"/>
 
             <Button
                 style="@style/Button.Flat"
-                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:tag="3"
                 android:text="@string/number_3"/>
@@ -79,23 +80,24 @@
 
             <Button
                 style="@style/Button.Flat"
-                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:tag="4"
                 android:text="@string/number_4"/>
 
             <Button
                 style="@style/Button.Flat"
-                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/x3"
-                android:layout_marginStart="@dimen/x3"
                 android:tag="5"
                 android:text="@string/number_5"/>
 
             <Button
                 style="@style/Button.Flat"
-                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:tag="6"
                 android:text="@string/number_6"/>
@@ -107,23 +109,24 @@
 
             <Button
                 style="@style/Button.Flat"
-                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:tag="7"
                 android:text="@string/number_7"/>
 
             <Button
                 style="@style/Button.Flat"
-                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/x3"
-                android:layout_marginStart="@dimen/x3"
                 android:tag="8"
                 android:text="@string/number_8"/>
 
             <Button
                 style="@style/Button.Flat"
-                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:tag="9"
                 android:text="@string/number_9"/>
@@ -135,24 +138,25 @@
             <Button
                 android:id="@+id/fragment_onboarding_register_birthday_skip"
                 style="@style/Button.Flat"
-                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:tag="-1"
                 android:text="@string/action_skip_short"/>
 
             <Button
                 style="@style/Button.Flat"
-                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/x3"
-                android:layout_marginStart="@dimen/x3"
                 android:tag="0"
                 android:text="@string/number_0"/>
 
             <Button
                 android:id="@+id/fragment_onboarding_register_birthday_delete"
                 style="@style/Button.Flat"
-                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:tag="-1"
                 android:text="@string/action_delete"/>

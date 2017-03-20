@@ -62,6 +62,7 @@
         android:lineSpacingMultiplier="@dimen/line_multiple_body"
         tools:text="@string/lorem_ipsum"/>
 
+
     <View
         android:id="@+id/item_insight_preview_divider"
         style="@style/Divider.Horizontal"
@@ -71,13 +72,16 @@
         android:layout_marginLeft="@dimen/x2"
         android:layout_marginRight="@dimen/x2"/>
 
-    <Button
+    <is.hello.sense.ui.widget.ImageTextView
         android:id="@+id/item_insight_share_button"
         style="@style/Button.Flat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/item_insight_preview_divider"
-        android:text="@string/action_share"/>
+        android:gravity="center"
+        app:labelText="@string/action_share"
+        app:leftImage="@drawable/icon_share_24"
+        app:leftTextPadding="@dimen/x2"/>
 
 
 </is.hello.sense.ui.widget.RoundedRelativeLayout>
