@@ -10,14 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/x.25"
-        style="@style/Caption2.Secondary"
-        android:textColor="@color/text_medium"/>
+        style="@style/Caption2.Hint"/>
 
     <me.grantland.widget.AutofitTextView
         android:id="@+id/item_timeline_info_reading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxLines="1"
-        android:textAppearance="@style/AppTheme.Text.Score.Tiny"/>
+        style="@style/Headline"/>
 
 </LinearLayout>
