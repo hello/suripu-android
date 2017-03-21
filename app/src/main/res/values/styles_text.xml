@@ -56,6 +56,9 @@
     <style name="Display2.Primary">
         <item name="android:textColor">@color/primary_text_selector</item>
     </style>
+    <style name="Display2.Secondary">
+        <item name="android:textColor">@color/secondary_text_selector</item>
+    </style>
 
     <style name="Display2.Secondary">
         <item name="android:textColor">@color/secondary_text_selector</item>
