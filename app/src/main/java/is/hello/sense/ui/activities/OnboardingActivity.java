@@ -685,7 +685,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
         switch (name) {
             case ANIMATION_ROOM_CHECK: {
                 return (view, onCompletion) -> {
-                    final int slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_xlarge);
+                    final int slideAmount = getResources().getDimensionPixelSize(R.dimen.x6);
 
                     animatorFor(view.contentsScrollView)
                             .slideYAndFade(0f, -slideAmount, 1f, 0f)

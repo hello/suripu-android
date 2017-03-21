@@ -1,15 +1,4 @@
 <resources>
-    <!-- Standard Sizing -->
-
-    <dimen name="gap_mlarge">32dp</dimen>
-    <dimen name="gap_xlarge">50dp</dimen>
-
-    <!-- Cards -->
-
-    <dimen name="gap_card_inter">8dp</dimen>
-    <dimen name="parallax_clip">30dp</dimen>
-
-    <!-- Text -->
 
     <!-- Official text sizes provided by Nathan -->
     <dimen name="x.1">1dp</dimen>

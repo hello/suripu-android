@@ -64,7 +64,7 @@
         android:layout_marginTop="@dimen/x3"
         android:layout_marginLeft="@dimen/x1"
         android:layout_marginRight="@dimen/x1"
-        android:layout_marginBottom="@dimen/gap_xlarge"
+        android:layout_marginBottom="@dimen/x6"
         android:visibility="gone" />
 
 </LinearLayout>
