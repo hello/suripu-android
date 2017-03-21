@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/light_accent_darkened">
+        android:color="@color/light_accent_darkened">
     <item>
         <selector>
-            <item android:state_enabled="false" android:drawable="@color/light_accent_dimmed" />
-            <item android:drawable="@color/primary" />
+            <item
+                android:drawable="@color/primary_dimmed"
+                android:state_enabled="false"/>
+            <item android:drawable="@color/primary"/>
         </selector>
     </item>
 

@@ -97,7 +97,7 @@ public class TutorialOverlayView extends RelativeLayout {
             descriptionContainer.addView(shadow, descriptionContainer.getChildCount(), shadowLayoutParams);
 
             final View topLine = new View(activity);
-            topLine.setBackgroundResource(R.color.light_accent_dimmed);
+            topLine.setBackgroundResource(R.color.tutorial_interaction_view_dimmed);
             final int topLineHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
             final ViewGroup.LayoutParams topLineLayoutParams
                     = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,

@@ -37,7 +37,7 @@
     <color name="sense_raised_button_shadow_light">@color/black_10</color>
     <color name="sense_raised_button_shadow_dark">@color/black_20</color>
 
-    <!-- Using @color/primary -->
+    <!-- Using @color/primary / blue6 -->
     <color name="devices_adapter_chevron">@color/primary</color>
     <color name="tutorial_interaction_view">@color/primary</color>
     <color name="notification_text">@color/primary</color>>
@@ -48,6 +48,13 @@
     <color name="timeline_header">@color/primary</color>
     <color name="user_support_toolbar">@color/primary</color>
 
+    <!-- Using @color/primary / blue4 -->
+    <color name="tutorial_interaction_view_dimmed">@color/primary_dimmed</color>
+    <color name="primary_dimmed">@color/blue4</color>
+
+    <!-- Misc -->
+    <color name="transparent">@color/white_00</color>
+    <color name="transparent_overlay">@color/black_25</color>
 
     <!-- EditText Colors -->
     <color name="sense_edittext_bottom_line_normal">@color/divider_color</color>
@@ -65,9 +72,6 @@
     <color name="smart_alarm_header_background">@color/primary</color>
 
     <!-- Todo remove / replace all colors below -->
-    <color name="transparent">@color/white_00</color>
-    <color name="transparent_overlay">@color/black_25</color>
-    <color name="light_accent_dimmed">@color/blue4</color>
     <color name="light_accent_extra_dimmed">@color/blue2</color>
     <color name="light_accent_darkened">@color/blue7</color>
     <color name="destructive_accent">@color/red6</color>
