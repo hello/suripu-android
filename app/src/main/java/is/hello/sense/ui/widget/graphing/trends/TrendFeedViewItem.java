@@ -3,7 +3,6 @@ package is.hello.sense.ui.widget.graphing.trends;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Build;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -63,7 +62,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
                                          LayoutParams.WRAP_CONTENT));
 
-        final float cornerRadius = resources.getDimension(R.dimen.raised_item_corner_radius);
+        final float cornerRadius = resources.getDimension(R.dimen.small_radius);
         setCornerRadii(cornerRadius);
 
         final View divider = findViewById(R.id.item_trend_feed_view_divider);

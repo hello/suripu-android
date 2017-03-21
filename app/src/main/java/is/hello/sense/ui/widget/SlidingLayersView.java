@@ -73,7 +73,7 @@ public class SlidingLayersView extends FrameLayout {
         // ListView eats some vertical motion events, so our touch slop has
         // to be lower than standard in order for the swipe gesture to work.
         this.touchSlop = ViewConfiguration.get(context).getScaledPagingTouchSlop() / 2;
-        this.baseTopOpenHeight = resources.getDimensionPixelSize(R.dimen.sliding_layers_open_height);
+        this.baseTopOpenHeight = resources.getDimensionPixelSize(R.dimen.action_bar_height);
         this.topDividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
     }
 

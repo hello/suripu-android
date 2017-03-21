@@ -31,8 +31,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/x3"
         android:layout_marginEnd="@dimen/x3"
-        android:layout_marginTop="@dimen/device_detail_progress_margin"
-        android:layout_marginBottom="@dimen/device_detail_text_margin"
+        android:layout_marginTop="@dimen/x5"
+        android:layout_marginBottom="@dimen/x4"
         android:layout_gravity="center"
         android:visibility="visible"
         style="@style/AppTheme.ProgressBar.Small" />

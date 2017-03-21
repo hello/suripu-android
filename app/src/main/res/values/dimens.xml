@@ -51,7 +51,23 @@
     <dimen name="graphview_header_text">11sp</dimen>
     <dimen name="graphview_footer_text">14sp</dimen>
 
-    <!-- Can't erase yet because of styles reference -->
+    <!-- SenseBottomSheet.java -->
+    <dimen name="bottom_sheet_replacement_content_min_height">130dp</dimen>
+
+    <!-- ParallaxImageView.java -->
+    <dimen name="view_parallax_image_clip">15dp</dimen>
+
+    <!-- TimelineImageGenerator -->
+    <dimen name="timeline_shareable_view_width">470dp</dimen>
+    <dimen name="timeline_shareable_view_height">470dp</dimen>
+
+    <!-- view_smart_alarm_detail.xml -->
+    <dimen name="smart_alarm_details_row_height">@dimen/x9</dimen>
+
+    <!-- ProfileImageView.java & item_profile_picture.xml & profile_image_error.xml -->
+    <dimen name="profile_image_size">104dp</dimen>
+
+    <!-- Can't erase yet because of styles reference todo erase/reuse everything below this-->
     <dimen name="text_body_line_height">24px</dimen>
 
     <dimen name="edit_text_min_height">45dp</dimen>
@@ -64,19 +80,15 @@
     <dimen name="divider_size">1dp</dimen>
     <dimen name="divider_size_thick">1dp</dimen>
 
-    <dimen name="raised_item_corner_radius">2dp</dimen>
-    <dimen name="card_large_corner_radius">3dp</dimen>
+    <dimen name="small_radius">2dp</dimen>
+    <dimen name="medium_radius">3dp</dimen>
 
     <dimen name="page_dot_margin">5dp</dimen>
     <dimen name="page_dot_selected_size">10dp</dimen>
     <dimen name="page_dot_unselected_size">6dp</dimen>
 
-
-    <dimen name="sliding_layers_open_height">@dimen/action_bar_height</dimen>
-
     <dimen name="grand_sleep_summary_width">175dp</dimen>
     <dimen name="grand_sleep_summary_height">175dp</dimen>
-
 
     <dimen name="view_sensor_ticker_letter_spacing">3dp</dimen>
     <dimen name="view_sensor_ticker_fade_height">10dp</dimen>
@@ -89,30 +101,14 @@
     <dimen name="scale_view_tick">1dp</dimen>
     <dimen name="scale_view_segment">12dp</dimen>
 
-    <dimen name="gap_smart_alarm_list_bottom">96dp</dimen>
-    <dimen name="smart_alarm_details_row_height">@dimen/x9</dimen>
-
     <dimen name="view_interaction_stroke">2dp</dimen>
     <dimen name="view_interaction_area">45dp</dimen>
 
     <dimen name="interaction_slide_negative">-70dp</dimen>
     <dimen name="interaction_slide_positive">70dp</dimen>
 
-    <dimen name="view_rotary_picker_width">95sp</dimen>
     <dimen name="view_rotary_picker_item_height">55sp</dimen>
-    <dimen name="view_rotary_picker_text">32sp</dimen>
 
-    <dimen name="bottom_sheet_option_vertical_margin">18dp</dimen>
-    <dimen name="bottom_sheet_replacement_content_min_height">130dp</dimen>
-
-    <dimen name="device_detail_progress_margin">40dp</dimen>
-    <dimen name="device_detail_text_margin">32dp</dimen>
-
-    <dimen name="view_parallax_image_clip">15dp</dimen>
-
-    <dimen name="trends_title_height">48dp</dimen>
-
-    <dimen name="profile_image_size">104dp</dimen>
 
     <dimen name="sense_voice_circles_x1">146dp</dimen>
     <dimen name="sense_voice_circles_x2">192dp</dimen>
@@ -124,7 +120,6 @@
 
     <dimen name="expansion_icon_min_size">60dp</dimen>
     <dimen name="expansion_detail_row_height">@dimen/x9</dimen>
-    <!-- px not typo -->
 
     <!-- Graphs -->
 
@@ -137,6 +132,7 @@
     <dimen name="series_graph_line_size">1dp</dimen>
     <dimen name="series_graph_shadow_radius">4dp</dimen>
     <dimen name="series_graph_offscreen_inset">8dp</dimen>
+
     <dimen name="trends_bargraph_highlight_top_margin">16dp</dimen>
     <dimen name="trends_bargraph_highlight_bottom_margin">4dp</dimen>
     <dimen name="trends_bargraph_highlight_value_height">24dp</dimen>
@@ -148,66 +144,28 @@
     <dimen name="trends_bubblegraph_title_top_margin">10dp</dimen>
     <dimen name="trends_bubblegraph_percent_offset">4dp</dimen>
     <dimen name="trends_gridgraph_border_inset">1dp</dimen>
-    <dimen name="trends_gridgraph_border_quarter_vertical_margins">@dimen/x1</dimen>
-    <dimen name="trends_gridgraph_border_quarter_horizontal_margins">@dimen/x.5</dimen>
+
     <dimen name="sensor_graph_height">112dp</dimen>
     <dimen name="sensor_line_distance">5dp</dimen>
 
     <!-- Timeline -->
-
     <dimen name="timeline_gap_bottom">96dp</dimen>
-
     <dimen name="timeline_segment_min_height">16dp</dimen>
     <dimen name="timeline_segment_height_per_hour">96dp</dimen>
     <dimen name="timeline_segment_item_end_inset">40dp</dimen>
     <dimen name="timeline_segment_event_offset_max">7dp</dimen>
     <dimen name="timeline_segment_stolen_height">16dp</dimen>
-
-    <dimen name="timeline_event_popup_left_inset">@dimen/x1</dimen>
-    <dimen name="timeline_event_popup_bottom_inset">@dimen/x.5</dimen>
-
-    <dimen name="timeline_event_start_inset">0dp</dimen>
-    <dimen name="timeline_event_end_inset">8dp</dimen>
-    <dimen name="timeline_event_text_top_inset">7dp</dimen>
-    <dimen name="timeline_event_text_bottom_inset">8dp</dimen>
-
-    <dimen name="view_grid_graph_cell_width">32dp</dimen>
-    <dimen name="view_grid_graph_cell_height">32dp</dimen>
-    <dimen name="view_grid_graph_cell_width_small">12dp</dimen>
-    <dimen name="view_grid_graph_cell_height_small">12dp</dimen>
-
-    <dimen name="timeline_shareable_view_width">470dp</dimen>
-    <dimen name="timeline_shareable_view_height">470dp</dimen>
-
     <item name="timeline_segment_item_end_max_fraction" format="float" type="dimen">0.825</item>
-
-
-    <!-- Buttons -->
-
-    <dimen name="button_min_size">40dp</dimen>
-    <dimen name="button_min_size_small">32dp</dimen>
-    <dimen name="button_rounded_min_height">50dp</dimen>
-    <dimen name="button_bottom_alert">48dp</dimen>
-    <dimen name="button_circular_area">54dp</dimen>
 
     <!-- Switch -->
 
     <dimen name="widget_switch_width">39dp</dimen>
     <dimen name="widget_switch_height">26dp</dimen>
 
-    <!-- Action Bar -->
-
-    <dimen name="action_bar_height_compact">@dimen/x6</dimen>
-    <dimen name="action_bar_title_text_size">20dp</dimen>
-    <dimen name="action_bar_subtitle_text_size">15dp</dimen>
-
     <!-- Dialogs -->
-
     <dimen name="dialog_max_width">500dp</dimen>
     <dimen name="dialog_max_height">700dp</dimen>
-
     <dimen name="dialog_bottom_max_height">400dp</dimen>
     <dimen name="volume_picker_min_size">40dp</dimen>
-    <dimen name="smart_alarm_expansion_attribution_row_height">44dp</dimen>
 
 </resources>

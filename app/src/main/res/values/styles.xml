@@ -79,13 +79,13 @@
     </style>
 
     <style name="AppTheme.Text.ActionTitle">
-        <item name="android:textSize">@dimen/action_bar_title_text_size</item>
+        <item name="android:textSize">@dimen/text_h5</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
 
     <style name="AppTheme.Text.ActionSubtitle">
-        <item name="android:textSize">@dimen/action_bar_subtitle_text_size</item>
+        <item name="android:textSize">@dimen/text_body</item>
         <item name="android:textColor">@color/text_dim_light</item>
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:paddingTop">2dp</item>
@@ -253,7 +253,7 @@
     </style>
 
     <style name="AppTheme.Button.Rounded">
-        <item name="android:minHeight">@dimen/button_rounded_min_height</item>
+        <item name="android:minHeight">@dimen/button_height</item>
         <item name="android:background">@drawable/sense_raised_button_selector</item>
         <item name="android:textColor">@color/white_text</item>
         <item name="android:textSize">@dimen/text_h6_5</item>
@@ -327,17 +327,6 @@
 
     <style name="AppTheme.Button.Borderless.Primary.Bottom">
         <item name="android:background">@drawable/selectable_dark_bounded_bottom</item>
-    </style>
-
-    <style name="AppTheme.Button.Circular">
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingLeft">0dp</item>
-        <item name="android:paddingRight">0dp</item>
-        <item name="android:paddingBottom">0dp</item>
-        <item name="android:minWidth">@dimen/button_circular_area</item>
-        <item name="android:minHeight">@dimen/button_circular_area</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:background">@drawable/button_oval_selector</item>
     </style>
 
     <!-- Spinners -->
@@ -433,12 +422,12 @@
     <style name="AppTheme.Card">
         <item name="android:background">@drawable/raised_item_normal</item>
         <item name="android:gravity">start|center_vertical</item>
-        <item name="senseCornerRadius">@dimen/raised_item_corner_radius</item>
+        <item name="senseCornerRadius">@dimen/small_radius</item>
     </style>
 
     <style name="AppTheme.LargeCard">
         <item name="android:background">@drawable/background_card_large</item>
-        <item name="senseCornerRadius">@dimen/card_large_corner_radius</item>
+        <item name="senseCornerRadius">@dimen/medium_radius</item>
     </style>
 
     <style name="AppTheme.Card.Clickable">

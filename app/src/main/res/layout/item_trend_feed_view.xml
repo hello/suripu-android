@@ -7,11 +7,12 @@
 
     <TextView
         android:id="@+id/item_trend_feed_view_title"
+        style="@style/Body2.Primary"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/trends_title_height"
+        android:layout_height="wrap_content"
         android:gravity="center"
         android:maxLines="1"
-        style="@style/Body2.Primary"/>
+        android:padding="@dimen/x2"/>
 
     <View
         android:id="@+id/item_trend_feed_view_divider"
