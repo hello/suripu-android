@@ -13,10 +13,6 @@
 
     <color name="transparent">@color/white_00</color>
     <color name="transparent_overlay">@color/black_25</color>
-    <color name="light_accent">@color/blue6</color>
-    <color name="light_accent_dimmed">@color/blue4</color>
-    <color name="light_accent_extra_dimmed">@color/blue2</color>
-    <color name="light_accent_darkened">@color/blue7</color>
     <color name="destructive_accent">@color/red6</color>
     <color name="status_bar_color">@color/gray7</color>
     <color name="status_bar_illustration">@color/gray7</color>

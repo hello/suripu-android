@@ -70,9 +70,9 @@
     <style name="AppTheme.ActionBar" parent="Platform.ActionBar"/>
 
     <style name="AppTheme.ActionBar.Solid">
-        <item name="android:background">@color/light_accent</item>
-        <item name="android:backgroundStacked">@color/light_accent</item>
-        <item name="android:backgroundSplit">@color/light_accent</item>
+        <item name="android:background">@color/primary</item>
+        <item name="android:backgroundStacked">@color/primary</item>
+        <item name="android:backgroundSplit">@color/primary</item>
         <item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
         <item name="android:icon">@android:color/transparent</item>
         <item name="android:titleTextStyle">@style/AppTheme.Text.ActionTitle</item>
