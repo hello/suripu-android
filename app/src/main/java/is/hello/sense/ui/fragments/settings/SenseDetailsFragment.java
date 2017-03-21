@@ -544,7 +544,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             options.add(
                     new SenseBottomSheet.Option(OPTION_ID_FACTORY_RESET)
                             .setTitle(R.string.action_factory_reset)
-                            .setTitleColor(ContextCompat.getColor(getActivity(), R.color.destructive_accent))
+                            .setTitleColor(ContextCompat.getColor(getActivity(), R.color.error_text))
                             .setDescription(R.string.description_factory_reset)
                             .setIcon(R.drawable.settings_factory_reset)
                        );

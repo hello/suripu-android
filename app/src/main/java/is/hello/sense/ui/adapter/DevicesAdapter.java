@@ -293,7 +293,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             final SenseDevice device = (SenseDevice) getItem(position);
             lastSeen.setText(device.getLastUpdatedDescription(lastSeen.getContext()));
             if (device.isMissing()) {
-                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.destructive_accent));
+                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.error_text));
             } else {
                 lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.secondary_text));
             }
@@ -375,7 +375,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
 
             lastSeen.setText(device.getLastUpdatedDescription(lastSeen.getContext()));
             if (device.isMissing()) {
-                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.destructive_accent));
+                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.error_text));
             } else {
                 lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.secondary_text));
             }

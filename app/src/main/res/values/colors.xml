@@ -26,6 +26,7 @@
     <color name="link_text">@color/primary</color>
     <color name="link_text_pressed">@color/blue7</color>
     <color name="link_text_disabled">@color/blue6_50</color>
+    <color name="notification_text">@color/primary</color>
 
     <!-- Button Colors -->
     <color name="sense_button_ripple">@color/divider_color</color>
@@ -40,7 +41,6 @@
     <!-- Using @color/primary / blue6 -->
     <color name="devices_adapter_chevron">@color/primary</color>
     <color name="tutorial_interaction_view">@color/primary</color>
-    <color name="notification_text">@color/primary</color>>
     <color name="onboarding_icon_tint">@color/primary</color>
     <color name="questions_divider">@color/primary</color>
     <color name="tabs_background_selected">@color/primary</color>
@@ -76,7 +76,6 @@
     <color name="smart_alarm_header_background">@color/primary</color>
 
     <!-- Todo remove / replace all colors below -->
-    <color name="destructive_accent">@color/red6</color>
     <color name="status_bar_color">@color/gray3</color>
     <!-- todo replace all uses with status_bar_color-->
     <color name="status_bar_grey">@color/gray3</color>

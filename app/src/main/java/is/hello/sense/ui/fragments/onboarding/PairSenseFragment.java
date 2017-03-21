@@ -193,7 +193,7 @@ public class PairSenseFragment extends BasePresenterFragment
         options.setTitle(R.string.title_recovery_options);
         options.addOption(new SenseBottomSheet.Option(0)
                                   .setTitle(R.string.action_factory_reset)
-                                  .setTitleColor(ContextCompat.getColor(getActivity(), R.color.destructive_accent))
+                                  .setTitleColor(ContextCompat.getColor(getActivity(), R.color.error_text))
                                   .setDescription(R.string.description_recovery_factory_reset));
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
             options.addOption(new SenseBottomSheet.Option(1)

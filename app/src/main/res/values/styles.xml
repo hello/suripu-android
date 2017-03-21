@@ -37,7 +37,8 @@
         <item name="android:listDivider">@color/border</item>
         <item name="android:dividerHeight">@dimen/divider_size</item>
 
-        <item name="senseTextAppearanceHeading">@style/Title2.Primary</item> <!-- todo confirm this doesn't break something -->
+        <item name="senseTextAppearanceHeading">@style/Title2.Primary
+        </item> <!-- todo confirm this doesn't break something -->
         <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
         <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
 
@@ -532,7 +533,8 @@
         <item name="android:windowBackground">@color/background</item>
         <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
 
-        <item name="senseTextAppearanceHeading">@style/Title2.Primary</item> <!-- todo confirm this doesn't break something -->
+        <item name="senseTextAppearanceHeading">@style/Title2.Primary
+        </item> <!-- todo confirm this doesn't break something -->
         <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
         <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
         <item name="senseBackgroundSecondary">@color/background_light</item>
@@ -576,7 +578,8 @@
         <!-- Inactive track color(75% transparency) -->
         <item name="android:windowBackground">@color/background</item>
         <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
-        <item name="senseTextAppearanceHeading">@style/Title2.Primary</item> <!-- todo confirm this doesn't break something -->
+        <item name="senseTextAppearanceHeading">@style/Title2.Primary
+        </item> <!-- todo confirm this doesn't break something -->
         <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
         <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
         <item name="senseBackgroundSecondary">@color/background_light</item>
@@ -628,7 +631,7 @@
 
     <style name="AppTheme.AppCompat.SearchListActivity">
         <item name="android:statusBarColor" tools:targetApi="lollipop">
-            @color/status_bar_primary_darkened
+            @color/blue7
         </item>
     </style>
 
