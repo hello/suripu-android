@@ -34,7 +34,6 @@ public class SenseAlertDialog extends Dialog {
     private final TextView titleText;
     private final TextView messageText;
 
-    private final View buttonDivider;
     private final Button negativeButton;
     private final Button positiveButton;
 
@@ -64,7 +63,6 @@ public class SenseAlertDialog extends Dialog {
         this.messageText = (TextView) findViewById(R.id.dialog_sense_alert_message);
         messageText.setMovementMethod(LinkMovementMethod.getInstance());
 
-        this.buttonDivider = findViewById(R.id.dialog_sense_alert_button_divider);
         this.negativeButton = (Button) findViewById(R.id.dialog_sense_alert_cancel);
         this.positiveButton = (Button) findViewById(R.id.dialog_sense_alert_ok);
     }
@@ -182,13 +180,6 @@ public class SenseAlertDialog extends Dialog {
         }
     }
 
-    protected void updateButtonDivider() {
-        if (positiveButton.getVisibility() == View.VISIBLE && negativeButton.getVisibility() == View.VISIBLE) {
-            buttonDivider.setVisibility(View.VISIBLE);
-        } else {
-            buttonDivider.setVisibility(View.GONE);
-        }
-    }
 
     public void setPositiveButton(@Nullable final CharSequence title, @Nullable final OnClickListener onClickListener) {
         if (title != null) {
@@ -199,7 +190,6 @@ public class SenseAlertDialog extends Dialog {
             positiveButton.setVisibility(View.GONE);
         }
 
-        updateButtonDivider();
     }
 
     public void setPositiveButton(@StringRes final int titleId, @Nullable final OnClickListener onClickListener) {
@@ -219,7 +209,6 @@ public class SenseAlertDialog extends Dialog {
             negativeButton.setVisibility(View.GONE);
         }
 
-        updateButtonDivider();
     }
 
     public void setNegativeButton(@StringRes final int titleId, @Nullable final OnClickListener onClickListener) {

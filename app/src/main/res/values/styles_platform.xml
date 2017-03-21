@@ -46,9 +46,9 @@
         <item name="android:windowBackground">@color/background</item>
         <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
 
-        <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading.New</item>
-        <item name="senseTextAppearanceSubheading">@style/AppTheme.Text.Body.MidSized.Dim</item>
-        <item name="senseTextAppearanceFieldLabel">@style/AppTheme.Text.Body.Small.New</item>
+        <item name="senseTextAppearanceHeading">@style/Title2.Primary</item> <!-- todo confirm this doesn't break something -->
+        <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
+        <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
         <item name="senseBackgroundSecondary">@color/background_light</item>
 
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_color</item>

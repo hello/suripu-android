@@ -2,45 +2,43 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/item_device_name"
+        style="@style/Body1.Primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/x3"
-        android:paddingStart="@dimen/x3"
-        android:paddingEnd="@dimen/x3"
-        android:paddingBottom="@dimen/x3"
         android:gravity="start|center_vertical"
-        android:textColor="@color/light_accent"
-        android:textAppearance="@style/AppTheme.Text.Body"
-        android:text="@string/app_name"
         android:maxLines="1"
+        android:paddingBottom="@dimen/x1"
+        android:paddingEnd="@dimen/x3"
+        android:paddingStart="@dimen/x3"
+        android:paddingTop="@dimen/x3"
+        android:text="@string/app_name"
         tools:drawableRight="@drawable/icon_chevron_right_24"
         tools:drawableTint="@color/primary"/>
 
     <TextView
         android:id="@+id/item_device_placeholder_message"
+        style="@style/Body1.Secondary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/x2"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
-        android:layout_marginBottom="@dimen/x2"
-        android:textAppearance="@style/AppTheme.Text.Body.MidSized.New"
-        android:text="@string/info_no_sense_connected"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
+        android:text="@string/info_no_sense_connected"/>
 
     <Button
         android:id="@+id/item_device_placeholder_action"
+        style="@style/Button.Raised"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/x3"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
-        android:layout_marginBottom="@dimen/x3"
-        android:text="@string/action_pair_sense"
-        style="@style/AppTheme.Button.Rounded"/>
+        android:text="@string/action_pair_sense"/>
 
 </LinearLayout>

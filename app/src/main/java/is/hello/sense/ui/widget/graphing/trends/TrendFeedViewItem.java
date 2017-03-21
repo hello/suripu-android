@@ -27,6 +27,7 @@ import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.RoundedLinearLayout;
 import is.hello.sense.ui.widget.ShimmerDividerDrawable;
+import is.hello.sense.ui.widget.util.Styles;
 
 @SuppressLint("ViewConstructor")
 public class TrendFeedViewItem extends RoundedLinearLayout {
@@ -193,12 +194,8 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
 
             ((MarginLayoutParams) message.getLayoutParams()).topMargin = getResources().getDimensionPixelSize(R.dimen.gap_small);
             message.setText(getResources().getString(R.string.message_trends_welcome));
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                //noinspection deprecation
-                message.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Small_New);
-            } else {
-                message.setTextAppearance(R.style.AppTheme_Text_Body_Small_New);
-            }
+
+            Styles.setTextAppearance(message, R.style.Body1_Secondary);
             action.setVisibility(GONE);
         }
     }

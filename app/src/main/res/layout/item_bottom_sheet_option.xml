@@ -1,46 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingLeft="@dimen/gap_outer"
-    android:paddingRight="@dimen/gap_outer"
-    android:paddingTop="@dimen/bottom_sheet_option_vertical_margin"
-    android:paddingBottom="@dimen/bottom_sheet_option_vertical_margin"
-    android:background="@drawable/selectable_dark_bounded"
-    android:descendantFocusability="blocksDescendants">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@drawable/selectable_dark_bounded"
+              android:descendantFocusability="blocksDescendants"
+              android:orientation="horizontal"
+              android:paddingBottom="@dimen/x2"
+              android:paddingLeft="@dimen/x3"
+              android:paddingRight="@dimen/x3"
+              android:paddingTop="@dimen/x2">
 
     <ImageView
         android:id="@+id/item_bottom_sheet_option_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingRight="@dimen/gap_outer"
+        android:paddingEnd="@dimen/x3"
         android:visibility="gone"
         tools:ignore="ContentDescription"/>
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/item_bottom_sheet_option_title"
+            style="@style/Body1.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawablePadding="@dimen/gap_medium"
-            android:gravity="center_vertical|start"
-            android:textAppearance="@style/AppTheme.Text.Body"
-            android:textColor="@color/text_color_selector_dark" />
+            android:drawablePadding="@dimen/x2"
+            android:gravity="center_vertical|start"/>
 
         <TextView
             android:id="@+id/item_bottom_sheet_option_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gap_small"
-            android:layout_marginBottom="@dimen/gap_small"
-            android:textAppearance="@style/AppTheme.Text.Body.Small"
-            android:textColor="@color/text_dim" />
+            android:layout_marginBottom="@dimen/x1"
+            android:layout_marginTop="@dimen/x1"
+            style="@style/BodySmall.Secondary"/>
 
     </LinearLayout>
 

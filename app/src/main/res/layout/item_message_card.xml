@@ -26,7 +26,7 @@
             android:layout_marginStart="@dimen/x3"
             android:layout_marginTop="@dimen/x2"
             app:leftTextPadding="@dimen/x2"
-            app:textStyle="@style/AppTheme.Text.Body.Bold"/>
+            app:textStyle="@style/Title2.Primary"/>
 
         <TextView
             android:id="@+id/item_message_card_message"
@@ -35,13 +35,11 @@
             android:layout_marginEnd="@dimen/x3"
             android:layout_marginStart="@dimen/x3"
             android:layout_marginTop="@dimen/x2"
-            android:gravity="center"
-            android:lineSpacingMultiplier="@dimen/line_multiple_body"
-            android:textAppearance="@style/AppTheme.Text.Body.MidSized"/>
+            style="@style/Body1.Secondary"/>
 
         <Button
             android:id="@+id/item_message_card_action"
-            style="@style/AppTheme.Button.Rounded"
+            style="@style/Button.Raised"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/x2"

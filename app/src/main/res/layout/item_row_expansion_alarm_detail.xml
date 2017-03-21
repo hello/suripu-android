@@ -1,49 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/item_row_expansion_alarm_container"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/smart_alarm_details_row_height"
+    android:background="@drawable/selectable_dark_bounded"
     android:gravity="center_vertical"
-    android:paddingStart="@dimen/x3"
-    android:paddingEnd="@dimen/x3"
     android:orientation="horizontal"
-    android:background="@drawable/selectable_dark_bounded">
+    android:paddingEnd="@dimen/x3"
+    android:paddingStart="@dimen/x3">
 
     <TextView
         android:id="@+id/item_row_expansion_alarm_category"
+        style="@style/Body1.Primary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/x1"
-        android:textAppearance="@style/Body1.Primary"
-        android:gravity="start|center_vertical"
         android:layout_gravity="center_vertical"
+        android:layout_marginEnd="@dimen/x1"
+        android:drawablePadding="@dimen/x3"
         android:drawableStart="@drawable/icon_alarm_light"
-        android:drawablePadding="@dimen/x3"/>
+        android:gravity="start|center_vertical"/>
 
     <FrameLayout
-        android:gravity="center_vertical|end"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:gravity="center_vertical|end">
 
         <TextView
             android:id="@+id/item_row_expansion_alarm_value"
+            style="@style/Body1.Link"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            android:visibility="gone"
-            android:drawableEnd="@drawable/icon_chevron_right_24"
-            android:drawablePadding="@dimen/x1"
-            android:fontFamily="sans-serif"
-            style="@style/AppTheme.Text.Body.MidSized"
-            android:textColor="@color/text_link_color_selector"/>
+            android:visibility="gone"/>
 
         <ImageView
             android:id="@+id/item_row_expansion_alarm_error"
-            android:src="@drawable/icon_warning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
+            android:src="@drawable/icon_warning"
             android:visibility="gone"/>
 
     </FrameLayout>

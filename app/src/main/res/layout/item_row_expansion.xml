@@ -24,7 +24,7 @@
             android:layout_toEndOf="@+id/item_icon_iv"
             android:layout_marginStart="@dimen/x2"
             android:layout_centerVertical="true"
-            style="@style/AppTheme.Text.Body.Bold"
+            style="@style/Body1.Primary"
             android:textColor="@color/text_color_selector_body_new"
             tools:text="Expansion Title"/>
 
@@ -36,7 +36,7 @@
             android:layout_marginStart="@dimen/x.5"
             android:layout_centerVertical="true"
             android:drawablePadding="@dimen/x.5"
-            style="@style/AppTheme.Text.Body.MidSized"
+            style="@style/Body1.Link"
             android:textColor="@color/text_color_selector_body_new"
             tools:text="Status"/>
 

@@ -51,7 +51,6 @@ public class RotaryTimePickerDialog extends SenseAlertDialog
                 onTimeSet();
             }
         });
-        updateButtonDivider();
     }
 
     @Override

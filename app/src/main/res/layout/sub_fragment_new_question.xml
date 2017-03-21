@@ -10,21 +10,22 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/gap_outer"
+        android:layout_marginBottom="@dimen/x2"
+        android:layout_marginTop="@dimen/x3"
         android:gravity="center"
         android:text="@string/label_new_question"
-        android:textAppearance="@style/AppTheme.Text.SectionHeading"/>
+        android:textAllCaps="true"
+        android:textAppearance="@style/Caption2.Hint"/>
 
     <TextView
         android:id="@+id/sub_fragment_new_question_title"
+        style="@style/Body1.Primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/gap_small"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:gravity="center"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"
-        android:textAppearance="@style/AppTheme.Text.Body.New"/>
+        android:layout_marginBottom="@dimen/x2"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
+        android:gravity="center"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -34,25 +35,18 @@
 
         <Button
             android:id="@+id/sub_fragment_new_question_skip"
-            style="@style/AppTheme.Button.Dialog"
+            style="@style/Button.Flat"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="@dimen/gap_outer"
             android:text="@string/action_skip"/>
-
-        <View
-            style="@style/Divider.Vertical"
-            android:layout_marginBottom="@dimen/gap_medium"
-            android:layout_marginTop="@dimen/gap_medium"/>
 
         <Button
             android:id="@+id/sub_fragment_new_question_answer"
-            style="@style/AppTheme.Button.Dialog.Positive"
+            style="@style/Button.Flat"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="@dimen/gap_outer"
             android:text="@string/action_answer"/>
 
     </LinearLayout>

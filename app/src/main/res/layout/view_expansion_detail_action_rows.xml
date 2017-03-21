@@ -23,7 +23,7 @@
 
         <TextView
             android:id="@+id/view_expansion_detail_enabled_tv"
-            style="@style/AppTheme.Text.Body.New"
+            style="@style/Body1.Secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -54,7 +54,7 @@
 
             <TextView
                 android:id="@+id/view_expansion_detail_configuration_type_tv"
-                style="@style/AppTheme.Text.Body.New"
+                style="@style/Body1.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
@@ -106,7 +106,7 @@
 
         <TextView
             android:id="@+id/view_expansion_detail_remove_access_tv"
-            style="@style/AppTheme.Text.Body.New"
+            style="@style/Body1.Secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="false"
