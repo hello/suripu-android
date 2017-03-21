@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:textAppearance="@style/AppTheme.Text.Body"/>
+        style="@style/Body1.Primary"/>
 
     <View
         android:id="@+id/item_settings_text_divider"

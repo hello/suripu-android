@@ -58,7 +58,6 @@ public class AirQualityCard extends LinearLayout {
             final TextView value = (TextView) row.findViewById(R.id.item_chevron_view_value);
             ((TextView) row.findViewById(R.id.item_chevron_view_name)).setText(sensor.getName());
             if (sensor.isCalibrating()) {
-                row.findViewById(R.id.item_chevron_view_circle).setVisibility(GONE);
                 value.setText(R.string.sensor_calibrating);
                 ((RelativeLayout.LayoutParams) value.getLayoutParams())
                         .addRule(RelativeLayout.ALIGN_PARENT_RIGHT,

@@ -56,6 +56,7 @@
     <style name="Display2.Primary">
         <item name="android:textColor">@color/primary_text_selector</item>
     </style>
+
     <style name="Display2.Secondary">
         <item name="android:textColor">@color/secondary_text_selector</item>
     </style>
@@ -106,11 +107,11 @@
 
     </style>
 
-    <style name="Body1.Primary" parent="AppTheme.Text.Body">
+    <style name="Body1.Primary">
         <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
-    <style name="Body1.Blue" parent="AppTheme.Text.Body">
+    <style name="Body1.Blue">
         <item name="android:textColor">@color/primary</item>
     </style>
 

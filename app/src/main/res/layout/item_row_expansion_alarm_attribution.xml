@@ -18,7 +18,7 @@
         android:drawablePadding="@dimen/x2"
         android:drawableStart="@drawable/icon_alarm_light"
         android:gravity="start|center_vertical"
-        android:textAppearance="@style/AppTheme.Text.Body"/>
+        style="@style/Body1.Primary"/>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start|center_vertical"
-            android:textAppearance="@style/Body1.Secondary"
+            style="@style/Body1.Secondary"
             android:visibility="visible"/>
 
         <ImageView

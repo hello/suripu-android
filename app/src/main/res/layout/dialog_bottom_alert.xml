@@ -36,10 +36,9 @@
             android:layout_marginRight="@dimen/x3"
             android:layout_weight="1"
             android:gravity="start"
-            android:lineSpacingMultiplier="@dimen/line_multiple_body"
             android:overScrollMode="ifContentScrolls"
             android:scrollbars="vertical"
-            android:textAppearance="@style/AppTheme.Text.Body"
+            style="@style/Body1.Secondary"
             tools:text="@string/dialog_message_replace_sense"/>
 
         <LinearLayout
@@ -63,7 +62,7 @@
 
             <Button
                 android:id="@+id/dialog_bottom_alert_positive"
-                style="@style/AppTheme.Button.Dialog.Positive"
+                style="@style/Button.Raised"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
