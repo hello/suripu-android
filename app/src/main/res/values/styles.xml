@@ -204,7 +204,7 @@
     <!-- Buttons -->
 
     <style name="AppTheme.Button" parent="Platform.Button">
-        <item name="android:minHeight">@dimen/button_min_size</item>
+        <item name="android:minHeight">@dimen/button_height</item>
         <item name="android:textAppearance">@style/AppTheme.Text.Header.H6.Medium</item>
         <item name="android:background">@drawable/button_background_selector_simple</item>
     </style>
@@ -640,7 +640,7 @@
     </style>
 
     <style name="AppTheme.AppCompat.NoActionBar.BottomBar" parent="AppTheme.AppCompat.NoActionBar.TabLayout">
-        <item name="android:minHeight">@dimen/bottom_bar_height</item>
+        <item name="android:minHeight">@dimen/action_bar_height</item>
         <item name="tabIndicatorColor">@color/background_light</item>
         <item name="tabIndicatorHeight">0dp</item>
         <item name="android:layout_gravity">bottom</item>

@@ -16,8 +16,7 @@
         android:layout_marginBottom="@dimen/x2"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
-        android:textAppearance="?attr/senseTextAppearanceHeading"
-        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+        style="@style/Title2.Primary"
         android:text="@string/title_sign_into_wifi_selection"/>
 
     <TextView
@@ -27,7 +26,7 @@
         android:layout_marginBottom="@dimen/x2"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
-        android:textAppearance="?attr/senseTextAppearanceSubheading"
+        style="@style/Body1.Secondary"
         android:text="@string/label_wifi_network_name"/>
 
     <Space

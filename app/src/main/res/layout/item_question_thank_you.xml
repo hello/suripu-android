@@ -1,28 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/item_question_thank_you"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_gravity="center"
-    android:gravity="center"
-    tools:ignore="UseCompoundDrawables">
+<LinearLayout android:id="@+id/item_question_thank_you"
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:gravity="center"
+              android:orientation="vertical"
+              tools:ignore="UseCompoundDrawables">
 
     <ImageView
         android:id="@+id/item_thank_you_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/x3"
-        android:src="@drawable/loading_done"
-        android:contentDescription="@string/title_thank_you"/>
+        android:contentDescription="@string/title_thank_you"
+        android:src="@drawable/loading_done"/>
 
     <TextView
         android:id="@+id/item_thank_you_text"
+        style="@style/Title2.Primary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title_thank_you"
-        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-        android:textAppearance="?attr/senseTextAppearanceHeading" />
+        android:text="@string/title_thank_you"/>
 
 </LinearLayout>

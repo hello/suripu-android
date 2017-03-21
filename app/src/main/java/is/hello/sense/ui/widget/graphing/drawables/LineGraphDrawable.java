@@ -174,7 +174,7 @@ public class LineGraphDrawable extends GraphDrawable {
 
             int shadowRadius = resources.getDimensionPixelSize(R.dimen.series_graph_shadow_radius);
             textPaint.setShadowLayer(shadowRadius, 0f, 0f, Color.WHITE);
-            textPaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_graph_footer));
+            textPaint.setTextSize(resources.getDimensionPixelSize(R.dimen.graphview_footer_text));
             textPaint.getFontMetrics(fontMetrics);
         }
 

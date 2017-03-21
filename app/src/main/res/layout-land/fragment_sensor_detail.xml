@@ -109,8 +109,7 @@
                 android:layout_marginBottom="@dimen/x5"
                 android:layout_marginLeft="@dimen/x2"
                 android:layout_marginRight="@dimen/x2"
-                android:layout_marginTop="@dimen/x2"
-                android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"/>
+                android:layout_marginTop="@dimen/x2"/>
 
         </RelativeLayout>
 

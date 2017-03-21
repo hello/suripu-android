@@ -107,10 +107,10 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
         footerTextPaint.setAntiAlias(true);
         footerTextPaint.setSubpixelText(true);
 
-        setHeaderTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_graph_header));
+        setHeaderTextSize(resources.getDimensionPixelOffset(R.dimen.graphview_header_text));
         setHeaderTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
 
-        setFooterTextSize(resources.getDimensionPixelOffset(R.dimen.text_size_graph_footer));
+        setFooterTextSize(resources.getDimensionPixelOffset(R.dimen.graphview_footer_text));
         setFooterTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
 
         highlightPaint.setAntiAlias(true);
