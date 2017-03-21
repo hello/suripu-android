@@ -205,7 +205,7 @@
 
     <style name="AppTheme.Button" parent="Platform.Button">
         <item name="android:minHeight">@dimen/button_min_size</item>
-        <item name="android:textAppearance">@style/AppTheme.Text.Button</item>
+        <item name="android:textAppearance">@style/AppTheme.Text.Header.H6.Medium</item>
         <item name="android:background">@drawable/button_background_selector_simple</item>
     </style>
 
@@ -270,7 +270,7 @@
     <style name="AppTheme.Button.ModeSelector">
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:textColor">@color/text_color_selector_toggle_button</item>
-        <item name="android:textAppearance">@style/AppTheme.Text.Body</item>
+        <item name="android:textAppearance">@style/Body1</item>
         <item name="android:paddingTop">@dimen/gap_medium</item>
         <item name="android:paddingLeft">@dimen/gap_medium</item>
         <item name="android:paddingRight">@dimen/gap_medium</item>

@@ -39,7 +39,7 @@ public class BarTrendGraphView extends TrendGraphView {
                              @NonNull final Graph graph,
                              @NonNull final AnimatorContext animatorContext,
                              @NonNull final AnimationCallback animationCallback) {
-        super(context, animatorContext,animationCallback);
+        super(context, animatorContext, animationCallback);
         this.drawable = new BarGraphDrawable(context, graph, animatorContext);
         setBackground(drawable);
         setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -111,10 +111,9 @@ public class BarTrendGraphView extends TrendGraphView {
                                 @NonNull final AnimatorContext animatorContext) {
             super(context, graph, animatorContext);
 
-            Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.AppTheme_Text_Trends_BarGraph);
-            Drawing.updateTextPaintFromStyle(highlightTextPaint, context, R.style.AppTheme_Text_Trends_BarGraph_HighLight);
-
-
+            Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.Caption1_Hint);
+            Drawing.updateTextPaintFromStyle(highlightTextPaint, context, R.style.Caption1);
+            this.highlightTextPaint.setColor(ContextCompat.getColor(getContext(), R.color.white));
             this.highlightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bargraph_hightlight));
             this.barHighlightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bargraph_hightlight_bar));
             this.barPaint.setColor(ContextCompat.getColor(context, R.color.trends_bargraph_bar));

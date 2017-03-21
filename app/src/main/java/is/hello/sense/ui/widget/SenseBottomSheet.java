@@ -235,7 +235,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         this.wantsBigTitle = wantsBigTitle;
 
         if (wantsBigTitle) {
-            Styles.setTextAppearance(titleText, R.style.AppTheme_Text_Body);
+            Styles.setTextAppearance(titleText, R.style.Body1_Primary);
             titleText.setAllCaps(false);
         } else {
             Styles.setTextAppearance(titleText, R.style.Caption2_Secondary);

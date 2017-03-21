@@ -122,7 +122,7 @@ public class ExpansionRangePickerView extends LinearLayout {
 
     private void addDivider(final int width) {
         final TextView divider = new TextView(getContext());
-        Styles.setTextAppearance(divider, R.style.AppTheme_Text_RotaryPickerItem);
+        Styles.setTextAppearance(divider, R.style.Display1);
         divider.setText("-");
         divider.setGravity(Gravity.CENTER);
         final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width,

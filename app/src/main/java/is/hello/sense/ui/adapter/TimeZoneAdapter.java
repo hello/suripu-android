@@ -54,7 +54,7 @@ public class TimeZoneAdapter extends RecyclerView.Adapter<TimeZoneAdapter.BaseVi
                                                      R.attr.senseTextAppearanceFieldLabel);
             return new HeaderViewHolder(headerText);
         } else {
-            final TextView timeZoneText = new TextView(context, null, R.style.AppTheme_Text_Body);
+            final TextView timeZoneText = new TextView(context, null, R.style.Body1_Secondary);
             timeZoneText.setCompoundDrawablesWithIntrinsicBounds(R.drawable.radio_off, 0, 0, 0);
             timeZoneText.setCompoundDrawablePadding(drawablePadding);
             timeZoneText.setBackgroundResource(R.drawable.selectable_dark_bounded);

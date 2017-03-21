@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools">
+
     <RelativeLayout
         android:layout_width="@dimen/timeline_shareable_view_width"
         android:layout_height="@dimen/timeline_shareable_view_height"
@@ -11,8 +12,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
             android:layout_above="@+id/view_share_timeline_date"
+            android:layout_alignParentTop="true"
             android:background="@drawable/timeline_share_background_gradient"
             android:orientation="vertical"
             android:padding="@dimen/x4">
@@ -22,19 +23,19 @@
                 android:layout_width="@dimen/grand_sleep_summary_width"
                 android:layout_height="@dimen/grand_sleep_summary_height"
                 android:layout_gravity="center_horizontal"
-                android:contentDescription="@string/sleep_score"
                 android:layout_marginTop="@dimen/x2"
+                android:contentDescription="@string/sleep_score"
                 android:importantForAccessibility="yes">
             </RelativeLayout>
 
             <TextView
                 android:id="@+id/view_share_timeline_slept_for_time"
+                style="@style/Title2.Secondary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center_horizontal"
                 android:lineSpacingExtra="@dimen/x.5"
-                android:textAppearance="@style/AppTheme.Text.Score.Share.Text"
                 tools:text="It took you 7 minutes to fall asleep. You slept a total 6.3 hours and woke up 1 time during the night."/>
 
             <LinearLayout
@@ -59,12 +60,11 @@
 
         <TextView
             android:id="@+id/view_share_timeline_date"
+            style="@style/Caption1.Primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:letterSpacing=".065"
-            android:textAppearance="@style/AppTheme.Text.Score.Share.Date"
             tools:targetApi="lollipop"
             tools:text="January 18, 2017"/>
     </RelativeLayout>
