@@ -120,6 +120,8 @@ public class SenseApplication extends MultiDexApplication {
 
         this.refWatcher = LeakCanary.install(this);
 
+        nightModeInteractor.updateToMatchPrefAndSession(); //if application was destroyed need to update again
+
         final Observable<Intent> onLogOut = Rx.fromLocalBroadcast(this, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         onLogOut.observeOn(Rx.mainThreadScheduler())
                 .subscribe(ignored -> {

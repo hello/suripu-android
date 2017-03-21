@@ -1,6 +1,8 @@
 package is.hello.sense.flows.nightmode.interactors;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatDelegate;
 
@@ -41,11 +43,15 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
 
     @Override
     protected Observable<Integer> provideUpdateObservable() {
+        return Observable.just(getCurrentMode());
+    }
+
+    private Integer getCurrentMode() {
         if(apiSessionManager.hasSession()) {
-            return Observable.just(persistentPreferencesInteractor.getInt(getNightModePrefKey(),
-                                                                          getDefaultMode()));
+            return persistentPreferencesInteractor.getInt(getNightModePrefKey(),
+                                                          getDefaultMode());
         } else {
-            return Observable.just(getDefaultMode());
+            return getDefaultMode();
         }
     }
 
@@ -83,5 +89,21 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
                                                                                 getDefaultMode());
         AppCompatDelegate.setDefaultNightMode(accountPrefNightMode);
         update();
+    }
+
+    /**
+     * @param initialConfigMode should be fetched from {@link NightModeInteractor#getConfigMode(Resources)}
+     *                          during onCreate to compare after updates occur.
+     * @param current resource used to derive current config mode.
+     * @return true if current config mode doesn't match initial config mode
+     */
+    public boolean requiresRecreate(final int initialConfigMode,
+                                    @NonNull final Resources current) {
+        final int currentConfigMode = getConfigMode(current);
+        return currentConfigMode != initialConfigMode;
+    }
+
+    public int getConfigMode(@NonNull final Resources resources) {
+        return resources.getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
     }
 }
