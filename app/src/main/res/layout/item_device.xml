@@ -23,14 +23,14 @@
 
     <TextView
         android:id="@+id/item_device_last_seen_label"
+        style="@style/Body1.Secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_below="@id/item_device_name"
         android:layout_marginEnd="@dimen/x2"
         android:layout_marginStart="@dimen/x3"
-        android:text="@string/label_last_seen"
-        android:textAppearance="@style/Body1.Secondary"/>
+        android:text="@string/label_last_seen"/>
 
     <TextView
         android:id="@+id/item_device_last_seen"
@@ -46,14 +46,14 @@
 
     <TextView
         android:id="@+id/item_device_status_label"
+        style="@style/Body1.Secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/item_device_last_seen_label"
         android:layout_marginEnd="@dimen/x2"
         android:layout_marginStart="@dimen/x3"
         android:layout_marginTop="@dimen/x1"
-        android:text="@string/label_wifi"
-        android:textAppearance="@style/Body1.Secondary"/>
+        android:text="@string/label_wifi"/>
 
     <TextView
         android:id="@+id/item_device_status"
@@ -70,14 +70,14 @@
 
     <TextView
         android:id="@+id/item_device_status2_label"
+        style="@style/Body1.Secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/item_device_status_label"
         android:layout_marginEnd="@dimen/x1"
         android:layout_marginStart="@dimen/x3"
         android:layout_marginTop="@dimen/x1"
-        android:text="@string/label_firmware_version"
-        android:textAppearance="@style/Body1.Secondary"/>
+        android:text="@string/label_firmware_version"/>
 
     <TextView
         android:id="@+id/item_device_status2"
@@ -93,6 +93,7 @@
 
     <TextView
         android:id="@+id/item_device_status3_label"
+        style="@style/Body1.Secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/item_device_status2_label"
@@ -100,7 +101,6 @@
         android:layout_marginStart="@dimen/x3"
         android:layout_marginTop="@dimen/x1"
         android:text="@string/label_firmware_version"
-        android:textAppearance="@style/Body1.Secondary"
         android:visibility="gone"/>
 
     <TextView
