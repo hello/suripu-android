@@ -119,7 +119,6 @@
     <dimen name="sense_voice_fixed_margin">36px</dimen>
 
     <dimen name="expansion_icon_min_size">60dp</dimen>
-    <dimen name="expansion_detail_row_height">@dimen/x9</dimen>
 
     <!-- Graphs -->
 
