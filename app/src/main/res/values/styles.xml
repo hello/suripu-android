@@ -163,7 +163,7 @@
     <style name="AppTheme.Dialog.FullScreen.Insight">
         <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
         <item name="android:statusBarColor" tools:targetApi="lollipop">
-            @color/status_bar_illustration
+            @color/status_bar_color
         </item>
     </style>
 

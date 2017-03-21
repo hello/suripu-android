@@ -14,7 +14,7 @@
         android:id="@+id/item_insight_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/insight_card_background"
+        android:background="@color/background"
         app:senseLoadingView="@+id/item_insight_image_loading">
 
         <ProgressBar
