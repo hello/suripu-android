@@ -62,7 +62,7 @@ public class DebugActivity extends InjectionActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
 
-        final int sectionPadding = getResources().getDimensionPixelSize(R.dimen.gap_outer);
+        final int sectionPadding = getResources().getDimensionPixelSize(R.dimen.x3);
         final InsetItemDecoration decoration = new InsetItemDecoration();
         recyclerView.addItemDecoration(decoration);
 

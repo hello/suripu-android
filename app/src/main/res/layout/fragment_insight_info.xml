@@ -61,7 +61,7 @@
                 android:id="@+id/fragment_insight_info_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/gap_outer"
+                android:layout_marginBottom="@dimen/x3"
                 android:layout_marginLeft="@dimen/x3"
                 android:layout_marginRight="@dimen/x3"
                 android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"

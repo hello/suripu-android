@@ -102,8 +102,8 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:paddingLeft">@dimen/gap_outer</item>
-        <item name="android:paddingRight">@dimen/gap_outer</item>
+        <item name="android:paddingLeft">@dimen/x3</item>
+        <item name="android:paddingRight">@dimen/x3</item>
     </style>
 
     <style name="AppTheme.PopupMenu" parent="Platform.ListPopupWindow">
@@ -233,10 +233,10 @@
     <style name="AppTheme.Button.Borderless.Question">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:paddingTop">@dimen/gap_outer</item>
-        <item name="android:paddingLeft">@dimen/gap_outer</item>
-        <item name="android:paddingRight">@dimen/gap_outer</item>
-        <item name="android:paddingBottom">@dimen/gap_outer</item>
+        <item name="android:paddingTop">@dimen/x3</item>
+        <item name="android:paddingLeft">@dimen/x3</item>
+        <item name="android:paddingRight">@dimen/x3</item>
+        <item name="android:paddingBottom">@dimen/x3</item>
         <item name="android:textColor">@color/text_body_new</item>
         <item name="android:textSize">@dimen/text_size_button_large</item>
         <item name="android:background">@drawable/selectable_dark_bounded</item>
@@ -303,8 +303,8 @@
     <style name="AppTheme.Button.Facebook">
         <item name="android:paddingTop">@dimen/gap_medium</item>
         <item name="android:paddingBottom">@dimen/gap_medium</item>
-        <item name="android:paddingLeft">@dimen/gap_outer</item>
-        <item name="android:paddingRight">@dimen/gap_outer</item>
+        <item name="android:paddingLeft">@dimen/x3</item>
+        <item name="android:paddingRight">@dimen/x3</item>
         <item name="android:background">@drawable/facebook_autofill_selector</item>
         <item name="android:textColor">@color/facebook_autofill_text_color_selector</item>
         <item name="android:drawableLeft">@drawable/facebook_logo_selector</item>

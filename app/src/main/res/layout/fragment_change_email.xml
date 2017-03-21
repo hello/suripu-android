@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:clipToPadding="false"
         android:orientation="vertical"
-        android:padding="@dimen/gap_outer">
+        android:padding="@dimen/x3">
 
         <is.hello.sense.ui.widget.LabelEditText
             android:id="@+id/fragment_change_email_let"

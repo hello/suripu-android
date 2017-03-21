@@ -102,7 +102,7 @@ public class SenseAlertDialog extends Dialog {
         final boolean hasText = (titleText.getVisibility() == View.VISIBLE ||
                 messageText.getVisibility() == View.VISIBLE);
         if (hasText) {
-            final int padding = getContext().getResources().getDimensionPixelSize(R.dimen.gap_outer);
+            final int padding = getContext().getResources().getDimensionPixelSize(R.dimen.x3);
             container.setPadding(0, padding, 0, 0);
             if (topViewDivider != null) {
                 topViewDivider.setVisibility(View.VISIBLE);

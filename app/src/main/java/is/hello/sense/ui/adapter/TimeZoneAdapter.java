@@ -36,7 +36,7 @@ public class TimeZoneAdapter extends RecyclerView.Adapter<TimeZoneAdapter.BaseVi
         this.timeZoneNames[0] = context.getString(R.string.label_choose_time_zone);
         System.arraycopy(timeZoneArray, 0, this.timeZoneNames, 1, timeZoneArray.length);
 
-        this.itemHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_outer);
+        this.itemHorizontalPadding = resources.getDimensionPixelSize(R.dimen.x3);
         this.itemVerticalPadding = resources.getDimensionPixelSize(R.dimen.gap_outer_half);
         this.drawablePadding = resources.getDimensionPixelSize(R.dimen.gap_large);
 
