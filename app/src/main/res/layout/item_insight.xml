@@ -59,7 +59,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/item_insight_category"
         android:layout_margin="@dimen/x2"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"
         tools:text="@string/lorem_ipsum"/>
 
 

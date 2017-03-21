@@ -294,7 +294,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         optionButton.setGravity(Gravity.CENTER);
         optionButton.setMinimumHeight(resources.getDimensionPixelSize(R.dimen.action_bar_height));
         optionButton.setBackgroundResource(R.drawable.selectable_dark_bounded);
-        optionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(R.dimen.text_size_body_mid_sized));
+        optionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(R.dimen.text_h6_5));
         optionButton.setTextColor(Styles.getColorStateList(resources, buttonNotSelectedColorRes, null));
         applyButtonStyles(optionButton, false);
 
