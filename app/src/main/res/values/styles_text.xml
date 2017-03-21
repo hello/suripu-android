@@ -56,6 +56,9 @@
     <style name="Display2.Primary">
         <item name="android:textColor">@color/primary_text_selector</item>
     </style>
+    <style name="Display2.Secondary">
+        <item name="android:textColor">@color/secondary_text_selector</item>
+    </style>
 
     <style name="Display3" parent="AppTheme.Text.Header.H1.Thin">
         <item name="android:textSize">@dimen/text_h1_2</item>
