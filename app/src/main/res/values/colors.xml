@@ -59,6 +59,7 @@
     <!-- Misc -->
     <color name="transparent">@color/white_00</color>
     <color name="transparent_overlay">@color/black_25</color>
+    <color name="status_bar_color">@color/gray3</color>
 
     <!-- EditText Colors -->
     <color name="sense_edittext_bottom_line_normal">@color/divider_color</color>
@@ -76,9 +77,6 @@
     <color name="smart_alarm_header_background">@color/primary</color>
 
     <!-- Todo remove / replace all colors below -->
-    <color name="status_bar_color">@color/gray3</color>
-    <!-- todo replace all uses with status_bar_color-->
-    <color name="status_bar_grey">@color/gray3</color>
     <color name="status_bar_illustration">@color/gray3</color>
 
     <color name="insight_card_background">@color/gray2</color>

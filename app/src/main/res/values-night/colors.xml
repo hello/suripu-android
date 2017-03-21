@@ -13,9 +13,6 @@
 
     <color name="transparent">@color/white_00</color>
     <color name="transparent_overlay">@color/black_25</color>
-    <color name="destructive_accent">@color/red6</color>
-    <color name="status_bar_color">@color/gray7</color>
-    <color name="status_bar_illustration">@color/gray7</color>
 
     <color name="background">@color/gray9</color>
     <color name="card">@color/gray8</color>

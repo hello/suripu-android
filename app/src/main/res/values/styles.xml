@@ -58,7 +58,7 @@
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowTitleSize">0dp</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_color</item>
     </style>
 
     <style name="AppTheme.NoActionBar.Black">
@@ -157,7 +157,7 @@
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">@color/transparent</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_color</item>
     </style>
 
     <style name="AppTheme.Dialog.FullScreen.Insight">
@@ -539,7 +539,7 @@
         <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
         <item name="senseBackgroundSecondary">@color/background_light</item>
 
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_color</item>
         <!-- remove actionbar elevation for kitkat and older -->
         <item name="android:windowContentOverlay">@null</item>
         <item name="actionBarStyle">@style/ActionBar</item>
@@ -584,7 +584,7 @@
         <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
         <item name="senseBackgroundSecondary">@color/background_light</item>
 
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_color</item>
     </style>
 
     <style name="AppTheme.AppCompat.ProgressBar" parent="Widget.AppCompat.ProgressBar">
