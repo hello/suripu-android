@@ -8,7 +8,7 @@
     android:layout_marginLeft="@dimen/x1"
     android:layout_marginRight="@dimen/x1"
     android:layout_marginTop="@dimen/gap_xlarge"
-    android:paddingBottom="@dimen/gap_medium">
+    android:paddingBottom="@dimen/x2">
 
     <TextView
         android:id="@+id/dialog_sense_list_message"
@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginBottom="@dimen/gap_medium"
+        android:layout_marginBottom="@dimen/x2"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
         android:layout_marginTop="@dimen/x3"
@@ -36,7 +36,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="@dimen/x2"
-        android:layout_marginTop="@dimen/gap_medium"
+        android:layout_marginTop="@dimen/x2"
         android:text="@android:string/ok"/>
 
     <Button
@@ -47,7 +47,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="@dimen/x1"
         android:layout_marginStart="@dimen/x2"
-        android:layout_marginTop="@dimen/gap_medium"
+        android:layout_marginTop="@dimen/x2"
         android:layout_toStartOf="@id/dialog_sense_list_positive"
         android:text="@android:string/cancel"
         android:textColor="@color/text_medium"/>

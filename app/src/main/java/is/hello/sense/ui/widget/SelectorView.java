@@ -302,7 +302,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
             final View divider = Styles.createVerticalDivider(context,
                                                               ViewGroup.LayoutParams.MATCH_PARENT);
             final LayoutParams layoutParams = new LayoutParams(divider.getLayoutParams());
-            final int margin = resources.getDimensionPixelSize(R.dimen.gap_medium);
+            final int margin = resources.getDimensionPixelSize(R.dimen.x2);
             layoutParams.setMargins(0, margin, 0, margin);
             addView(divider, layoutParams);
         }

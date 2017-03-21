@@ -98,7 +98,7 @@ public class GraphView extends View implements GraphAdapter.ChangeObserver {
 
         this.markerPointHalf = resources.getDimensionPixelSize(R.dimen.graph_point_size) / 2f;
 
-        this.headerFooterPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
+        this.headerFooterPadding = resources.getDimensionPixelSize(R.dimen.x2);
 
         this.touchSlop = ViewConfiguration.get(getContext()).getScaledPagingTouchSlop();
 

@@ -434,7 +434,7 @@ public class TimelineInfoFragment extends AnimatedInjectionFragment {
 
         private Decoration(@NonNull Resources resources) {
             this.dividerSize = resources.getDimensionPixelSize(R.dimen.divider_size);
-            this.verticalDividerInset = resources.getDimensionPixelSize(R.dimen.gap_medium);
+            this.verticalDividerInset = resources.getDimensionPixelSize(R.dimen.x2);
 
             final int lineColor = resources.getColor(R.color.border);
             linePaint.setColor(lineColor);

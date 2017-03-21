@@ -6,9 +6,9 @@
           android:layout_height="wrap_content"
           android:paddingLeft="@dimen/x3"
           android:paddingRight="@dimen/x3"
-          android:paddingTop="@dimen/gap_medium"
-          android:paddingBottom="@dimen/gap_medium"
-          android:drawablePadding="@dimen/gap_medium"
+          android:paddingTop="@dimen/x2"
+          android:paddingBottom="@dimen/x2"
+          android:drawablePadding="@dimen/x2"
           android:gravity="end|center_vertical"
           android:textAppearance="@style/AppTheme.Text.Body"
           android:text="@string/app_name" />

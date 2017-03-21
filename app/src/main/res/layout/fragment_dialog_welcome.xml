@@ -21,7 +21,7 @@
         android:id="@+id/fragment_dialog_welcome_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/gap_medium"
+        android:layout_marginTop="@dimen/x2"
         android:layout_above="@id/fragment_dialog_welcome_page_dots"
         android:layout_centerVertical="true"
         android:overScrollMode="never"/>

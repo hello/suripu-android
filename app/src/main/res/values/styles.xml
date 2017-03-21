@@ -271,10 +271,10 @@
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:textColor">@color/text_color_selector_toggle_button</item>
         <item name="android:textAppearance">@style/AppTheme.Text.Body</item>
-        <item name="android:paddingTop">@dimen/gap_medium</item>
-        <item name="android:paddingLeft">@dimen/gap_medium</item>
-        <item name="android:paddingRight">@dimen/gap_medium</item>
-        <item name="android:paddingBottom">@dimen/gap_medium</item>
+        <item name="android:paddingTop">@dimen/x2</item>
+        <item name="android:paddingLeft">@dimen/x2</item>
+        <item name="android:paddingRight">@dimen/x2</item>
+        <item name="android:paddingBottom">@dimen/x2</item>
     </style>
 
     <style name="AppTheme.Button.Gender" parent="AppTheme.Button.Borderless.Accent">
@@ -301,8 +301,8 @@
     </style>
 
     <style name="AppTheme.Button.Facebook">
-        <item name="android:paddingTop">@dimen/gap_medium</item>
-        <item name="android:paddingBottom">@dimen/gap_medium</item>
+        <item name="android:paddingTop">@dimen/x2</item>
+        <item name="android:paddingBottom">@dimen/x2</item>
         <item name="android:paddingLeft">@dimen/x3</item>
         <item name="android:paddingRight">@dimen/x3</item>
         <item name="android:background">@drawable/facebook_autofill_selector</item>

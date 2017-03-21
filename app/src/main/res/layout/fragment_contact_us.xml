@@ -16,7 +16,7 @@
             android:id="@+id/fragment_contact_us_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/gap_medium"
+            android:padding="@dimen/x2"
             android:gravity="top|start"
             android:background="@null"
             android:hint="@string/hint_contact_us_text"

@@ -62,14 +62,14 @@
                 android:layout_marginBottom="@dimen/x3"
                 android:layout_marginLeft="@dimen/x3"
                 android:layout_marginRight="@dimen/x3"
-                android:layout_marginTop="@dimen/gap_medium"
+                android:layout_marginTop="@dimen/x2"
                 style="@style/Body1.Secondary"/>
 
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:minHeight="@dimen/gap_medium"/>
+                android:minHeight="@dimen/x2"/>
 
         </LinearLayout>
 

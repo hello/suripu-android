@@ -12,7 +12,7 @@
         android:id="@+id/item_tutorial_description_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/gap_medium"
+        android:padding="@dimen/x2"
         android:drawablePadding="@dimen/x1"
         android:drawableEnd="@drawable/icon_dialog_close"
         android:gravity="center_vertical|start"
