@@ -14,7 +14,7 @@
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
         android:drawableTop="@drawable/onboarding_done_check"
-        android:drawablePadding="@dimen/gap_large"
+        android:drawablePadding="@dimen/x3"
         android:gravity="center"
         android:textAppearance="?attr/senseTextAppearanceSubheading"
         android:text="@string/onboarding_complete_title"

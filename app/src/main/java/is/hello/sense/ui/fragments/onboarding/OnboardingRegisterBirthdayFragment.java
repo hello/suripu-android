@@ -97,7 +97,7 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
             }
 
             if (index == NUM_FIELDS / 2) {
-                final int margin = getResources().getDimensionPixelSize(R.dimen.gap_large);
+                final int margin = getResources().getDimensionPixelSize(R.dimen.x3);
                 final ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) component.getLayoutParams();
                 layoutParams.leftMargin = margin;
                 layoutParams.rightMargin = margin;

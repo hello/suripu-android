@@ -32,7 +32,7 @@
         android:id="@+id/item_static_choice_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/gap_large"
+        android:layout_marginStart="@dimen/x3"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@id/item_static_choice_checked"
         android:textAppearance="@style/AppTheme.Text.Body"

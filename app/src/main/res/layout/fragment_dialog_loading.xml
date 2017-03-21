@@ -27,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/fragment_dialog_loading_bar"
-        android:layout_marginTop="@dimen/gap_large"
+        android:layout_marginTop="@dimen/x3"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
         android:gravity="center"
