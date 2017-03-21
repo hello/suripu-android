@@ -1,7 +1,6 @@
 <resources>
     <!-- Standard Sizing -->
 
-    <dimen name="gap_outer_half">12dp</dimen>
     <dimen name="gap_outer_dialog_buttons">14dp</dimen>
     <dimen name="gap_action_bar_start">63dp</dimen>
     <dimen name="gap_card_content">20dp</dimen>
@@ -17,8 +16,6 @@
 
     <!-- Cards -->
 
-    <dimen name="gap_card_horizontal">@dimen/gap_outer_half</dimen>
-    <dimen name="gap_card_vertical">@dimen/gap_outer_half</dimen>
     <dimen name="gap_card_inter">8dp</dimen>
     <dimen name="parallax_clip">30dp</dimen>
 
