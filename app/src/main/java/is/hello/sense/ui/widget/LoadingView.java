@@ -151,7 +151,7 @@ public class LoadingView extends LinearLayout {
         Resources resources = getResources();
 
         TextView textView = new TextView(getContext());
-        textView.setTextAppearance(getContext(), R.style.AppTheme_Text_Body);
+        textView.setTextAppearance(getContext(), R.style.Body1_Secondary);
         textView.setSingleLine();
         textView.setText(text);
 

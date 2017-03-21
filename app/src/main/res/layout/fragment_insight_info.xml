@@ -65,7 +65,7 @@
                 android:layout_marginLeft="@dimen/x3"
                 android:layout_marginRight="@dimen/x3"
                 android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"
-                android:textAppearance="@style/AppTheme.Text.Body"
+                style="@style/Body1.Secondary"
                 android:textColor="@color/text_medium"
                 android:visibility="gone"
                 tools:text="@string/lorem_ipsum"

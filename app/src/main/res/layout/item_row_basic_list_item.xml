@@ -13,5 +13,5 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         app:leftTextPadding="@dimen/x3"
-        app:textStyle="@style/AppTheme.Text.Body"/>
+        app:textStyle="@style/Body1.Primary"/>
 </RelativeLayout>

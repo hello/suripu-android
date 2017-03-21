@@ -13,7 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/x1"
-            android:textAppearance="@style/Body1.Primary"
+            style="@style/Body1.Primary"
             android:text="@string/label_custom_endpoint_url"/>
 
         <EditText
@@ -30,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/x1"
-            android:textAppearance="@style/Body1.Primary"
+            style="@style/Body1.Primary"
             android:text="@string/label_custom_endpoint_client_id"/>
 
         <EditText
@@ -47,7 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/x1"
-            android:textAppearance="@style/Body1.Primary"
+            style="@style/Body1.Primary"
             android:text="@string/label_custom_endpoint_client_secret"/>
 
         <EditText
