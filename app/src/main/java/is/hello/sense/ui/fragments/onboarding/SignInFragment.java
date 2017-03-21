@@ -31,6 +31,7 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
+import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
@@ -65,6 +66,8 @@ public class SignInFragment extends InjectionFragment
     AccountInteractor accountPresenter;
     @Inject
     PreferencesInteractor preferences;
+    @Inject
+    NightModeInteractor nightModeInteractor;
     @Inject
     DevicesInteractor devicesInteractor;
 
@@ -225,6 +228,7 @@ public class SignInFragment extends InjectionFragment
                                  Analytics.trackSignIn(account.getId(),
                                                        account.getFullName(),
                                                        account.getEmail());
+                                 nightModeInteractor.updateToMatchPrefAndSession();
                                  getOnboardingActivity().showHomeActivity(OnboardingActivity.FLOW_SIGN_IN);
                              },
                              e -> {

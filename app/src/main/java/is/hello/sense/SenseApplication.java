@@ -24,6 +24,7 @@ import dagger.ObjectGraph;
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.SenseAppModule;
 import is.hello.sense.notifications.NotificationActivityLifecycleListener;
@@ -46,6 +47,8 @@ public class SenseApplication extends MultiDexApplication {
     LruCache picassoMemoryCache;
     @Inject
     NotificationActivityLifecycleListener notificationActivityLifecycleListener;
+    @Inject
+    NightModeInteractor nightModeInteractor;
 
     private static SenseApplication instance = null;
 
@@ -130,6 +133,8 @@ public class SenseApplication extends MultiDexApplication {
                                          .sendBroadcast(NotificationRegistrationBroadcastReceiver.getRemoveTokenIntent());
 
                     NotificationMessageReceiver.cancelShownMessages(this);
+
+                    nightModeInteractor.updateToMatchPrefAndSession();
 
                     final Intent launchIntent = new Intent(this, LaunchActivity.class);
                     launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

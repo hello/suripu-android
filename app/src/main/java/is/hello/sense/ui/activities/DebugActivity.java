@@ -20,6 +20,7 @@ import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
+import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountPreferencesInteractor;
 import is.hello.sense.interactors.PersistentPreferencesInteractor;
@@ -50,6 +51,8 @@ public class DebugActivity extends InjectionActivity {
     LocalUsageTracker localUsageTracker;
     @Inject
     ApiEndpoint apiEndpoint;
+    @Inject
+    NightModeInteractor nightModeInteractor;
 
 
     @Override
@@ -245,14 +248,14 @@ public class DebugActivity extends InjectionActivity {
                 & Configuration.UI_MODE_NIGHT_MASK;
         switch (currentNightMode) {
             case Configuration.UI_MODE_NIGHT_NO:
-                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                nightModeInteractor.setMode(AppCompatDelegate.MODE_NIGHT_YES);
                 break;
             case Configuration.UI_MODE_NIGHT_YES:
-                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                nightModeInteractor.setMode(AppCompatDelegate.MODE_NIGHT_NO);
                 break;
             case Configuration.UI_MODE_NIGHT_UNDEFINED:
                 // We don't know what mode we're in, assume notnight
-                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                nightModeInteractor.setMode(AppCompatDelegate.MODE_NIGHT_YES);
                 break;
         }
         recreate();
