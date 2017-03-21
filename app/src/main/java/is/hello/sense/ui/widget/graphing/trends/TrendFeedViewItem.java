@@ -192,7 +192,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
             title.setText(getResources().getString(R.string.title_trends_welcome));
             image.setImageResource(R.drawable.trends_first_day);
 
-            ((MarginLayoutParams) message.getLayoutParams()).topMargin = getResources().getDimensionPixelSize(R.dimen.gap_small);
+            ((MarginLayoutParams) message.getLayoutParams()).topMargin = getResources().getDimensionPixelSize(R.dimen.x1);
             message.setText(getResources().getString(R.string.message_trends_welcome));
 
             Styles.setTextAppearance(message, R.style.Body1_Secondary);

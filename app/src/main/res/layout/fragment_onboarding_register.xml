@@ -23,10 +23,10 @@
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
             android:orientation="vertical"
-            android:paddingBottom="@dimen/gap_small"
+            android:paddingBottom="@dimen/x1"
             android:paddingLeft="@dimen/x3"
             android:paddingRight="@dimen/x3"
-            android:paddingTop="@dimen/gap_small">
+            android:paddingTop="@dimen/x1">
 
             <is.hello.sense.ui.widget.ProfileImageView
                 android:id="@+id/fragment_onboarding_register_profile_image"
@@ -116,6 +116,6 @@
         android:layout_marginBottom="@dimen/gap_large"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
-        android:layout_marginTop="@dimen/gap_small"/>
+        android:layout_marginTop="@dimen/x1"/>
 
 </LinearLayout>

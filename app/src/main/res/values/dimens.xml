@@ -1,7 +1,6 @@
 <resources>
     <!-- Standard Sizing -->
 
-    <dimen name="gap_small">10dp</dimen>
     <dimen name="gap_medium">16dp</dimen>
     <dimen name="gap_large">25dp</dimen>
     <dimen name="gap_mlarge">32dp</dimen>

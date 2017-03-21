@@ -20,7 +20,7 @@
             android:layout_marginBottom="@dimen/x2"
             android:layout_marginLeft="@dimen/x3"
             android:layout_marginRight="@dimen/x3"
-            android:layout_marginTop="@dimen/gap_small"
+            android:layout_marginTop="@dimen/x1"
             android:lineSpacingMultiplier="@dimen/line_multiple_heading"
             android:text="@string/title_sense_updating"
             android:textAppearance="?attr/senseTextAppearanceHeading"/>

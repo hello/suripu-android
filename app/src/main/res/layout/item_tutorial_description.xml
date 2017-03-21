@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/gap_medium"
-        android:drawablePadding="@dimen/gap_small"
+        android:drawablePadding="@dimen/x1"
         android:drawableEnd="@drawable/icon_dialog_close"
         android:gravity="center_vertical|start"
         android:background="@drawable/selector_simple_blue"

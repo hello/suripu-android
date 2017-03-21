@@ -177,7 +177,7 @@ public class RegisterFragment extends InjectionFragment
                                                  apiEndpoint.getUrl());
             bindAndSubscribe(apiUrl, selectHost::setText, Functions.LOG_ERROR);
 
-            final int padding = getResources().getDimensionPixelSize(R.dimen.gap_small);
+            final int padding = getResources().getDimensionPixelSize(R.dimen.x1);
             selectHost.setPadding(padding, padding, padding, padding);
 
             Views.setSafeOnClickListener(selectHost, ignored -> {
@@ -191,7 +191,7 @@ public class RegisterFragment extends InjectionFragment
             final LinearLayout.LayoutParams layoutParams =
                     new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                                   ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.bottomMargin = getResources().getDimensionPixelSize(R.dimen.gap_small);
+            layoutParams.bottomMargin = getResources().getDimensionPixelSize(R.dimen.x1);
             credentialsContainer.addView(selectHost, layoutParams);
         }
 
