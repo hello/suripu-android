@@ -4,11 +4,17 @@ import android.app.Activity;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.text.style.ClickableSpan;
+import android.view.MotionEvent;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.databinding.ViewNightModeBinding;
 import is.hello.sense.mvp.view.BindedPresenterView;
+import is.hello.sense.ui.widget.util.Styles;
+import is.hello.sense.ui.widget.util.Views;
 
 public class NightModeView extends BindedPresenterView<ViewNightModeBinding>
 implements RadioGroup.OnCheckedChangeListener{
@@ -19,6 +25,8 @@ implements RadioGroup.OnCheckedChangeListener{
     public NightModeView(@NonNull final Activity activity) {
         super(activity);
         this.binding.viewNightModeRadioGroup.setOnCheckedChangeListener(this);
+        setLocationPermissionClickListener(activity,
+                                           this.binding.viewNightModeLocationPermission);
     }
 
     @Override
@@ -58,9 +66,37 @@ implements RadioGroup.OnCheckedChangeListener{
         this.listener = listener;
     }
 
+    public void setScheduledModeEnabled(final boolean enabled) {
+        this.binding.viewNightModeOffRb.setChecked(!enabled && !binding.viewNightModeAlwaysOnRb.isChecked());
+        this.binding.viewNightModeScheduledRb.setEnabled(enabled);
+        this.binding.viewNightModeScheduledInfo.setEnabled(enabled);
+        this.binding.viewNightModeLocationPermission.setVisibility(enabled ? GONE : VISIBLE);
+    }
+
+    @VisibleForTesting
+    protected void setLocationPermissionClickListener(@NonNull final Activity activity,
+                                                      @NonNull final TextView permissionTextView) {
+        permissionTextView.setText(Styles.resolveSupportLinks(activity, permissionTextView.getText()));
+        permissionTextView.setOnTouchListener( (v, event) -> {
+            if (listener == null) {
+                return false;
+            }
+            final ClickableSpan link = Views.getClickableSpan(((TextView) v), event);
+            if (link != null) {
+                if (event.getAction() == MotionEvent.ACTION_UP
+                    && !listener.onLocationPermissionLinkIntercepted()) {
+                    link.onClick(v);
+                }
+                return true;
+            }
+            return false;
+        });
+    }
+
     public interface Listener {
         void offModeSelected();
         void onModeSelected();
         void scheduledModeSelected();
+        boolean onLocationPermissionLinkIntercepted();
     }
 }
