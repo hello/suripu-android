@@ -48,9 +48,13 @@
     <color name="timeline_header">@color/primary</color>
     <color name="user_support_toolbar">@color/primary</color>
 
-    <!-- Using @color/primary / blue4 -->
-    <color name="tutorial_interaction_view_dimmed">@color/primary_dimmed</color>
+    <!-- Using @color/primary_dimmed / blue4 -->
     <color name="primary_dimmed">@color/blue4</color>
+    <color name="tutorial_interaction_view_dimmed">@color/primary_dimmed</color>
+
+    <!-- Using @color/primary_darkened / blue7 -->
+    <color name="primary_darkened">@color/blue7</color>
+    <color name="status_bar_primary_darkened">@color/primary_darkened</color>
 
     <!-- Misc -->
     <color name="transparent">@color/white_00</color>
@@ -72,8 +76,6 @@
     <color name="smart_alarm_header_background">@color/primary</color>
 
     <!-- Todo remove / replace all colors below -->
-    <color name="light_accent_extra_dimmed">@color/blue2</color>
-    <color name="light_accent_darkened">@color/blue7</color>
     <color name="destructive_accent">@color/red6</color>
     <color name="status_bar_color">@color/gray3</color>
     <!-- todo replace all uses with status_bar_color-->

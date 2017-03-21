@@ -166,7 +166,7 @@ public class SignInFragment extends InjectionFragment
     public
     @ColorInt
     int getStatusBarColor(@NonNull final Resources resources) {
-        return ContextCompat.getColor(getActivity(), R.color.light_accent_darkened);
+        return ContextCompat.getColor(getActivity(), R.color.status_bar_primary_darkened);
     }
 
     @Override

@@ -628,7 +628,7 @@
 
     <style name="AppTheme.AppCompat.SearchListActivity">
         <item name="android:statusBarColor" tools:targetApi="lollipop">
-            @color/light_accent_darkened
+            @color/status_bar_primary_darkened
         </item>
     </style>
 
