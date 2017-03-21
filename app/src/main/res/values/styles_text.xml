@@ -110,6 +110,10 @@
         <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
+    <style name="Body1.Blue" parent="AppTheme.Text.Body">
+        <item name="android:textColor">@color/primary</item>
+    </style>
+
     <style name="Body1.Secondary">
         <item name="android:textColor">@color/secondary_text_selector</item>
     </style>

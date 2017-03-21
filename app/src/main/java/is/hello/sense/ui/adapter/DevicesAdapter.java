@@ -295,7 +295,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             if (device.isMissing()) {
                 lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.destructive_accent));
             } else {
-                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.text_dark));
+                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.secondary_text));
             }
 
             status1Label.setText(R.string.label_wifi);
@@ -317,8 +317,6 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                     status1.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
                 }
             }
-
-            Styles.setTextAppearance(status1, R.style.AppTheme_Text_Body);
 
             status2Label.setText(R.string.label_firmware_version);
             status2.setText(device.firmwareVersion);
@@ -379,7 +377,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             if (device.isMissing()) {
                 lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.destructive_accent));
             } else {
-                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.text_dark));
+                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.secondary_text));
             }
 
             status1Label.setText(R.string.label_battery_level);
@@ -389,11 +387,6 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 state = BaseDevice.State.UNKNOWN;
             }
             status1.setText(state.nameRes);
-            if (state == BaseDevice.State.UNKNOWN) {
-                Styles.setTextAppearance(status1, R.style.Body1_Secondary);
-            } else {
-                Styles.setTextAppearance(status1, R.style.AppTheme_Text_Body);
-            }
 
             status2Label.setText(R.string.label_color);
 
@@ -414,7 +407,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 actionButton.setEnabled(true);
                 actionButton.setVisibility(View.VISIBLE);
             } else {
-                status3.setTextColor(ContextCompat.getColor(activity, R.color.standard));
+                status3.setTextColor(ContextCompat.getColor(activity, R.color.secondary_text));
                 actionButton.setVisibility(View.GONE);
                 actionButton.setEnabled(false);
             }

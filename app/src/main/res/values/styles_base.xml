@@ -94,9 +94,5 @@
         <item name="android:lineSpacingMultiplier">@dimen/line_multiple_body</item>
     </style>
 
-    <style name="AppTheme.Text.Body.Paragraph">
-        <item name="android:lineSpacingMultiplier">@dimen/line_multiple_body</item>
-    </style>
-    ​
     ​ ​
 </resources>
