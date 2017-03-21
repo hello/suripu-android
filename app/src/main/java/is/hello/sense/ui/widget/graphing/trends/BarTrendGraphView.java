@@ -128,7 +128,7 @@ public class BarTrendGraphView extends TrendGraphView {
             this.bottomLinePaint.setColor(ContextCompat.getColor(context, R.color.trends_line_divider));
 
 
-            this.highlightValueSidePadding = resources.getDimensionPixelSize(R.dimen.gap_xsmall);
+            this.highlightValueSidePadding = resources.getDimensionPixelSize(R.dimen.x_75);
             this.highlightValueHeight = resources.getDimensionPixelSize(R.dimen.trends_bargraph_highlight_value_height);
             this.highlightBottomMargin = resources.getDimensionPixelSize(R.dimen.trends_bargraph_highlight_bottom_margin);
             final int highlightTopMargin = resources.getDimensionPixelSize(R.dimen.trends_bargraph_highlight_top_margin);

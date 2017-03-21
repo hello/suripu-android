@@ -1,7 +1,6 @@
 <resources>
     <!-- Standard Sizing -->
 
-    <dimen name="gap_xsmall">6dp</dimen>
     <dimen name="gap_xsmall_negative">-6dp</dimen>
     <dimen name="gap_xsmallradius">5dp</dimen>
     <dimen name="gap_small">10dp</dimen>
