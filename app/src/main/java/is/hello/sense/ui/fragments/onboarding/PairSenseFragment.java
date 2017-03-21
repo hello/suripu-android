@@ -198,12 +198,12 @@ public class PairSenseFragment extends BasePresenterFragment
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
             options.addOption(new SenseBottomSheet.Option(1)
                                       .setTitle("Debug")
-                                      .setTitleColor(ContextCompat.getColor(getActivity(), R.color.light_accent))
+                                      .setTitleColor(ContextCompat.getColor(getActivity(), R.color.primary))
                                       .setDescription("If you're adventurous, but here there be dragons."));
             if (getActivity() instanceof SkippableFlow) {
                 options.addOption(new SenseBottomSheet.Option(2)
                                           .setTitle("Skip to End")
-                                          .setTitleColor(ContextCompat.getColor(getActivity(), R.color.light_accent))
+                                          .setTitleColor(ContextCompat.getColor(getActivity(), R.color.primary))
                                           .setDescription("If you're in a hurry."));
             }
         }

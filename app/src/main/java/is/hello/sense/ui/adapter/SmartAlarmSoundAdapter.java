@@ -66,7 +66,7 @@ public class SmartAlarmSoundAdapter extends ArrayRecyclerAdapter<Alarm.Sound, Sm
         }
 
         if (playingSoundId == sound.id) {
-            holder.name.setTextColor(resources.getColor(R.color.light_accent));
+            holder.name.setTextColor(resources.getColor(R.color.link_text));
             if (playingSoundLoading) {
                 holder.checked.setVisibility(View.INVISIBLE);
                 holder.busy.setVisibility(View.VISIBLE);

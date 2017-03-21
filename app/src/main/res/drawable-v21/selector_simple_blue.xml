@@ -4,7 +4,7 @@
     <item>
         <selector>
             <item android:state_enabled="false" android:drawable="@color/light_accent_dimmed" />
-            <item android:drawable="@color/light_accent" />
+            <item android:drawable="@color/primary" />
         </selector>
     </item>
 

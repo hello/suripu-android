@@ -209,7 +209,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         public void bind(final int position) {
             final Drawable chevron = getChevronDrawable();
             if(chevron != null) {
-                Drawables.setTintColor(chevron, ContextCompat.getColor(activity, R.color.light_accent));
+                Drawables.setTintColor(chevron, ContextCompat.getColor(activity, R.color.devices_adapter_chevron));
             }
             title.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, chevron, null);
         }

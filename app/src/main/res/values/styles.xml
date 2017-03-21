@@ -517,7 +517,7 @@
         <item name="colorPrimaryDark">@color/primary</item>
         <!-- Bright complement to the primary branding color. By default, this is the color applied
          to framework controls (via colorControlActivated). -->
-        <item name="colorAccent">@color/light_accent</item>
+        <item name="colorAccent">@color/primary</item>
         <!-- The color applied to framework controls in their normal state. -->
         <item name="colorControlNormal">@color/primary</item>
         <!-- The color applied to framework controls in their activated (ex. checked) state. -->
@@ -562,7 +562,7 @@
         <item name="colorPrimaryDark">@color/primary</item>
         <!-- Bright complement to the primary branding color. By default, this is the color applied
          to framework controls (via colorControlActivated). -->
-        <item name="colorAccent">@color/light_accent</item>
+        <item name="colorAccent">@color/primary</item>
         <!-- The color applied to framework controls in their normal state. -->
         <item name="colorControlNormal">@color/primary</item>
         <!-- The color applied to framework controls in their activated (ex. checked) state. -->
@@ -613,7 +613,7 @@
     </style>
 
     <style name="AppTheme.AppCompat.Fab" parent="Widget.Design.FloatingActionButton">
-        <item name="backgroundTint">@color/light_accent</item>
+        <item name="backgroundTint">@color/primary</item>
     </style>
 
     <style name="AppTheme.AppCompat.AppSettingsActivity">

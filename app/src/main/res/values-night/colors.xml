@@ -65,7 +65,7 @@
     <color name="text_body_new">@color/white_70</color>
     <color name="text_heading_major">@color/standard</color>
 
-    <color name="text_rotary_picker_focused">@color/light_accent</color>
+    <color name="text_rotary_picker_focused">@color/primary</color>
     <color name="text_rotary_picker_unfocused">@color/gray4</color>
     <color name="text_rotary_picker_almost_gone">@color/gray2</color>
 

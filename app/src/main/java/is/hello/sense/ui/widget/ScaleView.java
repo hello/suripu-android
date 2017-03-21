@@ -106,7 +106,7 @@ public class ScaleView extends FrameLayout {
 
 
         Resources resources = getResources();
-        linePaint.setColor(resources.getColor(R.color.light_accent));
+        linePaint.setColor(resources.getColor(R.color.primary));
         this.diamondHalf = resources.getDimensionPixelSize(R.dimen.scale_view_diamond) / 2f;
         this.segmentSize = resources.getDimensionPixelSize(R.dimen.scale_view_segment);
 

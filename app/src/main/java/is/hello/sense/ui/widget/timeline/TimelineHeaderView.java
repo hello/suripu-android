@@ -283,7 +283,7 @@ public class TimelineHeaderView extends RelativeLayout {
         pulseAnimator.setRepeatCount(ValueAnimator.INFINITE);
         pulseAnimator.setRepeatMode(ValueAnimator.REVERSE);
 
-        int startColor = getResources().getColor(R.color.light_accent);
+        int startColor = getResources().getColor(R.color.timeline_header);
         int endColor = getResources().getColor(R.color.border);
         pulseAnimator.addUpdateListener(a -> {
             int color = Anime.interpolateColors(a.getAnimatedFraction(), endColor, startColor);

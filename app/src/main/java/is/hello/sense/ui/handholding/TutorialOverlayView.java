@@ -104,7 +104,7 @@ public class TutorialOverlayView extends RelativeLayout {
                                                  topLineHeight);
             descriptionContainer.addView(topLine, 0, topLineLayoutParams);
         } else {
-            descriptionContainer.setBackgroundResource(R.color.light_accent);
+            descriptionContainer.setBackgroundResource(R.color.tutorial_interaction_view);
             shadow.setBackgroundResource(R.drawable.shadow_bottom_up);
             descriptionContainer.addView(shadow, 0, shadowLayoutParams);
         }
