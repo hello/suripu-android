@@ -58,7 +58,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
         setBackgroundResource(R.drawable.raised_item_normal);
 
         final Resources resources = getResources();
-        final int padding = resources.getDimensionPixelSize(R.dimen.gap_card_content);
+        final int padding = resources.getDimensionPixelSize(R.dimen.x2);
         setPadding(padding, 0, padding, padding);
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
                                          LayoutParams.WRAP_CONTENT));
@@ -76,7 +76,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
 
         final LayoutParams annotationsLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
                                                                       LayoutParams.WRAP_CONTENT);
-        annotationsLayoutParams.topMargin = resources.getDimensionPixelSize(R.dimen.gap_card_content);
+        annotationsLayoutParams.topMargin = resources.getDimensionPixelSize(R.dimen.x2);
 
         final LayoutParams graphLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
                                                                 LayoutParams.WRAP_CONTENT);

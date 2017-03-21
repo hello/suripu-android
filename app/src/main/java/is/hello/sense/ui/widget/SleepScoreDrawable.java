@@ -61,7 +61,7 @@ public class SleepScoreDrawable extends Drawable {
 
             this.label = resources.getString(R.string.sleep_score).toUpperCase();
 
-            int offset = resources.getDimensionPixelSize(R.dimen.gap_tiny);
+            int offset = resources.getDimensionPixelSize(R.dimen.x_25);
             this.labelHeight = Drawing.getEstimatedLineHeight(labelPaint, false) + offset;
         } else {
             this.labelPaint = null;

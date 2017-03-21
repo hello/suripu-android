@@ -1,9 +1,6 @@
 <resources>
     <!-- Standard Sizing -->
 
-    <dimen name="gap_action_bar_start">63dp</dimen>
-    <dimen name="gap_card_content">20dp</dimen>
-    <dimen name="gap_tiny">3dp</dimen>
     <dimen name="gap_xsmall">6dp</dimen>
     <dimen name="gap_xsmall_negative">-6dp</dimen>
     <dimen name="gap_xsmallradius">5dp</dimen>

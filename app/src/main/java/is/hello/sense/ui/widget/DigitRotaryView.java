@@ -269,7 +269,7 @@ public class DigitRotaryView extends View implements ValueAnimator.AnimatorUpdat
             Rect textBounds = new Rect();
             textPaint.getTextBounds(digits, 4, 1, textBounds); // '4' is the widest number in Roboto
 
-            int extraSpacing = context.getResources().getDimensionPixelSize(R.dimen.gap_tiny);
+            int extraSpacing = context.getResources().getDimensionPixelSize(R.dimen.x_25);
             this.itemWidth = textBounds.width() + extraSpacing;
 
             Paint.FontMetricsInt fontMetrics = textPaint.getFontMetricsInt();
