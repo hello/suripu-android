@@ -23,8 +23,8 @@
     <color name="sensor_alert">@color/red6</color>
     <color name="sensor_warning">@color/yellow6</color>
     <color name="sensor_ideal">@color/green6</color>
-    <color name="sensor_unknown">@color/gray6</color>
-    <color name="sensor_empty">@color/gray3</color>
+    <color name="sensor_unknown">@color/background_card</color>
+    <color name="sensor_empty">@color/background_card</color>
 
     <!-- Using @color/primary / blue6 -->
     <color name="devices_adapter_chevron">@color/primary</color>
@@ -103,9 +103,9 @@
     <!-- Trends -->
     <color name="trends_line_divider">@color/divider</color>
     <color name="trends_line_divider_shimmer">@color/gray3</color>
-    <color name="trends_grid_graph_cell_empty">@color/white</color>
+    <color name="trends_grid_graph_cell_empty">@color/background_card</color>
     <color name="trends_grid_graph_cell_empty_border">@color/gray3</color>
-    <color name="trends_grid_graph_cell_missing">@color/gray2</color>
+    <color name="trends_grid_graph_cell_missing">@color/divider</color>
     <color name="trends_bar_graph_bar">@color/blue3</color>
     <color name="trends_bar_graph_annotation_text">@color/blue6</color>
     <color name="trends_bar_graph_highlight">@color/blue6</color>
