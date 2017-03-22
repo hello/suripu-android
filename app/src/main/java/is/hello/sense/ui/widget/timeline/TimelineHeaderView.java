@@ -87,7 +87,7 @@ public class TimelineHeaderView extends RelativeLayout {
         this.dividerColor = ContextCompat.getColor(context, R.color.timeline_header_border);
         this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
 
-        this.solidBackgroundColor = ContextCompat.getColor(context, R.color.background_timeline);
+        this.solidBackgroundColor = ContextCompat.getColor(context, R.color.timeline_background);
         final int[] gradientColors = {
                 solidBackgroundColor,
                 solidBackgroundColor,

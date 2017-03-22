@@ -7,7 +7,7 @@
         android:id="@+id/fragment_timeline_info_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background_timeline"/>
+        android:background="@color/timeline_background"/>
 
     <LinearLayout
         android:id="@+id/fragment_timeline_info_header"
