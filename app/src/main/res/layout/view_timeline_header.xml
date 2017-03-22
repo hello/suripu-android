@@ -34,7 +34,7 @@
         android:paddingTop="@dimen/x1"
         android:paddingBottom="@dimen/x1"
         android:orientation="vertical"
-        android:background="@drawable/selectable_dark_bounded">
+        >
 
         <TextView
             android:id="@+id/view_timeline_header_card_contents"

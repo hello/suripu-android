@@ -94,7 +94,7 @@ public class TimelineHeaderView extends RelativeLayout {
         final int[] gradientColors = {
                 solidBackgroundColor,
                 solidBackgroundColor,
-                ContextCompat.getColor(context, R.color.timeline_header_gradient_end),
+                solidBackgroundColor,
         };
         this.gradientBackground = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                                                        gradientColors);
@@ -109,15 +109,10 @@ public class TimelineHeaderView extends RelativeLayout {
         scoreContainer.setTranslationY(scoreTranslation);
 
         this.scoreDrawable = new SleepScoreDrawable(getResources(), true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            final int rippleColor = scoreDrawable.getPressedColor();
-            final ShapeDrawable mask = new ShapeDrawable(new OvalShape());
-            final RippleDrawable ripple = new RippleDrawable(ColorStateList.valueOf(rippleColor), scoreDrawable, mask);
-            scoreContainer.setBackground(ripple);
-        } else {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             scoreDrawable.setStateful(true);
-            scoreContainer.setBackground(scoreDrawable);
         }
+        scoreContainer.setBackground(scoreDrawable);
 
         this.scoreText = (TextView) findViewById(R.id.view_timeline_header_chart_score);
 
@@ -162,7 +157,7 @@ public class TimelineHeaderView extends RelativeLayout {
             gradientBackground.setBounds(0, 0, right, bottom);
             gradientBackground.draw(canvas);
 
-            canvas.drawRect(0, bottom - 20,
+            canvas.drawRect(0, bottom,
                             right, bottom, paint);
         }
     }
