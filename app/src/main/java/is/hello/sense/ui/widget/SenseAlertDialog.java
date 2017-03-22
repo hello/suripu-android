@@ -258,7 +258,7 @@ public class SenseAlertDialog extends Dialog {
         }
 
         if (flag) {
-            button.setTextColor(ContextCompat.getColor(getContext(), R.color.text_medium));
+            button.setTextColor(ContextCompat.getColor(getContext(), R.color.primary_text));
         } else {
             button.setTextColor(ContextCompat.getColor(getContext(), R.color.link_text));
         }
