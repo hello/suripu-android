@@ -58,7 +58,7 @@
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowTitleSize">0dp</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_color</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal</item>
     </style>
 
     <style name="AppTheme.NoActionBar.Black">
@@ -157,14 +157,12 @@
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">@color/transparent</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_color</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal</item>
     </style>
 
     <style name="AppTheme.Dialog.FullScreen.Insight">
         <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">
-            @color/status_bar_color
-        </item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal</item>
     </style>
 
     <style name="AppTheme.Dialog.Loading" parent="AppTheme.Dialog.FullScreen">
@@ -353,7 +351,7 @@
     <style name="Divider.Horizontal">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_size</item>
-        <item name="android:color">@color/divider_color</item>
+        <item name="android:color">@color/divider</item>
     </style>
 
 
@@ -539,7 +537,7 @@
         <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
         <item name="senseBackgroundSecondary">@color/background_card</item>
 
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_color</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal</item>
         <!-- remove actionbar elevation for kitkat and older -->
         <item name="android:windowContentOverlay">@null</item>
         <item name="actionBarStyle">@style/ActionBar</item>
@@ -584,7 +582,7 @@
         <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
         <item name="senseBackgroundSecondary">@color/background_card</item>
 
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_color</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal</item>
     </style>
 
     <style name="AppTheme.AppCompat.ProgressBar" parent="Widget.AppCompat.ProgressBar">

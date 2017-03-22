@@ -51,7 +51,7 @@
         <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
         <item name="senseBackgroundSecondary">@color/background_card</item>
 
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_color</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal</item>
         <!-- remove actionbar elevation for kitkat and older -->
         <item name="android:windowContentOverlay">@null</item>
         <item name="actionBarStyle">@style/ActionBar</item>
