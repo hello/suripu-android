@@ -7,8 +7,6 @@
     <color name="disabled_text">@color/hint_text</color>
     <color name="divider">@color/black_12</color>
 
-    <color name="dark">@color/gray6</color>
-    <color name="standard">@color/gray5</color>
     <color name="dim">@color/gray4</color>
     <color name="primary">@color/blue6</color>
     <color name="error">@color/red6</color>
@@ -22,17 +20,16 @@
     <color name="background_drawer">@color/primary</color>
 
     <!-- Alert colors -->
-    <color name="sensor_alert">@color/red6</color>
-    <color name="sensor_warning">@color/yellow6</color>
-    <color name="sensor_ideal">@color/green6</color>
-    <color name="sensor_unknown">@color/gray6</color>
+    <color name="sensor_alert">@color/error</color>
+    <color name="sensor_warning">@color/warning</color>
+    <color name="sensor_ideal">@color/success</color>
+    <color name="sensor_unknown">@color/dim</color>
     <color name="sensor_empty">@color/gray3</color>
 
     <!-- Using @color/primary / blue6 -->
     <color name="devices_adapter_chevron">@color/primary</color>
     <color name="tutorial_interaction_view">@color/primary</color>
     <color name="onboarding_icon_tint">@color/primary</color>
-    <color name="questions_divider">@color/primary</color>
     <color name="tabs_background_selected">@color/primary</color>
     <color name="ticket_detail_icon_tint">@color/primary</color>
     <color name="timeline_header">@color/primary</color>
@@ -49,7 +46,7 @@
 
     <!-- Misc -->
     <color name="transparent">@color/white_00</color>
-    <color name="transparent_overlay">@color/black_25</color>
+    <color name="transparent_overlay">@color/black_70</color>
     <color name="ripple">@color/divider</color>
     <color name="status_bar_normal">@color/gray3</color>
     <color name="timeline_transparent_overlay">@color/transparent_overlay</color>
@@ -64,6 +61,7 @@
     <color name="expansions_background">@color/background_card</color>
     <color name="timeline_share_background_gradient_top">@color/gray1</color>
     <color name="timeline_share_background_gradient_bottom">@color/white</color>
+    <color name="questions_divider">@color/divider</color>
 
     <!-- Text Colors -->
     <color name="error_text">@color/error</color>
@@ -119,9 +117,9 @@
     <!-- could use cleaning, but good enough for now -->
     <color name="border">@color/gray2</color>
 
-    <color name="text_rotary_picker_focused">@color/primary</color>
-    <color name="text_rotary_picker_unfocused">@color/gray4</color>
-    <color name="text_rotary_picker_almost_gone">@color/gray2</color>
+    <color name="text_rotary_picker_focused">@color/link_text</color>
+    <color name="text_rotary_picker_unfocused">@color/secondary_text</color>
+    <color name="text_rotary_picker_almost_gone">@color/hint_text</color>
 
     <color name="view_scale_tick_normal">@color/gray2</color>
     <color name="view_scale_tick_emphasized">@color/gray3</color>

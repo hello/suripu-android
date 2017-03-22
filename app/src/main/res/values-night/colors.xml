@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Design terms-->
-    <color name="primary_text">@color/black_87</color>
-    <color name="secondary_text">@color/black_54</color>
-    <color name="hint_text">@color/black_38</color>
+    <color name="primary_text">@color/white</color>
+    <color name="secondary_text">@color/white_70</color>
+    <color name="hint_text">@color/white_50</color>
     <color name="disabled_text">@color/hint_text</color>
-    <color name="divider">@color/black_12</color>
+    <color name="divider">@color/white_12</color>
 
-    <color name="dark">@color/gray6</color>
-    <color name="standard">@color/gray5</color>
-    <color name="dim">@color/gray4</color>
+    <color name="dim">@color/gray7</color>
     <color name="primary">@color/blue6</color>
     <color name="error">@color/red6</color>
     <color name="warning">@color/yellow6</color>
     <color name="success">@color/green6</color>
 
-    <color name="background">@color/gray2</color>
-    <color name="background_card">@color/white</color>
-    <color name="background_navigation">@color/white</color>
-    <color name="background_overlay">@color/primary</color>
-    <color name="background_drawer">@color/primary</color>
+    <color name="background">@color/gray9</color>
+    <color name="background_card">@color/gray8</color>
+    <color name="background_navigation">@color/gray8</color>
+    <color name="background_overlay">@color/black_50</color>
+    <color name="background_drawer">@color/gray8</color>
 
     <!-- Alert colors -->
     <color name="sensor_alert">@color/red6</color>
@@ -32,7 +30,6 @@
     <color name="devices_adapter_chevron">@color/primary</color>
     <color name="tutorial_interaction_view">@color/primary</color>
     <color name="onboarding_icon_tint">@color/primary</color>
-    <color name="questions_divider">@color/primary</color>
     <color name="tabs_background_selected">@color/primary</color>
     <color name="ticket_detail_icon_tint">@color/primary</color>
     <color name="timeline_header">@color/primary</color>
@@ -49,11 +46,11 @@
 
     <!-- Misc -->
     <color name="transparent">@color/white_00</color>
-    <color name="transparent_overlay">@color/black_25</color>
+    <color name="transparent_overlay">@color/black_50</color>
     <color name="ripple">@color/divider</color>
     <color name="status_bar_normal">@color/gray3</color>
     <color name="timeline_transparent_overlay">@color/transparent_overlay</color>
-    <color name="timeline_background_fill">@color/blue2</color>
+    <color name="timeline_background_fill">@color/gray9</color>
     <color name="timeline_time_dividers">@color/blue6_30</color>
     <color name="fragment_dialog_loading_overlay">@color/transparent_overlay</color>
     <color name="fragment_dialog_welcome">@color/transparent_overlay</color>
@@ -64,6 +61,7 @@
     <color name="expansions_background">@color/background_card</color>
     <color name="timeline_share_background_gradient_top">@color/gray1</color>
     <color name="timeline_share_background_gradient_bottom">@color/white</color>
+    <color name="questions_divider">@color/divider</color>
 
     <!-- Text Colors -->
     <color name="error_text">@color/error</color>
@@ -81,8 +79,8 @@
     <color name="sense_raised_button_normal">@color/primary</color>
     <color name="sense_raised_button_pressed">@color/blue7</color>
     <color name="sense_raised_button_disabled">@color/dim</color>
-    <color name="sense_raised_button_shadow_light">@color/black_10</color>
-    <color name="sense_raised_button_shadow_dark">@color/black_20</color>
+    <color name="sense_raised_button_shadow_light">@color/black_80</color>
+    <color name="sense_raised_button_shadow_dark">@color/black_80</color>
 
     <!-- EditText Colors -->
     <color name="sense_edittext_bottom_line_normal">@color/divider</color>
@@ -98,9 +96,9 @@
 
     <!-- Timeline Sleep colors -->
     <color name="sleep_awake">@color/transparent</color>
-    <color name="sleep_light">@color/blue6_30</color>
-    <color name="sleep_medium">@color/blue6_50</color>
-    <color name="sleep_sound">@color/blue6_80</color>
+    <color name="sleep_light">@color/blue6_10</color>
+    <color name="sleep_medium">@color/blue6_15</color>
+    <color name="sleep_sound">@color/blue6_20</color>
 
     <!-- Trends -->
     <color name="trends_line_divider">@color/divider</color>
@@ -119,9 +117,9 @@
     <!-- could use cleaning, but good enough for now -->
     <color name="border">@color/gray2</color>
 
-    <color name="text_rotary_picker_focused">@color/primary</color>
-    <color name="text_rotary_picker_unfocused">@color/gray4</color>
-    <color name="text_rotary_picker_almost_gone">@color/gray2</color>
+    <color name="text_rotary_picker_focused">@color/link_text</color>
+    <color name="text_rotary_picker_unfocused">@color/secondary_text</color>
+    <color name="text_rotary_picker_almost_gone">@color/hint_text</color>
 
     <color name="view_scale_tick_normal">@color/gray2</color>
     <color name="view_scale_tick_emphasized">@color/gray3</color>
