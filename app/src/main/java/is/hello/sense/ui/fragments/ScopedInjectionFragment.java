@@ -25,12 +25,14 @@ public abstract class ScopedInjectionFragment extends SenseFragment
     }
 
     public void inject(@NonNull final Context context) {
-        try {
+        if (context instanceof ScopedInjectionActivity) {
             ((ScopedInjectionActivity) context).injectToScopedGraph(this);
-            onInjected();
-        } catch (final ClassCastException e) {
+        } else if (context instanceof is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity) {
+            ((is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity) context).injectToScopedGraph(this);
+        } else {
             throw new ClassCastException(context.getClass() + " needs to be instanceof " + ScopedInjectionActivity.class.getSimpleName());
         }
+        onInjected();
     }
 
     @Override

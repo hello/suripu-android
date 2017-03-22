@@ -40,6 +40,7 @@ import is.hello.sense.onboarding.OnboardingModule;
 import is.hello.sense.onboarding.OnboardingPairSenseModule;
 import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.settings.SettingsPairSenseModule;
+import is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -83,7 +84,7 @@ import rx.Observable;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 import static is.hello.sense.ui.activities.DebugActivity.EXTRA_DEBUG_CHECKPOINT;
 
-public class OnboardingActivity extends ScopedInjectionActivity
+public class OnboardingActivity extends ScopedInjectionAppCompatActivity
         implements FragmentNavigation,
         SkippableFlow,
         SimpleStepFragment.ExitAnimationProviderActivity,
