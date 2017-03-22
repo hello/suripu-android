@@ -46,11 +46,11 @@
     </style>
 
     <style name="AppTheme.Onboarding" parent="AppTheme.NoActionBar">
-        <item name="android:windowBackground">@color/background_onboarding</item>
+        <item name="android:windowBackground">@color/onboarding_background</item>
     </style>
 
     <style name="AppTheme.Expansions" parent="AppTheme">
-        <item name="android:windowBackground">@color/background_expansions</item>
+        <item name="android:windowBackground">@color/expansions_background</item>
     </style>
 
 

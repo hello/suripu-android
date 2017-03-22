@@ -452,7 +452,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                 new SettingsActivity.Builder(getActivity());
         builder.setDefaultTitle(R.string.title_edit_wifi);
         builder.setFragmentClass(SelectWifiNetworkFragment.class);
-        builder.setWindowBackgroundColor(ContextCompat.getColor(getActivity(), R.color.background_onboarding));
+        builder.setWindowBackgroundColor(ContextCompat.getColor(getActivity(), R.color.onboarding_background));
         builder.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         startActivityForResult(builder.toIntent(), REQUEST_CODE_WIFI);
     }
