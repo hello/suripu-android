@@ -56,7 +56,7 @@ public class SleepScoreDrawable extends Drawable {
         if (wantsLabel) {
             this.labelPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG | TextPaint.SUBPIXEL_TEXT_FLAG);
             labelPaint.setTextSize(resources.getDimension(R.dimen.text_h7_2));
-            labelPaint.setColor(resources.getColor(R.color.text_section_header));
+            labelPaint.setColor(resources.getColor(R.color.primary_text));
             labelPaint.setTextAlign(Paint.Align.CENTER);
 
             this.label = resources.getString(R.string.sleep_score).toUpperCase();
@@ -75,8 +75,8 @@ public class SleepScoreDrawable extends Drawable {
         arcPath.reset();
         fillPath.reset();
 
-        int width = canvas.getWidth(),
-            height = canvas.getHeight();
+        int width = canvas.getWidth();
+        int height = canvas.getHeight();
         int size = Math.min(width, height);
 
         float left = width > height ? (width - height) / 2 : 0;
