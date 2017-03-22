@@ -220,7 +220,7 @@
     </style>
 
     <style name="AppTheme.Button.Borderless.Accent">
-        <item name="android:textColor">@color/text_link_color_selector</item>
+        <item name="android:textColor">@color/link_text_selector</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.Accent.Bounded">
@@ -244,7 +244,7 @@
     </style>
 
     <style name="AppTheme.Button.Borderless.Question.Choice">
-        <item name="android:textColor">@color/text_link_color_selector</item>
+        <item name="android:textColor">@color/link_text_selector</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.White">
@@ -292,7 +292,7 @@
 
     <style name="AppTheme.Button.Dialog" parent="AppTheme.Button.Borderless">
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/text_link_color_selector</item>
+        <item name="android:textColor">@color/link_text_selector</item>
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:textSize">@dimen/text_h6_3</item>
         <item name="android:singleLine">true</item>
@@ -323,7 +323,7 @@
         <item name="android:textSize">@dimen/text_h6_3</item>
         <item name="android:textStyle">normal</item>
         <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textColor">@color/text_link_color_selector</item>
+        <item name="android:textColor">@color/link_text_selector</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.Primary.Bottom">
