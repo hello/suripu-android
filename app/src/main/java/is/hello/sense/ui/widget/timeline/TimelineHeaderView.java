@@ -44,8 +44,6 @@ public class TimelineHeaderView extends RelativeLayout {
     private static final String PULSE_ANIMATOR_NAME = TimelineHeaderView.class.getSimpleName() + "#pulseAnimator";
 
     private final Paint paint = new Paint();
-    private final int dividerHeight;
-    private final int dividerColor;
 
     private final int solidBackgroundColor;
     private final Drawable gradientBackground;
@@ -63,29 +61,34 @@ public class TimelineHeaderView extends RelativeLayout {
     private AnimatorContext animatorContext;
 
 
-    private @Nullable ValueAnimator scoreAnimator;
-    private @Nullable ValueAnimator pulseAnimator;
-    private @Nullable ValueAnimator backgroundAnimator;
+    private
+    @Nullable
+    ValueAnimator scoreAnimator;
+    private
+    @Nullable
+    ValueAnimator pulseAnimator;
+    private
+    @Nullable
+    ValueAnimator backgroundAnimator;
 
 
     //region Lifecycle
 
-    public TimelineHeaderView(@NonNull Context context) {
+    public TimelineHeaderView(@NonNull final Context context) {
         this(context, null);
     }
 
-    public TimelineHeaderView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public TimelineHeaderView(@NonNull final Context context,
+                              @Nullable final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public TimelineHeaderView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public TimelineHeaderView(@NonNull final Context context,
+                              @Nullable final AttributeSet attrs,
+                              final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-
-        final Resources resources = getResources();
-        this.dividerColor = ContextCompat.getColor(context, R.color.timeline_header_border);
-        this.dividerHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
 
         this.solidBackgroundColor = ContextCompat.getColor(context, R.color.timeline_background);
         final int[] gradientColors = {
@@ -98,12 +101,11 @@ public class TimelineHeaderView extends RelativeLayout {
         gradientBackground.setAlpha(0);
 
 
-
         final LayoutInflater inflater = LayoutInflater.from(context);
         inflater.inflate(R.layout.view_timeline_header, this, true);
 
         this.scoreContainer = findViewById(R.id.view_timeline_header_chart);
-        final int scoreTranslation = resources.getDimensionPixelSize(R.dimen.x6);
+        final int scoreTranslation = getResources().getDimensionPixelSize(R.dimen.x6);
         scoreContainer.setTranslationY(scoreTranslation);
 
         this.scoreDrawable = new SleepScoreDrawable(getResources(), true);
@@ -130,7 +132,8 @@ public class TimelineHeaderView extends RelativeLayout {
     }
 
     @Override
-    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+    protected void onVisibilityChanged(@NonNull final View changedView,
+                                       final int visibility) {
         super.onVisibilityChanged(changedView, visibility);
 
         if (visibility != VISIBLE) {
@@ -159,8 +162,7 @@ public class TimelineHeaderView extends RelativeLayout {
             gradientBackground.setBounds(0, 0, right, bottom);
             gradientBackground.draw(canvas);
 
-            paint.setColor(Drawing.colorWithAlpha(dividerColor, gradientBackgroundAlpha));
-            canvas.drawRect(0, bottom - dividerHeight,
+            canvas.drawRect(0, bottom - 20,
                             right, bottom, paint);
         }
     }
@@ -170,7 +172,7 @@ public class TimelineHeaderView extends RelativeLayout {
 
     //region Attributes
 
-    public void setAnimationEnabled(boolean animationEnabled) {
+    public void setAnimationEnabled(final boolean animationEnabled) {
         if (!animationEnabled) {
             clearAnimation();
         }
@@ -178,11 +180,11 @@ public class TimelineHeaderView extends RelativeLayout {
         this.animationEnabled = animationEnabled;
     }
 
-    public void setAnimatorContext(@NonNull AnimatorContext animatorContext) {
+    public void setAnimatorContext(@NonNull final AnimatorContext animatorContext) {
         this.animatorContext = animatorContext;
     }
 
-    public void setOnScoreClickListener(@Nullable View.OnClickListener listener) {
+    public void setOnScoreClickListener(@Nullable final View.OnClickListener listener) {
         if (listener != null) {
             final SafeOnClickListener wrapper = new SafeOnClickListener(null, listener);
             final boolean clickEnabled = isScoreClickEnabled();
@@ -196,7 +198,7 @@ public class TimelineHeaderView extends RelativeLayout {
         }
     }
 
-    public void setScoreClickEnabled(boolean enabled) {
+    public void setScoreClickEnabled(final boolean enabled) {
         scoreContainer.setClickable(enabled);
         cardContainer.setClickable(enabled);
     }
@@ -205,12 +207,15 @@ public class TimelineHeaderView extends RelativeLayout {
         return scoreContainer.isClickable() && cardContainer.isClickable();
     }
 
-    public @IdRes int getCardViewId() {
+    public
+    @IdRes
+    int getCardViewId() {
         return cardContainer.getId();
     }
 
-    public void setBackgroundSolid(boolean backgroundSolid, int duration) {
-        int targetAlpha = backgroundSolid ? 0 : 255;
+    public void setBackgroundSolid(final boolean backgroundSolid,
+                                   final int duration) {
+        final int targetAlpha = backgroundSolid ? 0 : 255;
         if (targetAlpha == gradientBackgroundAlpha) {
             return;
         }
@@ -228,14 +233,14 @@ public class TimelineHeaderView extends RelativeLayout {
             AnimatorTemplate.DEFAULT.apply(backgroundAnimator);
             backgroundAnimator.setDuration(500L);
             backgroundAnimator.addUpdateListener(a -> {
-                int alpha = (int) a.getAnimatedValue();
+                final int alpha = (int) a.getAnimatedValue();
                 gradientBackground.setAlpha(alpha);
                 this.gradientBackgroundAlpha = alpha;
                 invalidate();
             });
             backgroundAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
-                public void onAnimationEnd(Animator animation) {
+                public void onAnimationEnd(final Animator animation) {
                     if (TimelineHeaderView.this.backgroundAnimator == animation) {
                         gradientBackground.setAlpha(targetAlpha);
                         TimelineHeaderView.this.gradientBackgroundAlpha = targetAlpha;
@@ -283,15 +288,15 @@ public class TimelineHeaderView extends RelativeLayout {
         pulseAnimator.setRepeatCount(ValueAnimator.INFINITE);
         pulseAnimator.setRepeatMode(ValueAnimator.REVERSE);
 
-        int startColor = getResources().getColor(R.color.timeline_header);
-        int endColor = getResources().getColor(R.color.border);
+        final int startColor = getResources().getColor(R.color.timeline_header);
+        final int endColor = getResources().getColor(R.color.border);
         pulseAnimator.addUpdateListener(a -> {
-            int color = Anime.interpolateColors(a.getAnimatedFraction(), endColor, startColor);
+            final int color = Anime.interpolateColors(a.getAnimatedFraction(), endColor, startColor);
             scoreDrawable.setTrackColor(color);
         });
         pulseAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
-            public void onAnimationEnd(Animator animation) {
+            public void onAnimationEnd(final Animator animation) {
                 scoreDrawable.setTrackColor(endColor);
                 TimelineHeaderView.this.pulseAnimator = null;
             }
@@ -314,7 +319,8 @@ public class TimelineHeaderView extends RelativeLayout {
 
     //region Scores
 
-    private void setScore(@Nullable Integer score, ScoreCondition condition) {
+    private void setScore(@Nullable final Integer score,
+                          final ScoreCondition condition) {
         clearAnimation();
 
         int color;
@@ -345,10 +351,10 @@ public class TimelineHeaderView extends RelativeLayout {
         setBackgroundSolid(false, 0);
     }
 
-    private void animateToScore(@Nullable Integer score,
-                                ScoreCondition condition,
-                                @NonNull Runnable fireBackgroundAnimations,
-                                @NonNull Runnable fireAdapterAnimations) {
+    private void animateToScore(@Nullable final Integer score,
+                                final ScoreCondition condition,
+                                @NonNull final Runnable fireBackgroundAnimations,
+                                @NonNull final Runnable fireAdapterAnimations) {
         if (score == null || !animationEnabled || hasAnimated || getVisibility() != VISIBLE) {
             setScore(score, condition);
             fireBackgroundAnimations.run();
@@ -368,11 +374,11 @@ public class TimelineHeaderView extends RelativeLayout {
             scoreAnimator.setDuration(Anime.DURATION_SLOW);
             scoreAnimator.setInterpolator(Anime.INTERPOLATOR_DEFAULT);
 
-            int startColor = scoreDrawable.getFillColor();
-            int endColor = getResources().getColor(condition.colorRes);
+            final int startColor = scoreDrawable.getFillColor();
+            final int endColor = getResources().getColor(condition.colorRes);
             scoreAnimator.addUpdateListener(a -> {
-                Integer newScore = (Integer) a.getAnimatedValue();
-                int color = Anime.interpolateColors(a.getAnimatedFraction(), startColor, endColor);
+                final Integer newScore = (Integer) a.getAnimatedValue();
+                final int color = Anime.interpolateColors(a.getAnimatedFraction(), startColor, endColor);
 
                 scoreDrawable.setValue(newScore);
                 scoreDrawable.setFillColor(color);
@@ -384,7 +390,7 @@ public class TimelineHeaderView extends RelativeLayout {
                 boolean wasCanceled = false;
 
                 @Override
-                public void onAnimationCancel(Animator animation) {
+                public void onAnimationCancel(final Animator animation) {
                     scoreDrawable.setValue(score);
                     scoreDrawable.setFillColor(endColor);
 
@@ -395,7 +401,7 @@ public class TimelineHeaderView extends RelativeLayout {
                 }
 
                 @Override
-                public void onAnimationEnd(Animator animation) {
+                public void onAnimationEnd(final Animator animation) {
                     if (scoreAnimator == animation) {
                         TimelineHeaderView.this.scoreAnimator = null;
 
@@ -413,8 +419,8 @@ public class TimelineHeaderView extends RelativeLayout {
         }
     }
 
-    private void animateScoreIntoPlace(@NonNull Runnable fireBackgroundAnimations,
-                                       @NonNull Runnable fireAdapterAnimations) {
+    private void animateScoreIntoPlace(@NonNull final Runnable fireBackgroundAnimations,
+                                       @NonNull final Runnable fireAdapterAnimations) {
         animatorFor(scoreContainer, animatorContext)
                 .withInterpolator(new FastOutSlowInInterpolator())
                 .translationY(0f)
@@ -456,9 +462,9 @@ public class TimelineHeaderView extends RelativeLayout {
 
     //region Binding
 
-    public void bindTimeline(@NonNull Timeline timeline,
-                             @NonNull Runnable fireBackgroundAnimations,
-                             @NonNull Runnable fireAdapterAnimations) {
+    public void bindTimeline(@NonNull final Timeline timeline,
+                             @NonNull final Runnable fireBackgroundAnimations,
+                             @NonNull final Runnable fireAdapterAnimations) {
         cardContents.setText(timeline.getMessage());
         animateToScore(timeline.getScore(),
                        timeline.getScoreCondition(),
@@ -466,7 +472,7 @@ public class TimelineHeaderView extends RelativeLayout {
                        fireAdapterAnimations);
     }
 
-    public void bindTimeline(@NonNull Timeline timeline) {
+    public void bindTimeline(@NonNull final Timeline timeline) {
         cardContents.setText(timeline.getMessage());
         setScore(timeline.getScore(),
                  timeline.getScoreCondition());
