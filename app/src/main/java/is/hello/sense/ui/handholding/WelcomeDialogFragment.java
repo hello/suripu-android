@@ -354,8 +354,8 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
                 final Resources resources = getResources();
                 final float bottomCornerRadius = resources.getDimension(R.dimen.button_corner_radius);
-                final int normal = resources.getColor(R.color.background_light);
-                final int pressed = resources.getColor(R.color.light_accent_extra_dimmed);
+                final int normal = resources.getColor(R.color.background_card);
+                final int pressed = resources.getColor(R.color.sense_flat_button_pressed);
                 dismissButton.setBackground(Styles.newRoundedBorderlessButtonBackground(0f, bottomCornerRadius,
                                                                                         normal, pressed));
             }

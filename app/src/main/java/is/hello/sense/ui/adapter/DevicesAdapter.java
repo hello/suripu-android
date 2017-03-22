@@ -209,7 +209,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         public void bind(final int position) {
             final Drawable chevron = getChevronDrawable();
             if(chevron != null) {
-                Drawables.setTintColor(chevron, ContextCompat.getColor(activity, R.color.light_accent));
+                Drawables.setTintColor(chevron, ContextCompat.getColor(activity, R.color.devices_adapter_chevron));
             }
             title.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, chevron, null);
         }
@@ -293,7 +293,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             final SenseDevice device = (SenseDevice) getItem(position);
             lastSeen.setText(device.getLastUpdatedDescription(lastSeen.getContext()));
             if (device.isMissing()) {
-                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.destructive_accent));
+                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.error_text));
             } else {
                 lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.secondary_text));
             }
@@ -375,7 +375,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
 
             lastSeen.setText(device.getLastUpdatedDescription(lastSeen.getContext()));
             if (device.isMissing()) {
-                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.destructive_accent));
+                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.error_text));
             } else {
                 lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.secondary_text));
             }

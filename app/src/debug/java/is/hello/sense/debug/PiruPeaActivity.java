@@ -254,7 +254,7 @@ public class PiruPeaActivity extends ScopedInjectionActivity implements ArrayRec
                 new SettingsActivity.Builder(this);
         builder.setDefaultTitle(R.string.title_edit_wifi);
         builder.setFragmentClass(SelectWifiNetworkFragment.class);
-        builder.setWindowBackgroundColor(ContextCompat.getColor(this, R.color.background_onboarding));
+        builder.setWindowBackgroundColor(ContextCompat.getColor(this, R.color.onboarding_background));
         builder.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         startActivity(builder.toIntent());
     }

@@ -77,14 +77,14 @@ public class ProfileImageManager {
         options.add(
                 new SenseBottomSheet.Option(OPTION_ID_FROM_FACEBOOK)
                         .setTitle(R.string.action_import_from_facebook)
-                        .setTitleColor(ContextCompat.getColor(context, R.color.text_dark))
+                        .setTitleColor(ContextCompat.getColor(context, R.color.primary_text))
                         .setIcon(R.drawable.facebook_logo)
                    );
         if (imageUtil.hasDeviceCamera()) {
             options.add(
                     new SenseBottomSheet.Option(OPTION_ID_FROM_CAMERA)
                             .setTitle(R.string.action_take_photo)
-                            .setTitleColor(ContextCompat.getColor(context, R.color.text_dark))
+                            .setTitleColor(ContextCompat.getColor(context, R.color.primary_text))
                             .setIcon(R.drawable.settings_camera)
                        );
             minOptions = 3;
@@ -94,12 +94,12 @@ public class ProfileImageManager {
         options.add(
                 new SenseBottomSheet.Option(OPTION_ID_FROM_GALLERY)
                         .setTitle(R.string.action_import_from_gallery)
-                        .setTitleColor(ContextCompat.getColor(context, R.color.text_dark))
+                        .setTitleColor(ContextCompat.getColor(context, R.color.primary_text))
                         .setIcon(R.drawable.settings_photo_library)
                    );
         deleteOption = new SenseBottomSheet.Option(OPTION_ID_REMOVE_PICTURE)
                 .setTitle(R.string.action_remove_picture)
-                .setTitleColor(ContextCompat.getColor(context, R.color.destructive_accent))
+                .setTitleColor(ContextCompat.getColor(context, R.color.error_text))
                 .setIcon(R.drawable.icon_alarm_delete);
     }
 

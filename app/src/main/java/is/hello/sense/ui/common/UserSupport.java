@@ -36,7 +36,7 @@ public class UserSupport {
     public static Intent createViewUriIntent(@NonNull final Context context, @NonNull final Uri uri) {
         final CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         builder.setShowTitle(true);
-        builder.setToolbarColor(ContextCompat.getColor(context, R.color.light_accent));
+        builder.setToolbarColor(ContextCompat.getColor(context, R.color.user_support_toolbar));
 
         final Intent intent = builder.build().intent;
         intent.setData(uri);

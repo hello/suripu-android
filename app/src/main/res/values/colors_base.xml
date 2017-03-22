@@ -24,6 +24,7 @@
     <color name="black_53">#86000000</color>
     <color name="black_54">#7f000000</color>
     <color name="black_70">#b3000000</color>
+    <color name="black_80">#cc000000</color>
     <color name="black_87">#de000000</color>
 
 
@@ -62,6 +63,9 @@
     <color name="blue6_80">#cc009aff</color>
     <color name="blue6_50">#80009aff</color>
     <color name="blue6_30">#4d009aff</color>
+    <color name="blue6_20">#33009aff</color>
+    <color name="blue6_15">#26009aff</color>
+    <color name="blue6_10">#19009aff</color>
     <color name="blue5">#4CB9FF</color>
     <color name="blue4">#7FCDFF</color>
     <color name="blue3">#B2E1FF</color>

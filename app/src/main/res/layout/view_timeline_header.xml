@@ -34,7 +34,7 @@
         android:paddingTop="@dimen/x1"
         android:paddingBottom="@dimen/x1"
         android:orientation="vertical"
-        android:background="@drawable/selectable_dark_bounded">
+        >
 
         <TextView
             android:id="@+id/view_timeline_header_card_contents"
@@ -66,7 +66,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/x4"
-        android:background="@color/background_light"
+        android:background="@color/background_card"
         android:layout_below="@id/view_timeline_header_card"
         android:layout_alignParentBottom="true"/>
 </merge>

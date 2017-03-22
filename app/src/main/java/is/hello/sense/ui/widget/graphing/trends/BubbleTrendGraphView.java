@@ -97,9 +97,9 @@ public class BubbleTrendGraphView extends TrendGraphView {
             this.minBubbleHeight = resources.getDimensionPixelSize(R.dimen.trends_bubblegraph_min_height);
             this.titleTopMargin = resources.getDimensionPixelSize(R.dimen.trends_bubblegraph_title_top_margin);
             final int whiteTextColor = ContextCompat.getColor(context, R.color.white_text);
-            this.lightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubblegraph_light_bubble));
-            this.mediumPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubblegraph_medium_bubble));
-            this.deepPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubblegraph_deep_bubble));
+            this.lightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubble_graph_light_bubble));
+            this.mediumPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubble_graph_medium_bubble));
+            this.deepPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubble_graph_deep_bubble));
 
             Drawing.updateTextPaintFromStyle(textValuePaint, context, R.style.Display1);
             Drawing.updateTextPaintFromStyle(textPercentPaint, context, R.style.Display1);

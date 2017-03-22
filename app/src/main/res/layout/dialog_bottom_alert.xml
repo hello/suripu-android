@@ -6,7 +6,7 @@
         android:id="@+id/item_bottom_alert"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_light"
+        android:background="@color/background_card"
         android:orientation="vertical">
 
         <View
@@ -53,11 +53,10 @@
 
             <Button
                 android:id="@+id/dialog_bottom_alert_neutral"
-                style="@style/AppTheme.Button.Dialog.Positive"
+                style="@style/Button.Flat"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@color/text_dim"
                 tools:text="@string/action_close"/>
 
             <Button
@@ -66,7 +65,6 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@color/text_link"
                 tools:text="@string/action_okay"/>
 
         </LinearLayout>

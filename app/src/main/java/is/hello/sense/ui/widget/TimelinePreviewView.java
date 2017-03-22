@@ -35,7 +35,7 @@ public class TimelinePreviewView extends View {
 
         Resources resources = getResources();
 
-        int borderColor = resources.getColor(R.color.timeline_header_border);
+        int borderColor = resources.getColor(R.color.timeline_preview_vertical_border);
         borderPaint.setColor(borderColor);
 
         this.borderWidth = resources.getDimensionPixelSize(R.dimen.divider_size);

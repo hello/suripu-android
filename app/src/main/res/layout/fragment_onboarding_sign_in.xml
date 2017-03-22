@@ -10,7 +10,7 @@
 
     <Button
         android:id="@+id/fragment_onboarding_sign_in_forgot_password"
-        style="@style/AppTheme.Button.Borderless.White"
+        style="@style/Button.Flat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="@dimen/x3"

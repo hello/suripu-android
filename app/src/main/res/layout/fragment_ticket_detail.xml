@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
-        android:background="@color/background_light"
+        android:background="@color/background_card"
         android:baselineAligned="false"
         android:gravity="center_horizontal">
 
@@ -47,7 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/fragment_ticket_detail_reply_bar"
         android:scrollbars="horizontal"
-        android:background="@color/background_light">
+        android:background="@color/background_card">
 
         <com.zendesk.sdk.feedback.ui.AttachmentContainerHost
             android:id="@+id/fragment_ticket_detail_comment_attachments"
@@ -67,7 +67,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/fragment_ticket_detail_divider"
-        android:background="@color/background_light" />
+        android:background="@color/background_card" />
 
     <ProgressBar
         android:id="@+id/fragment_ticket_detail_loading"

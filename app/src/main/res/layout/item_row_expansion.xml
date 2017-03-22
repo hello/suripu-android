@@ -25,7 +25,6 @@
             android:layout_marginStart="@dimen/x2"
             android:layout_centerVertical="true"
             style="@style/Body1.Primary"
-            android:textColor="@color/text_color_selector_body_new"
             tools:text="Expansion Title"/>
 
         <TextView
@@ -37,7 +36,6 @@
             android:layout_centerVertical="true"
             android:drawablePadding="@dimen/x.5"
             style="@style/Body1.Link"
-            android:textColor="@color/text_color_selector_body_new"
             tools:text="Status"/>
 
     </RelativeLayout>

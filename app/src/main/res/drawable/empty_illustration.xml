@@ -6,6 +6,6 @@
     <size android:width="100dp"
           android:height="50dp" />
 
-    <solid android:color="@color/background_insight_illustration" />
+    <solid android:color="@color/insight_illustration_background" />
 
 </shape>

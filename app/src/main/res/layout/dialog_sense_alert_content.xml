@@ -27,7 +27,7 @@
         android:layout_weight="1"
         android:overScrollMode="ifContentScrolls"
         android:scrollbars="vertical"
-        android:textColorLink="@color/text_link"
+        android:textColorLink="@color/link_text_selector"
         android:visibility="gone"/>
 
     <LinearLayout

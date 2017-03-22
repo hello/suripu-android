@@ -111,7 +111,7 @@
             android:layout_height="wrap_content"
             android:enabled="false"
             android:text="@string/expansion_detail_remove_access"
-            android:textColor="@color/destructive_accent"/>
+            android:textColor="@color/error_text"/>
     </LinearLayout>
 
 </LinearLayout>

@@ -456,8 +456,8 @@ public class GridTrendGraphView extends TrendGraphView {
                 if (value != null) {
                     if (value < 0f) {
                         textValue = context.getString(R.string.missing_data_placeholder);
-                        paint.setColor(ContextCompat.getColor(context, R.color.graph_grid_empty_missing));
-                        borderPaint.setColor(ContextCompat.getColor(context, R.color.trends_gridgraph_empty_cell_border));
+                        paint.setColor(ContextCompat.getColor(context, R.color.trends_grid_graph_cell_missing));
+                        borderPaint.setColor(ContextCompat.getColor(context, R.color.trends_grid_graph_cell_empty_border));
                         shouldDraw = GraphSection.canShow(value);
                     } else {
                         shouldDraw = true;
@@ -470,8 +470,8 @@ public class GridTrendGraphView extends TrendGraphView {
                 } else {
                     shouldDraw = true;
                     textValue = "";
-                    paint.setColor(ContextCompat.getColor(context, R.color.graph_grid_empty_cell));
-                    borderPaint.setColor(ContextCompat.getColor(context, R.color.trends_gridgraph_empty_cell_border));
+                    paint.setColor(ContextCompat.getColor(context, R.color.trends_grid_graph_cell_empty));
+                    borderPaint.setColor(ContextCompat.getColor(context, R.color.trends_grid_graph_cell_empty_border));
                 }
                 textCellPaint.getTextBounds(textValue, 0, textValue.length(), textBounds);
             }
