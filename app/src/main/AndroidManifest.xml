@@ -90,7 +90,7 @@
             android:launchMode="singleTop"
             android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Onboarding"
+            android:theme="@style/AppTheme.AppCompat.NoActionBar.Onboarding"
             android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".flows.sensordetails.ui.activities.SensorDetailActivity"
