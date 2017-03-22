@@ -133,7 +133,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
                         textColor = condition.colorRes;
                     }
                 } else {
-                    textColor = R.color.trends_bargraph_annotation_text;
+                    textColor = R.color.trends_bar_graph_annotation_text;
                 }
                 final TextView valueText =
                         ((TextView) annotationView.findViewById(R.id.item_bargraph_annotation_value));

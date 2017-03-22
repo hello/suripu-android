@@ -114,9 +114,9 @@ public class BarTrendGraphView extends TrendGraphView {
             Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.Caption1_Hint);
             Drawing.updateTextPaintFromStyle(highlightTextPaint, context, R.style.Caption1);
             this.highlightTextPaint.setColor(ContextCompat.getColor(getContext(), R.color.white));
-            this.highlightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bargraph_hightlight));
-            this.barHighlightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bargraph_hightlight_bar));
-            this.barPaint.setColor(ContextCompat.getColor(context, R.color.trends_bargraph_bar));
+            this.highlightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bar_graph_highlight));
+            this.barHighlightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bar_graph_highlight_bar));
+            this.barPaint.setColor(ContextCompat.getColor(context, R.color.trends_bar_graph_bar));
 
 
             final int dashedLineLength = resources.getDimensionPixelSize(R.dimen.trends_bargraph_dashed_line_length);

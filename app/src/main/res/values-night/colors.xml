@@ -38,8 +38,8 @@
     <color name="sleep_medium">@color/blue6_50</color>
     <color name="sleep_sound">@color/blue6_80</color>
 
-    <color name="graph_grid_empty_cell">@color/white</color>
-    <color name="graph_grid_empty_missing">@color/gray2</color>
+    <color name="trends_grid_graph_cell_empty">@color/white</color>
+    <color name="trends_grid_graph_cell_missing">@color/gray2</color>
 
     <color name="view_scale_tick_normal">@color/gray2</color>
     <color name="view_scale_tick_emphasized">@color/gray3</color>
@@ -49,18 +49,18 @@
     <color name="trends_line_divider_shimmer">@color/gray3</color>
     <color name="trends_bargraph_dashedline">@color/gray7</color>
     <color name="trends_bargraph">@color/gray3</color>
-    <color name="trends_bargraph_bar">@color/blue3</color>
-    <color name="trends_bargraph_annotation_text">@color/blue6</color>
-    <color name="trends_bargraph_hightlight">@color/blue6</color>
-    <color name="trends_bargraph_hightlight_bar">@color/blue5</color>
+    <color name="trends_bar_graph_bar">@color/blue3</color>
+    <color name="trends_bar_graph_annotation_text">@color/blue6</color>
+    <color name="trends_bar_graph_highlight">@color/blue6</color>
+    <color name="trends_bar_graph_highlight_bar">@color/blue5</color>
     <color name="trends_bargraph_highlight_text">@color/white</color>
-    <color name="trends_bubblegraph_light_bubble">@color/blue4</color>
-    <color name="trends_bubblegraph_medium_bubble">@color/blue5</color>
-    <color name="trends_bubblegraph_deep_bubble">@color/blue6</color>
+    <color name="trends_bubble_graph_light_bubble">@color/blue4</color>
+    <color name="trends_bubble_graph_medium_bubble">@color/blue5</color>
+    <color name="trends_bubble_graph_deep_bubble">@color/blue6</color>
     <color name="trends_bubblegraph_text_title">@color/white</color>
     <color name="trends_bubblegraph_text_value">@color/white</color>
     <color name="trends_gridgraph">@color/gray3</color>
-    <color name="trends_gridgraph_empty_cell_border">@color/gray3</color>
+    <color name="trends_grid_graph_cell_empty_border">@color/gray3</color>
 
     <color name="timeline_share_text">@color/gray4</color>
     <color name="timeline_share_background_gradient_top">@color/gray1</color>
