@@ -44,6 +44,7 @@
     <color name="status_bar_color">@color/gray3</color>
     <color name="timeline_transparent_overlay">@color/transparent_overlay</color>
     <color name="fragment_dialog_loading_overlay">@color/transparent_overlay</color>
+    <color name="fragment_dialog_welcome">@color/transparent_overlay</color>
 
     <!-- Text Colors -->
     <color name="error_text">@color/error</color>
@@ -79,7 +80,6 @@
     <color name="smart_alarm_header_background">@color/primary</color>
 
     <!-- Todo remove / replace all colors below -->
-    <color name="background_dark_overlay">@color/black_50</color>
     <color name="background_timeline">@color/white</color>
     <color name="background_onboarding">@color/white</color>
     <color name="background_expansions">@color/white</color>
