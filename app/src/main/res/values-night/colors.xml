@@ -32,7 +32,6 @@
     <color name="link_text_pressed">@color/blue7</color>
     <color name="link_text_disabled">@color/blue6_50</color>
 
-    <color name="text_body_new">@color/white_70</color>
     <color name="text_heading_major">@color/standard</color>
 
     <color name="text_rotary_picker_focused">@color/primary</color>

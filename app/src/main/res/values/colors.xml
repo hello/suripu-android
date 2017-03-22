@@ -97,7 +97,6 @@
     <!-- Todo remove / replace all colors below -->
     <color name="border">@color/gray2</color>
 
-    <color name="text_body_new">@color/gray5</color>
     <color name="text_heading_major">@color/gray6</color>
 
     <color name="text_rotary_picker_focused">@color/primary</color>
