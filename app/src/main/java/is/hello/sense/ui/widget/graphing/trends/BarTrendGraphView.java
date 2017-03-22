@@ -128,7 +128,7 @@ public class BarTrendGraphView extends TrendGraphView {
             this.bottomLinePaint.setColor(ContextCompat.getColor(context, R.color.trends_line_divider));
 
 
-            this.highlightValueSidePadding = resources.getDimensionPixelSize(R.dimen.gap_xsmall);
+            this.highlightValueSidePadding = resources.getDimensionPixelSize(R.dimen.x_75);
             this.highlightValueHeight = resources.getDimensionPixelSize(R.dimen.trends_bargraph_highlight_value_height);
             this.highlightBottomMargin = resources.getDimensionPixelSize(R.dimen.trends_bargraph_highlight_bottom_margin);
             final int highlightTopMargin = resources.getDimensionPixelSize(R.dimen.trends_bargraph_highlight_top_margin);
@@ -225,7 +225,7 @@ public class BarTrendGraphView extends TrendGraphView {
                     calculateHighlightBounds(textBounds.centerX(), barBoundsRect, highlightBounds); // This is the min / max bubble's position above the bar.
                     calculateHighlightTextBounds(textBounds, highlightBounds, highlightTextBounds);
                     drawingPath.reset();
-                    drawingPath.addRoundRect(highlightBounds, resources.getDimensionPixelSize(R.dimen.raised_item_corner_radius), resources.getDimensionPixelSize(R.dimen.raised_item_corner_radius),
+                    drawingPath.addRoundRect(highlightBounds, resources.getDimensionPixelSize(R.dimen.small_radius), resources.getDimensionPixelSize(R.dimen.small_radius),
                                              Path.Direction.CW);
                     highlightedColumns.add(new RectF(barBoundsRect));
                     highlightedBubbles.add(new Path(drawingPath));

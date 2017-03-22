@@ -87,7 +87,7 @@ public class SenseAlertDialog extends Dialog {
         Views.runWhenLaidOut(container, () -> {
             final DisplayMetrics metrics = container.getResources().getDisplayMetrics();
 
-            final int padding = getContext().getResources().getDimensionPixelSize(R.dimen.gap_medium);
+            final int padding = getContext().getResources().getDimensionPixelSize(R.dimen.x2);
             final int maxHeight = metrics.heightPixels - (padding * 2);
 
             if (container.getMeasuredHeight() > maxHeight) {
@@ -102,7 +102,7 @@ public class SenseAlertDialog extends Dialog {
         final boolean hasText = (titleText.getVisibility() == View.VISIBLE ||
                 messageText.getVisibility() == View.VISIBLE);
         if (hasText) {
-            final int padding = getContext().getResources().getDimensionPixelSize(R.dimen.gap_outer);
+            final int padding = getContext().getResources().getDimensionPixelSize(R.dimen.x3);
             container.setPadding(0, padding, 0, 0);
             if (topViewDivider != null) {
                 topViewDivider.setVisibility(View.VISIBLE);
@@ -291,7 +291,7 @@ public class SenseAlertDialog extends Dialog {
             if (bottomViewDivider == null && wantsDividers) {
                 this.bottomViewDivider = Styles.createHorizontalDivider(getContext(), ViewGroup.LayoutParams.MATCH_PARENT);
                 final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(bottomViewDivider.getLayoutParams());
-                layoutParams.bottomMargin = getContext().getResources().getDimensionPixelSize(R.dimen.gap_medium);
+                layoutParams.bottomMargin = getContext().getResources().getDimensionPixelSize(R.dimen.x2);
                 bottomViewDivider.setLayoutParams(layoutParams);
                 container.addView(bottomViewDivider, end);
             }

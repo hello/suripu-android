@@ -3,7 +3,6 @@ package is.hello.sense.ui.widget.graphing.trends;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Build;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -58,12 +57,12 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
         setBackgroundResource(R.drawable.raised_item_normal);
 
         final Resources resources = getResources();
-        final int padding = resources.getDimensionPixelSize(R.dimen.gap_card_content);
+        final int padding = resources.getDimensionPixelSize(R.dimen.x2);
         setPadding(padding, 0, padding, padding);
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
                                          LayoutParams.WRAP_CONTENT));
 
-        final float cornerRadius = resources.getDimension(R.dimen.raised_item_corner_radius);
+        final float cornerRadius = resources.getDimension(R.dimen.small_radius);
         setCornerRadii(cornerRadius);
 
         final View divider = findViewById(R.id.item_trend_feed_view_divider);
@@ -76,7 +75,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
 
         final LayoutParams annotationsLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
                                                                       LayoutParams.WRAP_CONTENT);
-        annotationsLayoutParams.topMargin = resources.getDimensionPixelSize(R.dimen.gap_card_content);
+        annotationsLayoutParams.topMargin = resources.getDimensionPixelSize(R.dimen.x2);
 
         final LayoutParams graphLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
                                                                 LayoutParams.WRAP_CONTENT);
@@ -192,7 +191,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
             title.setText(getResources().getString(R.string.title_trends_welcome));
             image.setImageResource(R.drawable.trends_first_day);
 
-            ((MarginLayoutParams) message.getLayoutParams()).topMargin = getResources().getDimensionPixelSize(R.dimen.gap_small);
+            ((MarginLayoutParams) message.getLayoutParams()).topMargin = getResources().getDimensionPixelSize(R.dimen.x1);
             message.setText(getResources().getString(R.string.message_trends_welcome));
 
             Styles.setTextAppearance(message, R.style.Body1_Secondary);

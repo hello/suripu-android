@@ -89,8 +89,8 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         final Resources resources = getResources();
 
         this.layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
-        this.itemVerticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
-        this.itemHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
+        this.itemVerticalPadding = resources.getDimensionPixelSize(R.dimen.x2);
+        this.itemHorizontalPadding = resources.getDimensionPixelSize(R.dimen.x2);
 
         final TextPaint measuringPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         Drawing.updateTextPaintFromStyle(measuringPaint, context, ITEM_TEXT_APPEARANCE_FOCUSED);

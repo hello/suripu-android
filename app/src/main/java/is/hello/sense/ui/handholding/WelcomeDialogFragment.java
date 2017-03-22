@@ -200,7 +200,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
         this.adapter = new ItemAdapter();
 
-        final int pageMargin = getResources().getDimensionPixelSize(R.dimen.gap_medium);
+        final int pageMargin = getResources().getDimensionPixelSize(R.dimen.x2);
         viewPager.setClipToPadding(false);
         viewPager.setPadding(pageMargin, 0, pageMargin, 0);
         viewPager.setPageMargin(pageMargin);
@@ -458,7 +458,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
                final  Uri diagramUri = Uri.parse(item.diagramVideo);
                 header.setDataSource(diagramUri);
 
-                final int radius = getResources().getDimensionPixelSize(R.dimen.raised_item_corner_radius);
+                final int radius = getResources().getDimensionPixelSize(R.dimen.small_radius);
                 final float[] cornerRadii = {
                         radius, radius, radius, radius,
                         0f, 0f, 0f, 0f,

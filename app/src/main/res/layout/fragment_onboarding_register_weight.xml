@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/gap_outer"
+    android:padding="@dimen/x3"
     android:background="@color/background_card"
     android:clickable="true">
 

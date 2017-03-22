@@ -11,7 +11,7 @@
         android:layout_alignParentTop="true"
         android:id="@+id/fragment_room_conditions_sense_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/action_bar_height_compact"/>
+        android:layout_height="@dimen/action_bar_height"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/fragment_room_conditions_recycler"

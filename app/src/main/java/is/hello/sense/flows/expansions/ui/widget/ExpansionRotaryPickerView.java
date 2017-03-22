@@ -107,7 +107,7 @@ public class ExpansionRotaryPickerView extends RecyclerView implements View.OnCl
 
         this.layoutManager = new CenterLinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
         this.itemVerticalPadding =resources.getDimensionPixelSize(R.dimen.x_5);;
-        this.itemHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
+        this.itemHorizontalPadding = resources.getDimensionPixelSize(R.dimen.x2);
 
         final TextPaint measuringPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         Drawing.updateTextPaintFromStyle(measuringPaint, context, ITEM_TEXT_APPEARANCE_FOCUSED);

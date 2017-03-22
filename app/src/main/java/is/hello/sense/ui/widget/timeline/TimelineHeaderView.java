@@ -103,7 +103,7 @@ public class TimelineHeaderView extends RelativeLayout {
         inflater.inflate(R.layout.view_timeline_header, this, true);
 
         this.scoreContainer = findViewById(R.id.view_timeline_header_chart);
-        final int scoreTranslation = resources.getDimensionPixelSize(R.dimen.gap_xlarge);
+        final int scoreTranslation = resources.getDimensionPixelSize(R.dimen.x6);
         scoreContainer.setTranslationY(scoreTranslation);
 
         this.scoreDrawable = new SleepScoreDrawable(getResources(), true);

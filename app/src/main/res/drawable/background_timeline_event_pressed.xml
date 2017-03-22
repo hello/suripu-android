@@ -3,17 +3,17 @@
 
     <item
 
-        android:bottom="@dimen/gap_xsmallradius"
-        android:left="@dimen/gap_xsmallradius"
-        android:right="@dimen/gap_xsmallradius"
-        android:top="@dimen/gap_xsmallradius">
+        android:bottom="@dimen/x.75"
+        android:left="@dimen/x.75"
+        android:right="@dimen/x.75"
+        android:top="@dimen/x.75">
         <shape
             android:shape="rectangle">
             <padding
-                android:bottom="@dimen/gap_xsmall"
-                android:left="@dimen/gap_xsmall"
-                android:right="@dimen/gap_xsmall"
-                android:top="@dimen/gap_xsmall"
+                android:bottom="@dimen/x.75"
+                android:left="@dimen/x.75"
+                android:right="@dimen/x.75"
+                android:top="@dimen/x.75"
                 />
             <corners
                 android:radius="@dimen/button_corner_radius">

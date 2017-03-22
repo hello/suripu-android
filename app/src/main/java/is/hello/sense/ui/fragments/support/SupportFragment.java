@@ -35,7 +35,7 @@ public class SupportFragment extends SenseFragment {
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager, resources,
                                                                      EnumSet.of(ScrollEdge.TOP), FadingEdgesItemDecoration.Style.STRAIGHT));
 
-        final int verticalPadding = getResources().getDimensionPixelSize(R.dimen.gap_medium);
+        final int verticalPadding = getResources().getDimensionPixelSize(R.dimen.x2);
         final InsetItemDecoration decoration = new InsetItemDecoration();
         recyclerView.addItemDecoration(decoration);
 

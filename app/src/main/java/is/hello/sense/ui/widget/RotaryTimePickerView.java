@@ -68,7 +68,7 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
 
         final LayoutParams pickerLayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
                                                                  LayoutParams.WRAP_CONTENT);
-        final int hourMinutePadding = resources.getDimensionPixelSize(R.dimen.gap_large);
+        final int hourMinutePadding = resources.getDimensionPixelSize(R.dimen.x3);
 
         this.hourPicker = new RotaryPickerView(context);
         hourPicker.setOnSelectionListener(this);

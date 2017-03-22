@@ -45,7 +45,7 @@ public class SleepScoreDrawable extends Drawable {
 
     public SleepScoreDrawable(@NonNull Resources resources, boolean wantsLabel) {
         this.resources = resources;
-        this.fillStrokeWidth = resources.getDimensionPixelSize(R.dimen.pie_graph_stroke_width);
+        this.fillStrokeWidth = resources.getDimensionPixelSize(R.dimen.divider_size);
         this.fillColor = Color.TRANSPARENT;
         this.trackColor = resources.getColor(R.color.border);
         this.pressedColor = resources.getColor(R.color.background_dark_item_clicked);
@@ -55,13 +55,13 @@ public class SleepScoreDrawable extends Drawable {
 
         if (wantsLabel) {
             this.labelPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG | TextPaint.SUBPIXEL_TEXT_FLAG);
-            labelPaint.setTextSize(resources.getDimension(R.dimen.text_size_section_heading));
+            labelPaint.setTextSize(resources.getDimension(R.dimen.text_h7_2));
             labelPaint.setColor(resources.getColor(R.color.text_section_header));
             labelPaint.setTextAlign(Paint.Align.CENTER);
 
             this.label = resources.getString(R.string.sleep_score).toUpperCase();
 
-            int offset = resources.getDimensionPixelSize(R.dimen.gap_tiny);
+            int offset = resources.getDimensionPixelSize(R.dimen.x_25);
             this.labelHeight = Drawing.getEstimatedLineHeight(labelPaint, false) + offset;
         } else {
             this.labelPaint = null;

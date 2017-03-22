@@ -161,7 +161,7 @@ public class OnboardingToolbar {
     public OnboardingToolbar setCompact(final boolean compact) {
         final Resources resources = toolbarView.getResources();
         if (compact) {
-            toolbarView.getLayoutParams().height = resources.getDimensionPixelSize(R.dimen.action_bar_height_compact);
+            toolbarView.getLayoutParams().height = resources.getDimensionPixelSize(R.dimen.action_bar_height);
         } else {
             toolbarView.getLayoutParams().height = resources.getDimensionPixelSize(R.dimen.action_bar_height);
         }

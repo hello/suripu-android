@@ -292,9 +292,9 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         optionButton.setTextOff(titleOff);
         optionButton.setText(titleOff);
         optionButton.setGravity(Gravity.CENTER);
-        optionButton.setMinimumHeight(resources.getDimensionPixelSize(R.dimen.button_min_size));
+        optionButton.setMinimumHeight(resources.getDimensionPixelSize(R.dimen.action_bar_height));
         optionButton.setBackgroundResource(R.drawable.selectable_dark_bounded);
-        optionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(R.dimen.text_size_body_mid_sized));
+        optionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(R.dimen.text_h6_5));
         optionButton.setTextColor(Styles.getColorStateList(resources, buttonNotSelectedColorRes, null));
         applyButtonStyles(optionButton, false);
 
@@ -302,7 +302,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
             final View divider = Styles.createVerticalDivider(context,
                                                               ViewGroup.LayoutParams.MATCH_PARENT);
             final LayoutParams layoutParams = new LayoutParams(divider.getLayoutParams());
-            final int margin = resources.getDimensionPixelSize(R.dimen.gap_medium);
+            final int margin = resources.getDimensionPixelSize(R.dimen.x2);
             layoutParams.setMargins(0, margin, 0, margin);
             addView(divider, layoutParams);
         }

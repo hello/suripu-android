@@ -77,7 +77,7 @@ public final class PageDots extends LinearLayout implements OnViewPagerChangeAda
 
 
         final Resources resources = getResources();
-        final int padding = resources.getDimensionPixelSize(R.dimen.gap_medium);
+        final int padding = resources.getDimensionPixelSize(R.dimen.x2);
         setPadding(padding, padding, padding, padding);
         setOrientation(HORIZONTAL);
         setGravity(Gravity.CENTER);

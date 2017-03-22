@@ -170,11 +170,11 @@ public class LineGraphDrawable extends GraphDrawable {
         private MarkerState(@NonNull Resources resources, @NonNull Marker[] points) {
             this.points = points;
 
-            this.edgeInset = resources.getDimensionPixelSize(R.dimen.gap_tiny);
+            this.edgeInset = resources.getDimensionPixelSize(R.dimen.x_25);
 
             int shadowRadius = resources.getDimensionPixelSize(R.dimen.series_graph_shadow_radius);
             textPaint.setShadowLayer(shadowRadius, 0f, 0f, Color.WHITE);
-            textPaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_graph_footer));
+            textPaint.setTextSize(resources.getDimensionPixelSize(R.dimen.graphview_footer_text));
             textPaint.getFontMetrics(fontMetrics);
         }
 

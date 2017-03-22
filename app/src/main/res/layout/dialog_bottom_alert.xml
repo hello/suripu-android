@@ -43,10 +43,10 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/button_bottom_alert"
+            android:layout_height="@dimen/button_height"
             android:layout_marginBottom="@dimen/x1"
-            android:layout_marginLeft="@dimen/gap_outer_dialog_buttons"
-            android:layout_marginRight="@dimen/gap_outer_dialog_buttons"
+            android:layout_marginLeft="@dimen/x2"
+            android:layout_marginRight="@dimen/x2"
             android:layout_marginTop="@dimen/x1"
             android:gravity="center"
             android:orientation="horizontal">

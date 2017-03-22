@@ -9,7 +9,7 @@
         android:id="@+id/fragment_device_time_current_zone_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/gap_outer"
+        android:layout_margin="@dimen/x3"
         android:text="@string/label_time_zone"
         android:textAppearance="?attr/senseTextAppearanceFieldLabel"/>
 
@@ -18,10 +18,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/fragment_device_time_current_zone_header"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_outer"
-        android:drawablePadding="@dimen/gap_large"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
+        android:layout_marginBottom="@dimen/x3"
+        android:drawablePadding="@dimen/x3"
         android:drawableStart="@drawable/radio_on"
         android:text="@string/app_name"
         style="@style/Body1.Primary"/>

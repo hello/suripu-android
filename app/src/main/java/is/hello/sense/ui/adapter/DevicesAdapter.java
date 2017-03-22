@@ -395,7 +395,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 color = SleepPillDevice.Color.UNKNOWN;
             }
             status2.setText(color.nameRes);
-            status2Label.setCompoundDrawablePadding(resources.getDimensionPixelSize(R.dimen.gap_medium));
+            status2Label.setCompoundDrawablePadding(resources.getDimensionPixelSize(R.dimen.x2));
             status2Label.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.info_button_icon_small, 0);
 
             status3Label.setText(R.string.label_firmware_version);

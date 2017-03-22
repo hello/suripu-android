@@ -109,7 +109,7 @@ public class BubbleTrendGraphView extends TrendGraphView {
             Drawing.updateTextPaintFromStyle(textTitlePaint, context, R.style.Caption1);
             textTitlePaint.setColor(whiteTextColor);
             this.percentOffset = resources.getDimensionPixelOffset(R.dimen.trends_bubblegraph_percent_offset);
-            textTitlePaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_trends_bubblegraph_title));
+            textTitlePaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_h8));
             this.totalGraphHeight = context.getResources().getDimensionPixelSize(R.dimen.trends_bubblegraph_max_height);
         }
 

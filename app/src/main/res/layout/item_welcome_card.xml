@@ -27,7 +27,6 @@
         <TextView
             android:id="@+id/item_welcome_message"
             style="@style/Body1.Secondary"
-            android:lineSpacingMultiplier="@dimen/line_multiple_body_medium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/item_welcome_title"

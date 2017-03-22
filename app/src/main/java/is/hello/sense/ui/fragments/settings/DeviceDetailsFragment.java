@@ -127,8 +127,8 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
         itemView.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
         itemView.setText(titleRes);
 
-        final int itemTextHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_outer);
-        final int itemTextVerticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
+        final int itemTextHorizontalPadding = resources.getDimensionPixelSize(R.dimen.x3);
+        final int itemTextVerticalPadding = resources.getDimensionPixelSize(R.dimen.x2);
         itemView.setPadding(itemTextHorizontalPadding, itemTextVerticalPadding,
                             itemTextHorizontalPadding, itemTextVerticalPadding);
         itemView.setCompoundDrawablePadding(itemTextHorizontalPadding);
