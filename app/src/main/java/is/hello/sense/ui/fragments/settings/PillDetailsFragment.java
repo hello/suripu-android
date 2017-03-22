@@ -170,7 +170,7 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
         options.add(
             new SenseBottomSheet.Option(OPTION_ID_REPLACE_PILL)
                     .setTitle(R.string.action_replace_sleep_pill)
-                    .setTitleColor(getResources().getColor(R.color.link_text))
+                    .setTitleColor(getResources().getColor(R.color.link_text_selector))
                     .setDescription(R.string.description_replace_sleep_pill)
         );
         BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(R.string.title_advanced, options);

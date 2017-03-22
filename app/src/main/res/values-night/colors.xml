@@ -31,7 +31,6 @@
     <color name="timeline_background_fill">@color/blue2</color>
     <color name="timeline_segment_stripe">@color/blue6_30</color>
 
-    <color name="text_link">@color/blue6</color>
     <color name="link_text_pressed">@color/blue7</color>
     <color name="link_text_disabled">@color/blue6_50</color>
 

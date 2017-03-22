@@ -246,7 +246,7 @@ public class SenseAlertDialog extends Dialog {
         if (flag) {
             button.setTextColor(ContextCompat.getColor(getContext(), R.color.error_text));
         } else {
-            button.setTextColor(ContextCompat.getColor(getContext(), R.color.link_text));
+            button.setTextColor(ContextCompat.getColor(getContext(), R.color.link_text_selector));
         }
     }
 
@@ -260,7 +260,7 @@ public class SenseAlertDialog extends Dialog {
         if (flag) {
             button.setTextColor(ContextCompat.getColor(getContext(), R.color.primary_text));
         } else {
-            button.setTextColor(ContextCompat.getColor(getContext(), R.color.link_text));
+            button.setTextColor(ContextCompat.getColor(getContext(), R.color.link_text_selector));
         }
     }
 
