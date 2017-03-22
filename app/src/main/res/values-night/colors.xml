@@ -24,10 +24,6 @@
     <color name="background">@color/gray9</color>
     <color name="card">@color/gray8</color>
 
-
-
-    <color name="background_dark_item_clicked">@color/blue2</color>
-
     <color name="border">@color/gray2</color>
     <color name="border_backside_tabs">@color/gray3</color>
     <color name="view_time_picker_shadow_end">@color/black_06</color>

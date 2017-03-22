@@ -48,7 +48,7 @@ public class SleepScoreDrawable extends Drawable {
         this.fillStrokeWidth = resources.getDimensionPixelSize(R.dimen.divider_size);
         this.fillColor = Color.TRANSPARENT;
         this.trackColor = resources.getColor(R.color.border);
-        this.pressedColor = resources.getColor(R.color.background_dark_item_clicked);
+        this.pressedColor = resources.getColor(R.color.ripple);
 
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(fillStrokeWidth);
