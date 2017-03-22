@@ -295,12 +295,12 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
             this.backgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                                                            backgroundColors);
 
-            final @ColorInt int[] shadowColors = {
+            final @ColorInt int[] horizontalDivider = {
                     Color.TRANSPARENT,
-                    resources.getColor(R.color.view_time_picker_shadow_end),
+                    resources.getColor(R.color.divider),
             };
             this.shadowDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                                                       shadowColors);
+                                                       horizontalDivider);
 
             paint.setColor(resources.getColor(R.color.background_card));
         }
