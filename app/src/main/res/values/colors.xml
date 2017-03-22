@@ -104,8 +104,6 @@
     <color name="edit_text_bottom_line_normal">@color/gray3</color>
     <color name="edit_text_bottom_line_disabled">@color/gray3</color>
 
-    <color name="text_white_button_pressed">@color/gray3</color>
-
     <color name="background_button_white_pressed">@color/gray2_15</color>
     <color name="background_button_dark_pressed">@color/blue3_93</color>
 

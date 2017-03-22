@@ -29,16 +29,9 @@
     <color name="timeline_background_fill">@color/blue2</color>
     <color name="timeline_time_dividers">@color/blue6_30</color>
 
-    <color name="link_text_pressed">@color/blue7</color>
-    <color name="link_text_disabled">@color/blue6_50</color>
-
     <color name="text_rotary_picker_focused">@color/primary</color>
     <color name="text_rotary_picker_unfocused">@color/gray4</color>
     <color name="text_rotary_picker_almost_gone">@color/gray2</color>
-
-
-    <color name="white_text">@color/white</color>
-    <color name="text_white_button_pressed">@color/background</color>
 
     <color name="background_button_white_pressed">@color/gray2_15</color>
     <color name="background_button_dark_pressed">@color/blue3_93</color>
