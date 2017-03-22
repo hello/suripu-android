@@ -428,7 +428,7 @@
     <!-- Other -->
 
     <style name="AppTheme.Card">
-        <item name="android:background">@drawable/raised_item_normal</item>
+        <item name="android:background">@color/background_card</item>
         <item name="android:gravity">start|center_vertical</item>
         <item name="senseCornerRadius">@dimen/small_radius</item>
     </style>
@@ -439,7 +439,7 @@
     </style>
 
     <style name="AppTheme.Card.Clickable">
-        <item name="android:background">@drawable/raised_item_selector</item>
+        <item name="android:background">@color/background_card</item> <!-- todo show ripple -->
     </style>
 
     <style name="AppTheme.Card.VerticalPaddingItem">

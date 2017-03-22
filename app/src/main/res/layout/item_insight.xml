@@ -79,6 +79,7 @@
         android:layout_below="@+id/item_insight_preview_divider"
         android:gravity="center"
         app:labelText="@string/action_share"
+        app:textStyle="@style/Button.Flat"
         app:leftImage="@drawable/icon_share_24"
         app:leftTextPadding="@dimen/x2"/>
 

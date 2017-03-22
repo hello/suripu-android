@@ -28,7 +28,7 @@
     </style>
 
     <style name="Button.Flat">
-        <item name="android:textColor">@color/primary</item>
+        <item name="android:textColor">@color/link_text_selector</item>
         <item name="android:background">@drawable/sense_flat_button_selector</item>
     </style>
 
