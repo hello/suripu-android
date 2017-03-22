@@ -35,7 +35,6 @@
     <color name="text_medium">@color/white_75</color>
     <color name="text_light">@color/gray4</color>
     <color name="text_dim">@color/white_50</color>
-    <color name="text_dim_placeholder">@color/gray2</color>
 
     <color name="text_link">@color/blue6</color>
     <color name="link_text_pressed">@color/blue7</color>
