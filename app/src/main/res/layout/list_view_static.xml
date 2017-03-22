@@ -3,7 +3,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light">
+    android:background="@color/background_card">
 
     <ListView
         android:id="@android:id/list"
@@ -12,7 +12,7 @@
         android:divider="@null"
         android:dividerHeight="0dp"
         android:listSelector="@color/transparent"
-        android:background="@color/background_light"/>
+        android:background="@color/background_card"/>
 
     <ProgressBar
         android:id="@+id/list_view_static_loading"

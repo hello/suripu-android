@@ -290,7 +290,7 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
 
             final @ColorInt int[] backgroundColors = {
                     resources.getColor(R.color.background),
-                    resources.getColor(R.color.background_light),
+                    resources.getColor(R.color.background_card),
             };
             this.backgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                                                            backgroundColors);
@@ -302,7 +302,7 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
             this.shadowDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                                                        shadowColors);
 
-            paint.setColor(resources.getColor(R.color.background_light));
+            paint.setColor(resources.getColor(R.color.background_card));
         }
 
         @Override

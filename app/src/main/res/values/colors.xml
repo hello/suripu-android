@@ -78,7 +78,6 @@
 
     <!-- Todo remove / replace all colors below -->
     <color name="insight_card_background">@color/gray2</color>
-    <color name="background_light">@color/white</color>
     <color name="background_light_overlay">@color/white_60</color>
     <color name="background_dark_overlay">@color/black_50</color>
     <color name="background_timeline">@color/white</color>

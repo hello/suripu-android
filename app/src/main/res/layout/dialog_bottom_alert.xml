@@ -6,7 +6,7 @@
         android:id="@+id/item_bottom_alert"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_light"
+        android:background="@color/background_card"
         android:orientation="vertical">
 
         <View

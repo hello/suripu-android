@@ -42,7 +42,7 @@
         <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
         <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
 
-        <item name="senseBackgroundSecondary">@color/background_light</item>
+        <item name="senseBackgroundSecondary">@color/background_card</item>
     </style>
 
     <style name="AppTheme.Onboarding" parent="AppTheme.NoActionBar">
@@ -172,7 +172,7 @@
     </style>
 
     <style name="AppTheme.Dialog.BottomSheet" parent="Platform.Dialog.NoElevation">
-        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:windowBackground">@color/background_card</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimations.BottomSlide</item>
         <item name="android:paddingTop">0dp</item>
@@ -537,7 +537,7 @@
         </item> <!-- todo confirm this doesn't break something -->
         <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
         <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
-        <item name="senseBackgroundSecondary">@color/background_light</item>
+        <item name="senseBackgroundSecondary">@color/background_card</item>
 
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_color</item>
         <!-- remove actionbar elevation for kitkat and older -->
@@ -582,7 +582,7 @@
         </item> <!-- todo confirm this doesn't break something -->
         <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
         <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
-        <item name="senseBackgroundSecondary">@color/background_light</item>
+        <item name="senseBackgroundSecondary">@color/background_card</item>
 
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_color</item>
     </style>
@@ -598,7 +598,7 @@
     </style>
 
     <style name="AppTheme.AppCompat.NoActionBar.TabLayout" parent="Widget.Design.TabLayout">
-        <item name="tabBackground">@color/background_light</item>
+        <item name="tabBackground">@color/background_card</item>
         <item name="android:textAllCaps">true</item>
         <item name="tabSelectedTextColor">@color/primary</item>
         <item name="tabTextColor">@color/dim</item>
@@ -610,7 +610,7 @@
 
     <style name="AppTheme.AppCompat.NoActionBar.BottomBar" parent="AppTheme.AppCompat.NoActionBar.TabLayout">
         <item name="android:minHeight">@dimen/action_bar_height</item>
-        <item name="tabIndicatorColor">@color/background_light</item>
+        <item name="tabIndicatorColor">@color/background_card</item>
         <item name="tabIndicatorHeight">0dp</item>
         <item name="android:layout_gravity">bottom</item>
     </style>
@@ -621,7 +621,7 @@
 
     <style name="AppTheme.AppCompat.AppSettingsActivity">
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/primary</item>
-        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:windowBackground">@color/background_card</item>
     </style>
 
     <style name="AppTheme.AppCompat.NotificationActivity" parent="AppTheme.AppCompat.AppSettingsActivity">

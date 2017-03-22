@@ -3,7 +3,7 @@
     android:color="@color/background_dark_item_clicked">
 
     <item>
-        <color android:color="@color/background_light" />
+        <color android:color="@color/background_card" />
     </item>
 
 </ripple>
