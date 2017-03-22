@@ -87,7 +87,7 @@
 
     <style name="AppTheme.Text.ActionSubtitle">
         <item name="android:textSize">@dimen/text_body</item>
-        <item name="android:textColor">@color/text_dim_light</item>
+        <item name="android:textColor">@color/secondary_text</item>
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:paddingTop">2dp</item>
     </style>
