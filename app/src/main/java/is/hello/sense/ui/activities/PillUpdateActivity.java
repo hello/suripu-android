@@ -9,27 +9,21 @@ import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 
-import is.hello.sense.R;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.notifications.OnNotificationPressedInterceptor;
-import is.hello.sense.ui.common.FragmentNavigation;
-import is.hello.sense.ui.common.FragmentNavigationDelegate;
-import is.hello.sense.ui.common.InjectionActivity;
-import is.hello.sense.ui.common.OnBackPressedInterceptor;
+import is.hello.sense.ui.activities.appcompat.FragmentNavigationActivity;
 import is.hello.sense.ui.fragments.onboarding.BluetoothFragment;
 import is.hello.sense.ui.fragments.pill.ConnectPillFragment;
 import is.hello.sense.ui.fragments.pill.UpdateIntroPillFragment;
 import is.hello.sense.ui.fragments.pill.UpdateReadyPillFragment;
 import is.hello.sense.util.Analytics;
 
-public class PillUpdateActivity extends InjectionActivity
-        implements FragmentNavigation,
-        OnNotificationPressedInterceptor {
+public class PillUpdateActivity extends FragmentNavigationActivity
+        implements OnNotificationPressedInterceptor {
     public static final String ARG_NEEDS_BLUETOOTH = PillUpdateActivity.class.getName() + ".ARG_NEEDS_BLUETOOTH";
     public static final String EXTRA_DEVICE_ID = PillUpdateActivity.class.getName() + ".EXTRA_DEVICE_ID";
     public static final int REQUEST_CODE = 0xfeed;
 
-    private FragmentNavigationDelegate navigationDelegate;
     //Todo able to remove once server can be notified immediately after a successful update.
     private String deviceId;
 
@@ -37,22 +31,15 @@ public class PillUpdateActivity extends InjectionActivity
     DeviceIssuesInteractor deviceIssuesPresenter;
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_navigation);
-
-        this.navigationDelegate = new FragmentNavigationDelegate(this,
-                                                                 R.id.activity_navigation_container,
-                                                                 stateSafeExecutor);
-
-        if (savedInstanceState != null) {
-            navigationDelegate.onRestoreInstanceState(savedInstanceState);
-            getDeviceIdFromBundle(savedInstanceState);
-        } else if (navigationDelegate.getTopFragment() == null) {
-            showUpdatePillIntro();
-        }
-
+    protected void onCreateAction() {
+        showUpdatePillIntro();
         getDeviceIdFromIntent(getIntent());
+    }
+
+    @Override
+    protected void onReCreateAction(@NonNull final Bundle savedInstanceState) {
+        super.onReCreateAction(savedInstanceState);
+        getDeviceIdFromBundle(savedInstanceState);
     }
 
     @Override
@@ -68,29 +55,7 @@ public class PillUpdateActivity extends InjectionActivity
     @Override
     protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-        navigationDelegate.onSaveInstanceState(outState);
         outState.putString(EXTRA_DEVICE_ID, deviceId);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        navigationDelegate.onDestroy();
-    }
-
-    @Override
-    public void pushFragment(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
-        navigationDelegate.pushFragment(fragment, title, wantsBackStackEntry);
-    }
-
-    @Override
-    public void pushFragmentAllowingStateLoss(@NonNull final Fragment fragment, @Nullable final String title, final boolean wantsBackStackEntry) {
-        navigationDelegate.pushFragmentAllowingStateLoss(fragment, title, wantsBackStackEntry);
-    }
-
-    @Override
-    public void popFragment(@NonNull final Fragment fragment, final boolean immediate) {
-        navigationDelegate.popFragment(fragment, immediate);
     }
 
     @Override
@@ -118,24 +83,6 @@ public class PillUpdateActivity extends InjectionActivity
        }
     }
 
-    @Nullable
-    @Override
-    public Fragment getTopFragment() {
-        return navigationDelegate.getTopFragment();
-    }
-
-    @Override
-    public void onBackPressed() {
-        final Fragment topFragment = getTopFragment();
-        if (topFragment instanceof OnBackPressedInterceptor) {
-            if (((OnBackPressedInterceptor) topFragment).onInterceptBackPressed(this::back)) {
-                return;
-            }
-        }
-
-        back();
-    }
-
     public void showUpdatePillIntro() {
         pushFragment(new UpdateIntroPillFragment(), null, true);
     }
@@ -158,10 +105,6 @@ public class PillUpdateActivity extends InjectionActivity
     public void showBluetoothFragment() {
         pushFragmentAllowingStateLoss(new BluetoothFragment(), null, true);
 
-    }
-
-    private void back() {
-        stateSafeExecutor.execute(super::onBackPressed);
     }
 
     private void getDeviceIdFromBundle(@NonNull final Bundle savedInstanceState) {
