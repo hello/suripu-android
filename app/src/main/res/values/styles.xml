@@ -214,7 +214,7 @@
         <item name="android:paddingLeft">@dimen/x1</item>
         <item name="android:paddingRight">@dimen/x1</item>
         <item name="android:paddingBottom">@dimen/x1</item>
-        <item name="android:background">@drawable/selectable_dark</item>
+        <item name="android:background">@drawable/ripple_selector</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.Accent">

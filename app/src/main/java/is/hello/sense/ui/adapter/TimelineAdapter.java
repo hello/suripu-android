@@ -512,7 +512,7 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
                 }
 
                 Views.setSafeOnClickListener(iconImage, ignored -> playSegmentSound(position));
-                iconImage.setBackgroundResource(R.drawable.selectable_dark);
+                iconImage.setBackgroundResource(R.drawable.ripple_selector);
             } else {
                 iconImage.setImageResource(event.getType().iconDrawableRes);
                 iconImage.setContentDescription(context.getString(event.getType().accessibilityStringRes));

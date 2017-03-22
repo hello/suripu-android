@@ -33,9 +33,6 @@
     <color name="text_rotary_picker_unfocused">@color/gray4</color>
     <color name="text_rotary_picker_almost_gone">@color/gray2</color>
 
-    <color name="background_button_dark_pressed">@color/blue3_93</color>
-
-
     <color name="sleep_awake">@color/transparent</color>
     <color name="sleep_light">@color/blue6_30</color>
     <color name="sleep_medium">@color/blue6_50</color>

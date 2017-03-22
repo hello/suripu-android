@@ -14,7 +14,7 @@
         android:paddingBottom="@dimen/x1"
         android:paddingStart="@dimen/x3"
         android:paddingEnd="@dimen/x3"
-        android:background="@drawable/selectable_dark"/>
+        android:background="@drawable/ripple_selector"/>
 
     <TextView
         android:id="@+id/view_sense_bar_text"
@@ -35,5 +35,5 @@
         android:paddingBottom="@dimen/x1"
         android:paddingStart="@dimen/x3"
         android:paddingEnd="@dimen/x3"
-        android:background="@drawable/selectable_dark"/>
+        android:background="@drawable/ripple_selector"/>
 </RelativeLayout>
