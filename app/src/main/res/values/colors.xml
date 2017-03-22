@@ -88,7 +88,6 @@
 
     <color name="border">@color/gray2</color>
     <color name="border_backside_tabs">@color/gray3</color>
-    <color name="shadow_end">@color/black_10</color>
     <color name="view_time_picker_shadow_end">@color/black_06</color>
 
     <color name="timeline_header_border">@color/blue3</color>
