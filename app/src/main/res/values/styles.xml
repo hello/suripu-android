@@ -245,12 +245,6 @@
         <item name="android:textColor">@color/link_text_selector</item>
     </style>
 
-    <style name="AppTheme.Button.Borderless.White">
-        <item name="android:background">@drawable/selectable_light</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textColor">@color/white</item>
-    </style>
-
     <style name="AppTheme.Button.Rounded">
         <item name="android:minHeight">@dimen/button_height</item>
         <item name="android:background">@drawable/sense_raised_button_selector</item>
@@ -260,12 +254,7 @@
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
     </style>
-
-    <style name="AppTheme.Button.Rounded.Light">
-        <item name="android:background">@drawable/selector_button_rounded_white</item>
-        <item name="android:textColor">@color/white_text</item>
-    </style>
-
+\
     <style name="AppTheme.Button.ModeSelector">
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:textColor">@color/text_color_selector_toggle_button</item>
