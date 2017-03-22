@@ -109,11 +109,6 @@
     <color name="sleep_medium">@color/blue6_50</color>
     <color name="sleep_sound">@color/blue6_80</color>
 
-    <color name="graph_stroke_color">@color/white_40</color>
-    <color name="graph_fill_gradient_top">@color/black_13</color>
-    <color name="graph_fill_gradient_bottom">@color/black_06</color>
-    <color name="graph_fill_solid">@color/gray2_15</color>
-    <color name="graph_fill_empty">@color/gray2_00</color>
 
     <color name="graph_grid_empty_cell">@color/white</color>
     <color name="graph_grid_empty_missing">@color/gray2</color>
