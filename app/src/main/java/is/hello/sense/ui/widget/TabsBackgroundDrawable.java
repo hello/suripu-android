@@ -112,7 +112,6 @@ public class TabsBackgroundDrawable extends SelectorView.SelectionAwareDrawable 
 
 
     public enum Style {
-        BACKSIDE(R.dimen.bottom_line, R.dimen.bottom_line, R.color.tabs_background_selected, R.color.border_backside_tabs, R.color.background_card),
         INLINE(R.dimen.bottom_line, R.dimen.divider_size, R.color.tabs_background_selected, R.color.border, R.color.background_card),
         SUBNAV(R.dimen.bottom_line, R.dimen.x3, R.color.background_card, R.color.background_card, R.color.background_card);
 
