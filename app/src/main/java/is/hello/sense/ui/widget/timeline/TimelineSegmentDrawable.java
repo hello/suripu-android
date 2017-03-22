@@ -56,7 +56,7 @@ public class TimelineSegmentDrawable extends Drawable {
         this.timestampDrawable = new TextDrawable(context, R.style.Caption2_Blue);
         this.overlayDrawable = ResourcesCompat.getDrawable(resources, R.drawable.timeline_segment_shading, null);
 
-        stripePaint.setColor(ContextCompat.getColor(context, R.color.timeline_segment_stripe));
+        stripePaint.setColor(ContextCompat.getColor(context, R.color.timeline_time_dividers));
 
         setSleepDepth(0, TimelineEvent.SleepState.AWAKE);
     }
