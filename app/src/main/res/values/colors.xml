@@ -62,6 +62,8 @@
     <color name="smart_alarm_header_background">@color/primary</color>
     <color name="insight_illustration_background">@color/background</color>
     <color name="expansions_background">@color/background_card</color>
+    <color name="timeline_share_background_gradient_top">@color/gray1</color>
+    <color name="timeline_share_background_gradient_bottom">@color/white</color>
 
     <!-- Text Colors -->
     <color name="error_text">@color/error</color>
@@ -70,6 +72,7 @@
     <color name="link_text_pressed">@color/blue7</color>
     <color name="link_text_disabled">@color/blue6_50</color>
     <color name="notification_text">@color/primary</color>
+    <color name="facebook_official_color">#3B5998</color>
 
     <!-- Button Colors -->
     <color name="sense_button_ripple">@color/ripple</color>
@@ -93,6 +96,12 @@
     <!-- fragment_onboarding_register_height.xml & fragment_onboarding_register_weight.xml-->
     <color name="scale_display_text">@color/primary</color>
 
+    <!-- Timeline Sleep colors -->
+    <color name="sleep_awake">@color/transparent</color>
+    <color name="sleep_light">@color/blue6_30</color>
+    <color name="sleep_medium">@color/blue6_50</color>
+    <color name="sleep_sound">@color/blue6_80</color>
+
     <!-- Trends -->
     <color name="trends_line_divider">@color/divider</color>
     <color name="trends_line_divider_shimmer">@color/gray3</color>
@@ -107,30 +116,16 @@
     <color name="trends_bubble_graph_medium_bubble">@color/blue5</color>
     <color name="trends_bubble_graph_deep_bubble">@color/blue6</color>
 
-    <!-- Todo remove / replace all colors below -->
+    <!-- could use cleaning, but good enough for now -->
     <color name="border">@color/gray2</color>
 
     <color name="text_rotary_picker_focused">@color/primary</color>
     <color name="text_rotary_picker_unfocused">@color/gray4</color>
     <color name="text_rotary_picker_almost_gone">@color/gray2</color>
 
-    <color name="edit_text_bottom_line_normal">@color/gray3</color>
-    <color name="edit_text_bottom_line_disabled">@color/gray3</color>
-
-    <color name="sleep_awake">@color/transparent</color>
-    <color name="sleep_light">@color/blue6_30</color>
-    <color name="sleep_medium">@color/blue6_50</color>
-    <color name="sleep_sound">@color/blue6_80</color>
-
-
     <color name="view_scale_tick_normal">@color/gray2</color>
     <color name="view_scale_tick_emphasized">@color/gray3</color>
 
-    <color name="timeline_share_text">@color/gray4</color>
-    <color name="timeline_share_background_gradient_top">@color/gray1</color>
-    <color name="timeline_share_background_gradient_bottom">@color/white</color>
-
-    <color name="facebook_official_color">#3B5998</color>
     <color name="voice_volume_emphasized_color">@color/blue6</color>
     <color name="voice_volume_normal_color">@color/gray3</color>
 
