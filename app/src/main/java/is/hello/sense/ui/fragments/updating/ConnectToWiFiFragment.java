@@ -167,7 +167,7 @@ public class ConnectToWiFiFragment extends BasePresenterFragment
             final int start = networkInfoBuilder.length();
             networkInfoBuilder.append(network.getSsid());
             networkInfoBuilder.setSpan(
-                    new ForegroundColorSpan(ContextCompat.getColor(getActivity(), R.color.text_dark)),
+                    new ForegroundColorSpan(ContextCompat.getColor(getActivity(), R.color.primary_text)),
                     start, networkInfoBuilder.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                                       );
