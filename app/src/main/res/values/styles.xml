@@ -354,13 +354,12 @@
     <!-- Dividers -->
 
     <style name="Divider">
-        <item name="android:background">@color/border</item>
+        <item name="android:background">@color/divider</item>
     </style>
 
     <style name="Divider.Horizontal">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_size</item>
-        <item name="android:color">@color/divider</item>
     </style>
 
 
