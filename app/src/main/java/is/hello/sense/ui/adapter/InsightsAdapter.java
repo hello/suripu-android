@@ -278,10 +278,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                 return new InsightViewHolder(view);
             }
             case TYPE_ERROR: {
-                final View view = inflater.inflate(R.layout.temp_item_message_card, parent, false);
-                final int margin = resources.getDimensionPixelSize(R.dimen.x1);
-                final RecyclerView.LayoutParams lp = ((RecyclerView.LayoutParams) view.getLayoutParams());
-                lp.setMargins(margin, margin, margin, margin);
+                final View view = inflater.inflate(R.layout.item_message_card, parent, false);
                 return new ErrorViewHolder(view);
             }
             default: {
@@ -365,7 +362,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         ErrorViewHolder(@NonNull final View view) {
             super(view);
 
-            final TextView title = (TextView) view.findViewById(R.id.item_message_card_title);
+            final ImageTextView title = (ImageTextView) view.findViewById(R.id.item_message_card_image_text);
             title.setVisibility(View.GONE);
 
             this.message = (TextView) view.findViewById(R.id.item_message_card_message);

@@ -24,6 +24,7 @@ import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.v2.expansions.ExpansionAlarm;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatter;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
+import is.hello.sense.ui.widget.ImageTextView;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
@@ -118,7 +119,7 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
                                              final int viewType) {
         switch (viewType) {
             case VIEW_ID_MESSAGE: {
-                return new MessageViewHolder(inflater.inflate(R.layout.temp_item_message_card, parent, false));
+                return new MessageViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
             }
             case VIEW_ID_ALARM: {
                 return new AlarmViewHolder(inflater.inflate(R.layout.item_smart_alarm, parent, false));
@@ -250,7 +251,7 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
     }
 
     class MessageViewHolder extends BaseViewHolder {
-        final TextView titleText;
+        final ImageTextView titleText;
         final TextView messageText;
         final Button actionButton;
         final ImageView imageView;
@@ -258,7 +259,7 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
         MessageViewHolder(@NonNull final View view) {
             super(view);
 
-            this.titleText = (TextView) view.findViewById(R.id.item_message_card_title);
+            this.titleText = (ImageTextView) view.findViewById(R.id.item_message_card_image_text);
             this.messageText = (TextView) view.findViewById(R.id.item_message_card_message);
             this.actionButton = (Button) view.findViewById(R.id.item_message_card_action);
             this.imageView = (ImageView) view.findViewById(R.id.item_message_card_image);
@@ -267,7 +268,6 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
         @Override
         void bind(final int ignored) {
             if (currentMessage.titleRes != 0) {
-                titleText.setAllCaps(false);
                 titleText.setText(currentMessage.titleRes);
                 titleText.setVisibility(View.VISIBLE);
             } else {

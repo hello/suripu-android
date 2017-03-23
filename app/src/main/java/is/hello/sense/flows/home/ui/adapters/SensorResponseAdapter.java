@@ -25,6 +25,7 @@ import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.databinding.ItemSensorGroupBinding;
 import is.hello.sense.databinding.ItemWelcomeCardBinding;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
+import is.hello.sense.ui.widget.ImageTextView;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
 import is.hello.sense.ui.widget.util.Views;
@@ -154,7 +155,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         switch (viewType) {
             case VIEW_ID_MESSAGE:
             case VIEW_SENSE_MISSING:
-                return new ErrorViewHolder(this.inflater.inflate(R.layout.temp_item_message_card, parent, false));
+                return new ErrorViewHolder(this.inflater.inflate(R.layout.item_message_card, parent, false));
             case VIEW_SENSOR:
                 return new SensorViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_sensor_response, parent, false));
             case VIEW_SENSOR_GROUP:
@@ -243,20 +244,20 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
     private class ErrorViewHolder extends BaseViewHolder {
         final View view;
-        final TextView titleTextView;
+        final ImageTextView titleImageTextView;
         final TextView messageTextView;
         final ImageView imageView;
         final Button button;
 
         public ErrorViewHolder(@NonNull final View view) {
             super(view);
-            this.titleTextView = (TextView) view.findViewById(R.id.item_message_card_title);
+            this.titleImageTextView = (ImageTextView) view.findViewById(R.id.item_message_card_image_text);
             this.messageTextView = (TextView) view.findViewById(R.id.item_message_card_message);
             this.view = view;
             this.imageView = (ImageView) view.findViewById(R.id.item_message_card_image);
             this.button = (Button) view.findViewById(R.id.item_message_card_action);
             if (SensorResponseAdapter.this.showSenseMissingCard) {
-                this.titleTextView.setVisibility(View.GONE);
+                this.titleImageTextView.setVisibility(View.GONE);
                 this.imageView.setImageResource(R.drawable.illustration_no_sense);
                 this.messageTextView.setText(R.string.error_room_conditions_no_sense);
                 this.button.setText(R.string.action_pair_sense);
@@ -270,10 +271,10 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             super.bind(position);
             if (!SensorResponseAdapter.this.showSenseMissingCard) {
                 if (SensorResponseAdapter.this.messageTitle != 0) {
-                    this.titleTextView.setText(SensorResponseAdapter.this.messageTitle);
-                    this.titleTextView.setVisibility(View.VISIBLE);
+                    this.titleImageTextView.setText(SensorResponseAdapter.this.messageTitle);
+                    this.titleImageTextView.setVisibility(View.VISIBLE);
                 } else {
-                    this.titleTextView.setVisibility(View.GONE);
+                    this.titleImageTextView.setVisibility(View.GONE);
                 }
 
                 final ImageView image = (ImageView) this.view.findViewById(R.id.item_message_card_image);
