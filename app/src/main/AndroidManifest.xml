@@ -114,7 +114,7 @@
         <activity
             android:name=".ui.fragments.VideoPlayerActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
-            android:theme="@style/AppTheme.NoActionBar.Black"/>
+            android:theme="@style/AppTheme.AppCompat.NoActionBar.Black"/>
         <activity
             android:name=".ui.common.FragmentNavigationActivity"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
