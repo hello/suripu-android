@@ -1,6 +1,5 @@
 package is.hello.sense.ui.common;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -15,13 +14,15 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import is.hello.sense.R;
-import is.hello.sense.ui.activities.SenseActivity;
+import is.hello.sense.SenseApplication;
+import is.hello.sense.ui.activities.appcompat.SenseActivity;
 import is.hello.sense.util.Logger;
 
 public class FragmentNavigationActivity extends SenseActivity
@@ -35,11 +36,17 @@ public class FragmentNavigationActivity extends SenseActivity
      */
     @Deprecated
     public static final String EXTRA_ORIENTATION = FragmentNavigationActivity.class.getName() + ".EXTRA_ORIENTATION";
+    private static final String ARG_TITLE = "title";
 
     private FragmentNavigationDelegate navigationDelegate;
 
+    public FragmentNavigationActivity() {
+        super();
+        SenseApplication.getInstance().inject(this);
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment_navigation);
 
@@ -50,9 +57,10 @@ public class FragmentNavigationActivity extends SenseActivity
         getFragmentManager().addOnBackStackChangedListener(this);
 
         final Intent intent = getIntent();
+        final ActionBar actionBar = getSupportActionBar();
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
-            getActionBar().setTitle(getDefaultTitle());
+            actionBar.setTitle(getDefaultTitle());
 
             if (intent.hasExtra(EXTRA_FRAGMENT_CLASS)) {
                 try {
@@ -62,14 +70,14 @@ public class FragmentNavigationActivity extends SenseActivity
                     final Fragment fragment = fragmentClass.newInstance();
                     fragment.setArguments(intent.getParcelableExtra(EXTRA_FRAGMENT_ARGUMENTS));
                     pushFragment(fragment, getDefaultTitle(), false);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     Logger.warn(getClass().getSimpleName(), "Could not create fragment", e);
                 }
             }
         } else {
-            final String title = savedInstanceState.getString("title");
+            final CharSequence title = savedInstanceState.getCharSequence(ARG_TITLE, getDefaultTitle());
             //noinspection ConstantConditions
-            getActionBar().setTitle(title);
+            actionBar.setTitle(title);
 
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         }
@@ -90,11 +98,11 @@ public class FragmentNavigationActivity extends SenseActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         if (item.getItemId() == android.R.id.home &&
                 getFragmentManager().getBackStackEntryCount() > 0) {
             final View focusView = getCurrentFocus();
-            if (focusView != null && focusView instanceof EditText) {
+            if (focusView instanceof EditText) {
                 final InputMethodManager inputMethodManager =
                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(focusView.getWindowToken(), 0);
@@ -107,12 +115,12 @@ public class FragmentNavigationActivity extends SenseActivity
     }
 
     @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        final ActionBar actionBar = getActionBar();
+        final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null && actionBar.getTitle() != null) {
-            outState.putString("title", actionBar.getTitle().toString());
+            outState.putCharSequence(ARG_TITLE, actionBar.getTitle());
         }
 
         navigationDelegate.onSaveInstanceState(outState);
@@ -184,7 +192,7 @@ public class FragmentNavigationActivity extends SenseActivity
 
     @Override
     public void onBackStackChanged() {
-        final ActionBar actionBar = getActionBar();
+        final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             final FragmentManager fragmentManager = getFragmentManager();
             final int entryCount = fragmentManager.getBackStackEntryCount();
@@ -212,36 +220,36 @@ public class FragmentNavigationActivity extends SenseActivity
         private final Activity from;
         private final Intent intent;
 
-        public Builder(@NonNull Activity from) {
+        public Builder(@NonNull final Activity from) {
             this(from, FragmentNavigationActivity.class);
         }
 
-        public Builder(@NonNull Activity from,
-                       @NonNull Class<? extends FragmentNavigationActivity> clazz) {
+        public Builder(@NonNull final Activity from,
+                       @NonNull final Class<? extends FragmentNavigationActivity> clazz) {
             this.from = from;
             this.intent = new Intent(from, clazz);
         }
 
-        public Builder setDefaultTitle(@Nullable String title) {
+        public Builder setDefaultTitle(@Nullable final String title) {
             intent.putExtra(EXTRA_DEFAULT_TITLE, title);
             return this;
         }
 
-        public Builder setDefaultTitle(@StringRes int titleRes) {
+        public Builder setDefaultTitle(@StringRes final int titleRes) {
             return setDefaultTitle(from.getString(titleRes));
         }
 
-        public Builder setFragmentClass(@NonNull Class<? extends Fragment> clazz) {
+        public Builder setFragmentClass(@NonNull final Class<? extends Fragment> clazz) {
             intent.putExtra(EXTRA_FRAGMENT_CLASS, clazz.getName());
             return this;
         }
 
-        public Builder setArguments(@Nullable Bundle arguments) {
+        public Builder setArguments(@Nullable final Bundle arguments) {
             intent.putExtra(EXTRA_FRAGMENT_ARGUMENTS, arguments);
             return this;
         }
 
-        public Builder setWindowBackgroundColor(@ColorInt int backgroundColor) {
+        public Builder setWindowBackgroundColor(@ColorInt final int backgroundColor) {
             intent.putExtra(EXTRA_WINDOW_COLOR, backgroundColor);
             return this;
         }
@@ -256,7 +264,7 @@ public class FragmentNavigationActivity extends SenseActivity
          * @return The builder.
          */
         @Deprecated
-        public Builder setOrientation(int orientation) {
+        public Builder setOrientation(final int orientation) {
             intent.putExtra(EXTRA_ORIENTATION, orientation);
             return this;
         }
