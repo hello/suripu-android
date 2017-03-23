@@ -17,7 +17,7 @@
             android:layout_marginRight="@dimen/x3"
             android:layout_marginTop="@dimen/x3"
             android:layout_marginBottom="@dimen/x1"
-            style="@style/Caption2.Primary"
+            style="@style/Title2.Primary"
             android:maxLines="1"
             android:ellipsize="end"
             android:visibility="gone" />
@@ -30,7 +30,7 @@
             android:layout_marginLeft="@dimen/x3"
             android:layout_marginRight="@dimen/x3"
             android:layout_marginBottom="@dimen/x3"
-            style="@style/Body1.Primary"
+            style="@style/Body1.Secondary"
             android:visibility="gone"/>
 
         <View

@@ -7,7 +7,7 @@
     <color name="disabled_text">@color/hint_text</color>
     <color name="divider">@color/white_12</color>
 
-    <color name="dim">@color/gray7</color>
+    <color name="dim">@color/gray3</color>
     <color name="primary">@color/blue6</color>
     <color name="error">@color/red6</color>
     <color name="warning">@color/yellow6</color>

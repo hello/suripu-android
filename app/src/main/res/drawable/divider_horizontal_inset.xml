@@ -2,6 +2,9 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:left="@dimen/x3">
-        <bitmap android:src="@drawable/divider_horizontal"/>
+        <shape android:shape="rectangle">
+            <size android:height="@dimen/divider_size" />
+            <solid android:color="@color/divider" />
+        </shape>
     </item>
 </layer-list>
