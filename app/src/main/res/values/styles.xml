@@ -607,9 +607,9 @@
     <style name="AppTheme.AppCompat.NoActionBar.TabLayout" parent="Widget.Design.TabLayout">
         <item name="tabBackground">@color/background_card</item>
         <item name="android:textAllCaps">true</item>
-        <item name="tabSelectedTextColor">@color/primary</item>
+        <item name="tabSelectedTextColor">@color/tablayout_focused</item>
         <item name="tabTextColor">@color/secondary_text</item>
-        <item name="tabIndicatorColor">@color/primary</item>
+        <item name="tabIndicatorColor">@color/tablayout_focused</item>
         <item name="tabPaddingStart">@dimen/x1</item>
         <item name="tabGravity">fill</item>
         <item name="tabMaxWidth">0dp</item>

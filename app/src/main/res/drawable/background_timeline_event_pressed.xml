@@ -2,24 +2,22 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-
-        android:bottom="@dimen/x.75"
-        android:left="@dimen/x.75"
-        android:right="@dimen/x.75"
-        android:top="@dimen/x.75">
+        android:bottom="@dimen/x1"
+        android:left="@dimen/x1"
+        android:right="@dimen/x1"
+        android:top="@dimen/x1">
         <shape
             android:shape="rectangle">
             <padding
-                android:bottom="@dimen/x.75"
-                android:left="@dimen/x.75"
-                android:right="@dimen/x.75"
-                android:top="@dimen/x.75"
-                />
+                android:bottom="@dimen/x1"
+                android:left="@dimen/x1"
+                android:right="@dimen/x1"
+                android:top="@dimen/x1"/>
             <corners
                 android:radius="@dimen/button_corner_radius">
             </corners>
             <solid
-                android:color="@color/blue1">
+                android:color="@color/timeline_event_background_pressed">
             </solid>
         </shape>
     </item>
