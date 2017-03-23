@@ -90,5 +90,6 @@
         <attr name="leftImage" format="reference"/>
         <attr name="labelText"/>
         <attr name="leftTextPadding" format="reference"/>
+        <attr name="textColor" format="reference"/>
     </declare-styleable>
 </resources>

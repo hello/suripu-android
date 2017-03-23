@@ -59,7 +59,7 @@
             android:layout_marginEnd="@dimen/x3"
             android:gravity="center"
             android:text="@string/label_sleep_summary"
-            style="@style/Button.Flat"/>
+            style="@style/Button.Flat.Link"/>
 
     </LinearLayout>
 

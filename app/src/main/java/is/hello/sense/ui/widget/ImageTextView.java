@@ -3,10 +3,12 @@ package is.hello.sense.ui.widget;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.EditText;
@@ -54,7 +56,7 @@ public class ImageTextView extends LinearLayout {
             final int imageRes = a.getResourceId(R.styleable.ImageTextView_leftImage, Constants.NONE);
             final int textAppearanceRes = a.getResourceId(R.styleable.ImageTextView_textStyle, Constants.NONE);
             final int leftTextPaddingRes = a.getResourceId(R.styleable.ImageTextView_leftTextPadding, Constants.NONE);
-
+            final int textColor = a.getResourceId(R.styleable.ImageTextView_textColor, Constants.NONE);
             // ImageView
             if (imageRes != Constants.NONE) {
                 setImageResource(imageRes);
@@ -67,6 +69,9 @@ public class ImageTextView extends LinearLayout {
                               Constants.NONE,
                               Constants.NONE);
             setText(text);
+            if (textColor != Constants.NONE) {
+                setTextColor(textColor);
+            }
 
         } finally {
             a.recycle();
@@ -82,8 +87,12 @@ public class ImageTextView extends LinearLayout {
         this.textView.setText(string);
     }
 
-    public CharSequence getText(){
+    public CharSequence getText() {
         return this.textView.getText();
+    }
+
+    public void setTextColor(@ColorRes final int textColor) {
+        this.textView.setTextColor(ContextCompat.getColor(getContext(), textColor));
     }
 
     public void setImageResource(@DrawableRes final int drawableRes) {
