@@ -43,10 +43,10 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
     private Message currentMessage;
     private boolean use24Time = false;
 
-    public SmartAlarmAdapter(@NonNull Context context,
-                             @NonNull InteractionListener interactionListener,
-                             @NonNull DateFormatter dateFormatter,
-                             @NonNull ExpansionCategoryFormatter expansionAlarmFormatter) {
+    public SmartAlarmAdapter(@NonNull final Context context,
+                             @NonNull final InteractionListener interactionListener,
+                             @NonNull final DateFormatter dateFormatter,
+                             @NonNull final ExpansionCategoryFormatter expansionAlarmFormatter) {
         this.dateFormatter = dateFormatter;
         this.expansionFormatter = expansionAlarmFormatter;
         this.inflater = LayoutInflater.from(context);
@@ -55,19 +55,19 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
 
     //region Binding
 
-    public void setUse24Time(boolean use24Time) {
+    public void setUse24Time(final boolean use24Time) {
         this.use24Time = use24Time;
         notifyDataSetChanged();
     }
 
-    public void bindAlarms(@NonNull List<Alarm> alarms) {
+    public void bindAlarms(@NonNull final List<Alarm> alarms) {
         this.currentMessage = null;
         this.alarms.clear();
         this.alarms.addAll(alarms);
         notifyDataSetChanged();
     }
 
-    public void bindMessage(@NonNull Message message) {
+    public void bindMessage(@NonNull final Message message) {
         this.currentMessage = message;
         this.alarms.clear();
         notifyDataSetChanged();
@@ -94,12 +94,12 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
     }
 
     @Override
-    public long getItemId(int position) {
+    public long getItemId(final int position) {
         return position;
     }
 
     @Override
-    public int getItemViewType(int position) {
+    public int getItemViewType(final int position) {
         if (currentMessage != null) {
             return VIEW_ID_MESSAGE;
         } else {
@@ -114,15 +114,14 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
 
 
     @Override
-    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BaseViewHolder onCreateViewHolder(final ViewGroup parent,
+                                             final int viewType) {
         switch (viewType) {
             case VIEW_ID_MESSAGE: {
-                View view = inflater.inflate(R.layout.temp_item_message_card, parent, false);
-                return new MessageViewHolder(view);
+                return new MessageViewHolder(inflater.inflate(R.layout.temp_item_message_card, parent, false));
             }
             case VIEW_ID_ALARM: {
-                View view = inflater.inflate(R.layout.item_smart_alarm, parent, false);
-                return new AlarmViewHolder(view);
+                return new AlarmViewHolder(inflater.inflate(R.layout.item_smart_alarm, parent, false));
             }
             default: {
                 throw new IllegalArgumentException();
@@ -131,13 +130,14 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
     }
 
     @Override
-    public void onBindViewHolder(BaseViewHolder holder, int position) {
+    public void onBindViewHolder(final BaseViewHolder holder,
+                                 final int position) {
         holder.bind(position);
     }
 
 
     abstract static class BaseViewHolder extends RecyclerView.ViewHolder {
-        BaseViewHolder(@NonNull View itemView) {
+        BaseViewHolder(@NonNull final View itemView) {
             super(itemView);
         }
 
@@ -152,15 +152,17 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
         final TextView time;
         final TextView repeat;
         final RecyclerView expansionsRV;
+        final View divider;
         private final ExpansionAlarmsAdapter expansionsAdapter;
 
-        AlarmViewHolder(@NonNull View view) {
+        AlarmViewHolder(@NonNull final View view) {
             super(view);
 
             this.enabled = (CompoundButton) view.findViewById(R.id.item_smart_alarm_enabled);
             this.time = (TextView) view.findViewById(R.id.item_smart_alarm_time);
             this.repeat = (TextView) view.findViewById(R.id.item_smart_alarm_repeat);
             this.expansionsRV = (RecyclerView) view.findViewById(R.id.item_smart_alarm_expansions_rv);
+            this.divider = view.findViewById(R.id.item_smart_alarm_divider);
 
             this.expansionsRV.setLayoutManager(new LinearLayoutManager(view.getContext()));
             this.expansionsRV.setHasFixedSize(false);
@@ -202,10 +204,15 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
             }
 
             expansionsAdapter.replaceAll(tempAlarms);
+            if (expansionsAdapter.getItemCount() > 0) {
+                divider.setVisibility(View.VISIBLE);
+            } else {
+                divider.setVisibility(View.GONE);
+            }
         }
 
         @Override
-        public void onClick(View sender) {
+        public void onClick(final View sender) {
             // View dispatches OnClickListener#onClick(View) calls on
             // the next looper cycle. It's possible for the adapter's
             // containing recycler view to update and invalidate a
@@ -222,7 +229,7 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
         }
 
         @Override
-        public boolean onLongClick(View ignored) {
+        public boolean onLongClick(final View ignored) {
             // View dispatches OnClickListener#onClick(View) calls on
             // the next looper cycle. It's possible for the adapter's
             // containing recycler view to update and invalidate a
@@ -248,7 +255,7 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
         final Button actionButton;
         final ImageView imageView;
 
-        MessageViewHolder(@NonNull View view) {
+        MessageViewHolder(@NonNull final View view) {
             super(view);
 
             this.titleText = (TextView) view.findViewById(R.id.item_message_card_title);
@@ -258,7 +265,7 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
         }
 
         @Override
-        void bind(int ignored) {
+        void bind(final int ignored) {
             if (currentMessage.titleRes != 0) {
                 titleText.setAllCaps(false);
                 titleText.setText(currentMessage.titleRes);
@@ -306,7 +313,8 @@ public class SmartAlarmAdapter extends RecyclerView.Adapter<SmartAlarmAdapter.Ba
         int actionRes = android.R.string.ok;
         public View.OnClickListener onClickListener;
 
-        public Message(@StringRes int titleRes, @NonNull StringRef message) {
+        public Message(@StringRes final int titleRes,
+                       @NonNull final StringRef message) {
             this.titleRes = titleRes;
             this.message = message;
         }
