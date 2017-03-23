@@ -31,8 +31,6 @@ public class VoiceView extends PresenterView {
         this.recyclerView.setItemAnimator(null);
         this.recyclerView.setLayoutManager(layoutManager);
         this.recyclerView.addItemDecoration(new FirstAndLastItemMarginDecoration(resources));
-        this.recyclerView.addItemDecoration(DividerItemDecoration.getLeftInset(activity,
-                                                                               resources.getDimensionPixelOffset(R.dimen.x8)));
         this.recyclerView.setAdapter(adapter);
 
     }

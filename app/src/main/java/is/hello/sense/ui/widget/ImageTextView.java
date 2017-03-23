@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -79,6 +80,10 @@ public class ImageTextView extends LinearLayout {
 
     public void setText(@Nullable final String string) {
         this.textView.setText(string);
+    }
+
+    public CharSequence getText(){
+        return this.textView.getText();
     }
 
     public void setImageResource(@DrawableRes final int drawableRes) {

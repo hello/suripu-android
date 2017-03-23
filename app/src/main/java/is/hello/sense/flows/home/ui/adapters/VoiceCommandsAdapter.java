@@ -103,6 +103,9 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdap
             this.binding.itemVoiceCommandTitle.setText(voiceCommand.titleRes);
             this.binding.itemVoiceCommandBody.setText(voiceCommand.bodyRes);
             this.itemView.setOnClickListener(v -> dispatchItemClicked(position, voiceCommand));
+            if (position == getItemCount() - 1) {
+                this.binding.itemVoiceCommandDivider.setVisibility(View.INVISIBLE);
+            }
         }
     }
 
@@ -111,8 +114,8 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdap
         public WelcomeCardViewHolder(@NonNull final WelcomeCard itemView) {
             super(itemView);
             itemView.setContent(R.drawable.sense_with_voice,
-                                   R.string.welcome_to_voice_title,
-                                   R.string.welcome_to_voice_body);
+                                R.string.welcome_to_voice_title,
+                                R.string.welcome_to_voice_body);
             itemView.setOnCloseButtonListener(welcomeCardListener);
         }
     }
