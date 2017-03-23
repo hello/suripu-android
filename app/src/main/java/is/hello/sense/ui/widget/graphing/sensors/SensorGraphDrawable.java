@@ -232,13 +232,13 @@ public class SensorGraphDrawable extends Drawable {
             return;
         }
         final Rect rect = new Rect();
-        textLabelPaint.getTextBounds(labels[0], 0, labels[0].length(), rect);
+        textLabelPaint.getTextBounds(labels[0].toUpperCase(), 0, labels[0].length(), rect);
         final float xInc = canvas.getWidth() / labels.length;
         final float textHeight = textLabelPaint.getTextSize();
         final float offset = Math.abs((xInc - rect.width())) / 2;
 
         for (int i = 0; i < labels.length; i++) {
-            canvas.drawText(labels[i], xInc * i + offset, canvas.getHeight() - textHeight, textLabelPaint);
+            canvas.drawText(labels[i].toUpperCase(), xInc * i + offset, canvas.getHeight() - textHeight, textLabelPaint);
         }
     }
 
