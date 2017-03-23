@@ -137,12 +137,12 @@ public class ExtendedScrollView extends ScrollView {
                 this.bottomEdge = null;
                 break;
             case FADING_EDGE_STYLE_ROUNDED:
-                this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.rounded_shadow_top_down, null);
-                this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.rounded_shadow_bottom_up, null);
+                this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.top_down_shadow, null);
+                this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.down_top_shadow, null);
                 break;
             case FADING_EDGE_STYLE_STRAIGHT:
-                this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_top_down, null);
-                this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_bottom_up, null);
+                this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.top_down_shadow, null);
+                this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.down_top_shadow, null);
                 break;
         }
 

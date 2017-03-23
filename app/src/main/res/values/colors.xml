@@ -7,7 +7,7 @@
     <color name="disabled_text">@color/hint_text</color>
     <color name="divider">@color/black_12</color>
 
-    <color name="dim">@color/gray4</color>
+    <color name="dim">@color/gray3</color>
     <color name="primary">@color/blue6</color>
     <color name="error">@color/red6</color>
     <color name="warning">@color/yellow6</color>
@@ -64,6 +64,8 @@
     <color name="timeline_event_background_normal">@color/background_card</color>
     <color name="timeline_event_background_pressed">@color/blue1</color>
     <color name="questions_divider">@color/divider</color>
+    <color name="shadow_start_color">@color/black_10</color>
+    <color name="shadow_end_color">@color/black_00</color>
 
     <!-- Text Colors -->
     <color name="error_text">@color/error</color>

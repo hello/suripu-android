@@ -64,6 +64,8 @@
     <color name="timeline_event_background_normal">@color/background_card</color>
     <color name="timeline_event_background_pressed">@color/gray8</color>
     <color name="questions_divider">@color/divider</color>
+    <color name="shadow_start_color">@color/black_40</color>
+    <color name="shadow_end_color">@color/black_00</color>
 
     <!-- Text Colors -->
     <color name="error_text">@color/error</color>

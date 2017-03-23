@@ -78,7 +78,8 @@
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowTitleSize">0dp</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
+        </item>
     </style>
 
     <style name="AppTheme.NoActionBar.Black">
@@ -177,12 +178,14 @@
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">@color/transparent</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
+        </item>
     </style>
 
     <style name="AppTheme.Dialog.FullScreen.Insight">
         <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
+        </item>
     </style>
 
     <style name="AppTheme.Dialog.Loading" parent="AppTheme.Dialog.FullScreen">
@@ -274,7 +277,8 @@
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
     </style>
-\
+    \
+
     <style name="AppTheme.Button.ModeSelector">
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:textColor">@color/text_color_selector_toggle_button</item>
@@ -389,9 +393,9 @@
         <item name="android:paddingRight">@dimen/x.25</item>
 
         <item name="android:background">@drawable/edit_text_background_selector</item>
-        <item name="android:fontFamily">sans-serif-regular</item>
         <item name="android:textAppearance">@style/Body1.Primary</item>
         <item name="android:minHeight">@dimen/text_body_line_height</item>
+        <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
     <style name="AppTheme.Text.EditText" parent="Platform.EditText">
@@ -403,14 +407,15 @@
         <item name="android:paddingRight">@dimen/x.25</item>
 
         <item name="android:background">@drawable/edit_text_background_selector</item>
-        <item name="android:textSize">@dimen/text_h6_3</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textAppearance">@style/Body1.Primary</item>
+        <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
     <style name="AppTheme.Text.EditText.Onboarding">
         <item name="android:textSize">@dimen/text_body</item>
-        <item name="android:textColor">@drawable/onboarding_edittext_selector</item>
         <item name="android:minHeight">@dimen/text_body_line_height</item>
+        <item name="android:textAppearance">@style/Body1.Primary</item>
+        <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
     <!-- Specific Tinting -->
@@ -546,7 +551,8 @@
         <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
         <item name="senseBackgroundSecondary">@color/background_card</item>
 
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
+        </item>
         <!-- remove actionbar elevation for kitkat and older -->
         <item name="android:windowContentOverlay">@null</item>
         <item name="actionBarStyle">@style/ActionBar</item>
@@ -591,7 +597,8 @@
         <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
         <item name="senseBackgroundSecondary">@color/background_card</item>
 
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
+        </item>
     </style>
 
     <style name="AppTheme.AppCompat.ProgressBar" parent="Widget.AppCompat.ProgressBar">
