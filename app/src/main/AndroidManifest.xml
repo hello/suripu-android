@@ -130,7 +130,8 @@
             android:theme="@style/AppTheme.AppCompat.AppSettingsActivity"/>
         <activity
             android:name=".ui.activities.SettingsActivity"
-            android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+            android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
+            android:theme="@style/AppTheme.AppCompat.AppSettingsActivity"/>
         <activity
             android:name=".flows.expansions.ui.activities.ExpansionSettingsActivity"
             android:label="@string/expansion_list_title"

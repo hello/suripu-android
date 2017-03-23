@@ -1,6 +1,5 @@
 package is.hello.sense.ui.activities;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -15,6 +14,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -26,13 +26,14 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.notifications.OnNotificationPressedInterceptor;
 import is.hello.sense.settings.SettingsPairSenseModule;
+import is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.util.Logger;
 
 //todo decide how to phase out fragment navigation activity
-public class SettingsActivity extends ScopedInjectionActivity
+public class SettingsActivity extends ScopedInjectionAppCompatActivity
         implements FragmentNavigation,
         FragmentManager.OnBackStackChangedListener,
         OnNotificationPressedInterceptor {
@@ -67,7 +68,7 @@ public class SettingsActivity extends ScopedInjectionActivity
         final Intent intent = getIntent();
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
-            getActionBar().setTitle(getDefaultTitle());
+            getSupportActionBar().setTitle(getDefaultTitle());
 
             if (intent.hasExtra(EXTRA_FRAGMENT_CLASS)) {
                 try {
@@ -84,7 +85,7 @@ public class SettingsActivity extends ScopedInjectionActivity
         } else {
             final String title = savedInstanceState.getString("title");
             //noinspection ConstantConditions
-            getActionBar().setTitle(title);
+            getSupportActionBar().setTitle(title);
 
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
         }
@@ -106,15 +107,14 @@ public class SettingsActivity extends ScopedInjectionActivity
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        if (item.getItemId() == android.R.id.home &&
-                getFragmentManager().getBackStackEntryCount() > 0) {
+        if (item.getItemId() == android.R.id.home) {
             final View focusView = getCurrentFocus();
             if (focusView instanceof EditText) {
                 final InputMethodManager inputMethodManager =
                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(focusView.getWindowToken(), 0);
             }
-            getFragmentManager().popBackStack();
+            onBackPressed();
             return true;
         }
 
@@ -125,7 +125,7 @@ public class SettingsActivity extends ScopedInjectionActivity
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        final ActionBar actionBar = getActionBar();
+        final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null && actionBar.getTitle() != null) {
             outState.putString("title", actionBar.getTitle().toString());
         }
@@ -199,7 +199,7 @@ public class SettingsActivity extends ScopedInjectionActivity
 
     @Override
     public void onBackStackChanged() {
-        final ActionBar actionBar = getActionBar();
+        final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             final FragmentManager fragmentManager = getFragmentManager();
             final int entryCount = fragmentManager.getBackStackEntryCount();
