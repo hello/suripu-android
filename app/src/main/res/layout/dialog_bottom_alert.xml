@@ -13,7 +13,7 @@
             android:id="@+id/dialog_bottom_alert_top_divider"
             android:layout_width="match_parent"
             android:layout_height="@dimen/divider_size_thick"
-            android:background="@drawable/top_down_shadow"/>
+            android:background="@drawable/shadow_from_top_to_bottom"/>
 
         <TextView
             android:id="@+id/dialog_bottom_alert"
@@ -73,7 +73,7 @@
             android:id="@+id/dialog_bottom_alert_bottom_divider"
             android:layout_width="match_parent"
             android:layout_height="@dimen/divider_size_thick"
-            android:background="@drawable/down_top_shadow"/>
+            android:background="@drawable/shadow_from_bottom_to_top"/>
 
     </LinearLayout>
 </layout>

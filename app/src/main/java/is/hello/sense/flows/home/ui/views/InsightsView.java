@@ -46,7 +46,7 @@ public final class InsightsView extends PresenterView {
         this.recyclerView = (RecyclerView) findViewById(R.id.fragment_insights_recycler);
         setUpStandardRecyclerViewDecorations(recyclerView,
                                              new LinearLayoutManager(activity));
-        //recyclerView.addOnScrollListener(new ParallaxRecyclerScrollListener());
+        recyclerView.addOnScrollListener(new ParallaxRecyclerScrollListener());
         this.insightsAdapter = new InsightsAdapter(activity, dateFormatter, listener, picasso);
         recyclerView.setAdapter(insightsAdapter);
     }

@@ -29,11 +29,11 @@ public class FadingEdgesItemDecoration extends PaddingItemDecoration {
         this.edges = edges;
 
         if (style == Style.ROUNDED_EDGES) {
-            this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.top_down_shadow, null);
-            this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.down_top_shadow, null);
+            this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_from_top_to_bottom, null);
+            this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_from_bottom_to_top, null);
         } else {
-            this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.top_down_shadow, null);
-            this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.down_top_shadow, null);
+            this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_from_top_to_bottom, null);
+            this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_from_bottom_to_top, null);
         }
     }
 

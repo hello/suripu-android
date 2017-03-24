@@ -8,6 +8,7 @@ import android.support.annotation.DimenRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.annotation.StyleRes;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -53,10 +54,10 @@ public class ImageTextView extends LinearLayout {
 
         try {
             final String text = a.getString(R.styleable.ImageTextView_labelText);
-            final int imageRes = a.getResourceId(R.styleable.ImageTextView_leftImage, Constants.NONE);
-            final int textAppearanceRes = a.getResourceId(R.styleable.ImageTextView_textStyle, Constants.NONE);
-            final int leftTextPaddingRes = a.getResourceId(R.styleable.ImageTextView_leftTextPadding, Constants.NONE);
-            final int textColor = a.getResourceId(R.styleable.ImageTextView_textColor, Constants.NONE);
+            @DrawableRes final int imageRes = a.getResourceId(R.styleable.ImageTextView_leftImage, Constants.NONE);
+            @StyleRes final int textAppearanceRes = a.getResourceId(R.styleable.ImageTextView_textStyle, Constants.NONE);
+            @DimenRes final int leftTextPaddingRes = a.getResourceId(R.styleable.ImageTextView_leftTextPadding, Constants.NONE);
+            @ColorRes final int textColorRes = a.getResourceId(R.styleable.ImageTextView_textColor, Constants.NONE);
             // ImageView
             if (imageRes != Constants.NONE) {
                 setImageResource(imageRes);
@@ -69,8 +70,8 @@ public class ImageTextView extends LinearLayout {
                               Constants.NONE,
                               Constants.NONE);
             setText(text);
-            if (textColor != Constants.NONE) {
-                setTextColor(textColor);
+            if (textColorRes != Constants.NONE) {
+                setTextColor(textColorRes);
             }
 
         } finally {
