@@ -1,60 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-        xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
     <RadioGroup
         android:id="@+id/view_night_mode_radio_group"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <RadioButton
-            style="@style/AppTheme.RadioButton.Drawable"
             android:id="@+id/view_night_mode_off_rb"
+            style="@style/AppTheme.RadioButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/action_off"/>
 
-        <View style="@style/Divider.Horizontal"
-            android:layout_marginStart="@dimen/x9"/>
+        <View style="@style/Divider.Horizontal.LeftInset.Large"/>
 
         <RadioButton
-            style="@style/AppTheme.RadioButton.Drawable"
             android:id="@+id/view_night_mode_always_on_rb"
+            style="@style/AppTheme.RadioButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/action_always_on"/>
 
-        <View style="@style/Divider.Horizontal"
-              android:layout_marginStart="@dimen/x9"/>
+        <View style="@style/Divider.Horizontal.LeftInset.Large"/>
 
         <RadioButton
-            style="@style/AppTheme.RadioButton.Drawable"
             android:id="@+id/view_night_mode_scheduled_rb"
+            style="@style/AppTheme.RadioButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/action_scheduled"
-            android:paddingBottom="@dimen/x1"/>
+            android:paddingBottom="@dimen/x1"
+            android:text="@string/action_scheduled"/>
 
         <TextView
             android:id="@+id/view_night_mode_scheduled_info"
+            style="@style/BodySmall.Secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/x9"
-            android:text="@string/night_mode_scheduled_description"
+            android:layout_marginBottom="@dimen/x2"
             android:layout_marginEnd="@dimen/x3"
-            android:layout_marginBottom="@dimen/x2"/>
+            android:layout_marginStart="@dimen/x9"
+            android:text="@string/night_mode_scheduled_description"/>
 
-        <View style="@style/Divider.Horizontal.Padded"
-              android:layout_marginStart="@dimen/x9"/>
-<!-- todo confirm style is right -->
+        <View style="@style/Divider.Horizontal.LeftInset.Large"/>
+
+
         <TextView
             android:id="@+id/view_night_mode_location_permission"
+            style="@style/Body1.Secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x2"
+            android:layout_marginStart="@dimen/x9"
             android:text="@string/night_mode_location_permission_disabled_msg"
-            style="@style/Caption1.Secondary"
-            android:paddingStart="@dimen/x3"
-            android:paddingEnd="@dimen/x3"
             android:visibility="gone"
             tools:visibility="visible"/>
     </RadioGroup>
