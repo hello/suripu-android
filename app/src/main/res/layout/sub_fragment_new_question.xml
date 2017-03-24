@@ -43,7 +43,7 @@
 
         <Button
             android:id="@+id/sub_fragment_new_question_answer"
-            style="@style/Button.Flat"
+            style="@style/Button.Flat.Link"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

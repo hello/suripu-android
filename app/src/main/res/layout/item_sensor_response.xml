@@ -61,7 +61,7 @@
 
             <TextView
                 android:id="@+id/item_server_response_value"
-                style="@style/Headline"
+                style="@style/Headline.Hint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -70,7 +70,7 @@
 
             <TextView
                 android:id="@+id/item_server_response_descriptor"
-                style="@style/Caption1"
+                style="@style/Caption1.Hint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"

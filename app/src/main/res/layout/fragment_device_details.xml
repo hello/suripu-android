@@ -59,7 +59,7 @@
                 android:layout_marginTop="@dimen/x2"
                 android:layout_marginBottom="@dimen/x1"
                 android:text="@string/action_troubleshoot"
-                style="@style/Button.Raised"/>
+                style="@style/Button.Flat"/>
 
             <Button
                 android:id="@+id/fragment_device_details_alert_action_secondary"
@@ -67,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/action_retry"
                 android:visibility="gone"
-                style="@style/Button.Flat" />
+                style="@style/Button.Raised" />
 
             <View
                 android:layout_marginTop="@dimen/x4"

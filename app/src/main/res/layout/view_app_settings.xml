@@ -18,30 +18,32 @@
 
                 <TextView
                     android:id="@+id/view_app_settings_my_account"
+                    style="@style/Body1.Primary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_account"
-                    style="@style/AppTheme.Card.Item"/>
+                    android:padding="@dimen/x2"
+                    android:text="@string/label_account"/>
 
                 <View style="@style/Divider.Horizontal.LeftInset"/>
 
                 <TextView
                     android:id="@+id/view_app_settings_devices"
+                    style="@style/Body1.Primary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_devices"
-                    style="@style/AppTheme.Card.Item"/>
+                    android:padding="@dimen/x2"
+                    android:text="@string/label_devices"/>
 
                 <View style="@style/Divider.Horizontal.LeftInset"/>
 
 
                 <TextView
                     android:id="@+id/view_app_settings_notifications"
+                    style="@style/Body1.Primary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/x2"
-                    android:text="@string/label_notifications"
-                    style="@style/AppTheme.Card.Item"/>
+                    android:text="@string/label_notifications"/>
 
                 <View style="@style/Divider.Horizontal.LeftInset"/>
 
@@ -53,19 +55,21 @@
 
                     <TextView
                         android:id="@+id/view_app_settings_expansions"
+                        style="@style/Body1.Primary"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/action_expansions"
-                        style="@style/AppTheme.Card.Item"/>
+                        android:padding="@dimen/x2"
+                        android:text="@string/action_expansions"/>
 
                     <View style="@style/Divider.Horizontal.LeftInset"/>
 
                     <TextView
                         android:id="@+id/view_app_settings_voice"
+                        style="@style/Body1.Primary"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/label_voice"
-                        style="@style/AppTheme.Card.Item"/>
+                        android:padding="@dimen/x2"
+                        android:text="@string/label_voice"/>
 
                     <View style="@style/Divider.Horizontal.LeftInset"/>
                 </LinearLayout>
@@ -73,31 +77,33 @@
 
                 <TextView
                     android:id="@+id/view_app_settings_support"
+                    style="@style/Body1.Primary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/x4"
-                    android:text="@string/action_support"
-                    style="@style/AppTheme.Card.Item"/>
+                    android:padding="@dimen/x2"
+                    android:text="@string/action_support"/>
 
                 <View style="@style/Divider.Horizontal.LeftInset"/>
 
 
                 <TextView
                     android:id="@+id/view_app_settings_share"
+                    style="@style/Body1.Primary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_tell_a_friend"
-                    style="@style/AppTheme.Card.Item"/>
+                    android:padding="@dimen/x2"
+                    android:text="@string/label_tell_a_friend"/>
 
                 <View style="@style/Divider.Horizontal.LeftInset"/>
 
                 <TextView
                     android:id="@+id/view_app_settings_debug"
+                    style="@style/Caption2.Hint"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="@dimen/x3"
-                    style="@style/Caption2.Hint"
                     tools:text="Sense 0.0.0"/>
 
             </LinearLayout>

@@ -112,7 +112,7 @@
         android:layout_height="wrap_content"
         android:importantForAccessibility="no"
         android:scaleType="fitXY"
-        android:src="@drawable/shadow_top_down"
+        android:src="@drawable/shadow_from_top_to_bottom"
         android:visibility="gone"
         tools:visibility="visible"/>
 
@@ -123,7 +123,7 @@
         android:layout_above="@id/fragment_insight_info_bottom"
         android:importantForAccessibility="no"
         android:scaleType="fitXY"
-        android:src="@drawable/shadow_bottom_up"
+        android:src="@drawable/shadow_from_bottom_to_top"
         android:visibility="gone"
         tools:visibility="visible"/>
 

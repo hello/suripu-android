@@ -24,11 +24,9 @@ import is.hello.sense.R;
 
 public class ExtendedScrollView extends ScrollView {
     public static final int FADING_EDGE_STYLE_NONE = 0;
-    public static final int FADING_EDGE_STYLE_ROUNDED = 1;
     public static final int FADING_EDGE_STYLE_STRAIGHT = 2;
 
     @IntDef({FADING_EDGE_STYLE_NONE,
-            FADING_EDGE_STYLE_ROUNDED,
             FADING_EDGE_STYLE_STRAIGHT})
     @Target({ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})
     @Retention(RetentionPolicy.SOURCE)
@@ -136,13 +134,9 @@ public class ExtendedScrollView extends ScrollView {
                 this.topEdge = null;
                 this.bottomEdge = null;
                 break;
-            case FADING_EDGE_STYLE_ROUNDED:
-                this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.rounded_shadow_top_down, null);
-                this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.rounded_shadow_bottom_up, null);
-                break;
             case FADING_EDGE_STYLE_STRAIGHT:
-                this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_top_down, null);
-                this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_bottom_up, null);
+                this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_from_top_to_bottom, null);
+                this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_from_bottom_to_top, null);
                 break;
         }
 

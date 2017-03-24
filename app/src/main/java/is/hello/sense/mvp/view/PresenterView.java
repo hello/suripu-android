@@ -95,7 +95,7 @@ public abstract class PresenterView extends FrameLayout {
         recyclerView.addItemDecoration(decoration);
         recyclerView.addItemDecoration(new FadingEdgesItemDecoration(layoutManager,
                                                                      resources,
-                                                                     FadingEdgesItemDecoration.Style.ROUNDED_EDGES));
+                                                                     FadingEdgesItemDecoration.Style.STRAIGHT));
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(null);
     }

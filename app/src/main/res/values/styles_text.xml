@@ -3,22 +3,26 @@
     <!-- Todo rename file to typography.xml -->
 
     <!-- Start Button Styles -->
+    <style name="ButtonText" parent="AppTheme.Text.Header.H6.Medium">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textSize">@dimen/text_h6_5</item>
+        <item name="android:textColor">@color/primary_text_selector</item>
+    </style>
+
     <style name="Button">
         <item name="android:paddingTop">@dimen/x1</item>
         <item name="android:paddingBottom">@dimen/x1</item>
         <item name="android:paddingLeft">@dimen/x3</item>
         <item name="android:paddingRight">@dimen/x3</item>
-        <item name="android:textSize">@dimen/text_h6_5</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textAlignment">center</item>
-        <item name="android:textAppearance">@style/AppTheme.Text.Header.H6.Medium</item>
-        <item name="android:textColor">@color/white_text</item>
+        <item name="android:textAppearance">@style/ButtonText</item>
         <item name="android:background">@null</item>
         <item name="android:height">@dimen/button_height</item>
         <item name="android:hapticFeedbackEnabled">true</item>
     </style>
 
     <style name="Button.Raised">
+        <item name="android:textColor">@color/white_text</item>
         <item name="android:background">@drawable/sense_raised_button_selector</item>
     </style>
 
@@ -28,13 +32,16 @@
     </style>
 
     <style name="Button.Flat">
-        <item name="android:textColor">@color/primary</item>
+        <item name="android:textColor">@color/primary_text_selector</item>
         <item name="android:background">@drawable/sense_flat_button_selector</item>
     </style>
 
     <style name="Button.Flat.Primary">
-        <item name="android:textColor">@color/white_text</item>
         <item name="android:background">@color/primary</item>
+    </style>
+
+    <style name="Button.Flat.Link">
+        <item name="android:textColor">@color/link_text_selector</item>
     </style>
 
     <!-- End Button Styles -->
@@ -74,6 +81,11 @@
 
     <style name="Headline.Primary">
         <item name="android:textColor">@color/primary_text_selector</item>
+    </style>
+
+
+    <style name="Headline.Hint">
+        <item name="android:textColor">@color/hint_text</item>
     </style>
 
     <style name="Title1" parent="AppTheme.Text.Header.H5">

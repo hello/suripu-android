@@ -7,14 +7,14 @@
     <color name="disabled_text">@color/hint_text</color>
     <color name="divider">@color/white_12</color>
 
-    <color name="dim">@color/gray7</color>
+    <color name="dim">@color/gray3</color>
     <color name="primary">@color/blue6</color>
     <color name="error">@color/red6</color>
     <color name="warning">@color/yellow6</color>
     <color name="success">@color/green6</color>
 
-    <color name="background">@color/gray9</color>
-    <color name="background_card">@color/gray8</color>
+    <color name="background">@color/black</color>
+    <color name="background_card">@color/gray9</color>
     <color name="background_navigation">@color/gray8</color>
     <color name="background_overlay">@color/black_50</color>
     <color name="background_drawer">@color/gray8</color>
@@ -23,8 +23,8 @@
     <color name="sensor_alert">@color/red6</color>
     <color name="sensor_warning">@color/yellow6</color>
     <color name="sensor_ideal">@color/green6</color>
-    <color name="sensor_unknown">@color/gray6</color>
-    <color name="sensor_empty">@color/gray3</color>
+    <color name="sensor_unknown">@color/background_card</color>
+    <color name="sensor_empty">@color/background_card</color>
 
     <!-- Using @color/primary / blue6 -->
     <color name="devices_adapter_chevron">@color/primary</color>
@@ -48,9 +48,9 @@
     <color name="transparent">@color/white_00</color>
     <color name="transparent_overlay">@color/black_50</color>
     <color name="ripple">@color/divider</color>
-    <color name="status_bar_normal">@color/gray3</color>
+    <color name="status_bar_normal">#181818</color>
     <color name="timeline_transparent_overlay">@color/transparent_overlay</color>
-    <color name="timeline_background_fill">@color/gray9</color>
+    <color name="timeline_background_fill">@color/background</color>
     <color name="timeline_time_dividers">@color/blue6_30</color>
     <color name="fragment_dialog_loading_overlay">@color/transparent_overlay</color>
     <color name="fragment_dialog_welcome">@color/transparent_overlay</color>
@@ -61,7 +61,11 @@
     <color name="expansions_background">@color/background_card</color>
     <color name="timeline_share_background_gradient_top">@color/gray1</color>
     <color name="timeline_share_background_gradient_bottom">@color/white</color>
+    <color name="timeline_event_background_normal">@color/background_card</color>
+    <color name="timeline_event_background_pressed">@color/gray8</color>
     <color name="questions_divider">@color/divider</color>
+    <color name="shadow_start_color">@color/black_40</color>
+    <color name="shadow_end_color">@color/black_00</color>
 
     <!-- Text Colors -->
     <color name="error_text">@color/error</color>
@@ -86,6 +90,9 @@
     <color name="sense_edittext_bottom_line_normal">@color/divider</color>
     <color name="sense_edittext_background_normal">@color/background_card</color>
 
+    <!-- TabLayout Colors -->
+    <color name="tablayout_focused">@color/primary_text</color>
+
     <!-- OnboardingRegisterBirthdayFragment.java -->
     <color name="birthday_text_hint">@color/hint_text</color>
     <color name="birthday_text_active">@color/primary</color>
@@ -103,9 +110,9 @@
     <!-- Trends -->
     <color name="trends_line_divider">@color/divider</color>
     <color name="trends_line_divider_shimmer">@color/gray3</color>
-    <color name="trends_grid_graph_cell_empty">@color/white</color>
+    <color name="trends_grid_graph_cell_empty">@color/background_card</color>
     <color name="trends_grid_graph_cell_empty_border">@color/gray3</color>
-    <color name="trends_grid_graph_cell_missing">@color/gray2</color>
+    <color name="trends_grid_graph_cell_missing">@color/divider</color>
     <color name="trends_bar_graph_bar">@color/blue3</color>
     <color name="trends_bar_graph_annotation_text">@color/blue6</color>
     <color name="trends_bar_graph_highlight">@color/blue6</color>

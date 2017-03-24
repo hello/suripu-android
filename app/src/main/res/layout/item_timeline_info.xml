@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/x.25"
-        style="@style/Caption2.Hint"/>
+        style="@style/Caption1.Hint"/>
 
     <me.grantland.widget.AutofitTextView
         android:id="@+id/item_timeline_info_reading"

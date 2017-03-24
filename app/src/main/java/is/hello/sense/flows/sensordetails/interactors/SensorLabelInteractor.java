@@ -39,7 +39,7 @@ public class SensorLabelInteractor extends Interactor {
         for (int i = 0; i < labels.length; i++) {
             calendar.add(Calendar.DATE, 1);
             final String day = dateFormat.format(calendar.getTime());
-            labels[i] = day;
+            labels[i] = day.toUpperCase();
         }
         return labels;
     }
@@ -75,7 +75,7 @@ public class SensorLabelInteractor extends Interactor {
 
         for (int i = 6; i >= 0; i--) {
             final String day = dateFormat.format(calendar.getTime());
-            labels[i] = day;
+            labels[i] = day.toUpperCase();
             calendar.add(Calendar.HOUR, -3);
             calendar.add(Calendar.MINUTE, minuteDiff);
         }

@@ -248,7 +248,7 @@ public final class Styles {
             return null;
         }
 
-        final @ColorInt int emphasisColor = resources.getColor(R.color.black);
+        final @ColorInt int emphasisColor = resources.getColor(R.color.primary_text);
         final SpannableStringBuilder toFormat = new SpannableStringBuilder(source);
         final MarkupStyleSpan[] spans = toFormat.getSpans(0, toFormat.length(),
                                                           MarkupStyleSpan.class);

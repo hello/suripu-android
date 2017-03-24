@@ -6,7 +6,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/selectable_dark_bounded"
-        android:padding="@dimen/x2">
+        android:paddingEnd="@dimen/x2"
+        android:paddingStart="@dimen/x2"
+        android:paddingTop="@dimen/x2">
 
         <ImageView
             android:id="@+id/item_voice_command_image"
@@ -18,6 +20,7 @@
             tools:src="@drawable/icon_conditions_large"/>
 
         <LinearLayout
+            android:id="@+id/item_voice_command_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
@@ -39,5 +42,12 @@
                 android:layout_height="wrap_content"
                 tools:text="@string/voice_rc_message"/>
         </LinearLayout>
+
+        <View
+            android:id="@+id/item_voice_command_divider"
+            style="@style/Divider.Horizontal.LeftInset"
+            android:layout_below="@id/item_voice_command_container"
+            android:layout_marginTop="@dimen/x2"/>
+
     </RelativeLayout>
 </layout>

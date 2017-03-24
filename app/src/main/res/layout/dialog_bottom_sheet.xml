@@ -30,7 +30,7 @@
             android:layout_marginLeft="@dimen/x3"
             android:layout_marginRight="@dimen/x3"
             android:layout_marginBottom="@dimen/x3"
-            style="@style/Body1.Primary"
+            style="@style/Body1.Secondary"
             android:visibility="gone"/>
 
         <View

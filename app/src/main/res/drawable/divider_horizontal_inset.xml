@@ -4,7 +4,7 @@
         android:left="@dimen/x3">
         <shape android:shape="rectangle">
             <size android:height="@dimen/divider_size" />
-            <solid android:color="@color/border" />
+            <solid android:color="@color/divider" />
         </shape>
     </item>
 </layer-list>

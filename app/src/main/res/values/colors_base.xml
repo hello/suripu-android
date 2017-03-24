@@ -11,6 +11,7 @@
 
 
     <color name="black">#000000</color>
+    <color name="black_00">#00000000</color>
     <color name="black_06">#10000000</color>
     <color name="black_10">#19000000</color>
     <color name="black_12">#1e000000</color>
@@ -20,6 +21,7 @@
     <color name="black_25">#40000000</color>
     <color name="black_27">#45000000</color>
     <color name="black_38">#61000000</color>
+    <color name="black_40">#66000000</color>
     <color name="black_50">#80000000</color>
     <color name="black_53">#86000000</color>
     <color name="black_54">#7f000000</color>
@@ -62,6 +64,7 @@
     <color name="blue6">#009AFF</color>
     <color name="blue6_80">#cc009aff</color>
     <color name="blue6_50">#80009aff</color>
+    <color name="blue6_40">#66009aff</color>
     <color name="blue6_30">#4d009aff</color>
     <color name="blue6_20">#33009aff</color>
     <color name="blue6_15">#26009aff</color>

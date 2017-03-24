@@ -29,7 +29,7 @@
 
         <TextView
             android:id="@+id/fragment_timeline_info_summary"
-            style="@style/Body1.Secondary"
+            style="@style/Body1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/white_text"/>

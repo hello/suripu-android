@@ -2,13 +2,14 @@
 <layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
-        style="@style/AppTheme.Card.Clickable"
+        style="@style/AppTheme.Card"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:descendantFocusability="blocksDescendants"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/x2">
 
         <ImageView
             android:id="@+id/item_message_card_image"
@@ -30,12 +31,14 @@
 
         <TextView
             android:id="@+id/item_message_card_message"
+            style="@style/Body1.Secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/x2"
             android:layout_marginEnd="@dimen/x3"
             android:layout_marginStart="@dimen/x3"
             android:layout_marginTop="@dimen/x2"
-            style="@style/Body1.Secondary"/>
+            android:gravity="center_horizontal"/>
 
         <Button
             android:id="@+id/item_message_card_action"
@@ -45,7 +48,6 @@
             android:layout_marginBottom="@dimen/x2"
             android:layout_marginEnd="@dimen/x3"
             android:layout_marginStart="@dimen/x3"
-            android:layout_marginTop="@dimen/x2"
             android:text="@android:string/ok"/>
 
     </LinearLayout>

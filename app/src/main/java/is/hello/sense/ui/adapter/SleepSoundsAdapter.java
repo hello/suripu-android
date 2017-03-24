@@ -25,6 +25,7 @@ import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.widget.ImageTextView;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Constants;
@@ -128,15 +129,15 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             return new SleepSoundsPlayerViewHolder(inflater.inflate(R.layout.item_rounded_linearlayout, parent, false),
                                                    playerView);
         } else if (viewType == AdapterState.FIRMWARE_UPDATE.ordinal()) {
-            return new FwUpdateStateViewHolder(inflater.inflate(R.layout.temp_item_message_card, parent, false));
+            return new FwUpdateStateViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         } else if (viewType == AdapterState.SOUNDS_DOWNLOAD.ordinal()) {
-            return new NoSoundsStateViewHolder(inflater.inflate(R.layout.temp_item_message_card, parent, false));
+            return new NoSoundsStateViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         } else if (viewType == AdapterState.OFFLINE.ordinal()) {
-            return new OfflineViewHolder(inflater.inflate(R.layout.temp_item_message_card, parent, false));
+            return new OfflineViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         } else if (viewType == AdapterState.SENSE_NOT_PAIRED.ordinal()) {
-            return new SenseNotPairedViewHolder(inflater.inflate(R.layout.temp_item_message_card, parent, false));
+            return new SenseNotPairedViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         }
-        return new ErrorViewHolder(inflater.inflate(R.layout.temp_item_message_card, parent, false));
+        return new ErrorViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
     }
 
 
@@ -183,14 +184,14 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     public static abstract class SleepStateViewHolder extends BaseViewHolder {
         protected final ImageView image;
-        protected final TextView title;
+        protected final ImageTextView title;
         protected final TextView message;
 
         SleepStateViewHolder(final @NonNull View view) {
             super(view);
 
             this.image = (ImageView) view.findViewById(R.id.item_message_card_image);
-            this.title = (TextView) view.findViewById(R.id.item_message_card_title);
+            this.title = (ImageTextView) view.findViewById(R.id.item_message_card_image_text);
             this.message = (TextView) view.findViewById(R.id.item_message_card_message);
 
             final Button action = (Button) view.findViewById(R.id.item_message_card_action);
@@ -255,7 +256,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         ErrorViewHolder(final @NonNull View view) {
             super(view);
 
-            final TextView title = (TextView) view.findViewById(R.id.item_message_card_title);
+            final ImageTextView title = (ImageTextView) view.findViewById(R.id.item_message_card_image_text);
             title.setVisibility(View.GONE);
 
             this.message = (TextView) view.findViewById(R.id.item_message_card_message);

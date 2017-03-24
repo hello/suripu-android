@@ -24,6 +24,7 @@ import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.Annotation;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.functional.Lists;
+import is.hello.sense.ui.widget.ImageTextView;
 import is.hello.sense.ui.widget.RoundedLinearLayout;
 import is.hello.sense.ui.widget.ShimmerDividerDrawable;
 import is.hello.sense.ui.widget.util.Styles;
@@ -153,16 +154,16 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
 
     abstract static class StaticCardLayout extends FrameLayout {
         protected final ImageView image;
-        protected final TextView title;
+        protected final ImageTextView title;
         protected final TextView message;
         protected final Button action;
 
         StaticCardLayout(@NonNull final Context context) {
             super(context);
-            LayoutInflater.from(getContext()).inflate(R.layout.temp_item_message_card, this);
+            LayoutInflater.from(getContext()).inflate(R.layout.item_message_card, this);
             setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             this.image = (ImageView) findViewById(R.id.item_message_card_image);
-            this.title = (TextView) findViewById(R.id.item_message_card_title);
+            this.title = (ImageTextView) findViewById(R.id.item_message_card_image_text);
             this.message = (TextView) findViewById(R.id.item_message_card_message);
             this.action = (Button) findViewById(R.id.item_message_card_action);
         }
