@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import is.hello.sense.presenters.outputs.BaseOutput;
-import is.hello.sense.ui.activities.ScopedInjectionActivity;
+import is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity;
 import is.hello.sense.ui.common.SenseFragment;
 
 /**
@@ -25,12 +25,10 @@ public abstract class ScopedInjectionFragment extends SenseFragment
     }
 
     public void inject(@NonNull final Context context) {
-        if (context instanceof ScopedInjectionActivity) {
-            ((ScopedInjectionActivity) context).injectToScopedGraph(this);
-        } else if (context instanceof is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity) {
-            ((is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity) context).injectToScopedGraph(this);
+       if (context instanceof ScopedInjectionAppCompatActivity) {
+            ((ScopedInjectionAppCompatActivity) context).injectToScopedGraph(this);
         } else {
-            throw new ClassCastException(context.getClass() + " needs to be instanceof " + ScopedInjectionActivity.class.getSimpleName());
+            throw new ClassCastException(context.getClass() + " needs to be instanceof " + ScopedInjectionAppCompatActivity.class.getSimpleName());
         }
         onInjected();
     }
