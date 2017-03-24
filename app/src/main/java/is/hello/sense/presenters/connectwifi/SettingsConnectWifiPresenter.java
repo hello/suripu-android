@@ -26,6 +26,11 @@ public class SettingsConnectWifiPresenter extends BaseConnectWifiPresenter {
     }
 
     @Override
+    protected boolean shouldUseToolbar() {
+        return false;
+    }
+
+    @Override
     protected boolean shouldLinkAccount() {
         return shouldLinkAccount;
     }

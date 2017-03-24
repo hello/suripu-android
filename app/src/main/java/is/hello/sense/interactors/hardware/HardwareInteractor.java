@@ -12,11 +12,9 @@ import android.text.TextUtils;
 
 import org.joda.time.DateTimeZone;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

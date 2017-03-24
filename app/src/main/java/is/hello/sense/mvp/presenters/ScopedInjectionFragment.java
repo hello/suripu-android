@@ -10,11 +10,12 @@ import android.support.annotation.NonNull;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.interactors.Interactor;
 import is.hello.sense.interactors.InteractorContainer;
-import is.hello.sense.ui.activities.ScopedInjectionActivity;
+import is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity;
 import is.hello.sense.ui.common.SenseFragment;
 
 /**
  * To be used when injecting fragments to a scoped object graph instead of application level graph.
+ * Used by second MVP architecture. Based off {@link is.hello.sense.ui.fragments.ScopedInjectionFragment}
  */
 public abstract class ScopedInjectionFragment extends SenseFragment {
     private InteractorContainer interactorContainer = new InteractorContainer();
@@ -33,13 +34,13 @@ public abstract class ScopedInjectionFragment extends SenseFragment {
 
     @CallSuper
     public void inject() {
-        try {
-            ((ScopedInjectionActivity) getActivity()).injectToScopedGraph(this);
-            onInjected();
-        } catch (final ClassCastException e) {
-            SenseApplication.getInstance().inject(this); //todo temporary until we phase out old ScopedInjectionActivity
-            // throw new ClassCastException(context.getClass() + " needs to be instanceof " + ScopedInjectionActivity.class.getSimpleName());
+        final Context context = getActivity();
+        if (context instanceof ScopedInjectionAppCompatActivity) {
+            ((ScopedInjectionAppCompatActivity) context).injectToScopedGraph(this);
+        } else {
+            SenseApplication.getInstance().inject(this);
         }
+        onInjected();
     }
 
 

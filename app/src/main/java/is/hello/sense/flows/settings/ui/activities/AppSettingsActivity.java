@@ -18,7 +18,6 @@ import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.settings.ui.views.AppSettingsView;
 import is.hello.sense.flows.voice.ui.activities.VoiceSettingsActivity;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.appcompat.FragmentNavigationActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
@@ -136,7 +135,7 @@ public class AppSettingsActivity extends FragmentNavigationActivity
                               @StringRes final int titleRes,
                               final boolean lockOrientation) {
         final is.hello.sense.ui.common.FragmentNavigationActivity.Builder builder =
-                new is.hello.sense.ui.common.FragmentNavigationActivity.Builder(this, HardwareFragmentActivity.class);
+                new is.hello.sense.ui.common.FragmentNavigationActivity.Builder(this);
         builder.setDefaultTitle(titleRes);
         builder.setFragmentClass(fragmentClass);
         if (lockOrientation) {

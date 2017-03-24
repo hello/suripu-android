@@ -53,10 +53,26 @@ public abstract class BaseSelectWifiNetworkPresenter
         rescan(true);
     }
 
+    public boolean onBackPressed(@NonNull final Runnable defaultBehavior) {
+        if (shouldUseDefaultBackPressedBehavior()) {
+            defaultBehavior.run();
+        }
+        return true;
+    }
+
     @Override
     public void onViewCreated() {
         super.onViewCreated();
+        view.useToolbar(shouldUseToolBar());
         view.showMacAddress(hardwareInteractor.showMacAddress());
+    }
+
+    protected boolean shouldUseToolBar() {
+        return true;
+    }
+
+    protected boolean shouldUseDefaultBackPressedBehavior() {
+        return view == null || !view.isScanning();
     }
 
     protected void rescan(final boolean sendCountryCode) {
@@ -124,6 +140,10 @@ public abstract class BaseSelectWifiNetworkPresenter
         void showRescanOption();
 
         void bindScanResults(Collection<SenseCommandProtos.wifi_endpoint> scanResults);
+
+        void useToolbar(boolean use);
+
+        boolean isScanning();
     }
 
 }

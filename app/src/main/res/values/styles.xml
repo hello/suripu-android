@@ -69,7 +69,7 @@
         <item name="android:dividerHeight">@dimen/divider_size</item>
     </style>
 
-    <style name="AppTheme.Expansions" parent="AppTheme">
+    <style name="AppTheme.Expansions" parent="AppTheme.AppCompat.AppSettingsActivity">
         <item name="android:windowBackground">@color/expansions_background</item>
     </style>
 
@@ -82,7 +82,7 @@
         </item>
     </style>
 
-    <style name="AppTheme.NoActionBar.Black">
+    <style name="AppTheme.AppCompat.NoActionBar.Black">
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/black</item>
     </style>
 

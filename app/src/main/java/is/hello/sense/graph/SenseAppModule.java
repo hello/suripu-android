@@ -61,9 +61,9 @@ import is.hello.sense.pill.PillModule;
 import is.hello.sense.presenters.BaseHardwarePresenter;
 import is.hello.sense.settings.SettingsModule;
 import is.hello.sense.ui.activities.DebugActivity;
-import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.ListActivity;
+import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
@@ -86,7 +86,6 @@ import is.hello.sense.zendesk.ZendeskModule;
                 ApiModule.class,
                 BluetoothModule.class,
                 ZendeskModule.class,
-                DebugModule.class,
                 SettingsModule.class,
                 UtilityModule.class,
                 FacebookApiModule.class,
@@ -109,7 +108,6 @@ import is.hello.sense.zendesk.ZendeskModule;
                 RegisterFragment.class,
                 HardwareInteractor.class,
 
-                HardwareFragmentActivity.class,
                 DeviceListFragment.class,
                 DevicesInteractor.class,
                 DeviceIssuesInteractor.class,
@@ -159,7 +157,9 @@ import is.hello.sense.zendesk.ZendeskModule;
                 VoiceSettingsInteractor.class,
                 AppSettingsActivity.class,
                 SearchListActivity.class,
-                HomePresenterFragment.class
+                HomePresenterFragment.class,
+
+                FragmentNavigationActivity.class,
         }
 )
 @SuppressWarnings("UnusedDeclaration")

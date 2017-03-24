@@ -180,7 +180,7 @@ public class ErrorDialogFragment extends SenseDialogFragment {
     public static class Builder {
         protected final Bundle arguments = new Bundle();
 
-        @Deprecated
+
         /**
          * See {@link is.hello.sense.ui.dialogs.ErrorDialogFragment.PresenterBuilder}
          */
