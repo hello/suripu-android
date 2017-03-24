@@ -20,17 +20,19 @@
         android:orientation="horizontal">
 
         <RadioButton
+            style="@style/AppTheme.RadioButton"
             android:id="@+id/item_section_radio_button_left"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="@dimen/x.75"/>
+            android:padding="@dimen/x1"/>
 
         <RadioButton
+            style="@style/AppTheme.RadioButton"
             android:id="@+id/item_section_radio_button_right"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="@dimen/x.75"/>
+            android:padding="@dimen/x1"/>
     </RadioGroup>
 </LinearLayout>

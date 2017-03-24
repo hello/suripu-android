@@ -3,6 +3,7 @@ package is.hello.sense.permissions;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.PermissionChecker;
@@ -11,6 +12,7 @@ import is.hello.sense.R;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Constants;
 
 public abstract class Permission {
     protected final Fragment fragment;
@@ -27,6 +29,10 @@ public abstract class Permission {
         this.fragment = fragment;
         this.negativeButtonText = negativeButtonText;
         this.positiveButtonText = positiveButtonText;
+    }
+
+    protected CharSequence getButtonText(final int buttonTextRes) {
+        return Constants.NONE == buttonTextRes ? null : fragment.getText(buttonTextRes);
     }
 
     public boolean isGranted() {
@@ -55,7 +61,7 @@ public abstract class Permission {
 
     protected void requestPermissionWithDialog(@StringRes final int titleRes,
                                                @StringRes final int messageRes,
-                                               @NonNull final DialogInterface.OnClickListener listener) {
+                                               @Nullable final DialogInterface.OnClickListener listener) {
         Analytics.trackEvent(Analytics.Permissions.EVENT_WE_NEED_LOCATION, null);
 
         final SenseAlertDialog dialog = new SenseAlertDialog(fragment.getActivity());
@@ -65,7 +71,7 @@ public abstract class Permission {
             dialog.dismiss();
             Permission.this.requestPermission();
         });
-        dialog.setNegativeButton(negativeButtonText, listener);
+        dialog.setNegativeButton(getButtonText(negativeButtonText), listener);
         dialog.show();
     }
 
@@ -76,15 +82,15 @@ public abstract class Permission {
      */
     protected void showEnableInstructionsDialog(@StringRes final int titleRes,
                                                 @StringRes final int messageRes,
-                                                @NonNull final DialogInterface.OnClickListener listener) {
+                                                @Nullable final DialogInterface.OnClickListener listener) {
         Analytics.trackEvent(Analytics.Permissions.EVENT_LOCATION_DISABLED, null);
 
         final SenseAlertDialog dialog = new SenseAlertDialog(fragment.getActivity());
-        final CharSequence clickableText = fragment.getResources().getText(messageRes);
+        final CharSequence clickableText = fragment.getText(messageRes);
         dialog.setTitle(titleRes);
         dialog.setMessage(Styles.resolveSupportLinks(fragment.getActivity(), clickableText));
         dialog.setPositiveButton(android.R.string.ok, null);
-        dialog.setNegativeButton(negativeButtonText, listener);
+        dialog.setNegativeButton(getButtonText(negativeButtonText), listener);
         dialog.show();
     }
 

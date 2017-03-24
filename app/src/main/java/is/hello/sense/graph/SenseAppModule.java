@@ -34,6 +34,7 @@ import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
 import is.hello.sense.flows.home.ui.fragments.WeekTrendsFragment;
+import is.hello.sense.flows.nightmode.NightModeModule;
 import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.flows.settings.ui.activities.AppSettingsActivity;
 import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
@@ -92,6 +93,7 @@ import is.hello.sense.zendesk.ZendeskModule;
                 PillModule.class,
                 SenseOTAModule.class, //todo remove after converting fragments to use presenters,
                 NotificationModule.class,
+                NightModeModule.class,
         },
         injects = {
                 SenseApplication.class,

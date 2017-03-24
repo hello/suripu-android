@@ -187,32 +187,42 @@ public final class Views {
         // From <http://stackoverflow.com/questions/8558732/listview-textview-with-linkmovementmethod-makes-list-item-unclickable>
         textView.setMovementMethod(LinkMovementMethod.getInstance());
         textView.setOnTouchListener((v, event) -> {
-            final Spannable spannableText = Spannable.Factory.getInstance().newSpannable(textView.getText());
-            final int action = event.getAction();
-            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_DOWN) {
-                int x = (int) event.getX();
-                int y = (int) event.getY();
-
-                x -= textView.getTotalPaddingLeft();
-                y -= textView.getTotalPaddingTop();
-
-                x += textView.getScrollX();
-                y += textView.getScrollY();
-
-                final Layout layout = textView.getLayout();
-                final int line = layout.getLineForVertical(y);
-                final int off = layout.getOffsetForHorizontal(line, x);
-
-                final ClickableSpan[] link = spannableText.getSpans(off, off, ClickableSpan.class);
-                if (link.length != 0) {
-                    if (action == MotionEvent.ACTION_UP) {
-                        link[0].onClick(textView);
+                final ClickableSpan link = getClickableSpan(textView, event);
+                if (link != null) {
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        link.onClick(textView);
                     }
                     return true;
                 }
-            }
             return false;
         });
+    }
+
+    @Nullable
+    public static ClickableSpan getClickableSpan(@NonNull final TextView textView,
+                                                 @NonNull final MotionEvent event) {
+        final int action = event.getAction();
+        if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_DOWN) {
+            final Spannable spannableText = Spannable.Factory.getInstance().newSpannable(textView.getText());
+            int x = (int) event.getX();
+            int y = (int) event.getY();
+
+            x -= textView.getTotalPaddingLeft();
+            y -= textView.getTotalPaddingTop();
+
+            x += textView.getScrollX();
+            y += textView.getScrollY();
+
+            final Layout layout = textView.getLayout();
+            final int line = layout.getLineForVertical(y);
+            final int off = layout.getOffsetForHorizontal(line, x);
+
+            final ClickableSpan[] link = spannableText.getSpans(off, off, ClickableSpan.class);
+            if (link.length != 0) {
+                return link[0];
+            }
+        }
+        return null;
     }
 
     public static ValueAnimator createFrameAnimator(@NonNull View view, @NonNull Rect... frames) {
