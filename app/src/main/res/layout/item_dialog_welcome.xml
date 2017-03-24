@@ -7,7 +7,7 @@
 
     <Button
         android:id="@+id/fragment_dialog_welcome_item_dismiss"
-        style="@style/AppTheme.Button.Borderless.Primary"
+        style="@style/Button.Raised"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

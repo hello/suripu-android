@@ -288,48 +288,6 @@
         <item name="android:drawablePadding">4dp</item>
         <item name="android:text">@string/action_autofill_from_facebook</item>
     </style>
-
-    <style name="AppTheme.Button.Dialog" parent="AppTheme.Button.Borderless">
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/link_text_selector</item>
-        <item name="android:background">@drawable/selectable_dark_bounded</item>
-        <item name="android:textSize">@dimen/text_h6_3</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:ellipsize">end</item>
-    </style>
-
-    <style name="AppTheme.Button.Dialog.Alert">
-        <item name="android:paddingLeft">@dimen/x1</item>
-        <item name="android:paddingRight">@dimen/x1</item>
-        <item name="android:paddingTop">@dimen/x1</item>
-        <item name="android:paddingBottom">@dimen/x1</item>
-        <item name="android:fontFamily">sans-serif</item>
-    </style>
-
-    <style name="AppTheme.Button.Dialog.Positive">
-        <item name="android:fontFamily">sans-serif-medium</item>
-    </style>
-
-    <style name="AppTheme.Button.Borderless.Primary">
-        <item name="android:paddingTop">@dimen/x1</item>
-        <item name="android:paddingLeft">@dimen/x1</item>
-        <item name="android:paddingRight">@dimen/x1</item>
-        <item name="android:paddingBottom">@dimen/x1</item>
-        <item name="android:minHeight">56dp</item>
-
-        <item name="android:textAllCaps">true</item>
-        <item name="android:background">@drawable/selectable_dark_bounded</item>
-        <item name="android:textSize">@dimen/text_h6_3</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textColor">@color/link_text_selector</item>
-    </style>
-
-    <style name="AppTheme.Button.Borderless.Primary.Bottom">
-        <item name="android:background">@drawable/selectable_dark_bounded_bottom</item>
-    </style>
-
-
     <!-- Radio Buttons -->
 
     <!-- todo confirm this text appearance is right -->
