@@ -74,7 +74,9 @@ public class VideoPlayerActivity extends SenseActivity {
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(ARG_POSITION, videoView.getCurrentPosition());
+        if (videoView != null) {
+            outState.putInt(ARG_POSITION, videoView.getCurrentPosition());
+        }
     }
 
     @Override
@@ -100,8 +102,11 @@ public class VideoPlayerActivity extends SenseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        videoView.setOnPreparedListener(null);
-        videoView.setOnErrorListener(null);
-        videoView.setOnCompletionListener(null);
+        if (videoView != null) {
+            videoView.setOnPreparedListener(null);
+            videoView.setOnErrorListener(null);
+            videoView.setOnCompletionListener(null);
+            videoView = null;
+        }
     }
 }

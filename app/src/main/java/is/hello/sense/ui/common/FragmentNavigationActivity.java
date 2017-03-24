@@ -58,8 +58,10 @@ public class FragmentNavigationActivity extends SenseActivity
 
         final Intent intent = getIntent();
         final ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) {
+            throw new IllegalStateException(ActionBar.class.getSimpleName() + " required for " + getClass().getName());
+        }
         if (savedInstanceState == null) {
-            //noinspection ConstantConditions
             actionBar.setTitle(getDefaultTitle());
 
             if (intent.hasExtra(EXTRA_FRAGMENT_CLASS)) {
@@ -76,7 +78,6 @@ public class FragmentNavigationActivity extends SenseActivity
             }
         } else {
             final CharSequence title = savedInstanceState.getCharSequence(ARG_TITLE, getDefaultTitle());
-            //noinspection ConstantConditions
             actionBar.setTitle(title);
 
             navigationDelegate.onRestoreInstanceState(savedInstanceState);
