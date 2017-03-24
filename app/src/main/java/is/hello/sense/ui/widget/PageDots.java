@@ -172,7 +172,7 @@ public final class PageDots extends LinearLayout implements OnViewPagerChangeAda
             }
 
             case STYLE_BLUE: {
-                setColor(getResources().getColor(R.color.light_accent));
+                setColor(getResources().getColor(R.color.onboarding_icon_tint));
                 break;
             }
 

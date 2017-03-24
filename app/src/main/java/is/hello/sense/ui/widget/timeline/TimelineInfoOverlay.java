@@ -68,7 +68,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
         this.tooltip = (TextView) activity.getLayoutInflater().inflate(R.layout.timeline_tooltip_textview, contents, false);
         contents.addView(tooltip);
 
-        this.backgroundColor = ContextCompat.getColor(activity, R.color.background_light_overlay);
+        this.backgroundColor = ContextCompat.getColor(activity, R.color.timeline_transparent_overlay);
         final TypedValue typedValue = new TypedValue();
         resources.getValue(R.dimen.timeline_segment_item_end_max_fraction, typedValue, true);
         this.maxBackgroundWidthFraction = typedValue.getFloat();

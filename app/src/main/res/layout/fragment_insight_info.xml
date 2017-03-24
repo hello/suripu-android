@@ -37,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/x3"
-                android:background="@color/background_insight_illustration"
+                android:background="@color/insight_illustration_background"
                 android:src="@drawable/empty_illustration"
                 app:senseAspectRatio="2:1"
                 />

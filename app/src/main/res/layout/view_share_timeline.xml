@@ -5,7 +5,7 @@
     <RelativeLayout
         android:layout_width="@dimen/timeline_shareable_view_width"
         android:layout_height="@dimen/timeline_shareable_view_height"
-        android:background="@color/background_light"
+        android:background="@color/background_card"
         android:padding="@dimen/x2">
 
 

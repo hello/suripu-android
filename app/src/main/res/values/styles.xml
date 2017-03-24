@@ -31,25 +31,26 @@
         <item name="android:spinnerStyle">@style/AppTheme.Spinner</item>
         <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
         <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Tiny</item>
-        <item name="android:textColorLink">@color/text_link</item>
+        <item name="android:textColorLink">@color/link_text_selector</item>
 
         <item name="android:listSelector">@drawable/selectable_dark_bounded</item>
         <item name="android:listDivider">@color/border</item>
         <item name="android:dividerHeight">@dimen/divider_size</item>
 
-        <item name="senseTextAppearanceHeading">@style/Title2.Primary</item> <!-- todo confirm this doesn't break something -->
+        <item name="senseTextAppearanceHeading">@style/Title2.Primary
+        </item> <!-- todo confirm this doesn't break something -->
         <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
         <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
 
-        <item name="senseBackgroundSecondary">@color/background_light</item>
+        <item name="senseBackgroundSecondary">@color/background_card</item>
     </style>
 
     <style name="AppTheme.Onboarding" parent="AppTheme.NoActionBar">
-        <item name="android:windowBackground">@color/background_onboarding</item>
+        <item name="android:windowBackground">@color/onboarding_background</item>
     </style>
 
     <style name="AppTheme.AppCompat.NoActionBar.Onboarding">
-        <item name="android:windowBackground">@color/background_onboarding</item>
+        <item name="android:windowBackground">@color/onboarding_background</item>
         <!-- Todo after complete app compat transition move to AppTheme.AppCompat.NoActionBar-->
         <item name="colorButtonNormal">@color/sense_flat_button_normal</item>
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
@@ -61,7 +62,7 @@
         <item name="android:spinnerStyle">@style/AppTheme.Spinner</item>
         <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
         <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Tiny</item>
-        <item name="android:textColorLink">@color/text_link</item>
+        <item name="android:textColorLink">@color/link_text_selector</item>
 
         <item name="android:listSelector">@drawable/selectable_dark_bounded</item>
         <item name="android:listDivider">@color/border</item>
@@ -69,7 +70,7 @@
     </style>
 
     <style name="AppTheme.Expansions" parent="AppTheme.AppCompat.AppSettingsActivity">
-        <item name="android:windowBackground">@color/background_expansions</item>
+        <item name="android:windowBackground">@color/expansions_background</item>
     </style>
 
 
@@ -77,7 +78,7 @@
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowTitleSize">0dp</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal</item>
     </style>
 
     <style name="AppTheme.AppCompat.NoActionBar.Black">
@@ -89,9 +90,9 @@
     <style name="AppTheme.ActionBar" parent="Platform.ActionBar"/>
 
     <style name="AppTheme.ActionBar.Solid">
-        <item name="android:background">@color/light_accent</item>
-        <item name="android:backgroundStacked">@color/light_accent</item>
-        <item name="android:backgroundSplit">@color/light_accent</item>
+        <item name="android:background">@color/primary</item>
+        <item name="android:backgroundStacked">@color/primary</item>
+        <item name="android:backgroundSplit">@color/primary</item>
         <item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
         <item name="android:icon">@android:color/transparent</item>
         <item name="android:titleTextStyle">@style/AppTheme.Text.ActionTitle</item>
@@ -106,7 +107,7 @@
 
     <style name="AppTheme.Text.ActionSubtitle">
         <item name="android:textSize">@dimen/text_body</item>
-        <item name="android:textColor">@color/text_dim_light</item>
+        <item name="android:textColor">@color/secondary_text</item>
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:paddingTop">2dp</item>
     </style>
@@ -176,14 +177,12 @@
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">@color/transparent</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal</item>
     </style>
 
     <style name="AppTheme.Dialog.FullScreen.Insight">
         <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">
-            @color/status_bar_illustration
-        </item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal</item>
     </style>
 
     <style name="AppTheme.Dialog.Loading" parent="AppTheme.Dialog.FullScreen">
@@ -191,7 +190,7 @@
     </style>
 
     <style name="AppTheme.Dialog.BottomSheet" parent="Platform.Dialog.NoElevation">
-        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:windowBackground">@color/background_card</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimations.BottomSlide</item>
         <item name="android:paddingTop">0dp</item>
@@ -226,7 +225,7 @@
     <style name="AppTheme.Button" parent="Platform.Button">
         <item name="android:minHeight">@dimen/button_height</item>
         <item name="android:textAppearance">@style/AppTheme.Text.Header.H6.Medium</item>
-        <item name="android:background">@drawable/button_background_selector_simple</item>
+        <item name="android:background">@drawable/sense_raised_button_selector</item>
     </style>
 
     <style name="AppTheme.Button.Borderless">
@@ -235,11 +234,11 @@
         <item name="android:paddingLeft">@dimen/x1</item>
         <item name="android:paddingRight">@dimen/x1</item>
         <item name="android:paddingBottom">@dimen/x1</item>
-        <item name="android:background">@drawable/selectable_dark</item>
+        <item name="android:background">@drawable/ripple_selector</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.Accent">
-        <item name="android:textColor">@color/text_link_color_selector</item>
+        <item name="android:textColor">@color/link_text_selector</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.Accent.Bounded">
@@ -257,19 +256,13 @@
         <item name="android:paddingLeft">@dimen/x3</item>
         <item name="android:paddingRight">@dimen/x3</item>
         <item name="android:paddingBottom">@dimen/x3</item>
-        <item name="android:textColor">@color/text_body_new</item>
+        <item name="android:textColor">@color/primary_text</item>
         <item name="android:textSize">@dimen/text_h6_3</item>
         <item name="android:background">@drawable/selectable_dark_bounded</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.Question.Choice">
-        <item name="android:textColor">@color/text_link_color_selector</item>
-    </style>
-
-    <style name="AppTheme.Button.Borderless.White">
-        <item name="android:background">@drawable/selectable_light</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/link_text_selector</item>
     </style>
 
     <style name="AppTheme.Button.Rounded">
@@ -281,12 +274,7 @@
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
     </style>
-
-    <style name="AppTheme.Button.Rounded.Light">
-        <item name="android:background">@drawable/selector_button_rounded_white</item>
-        <item name="android:textColor">@color/white_text</item>
-    </style>
-
+\
     <style name="AppTheme.Button.ModeSelector">
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:textColor">@color/text_color_selector_toggle_button</item>
@@ -311,7 +299,7 @@
 
     <style name="AppTheme.Button.Dialog" parent="AppTheme.Button.Borderless">
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/text_link_color_selector</item>
+        <item name="android:textColor">@color/link_text_selector</item>
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:textSize">@dimen/text_h6_3</item>
         <item name="android:singleLine">true</item>
@@ -342,7 +330,7 @@
         <item name="android:textSize">@dimen/text_h6_3</item>
         <item name="android:textStyle">normal</item>
         <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textColor">@color/text_link_color_selector</item>
+        <item name="android:textColor">@color/link_text_selector</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.Primary.Bottom">
@@ -372,7 +360,7 @@
     <style name="Divider.Horizontal">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_size</item>
-        <item name="android:color">@color/divider_color</item>
+        <item name="android:color">@color/divider</item>
     </style>
 
 
@@ -537,7 +525,7 @@
         <item name="colorPrimaryDark">@color/primary</item>
         <!-- Bright complement to the primary branding color. By default, this is the color applied
          to framework controls (via colorControlActivated). -->
-        <item name="colorAccent">@color/light_accent</item>
+        <item name="colorAccent">@color/primary</item>
         <!-- The color applied to framework controls in their normal state. -->
         <item name="colorControlNormal">@color/primary</item>
         <!-- The color applied to framework controls in their activated (ex. checked) state. -->
@@ -552,12 +540,13 @@
         <item name="android:windowBackground">@color/background</item>
         <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
 
-        <item name="senseTextAppearanceHeading">@style/Title2.Primary</item> <!-- todo confirm this doesn't break something -->
+        <item name="senseTextAppearanceHeading">@style/Title2.Primary
+        </item> <!-- todo confirm this doesn't break something -->
         <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
         <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
-        <item name="senseBackgroundSecondary">@color/background_light</item>
+        <item name="senseBackgroundSecondary">@color/background_card</item>
 
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal</item>
         <!-- remove actionbar elevation for kitkat and older -->
         <item name="android:windowContentOverlay">@null</item>
         <item name="actionBarStyle">@style/ActionBar</item>
@@ -582,7 +571,7 @@
         <item name="colorPrimaryDark">@color/primary</item>
         <!-- Bright complement to the primary branding color. By default, this is the color applied
          to framework controls (via colorControlActivated). -->
-        <item name="colorAccent">@color/light_accent</item>
+        <item name="colorAccent">@color/primary</item>
         <!-- The color applied to framework controls in their normal state. -->
         <item name="colorControlNormal">@color/primary</item>
         <!-- The color applied to framework controls in their activated (ex. checked) state. -->
@@ -596,12 +585,13 @@
         <!-- Inactive track color(75% transparency) -->
         <item name="android:windowBackground">@color/background</item>
         <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
-        <item name="senseTextAppearanceHeading">@style/Title2.Primary</item> <!-- todo confirm this doesn't break something -->
+        <item name="senseTextAppearanceHeading">@style/Title2.Primary
+        </item> <!-- todo confirm this doesn't break something -->
         <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
         <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
-        <item name="senseBackgroundSecondary">@color/background_light</item>
+        <item name="senseBackgroundSecondary">@color/background_card</item>
 
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal</item>
     </style>
 
     <style name="AppTheme.AppCompat.ProgressBar" parent="Widget.AppCompat.ProgressBar">
@@ -615,7 +605,7 @@
     </style>
 
     <style name="AppTheme.AppCompat.NoActionBar.TabLayout" parent="Widget.Design.TabLayout">
-        <item name="tabBackground">@color/background_light</item>
+        <item name="tabBackground">@color/background_card</item>
         <item name="android:textAllCaps">true</item>
         <item name="tabSelectedTextColor">@color/primary</item>
         <item name="tabTextColor">@color/dim</item>
@@ -627,18 +617,18 @@
 
     <style name="AppTheme.AppCompat.NoActionBar.BottomBar" parent="AppTheme.AppCompat.NoActionBar.TabLayout">
         <item name="android:minHeight">@dimen/action_bar_height</item>
-        <item name="tabIndicatorColor">@color/background_light</item>
+        <item name="tabIndicatorColor">@color/background_card</item>
         <item name="tabIndicatorHeight">0dp</item>
         <item name="android:layout_gravity">bottom</item>
     </style>
 
     <style name="AppTheme.AppCompat.Fab" parent="Widget.Design.FloatingActionButton">
-        <item name="backgroundTint">@color/light_accent</item>
+        <item name="backgroundTint">@color/primary</item>
     </style>
 
     <style name="AppTheme.AppCompat.AppSettingsActivity">
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/primary</item>
-        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:windowBackground">@color/background_card</item>
     </style>
 
     <style name="AppTheme.AppCompat.NotificationActivity" parent="AppTheme.AppCompat.AppSettingsActivity">
@@ -648,7 +638,7 @@
 
     <style name="AppTheme.AppCompat.SearchListActivity">
         <item name="android:statusBarColor" tools:targetApi="lollipop">
-            @color/light_accent_darkened
+            @color/primary_darkened
         </item>
     </style>
 

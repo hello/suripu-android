@@ -255,7 +255,7 @@ public class RegisterFragment extends InjectionFragment
 
     @Override
     public int getStatusBarColor(@NonNull final Resources resources) {
-        return ContextCompat.getColor(getActivity(), R.color.status_bar_grey);
+        return ContextCompat.getColor(getActivity(), R.color.status_bar_normal);
     }
 
     @Override

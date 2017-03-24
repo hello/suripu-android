@@ -83,8 +83,7 @@ public class SmartAlarmDetailView extends PresenterView {
         final View repeatRow = findViewById(R.id.view_smart_alarm_detail_repeat);
         final ImageButton smartHelp = (ImageButton) findViewById(R.id.view_smart_alarm_detail_smart_help);
         final Drawable smartHelpDrawable = smartHelp.getDrawable().mutate();
-        final int accent = ContextCompat.getColor(activity, R.color.light_accent);
-        final int dimmedAccent = Drawing.colorWithAlpha(accent, 178);
+        final int dimmedAccent = Drawing.colorWithAlpha(ContextCompat.getColor(activity, R.color.primary), 178);
         Drawables.setTintColor(smartHelpDrawable, dimmedAccent);
         smartHelp.setImageDrawable(smartHelpDrawable);
         Views.setSafeOnClickListener(smartRow, v -> this.smartAlarmToggle.toggle());

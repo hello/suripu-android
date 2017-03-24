@@ -2,10 +2,10 @@
 <resources>
     <style name="Platform" />
     <style name="Platform.Light" parent="android:Theme.Material.Light">
-        <item name="android:colorPrimary">@color/light_accent</item>
-        <item name="android:colorPrimaryDark">@color/light_accent_darkened</item>
-        <item name="android:colorAccent">@color/light_accent</item>
-        <item name="android:statusBarColor">@color/light_accent_darkened</item>
+        <item name="android:colorPrimary">@color/primary</item>
+        <item name="android:colorPrimaryDark">@color/primary_darkened</item>
+        <item name="android:colorAccent">@color/primary</item>
+        <item name="android:statusBarColor">@color/status_bar_primary_darkened</item>
         <item name="android:progressBarStyle">@android:style/Widget.Holo.ProgressBar</item>
 
         <item name="android:dialogTheme">@style/Platform.Dialog</item>
@@ -19,9 +19,9 @@
     <style name="Platform.ActionBar.ButtonCloseMode" parent="android:Widget.Material.Light.ActionButton.CloseMode" />
     <style name="Platform.ActionBar.ButtonOverflow" parent="android:style/Widget.Material.ActionButton.Overflow" />
     <style name="Platform.Dialog" parent="android:Theme.Material.Light.Dialog.MinWidth">
-        <item name="android:colorPrimary">@color/light_accent</item>
-        <item name="android:colorPrimaryDark">@color/light_accent_darkened</item>
-        <item name="android:colorAccent">@color/light_accent</item>
+        <item name="android:colorPrimary">@color/primary</item>
+        <item name="android:colorPrimaryDark">@color/primary_darkened</item>
+        <item name="android:colorAccent">@color/primary</item>
     </style>
     <style name="Platform.Dialog.NoElevation">
         <item name="android:elevation">0dp</item>
@@ -29,9 +29,9 @@
         <item name="android:windowElevation">0dp</item>
     </style>
     <style name="Platform.Dialog.MinWidth" parent="android:Theme.Material.Light.Dialog.MinWidth">
-        <item name="android:colorPrimary">@color/light_accent</item>
-        <item name="android:colorPrimaryDark">@color/light_accent_darkened</item>
-        <item name="android:colorAccent">@color/light_accent</item>
+        <item name="android:colorPrimary">@color/primary</item>
+        <item name="android:colorPrimaryDark">@color/primary_darkened</item>
+        <item name="android:colorAccent">@color/primary</item>
     </style>
     <style name="Platform.Spinner" parent="android:style/Widget.Holo.Light.Spinner">
         <item name="android:elevation">0dp</item>

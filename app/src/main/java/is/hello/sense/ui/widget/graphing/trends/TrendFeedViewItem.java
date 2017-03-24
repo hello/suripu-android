@@ -54,7 +54,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.item_trend_feed_view, this);
 
         setOrientation(VERTICAL);
-        setBackgroundResource(R.drawable.raised_item_normal);
+        setBackgroundColor(ContextCompat.getColor(getContext(), R.color.background_card));
 
         final Resources resources = getResources();
         final int padding = resources.getDimensionPixelSize(R.dimen.x2);
@@ -133,7 +133,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
                         textColor = condition.colorRes;
                     }
                 } else {
-                    textColor = R.color.trends_bargraph_annotation_text;
+                    textColor = R.color.trends_bar_graph_annotation_text;
                 }
                 final TextView valueText =
                         ((TextView) annotationView.findViewById(R.id.item_bargraph_annotation_value));

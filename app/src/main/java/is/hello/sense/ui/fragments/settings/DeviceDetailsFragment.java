@@ -123,7 +123,7 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
 
         final TextView itemView = new TextView(context);
         itemView.setBackgroundResource(R.drawable.selectable_dark_bounded);
-        itemView.setTextColor(ContextCompat.getColorStateList(getActivity(), R.color.text_color_selector_dark));
+        itemView.setTextColor(ContextCompat.getColorStateList(getActivity(), R.color.primary_text));
         itemView.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
         itemView.setText(titleRes);
 

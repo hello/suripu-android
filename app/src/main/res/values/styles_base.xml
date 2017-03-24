@@ -4,7 +4,7 @@
          should be referenced in styles_text.xml with a proper design 'term'. The design term is
          what should be used with your views. -->
     <style name="AppTheme.Text" parent="android:TextAppearance">
-        <item name="android:textColorLink">@color/text_color_link</item>
+        <item name="android:textColorLink">@color/link_text_selector</item>
     </style>
 
     <style name="AppTheme.Text.Header">

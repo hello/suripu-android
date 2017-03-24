@@ -30,7 +30,7 @@
         <item name="colorPrimaryDark">@color/primary</item>
         <!-- Bright complement to the primary branding color. By default, this is the color applied
          to framework controls (via colorControlActivated). -->
-        <item name="colorAccent">@color/light_accent</item>
+        <item name="colorAccent">@color/primary</item>
         <!-- The color applied to framework controls in their normal state. -->
         <item name="colorControlNormal">@color/primary</item>
         <!-- The color applied to framework controls in their activated (ex. checked) state. -->
@@ -49,9 +49,9 @@
         <item name="senseTextAppearanceHeading">@style/Title2.Primary</item> <!-- todo confirm this doesn't break something -->
         <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
         <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
-        <item name="senseBackgroundSecondary">@color/background_light</item>
+        <item name="senseBackgroundSecondary">@color/background_card</item>
 
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_color</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal</item>
         <!-- remove actionbar elevation for kitkat and older -->
         <item name="android:windowContentOverlay">@null</item>
         <item name="actionBarStyle">@style/ActionBar</item>

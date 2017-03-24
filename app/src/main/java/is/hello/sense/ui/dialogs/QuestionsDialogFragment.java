@@ -312,7 +312,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment
 
             if (i < choices.size() - 1) {
                 View divider = new View(getActivity());
-                divider.setBackgroundResource(R.color.light_accent);
+                divider.setBackgroundResource(R.color.questions_divider);
                 choicesContainer.addView(divider, dividerLayoutParams);
             }
         }
@@ -338,7 +338,7 @@ public class QuestionsDialogFragment extends InjectionDialogFragment
 
             if (i < choices.size() - 1) {
                 View divider = new View(getActivity());
-                divider.setBackgroundResource(R.color.light_accent);
+                divider.setBackgroundResource(R.color.questions_divider);
                 choicesContainer.addView(divider, dividerLayoutParams);
             }
         }

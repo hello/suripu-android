@@ -65,8 +65,7 @@
             android:layout_marginRight="@dimen/x3"
             android:layout_marginTop="@dimen/x2"
             android:gravity="center"
-            android:text="@string/sense_starting_update"
-            android:textColor="@color/text_detail_grey"/>
+            android:text="@string/sense_starting_update"/>
 
         <Button
             android:id="@+id/fragment_onboarding_sense_update_skip"

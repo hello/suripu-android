@@ -85,7 +85,7 @@ public class NotificationMessageReceiver extends BroadcastReceiver {
 
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setSmallIcon(R.drawable.icon_sense_24_white);
-        builder.setColor(ContextCompat.getColor(context, R.color.light_accent));
+        builder.setColor(ContextCompat.getColor(context, R.color.notification_text));
         builder.setContentTitle(titleText);
         builder.setContentText(bodyText);
         builder.setStyle(new NotificationCompat.BigTextStyle().bigText(bodyText));

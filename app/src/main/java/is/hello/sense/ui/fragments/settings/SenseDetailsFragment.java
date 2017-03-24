@@ -458,7 +458,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                 new SettingsActivity.Builder(getActivity());
         builder.setDefaultTitle(R.string.title_edit_wifi);
         builder.setFragmentClass(SelectWifiNetworkFragment.class);
-        builder.setWindowBackgroundColor(ContextCompat.getColor(getActivity(), R.color.background_onboarding));
+        builder.setWindowBackgroundColor(ContextCompat.getColor(getActivity(), R.color.onboarding_background));
         builder.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         startActivityForResult(builder.toIntent(), REQUEST_CODE_WIFI);
     }
@@ -542,7 +542,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         options.add(
                 new SenseBottomSheet.Option(OPTION_ID_REPLACE_SENSE)
                         .setTitle(R.string.action_replace_this_sense)
-                        .setTitleColor(ContextCompat.getColor(getActivity(), R.color.text_dark))
+                        .setTitleColor(ContextCompat.getColor(getActivity(), R.color.primary_text))
                         .setDescription(R.string.description_replace_this_sense)
                         .setIcon(R.drawable.settings_advanced)
                    );
@@ -550,7 +550,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             options.add(
                     new SenseBottomSheet.Option(OPTION_ID_FACTORY_RESET)
                             .setTitle(R.string.action_factory_reset)
-                            .setTitleColor(ContextCompat.getColor(getActivity(), R.color.destructive_accent))
+                            .setTitleColor(ContextCompat.getColor(getActivity(), R.color.error_text))
                             .setDescription(R.string.description_factory_reset)
                             .setIcon(R.drawable.settings_factory_reset)
                        );

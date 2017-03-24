@@ -66,7 +66,7 @@ public class SmartAlarmSoundAdapter extends ArrayRecyclerAdapter<Alarm.Sound, Sm
         }
 
         if (playingSoundId == sound.id) {
-            holder.name.setTextColor(resources.getColor(R.color.light_accent));
+            holder.name.setTextColor(resources.getColor(R.color.link_text_selector));
             if (playingSoundLoading) {
                 holder.checked.setVisibility(View.INVISIBLE);
                 holder.busy.setVisibility(View.VISIBLE);
@@ -75,7 +75,7 @@ public class SmartAlarmSoundAdapter extends ArrayRecyclerAdapter<Alarm.Sound, Sm
                 holder.busy.setVisibility(View.GONE);
             }
         } else {
-            holder.name.setTextColor(resources.getColor(R.color.text_dark));
+            holder.name.setTextColor(resources.getColor(R.color.primary_text));
             holder.checked.setVisibility(View.VISIBLE);
             holder.busy.setVisibility(View.GONE);
         }

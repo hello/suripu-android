@@ -30,7 +30,7 @@
 
     <Button
         android:id="@+id/dialog_sense_list_positive"
-        style="@style/AppTheme.Button.Dialog.Alert"
+        style="@style/Button.Flat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -41,7 +41,7 @@
 
     <Button
         android:id="@+id/dialog_sense_list_negative"
-        style="@style/AppTheme.Button.Dialog.Alert"
+        style="@style/Button.Flat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -49,8 +49,7 @@
         android:layout_marginStart="@dimen/x2"
         android:layout_marginTop="@dimen/x2"
         android:layout_toStartOf="@id/dialog_sense_list_positive"
-        android:text="@android:string/cancel"
-        android:textColor="@color/text_medium"/>
+        android:text="@android:string/cancel"/>
 
     <View
         android:id="@+id/dialog_sense_list_button_divider"
