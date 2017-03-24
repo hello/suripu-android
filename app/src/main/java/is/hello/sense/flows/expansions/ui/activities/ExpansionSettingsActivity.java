@@ -18,12 +18,12 @@ import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionListFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionsAuthFragment;
-import is.hello.sense.ui.activities.ScopedInjectionActivity;
+import is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 
-public class ExpansionSettingsActivity extends ScopedInjectionActivity
+public class ExpansionSettingsActivity extends ScopedInjectionAppCompatActivity
         implements FragmentNavigation {
 
     private static final String EXTRA_EXPANSION_DETAIL_ID = ExpansionSettingsActivity.class.getName() + "EXTRA_EXPANSION_DETAIL_ID";

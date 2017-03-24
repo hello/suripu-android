@@ -68,7 +68,7 @@
         <item name="android:dividerHeight">@dimen/divider_size</item>
     </style>
 
-    <style name="AppTheme.Expansions" parent="AppTheme">
+    <style name="AppTheme.Expansions" parent="AppTheme.AppCompat.AppSettingsActivity">
         <item name="android:windowBackground">@color/background_expansions</item>
     </style>
 
