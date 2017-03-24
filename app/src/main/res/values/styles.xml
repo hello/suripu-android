@@ -69,7 +69,7 @@
         <item name="android:dividerHeight">@dimen/divider_size</item>
     </style>
 
-    <style name="AppTheme.Expansions" parent="AppTheme">
+    <style name="AppTheme.Expansions" parent="AppTheme.AppCompat.AppSettingsActivity">
         <item name="android:windowBackground">@color/expansions_background</item>
     </style>
 
@@ -82,7 +82,7 @@
         </item>
     </style>
 
-    <style name="AppTheme.NoActionBar.Black">
+    <style name="AppTheme.AppCompat.NoActionBar.Black">
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/black</item>
     </style>
 
@@ -277,7 +277,7 @@
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
     </style>
-    \
+
 
     <style name="AppTheme.Button.ModeSelector">
         <item name="android:background">@drawable/selectable_dark_bounded</item>
@@ -341,6 +341,26 @@
         <item name="android:background">@drawable/selectable_dark_bounded_bottom</item>
     </style>
 
+
+    <!-- Radio Buttons -->
+
+    <!-- todo confirm this text appearance is right -->
+    <style name="AppTheme.RadioButton" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:background">@drawable/selectable_dark_bounded</item>
+        <item name="android:paddingTop">@dimen/x2</item>
+        <item name="android:paddingBottom">@dimen/x2</item>
+        <item name="android:paddingRight">@dimen/x3</item>
+        <item name="android:paddingStart">@dimen/x3</item>
+        <item name="android:button">@drawable/radio_selector</item>
+        <item name="android:textAppearance">@style/Body1.Primary</item>
+    </style>
+
+    <!-- In order to allow left padding of radio selector but has issues syncing state with recyclerview adapters when first rendered-->
+    <style name="AppTheme.RadioButton.Drawable">
+        <item name="android:button">@null</item>
+        <item name="android:drawableStart">@drawable/radio_selector</item>
+        <item name="android:drawablePadding">@dimen/x3</item>
+    </style>
 
     <!-- Spinners -->
 
@@ -634,7 +654,7 @@
     </style>
 
     <style name="AppTheme.AppCompat.AppSettingsActivity">
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/primary</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/primary_darkened</item>
         <item name="android:windowBackground">@color/background_card</item>
     </style>
 
@@ -647,6 +667,9 @@
         <item name="android:statusBarColor" tools:targetApi="lollipop">
             @color/primary_darkened
         </item>
+    </style>
+
+    <style name="AppTheme.AppCompat.NightModeActivity" parent="AppTheme.AppCompat.AppSettingsActivity">
     </style>
 
 </resources>

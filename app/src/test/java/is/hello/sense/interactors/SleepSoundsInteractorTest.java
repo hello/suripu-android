@@ -57,4 +57,8 @@ public class SleepSoundsInteractorTest extends InjectionTestCase {
         Sync.wrap(sleepSoundsInteractor.hasSensePaired(devicesList)).assertThrows(SenseRequiredException.class);
     }
 
+    @Test
+    public void hasNullState() throws Exception {
+        assertThat(sleepSoundsInteractor.onSaveState(), equalTo(null));
+    }
 }

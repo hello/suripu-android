@@ -61,10 +61,15 @@ public abstract class FragmentNavigationActivity extends ScopedInjectionActivity
     public void onBackPressed() {
         final Fragment fragment = getTopFragment();
         if (fragment instanceof OnBackPressedInterceptor) {
-            ((OnBackPressedInterceptor) fragment).onInterceptBackPressed(() -> this.stateSafeExecutor.execute(super::onBackPressed));
-        } else {
-            super.onBackPressed();
+            if (((OnBackPressedInterceptor) fragment).onInterceptBackPressed(this::back)) {
+                return;
+            }
         }
+        back();
+    }
+
+    private void back() {
+        stateSafeExecutor.execute(super::onBackPressed);
     }
     //endregion
 

@@ -12,13 +12,13 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
+import is.hello.sense.flows.nightmode.ui.activities.NightModeActivity;
 import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.flows.notification.ui.activities.NotificationActivity;
 import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.settings.ui.views.AppSettingsView;
 import is.hello.sense.flows.voice.ui.activities.VoiceSettingsActivity;
 import is.hello.sense.functional.Functions;
-import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.appcompat.FragmentNavigationActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
@@ -78,6 +78,9 @@ public class AppSettingsActivity extends FragmentNavigationActivity
                 case AppSettingsView.INDEX_VOICE:
                     showVoiceFragment();
                     break;
+                case AppSettingsView.INDEX_NIGHT_MODE:
+                    showNightModeSettings();
+                    break;
                 case AppSettingsView.INDEX_SUPPORT:
                     showSupportFragment();
                     break;
@@ -89,6 +92,10 @@ public class AppSettingsActivity extends FragmentNavigationActivity
                     break;
             }
         }
+    }
+
+    private void showNightModeSettings() {
+        startActivity(new Intent(this, NightModeActivity.class));
     }
     //endregion
 
@@ -136,7 +143,7 @@ public class AppSettingsActivity extends FragmentNavigationActivity
                               @StringRes final int titleRes,
                               final boolean lockOrientation) {
         final is.hello.sense.ui.common.FragmentNavigationActivity.Builder builder =
-                new is.hello.sense.ui.common.FragmentNavigationActivity.Builder(this, HardwareFragmentActivity.class);
+                new is.hello.sense.ui.common.FragmentNavigationActivity.Builder(this);
         builder.setDefaultTitle(titleRes);
         builder.setFragmentClass(fragmentClass);
         if (lockOrientation) {

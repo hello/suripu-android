@@ -84,14 +84,7 @@ public class ConnectToWiFiFragment extends BasePresenterFragment
         this.continueButton = (Button) view.findViewById(R.id.fragment_connect_to_wifi_continue);
         Views.setSafeOnClickListener(continueButton, ignored -> wifiPresenter.sendWifiCredentials());
 
-        if (getActivity().getActionBar() != null) {
-            setHasOptionsMenu(true);
-        } else {
-            this.toolbar = OnboardingToolbar.of(this, view);
-            this.toolbar.setWantsBackButton(true)
-                        .setOnHelpClickListener(wifiPresenter::onHelpClick);
-            //todo add back support options after refactor
-        }
+        this.toolbar = OnboardingToolbar.of(this, view);
 
         return view;
     }
@@ -249,6 +242,20 @@ public class ConnectToWiFiFragment extends BasePresenterFragment
     @Override
     public void onNothingSelected(final AdapterView<?> parent) {
         wifiPresenter.updatePasswordField();
+    }
+
+    @Override
+    public void useToolbar(final boolean use) {
+        if (use) {
+            this.toolbar.setWantsBackButton(true)
+                        .setOnHelpClickListener(wifiPresenter::onHelpClick);
+            //todo add back support options after refactor
+            this.toolbar.setVisible(true);
+            setHasOptionsMenu(false);
+        } else {
+            setHasOptionsMenu(true);
+            this.toolbar.hide();
+        }
     }
     //endregion
 

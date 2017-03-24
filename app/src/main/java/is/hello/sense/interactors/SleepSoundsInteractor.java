@@ -1,5 +1,6 @@
 package is.hello.sense.interactors;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -30,6 +31,12 @@ public class SleepSoundsInteractor extends ScopedValueInteractor<SleepSoundsStat
     @Override
     protected boolean canUpdate() {
         return true;
+    }
+
+    @Nullable
+    @Override
+    public Bundle onSaveState() {
+        return null;
     }
 
     @Override

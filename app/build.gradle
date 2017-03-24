@@ -14,6 +14,7 @@ apply plugin: 'me.tatarka.retrolambda'
 
 repositories {
     maven { url 'https://zendesk.artifactoryonline.com/zendesk/repo' }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
 }
 
 
@@ -46,7 +47,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 25
         versionCode generateVersionCode()
-        versionName "2.0.6"
+        versionName "2.1.0"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
     }
@@ -108,6 +109,16 @@ android {
             minifyEnabled false // when we hit the 0xffff method limit, switch this to true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
         }
+
+        development {
+            initWith debug
+            signingConfig signingConfigs.debug
+
+            applicationIdSuffix ".development"
+
+
+        }
+
         release {
             buildConfigField TYPE_INT, MIN_LOGGING_LEVEL, "android.util.Log.WARN"
             buildConfigField TYPE_BOOLEAN, DEBUG_SCREEN_ENABLED, FALSE
@@ -123,6 +134,23 @@ android {
 
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-deadcode-rules.pro'
+        }
+
+
+    }
+
+    sourceSets {
+        development {
+            manifest.srcFile 'src/debug_menu/AndroidManifest.xml'
+            java.srcDirs = ['src/debug_menu/java', 'src/development/java']
+            res.srcDirs = ['src/debug_menu/res', 'src/development/res']
+            assets.srcDirs = ['src/debug_menu/assets', 'src/development/assets']
+        }
+        debug {
+            manifest.srcFile 'src/debug_menu/AndroidManifest.xml'
+            java.srcDirs = ['src/debug_menu/java', 'src/debug/java']
+            res.srcDirs = ['src/debug_menu/res', 'src/debug/res']
+            assets.srcDirs = ['src/debug_menu/assets', 'src/debug/assets']
         }
     }
 }
@@ -162,10 +190,9 @@ tasks.whenTaskAdded { theTask ->
 }
 
 dependencies {
-    
 
     // Is there anything we don't depend on?
-    
+
     compile fileTree(include: ['*.jar'], dir: 'libs')
     // !! If you remove this, remove the above workaround.
     compile('com.zendesk:sdk:1.4.1.1') {
@@ -197,7 +224,7 @@ dependencies {
     compile 'com.google.firebase:firebase-core:9.8.0'
     compile 'com.google.firebase:firebase-messaging:9.8.0'
 
-    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.squareup.picasso:picasso:2.5.3-SNAPSHOT'
     compile 'me.grantland:autofittextview:0.2.1'
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'is.hello.commonsense:ble:2017.02.22.1'
@@ -215,6 +242,8 @@ dependencies {
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     debugCompile 'net.hockeyapp.android:HockeySDK:3.5.0'
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
+    developmentCompile 'net.hockeyapp.android:HockeySDK:3.5.0'
+    developmentCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     provided 'com.squareup.dagger:dagger-compiler:1.2.2'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
 }

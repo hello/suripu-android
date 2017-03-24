@@ -17,7 +17,7 @@ import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.notifications.NotificationPressedInterceptorCounter;
 import is.hello.sense.rating.LocalUsageTracker;
-import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.activities.appcompat.InjectionActivity;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;

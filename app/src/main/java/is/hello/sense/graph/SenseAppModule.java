@@ -34,6 +34,7 @@ import is.hello.sense.flows.home.ui.fragments.TrendsFragment;
 import is.hello.sense.flows.home.ui.fragments.TrendsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
 import is.hello.sense.flows.home.ui.fragments.WeekTrendsFragment;
+import is.hello.sense.flows.nightmode.NightModeModule;
 import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.flows.settings.ui.activities.AppSettingsActivity;
 import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
@@ -61,9 +62,9 @@ import is.hello.sense.pill.PillModule;
 import is.hello.sense.presenters.BaseHardwarePresenter;
 import is.hello.sense.settings.SettingsModule;
 import is.hello.sense.ui.activities.DebugActivity;
-import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.ListActivity;
+import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
@@ -86,13 +87,13 @@ import is.hello.sense.zendesk.ZendeskModule;
                 ApiModule.class,
                 BluetoothModule.class,
                 ZendeskModule.class,
-                DebugModule.class,
                 SettingsModule.class,
                 UtilityModule.class,
                 FacebookApiModule.class,
                 PillModule.class,
                 SenseOTAModule.class, //todo remove after converting fragments to use presenters,
                 NotificationModule.class,
+                NightModeModule.class,
         },
         injects = {
                 SenseApplication.class,
@@ -109,7 +110,6 @@ import is.hello.sense.zendesk.ZendeskModule;
                 RegisterFragment.class,
                 HardwareInteractor.class,
 
-                HardwareFragmentActivity.class,
                 DeviceListFragment.class,
                 DevicesInteractor.class,
                 DeviceIssuesInteractor.class,
@@ -159,7 +159,9 @@ import is.hello.sense.zendesk.ZendeskModule;
                 VoiceSettingsInteractor.class,
                 AppSettingsActivity.class,
                 SearchListActivity.class,
-                HomePresenterFragment.class
+                HomePresenterFragment.class,
+
+                FragmentNavigationActivity.class,
         }
 )
 @SuppressWarnings("UnusedDeclaration")

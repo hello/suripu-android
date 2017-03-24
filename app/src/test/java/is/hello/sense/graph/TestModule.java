@@ -24,6 +24,7 @@ import is.hello.sense.flows.home.interactors.LastNightInteractorTest;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragmentTests;
 import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractorTest;
+import is.hello.sense.flows.settings.TestSettingsModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.interactors.AccountInteractor;
@@ -76,7 +77,10 @@ import static org.mockito.Mockito.mock;
 
 @Module(
         library = true,
-        includes = {TestNotificationModule.class},
+        includes = {
+                TestNotificationModule.class,
+                TestSettingsModule.class,
+        },
     injects = {
             TimelineInteractorTests.class,
             TimelineInteractor.class,

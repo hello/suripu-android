@@ -27,7 +27,6 @@ import is.hello.sense.api.model.SleepPillDevice;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.permissions.LocationPermission;
-import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.activities.PillUpdateActivity;
 import is.hello.sense.ui.activities.SenseUpgradeActivity;
@@ -65,7 +64,7 @@ public class DeviceListFragment extends InjectionFragment
 
     public static void startStandaloneFrom(@NonNull Activity activity) {
         final FragmentNavigationActivity.Builder builder =
-                new FragmentNavigationActivity.Builder(activity, HardwareFragmentActivity.class);
+                new FragmentNavigationActivity.Builder(activity);
         builder.setDefaultTitle(R.string.label_devices);
         builder.setFragmentClass(DeviceListFragment.class);
         activity.startActivity(builder.toIntent());

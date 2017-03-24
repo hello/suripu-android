@@ -2,43 +2,19 @@ package is.hello.sense.flows.home.ui.adapters;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v13.app.FragmentPagerAdapter;
-import android.view.ViewGroup;
 
-import is.hello.sense.util.Constants;
+import is.hello.sense.flows.generic.ui.adapters.BaseFragmentPagerAdapter;
 
 
-public class StaticFragmentAdapter extends FragmentPagerAdapter {
-    private static final String KEY_LAST_POSITION = StaticFragmentAdapter.class.getSimpleName() + ".KEY_LAST_POSITION";
-
+public class StaticFragmentAdapter extends BaseFragmentPagerAdapter {
     private final Item[] items;
-    private int lastPosition = Constants.NONE;
-    private final FragmentManager fragmentManager;
-    private final int containerId;
-
-    private static String makeFragmentName(final int viewId,
-                                           final long id) {
-        return "android:switcher:" + viewId + ":" + id;
-    }
 
     public StaticFragmentAdapter(@NonNull final FragmentManager fm,
-                                 final int containerId,
                                  @NonNull final Item... items) {
         super(fm);
-        this.fragmentManager = fm;
         this.items = items;
-        this.containerId = containerId;
     }
-
-    @Nullable
-    public Fragment getFragment(final int id) {
-        return fragmentManager.findFragmentByTag(makeFragmentName(containerId, id));
-    }
-
 
     @Override
     public int getCount() {
@@ -50,57 +26,6 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
         return items[position].newInstance();
     }
 
-
-    @Override
-    public void setPrimaryItem(final ViewGroup container,
-                               final int position,
-                               final Object object) {
-        if (lastPosition == position) {
-            return;
-        }
-        alertFragmentVisible(lastPosition, false);
-        lastPosition = position;
-        super.setPrimaryItem(container, lastPosition, object);
-        alertFragmentVisible(lastPosition, true);
-    }
-
-    @Override
-    public Parcelable saveState() {
-        final Bundle state = new Bundle();
-        state.putInt(KEY_LAST_POSITION, lastPosition);
-        return state;
-    }
-
-    @Override
-    public void restoreState(@Nullable final Parcelable state,
-                             @Nullable final ClassLoader loader) {
-        if (state instanceof Bundle) {
-            final Bundle bundle = (Bundle) state;
-            bundle.setClassLoader(loader);
-            this.lastPosition = bundle.getInt(KEY_LAST_POSITION, Constants.NONE);
-        }
-    }
-
-    public void onResume() {
-        alertFragmentVisible(lastPosition, true);
-    }
-
-    public void onPause() {
-        alertFragmentVisible(lastPosition, false);
-    }
-
-    private void alertFragmentVisible(final int position,
-                                      final boolean isVisible) {
-        final Fragment fragment = getFragment(position);
-        if (!(fragment instanceof Controller)) {
-            return;
-        }
-        final Controller controller = (Controller) fragment;
-        if (!controller.hasPresenterView()) {
-            return;
-        }
-        controller.setVisibleToUser(isVisible);
-    }
 
     public static class Item {
         private final Class<? extends Fragment> fragmentClass;
@@ -124,20 +49,6 @@ public class StaticFragmentAdapter extends FragmentPagerAdapter {
                 throw new RuntimeException(e);
             }
         }
-
-        public Class<? extends Fragment> getFragmentClass() {
-            return fragmentClass;
-        }
-    }
-
-    public interface Controller {
-        void setVisibleToUser(boolean isVisible);
-
-        boolean hasPresenterView();
-
-        boolean isVisibleToUser();
-
-
     }
 
 }

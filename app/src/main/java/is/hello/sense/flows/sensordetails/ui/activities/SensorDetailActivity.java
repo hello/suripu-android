@@ -1,6 +1,5 @@
 package is.hello.sense.flows.sensordetails.ui.activities;
 
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +10,7 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,12 +19,12 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.flows.sensordetails.modules.SensorDetailModule;
 import is.hello.sense.flows.sensordetails.ui.fragments.SensorDetailFragment;
-import is.hello.sense.ui.activities.ScopedInjectionActivity;
+import is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.widget.util.Drawing;
 
-public class SensorDetailActivity extends ScopedInjectionActivity
+public class SensorDetailActivity extends ScopedInjectionAppCompatActivity
         implements FragmentNavigation,
         SensorDetailFragment.Parent {
     private static final String EXTRA_SENSOR = SensorDetailActivity.class.getName() + ".EXTRA_SENSOR";
@@ -101,7 +101,7 @@ public class SensorDetailActivity extends ScopedInjectionActivity
         final int color = ContextCompat.getColor(this, sensor.getColor());
         setStatusBarColor(Drawing.darkenColorBy(color, Drawing.DARK_MULTIPLIER));
 
-        actionBar = getActionBar();
+        actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(sensor.getName());
             setActionbarColor(sensor.getColor());

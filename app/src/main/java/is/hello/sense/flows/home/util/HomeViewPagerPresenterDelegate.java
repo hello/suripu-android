@@ -3,7 +3,6 @@ package is.hello.sense.flows.home.util;
 import android.support.annotation.NonNull;
 
 import is.hello.sense.R;
-import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.flows.home.ui.fragments.FeedPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.SoundsPresenterFragment;
@@ -12,6 +11,12 @@ import is.hello.sense.flows.home.ui.fragments.TrendsPresenterFragment;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 
 public class HomeViewPagerPresenterDelegate extends BaseViewPagerPresenterDelegate {
+    public final int SLEEP_ICON_KEY = 0;
+    public final int TRENDS_ICON_KEY = 1;
+    public final int FEED_ICON_KEY = 2;
+    public final int SOUNDS_ICON_KEY = 3;
+    public final int CONDITIONS_ICON_KEY = 4;
+
     @NonNull
     @Override
     public HomeFragmentPagerAdapter.HomeItem[] getViewPagerItems() {
@@ -43,5 +48,4 @@ public class HomeViewPagerPresenterDelegate extends BaseViewPagerPresenterDelega
     public int getOffscreenPageLimit() {
         return 4;
     }
-
 }

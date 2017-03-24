@@ -7,9 +7,6 @@ import java.util.List;
 
 import dagger.ObjectGraph;
 import is.hello.sense.SenseApplication;
-/**
- * Appcompat copy of {@link is.hello.sense.ui.activities.ScopedInjectionActivity}
- */
 public abstract class ScopedInjectionAppCompatActivity extends InjectionActivity {
 
     private ObjectGraph scopedObjectGraph;
@@ -53,3 +50,4 @@ public abstract class ScopedInjectionAppCompatActivity extends InjectionActivity
         destroyScopedGraph();
     }
 }
+ 

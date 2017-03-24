@@ -28,6 +28,7 @@ import is.hello.sense.R;
 import is.hello.sense.presenters.BasePresenter;
 import is.hello.sense.presenters.selectwifinetwork.BaseSelectWifiNetworkPresenter;
 import is.hello.sense.ui.adapter.WifiNetworkAdapter;
+import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
@@ -35,10 +36,13 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 
 public class SelectWifiNetworkFragment extends BasePresenterFragment
-        implements AdapterView.OnItemClickListener, BaseSelectWifiNetworkPresenter.Output {
+        implements AdapterView.OnItemClickListener,
+        BaseSelectWifiNetworkPresenter.Output,
+        OnBackPressedInterceptor {
 
     private WifiNetworkAdapter networkAdapter;
 
+    private TextView heading;
     private TextView subheading;
     private TextView scanningIndicatorLabel;
     private ProgressBar scanningIndicator;
@@ -52,6 +56,7 @@ public class SelectWifiNetworkFragment extends BasePresenterFragment
 
     @Inject
     BaseSelectWifiNetworkPresenter presenter;
+
 
     //region Lifecycle
 
@@ -82,6 +87,7 @@ public class SelectWifiNetworkFragment extends BasePresenterFragment
 
         this.listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
+        this.heading = (TextView) view.findViewById(R.id.fragment_select_wifi_heading);
         this.macAddressContainer = view.findViewById(R.id.fragment_select_wifi_mac_address_container);
         this.macAddress = (TextView) view.findViewById(R.id.fragment_select_wifi_mac_address);
         this.copyMacAddress = (TextView) view.findViewById(R.id.fragment_select_wifi_mac_address_copy);
@@ -102,19 +108,7 @@ public class SelectWifiNetworkFragment extends BasePresenterFragment
         rescanButton.setEnabled(false);
         Views.setSafeOnClickListener(rescanButton, presenter::onRescanButtonClicked);
 
-        if (getActivity().getActionBar() != null) {
-            final TextView heading = (TextView) view.findViewById(R.id.fragment_select_wifi_heading);
-            heading.setVisibility(View.GONE);
-            subheading.setVisibility(View.GONE);
-
-            setHasOptionsMenu(true);
-        } else {
-            this.toolbar = OnboardingToolbar.of(this, view);
-            toolbar.setWantsBackButton(false)
-                   .setOnHelpClickListener(ignored -> UserSupport.showForHelpStep(getActivity(),
-                                                                                  UserSupport.HelpStep.WIFI_SCAN));
-            setHasOptionsMenu(false);
-        }
+        this.toolbar = OnboardingToolbar.of(this, view);
 
         return view;
     }
@@ -137,6 +131,7 @@ public class SelectWifiNetworkFragment extends BasePresenterFragment
             toolbar.onDestroyView();
             toolbar = null;
         }
+        heading = null;
         subheading = null;
         scanningIndicator = null;
         scanningIndicatorLabel = null;
@@ -232,5 +227,38 @@ public class SelectWifiNetworkFragment extends BasePresenterFragment
     public void bindScanResults(@NonNull final Collection<wifi_endpoint> scanResults) {
         networkAdapter.clear();
         networkAdapter.addAll(scanResults);
+    }
+
+    @Override
+    public void useToolbar(final boolean use) {
+        if (use) {
+            toolbar.setVisible(true);
+            toolbar.setWantsBackButton(false)
+                   .setOnHelpClickListener(ignored -> UserSupport.showForHelpStep(getActivity(),
+                                                                                  UserSupport.HelpStep.WIFI_SCAN));
+            heading.setVisibility(View.VISIBLE);
+            subheading.setVisibility(View.VISIBLE);
+
+            setHasOptionsMenu(false);
+        } else {
+            heading.setVisibility(View.GONE);
+            subheading.setVisibility(View.GONE);
+
+            setHasOptionsMenu(true);
+            toolbar.hide();
+        }
+    }
+
+    @Override
+    public boolean isScanning() {
+        return scanningIndicator != null && scanningIndicator.getVisibility() == View.VISIBLE;
+    }
+
+    @Override
+    public boolean onInterceptBackPressed(@NonNull final Runnable defaultBehavior) {
+        if (presenter != null) {
+            return presenter.onBackPressed(defaultBehavior);
+        }
+        return false;
     }
 }

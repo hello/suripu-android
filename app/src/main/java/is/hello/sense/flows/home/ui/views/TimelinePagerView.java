@@ -3,7 +3,6 @@ package is.hello.sense.flows.home.ui.views;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Fragment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
@@ -77,11 +76,7 @@ public class TimelinePagerView extends PresenterView {
 
     @Nullable
     public TimelineFragment getCurrentTimeline() {
-        final Fragment fragment = viewPagerAdapter.getCurrentFragment();
-        if (fragment instanceof TimelineFragment) {
-            return (TimelineFragment) fragment;
-        }
-        return null;
+        return viewPagerAdapter.getCurrentTimeline();
     }
 
     public void jumpToDate(@NonNull final LocalDate date,
