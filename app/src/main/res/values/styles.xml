@@ -330,7 +330,6 @@
         <item name="android:layout_height">@dimen/divider_size</item>
     </style>
 
-
     <style name="Divider.Horizontal.LeftInset">
         <item name="android:layout_marginLeft">@dimen/x2</item>
     </style>
@@ -361,6 +360,7 @@
         <item name="android:textAppearance">@style/Body1.Primary</item>
         <item name="android:minHeight">@dimen/text_body_line_height</item>
         <item name="android:textColor">@color/primary_text_selector</item>
+        <item name="android:textColorHint">@color/hint_text</item>
     </style>
 
     <style name="AppTheme.Text.EditText" parent="Platform.EditText">
