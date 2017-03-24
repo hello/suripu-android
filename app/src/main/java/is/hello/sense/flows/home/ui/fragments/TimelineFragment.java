@@ -529,6 +529,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         final SenseBottomSheet noActions = new SenseBottomSheet(getActivity());
         noActions.setTitle(R.string.message_timeline_no_actions_title);
         noActions.setMessage(R.string.message_timeline_no_actions_body);
+        noActions.setWantsBigTitle(true);
         noActions.show();
 
         this.activeDialog = new WeakReference<>(noActions);
@@ -542,6 +543,7 @@ public class TimelineFragment extends PresenterFragment<TimelineView>
         if (!preferences.getBoolean(Constants.HANDHOLDING_HAS_SHOWN_TIMELINE_ADJUST_INTRO, false)) {
             actions.setTitle(R.string.timeline_actions_intro_title);
             actions.setMessage(R.string.timeline_actions_intro_message);
+            actions.setWantsBigTitle(true);
         }
         actions.setWantsDividers(true);
 

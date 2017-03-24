@@ -39,6 +39,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     private static final String SAVED_MESSAGE = SenseBottomSheet.class.getSimpleName() + "#SAVED_MESSAGE";
     private static final String SAVED_OPTIONS = SenseBottomSheet.class.getSimpleName() + "#SAVED_OPTIONS";
     private static final String SAVED_WANTS_DIVIDERS = SenseBottomSheet.class.getSimpleName() + "#SAVED_WANTS_DIVIDERS";
+    private static final String SAVED_WANTS_BIG_TITLE = SenseBottomSheet.class.getSimpleName() + "#SAVED_WANTS_BIG_TITLE";
 
     private final ArrayList<Option> options = new ArrayList<>();
     private final LayoutInflater inflater;
@@ -50,6 +51,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     private final View messageDivider;
 
     private boolean wantsDividers = false;
+    private boolean wantsBigTitle = false;
 
     private @Nullable View replacementContent;
     private @Nullable OnOptionSelectedListener onOptionSelectedListener;
@@ -92,6 +94,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         setTitle(savedInstanceState.getString(SAVED_TITLE));
         setMessage(savedInstanceState.getString(SAVED_MESSAGE));
         setWantsDividers(savedInstanceState.getBoolean(SAVED_WANTS_DIVIDERS));
+        setWantsBigTitle(savedInstanceState.getBoolean(SAVED_WANTS_BIG_TITLE));
 
         ArrayList<Option> savedOptions = savedInstanceState.getParcelableArrayList(SAVED_OPTIONS);
         clearOptions();
@@ -111,6 +114,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         savedState.putParcelableArrayList(SAVED_OPTIONS, options);
 
         savedState.putBoolean(SAVED_WANTS_DIVIDERS, wantsDividers);
+        savedState.putBoolean(SAVED_WANTS_BIG_TITLE, wantsBigTitle);
 
         savedState.putParcelable(SAVED_DIALOG_STATE, super.onSaveInstanceState());
 
@@ -224,6 +228,17 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
             optionsContainer.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
         } else {
             optionsContainer.setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
+        }
+    }
+
+    public void setWantsBigTitle(boolean wantsBigTitle) {
+        this.wantsBigTitle = wantsBigTitle;
+
+        if (wantsBigTitle) {
+            Styles.setTextAppearance(titleText, R.style.Body1_Primary);
+            titleText.setAllCaps(false);
+        } else {
+            Styles.setTextAppearance(titleText, R.style.Caption2_Secondary);
         }
     }
 
