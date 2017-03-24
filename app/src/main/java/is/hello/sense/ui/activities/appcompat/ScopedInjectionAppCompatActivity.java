@@ -50,3 +50,4 @@ public abstract class ScopedInjectionAppCompatActivity extends InjectionActivity
         destroyScopedGraph();
     }
 }
+ 
