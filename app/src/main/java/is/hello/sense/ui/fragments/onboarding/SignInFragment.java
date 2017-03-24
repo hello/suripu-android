@@ -123,7 +123,7 @@ public class SignInFragment extends InjectionFragment
             final LinearLayout content = (LinearLayout) view.findViewById(R.id.fragment_onboarding_sign_in_content);
 
             final Button selectHost = new Button(getActivity());
-            Styles.setTextAppearance(selectHost, R.style.AppTheme_Button_Borderless_Accent_Bounded);
+            Styles.setTextAppearance(selectHost, R.style.Button_Flat);
             selectHost.setBackgroundResource(R.drawable.selectable_dark_bounded);
             selectHost.setGravity(Gravity.CENTER);
             final Observable<String> apiUrl =
