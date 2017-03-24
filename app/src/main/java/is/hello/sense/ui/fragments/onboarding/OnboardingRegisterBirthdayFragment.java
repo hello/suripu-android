@@ -60,7 +60,7 @@ public class OnboardingRegisterBirthdayFragment extends SenseFragment {
         final View view = inflater.inflate(R.layout.fragment_onboarding_register_birthday, container, false);
 
         final LinearLayout fieldContainer = (LinearLayout) view.findViewById(R.id.fragment_onboarding_birthday_fields);
-        final int hintColor = ContextCompat.getColor(getActivity(), R.color.birthday_text_hint);
+        final int hintColor = ContextCompat.getColor(getActivity(), R.color.hint_text);
 
         final char[] dateFormat = DateFormatter.getDateFormatOrder(getActivity());
         int index = 0;

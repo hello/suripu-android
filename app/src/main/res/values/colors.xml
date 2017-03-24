@@ -86,15 +86,10 @@
     <color name="sense_raised_button_shadow_light">@color/black_10</color>
     <color name="sense_raised_button_shadow_dark">@color/black_20</color>
 
-    <!-- EditText Colors -->
-    <color name="sense_edittext_bottom_line_normal">@color/divider</color>
-    <color name="sense_edittext_background_normal">@color/background_card</color>
-
     <!-- TabLayout Colors -->
     <color name="tablayout_focused">@color/primary</color>
 
     <!-- OnboardingRegisterBirthdayFragment.java -->
-    <color name="birthday_text_hint">@color/hint_text</color>
     <color name="birthday_text_active">@color/primary</color>
     <color name="birthday_text_inactive">@color/primary_text</color>
 
