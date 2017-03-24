@@ -36,8 +36,8 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.settings.SettingsPairSenseModule;
-import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.activities.SettingsActivity;
+import is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -48,7 +48,7 @@ import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class PiruPeaActivity extends ScopedInjectionActivity implements ArrayRecyclerAdapter.OnItemClickedListener<SensePeripheral> {
+public class PiruPeaActivity extends ScopedInjectionAppCompatActivity implements ArrayRecyclerAdapter.OnItemClickedListener<SensePeripheral> {
     @Inject BluetoothStack stack;
     @Inject ApiSessionManager apiSessionManager;
     @Inject

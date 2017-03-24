@@ -27,11 +27,11 @@ import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.DynamicApiEndpoint;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.NonsenseInteractor;
-import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Logger;
 
-public class EnvironmentActivity extends InjectionActivity
+public class EnvironmentActivity extends ScopedInjectionAppCompatActivity
         implements AdapterView.OnItemClickListener {
     private static final String OTHER_ITEM = "other";
 

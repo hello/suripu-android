@@ -10,7 +10,7 @@ import android.support.annotation.NonNull;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.interactors.Interactor;
 import is.hello.sense.interactors.InteractorContainer;
-import is.hello.sense.ui.activities.ScopedInjectionActivity;
+import is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity;
 import is.hello.sense.ui.common.SenseFragment;
 
 /**
@@ -35,10 +35,8 @@ public abstract class ScopedInjectionFragment extends SenseFragment {
     @CallSuper
     public void inject() {
         final Context context = getActivity();
-        if (context instanceof ScopedInjectionActivity) {
-            ((ScopedInjectionActivity) context).injectToScopedGraph(this);
-        } else if (context instanceof is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity) {
-            ((is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity) context).injectToScopedGraph(this);
+        if (context instanceof ScopedInjectionAppCompatActivity) {
+            ((ScopedInjectionAppCompatActivity) context).injectToScopedGraph(this);
         } else {
             SenseApplication.getInstance().inject(this);
         }
