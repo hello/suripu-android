@@ -28,7 +28,7 @@
         android:layout_marginEnd="@dimen/x3"
         android:layout_marginTop="@dimen/x1"
         android:layout_weight="1"
-        style="@style/Body1.Primary"
+        style="@style/Body1.Secondary"
         tools:text="@string/label_notifications"/>
 
 </LinearLayout>
