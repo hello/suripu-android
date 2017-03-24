@@ -236,7 +236,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         public WelcomeCardViewHolder(@NonNull final View itemView) {
             super(itemView);
             final ItemWelcomeCardBinding binding = DataBindingUtil.bind(itemView);
-            binding.itemWelcomeImage.setImageResource(R.drawable.conditions_welcome);
+            binding.itemWelcomeImage.setImageResource(R.drawable.feature_sensors);
             binding.itemWelcomeTitle.setText(R.string.room_conditions_welcome_title);
             binding.itemWelcomeMessage.setText(R.string.room_conditions_welcome_message);
         }

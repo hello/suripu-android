@@ -96,7 +96,7 @@ public class VoiceSettingsListView extends PresenterView {
             if(firmwareUpdateCardContainer == null) {
                 final WelcomeCard firmwareUpdateCard = new WelcomeCard(context);
                 firmwareUpdateCard.showCloseButton(false);
-                firmwareUpdateCard.setContent(R.drawable.illustration_sense_update,
+                firmwareUpdateCard.setContent(R.drawable.empty_sense_update,
                                               R.string.sense_state_fw_update_title,
                                               R.string.sense_voice_state_fw_update_message);
                 firmwareUpdateCardContainer = new ExtendedScrollView(context);
