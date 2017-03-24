@@ -344,6 +344,7 @@
 
     <!-- Radio Buttons -->
 
+    <!-- todo confirm this text appearance is right -->
     <style name="AppTheme.RadioButton" parent="Widget.AppCompat.CompoundButton.RadioButton">
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:paddingTop">@dimen/x2</item>
@@ -351,7 +352,7 @@
         <item name="android:paddingRight">@dimen/x3</item>
         <item name="android:paddingStart">@dimen/x3</item>
         <item name="android:button">@drawable/radio_selector</item>
-        <item name="android:textAppearance">@style/Body.New</item>
+        <item name="android:textAppearance">@style/Body1.Primary</item>
     </style>
 
     <!-- In order to allow left padding of radio selector but has issues syncing state with recyclerview adapters when first rendered-->

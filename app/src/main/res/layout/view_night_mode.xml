@@ -46,14 +46,13 @@
 
         <View style="@style/Divider.Horizontal.Padded"
               android:layout_marginStart="@dimen/x9"/>
-
+<!-- todo confirm style is right -->
         <TextView
             android:id="@+id/view_night_mode_location_permission"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/night_mode_location_permission_disabled_msg"
-            android:textAppearance="@style/AppTheme.Text.Body.MidSized.New"
-            android:lineSpacingMultiplier="@dimen/line_multiple_body"
+            style="@style/Caption1.Secondary"
             android:paddingStart="@dimen/x3"
             android:paddingEnd="@dimen/x3"
             android:visibility="gone"
