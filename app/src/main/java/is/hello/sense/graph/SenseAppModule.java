@@ -86,7 +86,6 @@ import is.hello.sense.zendesk.ZendeskModule;
                 ApiModule.class,
                 BluetoothModule.class,
                 ZendeskModule.class,
-                DebugModule.class,
                 SettingsModule.class,
                 UtilityModule.class,
                 FacebookApiModule.class,

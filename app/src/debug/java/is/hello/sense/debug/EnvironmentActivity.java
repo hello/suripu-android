@@ -26,6 +26,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.DynamicApiEndpoint;
 import is.hello.sense.functional.Lists;
+import is.hello.sense.graph.DebugModule;
 import is.hello.sense.graph.NonsenseInteractor;
 import is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity;
 import is.hello.sense.ui.widget.SenseAlertDialog;
@@ -69,6 +70,13 @@ public class EnvironmentActivity extends ScopedInjectionAppCompatActivity
                                                         "https://api.hello.is", "Production"));
         this.adapter = new EndpointAdapter(this, endpoints);
         listView.setAdapter(adapter);
+    }
+
+    @Override
+    protected List<Object> getModules() {
+        final List<Object> mods = super.getModules();
+        mods.add(new DebugModule());
+        return mods;
     }
 
     @Override

@@ -34,6 +34,7 @@ import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.DebugModule;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.settings.SettingsPairSenseModule;
 import is.hello.sense.ui.activities.SettingsActivity;
@@ -49,8 +50,10 @@ import rx.Observable;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class PiruPeaActivity extends ScopedInjectionAppCompatActivity implements ArrayRecyclerAdapter.OnItemClickedListener<SensePeripheral> {
-    @Inject BluetoothStack stack;
-    @Inject ApiSessionManager apiSessionManager;
+    @Inject
+    BluetoothStack stack;
+    @Inject
+    ApiSessionManager apiSessionManager;
     @Inject
     HardwareInteractor hardwarePresenter;
 
@@ -65,7 +68,7 @@ public class PiruPeaActivity extends ScopedInjectionAppCompatActivity implements
     @Override
     protected List<Object> getModules() {
         // May need to change variable: true
-        return Arrays.asList(new SettingsPairSenseModule(true));
+        return Arrays.asList(new SettingsPairSenseModule(true), new DebugModule());
     }
 
     @Override
@@ -115,7 +118,8 @@ public class PiruPeaActivity extends ScopedInjectionAppCompatActivity implements
         super.onDestroy();
 
         if (selectedPeripheral != null) {
-            selectedPeripheral.disconnect().subscribe(ignored -> {}, Functions.LOG_ERROR);
+            selectedPeripheral.disconnect().subscribe(ignored -> {
+            }, Functions.LOG_ERROR);
             hardwarePresenter.setPeripheral(null);
         }
     }
@@ -212,7 +216,8 @@ public class PiruPeaActivity extends ScopedInjectionAppCompatActivity implements
 
     public void disconnect() {
         if (selectedPeripheral != null) {
-            selectedPeripheral.disconnect().subscribe(ignored -> {}, Functions.LOG_ERROR);
+            selectedPeripheral.disconnect().subscribe(ignored -> {
+            }, Functions.LOG_ERROR);
             hardwarePresenter.setPeripheral(null);
             this.selectedPeripheral = null;
         }
