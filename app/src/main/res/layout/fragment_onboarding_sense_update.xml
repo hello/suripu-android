@@ -69,7 +69,7 @@
 
         <Button
             android:id="@+id/fragment_onboarding_sense_update_skip"
-            style="@style/AppTheme.Button.Borderless.Accent.Bounded.Lowercase"
+            style="@style/Button.Flat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/x1"
@@ -81,7 +81,7 @@
 
         <Button
             android:id="@+id/fragment_onboarding_sense_update_retry"
-            style="@style/AppTheme.Button.Rounded"
+            style="@style/Button.Raised"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/x3"

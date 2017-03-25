@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/item_onboarding_birthday_field"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    style="@style/Display1.Primary" />
+<TextView android:id="@+id/item_onboarding_birthday_field"
+          style="@style/Display1.Primary"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"/>

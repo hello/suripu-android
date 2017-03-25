@@ -37,6 +37,8 @@ public class SenseAlertDialog extends Dialog {
     private final Button negativeButton;
     private final Button positiveButton;
 
+    private final View verticalDivider;
+
     private View view;
     private View topViewDivider, bottomViewDivider;
 
@@ -65,6 +67,7 @@ public class SenseAlertDialog extends Dialog {
 
         this.negativeButton = (Button) findViewById(R.id.dialog_sense_alert_cancel);
         this.positiveButton = (Button) findViewById(R.id.dialog_sense_alert_ok);
+        this.verticalDivider = findViewById(R.id.dialog_sense_alert_vertical_divider);
     }
 
     /**
@@ -204,9 +207,11 @@ public class SenseAlertDialog extends Dialog {
         if (title != null) {
             negativeButton.setVisibility(View.VISIBLE);
             negativeButton.setText(title);
+            verticalDivider.setVisibility(View.VISIBLE);
             Views.setSafeOnClickListener(negativeButton, createClickListener(onClickListener, DialogInterface.BUTTON_NEGATIVE));
         } else {
             negativeButton.setVisibility(View.GONE);
+            verticalDivider.setVisibility(View.GONE);
         }
 
     }
@@ -381,7 +386,7 @@ public class SenseAlertDialog extends Dialog {
             return this;
         }
 
-        public Builder setCancelable(final boolean cancellable){
+        public Builder setCancelable(final boolean cancellable) {
             bundle.putBoolean(ARG_CANCELABLE, cancellable);
             return this;
         }
@@ -415,11 +420,11 @@ public class SenseAlertDialog extends Dialog {
                 }
                 alertDialog.setNegativeRunnableButton(bundle.getInt(ARG_NEGATIVE_CLICK_TEXT), runnable);
             }
-            if(bundle.containsKey(ARG_CANCELABLE)){
+            if (bundle.containsKey(ARG_CANCELABLE)) {
                 alertDialog.setCancelable(bundle.getBoolean(ARG_CANCELABLE));
             }
 
-            if(bundle.containsKey(ARG_DESTRUCTIVE_BUTTON) && bundle.containsKey(ARG_DESTRUCTIVE_FLAG)){
+            if (bundle.containsKey(ARG_DESTRUCTIVE_BUTTON) && bundle.containsKey(ARG_DESTRUCTIVE_FLAG)) {
                 alertDialog.setButtonDestructive(bundle.getInt(ARG_DESTRUCTIVE_BUTTON),
                                                  bundle.getBoolean(ARG_DESTRUCTIVE_FLAG));
             }

@@ -61,7 +61,7 @@
 
             <Button
                 android:id="@+id/dialog_bottom_alert_positive"
-                style="@style/Button.Raised"
+                style="@style/Button.Flat.Link"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
