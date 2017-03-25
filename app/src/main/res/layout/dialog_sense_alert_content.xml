@@ -48,7 +48,10 @@
             android:text="@android:string/cancel"
             android:visibility="gone"/>
 
-        <View style="@style/Divider.Vertical"/>
+        <View
+            style="@style/Divider.Vertical"
+            android:layout_marginBottom="@dimen/x.5"
+            android:layout_marginTop="@dimen/x.5"/>
 
         <Button
             android:id="@+id/dialog_sense_alert_ok"
