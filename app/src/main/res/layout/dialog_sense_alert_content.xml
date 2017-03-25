@@ -39,6 +39,7 @@
         android:layout_marginTop="@dimen/x1"
         android:gravity="end"
         android:orientation="horizontal">
+
         <Button
             android:id="@+id/dialog_sense_alert_cancel"
             style="@style/Button.Flat"
@@ -47,9 +48,11 @@
             android:text="@android:string/cancel"
             android:visibility="gone"/>
 
+        <View style="@style/Divider.Vertical"/>
+
         <Button
             android:id="@+id/dialog_sense_alert_ok"
-            style="@style/Button.Flat"
+            style="@style/Button.Flat.Link"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@android:string/ok"
