@@ -52,7 +52,8 @@
             android:id="@+id/dialog_sense_alert_vertical_divider"
             style="@style/Divider.Vertical"
             android:layout_marginBottom="@dimen/x.5"
-            android:layout_marginTop="@dimen/x.5"/>
+            android:layout_marginTop="@dimen/x.5"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/dialog_sense_alert_ok"
