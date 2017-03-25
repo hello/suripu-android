@@ -13,7 +13,8 @@
         android:layout_marginRight="@dimen/x3"
         android:layout_marginTop="@dimen/x3"
         android:scaleType="centerInside"
-        tools:ignore="ContentDescription"/>
+        tools:ignore="ContentDescription"
+        tools:src="@drawable/timeline_state_not_enough_data"/>
 
     <TextView
         android:id="@+id/view_timeline_no_data_header_title"
@@ -24,7 +25,8 @@
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
         android:layout_marginTop="@dimen/x2"
-        android:gravity="center"/>
+        android:gravity="center"
+        tools:text="@string/title_timeline_first_night"/>
 
     <TextView
         android:id="@+id/view_timeline_no_data_header_message"
@@ -34,7 +36,8 @@
         android:layout_marginBottom="@dimen/x3"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
-        android:gravity="center"/>
+        android:gravity="center"
+        tools:text="@string/message_timeline_first_night"/>
 
     <Button
         android:id="@+id/view_timeline_no_data_header_action"
@@ -45,6 +48,7 @@
         android:layout_marginBottom="@dimen/x3"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
 </merge>

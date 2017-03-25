@@ -1,10 +1,8 @@
 package is.hello.sense.ui.adapter;
 
 import android.content.Context;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -211,7 +209,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         @Override
         void bind(final int position) {
             this.title.setText(R.string.sense_offline_title);
-            this.image.setImageResource(R.drawable.illustration_sense_offline);
+            this.image.setImageResource(R.drawable.empty_sense_error);
             this.message.setText(R.string.sense_offline_message);
 
         }
@@ -227,7 +225,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         void bind(final int ignored) {
             this.title.setText(R.string.sleep_sounds_state_no_sounds_title);
             this.message.setText(R.string.sleep_sounds_state_no_sounds_message);
-            this.image.setImageResource(R.drawable.illustration_sense_download);
+            this.image.setImageResource(R.drawable.empty_sense_download);
         }
     }
 
@@ -241,7 +239,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         void bind(final int ignored) {
             this.title.setText(R.string.sense_state_fw_update_title);
             this.message.setText(R.string.sleep_sounds_state_fw_update_message);
-            this.image.setImageResource(R.drawable.illustration_sense_update);
+            this.image.setImageResource(R.drawable.empty_sense_update);
         }
     }
 

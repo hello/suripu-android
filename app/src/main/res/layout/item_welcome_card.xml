@@ -11,7 +11,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
-            tools:src="@drawable/conditions_welcome"/>
+            tools:src="@drawable/feature_sensors"/>
 
         <TextView
             android:id="@+id/item_welcome_title"
