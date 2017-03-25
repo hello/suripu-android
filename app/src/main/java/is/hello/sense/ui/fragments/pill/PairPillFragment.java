@@ -65,7 +65,7 @@ public class PairPillFragment extends BasePresenterFragment
                 presenter.skipPairingPill();
                 return true;
             });
-            diagram.setBackgroundResource(R.drawable.selectable_dark);
+            diagram.setBackgroundResource(R.drawable.ripple_selector);
         }
         return view;
     }

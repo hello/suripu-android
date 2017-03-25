@@ -39,15 +39,14 @@ public class HaveSenseReadyFragment extends SenseFragment {
                 .setPrimaryButtonText(R.string.action_pair_your_sense)
                 .setPrimaryOnClickListener(this::pairSense)
                 .setSecondaryButtonText(R.string.action_buy_sense)
-                .setSecondaryOnClickListener(this::showBuySense)
-                .withSecondaryOnBottom();
+                .setSecondaryOnClickListener(this::showBuySense);
         return view;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if(this.view != null) {
+        if (this.view != null) {
             this.view.destroy();
             this.view = null;
         }

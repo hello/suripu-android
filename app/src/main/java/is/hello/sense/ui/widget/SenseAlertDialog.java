@@ -34,9 +34,10 @@ public class SenseAlertDialog extends Dialog {
     private final TextView titleText;
     private final TextView messageText;
 
-    private final View buttonDivider;
     private final Button negativeButton;
     private final Button positiveButton;
+
+    private final View verticalDivider;
 
     private View view;
     private View topViewDivider, bottomViewDivider;
@@ -64,9 +65,9 @@ public class SenseAlertDialog extends Dialog {
         this.messageText = (TextView) findViewById(R.id.dialog_sense_alert_message);
         messageText.setMovementMethod(LinkMovementMethod.getInstance());
 
-        this.buttonDivider = findViewById(R.id.dialog_sense_alert_button_divider);
         this.negativeButton = (Button) findViewById(R.id.dialog_sense_alert_cancel);
         this.positiveButton = (Button) findViewById(R.id.dialog_sense_alert_ok);
+        this.verticalDivider = findViewById(R.id.dialog_sense_alert_vertical_divider);
     }
 
     /**
@@ -89,7 +90,7 @@ public class SenseAlertDialog extends Dialog {
         Views.runWhenLaidOut(container, () -> {
             final DisplayMetrics metrics = container.getResources().getDisplayMetrics();
 
-            final int padding = getContext().getResources().getDimensionPixelSize(R.dimen.gap_medium);
+            final int padding = getContext().getResources().getDimensionPixelSize(R.dimen.x2);
             final int maxHeight = metrics.heightPixels - (padding * 2);
 
             if (container.getMeasuredHeight() > maxHeight) {
@@ -104,7 +105,7 @@ public class SenseAlertDialog extends Dialog {
         final boolean hasText = (titleText.getVisibility() == View.VISIBLE ||
                 messageText.getVisibility() == View.VISIBLE);
         if (hasText) {
-            final int padding = getContext().getResources().getDimensionPixelSize(R.dimen.gap_outer);
+            final int padding = getContext().getResources().getDimensionPixelSize(R.dimen.x3);
             container.setPadding(0, padding, 0, 0);
             if (topViewDivider != null) {
                 topViewDivider.setVisibility(View.VISIBLE);
@@ -182,13 +183,6 @@ public class SenseAlertDialog extends Dialog {
         }
     }
 
-    protected void updateButtonDivider() {
-        if (positiveButton.getVisibility() == View.VISIBLE && negativeButton.getVisibility() == View.VISIBLE) {
-            buttonDivider.setVisibility(View.VISIBLE);
-        } else {
-            buttonDivider.setVisibility(View.GONE);
-        }
-    }
 
     public void setPositiveButton(@Nullable final CharSequence title, @Nullable final OnClickListener onClickListener) {
         if (title != null) {
@@ -199,7 +193,6 @@ public class SenseAlertDialog extends Dialog {
             positiveButton.setVisibility(View.GONE);
         }
 
-        updateButtonDivider();
     }
 
     public void setPositiveButton(@StringRes final int titleId, @Nullable final OnClickListener onClickListener) {
@@ -214,12 +207,13 @@ public class SenseAlertDialog extends Dialog {
         if (title != null) {
             negativeButton.setVisibility(View.VISIBLE);
             negativeButton.setText(title);
+            verticalDivider.setVisibility(View.VISIBLE);
             Views.setSafeOnClickListener(negativeButton, createClickListener(onClickListener, DialogInterface.BUTTON_NEGATIVE));
         } else {
             negativeButton.setVisibility(View.GONE);
+            verticalDivider.setVisibility(View.GONE);
         }
 
-        updateButtonDivider();
     }
 
     public void setNegativeButton(@StringRes final int titleId, @Nullable final OnClickListener onClickListener) {
@@ -255,9 +249,9 @@ public class SenseAlertDialog extends Dialog {
         }
 
         if (flag) {
-            button.setTextColor(ContextCompat.getColor(getContext(), R.color.destructive_accent));
+            button.setTextColor(ContextCompat.getColor(getContext(), R.color.error_text));
         } else {
-            button.setTextColor(ContextCompat.getColor(getContext(), R.color.light_accent));
+            button.setTextColor(ContextCompat.getColor(getContext(), R.color.link_text_selector));
         }
     }
 
@@ -269,9 +263,9 @@ public class SenseAlertDialog extends Dialog {
         }
 
         if (flag) {
-            button.setTextColor(ContextCompat.getColor(getContext(), R.color.text_medium));
+            button.setTextColor(ContextCompat.getColor(getContext(), R.color.primary_text));
         } else {
-            button.setTextColor(ContextCompat.getColor(getContext(), R.color.light_accent));
+            button.setTextColor(ContextCompat.getColor(getContext(), R.color.link_text_selector));
         }
     }
 
@@ -302,7 +296,7 @@ public class SenseAlertDialog extends Dialog {
             if (bottomViewDivider == null && wantsDividers) {
                 this.bottomViewDivider = Styles.createHorizontalDivider(getContext(), ViewGroup.LayoutParams.MATCH_PARENT);
                 final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(bottomViewDivider.getLayoutParams());
-                layoutParams.bottomMargin = getContext().getResources().getDimensionPixelSize(R.dimen.gap_medium);
+                layoutParams.bottomMargin = getContext().getResources().getDimensionPixelSize(R.dimen.x2);
                 bottomViewDivider.setLayoutParams(layoutParams);
                 container.addView(bottomViewDivider, end);
             }
@@ -392,7 +386,7 @@ public class SenseAlertDialog extends Dialog {
             return this;
         }
 
-        public Builder setCancelable(final boolean cancellable){
+        public Builder setCancelable(final boolean cancellable) {
             bundle.putBoolean(ARG_CANCELABLE, cancellable);
             return this;
         }
@@ -426,11 +420,11 @@ public class SenseAlertDialog extends Dialog {
                 }
                 alertDialog.setNegativeRunnableButton(bundle.getInt(ARG_NEGATIVE_CLICK_TEXT), runnable);
             }
-            if(bundle.containsKey(ARG_CANCELABLE)){
+            if (bundle.containsKey(ARG_CANCELABLE)) {
                 alertDialog.setCancelable(bundle.getBoolean(ARG_CANCELABLE));
             }
 
-            if(bundle.containsKey(ARG_DESTRUCTIVE_BUTTON) && bundle.containsKey(ARG_DESTRUCTIVE_FLAG)){
+            if (bundle.containsKey(ARG_DESTRUCTIVE_BUTTON) && bundle.containsKey(ARG_DESTRUCTIVE_FLAG)) {
                 alertDialog.setButtonDestructive(bundle.getInt(ARG_DESTRUCTIVE_BUTTON),
                                                  bundle.getBoolean(ARG_DESTRUCTIVE_FLAG));
             }

@@ -21,6 +21,7 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SenseOTAStatusInteractor;
 import is.hello.sense.notifications.OnNotificationPressedInterceptor;
 import is.hello.sense.presenters.PairSensePresenter;
+import is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
@@ -41,7 +42,11 @@ import is.hello.sense.ui.fragments.updating.ConnectToWiFiFragment;
 import is.hello.sense.ui.fragments.updating.SelectWifiNetworkFragment;
 import is.hello.sense.util.SkippableFlow;
 
-public class SenseUpgradeActivity extends ScopedInjectionActivity
+/**
+ * TODO make extend {@link is.hello.sense.ui.activities.appcompat.FragmentNavigationActivity} once
+ * {@link is.hello.sense.ui.activities.appcompat.ScopedInjectionActivity} is replaced
+ */
+public class SenseUpgradeActivity extends ScopedInjectionAppCompatActivity
         implements FragmentNavigation,
         SkippableFlow,
         OnNotificationPressedInterceptor {
@@ -100,7 +105,6 @@ public class SenseUpgradeActivity extends ScopedInjectionActivity
     protected void onDestroy() {
         super.onDestroy();
         navigationDelegate.onDestroy();
-        destroyScopedGraph();
     }
 
     //region SkippableFlow interface

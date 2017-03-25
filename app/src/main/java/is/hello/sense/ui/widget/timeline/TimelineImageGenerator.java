@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +55,8 @@ public class TimelineImageGenerator {
 
         final ViewShareTimelineBinding binding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.view_share_timeline, null, false);
         final TextView scoreTextView = new TextView(context);
-        Styles.setTextAppearance(scoreTextView, R.style.AppTheme_Text_Score_Share_Title);
+        Styles.setTextAppearance(scoreTextView, R.style.Display4);
+        scoreTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 70);
         scoreTextView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 

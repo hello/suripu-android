@@ -228,14 +228,6 @@ public final class Styles {
         return assembleReadingAndUnit(String.format("%.0f", value), suffix, UNIT_STYLE_SUPERSCRIPT);
     }
 
-    public static
-    @NonNull
-    GradientDrawable createGraphFillGradientDrawable(@NonNull Resources resources) {
-        return new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{
-                resources.getColor(R.color.graph_fill_gradient_top),
-                resources.getColor(R.color.graph_fill_gradient_bottom),
-        });
-    }
 
     public static void applyRefreshLayoutStyle(@NonNull SwipeRefreshLayout refreshLayout) {
         refreshLayout.setColorSchemeResources(R.color.sensor_alert,
@@ -256,7 +248,7 @@ public final class Styles {
             return null;
         }
 
-        final @ColorInt int emphasisColor = resources.getColor(R.color.black);
+        final @ColorInt int emphasisColor = resources.getColor(R.color.primary_text);
         final SpannableStringBuilder toFormat = new SpannableStringBuilder(source);
         final MarkupStyleSpan[] spans = toFormat.getSpans(0, toFormat.length(),
                                                           MarkupStyleSpan.class);

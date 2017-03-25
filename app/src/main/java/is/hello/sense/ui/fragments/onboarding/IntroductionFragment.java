@@ -155,8 +155,8 @@ public class IntroductionFragment extends SenseFragment
         Views.setSafeOnClickListener(getStartedButton, this::getStarted);
 
         final Resources resources = getResources();
-        this.introStatusBarColor = resources.getColor(R.color.status_bar_grey);
-        this.featureStatusBarColor = resources.getColor(R.color.light_accent_darkened);
+        this.introStatusBarColor = resources.getColor(R.color.status_bar_normal);
+        this.featureStatusBarColor = resources.getColor(R.color.status_bar_primary_darkened);
 
         return view;
     }
@@ -198,9 +198,9 @@ public class IntroductionFragment extends SenseFragment
     @Override
     public int getStatusBarColor(@NonNull Resources resources) {
         if (lastSelectedPage > INTRO_POSITION) {
-            return resources.getColor(R.color.light_accent_darkened);
+            return resources.getColor(R.color.status_bar_primary_darkened);
         } else {
-            return resources.getColor(R.color.status_bar_grey);
+            return resources.getColor(R.color.status_bar_normal);
         }
     }
 

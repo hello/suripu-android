@@ -77,7 +77,7 @@ public final class PageDots extends LinearLayout implements OnViewPagerChangeAda
 
 
         final Resources resources = getResources();
-        final int padding = resources.getDimensionPixelSize(R.dimen.gap_medium);
+        final int padding = resources.getDimensionPixelSize(R.dimen.x2);
         setPadding(padding, padding, padding, padding);
         setOrientation(HORIZONTAL);
         setGravity(Gravity.CENTER);
@@ -172,7 +172,7 @@ public final class PageDots extends LinearLayout implements OnViewPagerChangeAda
             }
 
             case STYLE_BLUE: {
-                setColor(getResources().getColor(R.color.light_accent));
+                setColor(getResources().getColor(R.color.onboarding_icon_tint));
                 break;
             }
 

@@ -12,14 +12,6 @@ public class InternalPrefManager {
         return context.getSharedPreferences(Constants.INTERNAL_PREFS, 0);
     }
 
-    public static void saveCurrentItem(@NonNull final Context context, final int currentItem) {
-        getInternalPrefs(context)
-                .edit()
-                .putInt(Constants.INTERNAL_PREF_BACKSIDE_CURRENT_ITEM, currentItem)
-                .putLong(Constants.INTERNAL_PREF_BACKSIDE_CURRENT_ITEM_LAST_UPDATED, System.currentTimeMillis())
-                .apply();
-    }
-
     public static void clearPrefs(@NonNull final Context context) {
         getInternalPrefs(context)
                 .edit()

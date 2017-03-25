@@ -133,7 +133,7 @@ public class SensorGraphDrawable extends Drawable {
 
         this.whiteFillPaint.setColor(Color.WHITE);
         this.whiteFillPaint.setStyle(Paint.Style.FILL);
-        Drawing.updateTextPaintFromStyle(this.textLabelPaint, context, R.style.AppTheme_Text_Trends_BarGraph);
+        Drawing.updateTextPaintFromStyle(this.textLabelPaint, context, R.style.Caption1_Hint);
     }
 
     public final void setScaleFactor(final float scaleFactor) {

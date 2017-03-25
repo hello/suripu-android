@@ -1,415 +1,195 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Todo rename file to typography.xml -->
 
-    <style name="Heading" parent="AppTheme.Text.Header.H1">
+    <!-- Start Button Styles -->
+    <style name="ButtonText" parent="AppTheme.Text.Header.H6.Medium">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textSize">@dimen/text_h6_5</item>
+        <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
-    <style name="Heading.Light" parent="AppTheme.Text.Header.H1.Light">
+    <style name="Button">
+        <item name="android:paddingTop">@dimen/x1</item>
+        <item name="android:paddingBottom">@dimen/x1</item>
+        <item name="android:paddingLeft">@dimen/x3</item>
+        <item name="android:paddingRight">@dimen/x3</item>
+        <item name="android:textAppearance">@style/ButtonText</item>
+        <item name="android:background">@null</item>
+        <item name="android:height">@dimen/button_height</item>
+        <item name="android:hapticFeedbackEnabled">true</item>
     </style>
 
-    <style name="Title" parent="AppTheme.Text.Header.H6.Medium">
-        <item name="android:textColor">@color/dark</item>
+    <style name="Button.Raised">
+        <item name="android:textColor">@color/white_text</item>
+        <item name="android:background">@drawable/sense_raised_button_selector</item>
     </style>
 
-    <style name="Body" parent="AppTheme.Text.Body">
-        <item name="android:background">@color/background_light</item>
+    <!-- Special case for fragment_onboarding_register.xml. Requires an activated state -->
+    <style name="Button.Raised.Onboarding">
+        <item name="android:background">@drawable/sense_raised_button_selector_onboarding</item>
     </style>
 
-    <style name="Body.Dim" parent="AppTheme.Text.Body">
-        <item name="android:textColor">@color/dim</item>
+    <style name="Button.Flat" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name="android:paddingTop">@dimen/x1</item>
+        <item name="android:paddingBottom">@dimen/x1</item>
+        <item name="android:paddingLeft">@dimen/x3</item>
+        <item name="android:paddingRight">@dimen/x3</item>
+        <item name="android:elevation" tools:targetApi="lollipop">0dp</item>
+        <item name="android:textColor">@color/primary_text_selector</item>
+        <item name="android:background">@drawable/sense_flat_button_selector</item>
     </style>
 
-    <style name="Body.Dark" parent="AppTheme.Text.Body">
-        <item name="android:textColor">@color/dark</item>
+    <style name="Button.Flat.Primary">
+        <item name="android:background">@color/primary</item>
     </style>
 
-    <style name="Body.New" parent="AppTheme.Text.Body">
-        <item name="android:textColor">@color/text_color_selector_body_new</item>
+    <style name="Button.Flat.Link">
+        <item name="android:textColor">@color/link_text_selector</item>
     </style>
 
-    <style name="Body.Accent" parent="AppTheme.Text.Body">
-        <item name="android:textColor">@color/text_color_selector_light_accent</item>
+    <!-- End Button Styles -->
+
+
+    <!-- Start Text Styles -->
+    <style name="Display1" parent="AppTheme.Text.Header.H3.Light">
+
     </style>
 
-    <style name="Label" parent="AppTheme.Text.Header.H7">
-        <item name="android:textColor">@color/dim</item>
+    <style name="Display1.Primary">
+        <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
-    <style name="Label.Error">
-        <item name="android:textColor">@color/error</item>
+    <style name="Display2" parent="AppTheme.Text.Header.H2.Light">
+
     </style>
 
-    <style name="Body.Link">
+    <style name="Display2.Primary">
+        <item name="android:textColor">@color/primary_text_selector</item>
+    </style>
+
+    <style name="Display2.Secondary">
+        <item name="android:textColor">@color/secondary_text_selector</item>
+    </style>
+
+    <style name="Display3" parent="AppTheme.Text.Header.H1.Thin">
+        <item name="android:textSize">@dimen/text_h1_2</item>
+    </style>
+
+    <style name="Display4" parent="AppTheme.Text.Header.H1.Thin">
+    </style>
+
+    <style name="Headline" parent="AppTheme.Text.Header.H4">
+
+    </style>
+
+    <style name="Headline.Primary">
+        <item name="android:textColor">@color/primary_text_selector</item>
+    </style>
+
+
+    <style name="Headline.Hint">
+        <item name="android:textColor">@color/hint_text</item>
+    </style>
+
+    <style name="Title1" parent="AppTheme.Text.Header.H5">
+        <item name="android:textSize">@dimen/text_h6_2</item>
+    </style>
+
+    <style name="Title1.Primary">
+        <item name="android:textColor">@color/primary_text_selector</item>
+    </style>
+
+    <style name="Title2" parent="AppTheme.Text.Header.H5">
+    </style>
+
+    <style name="Title2.Primary">
+        <item name="android:textColor">@color/primary_text_selector</item>
+    </style>
+
+    <style name="Title2.Secondary">
+        <item name="android:textColor">@color/secondary_text_selector</item>
+    </style>
+
+    <style name="BodySmall" parent="AppTheme.Text.Header.H6">
+        <item name="android:textSize">@dimen/text_h6_6</item>
+    </style>
+
+    <style name="BodySmall.Secondary">
+        <item name="android:textColor">@color/secondary_text_selector</item>
+    </style>
+
+    <style name="Body1" parent="AppTheme.Text.Body">
+
+    </style>
+
+    <style name="Body1.Primary">
+        <item name="android:textColor">@color/primary_text_selector</item>
+    </style>
+
+    <style name="Body1.Blue">
         <item name="android:textColor">@color/primary</item>
     </style>
 
-    <style name="Card" parent="AppTheme.Text.Body">
-
+    <style name="Body1.Secondary">
+        <item name="android:textColor">@color/secondary_text_selector</item>
     </style>
 
-    <style name="Card.Title">
-        <item name="android:textSize">@dimen/text_h7</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/dark</item>
+    <style name="Body1.Hint">
+        <item name="android:textColor">@color/hint_text</item>
+    </style>
+
+    <style name="Body1.Link">
+        <item name="android:textColor">@color/link_text_selector</item>
+    </style>
+
+    <style name="Body2" parent="Body1">
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="Body2.Primary">
+        <item name="android:textColor">@color/primary_text_selector</item>
+    </style>
+
+    <style name="Caption1" parent="AppTheme.Text.Header.H8.Medium">
         <item name="android:textAllCaps">true</item>
     </style>
 
-    <style name="Card.WelcomeTitle">
-        <item name="android:textSize">@dimen/text_h5</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textColor">@color/dark</item>
+    <style name="Caption1.Primary">
+        <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
-    <style name="Card.Body">
-        <item name="android:textSize">@dimen/text_body</item>
-        <item name="android:textColor">@color/standard</item>
+    <style name="Caption1.Secondary">
+        <item name="android:textColor">@color/secondary_text_selector</item>
     </style>
 
-    <style name="Card.Value">
-        <item name="android:textSize">@dimen/text_h4</item>
+    <style name="Caption1.Hint">
+        <item name="android:textColor">@color/hint_text</item>
     </style>
 
-    <style name="Card.Unit">
-        <item name="android:textSize">@dimen/text_h8</item>
-        <item name="android:textColor">@color/standard</item>
+    <style name="Caption2" parent="AppTheme.Text.Header.H7.Medium">
+
     </style>
 
-
-    ​<!-- Generic -->
-    <style name="AppTheme.Text.Heading">
-        <item name="android:fontFamily">sans-serif-thin</item>
-        <item name="android:textSize">@dimen/text_size_heading</item>
-        <item name="android:lineSpacingMultiplier">@dimen/line_multiple_heading</item>
-        <item name="android:textColor">@color/text_dark</item>
+    <style name="Caption2.Blue" parent="AppTheme.Text.Header.H7.Medium">
+        <item name="android:textColor">@color/primary</item>
     </style>
 
-    <style name="AppTheme.Text.Heading.New">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textSize">@dimen/text_size_heading_new</item>
-        <item name="android:textColor">@color/text_heading_major</item>
+    <style name="Caption2.Primary">
+        <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
-    <style name="AppTheme.Text.Subheading">
-        <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textSize">@dimen/text_size_subheading</item>
-        <item name="android:lineSpacingMultiplier">@dimen/line_multiple_subheading</item>
-        <item name="android:textColor">@color/text_medium</item>
+    <style name="Caption2.Secondary">
+        <item name="android:textColor">@color/secondary_text_selector</item>
     </style>
 
-    <style name="AppTheme.Text.ParagraphHeading">
-        <item name="android:textSize">@dimen/text_size_paragraph_heading</item>
-        <item name="android:lineSpacingMultiplier">@dimen/line_multiple_paragraph_heading</item>
-        <item name="android:textColor">@color/text_dark</item>
+    <style name="Caption2.Hint">
+        <item name="android:textColor">@color/hint_text</item>
     </style>
 
-    <style name="AppTheme.Text.Question">
-        <item name="android:textSize">@dimen/text_size_question</item>
-        <item name="android:fontFamily">sans-serif-thin</item>
-        <item name="android:lineSpacingMultiplier">@dimen/line_multiple_body</item>
-        <item name="android:textColor">@color/text_dark</item>
+    <style name="Caption2.Error">
+        <item name="android:textColor">@color/error_text</item>
     </style>
 
-    <style name="AppTheme.Text.SectionHeading">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textSize">@dimen/text_size_section_heading</item>
-        <item name="android:textColor">@color/text_section_header</item>
-    </style>
-
-    <style name="AppTheme.Text.SectionHeading.Accent">
-        <item name="android:textColor">@color/light_accent</item>
-    </style>
-
-    <style name="AppTheme.Text.SectionHeading.Large">
-        <item name="android:textSize">@dimen/text_size_section_heading_large</item>
-    </style>
-
-
-    <style name="AppTheme.Text.ScreenTitle">
-        <item name="android:textSize">@dimen/action_bar_title_text_size</item>
-        <item name="android:textColor">@color/text_dark</item>
-        <item name="android:fontFamily">sans-serif-light</item>
-    </style>
-
-    <style name="AppTheme.Text.ScreenTitle.Accent">
-        <item name="android:textColor">@color/light_accent</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.New">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textColor">@color/text_body_new</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.MidSized">
-        <item name="android:textSize">@dimen/text_size_body_mid_sized</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.MidSized.DarkText">
-        <item name="android:textColor">@color/black_70</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.MidSized.New">
-        <item name="android:textColor">@color/text_body_new</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.MidSized.Dim">
-        <item name="android:textColor">@color/text_dim</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.Small">
-        <item name="android:textSize">@dimen/text_size_body_small</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.Small.New">
-        <item name="android:textColor">@color/text_body_new</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.Bold">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.Bold.Italic">
-        <item name="android:textStyle">bold|italic</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.Bold.Small">
-        <item name="android:textSize">@dimen/text_size_body_small</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.Link">
-        <item name="android:textColor">@color/text_color_link</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.Dim">
-        <item name="android:textColor">@color/text_dim</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.Dim.Ellipsize">
-        <item name="android:ellipsize">end</item>
-        <item name="android:singleLine">true</item>
-    </style>
-
-    <style name="AppTheme.Text.Body.New.Ellipsize">
-        <item name="android:ellipsize">end</item>
-        <item name="android:singleLine">true</item>
-    </style>
-
-    <style name="AppTheme.Text.RotaryPickerItem" parent="AppTheme.Text.Body">
-        <item name="android:textSize">@dimen/view_rotary_picker_text</item>
-        <item name="android:textColor">@color/text_rotary_picker_focused</item>
-        <item name="android:includeFontPadding">false</item>
-    </style>
-
-    <style name="AppTheme.Text.RotaryPickerItem.Focused" parent="AppTheme.Text.Body">
-        <item name="android:textColor">@color/text_rotary_picker_focused</item>
-    </style>
-
-    <style name="AppTheme.Text.FieldLabel">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textSize">@dimen/text_size_body</item>
-    </style>
-
-    <style name="AppTheme.Text.Button">
-        <item name="android:textSize">@dimen/text_size_button</item>
-    </style>
-
-    <!-- Non-generic -->
-
-    <style name="AppTheme.Text.Timeline.Summary.Title" parent="@style/AppTheme.Text.Body.MidSized">
-        <item name="android:textColor">@color/dim</item>
-        <item name="android:textAllCaps">true</item>
-    </style>
-
-    <style name="AppTheme.Text.Score"/>
-
-    <style name="AppTheme.Text.Score.Big">
-        <item name="android:textSize">@dimen/text_size_big_score</item>
-        <item name="android:fontFamily">sans-serif-thin</item>
-    </style>
-
-    <style name="AppTheme.Text.Score.Small">
-        <item name="android:textSize">@dimen/text_size_small_score</item>
-        <item name="android:fontFamily">sans-serif-thin</item>
-    </style>
-
-    <style name="AppTheme.Text.Score.Tiny">
-        <item name="android:textSize">@dimen/text_size_tiny_score</item>
-        <item name="android:fontFamily">sans-serif-light</item>
-    </style>
-
-    <style name="AppTheme.Text.Score.Unit">
-        <item name="android:textSize">@dimen/text_h4</item>
-        <item name="android:fontFamily">sans-serif-thin</item>
-    </style>
-
-    <style name="AppTheme.Text.Condition">
-        <item name="android:fontFamily">sans-serif-thin</item>
-        <item name="android:textSize">@dimen/text_size_condition</item>
-    </style>
-
-    <style name="AppTheme.Text.Condition.Large">
-        <item name="android:textSize">@dimen/text_size_big_score</item>
-    </style>
-
-    <style name="AppTheme.Text.Score.Share"/>
-
-    <style name="AppTheme.Text.Score.Share.Title">
-        <item name="android:textSize">@dimen/text_size_score_share_title</item>
-        <item name="android:fontFamily">sans-serif-thin</item>
-        <item name="android:textStyle">normal</item>
-    </style>
-
-    <style name="AppTheme.Text.Score.Share.Text">
-        <item name="android:textSize">@dimen/text_size_score_share_text</item>
-        <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textColor">@color/timeline_share_text</item>
-    </style>
-
-    <style name="AppTheme.Text.Score.Share.Date">
-        <item name="android:textSize">@dimen/text_size_score_share_date_text</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textColor">@color/black_70</item>
-    </style>
-
-    <style name="AppTheme.Text.SmartAlarm"/>
-
-    <style name="AppTheme.Text.SmartAlarm.Time">
-        <item name="android:fontFamily">sans-serif-thin</item>
-        <item name="android:textSize">@dimen/text_size_smart_alarm_time</item>
-    </style>
-
-    <style name="AppTheme.Text.SmartAlarm.Repeat">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textSize">@dimen/text_h7</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/text_extra_light</item>
-    </style>
-
-    <style name="AppTheme.Text.SmartAlarm.Time.Big">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">@dimen/text_size_smart_alarm_time_big</item>
-    </style>
-
-    <style name="AppTheme.Text.ScaleReading">
-        <item name="android:fontFamily">sans-serif-thin</item>
-        <item name="android:textColor">@color/light_accent</item>
-        <item name="android:textSize">@dimen/text_size_scale_reading</item>
-    </style>
-
-    <style name="AppTheme.Text.Birthday">
-        <item name="android:gravity">center</item>
-
-        <item name="android:minHeight">@dimen/edit_text_min_height</item>
-        <item name="android:padding">@dimen/gap_medium</item>
-
-        <item name="android:background">@drawable/edit_text_background_normal</item>
-
-        <item name="android:textSize">@dimen/text_size_heading</item>
-        <item name="android:fontFamily">sans-serif-light</item>
-    </style>
-
-    <style name="AppTheme.Text.Timeline" parent="AppTheme.Text.Body.MidSized"/>
-
-    <style name="AppTheme.Text.Timeline.Timestamp">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textSize">@dimen/text_size_timeline_time</item>
-        <item name="android:textColor">@color/light_accent</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:ellipsize">end</item>
-    </style>
-
-    <style name="AppTheme.Text.Timeline.Timestamp.Event">
-        <item name="android:textColor">@color/text_dim</item>
-    </style>
-
-    <style name="AppTheme.Text.GridGraphCell">
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">12sp</item>
-        <item name="android:textColor">@color/white</item>
-    </style>
-
-    <style name="AppTheme.Text.Trends">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textAllCaps">false</item>
-    </style>
-
-    <style name="AppTheme.Text.Trends.Title">
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">@dimen/text_size_body</item>
-        <item name="android:textColor">@color/trends_title</item>
-    </style>
-
-    <style name="AppTheme.Text.Trends.BarGraph">
-        <item name="android:textAlignment">center</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">@dimen/text_size_trends_bargraph</item>
-        <item name="android:textColor">@color/trends_bargraph</item>
-    </style>
-
-    <style name="AppTheme.Text.Trends.BubbleGraph">
-        <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textAlignment">center</item>
-        <item name="android:textColor">@color/trends_bubblegraph_text_value</item>
-        <item name="android:textStyle">normal</item>
-    </style>
-
-    <style name="AppTheme.Text.Trends.BubbleGraph.Title">
-        <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textSize">@dimen/text_size_trends_bubblegraph_title</item>
-        <item name="android:textColor">@color/trends_bubblegraph_text_title</item>
-        <item name="android:textStyle">normal</item>
-    </style>
-
-    <style name="AppTheme.Text.Trends.BarGraph.HighLight">
-        <item name="android:textColor">@color/trends_bargraph_highlight_text</item>
-    </style>
-
-    <style name="AppTheme.Text.Trends.BarGraph.Hours">
-        <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textSize">@dimen/text_size_tiny_score</item>
-        <item name="android:textColor">@color/trends_bargraph_hightlight_bar</item>
-    </style>
-
-    <style name="AppTheme.Text.Trends.GridGraph">
-        <item name="android:textAlignment">center</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">@dimen/text_size_trends_gridgraph</item>
-        <item name="android:textColor">@color/trends_gridgraph</item>
-    </style>
-
-    <style name="AppTheme.Text.Trends.GridGraph.Cell">
-        <item name="android:textAlignment">center</item>
-        <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textSize">@dimen/text_size_trends_gridgraph_cell</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="AppTheme.Text.Player">
-        <item name="android:textAlignment">center</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">@dimen/player_preview_text_size</item>
-        <item name="android:textColor">@color/dim</item>
-    </style>
-
-    <style name="AppTheme.Text.Player.Title">
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">@dimen/text_size_body</item>
-        <item name="android:textColor">@color/trends_title</item>
-    </style>
-
-    <style name="AppTheme.Text.Player.Item">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textSize">@dimen/text_size_body</item>
-        <item name="android:textColor">@color/standard</item>
-    </style>
-
-    <style name="AppTheme.Text.Player.Preview">
-        <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textColor">@color/dim</item>
-    </style>
 </resources>

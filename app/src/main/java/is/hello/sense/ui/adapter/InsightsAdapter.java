@@ -26,6 +26,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
+import is.hello.sense.ui.widget.ImageTextView;
 import is.hello.sense.ui.widget.ParallaxImageView;
 import is.hello.sense.ui.widget.WhatsNewLayout;
 import is.hello.sense.ui.widget.util.Styles;
@@ -277,10 +278,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
                 return new InsightViewHolder(view);
             }
             case TYPE_ERROR: {
-                final View view = inflater.inflate(R.layout.temp_item_message_card, parent, false);
-                final int margin = resources.getDimensionPixelSize(R.dimen.x1);
-                final RecyclerView.LayoutParams lp = ((RecyclerView.LayoutParams) view.getLayoutParams());
-                lp.setMargins(margin, margin, margin, margin);
+                final View view = inflater.inflate(R.layout.item_message_card, parent, false);
                 return new ErrorViewHolder(view);
             }
             default: {
@@ -364,7 +362,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         ErrorViewHolder(@NonNull final View view) {
             super(view);
 
-            final TextView title = (TextView) view.findViewById(R.id.item_message_card_title);
+            final ImageTextView title = (ImageTextView) view.findViewById(R.id.item_message_card_image_text);
             title.setVisibility(View.GONE);
 
             this.message = (TextView) view.findViewById(R.id.item_message_card_message);
@@ -391,7 +389,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
         final TextView body;
         final TextView date;
         final TextView category;
-        final LinearLayout share;
+        final ImageTextView share;
         public final ParallaxImageView image;
 
         InsightViewHolder(@NonNull final View view) {
@@ -400,7 +398,7 @@ public class InsightsAdapter extends RecyclerView.Adapter<InsightsAdapter.BaseVi
             this.date = (TextView) view.findViewById(R.id.item_insight_date);
             this.category = (TextView) view.findViewById(R.id.item_insight_category);
             this.image = (ParallaxImageView) view.findViewById(R.id.item_insight_image);
-            this.share = (LinearLayout) view.findViewById(R.id.item_insight_share);
+            this.share = (ImageTextView) view.findViewById(R.id.item_insight_share_button);
 
             view.setOnClickListener(this);
         }

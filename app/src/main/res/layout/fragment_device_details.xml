@@ -4,7 +4,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true"
-            android:background="@color/background_light">
+            android:background="@color/background_card">
 
     <LinearLayout
         android:id="@+id/fragment_device_details_container"
@@ -17,30 +17,29 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/gap_outer"
-            android:layout_marginEnd="@dimen/gap_outer"
+            android:layout_marginStart="@dimen/x3"
+            android:layout_marginEnd="@dimen/x3"
             android:visibility="visible">
 
             <TextView
                 android:id="@+id/fragment_device_details_alert_title_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/AppTheme.Text.Body.MidSized"
+                style="@style/Body2.Primary"
                 android:text="@string/app_name"
-                android:drawableLeft="@drawable/icon_warning"
-                android:drawablePadding="@dimen/gap_small"
+                android:drawableStart="@drawable/icon_warning"
+                android:drawablePadding="@dimen/x1"
                 android:gravity="center"
-                android:layout_marginTop="@dimen/device_detail_progress_margin"
-                android:layout_marginLeft="@dimen/gap_xsmall"
-                android:layout_marginBottom="@dimen/device_detail_text_margin"
-                android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
+                android:layout_marginTop="@dimen/x5"
+                android:layout_marginStart="@dimen/x1"
+                android:layout_marginBottom="@dimen/x1"/>
 
             <ProgressBar
                 android:id="@+id/fragment_device_details_alert_busy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/device_detail_progress_margin"
-                android:layout_marginBottom="@dimen/device_detail_text_margin"
+                android:layout_marginTop="@dimen/x5"
+                android:layout_marginBottom="@dimen/x4"
                 android:layout_gravity="center_horizontal"
                 android:visibility="gone"
                 style="@style/AppTheme.ProgressBar.Small" />
@@ -50,18 +49,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textAppearance="@style/AppTheme.Text.Body.MidSized"
                 android:text="@string/app_name"
-                android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
+                style="@style/Body1.Secondary"/>
 
             <Button
                 android:id="@+id/fragment_device_details_alert_action"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/gap_small"
-                android:layout_marginBottom="@dimen/gap_small"
+                android:layout_marginTop="@dimen/x2"
+                android:layout_marginBottom="@dimen/x1"
                 android:text="@string/action_troubleshoot"
-                style="@style/AppTheme.Button.Rounded" />
+                style="@style/Button.Flat"/>
 
             <Button
                 android:id="@+id/fragment_device_details_alert_action_secondary"
@@ -69,10 +67,10 @@
                 android:layout_height="wrap_content"
                 android:text="@string/action_retry"
                 android:visibility="gone"
-                style="@style/AppTheme.Button.Borderless.Accent.Bounded.Lowercase" />
+                style="@style/Button.Raised" />
 
             <View
-                android:layout_marginTop="@dimen/device_detail_text_margin"
+                android:layout_marginTop="@dimen/x4"
                 style="@style/Divider.Horizontal" />
 
         </LinearLayout>
@@ -81,8 +79,8 @@
             android:id="@+id/fragment_device_details_actions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/gap_small"
-            android:paddingBottom="@dimen/gap_small"
+            android:paddingTop="@dimen/x1"
+            android:paddingBottom="@dimen/x1"
             android:orientation="vertical" />
 
         <View style="@style/Divider.Horizontal" />

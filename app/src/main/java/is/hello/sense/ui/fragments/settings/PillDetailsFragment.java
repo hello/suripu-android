@@ -166,11 +166,11 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
     public void showAdvancedOptions() {
         Analytics.trackEvent(Analytics.Backside.EVENT_PILL_ADVANCED, null);
 
-        ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
+        final ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
         options.add(
             new SenseBottomSheet.Option(OPTION_ID_REPLACE_PILL)
                     .setTitle(R.string.action_replace_sleep_pill)
-                    .setTitleColor(getResources().getColor(R.color.light_accent))
+                    .setTitleColor(getResources().getColor(R.color.link_text_selector))
                     .setDescription(R.string.description_replace_sleep_pill)
         );
         BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(R.string.title_advanced, options);

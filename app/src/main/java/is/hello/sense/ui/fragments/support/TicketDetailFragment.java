@@ -131,7 +131,7 @@ public class TicketDetailFragment extends InjectionFragment
         adapter.setOnItemClickedListener(this);
         recyclerView.setAdapter(adapter);
 
-        final @ColorInt int tintColor = ContextCompat.getColor(getActivity(), R.color.light_accent);
+        final @ColorInt int tintColor = ContextCompat.getColor(getActivity(), R.color.ticket_detail_icon_tint);
         this.attach = (ImageButton) view.findViewById(R.id.fragment_ticket_detail_comment_attach);
         final Drawable attachDrawable = attach.getDrawable().mutate();
         Drawables.setTintColor(attachDrawable, tintColor);

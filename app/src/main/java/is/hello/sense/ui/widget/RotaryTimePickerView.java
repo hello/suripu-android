@@ -68,7 +68,7 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
 
         final LayoutParams pickerLayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
                                                                  LayoutParams.WRAP_CONTENT);
-        final int hourMinutePadding = resources.getDimensionPixelSize(R.dimen.gap_large);
+        final int hourMinutePadding = resources.getDimensionPixelSize(R.dimen.x3);
 
         this.hourPicker = new RotaryPickerView(context);
         hourPicker.setOnSelectionListener(this);
@@ -290,19 +290,19 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
 
             final @ColorInt int[] backgroundColors = {
                     resources.getColor(R.color.background),
-                    resources.getColor(R.color.background_light),
+                    resources.getColor(R.color.background_card),
             };
             this.backgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                                                            backgroundColors);
 
-            final @ColorInt int[] shadowColors = {
+            final @ColorInt int[] horizontalDivider = {
                     Color.TRANSPARENT,
-                    resources.getColor(R.color.view_time_picker_shadow_end),
+                    resources.getColor(R.color.divider),
             };
             this.shadowDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                                                       shadowColors);
+                                                       horizontalDivider);
 
-            paint.setColor(resources.getColor(R.color.background_light));
+            paint.setColor(resources.getColor(R.color.background_card));
         }
 
         @Override

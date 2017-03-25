@@ -7,11 +7,11 @@
 
     <TextView
         android:id="@+id/item_section_radio_text"
+        style="@style/Caption2.Secondary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
         android:layout_marginBottom="@dimen/x3"
-        android:textAppearance="@style/AppTheme.Text.SectionHeading.Large"/>
+        android:text="@string/app_name"/>
 
     <RadioGroup
         android:id="@+id/item_section_radio_group"

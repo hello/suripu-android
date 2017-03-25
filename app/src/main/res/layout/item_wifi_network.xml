@@ -4,17 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingTop="@dimen/gap_medium"
-    android:paddingBottom="@dimen/gap_medium"
-    android:paddingLeft="@dimen/gap_outer"
-    android:paddingRight="@dimen/gap_outer"
+    android:paddingTop="@dimen/x2"
+    android:paddingBottom="@dimen/x2"
+    android:paddingLeft="@dimen/x3"
+    android:paddingRight="@dimen/x3"
     android:gravity="start|center_vertical">
 
     <ImageView
         android:id="@+id/item_wifi_network_strength"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/gap_medium"
+        android:layout_marginEnd="@dimen/x2"
         android:src="@drawable/icon_wifi_good"
         android:contentDescription="@string/wifi_network_was_scanned"/>
 
@@ -23,16 +23,16 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textAppearance="@style/AppTheme.Text.Body"
+        style="@style/Body1.Primary"
         android:text="@string/app_name"
-        android:singleLine="true"
+        android:maxLines="1"
         android:ellipsize="end" />
 
     <ImageView
         android:id="@+id/item_wifi_network_locked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/gap_medium"
+        android:layout_marginStart="@dimen/x2"
         android:src="@drawable/wifi_network_lock"
         android:contentDescription="@string/wifi_network_secured"/>
 

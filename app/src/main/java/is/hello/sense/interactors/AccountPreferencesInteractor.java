@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.InternalPrefManager;
 
 /**

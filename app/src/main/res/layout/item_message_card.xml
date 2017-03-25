@@ -2,13 +2,14 @@
 <layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
-        style="@style/AppTheme.Card.Clickable"
+        style="@style/AppTheme.Card"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:descendantFocusability="blocksDescendants"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/x2">
 
         <ImageView
             android:id="@+id/item_message_card_image"
@@ -26,28 +27,27 @@
             android:layout_marginStart="@dimen/x3"
             android:layout_marginTop="@dimen/x2"
             app:leftTextPadding="@dimen/x2"
-            app:textStyle="@style/AppTheme.Text.Body.Bold"/>
+            app:textStyle="@style/Title2.Primary"/>
 
         <TextView
             android:id="@+id/item_message_card_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/x3"
-            android:layout_marginStart="@dimen/x3"
-            android:layout_marginTop="@dimen/x2"
-            android:gravity="center"
-            android:lineSpacingMultiplier="@dimen/line_multiple_body"
-            android:textAppearance="@style/AppTheme.Text.Body.MidSized"/>
-
-        <Button
-            android:id="@+id/item_message_card_action"
-            style="@style/AppTheme.Button.Rounded"
+            style="@style/Body1.Secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/x2"
             android:layout_marginEnd="@dimen/x3"
             android:layout_marginStart="@dimen/x3"
             android:layout_marginTop="@dimen/x2"
+            android:gravity="center_horizontal"/>
+
+        <Button
+            android:id="@+id/item_message_card_action"
+            style="@style/Button.Raised"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/x2"
+            android:layout_marginEnd="@dimen/x3"
+            android:layout_marginStart="@dimen/x3"
             android:text="@android:string/ok"/>
 
     </LinearLayout>

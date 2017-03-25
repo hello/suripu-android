@@ -12,36 +12,35 @@
         android:id="@+id/fragment_connect_to_wifi_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_medium"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:textAppearance="?attr/senseTextAppearanceHeading"
-        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+        android:layout_marginTop="@dimen/x3"
+        android:layout_marginBottom="@dimen/x2"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
+        style="@style/Title2.Primary"
         android:text="@string/title_sign_into_wifi_selection"/>
 
     <TextView
         android:id="@+id/fragment_connect_to_wifi_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/gap_medium"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:textAppearance="?attr/senseTextAppearanceSubheading"
+        android:layout_marginBottom="@dimen/x2"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
+        style="@style/Body1.Secondary"
         android:text="@string/label_wifi_network_name"/>
 
     <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:minHeight="@dimen/gap_small" />
+        android:minHeight="@dimen/x1" />
 
     <RelativeLayout
         android:id="@+id/fragment_connect_to_wifi_other_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
         android:background="@drawable/edit_text_background_normal"
         android:visibility="gone">
 
@@ -49,7 +48,7 @@
             android:id="@+id/fragment_connect_to_wifi_network"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingEnd="@dimen/gap_xlarge"
+            android:paddingEnd="@dimen/x6"
             android:nextFocusForward="@+id/fragment_connect_to_wifi_password"
             android:imeOptions="actionNext|flagNoExtractUi"
             android:hint="@string/label_network_name"
@@ -70,8 +69,8 @@
         android:id="@+id/fragment_connect_to_wifi_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
         android:imeOptions="actionSend|flagNoExtractUi"
         app:labelText="@string/label_password"
         app:isPassword="true"/>
@@ -80,16 +79,16 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:minHeight="@dimen/gap_small" />
+        android:minHeight="@dimen/x1" />
 
     <Button
         android:id="@+id/fragment_connect_to_wifi_continue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
-        android:layout_marginBottom="@dimen/gap_outer"
+        android:layout_marginTop="@dimen/x1"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
+        android:layout_marginBottom="@dimen/x3"
         android:text="@string/action_continue"
         style="@style/AppTheme.Button.Rounded"/>
 

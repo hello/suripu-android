@@ -6,12 +6,13 @@
 
         <activity
             android:name="is.hello.sense.debug_menu_ui.EnvironmentActivity"
-            android:theme="@style/AppTheme.Dialog.Simple"/>
+            android:theme="@style/AppTheme.AppCompat"/>
 
         <activity
             android:name="is.hello.sense.ui.activities.DebugActivity"
             android:label="@string/activity_debug"
-            android:launchMode="singleTop"/>
+            android:launchMode="singleTop"
+            android:theme="@style/Platform.DayNight"/>
 
         <activity
             android:name="net.hockeyapp.android.UpdateActivity"/>
@@ -22,7 +23,8 @@
         <activity
             android:name="is.hello.sense.debug_menu_ui.PiruPeaActivity"
             android:label="Piru-Pea"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.AppCompat"/>
 
         <activity
             android:name="is.hello.sense.debug.WelcomeDialogsActivity"/>

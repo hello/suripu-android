@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/view_voice_settings_list_container"
+<LinearLayout android:id="@+id/view_voice_settings_list_container"
+              xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:divider="@drawable/divider_horizontal_inset"
@@ -9,13 +9,13 @@
 
     <FrameLayout
         android:id="@+id/view_voice_settings_list_volume_container"
+        style="@style/AppTheme.Card.Item"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/AppTheme.Card.Item">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/view_voice_settings_list_volume_tv"
-            style="@style/AppTheme.Text.Body.New"
+            style="@style/Body1.Primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start|center_vertical"
@@ -23,12 +23,10 @@
 
         <TextView
             android:id="@+id/view_voice_settings_list_volume_value_tv"
-            style="@style/AppTheme.Text.Body.Dim"
+            style="@style/Body1.Secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            android:drawableEnd="@drawable/icon_chevron_right_24"
-            android:drawablePadding="@dimen/x1"
             android:text="@string/missing_data_placeholder"
             android:visibility="visible"/>
 
@@ -36,17 +34,17 @@
 
     <LinearLayout
         android:id="@+id/view_voice_settings_list_mute_container"
+        style="@style/AppTheme.Card.Item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        style="@style/AppTheme.Card.Item">
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/voice_settings_list_mute"
-            android:textAppearance="@style/AppTheme.Text.Body.New"/>
+            style="@style/Body1.Primary"/>
 
         <Space
             android:layout_width="0dp"
@@ -66,13 +64,13 @@
 
         <FrameLayout
             android:id="@+id/view_voice_settings_list_primary_user_container"
+            style="@style/AppTheme.Card.Item"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/AppTheme.Card.Item">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/view_voice_settings_list_primary_user_tv"
-                style="@style/AppTheme.Text.Body.New"
+                style="@style/Body1.Primary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|center_vertical"
@@ -80,7 +78,7 @@
 
             <TextView
                 android:id="@+id/view_voice_settings_list_primary_user_value_tv"
-                style="@style/AppTheme.Text.Body.Link"
+                style="@style/Body1.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|center_vertical"
@@ -96,7 +94,7 @@
             android:layout_gravity="start|center_vertical"
             android:padding="@dimen/x2"
             android:text="@string/voice_settings_primary_user_about"
-            android:textAppearance="@style/Label"/>
+            style="@style/BodySmall.Secondary"/>
     </LinearLayout>
 
 </LinearLayout>

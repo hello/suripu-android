@@ -4,7 +4,7 @@
     android:id="@+id/fragment_dialog_loading_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light_overlay"
+    android:background="@color/fragment_dialog_loading_overlay"
     android:keepScreenOn="true">
 
     <ImageView
@@ -27,11 +27,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/fragment_dialog_loading_bar"
-        android:layout_marginTop="@dimen/gap_large"
-        android:layout_marginLeft="@dimen/gap_outer"
-        android:layout_marginRight="@dimen/gap_outer"
+        android:layout_marginTop="@dimen/x3"
+        android:layout_marginLeft="@dimen/x3"
+        android:layout_marginRight="@dimen/x3"
         android:gravity="center"
-        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-        android:textAppearance="@style/AppTheme.Text.Body" />
+        style="@style/Body1.Secondary" />
 
 </RelativeLayout>

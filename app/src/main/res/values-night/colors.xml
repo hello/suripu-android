@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Design terms-->
+    <color name="primary_text">@color/white</color>
+    <color name="secondary_text">@color/white_70</color>
+    <color name="hint_text">@color/white_50</color>
+    <color name="disabled_text">@color/hint_text</color>
+    <color name="divider">@color/white_12</color>
+
+    <color name="dim">@color/gray3</color>
+    <color name="primary">@color/blue6</color>
+    <color name="error">@color/red6</color>
+    <color name="warning">@color/yellow6</color>
+    <color name="success">@color/green6</color>
+
+    <color name="background">@color/black</color>
+    <color name="background_card">@color/gray9</color>
+    <color name="background_navigation">@color/gray8</color>
+    <color name="background_overlay">@color/black_50</color>
+    <color name="background_drawer">@color/gray8</color>
+
+    <!-- Alert colors -->
+    <color name="sensor_alert">@color/red6</color>
+    <color name="sensor_warning">@color/yellow6</color>
+    <color name="sensor_ideal">@color/green6</color>
+    <color name="sensor_unknown">@color/background_card</color>
+    <color name="sensor_empty">@color/background_card</color>
+
+    <!-- Using @color/primary / blue6 -->
+    <color name="devices_adapter_chevron">@color/primary</color>
+    <color name="tutorial_interaction_view">@color/primary</color>
+    <color name="onboarding_icon_tint">@color/primary</color>
+    <color name="tabs_background_selected">@color/primary</color>
+    <color name="ticket_detail_icon_tint">@color/primary</color>
+    <color name="timeline_header">@color/primary</color>
+    <color name="user_support_toolbar">@color/primary</color>
+
+    <!-- Using @color/primary_dimmed / blue4 -->
+    <color name="primary_dimmed">@color/blue4</color>
+    <color name="tutorial_interaction_view_dimmed">@color/primary_dimmed</color>
+    <color name="timeline_preview_vertical_border">@color/primary_dimmed</color>
+
+    <!-- Using @color/primary_darkened / blue7 -->
+    <color name="primary_darkened">@color/blue7</color>
+    <color name="status_bar_primary_darkened">@color/primary_darkened</color>
+
+    <!-- Misc -->
+    <color name="transparent">@color/white_00</color>
+    <color name="transparent_overlay">@color/black_50</color>
+    <color name="ripple">@color/divider</color>
+    <color name="status_bar_normal">#181818</color>
+    <color name="timeline_transparent_overlay">@color/transparent_overlay</color>
+    <color name="timeline_background_fill">@color/background</color>
+    <color name="timeline_time_dividers">@color/blue6_30</color>
+    <color name="fragment_dialog_loading_overlay">@color/transparent_overlay</color>
+    <color name="fragment_dialog_welcome">@color/transparent_overlay</color>
+    <color name="timeline_background">@color/background_card</color>
+    <color name="onboarding_background">@color/background_card</color>
+    <color name="smart_alarm_header_background">@color/primary</color>
+    <color name="insight_illustration_background">@color/background</color>
+    <color name="expansions_background">@color/background_card</color>
+    <color name="timeline_share_background_gradient_top">@color/gray1</color>
+    <color name="timeline_share_background_gradient_bottom">@color/white</color>
+    <color name="timeline_event_background_normal">@color/background_card</color>
+    <color name="timeline_event_background_pressed">@color/gray8</color>
+    <color name="questions_divider">@color/divider</color>
+    <color name="shadow_start_color">@color/black_40</color>
+    <color name="shadow_end_color">@color/black_00</color>
+
+    <!-- Text Colors -->
+    <color name="error_text">@color/error</color>
+    <color name="white_text">@color/white</color>
+    <color name="link_text">@color/primary</color>
+    <color name="link_text_pressed">@color/blue7</color>
+    <color name="link_text_disabled">@color/blue6_50</color>
+    <color name="notification_text">@color/primary</color>
+    <color name="facebook_official_color">#3B5998</color>
+
+    <!-- Button Colors -->
+    <color name="sense_button_ripple">@color/ripple</color>
+    <color name="sense_flat_button_normal">@color/background_card</color>
+    <color name="sense_flat_button_pressed">@color/divider</color>
+    <color name="sense_raised_button_normal">@color/primary</color>
+    <color name="sense_raised_button_pressed">@color/blue7</color>
+    <color name="sense_raised_button_disabled">@color/dim</color>
+    <color name="sense_raised_button_shadow_light">@color/black_80</color>
+    <color name="sense_raised_button_shadow_dark">@color/black_80</color>
+
+    <!-- TabLayout Colors -->
+    <color name="tablayout_focused">@color/primary_text</color>
+
+    <!-- OnboardingRegisterBirthdayFragment.java -->
+    <color name="birthday_text_active">@color/primary</color>
+    <color name="birthday_text_inactive">@color/primary_text</color>
+
+    <!-- fragment_onboarding_register_height.xml & fragment_onboarding_register_weight.xml-->
+    <color name="scale_display_text">@color/primary</color>
+
+    <!-- Timeline Sleep colors -->
+    <color name="sleep_awake">@color/transparent</color>
+    <color name="sleep_light">@color/blue6_10</color>
+    <color name="sleep_medium">@color/blue6_15</color>
+    <color name="sleep_sound">@color/blue6_20</color>
+
+    <!-- Trends -->
+    <color name="trends_line_divider">@color/divider</color>
+    <color name="trends_line_divider_shimmer">@color/gray3</color>
+    <color name="trends_grid_graph_cell_empty">@color/background_card</color>
+    <color name="trends_grid_graph_cell_empty_border">@color/gray3</color>
+    <color name="trends_grid_graph_cell_missing">@color/divider</color>
+    <color name="trends_bar_graph_bar">@color/blue3</color>
+    <color name="trends_bar_graph_annotation_text">@color/blue6</color>
+    <color name="trends_bar_graph_highlight">@color/blue6</color>
+    <color name="trends_bar_graph_highlight_bar">@color/blue5</color>
+    <color name="trends_bubble_graph_light_bubble">@color/blue4</color>
+    <color name="trends_bubble_graph_medium_bubble">@color/blue5</color>
+    <color name="trends_bubble_graph_deep_bubble">@color/blue6</color>
+
+    <!-- could use cleaning, but good enough for now -->
+    <color name="border">@color/gray2</color>
+
+    <color name="text_rotary_picker_focused">@color/link_text</color>
+    <color name="text_rotary_picker_unfocused">@color/secondary_text</color>
+    <color name="text_rotary_picker_almost_gone">@color/hint_text</color>
+
+    <color name="view_scale_tick_normal">@color/gray2</color>
+    <color name="view_scale_tick_emphasized">@color/gray3</color>
+
+    <color name="voice_volume_emphasized_color">@color/blue6</color>
+    <color name="voice_volume_normal_color">@color/gray3</color>
+
+    <color name="settings_icon_fill_color">@color/gray4</color>
+</resources>

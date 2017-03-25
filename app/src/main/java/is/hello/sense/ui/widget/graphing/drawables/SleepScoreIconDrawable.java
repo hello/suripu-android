@@ -39,7 +39,7 @@ public class SleepScoreIconDrawable extends Drawable {
         final int selectedColor = ContextCompat.getColor(context, R.color.blue6);
         final int unselectedColor = ContextCompat.getColor(context, R.color.gray4);
         final int fillColor = ContextCompat.getColor(context, R.color.blue2);
-        final int backgroundColor = ContextCompat.getColor(context, R.color.background_light);
+        final int backgroundColor = ContextCompat.getColor(context, R.color.background_card);
 
         this.backgroundPaint.setColor(backgroundColor);
         this.width = builder.width;

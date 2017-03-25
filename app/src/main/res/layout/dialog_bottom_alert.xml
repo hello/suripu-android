@@ -1,72 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools">
+
     <LinearLayout
         android:id="@+id/item_bottom_alert"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_light">
+        android:background="@color/background_card"
+        android:orientation="vertical">
 
         <View
             android:id="@+id/dialog_bottom_alert_top_divider"
             android:layout_width="match_parent"
             android:layout_height="@dimen/divider_size_thick"
-            android:background="@drawable/shadow_top_down"/>
+            android:background="@drawable/shadow_from_top_to_bottom"/>
 
         <TextView
             android:id="@+id/dialog_bottom_alert"
+            style="@style/Title2.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/x3"
-            android:layout_marginStart="@dimen/x3"
-            android:layout_marginEnd="@dimen/x3"
             android:layout_marginBottom="@dimen/x2"
+            android:layout_marginEnd="@dimen/x3"
+            android:layout_marginStart="@dimen/x3"
+            android:layout_marginTop="@dimen/x3"
             android:gravity="start"
-            android:textAppearance="@style/AppTheme.Text.Heading.New"
             tools:text="@string/dialog_title_replace_sense"/>
 
         <TextView
             android:id="@+id/dialog_bottom_alert_message"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_marginBottom="@dimen/x3"
             android:layout_marginLeft="@dimen/x3"
             android:layout_marginRight="@dimen/x3"
-            android:layout_marginBottom="@dimen/x3"
+            android:layout_weight="1"
             android:gravity="start"
-            android:scrollbars="vertical"
             android:overScrollMode="ifContentScrolls"
-            android:textAppearance="@style/AppTheme.Text.Body"
-            android:lineSpacingMultiplier="@dimen/line_multiple_body"
+            android:scrollbars="vertical"
+            style="@style/Body1.Secondary"
             tools:text="@string/dialog_message_replace_sense"/>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/button_bottom_alert"
-            android:layout_marginTop="@dimen/x1"
-            android:layout_marginLeft="@dimen/gap_outer_dialog_buttons"
-            android:layout_marginRight="@dimen/gap_outer_dialog_buttons"
+            android:layout_height="@dimen/button_height"
             android:layout_marginBottom="@dimen/x1"
+            android:layout_marginLeft="@dimen/x2"
+            android:layout_marginRight="@dimen/x2"
+            android:layout_marginTop="@dimen/x1"
             android:gravity="center"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/dialog_bottom_alert_neutral"
+                style="@style/Button.Flat"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@color/text_dim"
-                style="@style/AppTheme.Button.Dialog.Positive"
                 tools:text="@string/action_close"/>
 
             <Button
                 android:id="@+id/dialog_bottom_alert_positive"
+                style="@style/Button.Flat.Link"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@color/blue6"
-                style="@style/AppTheme.Button.Dialog.Positive"
                 tools:text="@string/action_okay"/>
 
         </LinearLayout>
@@ -75,7 +73,7 @@
             android:id="@+id/dialog_bottom_alert_bottom_divider"
             android:layout_width="match_parent"
             android:layout_height="@dimen/divider_size_thick"
-            android:background="@drawable/shadow_bottom_up"/>
+            android:background="@drawable/shadow_from_bottom_to_top"/>
 
     </LinearLayout>
 </layout>

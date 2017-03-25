@@ -35,9 +35,7 @@ public class OnboardingSmartAlarmFragment extends SenseFragment {
                 .setPrimaryButtonText(R.string.action_set_smart_alarm_now)
                 .setPrimaryOnClickListener(ignored -> complete(true))
                 .setSecondaryButtonText(R.string.action_do_later)
-                .setSecondaryOnClickListener(ignored -> complete(false))
-                .hideToolbar();
-
+                .setSecondaryOnClickListener(ignored -> complete(false));
         return view;
     }
 

@@ -439,7 +439,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
                 senseRepeatCount = AnimatorSetHandler.LOOP_ANIMATION;
                 tryTextVisibility = View.GONE;
                 question = R.string.error_sense_voice_problem;
-                color = R.color.text_dark;
+                color = R.color.primary_text;
                 animateText = true;
                 break;
             case NOT_DETECTED_STATE:
@@ -447,7 +447,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
                 senseRepeatCount = AnimatorSetHandler.SINGLE_ANIMATION;
                 tryTextVisibility = View.INVISIBLE;
                 question = R.string.error_sense_voice_not_detected;
-                color = R.color.text_dark;
+                color = R.color.primary_text;
                 animateText = true;
                 break;
             default:
@@ -482,7 +482,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         this.post(() -> setQuestionState(true,
                                          View.VISIBLE,
                                          R.string.sense_voice_wake_phrase,
-                                         R.color.text_dark));
+                                         R.color.primary_text));
 
         this.postDelayed(() -> setSenseCircleViewState(SENSE_WAKE_STATE,
                                                        AnimatorSetHandler.LOOP_ANIMATION),
@@ -493,7 +493,7 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
             setQuestionState(false,
                              View.VISIBLE,
                              R.string.sense_voice_question_temperature,
-                             R.color.text_dark);
+                             R.color.primary_text);
         }, LoadingDialogFragment.DURATION_DEFAULT*2);
     }
 

@@ -14,6 +14,7 @@ import is.hello.sense.SenseOTAModule;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.fb.FacebookApiModule;
+import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.flows.generic.ui.activities.SearchListActivity;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
@@ -34,6 +35,7 @@ import is.hello.sense.flows.home.ui.fragments.TrendsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
 import is.hello.sense.flows.home.ui.fragments.WeekTrendsFragment;
 import is.hello.sense.flows.nightmode.NightModeModule;
+import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.flows.settings.ui.activities.AppSettingsActivity;
 import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
@@ -43,6 +45,7 @@ import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.interactors.InsightInfoInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
+import is.hello.sense.interactors.PersistentPreferencesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.QuestionsInteractor;
 import is.hello.sense.interactors.SleepDurationsInteractor;
@@ -59,9 +62,9 @@ import is.hello.sense.pill.PillModule;
 import is.hello.sense.presenters.BaseHardwarePresenter;
 import is.hello.sense.settings.SettingsModule;
 import is.hello.sense.ui.activities.DebugActivity;
-import is.hello.sense.ui.activities.HardwareFragmentActivity;
 import is.hello.sense.ui.activities.LaunchActivity;
 import is.hello.sense.ui.activities.ListActivity;
+import is.hello.sense.ui.common.FragmentNavigationActivity;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.QuestionsDialogFragment;
 import is.hello.sense.ui.dialogs.SmartAlarmSoundDialogFragment;
@@ -84,7 +87,6 @@ import is.hello.sense.zendesk.ZendeskModule;
                 ApiModule.class,
                 BluetoothModule.class,
                 ZendeskModule.class,
-                DebugModule.class,
                 SettingsModule.class,
                 UtilityModule.class,
                 FacebookApiModule.class,
@@ -108,7 +110,6 @@ import is.hello.sense.zendesk.ZendeskModule;
                 RegisterFragment.class,
                 HardwareInteractor.class,
 
-                HardwareFragmentActivity.class,
                 DeviceListFragment.class,
                 DevicesInteractor.class,
                 DeviceIssuesInteractor.class,
@@ -158,7 +159,9 @@ import is.hello.sense.zendesk.ZendeskModule;
                 VoiceSettingsInteractor.class,
                 AppSettingsActivity.class,
                 SearchListActivity.class,
-                HomePresenterFragment.class
+                HomePresenterFragment.class,
+
+                FragmentNavigationActivity.class,
         }
 )
 @SuppressWarnings("UnusedDeclaration")
@@ -198,5 +201,15 @@ public class SenseAppModule {
     @Singleton
     public AlertsInteractor providesAlertsInteractor(@NonNull final ApiService apiService) {
         return new AlertsInteractor(apiService);
+    }
+
+    @Provides
+    @Singleton
+    public NightModeInteractor providesNightModeInteractor(@NonNull final PersistentPreferencesInteractor persistentPreferencesInteractor,
+                                                           @NonNull final ApiSessionManager apiSessionManager,
+                                                           @NonNull final Context applicationContext) {
+        return new NightModeInteractor(persistentPreferencesInteractor,
+                                       apiSessionManager,
+                                       applicationContext);
     }
 }

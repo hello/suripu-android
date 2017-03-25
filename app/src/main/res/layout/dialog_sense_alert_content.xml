@@ -1,69 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/dialog_sense_alert_title"
+        style="@style/Title2.Primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/x2"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
-        android:layout_marginBottom="@dimen/x2"
         android:drawablePadding="@dimen/x2"
-        android:textAppearance="@style/AppTheme.Text.Heading.New"
-        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
     <!-- Lollipop 5.0 doesn't honor textColorLink in styles,
          it has to be included here to render correctly. -->
     <TextView
         android:id="@+id/dialog_sense_alert_message"
+        style="@style/Body1.Secondary"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_marginBottom="@dimen/x1"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
-        android:layout_marginBottom="@dimen/x2"
-        android:scrollbars="vertical"
+        android:layout_weight="1"
         android:overScrollMode="ifContentScrolls"
-        android:textAppearance="@style/AppTheme.Text.Body.New"
-        android:textColorLink="@color/text_link"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"
+        android:scrollbars="vertical"
+        android:textColorLink="@color/link_text_selector"
         android:visibility="gone"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/x1"
-        android:layout_marginLeft="@dimen/gap_outer_dialog_buttons"
-        android:layout_marginRight="@dimen/gap_outer_dialog_buttons"
         android:layout_marginBottom="@dimen/x2"
-        android:gravity="end|center_vertical"
+        android:layout_marginLeft="@dimen/x2"
+        android:layout_marginRight="@dimen/x2"
+        android:layout_marginTop="@dimen/x1"
+        android:gravity="end"
         android:orientation="horizontal">
 
-        <!-- Todo change style to be gray instead of blue -->
         <Button
             android:id="@+id/dialog_sense_alert_cancel"
+            style="@style/Button.Flat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@android:string/cancel"
-            android:visibility="gone"
-            style="@style/AppTheme.Button.Dialog.Alert" />
+            android:visibility="gone"/>
 
         <View
-            android:id="@+id/dialog_sense_alert_button_divider"
-            android:layout_width="@dimen/x1"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
+            android:id="@+id/dialog_sense_alert_vertical_divider"
+            style="@style/Divider.Vertical"
+            android:layout_marginBottom="@dimen/x.5"
+            android:layout_marginTop="@dimen/x.5"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/dialog_sense_alert_ok"
+            style="@style/Button.Flat.Link"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@android:string/ok"
-            android:visibility="gone"
-            style="@style/AppTheme.Button.Dialog.Alert" />
+            android:visibility="gone"/>
+
 
     </LinearLayout>
 

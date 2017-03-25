@@ -123,13 +123,12 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
 
         final TextView itemView = new TextView(context);
         itemView.setBackgroundResource(R.drawable.selectable_dark_bounded);
-        Styles.setTextAppearance(itemView, R.style.AppTheme_Text_Body);
-        itemView.setTextColor(ContextCompat.getColorStateList(getActivity(), R.color.text_color_selector_dark));
+        itemView.setTextColor(ContextCompat.getColorStateList(getActivity(), R.color.primary_text_selector));
         itemView.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
         itemView.setText(titleRes);
 
-        final int itemTextHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_outer);
-        final int itemTextVerticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
+        final int itemTextHorizontalPadding = resources.getDimensionPixelSize(R.dimen.x3);
+        final int itemTextVerticalPadding = resources.getDimensionPixelSize(R.dimen.x2);
         itemView.setPadding(itemTextHorizontalPadding, itemTextVerticalPadding,
                             itemTextHorizontalPadding, itemTextVerticalPadding);
         itemView.setCompoundDrawablePadding(itemTextHorizontalPadding);
@@ -163,7 +162,6 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
             secondaryAlertAction.setVisibility(View.GONE);
 
             alertText.setGravity(Gravity.CENTER);
-            Styles.setTextAppearance(alertText, R.style.AppTheme_Text_Body_MidSized_DarkText);
             alertText.setText(messageRes);
 
             alertContainer.setVisibility(View.VISIBLE);
@@ -180,7 +178,6 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
             alertTitleText.setText(alert.title.resolve(getActivity()));
         }
         alertText.setGravity(Gravity.TOP | Gravity.START);
-        Styles.setTextAppearance(alertText, R.style.AppTheme_Text_Body_MidSized);
         alertText.setText(alert.message.resolve(getActivity()));
 
         if (alert.primaryButtonTitle != 0 && alert.primaryButtonOnClick != null) {

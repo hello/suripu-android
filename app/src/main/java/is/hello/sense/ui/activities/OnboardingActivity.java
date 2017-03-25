@@ -40,6 +40,7 @@ import is.hello.sense.onboarding.OnboardingModule;
 import is.hello.sense.onboarding.OnboardingPairSenseModule;
 import is.hello.sense.presenters.PairSensePresenter;
 import is.hello.sense.settings.SettingsPairSenseModule;
+import is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity;
 import is.hello.sense.ui.common.AccountEditor;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
@@ -83,7 +84,7 @@ import rx.Observable;
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 import static is.hello.sense.ui.activities.DebugActivity.EXTRA_DEBUG_CHECKPOINT;
 
-public class OnboardingActivity extends ScopedInjectionActivity
+public class OnboardingActivity extends ScopedInjectionAppCompatActivity
         implements FragmentNavigation,
         SkippableFlow,
         SimpleStepFragment.ExitAnimationProviderActivity,
@@ -554,7 +555,6 @@ public class OnboardingActivity extends ScopedInjectionActivity
             builder.setHeadingText(R.string.onboarding_title_sleep_pill_intro);
             builder.setSubheadingText(R.string.onboarding_message_sleep_pill_intro);
             builder.setDiagramImage(R.drawable.onboarding_sleep_pill);
-            builder.setHideToolbar(true);
             if (isPairOnly()) {
                 builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_INTRO_IN_APP);
             } else {
@@ -598,7 +598,6 @@ public class OnboardingActivity extends ScopedInjectionActivity
         introBuilder.setHeadingText(R.string.onboarding_title_room_check);
         introBuilder.setSubheadingText(R.string.onboarding_info_room_check);
         introBuilder.setDiagramImage(R.drawable.onboarding_sense_intro);
-        introBuilder.setHideToolbar(true);
         introBuilder.setExitAnimationName(ANIMATION_ROOM_CHECK);
         introBuilder.setNextWantsBackStackEntry(false);
         introBuilder.setAnalyticsEvent(Analytics.Onboarding.EVENT_ROOM_CHECK);
@@ -687,7 +686,7 @@ public class OnboardingActivity extends ScopedInjectionActivity
         switch (name) {
             case ANIMATION_ROOM_CHECK: {
                 return (view, onCompletion) -> {
-                    final int slideAmount = getResources().getDimensionPixelSize(R.dimen.gap_xlarge);
+                    final int slideAmount = getResources().getDimensionPixelSize(R.dimen.x6);
 
                     animatorFor(view.contentsScrollView)
                             .slideYAndFade(0f, -slideAmount, 1f, 0f)

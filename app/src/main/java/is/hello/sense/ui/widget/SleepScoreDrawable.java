@@ -45,23 +45,23 @@ public class SleepScoreDrawable extends Drawable {
 
     public SleepScoreDrawable(@NonNull Resources resources, boolean wantsLabel) {
         this.resources = resources;
-        this.fillStrokeWidth = resources.getDimensionPixelSize(R.dimen.pie_graph_stroke_width);
+        this.fillStrokeWidth = resources.getDimensionPixelSize(R.dimen.divider_size);
         this.fillColor = Color.TRANSPARENT;
         this.trackColor = resources.getColor(R.color.border);
-        this.pressedColor = resources.getColor(R.color.background_dark_item_clicked);
+        this.pressedColor = resources.getColor(R.color.ripple);
 
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(fillStrokeWidth);
 
         if (wantsLabel) {
             this.labelPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG | TextPaint.SUBPIXEL_TEXT_FLAG);
-            labelPaint.setTextSize(resources.getDimension(R.dimen.text_size_section_heading));
-            labelPaint.setColor(resources.getColor(R.color.text_section_header));
+            labelPaint.setTextSize(resources.getDimension(R.dimen.text_h7));
+            labelPaint.setColor(resources.getColor(R.color.hint_text));
             labelPaint.setTextAlign(Paint.Align.CENTER);
 
             this.label = resources.getString(R.string.sleep_score).toUpperCase();
 
-            int offset = resources.getDimensionPixelSize(R.dimen.gap_tiny);
+            int offset = resources.getDimensionPixelSize(R.dimen.x_25);
             this.labelHeight = Drawing.getEstimatedLineHeight(labelPaint, false) + offset;
         } else {
             this.labelPaint = null;
@@ -75,8 +75,8 @@ public class SleepScoreDrawable extends Drawable {
         arcPath.reset();
         fillPath.reset();
 
-        int width = canvas.getWidth(),
-            height = canvas.getHeight();
+        int width = canvas.getWidth();
+        int height = canvas.getHeight();
         int size = Math.min(width, height);
 
         float left = width > height ? (width - height) / 2 : 0;

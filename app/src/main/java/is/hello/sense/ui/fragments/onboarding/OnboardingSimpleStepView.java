@@ -185,8 +185,8 @@ public class OnboardingSimpleStepView extends RelativeLayout {
 
     public OnboardingSimpleStepView withSecondaryOnBottom() {
         final Resources resources = getResources();
-        final int gapOuter = resources.getDimensionPixelSize(R.dimen.gap_outer);
-        final int gapSmall = resources.getDimensionPixelSize(R.dimen.gap_small);
+        final int gapOuter = resources.getDimensionPixelSize(R.dimen.x3);
+        final int gapSmall = resources.getDimensionPixelSize(R.dimen.x1);
 
         final LayoutParams secondaryLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
                                                                     LayoutParams.WRAP_CONTENT);

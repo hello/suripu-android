@@ -32,7 +32,8 @@ public class OnboardingToolbar {
 
     private final ImageButton backButton;
     private final ImageButton helpButton;
-
+    @ColorInt
+    private final int iconPrimaryColor;
     private
     @Nullable
     View.OnClickListener onHelpClickListener;
@@ -40,7 +41,8 @@ public class OnboardingToolbar {
     @Nullable
     View.OnLongClickListener onHelpLongClickListener;
 
-    public static OnboardingToolbar of(@NonNull final Fragment fragment, @NonNull final View view) {
+    public static OnboardingToolbar of(@NonNull final Fragment fragment,
+                                       @NonNull final View view) {
         return new OnboardingToolbar(fragment, view.findViewById(R.id.sub_fragment_onboarding_toolbar));
     }
 
@@ -53,20 +55,22 @@ public class OnboardingToolbar {
         fragment = null;
     }
 
-    private OnboardingToolbar(@NonNull final Fragment fragment, @NonNull final View toolbarView) {
+    private OnboardingToolbar(@NonNull final Fragment fragment,
+                              @NonNull final View toolbarView) {
         this.fragment = fragment;
         this.toolbarView = (FrameLayout) toolbarView;
 
         final Context context = fragment.getActivity();
         this.backButton = (ImageButton) toolbarView.findViewById(R.id.sub_fragment_onboarding_toolbar_back);
         final Drawable backIcon = backButton.getDrawable().mutate();
-        Drawables.setTintColor(backIcon, ContextCompat.getColor(context, R.color.light_accent));
+        this.iconPrimaryColor = ContextCompat.getColor(context, R.color.onboarding_icon_tint);
+        Drawables.setTintColor(backIcon, this.iconPrimaryColor);
         backButton.setImageDrawable(backIcon);
         Views.setSafeOnClickListener(backButton, this::onBack);
 
         this.helpButton = (ImageButton) toolbarView.findViewById(R.id.sub_fragment_onboarding_toolbar_help);
         final Drawable helpIcon = helpButton.getDrawable().mutate();
-        Drawables.setTintColor(helpIcon, ContextCompat.getColor(context, R.color.light_accent));
+        Drawables.setTintColor(helpIcon, this.iconPrimaryColor);
         helpButton.setImageDrawable(helpIcon);
         Views.setSafeOnClickListener(helpButton, this::onHelp);
         helpButton.setOnLongClickListener(this::onHelpLongClick);
@@ -79,7 +83,7 @@ public class OnboardingToolbar {
         final Activity activity = fragment.getActivity();
         if (activity != null) {
             final View focusView = activity.getCurrentFocus();
-            if (focusView != null && focusView instanceof EditText) {
+            if (focusView instanceof EditText) {
                 final InputMethodManager inputMethodManager =
                         (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(focusView.getWindowToken(), 0);
@@ -161,7 +165,7 @@ public class OnboardingToolbar {
     public OnboardingToolbar setCompact(final boolean compact) {
         final Resources resources = toolbarView.getResources();
         if (compact) {
-            toolbarView.getLayoutParams().height = resources.getDimensionPixelSize(R.dimen.action_bar_height_compact);
+            toolbarView.getLayoutParams().height = resources.getDimensionPixelSize(R.dimen.action_bar_height);
         } else {
             toolbarView.getLayoutParams().height = resources.getDimensionPixelSize(R.dimen.action_bar_height);
         }
@@ -180,7 +184,7 @@ public class OnboardingToolbar {
         return this;
     }
 
-    public OnboardingToolbar setHelpButtonIcon(@DrawableRes final int iconRes){
+    public OnboardingToolbar setHelpButtonIcon(@DrawableRes final int iconRes) {
         helpButton.setImageResource(iconRes);
         return this;
     }
@@ -191,9 +195,9 @@ public class OnboardingToolbar {
         final @ColorInt int backgroundColor;
         if (isDark) {
             tintColor = resources.getColor(R.color.white);
-            backgroundColor = resources.getColor(R.color.light_accent);
+            backgroundColor = iconPrimaryColor;
         } else {
-            tintColor = resources.getColor(R.color.light_accent);
+            tintColor = iconPrimaryColor;
             backgroundColor = Color.TRANSPARENT;
         }
 

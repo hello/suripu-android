@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <is.hello.sense.ui.widget.RoundedRelativeLayout
+    android:id="@+id/item_insight_card"
+    style="@style/AppTheme.Card.Clickable"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/item_insight_card"
-    style="@style/AppTheme.Card.Clickable"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -14,7 +14,7 @@
         android:id="@+id/item_insight_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/insight_card_background"
+        android:background="@color/background"
         app:senseLoadingView="@+id/item_insight_image_loading">
 
         <ProgressBar
@@ -28,20 +28,19 @@
 
     <TextView
         android:id="@+id/item_insight_category"
-        style="@style/AppTheme.Text.Header.H7"
+        style="@style/Caption2.Primary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/item_insight_image"
         android:layout_marginStart="@dimen/x2"
         android:layout_marginTop="@dimen/x2"
-        android:singleLine="true"
+        android:maxLines="1"
         android:textAllCaps="true"
-        android:textColor="@color/gray6"
         tools:text="@string/action_insights"/>
 
     <TextView
         android:id="@+id/item_insight_date"
-        style="@style/AppTheme.Text.Header.H7"
+        style="@style/Caption1.Secondary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/item_insight_image"
@@ -49,19 +48,19 @@
         android:layout_marginTop="@dimen/x2"
         android:layout_toEndOf="@id/item_insight_category"
         android:gravity="end"
-        android:singleLine="true"
-        android:textColor="@color/gray3"
+        android:maxLines="1"
+        android:textAllCaps="true"
         tools:text="@string/action_today"/>
 
     <TextView
         android:id="@+id/item_insight_body"
-        style="@style/AppTheme.Text.Body"
+        style="@style/Body1.Secondary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/item_insight_category"
         android:layout_margin="@dimen/x2"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"
         tools:text="@string/lorem_ipsum"/>
+
 
     <View
         android:id="@+id/item_insight_preview_divider"
@@ -72,33 +71,17 @@
         android:layout_marginLeft="@dimen/x2"
         android:layout_marginRight="@dimen/x2"/>
 
-    <LinearLayout
-        android:id="@+id/item_insight_share"
+    <is.hello.sense.ui.widget.ImageTextView
+        android:id="@+id/item_insight_share_button"
+        style="@style/Button.Flat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/item_insight_preview_divider"
         android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="@dimen/x2"
-        tools:ignore="UseCompoundDrawables">
-
-        <ImageView
-            android:contentDescription="@string/action_share"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/icon_share_24"/>
-
-        <TextView
-            android:layout_marginStart="@dimen/x2"
-            style="@style/AppTheme.Text.Header.H7"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:maxLines="1"
-            android:text="@string/action_share"
-            android:textAllCaps="true"
-            android:textColor="@color/item_insight_share_text_color"/>
-    </LinearLayout>
+        app:labelText="@string/action_share"
+        app:textStyle="@style/ButtonText"
+        app:leftImage="@drawable/icon_share_24"
+        app:leftTextPadding="@dimen/x2"/>
 
 
 </is.hello.sense.ui.widget.RoundedRelativeLayout>

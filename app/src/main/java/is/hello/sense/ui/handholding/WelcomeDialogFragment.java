@@ -200,7 +200,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
         this.adapter = new ItemAdapter();
 
-        final int pageMargin = getResources().getDimensionPixelSize(R.dimen.gap_medium);
+        final int pageMargin = getResources().getDimensionPixelSize(R.dimen.x2);
         viewPager.setClipToPadding(false);
         viewPager.setPadding(pageMargin, 0, pageMargin, 0);
         viewPager.setPageMargin(pageMargin);
@@ -354,8 +354,8 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
                 final Resources resources = getResources();
                 final float bottomCornerRadius = resources.getDimension(R.dimen.button_corner_radius);
-                final int normal = resources.getColor(R.color.background_light);
-                final int pressed = resources.getColor(R.color.light_accent_extra_dimmed);
+                final int normal = resources.getColor(R.color.background_card);
+                final int pressed = resources.getColor(R.color.sense_flat_button_pressed);
                 dismissButton.setBackground(Styles.newRoundedBorderlessButtonBackground(0f, bottomCornerRadius,
                                                                                         normal, pressed));
             }
@@ -458,7 +458,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
                final  Uri diagramUri = Uri.parse(item.diagramVideo);
                 header.setDataSource(diagramUri);
 
-                final int radius = getResources().getDimensionPixelSize(R.dimen.raised_item_corner_radius);
+                final int radius = getResources().getDimensionPixelSize(R.dimen.small_radius);
                 final float[] cornerRadii = {
                         radius, radius, radius, radius,
                         0f, 0f, 0f, 0f,

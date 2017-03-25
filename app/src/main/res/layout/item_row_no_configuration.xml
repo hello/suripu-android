@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout style="@style/AppTheme.Card.VerticalPaddingItem"
+             xmlns:android="http://schemas.android.com/apk/res/android"
              android:layout_width="match_parent"
              android:layout_height="wrap_content"
-             style="@style/AppTheme.Card.VerticalPaddingItem"
              android:layout_gravity="center_vertical">
 
     <TextView
         android:id="@+id/item_row_no_configuration_title"
+        style="@style/Body1.Secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/AppTheme.Text.Body.Dim"
         android:layout_gravity="top|start"/>
 
     <View
@@ -17,15 +17,15 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
         android:layout_gravity="center"
-        android:layout_marginTop="@dimen/x4"
         android:layout_marginBottom="@dimen/x4"
+        android:layout_marginTop="@dimen/x4"
         android:background="@color/article_attachment_list_divider_color"/>
 
     <TextView
         android:id="@+id/item_row_no_configuration_subtitle"
+        style="@style/Body1.Secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/AppTheme.Text.Body.Small.New"
         android:layout_gravity="start|bottom"/>
 
     <ImageView

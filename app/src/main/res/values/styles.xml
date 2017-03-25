@@ -31,25 +31,46 @@
         <item name="android:spinnerStyle">@style/AppTheme.Spinner</item>
         <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
         <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Tiny</item>
-        <item name="android:textColorLink">@color/text_link</item>
+        <item name="android:textColorLink">@color/link_text_selector</item>
 
         <item name="android:listSelector">@drawable/selectable_dark_bounded</item>
         <item name="android:listDivider">@color/border</item>
         <item name="android:dividerHeight">@dimen/divider_size</item>
 
-        <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading.New</item>
-        <item name="senseTextAppearanceSubheading">@style/AppTheme.Text.Body.MidSized.Dim</item>
-        <item name="senseTextAppearanceFieldLabel">@style/AppTheme.Text.Body.Small.New</item>
+        <item name="senseTextAppearanceHeading">@style/Title2.Primary
+        </item> <!-- todo confirm this doesn't break something -->
+        <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
+        <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
 
-        <item name="senseBackgroundSecondary">@color/background_light</item>
+        <item name="senseBackgroundSecondary">@color/background_card</item>
     </style>
 
     <style name="AppTheme.Onboarding" parent="AppTheme.NoActionBar">
-        <item name="android:windowBackground">@color/background_onboarding</item>
+        <item name="android:windowBackground">@color/onboarding_background</item>
     </style>
 
-    <style name="AppTheme.Expansions" parent="AppTheme">
-        <item name="android:windowBackground">@color/background_expansions</item>
+    <style name="AppTheme.AppCompat.NoActionBar.Onboarding">
+        <item name="android:windowBackground">@color/background_card</item>
+        <!-- Todo after complete app compat transition move to AppTheme.AppCompat.NoActionBar-->
+        <item name="colorButtonNormal">@color/sense_flat_button_normal</item>
+        <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
+
+        <item name="android:buttonStyle">@style/AppTheme.Button</item>
+        <item name="android:imageButtonStyle">@style/AppTheme.Button.Borderless</item>
+        <item name="android:editTextStyle">@style/AppTheme.Text.EditText</item>
+        <item name="android:alertDialogStyle">@style/AppTheme.Dialog</item>
+        <item name="android:spinnerStyle">@style/AppTheme.Spinner</item>
+        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
+        <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Tiny</item>
+        <item name="android:textColorLink">@color/link_text_selector</item>
+
+        <item name="android:listSelector">@drawable/selectable_dark_bounded</item>
+        <item name="android:listDivider">@color/border</item>
+        <item name="android:dividerHeight">@dimen/divider_size</item>
+    </style>
+
+    <style name="AppTheme.Expansions" parent="AppTheme.AppCompat.AppSettingsActivity">
+        <item name="android:windowBackground">@color/expansions_background</item>
     </style>
 
 
@@ -57,10 +78,11 @@
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowTitleSize">0dp</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
+        </item>
     </style>
 
-    <style name="AppTheme.NoActionBar.Black">
+    <style name="AppTheme.AppCompat.NoActionBar.Black">
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/black</item>
     </style>
 
@@ -69,9 +91,9 @@
     <style name="AppTheme.ActionBar" parent="Platform.ActionBar"/>
 
     <style name="AppTheme.ActionBar.Solid">
-        <item name="android:background">@color/light_accent</item>
-        <item name="android:backgroundStacked">@color/light_accent</item>
-        <item name="android:backgroundSplit">@color/light_accent</item>
+        <item name="android:background">@color/primary</item>
+        <item name="android:backgroundStacked">@color/primary</item>
+        <item name="android:backgroundSplit">@color/primary</item>
         <item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
         <item name="android:icon">@android:color/transparent</item>
         <item name="android:titleTextStyle">@style/AppTheme.Text.ActionTitle</item>
@@ -79,31 +101,31 @@
     </style>
 
     <style name="AppTheme.Text.ActionTitle">
-        <item name="android:textSize">@dimen/action_bar_title_text_size</item>
+        <item name="android:textSize">@dimen/text_h5</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
 
     <style name="AppTheme.Text.ActionSubtitle">
-        <item name="android:textSize">@dimen/action_bar_subtitle_text_size</item>
-        <item name="android:textColor">@color/text_dim_light</item>
+        <item name="android:textSize">@dimen/text_body</item>
+        <item name="android:textColor">@color/secondary_text</item>
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:paddingTop">2dp</item>
     </style>
 
     <style name="AppTheme.Text.ActionMenu">
-        <item name="android:textSize">@dimen/text_size_body</item>
+        <item name="android:textSize">@dimen/text_h6_3</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textAllCaps">false</item>
     </style>
 
     <style name="AppTheme.ActionButton" parent="android:Widget.Holo.Light.ActionButton">
-        <item name="android:textSize">@dimen/text_size_body_mid_sized</item>
+        <item name="android:textSize">@dimen/text_h6_5</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:paddingLeft">@dimen/gap_outer</item>
-        <item name="android:paddingRight">@dimen/gap_outer</item>
+        <item name="android:paddingLeft">@dimen/x3</item>
+        <item name="android:paddingRight">@dimen/x3</item>
     </style>
 
     <style name="AppTheme.PopupMenu" parent="Platform.ListPopupWindow">
@@ -143,7 +165,7 @@
 
     <style name="AppTheme.Dialog.Simple" parent="Platform.Dialog.MinWidth">
         <item name="android:windowNoTitle">true</item>
-        <item name="android:windowBackground">@drawable/background_card_large</item>
+        <item name="android:windowBackground">@color/background_card</item>
     </style>
 
     <style name="AppTheme.Dialog.List">
@@ -156,13 +178,13 @@
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">@color/transparent</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
+        </item>
     </style>
 
     <style name="AppTheme.Dialog.FullScreen.Insight">
         <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">
-            @color/status_bar_illustration
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
         </item>
     </style>
 
@@ -171,7 +193,7 @@
     </style>
 
     <style name="AppTheme.Dialog.BottomSheet" parent="Platform.Dialog.NoElevation">
-        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:windowBackground">@color/background_card</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimations.BottomSlide</item>
         <item name="android:paddingTop">0dp</item>
@@ -204,182 +226,71 @@
     <!-- Buttons -->
 
     <style name="AppTheme.Button" parent="Platform.Button">
-        <item name="android:minHeight">@dimen/button_min_size</item>
-        <item name="android:textAppearance">@style/AppTheme.Text.Button</item>
-        <item name="android:background">@drawable/button_background_selector_simple</item>
+        <item name="android:minHeight">@dimen/button_height</item>
+        <item name="android:textAppearance">@style/AppTheme.Text.Header.H6.Medium</item>
+        <item name="android:background">@drawable/sense_raised_button_selector</item>
     </style>
 
     <style name="AppTheme.Button.Borderless">
         <item name="android:textAllCaps">true</item>
-        <item name="android:paddingTop">@dimen/gap_small</item>
-        <item name="android:paddingLeft">@dimen/gap_small</item>
-        <item name="android:paddingRight">@dimen/gap_small</item>
-        <item name="android:paddingBottom">@dimen/gap_small</item>
-        <item name="android:background">@drawable/selectable_dark</item>
-    </style>
-
-    <style name="AppTheme.Button.Borderless.Accent">
-        <item name="android:textColor">@color/text_color_selector_light_accent</item>
-    </style>
-
-    <style name="AppTheme.Button.Borderless.Accent.Bounded">
-        <item name="android:background">@drawable/selectable_dark_bounded</item>
-    </style>
-
-    <style name="AppTheme.Button.Borderless.Accent.Bounded.Lowercase">
-        <item name="android:textAllCaps">false</item>
+        <item name="android:paddingTop">@dimen/x1</item>
+        <item name="android:paddingLeft">@dimen/x1</item>
+        <item name="android:paddingRight">@dimen/x1</item>
+        <item name="android:paddingBottom">@dimen/x1</item>
+        <item name="android:background">@drawable/ripple_selector</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.Question">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:paddingTop">@dimen/gap_outer</item>
-        <item name="android:paddingLeft">@dimen/gap_outer</item>
-        <item name="android:paddingRight">@dimen/gap_outer</item>
-        <item name="android:paddingBottom">@dimen/gap_outer</item>
-        <item name="android:textColor">@color/text_body_new</item>
-        <item name="android:textSize">@dimen/text_size_button_large</item>
+        <item name="android:paddingTop">@dimen/x3</item>
+        <item name="android:paddingLeft">@dimen/x3</item>
+        <item name="android:paddingRight">@dimen/x3</item>
+        <item name="android:paddingBottom">@dimen/x3</item>
+        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textSize">@dimen/text_h6_3</item>
         <item name="android:background">@drawable/selectable_dark_bounded</item>
     </style>
 
     <style name="AppTheme.Button.Borderless.Question.Choice">
-        <item name="android:textColor">@color/text_color_selector_light_accent</item>
-    </style>
-
-    <style name="AppTheme.Button.Borderless.White">
-        <item name="android:background">@drawable/selectable_light</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/link_text_selector</item>
     </style>
 
     <style name="AppTheme.Button.Rounded">
-        <item name="android:minHeight">@dimen/button_rounded_min_height</item>
-        <item name="android:background">@drawable/selector_button_rounded</item>
-        <item name="android:textColor">@color/text_white_button</item>
-        <item name="android:textSize">@dimen/text_size_button</item>
+        <item name="android:minHeight">@dimen/button_height</item>
+        <item name="android:background">@drawable/sense_raised_button_selector</item>
+        <item name="android:textColor">@color/white_text</item>
+        <item name="android:textSize">@dimen/text_h6_5</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="AppTheme.Button.Rounded.Light">
-        <item name="android:background">@drawable/selector_button_rounded_white</item>
-        <item name="android:textColor">@color/text_white_button</item>
-    </style>
 
     <style name="AppTheme.Button.ModeSelector">
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:textColor">@color/text_color_selector_toggle_button</item>
-        <item name="android:textAppearance">@style/AppTheme.Text.Body</item>
-        <item name="android:paddingTop">@dimen/gap_medium</item>
-        <item name="android:paddingLeft">@dimen/gap_medium</item>
-        <item name="android:paddingRight">@dimen/gap_medium</item>
-        <item name="android:paddingBottom">@dimen/gap_medium</item>
-    </style>
-
-    <style name="AppTheme.Button.Gender" parent="AppTheme.Button.Borderless.Accent">
-        <item name="android:textAllCaps">false</item>
-        <item name="android:textSize">@dimen/text_size_button_large</item>
-        <item name="android:paddingTop">36dp</item>
-        <item name="android:paddingLeft">36dp</item>
-        <item name="android:paddingRight">36dp</item>
-        <item name="android:paddingBottom">36dp</item>
-    </style>
-
-    <style name="AppTheme.Button.Gender.Left" parent="AppTheme.Button.Gender">
-        <item name="android:background">@drawable/button_selector_gender_left</item>
-    </style>
-
-    <style name="AppTheme.Button.Gender.Right" parent="AppTheme.Button.Gender">
-        <item name="android:background">@drawable/button_selector_gender_right</item>
-    </style>
-
-    <style name="AppTheme.Button.Number" parent="AppTheme.Button.Dialog.Positive">
-        <item name="android:minHeight">@dimen/button_rounded_min_height</item>
-        <item name="android:background">@drawable/button_selector_number</item>
-        <item name="android:hapticFeedbackEnabled">true</item>
-    </style>
-
-    <style name="AppTheme.Button.Rounded.Onboarding">
-        <item name="android:background">@drawable/onboarding_button_selector</item>
+        <item name="android:textAppearance">@style/Body1</item>
+        <item name="android:paddingTop">@dimen/x2</item>
+        <item name="android:paddingLeft">@dimen/x2</item>
+        <item name="android:paddingRight">@dimen/x2</item>
+        <item name="android:paddingBottom">@dimen/x2</item>
     </style>
 
     <style name="AppTheme.Button.Facebook">
-        <item name="android:paddingTop">@dimen/gap_medium</item>
-        <item name="android:paddingBottom">@dimen/gap_medium</item>
-        <item name="android:paddingLeft">@dimen/gap_outer</item>
-        <item name="android:paddingRight">@dimen/gap_outer</item>
+        <item name="android:paddingTop">@dimen/x2</item>
+        <item name="android:paddingBottom">@dimen/x2</item>
+        <item name="android:paddingLeft">@dimen/x3</item>
+        <item name="android:paddingRight">@dimen/x3</item>
         <item name="android:background">@drawable/facebook_autofill_selector</item>
         <item name="android:textColor">@color/facebook_autofill_text_color_selector</item>
         <item name="android:drawableLeft">@drawable/facebook_logo_selector</item>
         <item name="android:drawablePadding">4dp</item>
         <item name="android:text">@string/action_autofill_from_facebook</item>
     </style>
-
-
-    <style name="AppTheme.Button.Raised">
-        <item name="android:minHeight">@dimen/button_min_size_small</item>
-        <item name="android:paddingBottom">1dp</item>
-        <item name="android:paddingLeft">@dimen/gap_small</item>
-        <item name="android:paddingRight">@dimen/gap_small</item>
-        <item name="android:background">@drawable/raised_item_selector</item>
-        <item name="android:textColor">@color/text_color_selector_light_accent</item>
-        <item name="android:textAppearance">@style/AppTheme.Text.SectionHeading</item>
-    </style>
-
-    <style name="AppTheme.Button.Dialog" parent="AppTheme.Button.Borderless">
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/text_color_selector_light_accent</item>
-        <item name="android:background">@drawable/selectable_dark_bounded</item>
-        <item name="android:textSize">@dimen/text_size_button_large</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:ellipsize">end</item>
-    </style>
-
-    <style name="AppTheme.Button.Dialog.Alert">
-        <item name="android:paddingLeft">@dimen/gap_small</item>
-        <item name="android:paddingRight">@dimen/gap_small</item>
-        <item name="android:paddingTop">@dimen/gap_small</item>
-        <item name="android:paddingBottom">@dimen/gap_small</item>
-        <item name="android:fontFamily">sans-serif</item>
-    </style>
-
-    <style name="AppTheme.Button.Dialog.Positive">
-        <item name="android:fontFamily">sans-serif-medium</item>
-    </style>
-
-    <style name="AppTheme.Button.Borderless.Primary">
-        <item name="android:paddingTop">@dimen/gap_small</item>
-        <item name="android:paddingLeft">@dimen/gap_small</item>
-        <item name="android:paddingRight">@dimen/gap_small</item>
-        <item name="android:paddingBottom">@dimen/gap_small</item>
-        <item name="android:minHeight">56dp</item>
-
-        <item name="android:textAllCaps">true</item>
-        <item name="android:background">@drawable/selectable_dark_bounded</item>
-        <item name="android:textSize">@dimen/text_size_body</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textColor">@color/text_color_selector_light_accent</item>
-    </style>
-
-    <style name="AppTheme.Button.Borderless.Primary.Bottom">
-        <item name="android:background">@drawable/selectable_dark_bounded_bottom</item>
-    </style>
-
-    <style name="AppTheme.Button.Circular">
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingLeft">0dp</item>
-        <item name="android:paddingRight">0dp</item>
-        <item name="android:paddingBottom">0dp</item>
-        <item name="android:minWidth">@dimen/button_circular_area</item>
-        <item name="android:minHeight">@dimen/button_circular_area</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:background">@drawable/button_oval_selector</item>
-    </style>
-
     <!-- Radio Buttons -->
 
+    <!-- todo confirm this text appearance is right -->
     <style name="AppTheme.RadioButton" parent="Widget.AppCompat.CompoundButton.RadioButton">
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:paddingTop">@dimen/x2</item>
@@ -387,7 +298,7 @@
         <item name="android:paddingRight">@dimen/x3</item>
         <item name="android:paddingStart">@dimen/x3</item>
         <item name="android:button">@drawable/radio_selector</item>
-        <item name="android:textAppearance">@style/Body.New</item>
+        <item name="android:textAppearance">@style/Body1.Primary</item>
     </style>
 
     <!-- In order to allow left padding of radio selector but has issues syncing state with recyclerview adapters when first rendered-->
@@ -396,6 +307,8 @@
         <item name="android:drawableStart">@drawable/radio_selector</item>
         <item name="android:drawablePadding">@dimen/x3</item>
     </style>
+
+
 
     <!-- Spinners -->
 
@@ -414,20 +327,20 @@
     <!-- Dividers -->
 
     <style name="Divider">
-        <item name="android:background">@color/border</item>
+        <item name="android:background">@color/divider</item>
     </style>
 
     <style name="Divider.Horizontal">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_size</item>
-        <item name="android:color">@color/border</item>
     </style>
 
-
     <style name="Divider.Horizontal.LeftInset">
-        <item name="android:layout_marginLeft">
-            @dimen/x2
-        </item>
+        <item name="android:layout_marginLeft">@dimen/x2</item>
+    </style>
+
+    <style name="Divider.Horizontal.LeftInset.Large">
+        <item name="android:layout_marginLeft">@dimen/x9</item>
     </style>
 
     <style name="Divider.Horizontal.Padded">
@@ -441,37 +354,38 @@
     </style>
 
     <!-- EditText -->
+    <!-- todo confirm this is needed -->
     <style name="EditText" parent="Platform.EditText">
-        <item name="android:paddingTop">@dimen/gap_small</item>
-        <item name="android:paddingBottom">@dimen/gap_small</item>
-        <item name="android:paddingLeft">@dimen/gap_tiny</item>
-        <item name="android:paddingRight">@dimen/gap_tiny</item>
+        <item name="android:paddingTop">@dimen/x1</item>
+        <item name="android:paddingBottom">@dimen/x1</item>
+        <item name="android:paddingLeft">@dimen/x.25</item>
+        <item name="android:paddingRight">@dimen/x.25</item>
 
         <item name="android:background">@drawable/edit_text_background_selector</item>
-        <item name="android:fontFamily">sans-serif</item>
-
-        <item name="android:textSize">@dimen/text_body</item>
-        <item name="android:textColor">@drawable/edit_text_selector</item>
+        <item name="android:textAppearance">@style/Body1.Primary</item>
         <item name="android:minHeight">@dimen/text_body_line_height</item>
+        <item name="android:textColor">@color/primary_text_selector</item>
+        <item name="android:textColorHint">@color/hint_text</item>
     </style>
 
     <style name="AppTheme.Text.EditText" parent="Platform.EditText">
         <item name="android:minHeight">@dimen/edit_text_min_height</item>
 
-        <item name="android:paddingTop">@dimen/gap_small</item>
-        <item name="android:paddingBottom">@dimen/gap_small</item>
-        <item name="android:paddingLeft">@dimen/gap_tiny</item>
-        <item name="android:paddingRight">@dimen/gap_tiny</item>
+        <item name="android:paddingTop">@dimen/x1</item>
+        <item name="android:paddingBottom">@dimen/x1</item>
+        <item name="android:paddingLeft">@dimen/x.25</item>
+        <item name="android:paddingRight">@dimen/x.25</item>
 
         <item name="android:background">@drawable/edit_text_background_selector</item>
-        <item name="android:textSize">@dimen/text_size_body</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textAppearance">@style/Body1.Primary</item>
+        <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
     <style name="AppTheme.Text.EditText.Onboarding">
         <item name="android:textSize">@dimen/text_body</item>
-        <item name="android:textColor">@drawable/onboarding_edittext_selector</item>
         <item name="android:minHeight">@dimen/text_body_line_height</item>
+        <item name="android:textAppearance">@style/Body1.Primary</item>
+        <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
     <!-- Specific Tinting -->
@@ -489,21 +403,20 @@
     <!-- Other -->
 
     <style name="AppTheme.Card">
-        <item name="android:background">@drawable/raised_item_normal</item>
+        <item name="android:background">@color/background_card</item>
         <item name="android:gravity">start|center_vertical</item>
-        <item name="senseCornerRadius">@dimen/raised_item_corner_radius</item>
+        <item name="senseCornerRadius">@dimen/small_radius</item>
     </style>
 
     <style name="AppTheme.LargeCard">
-        <item name="android:background">@drawable/background_card_large</item>
-        <item name="senseCornerRadius">@dimen/card_large_corner_radius</item>
+        <item name="senseCornerRadius">@dimen/medium_radius</item>
     </style>
 
     <style name="AppTheme.Card.Clickable">
-        <item name="android:background">@drawable/raised_item_selector</item>
+        <item name="android:background">@color/background_card</item> <!-- todo show ripple -->
     </style>
 
-    <style name="AppTheme.Card.VerticalPaddingItem" parent="AppTheme.Text.Body.New">
+    <style name="AppTheme.Card.VerticalPaddingItem">
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:paddingTop">@dimen/x2</item>
         <item name="android:paddingBottom">@dimen/x2</item>
@@ -586,7 +499,7 @@
         <item name="colorPrimaryDark">@color/primary</item>
         <!-- Bright complement to the primary branding color. By default, this is the color applied
          to framework controls (via colorControlActivated). -->
-        <item name="colorAccent">@color/light_accent</item>
+        <item name="colorAccent">@color/primary</item>
         <!-- The color applied to framework controls in their normal state. -->
         <item name="colorControlNormal">@color/primary</item>
         <!-- The color applied to framework controls in their activated (ex. checked) state. -->
@@ -601,12 +514,14 @@
         <item name="android:windowBackground">@color/background</item>
         <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
 
-        <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading.New</item>
-        <item name="senseTextAppearanceSubheading">@style/AppTheme.Text.Body.MidSized.Dim</item>
-        <item name="senseTextAppearanceFieldLabel">@style/AppTheme.Text.Body.Small.New</item>
-        <item name="senseBackgroundSecondary">@color/background_light</item>
+        <item name="senseTextAppearanceHeading">@style/Title2.Primary
+        </item> <!-- todo confirm this doesn't break something -->
+        <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
+        <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
+        <item name="senseBackgroundSecondary">@color/background_card</item>
 
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
+        </item>
         <!-- remove actionbar elevation for kitkat and older -->
         <item name="android:windowContentOverlay">@null</item>
         <item name="actionBarStyle">@style/ActionBar</item>
@@ -631,7 +546,7 @@
         <item name="colorPrimaryDark">@color/primary</item>
         <!-- Bright complement to the primary branding color. By default, this is the color applied
          to framework controls (via colorControlActivated). -->
-        <item name="colorAccent">@color/light_accent</item>
+        <item name="colorAccent">@color/primary</item>
         <!-- The color applied to framework controls in their normal state. -->
         <item name="colorControlNormal">@color/primary</item>
         <!-- The color applied to framework controls in their activated (ex. checked) state. -->
@@ -645,12 +560,14 @@
         <!-- Inactive track color(75% transparency) -->
         <item name="android:windowBackground">@color/background</item>
         <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
-        <item name="senseTextAppearanceHeading">@style/AppTheme.Text.Heading.New</item>
-        <item name="senseTextAppearanceSubheading">@style/AppTheme.Text.Body.MidSized.Dim</item>
-        <item name="senseTextAppearanceFieldLabel">@style/AppTheme.Text.Body.Small.New</item>
-        <item name="senseBackgroundSecondary">@color/background_light</item>
+        <item name="senseTextAppearanceHeading">@style/Title2.Primary
+        </item> <!-- todo confirm this doesn't break something -->
+        <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
+        <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
+        <item name="senseBackgroundSecondary">@color/background_card</item>
 
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_grey</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
+        </item>
     </style>
 
     <style name="AppTheme.AppCompat.ProgressBar" parent="Widget.AppCompat.ProgressBar">
@@ -664,30 +581,31 @@
     </style>
 
     <style name="AppTheme.AppCompat.NoActionBar.TabLayout" parent="Widget.Design.TabLayout">
-        <item name="tabBackground">@color/background_light</item>
+        <item name="tabBackground">@color/background_card</item>
         <item name="android:textAllCaps">true</item>
-        <item name="tabSelectedTextColor">@color/primary</item>
-        <item name="tabTextColor">@color/dim</item>
-        <item name="tabIndicatorColor">@color/primary</item>
+        <item name="tabSelectedTextColor">@color/tablayout_focused</item>
+        <item name="tabTextColor">@color/secondary_text</item>
+        <item name="tabIndicatorColor">@color/tablayout_focused</item>
         <item name="tabPaddingStart">@dimen/x1</item>
         <item name="tabGravity">fill</item>
         <item name="tabMaxWidth">0dp</item>
     </style>
 
     <style name="AppTheme.AppCompat.NoActionBar.BottomBar" parent="AppTheme.AppCompat.NoActionBar.TabLayout">
-        <item name="android:minHeight">@dimen/bottom_bar_height</item>
-        <item name="tabIndicatorColor">@color/background_light</item>
+        <item name="android:minHeight">@dimen/action_bar_height</item>
+        <item name="tabIndicatorColor">@color/background_card</item>
         <item name="tabIndicatorHeight">0dp</item>
         <item name="android:layout_gravity">bottom</item>
     </style>
 
     <style name="AppTheme.AppCompat.Fab" parent="Widget.Design.FloatingActionButton">
-        <item name="backgroundTint">@color/light_accent</item>
+        <item name="backgroundTint">@color/primary</item>
     </style>
 
     <style name="AppTheme.AppCompat.AppSettingsActivity">
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/light_accent_darkened</item>
-        <item name="android:windowBackground">?attr/senseBackgroundSecondary</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/primary_darkened
+        </item>
+        <item name="android:windowBackground">@color/background_card</item>
     </style>
 
     <style name="AppTheme.AppCompat.NotificationActivity" parent="AppTheme.AppCompat.AppSettingsActivity">
@@ -697,7 +615,7 @@
 
     <style name="AppTheme.AppCompat.SearchListActivity">
         <item name="android:statusBarColor" tools:targetApi="lollipop">
-            @color/light_accent_darkened
+            @color/primary_darkened
         </item>
     </style>
 

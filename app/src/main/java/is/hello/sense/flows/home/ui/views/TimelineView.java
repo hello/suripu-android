@@ -73,7 +73,7 @@ public class TimelineView extends PresenterView {
         this.headerView.setOnScoreClickListener(onScoreClickListener);
 
 
-        final int backgroundFillColor = ContextCompat.getColor(activity, R.color.background_timeline);
+        final int backgroundFillColor = ContextCompat.getColor(activity, R.color.timeline_background);
         this.backgroundFill = new ColorDrawableCompat(backgroundFillColor);
         this.recyclerView.setBackground(this.backgroundFill);
         this.adapter.addHeader(this.headerView);
@@ -233,7 +233,7 @@ public class TimelineView extends PresenterView {
                                                            .withDuration(Anime.DURATION_SLOW));
             this.itemAnimator.addListener(createListener());
         } else {
-            this.backgroundFill.setColor(ContextCompat.getColor(getContext(), R.color.background_timeline));
+            this.backgroundFill.setColor(ContextCompat.getColor(getContext(), R.color.timeline_background));
         }
         this.headerView.stopPulsing();
         this.adapter.replaceHeader(TimelineAdapter.CONTENT_START_POSITION, newHeader);
@@ -268,7 +268,7 @@ public class TimelineView extends PresenterView {
 
     private ExtendedItemAnimator.Listener createListener() {
         return new ExtendedItemAnimator.Listener() {
-            final Animator crossFade = TimelineView.this.backgroundFill.colorAnimator(ContextCompat.getColor(getContext(), R.color.background_timeline));
+            final Animator crossFade = TimelineView.this.backgroundFill.colorAnimator(ContextCompat.getColor(getContext(), R.color.timeline_background));
 
             @Override
             public void onItemAnimatorWillStart(@NonNull final AnimatorContext.Transaction transaction) {

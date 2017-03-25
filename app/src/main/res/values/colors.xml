@@ -1,121 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- start Nathan's official colors -->
-    <color name="dark">@color/gray6</color>
-    <color name="standard">@color/gray5</color>
-    <color name="dim">@color/gray4</color>
+    <!-- Design terms-->
+    <color name="primary_text">@color/black_87</color>
+    <color name="secondary_text">@color/black_54</color>
+    <color name="hint_text">@color/black_38</color>
+    <color name="disabled_text">@color/hint_text</color>
+    <color name="divider">@color/black_12</color>
+
+    <color name="dim">@color/gray3</color>
     <color name="primary">@color/blue6</color>
     <color name="error">@color/red6</color>
     <color name="warning">@color/yellow6</color>
     <color name="success">@color/green6</color>
 
-    <!-- end Nathan's official colors -->
-
-    <color name="transparent">@color/white_00</color>
-    <color name="transparent_overlay">@color/black_25</color>
-    <color name="light_accent">@color/blue6</color>
-    <color name="light_accent_dimmed">@color/blue4</color>
-    <color name="light_accent_extra_dimmed">@color/blue2</color>
-    <color name="light_accent_darkened">@color/blue7</color>
-    <color name="destructive_accent">@color/red6</color>
-    <color name="status_bar_grey">@color/gray3</color>
-    <color name="status_bar_illustration">@color/gray3</color>
-
     <color name="background">@color/gray2</color>
-    <color name="insight_card_background">@color/gray2</color>
-    <color name="background_light">@color/white</color>
-    <color name="background_light_overlay">@color/white_60</color>
-    <color name="background_dark_overlay">@color/black_50</color>
-    <color name="background_timeline">@color/white</color>
-    <color name="background_onboarding">@color/white</color>
-    <color name="background_expansions">@color/white</color>
-    <color name="background_insight_illustration">@color/gray3</color>
+    <color name="background_card">@color/white</color>
+    <color name="background_navigation">@color/white</color>
+    <color name="background_overlay">@color/primary</color>
+    <color name="background_drawer">@color/primary</color>
 
-    <color name="background_dark_item_clicked">@color/blue2</color>
-
-    <color name="border">@color/gray2</color>
-    <color name="border_backside_tabs">@color/gray3</color>
-    <color name="shadow_end">@color/black_10</color>
-    <color name="view_time_picker_shadow_end">@color/black_06</color>
-
-    <color name="timeline_header_border">@color/blue3</color>
-    <color name="timeline_header_gradient_end">@color/gray1</color>
-    <color name="timeline_background_fill">@color/blue2</color>
-    <color name="timeline_segment_stripe">@color/blue6_30</color>
-
-    <color name="text_dark">@color/gray6</color>
-    <color name="text_medium">@color/gray5</color>
-    <color name="text_light">@color/gray4</color>
-    <color name="text_extra_light">@color/gray3</color>
-    <color name="text_dark_disabled">@color/black_27</color>
-    <color name="text_dim">@color/black_53</color>
-    <color name="text_dim_light">@color/white_75</color>
-    <color name="text_detail_grey">@color/black_25</color>
-    <color name="text_section_header">@color/gray4</color>
-    <color name="text_dim_placeholder">@color/gray2</color>
-    <color name="text_link">@color/blue6</color>
-    <color name="text_body_new">@color/gray5</color>
-    <color name="text_heading_major">@color/gray6</color>
-
-    <color name="text_rotary_picker_focused">@color/light_accent</color>
-    <color name="text_rotary_picker_unfocused">@color/gray4</color>
-    <color name="text_rotary_picker_almost_gone">@color/gray2</color>
-
-    <color name="edit_text_bottom_line_normal">@color/gray3</color>
-    <color name="edit_text_bottom_line_disabled">@color/gray3</color>
-
-    <color name="text_white_button">@color/white</color>
-    <color name="text_white_button_pressed">@color/gray3</color>
-
-    <color name="background_button_white_pressed">@color/gray2_15</color>
-    <color name="background_button_dark_pressed">@color/blue3_93</color>
-
-    <color name="sensor_alert">@color/red6</color>
-    <color name="sensor_warning">@color/yellow6</color>
-    <color name="sensor_ideal">@color/green6</color>
-    <color name="sensor_unknown">@color/gray6</color>
+    <!-- Alert colors -->
+    <color name="sensor_alert">@color/error</color>
+    <color name="sensor_warning">@color/warning</color>
+    <color name="sensor_ideal">@color/success</color>
+    <color name="sensor_unknown">@color/dim</color>
     <color name="sensor_empty">@color/gray3</color>
 
+    <!-- Using @color/primary / blue6 -->
+    <color name="devices_adapter_chevron">@color/primary</color>
+    <color name="tutorial_interaction_view">@color/primary</color>
+    <color name="onboarding_icon_tint">@color/primary</color>
+    <color name="tabs_background_selected">@color/primary</color>
+    <color name="ticket_detail_icon_tint">@color/primary</color>
+    <color name="timeline_header">@color/primary</color>
+    <color name="user_support_toolbar">@color/primary</color>
+
+    <!-- Using @color/primary_dimmed / blue4 -->
+    <color name="primary_dimmed">@color/blue4</color>
+    <color name="tutorial_interaction_view_dimmed">@color/primary_dimmed</color>
+    <color name="timeline_preview_vertical_border">@color/primary_dimmed</color>
+
+    <!-- Using @color/primary_darkened / blue7 -->
+    <color name="primary_darkened">@color/blue7</color>
+    <color name="status_bar_primary_darkened">@color/primary_darkened</color>
+
+    <!-- Misc -->
+    <color name="transparent">@color/white_00</color>
+    <color name="transparent_overlay">@color/black_70</color>
+    <color name="ripple">@color/divider</color>
+    <color name="status_bar_normal">@color/gray3</color>
+    <color name="timeline_transparent_overlay">@color/transparent_overlay</color>
+    <color name="timeline_background_fill">@color/blue2</color>
+    <color name="timeline_time_dividers">@color/blue6_30</color>
+    <color name="fragment_dialog_loading_overlay">@color/transparent_overlay</color>
+    <color name="fragment_dialog_welcome">@color/transparent_overlay</color>
+    <color name="timeline_background">@color/background_card</color>
+    <color name="onboarding_background">@color/background_card</color>
+    <color name="smart_alarm_header_background">@color/primary</color>
+    <color name="insight_illustration_background">@color/background</color>
+    <color name="expansions_background">@color/background_card</color>
+    <color name="timeline_share_background_gradient_top">@color/gray1</color>
+    <color name="timeline_share_background_gradient_bottom">@color/white</color>
+    <color name="timeline_event_background_normal">@color/background_card</color>
+    <color name="timeline_event_background_pressed">@color/blue1</color>
+    <color name="questions_divider">@color/divider</color>
+    <color name="shadow_start_color">@color/black_10</color>
+    <color name="shadow_end_color">@color/black_00</color>
+
+    <!-- Text Colors -->
+    <color name="error_text">@color/error</color>
+    <color name="white_text">@color/white</color>
+    <color name="link_text">@color/primary</color>
+    <color name="link_text_pressed">@color/blue7</color>
+    <color name="link_text_disabled">@color/blue6_50</color>
+    <color name="notification_text">@color/primary</color>
+    <color name="facebook_official_color">#3B5998</color>
+
+    <!-- Button Colors -->
+    <color name="sense_button_ripple">@color/ripple</color>
+    <color name="sense_flat_button_normal">@color/background_card</color>
+    <color name="sense_flat_button_pressed">@color/divider</color>
+    <color name="sense_raised_button_normal">@color/primary</color>
+    <color name="sense_raised_button_pressed">@color/blue7</color>
+    <color name="sense_raised_button_disabled">@color/dim</color>
+    <color name="sense_raised_button_shadow_light">@color/black_10</color>
+    <color name="sense_raised_button_shadow_dark">@color/black_20</color>
+
+    <!-- TabLayout Colors -->
+    <color name="tablayout_focused">@color/primary</color>
+
+    <!-- OnboardingRegisterBirthdayFragment.java -->
+    <color name="birthday_text_active">@color/primary</color>
+    <color name="birthday_text_inactive">@color/primary_text</color>
+
+    <!-- fragment_onboarding_register_height.xml & fragment_onboarding_register_weight.xml-->
+    <color name="scale_display_text">@color/primary</color>
+
+    <!-- Timeline Sleep colors -->
     <color name="sleep_awake">@color/transparent</color>
     <color name="sleep_light">@color/blue6_30</color>
     <color name="sleep_medium">@color/blue6_50</color>
     <color name="sleep_sound">@color/blue6_80</color>
 
-    <color name="graph_stroke_color">@color/white_40</color>
-    <color name="graph_fill_gradient_top">@color/black_13</color>
-    <color name="graph_fill_gradient_bottom">@color/black_06</color>
-    <color name="graph_fill_solid">@color/gray2_15</color>
-    <color name="graph_fill_empty">@color/gray2_00</color>
+    <!-- Trends -->
+    <color name="trends_line_divider">@color/divider</color>
+    <color name="trends_line_divider_shimmer">@color/gray3</color>
+    <color name="trends_grid_graph_cell_empty">@color/background_card</color>
+    <color name="trends_grid_graph_cell_empty_border">@color/gray3</color>
+    <color name="trends_grid_graph_cell_missing">@color/divider</color>
+    <color name="trends_bar_graph_bar">@color/blue3</color>
+    <color name="trends_bar_graph_annotation_text">@color/blue6</color>
+    <color name="trends_bar_graph_highlight">@color/blue6</color>
+    <color name="trends_bar_graph_highlight_bar">@color/blue5</color>
+    <color name="trends_bubble_graph_light_bubble">@color/blue4</color>
+    <color name="trends_bubble_graph_medium_bubble">@color/blue5</color>
+    <color name="trends_bubble_graph_deep_bubble">@color/blue6</color>
 
-    <color name="graph_grid_empty_cell">@color/white</color>
-    <color name="graph_grid_empty_missing">@color/gray2</color>
+    <!-- could use cleaning, but good enough for now -->
+    <color name="border">@color/gray2</color>
+
+    <color name="text_rotary_picker_focused">@color/link_text</color>
+    <color name="text_rotary_picker_unfocused">@color/secondary_text</color>
+    <color name="text_rotary_picker_almost_gone">@color/hint_text</color>
 
     <color name="view_scale_tick_normal">@color/gray2</color>
     <color name="view_scale_tick_emphasized">@color/gray3</color>
 
-    <color name="trends_title">@color/gray4</color>
-    <color name="trends_line_divider">@color/gray2_50</color>
-    <color name="trends_line_divider_shimmer">@color/gray3</color>
-    <color name="trends_bargraph_dashedline">@color/gray7</color>
-    <color name="trends_bargraph">@color/gray3</color>
-    <color name="trends_bargraph_bar">@color/blue3</color>
-    <color name="trends_bargraph_annotation_text">@color/blue6</color>
-    <color name="trends_bargraph_hightlight">@color/blue6</color>
-    <color name="trends_bargraph_hightlight_bar">@color/blue5</color>
-    <color name="trends_bargraph_highlight_text">@color/white</color>
-    <color name="trends_bubblegraph_light_bubble">@color/blue4</color>
-    <color name="trends_bubblegraph_medium_bubble">@color/blue5</color>
-    <color name="trends_bubblegraph_deep_bubble">@color/blue6</color>
-    <color name="trends_bubblegraph_text_title">@color/white</color>
-    <color name="trends_bubblegraph_text_value">@color/white</color>
-    <color name="trends_gridgraph">@color/gray3</color>
-    <color name="trends_gridgraph_empty_cell_border">@color/gray3</color>
-
-    <color name="timeline_share_text">@color/gray4</color>
-    <color name="timeline_share_background_gradient_top">@color/gray1</color>
-    <color name="timeline_share_background_gradient_bottom">@color/white</color>
-
-    <color name="facebook_official_color">#3B5998</color>
     <color name="voice_volume_emphasized_color">@color/blue6</color>
     <color name="voice_volume_normal_color">@color/gray3</color>
 

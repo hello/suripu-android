@@ -181,7 +181,9 @@ public class GridTrendGraphView extends TrendGraphView {
 
         private final TextPaint textLabelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         private final TextPaint textCellPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        private final Paint whitePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint whiteTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint cardPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint emptyCellPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final int textHeight;
         private final int inset = getContext().getResources().getDimensionPixelSize(R.dimen.trends_gridgraph_border_inset);
 
@@ -196,9 +198,12 @@ public class GridTrendGraphView extends TrendGraphView {
                                   @NonNull final Graph graph,
                                   @NonNull final AnimatorContext animatorContext) {
             super(context, graph, animatorContext);
-            Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.AppTheme_Text_Trends_GridGraph);
-            Drawing.updateTextPaintFromStyle(textCellPaint, context, R.style.AppTheme_Text_Trends_GridGraph_Cell);
-            whitePaint.setColor(ContextCompat.getColor(getContext(), R.color.white));
+            Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.Caption1_Hint);
+            Drawing.updateTextPaintFromStyle(textCellPaint, context, R.style.BodySmall);
+            whiteTextPaint.setColor(ContextCompat.getColor(getContext(), R.color.white));
+            cardPaint.setColor(ContextCompat.getColor(getContext(), R.color.background_card));
+            emptyCellPaint.setColor(ContextCompat.getColor(context, R.color.trends_grid_graph_cell_empty));
+            textCellPaint.setColor(whiteTextPaint.getColor());
             final Rect bounds = new Rect();
             textLabelPaint.getTextBounds("A", 0, 1, bounds);
             textHeight = bounds.height();
@@ -422,10 +427,11 @@ public class GridTrendGraphView extends TrendGraphView {
 
                 if (highlight) {
                     canvas.drawCircle(left, top, radius, paint);
-                    canvas.drawCircle(left, top, radius - inset, whitePaint);
+                    canvas.drawCircle(left, top, radius - inset, cardPaint);
                     canvas.drawCircle(left, top, radius - inset * 2, paint);
                 } else {
                     canvas.drawCircle(left, top, radius, borderPaint);
+                    canvas.drawCircle(left, top, radius - padding / 8, emptyCellPaint);
                     canvas.drawCircle(left, top, radius - padding / 8, paint);
                 }
             }
@@ -455,8 +461,8 @@ public class GridTrendGraphView extends TrendGraphView {
                 if (value != null) {
                     if (value < 0f) {
                         textValue = context.getString(R.string.missing_data_placeholder);
-                        paint.setColor(ContextCompat.getColor(context, R.color.graph_grid_empty_missing));
-                        borderPaint.setColor(ContextCompat.getColor(context, R.color.trends_gridgraph_empty_cell_border));
+                        paint.setColor(ContextCompat.getColor(context, R.color.trends_grid_graph_cell_missing));
+                        borderPaint.setColor(ContextCompat.getColor(context, R.color.trends_grid_graph_cell_empty_border));
                         shouldDraw = GraphSection.canShow(value);
                     } else {
                         shouldDraw = true;
@@ -469,9 +475,10 @@ public class GridTrendGraphView extends TrendGraphView {
                 } else {
                     shouldDraw = true;
                     textValue = "";
-                    paint.setColor(ContextCompat.getColor(context, R.color.graph_grid_empty_cell));
-                    borderPaint.setColor(ContextCompat.getColor(context, R.color.trends_gridgraph_empty_cell_border));
+                    paint.setColor(emptyCellPaint.getColor());
+                    borderPaint.setColor(ContextCompat.getColor(context, R.color.trends_grid_graph_cell_empty_border));
                 }
+
                 textCellPaint.getTextBounds(textValue, 0, textValue.length(), textBounds);
             }
 
@@ -490,10 +497,11 @@ public class GridTrendGraphView extends TrendGraphView {
 
                 if (highlight) {
                     canvas.drawCircle(left, top, radius, paint);
-                    canvas.drawCircle(left, top, radius - inset, whitePaint);
+                    canvas.drawCircle(left, top, radius - inset, cardPaint);
                     canvas.drawCircle(left, top, radius - inset * 2, paint);
                 } else {
                     canvas.drawCircle(left, top, radius, borderPaint);
+                    canvas.drawCircle(left, top, radius - padding / 8, emptyCellPaint);
                     canvas.drawCircle(left, top, radius - padding / 8, paint);
                 }
                 if (showText) {

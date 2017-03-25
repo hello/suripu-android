@@ -169,7 +169,7 @@ public class RegisterFragment extends InjectionFragment
 
         if (BuildConfig.DEBUG) {
             final Button selectHost = new Button(getActivity());
-            Styles.setTextAppearance(selectHost, R.style.AppTheme_Button_Borderless_Accent_Bounded);
+            Styles.setTextAppearance(selectHost, R.style.Button_Flat);
             selectHost.setBackgroundResource(R.drawable.selectable_dark_bounded);
             selectHost.setGravity(Gravity.CENTER);
             final Observable<String> apiUrl =
@@ -177,7 +177,7 @@ public class RegisterFragment extends InjectionFragment
                                                  apiEndpoint.getUrl());
             bindAndSubscribe(apiUrl, selectHost::setText, Functions.LOG_ERROR);
 
-            final int padding = getResources().getDimensionPixelSize(R.dimen.gap_small);
+            final int padding = getResources().getDimensionPixelSize(R.dimen.x1);
             selectHost.setPadding(padding, padding, padding, padding);
 
             Views.setSafeOnClickListener(selectHost, ignored -> {
@@ -191,7 +191,7 @@ public class RegisterFragment extends InjectionFragment
             final LinearLayout.LayoutParams layoutParams =
                     new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                                   ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.bottomMargin = getResources().getDimensionPixelSize(R.dimen.gap_small);
+            layoutParams.bottomMargin = getResources().getDimensionPixelSize(R.dimen.x1);
             credentialsContainer.addView(selectHost, layoutParams);
         }
 
@@ -255,7 +255,7 @@ public class RegisterFragment extends InjectionFragment
 
     @Override
     public int getStatusBarColor(@NonNull final Resources resources) {
-        return ContextCompat.getColor(getActivity(), R.color.status_bar_grey);
+        return ContextCompat.getColor(getActivity(), R.color.status_bar_normal);
     }
 
     @Override

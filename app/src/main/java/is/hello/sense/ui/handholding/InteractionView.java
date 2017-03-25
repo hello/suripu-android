@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -18,31 +19,37 @@ public class InteractionView extends View {
     private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF ovalRect = new RectF();
 
-    private @Nullable Animator currentAnimation;
+    private
+    @Nullable
+    Animator currentAnimation;
 
     //region Lifecycle
 
-    public InteractionView(@NonNull Context context) {
+    public InteractionView(@NonNull final Context context) {
         this(context, null);
     }
 
-    public InteractionView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public InteractionView(@NonNull final Context context,
+                           @Nullable final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public InteractionView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public InteractionView(@NonNull final Context context,
+                           @Nullable final AttributeSet attrs,
+                           final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        Resources resources = getResources();
+        final Resources resources = getResources();
 
-        fillPaint.setColor(resources.getColor(R.color.light_accent));
+        final int color = ContextCompat.getColor(context, R.color.tutorial_interaction_view);
+        fillPaint.setColor(color);
         fillPaint.setAlpha(60);
 
-        borderPaint.setColor(resources.getColor(R.color.light_accent));
+        borderPaint.setColor(color);
         borderPaint.setStyle(Paint.Style.STROKE);
         borderPaint.setStrokeWidth(resources.getDimensionPixelSize(R.dimen.view_interaction_stroke));
 
-        int area = resources.getDimensionPixelSize(R.dimen.view_interaction_area);
+        final int area = resources.getDimensionPixelSize(R.dimen.view_interaction_area);
         setMinimumWidth(area);
         setMinimumHeight(area);
     }
@@ -60,9 +67,9 @@ public class InteractionView extends View {
     //region Drawing
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        int width = canvas.getWidth();
-        int height = canvas.getHeight();
+    protected void onDraw(final Canvas canvas) {
+        final int width = canvas.getWidth();
+        final int height = canvas.getHeight();
 
         ovalRect.set(0f, 0f, width, height);
         canvas.drawOval(ovalRect, fillPaint);
@@ -77,11 +84,11 @@ public class InteractionView extends View {
 
     //region Animation
 
-    public void playTutorial(@NonNull Tutorial tutorial) {
+    public void playTutorial(@NonNull final Tutorial tutorial) {
         startAnimation(tutorial.createAnimation(this));
     }
 
-    public void startAnimation(@NonNull Animator animation) {
+    public void startAnimation(@NonNull final Animator animation) {
         stopAnimation();
 
         this.currentAnimation = animation;

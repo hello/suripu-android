@@ -83,7 +83,7 @@ public class OnboardingPairPill extends BaseHardwareFragment implements OnBackPr
                 skipPairingPill();
                 return true;
             });
-            diagram.setBackgroundResource(R.drawable.selectable_dark);
+            diagram.setBackgroundResource(R.drawable.ripple_selector);
         }
 
         return view;

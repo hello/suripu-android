@@ -67,10 +67,15 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
     @Override
     public void onViewCreated() {
         super.onViewCreated();
+        view.useToolbar(shouldUseToolbar());
         if (network != null && network.getSecurityType() == wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN) {
             sendWifiCredentials();
         }
         view.updateView(network);
+    }
+
+    protected boolean shouldUseToolbar() {
+        return true;
     }
 
     protected abstract boolean shouldLinkAccount();
@@ -261,5 +266,6 @@ public abstract class BaseConnectWifiPresenter extends BasePairSensePresenter<Ba
 
         void updateView(@Nullable final wifi_endpoint network);
 
+        void useToolbar(boolean useToolbar);
     }
 }

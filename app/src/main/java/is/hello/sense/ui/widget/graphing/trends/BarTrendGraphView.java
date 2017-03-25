@@ -39,7 +39,7 @@ public class BarTrendGraphView extends TrendGraphView {
                              @NonNull final Graph graph,
                              @NonNull final AnimatorContext animatorContext,
                              @NonNull final AnimationCallback animationCallback) {
-        super(context, animatorContext,animationCallback);
+        super(context, animatorContext, animationCallback);
         this.drawable = new BarGraphDrawable(context, graph, animatorContext);
         setBackground(drawable);
         setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -111,13 +111,12 @@ public class BarTrendGraphView extends TrendGraphView {
                                 @NonNull final AnimatorContext animatorContext) {
             super(context, graph, animatorContext);
 
-            Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.AppTheme_Text_Trends_BarGraph);
-            Drawing.updateTextPaintFromStyle(highlightTextPaint, context, R.style.AppTheme_Text_Trends_BarGraph_HighLight);
-
-
-            this.highlightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bargraph_hightlight));
-            this.barHighlightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bargraph_hightlight_bar));
-            this.barPaint.setColor(ContextCompat.getColor(context, R.color.trends_bargraph_bar));
+            Drawing.updateTextPaintFromStyle(textLabelPaint, context, R.style.Caption1_Hint);
+            Drawing.updateTextPaintFromStyle(highlightTextPaint, context, R.style.Caption1);
+            this.highlightTextPaint.setColor(ContextCompat.getColor(getContext(), R.color.white_text));
+            this.highlightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bar_graph_highlight));
+            this.barHighlightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bar_graph_highlight_bar));
+            this.barPaint.setColor(ContextCompat.getColor(context, R.color.trends_bar_graph_bar));
 
 
             final int dashedLineLength = resources.getDimensionPixelSize(R.dimen.trends_bargraph_dashed_line_length);
@@ -129,7 +128,7 @@ public class BarTrendGraphView extends TrendGraphView {
             this.bottomLinePaint.setColor(ContextCompat.getColor(context, R.color.trends_line_divider));
 
 
-            this.highlightValueSidePadding = resources.getDimensionPixelSize(R.dimen.gap_xsmall);
+            this.highlightValueSidePadding = resources.getDimensionPixelSize(R.dimen.x_75);
             this.highlightValueHeight = resources.getDimensionPixelSize(R.dimen.trends_bargraph_highlight_value_height);
             this.highlightBottomMargin = resources.getDimensionPixelSize(R.dimen.trends_bargraph_highlight_bottom_margin);
             final int highlightTopMargin = resources.getDimensionPixelSize(R.dimen.trends_bargraph_highlight_top_margin);
@@ -226,7 +225,7 @@ public class BarTrendGraphView extends TrendGraphView {
                     calculateHighlightBounds(textBounds.centerX(), barBoundsRect, highlightBounds); // This is the min / max bubble's position above the bar.
                     calculateHighlightTextBounds(textBounds, highlightBounds, highlightTextBounds);
                     drawingPath.reset();
-                    drawingPath.addRoundRect(highlightBounds, resources.getDimensionPixelSize(R.dimen.raised_item_corner_radius), resources.getDimensionPixelSize(R.dimen.raised_item_corner_radius),
+                    drawingPath.addRoundRect(highlightBounds, resources.getDimensionPixelSize(R.dimen.small_radius), resources.getDimensionPixelSize(R.dimen.small_radius),
                                              Path.Direction.CW);
                     highlightedColumns.add(new RectF(barBoundsRect));
                     highlightedBubbles.add(new Path(drawingPath));

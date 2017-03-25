@@ -18,7 +18,7 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.flows.timeline.TimelineModule;
-import is.hello.sense.ui.activities.ScopedInjectionActivity;
+import is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
 import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.util.Analytics;
@@ -28,7 +28,7 @@ import is.hello.sense.util.DateFormatter;
  * Activity that handles displaying sleep score history
  */
 
-public class TimelineActivity extends ScopedInjectionActivity
+public class TimelineActivity extends ScopedInjectionAppCompatActivity
         implements ZoomedOutTimelineFragment.OnTimelineDateSelectedListener {
 
     public static final String EXTRA_LOCAL_DATE = TimelineActivity.class.getSimpleName() + "EXTRA_LOCAL_DATE";

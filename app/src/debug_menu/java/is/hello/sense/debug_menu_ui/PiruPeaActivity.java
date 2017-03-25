@@ -34,10 +34,11 @@ import is.hello.commonsense.util.ConnectProgress;
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.functional.Functions;
+import is.hello.sense.graph.DebugModule;
 import is.hello.sense.interactors.hardware.HardwareInteractor;
 import is.hello.sense.settings.SettingsPairSenseModule;
-import is.hello.sense.ui.activities.ScopedInjectionActivity;
 import is.hello.sense.ui.activities.SettingsActivity;
+import is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.adapter.SettingsRecyclerAdapter;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
@@ -48,9 +49,11 @@ import rx.Observable;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
-public class PiruPeaActivity extends ScopedInjectionActivity implements ArrayRecyclerAdapter.OnItemClickedListener<SensePeripheral> {
-    @Inject BluetoothStack stack;
-    @Inject ApiSessionManager apiSessionManager;
+public class PiruPeaActivity extends ScopedInjectionAppCompatActivity implements ArrayRecyclerAdapter.OnItemClickedListener<SensePeripheral> {
+    @Inject
+    BluetoothStack stack;
+    @Inject
+    ApiSessionManager apiSessionManager;
     @Inject
     HardwareInteractor hardwarePresenter;
 
@@ -65,7 +68,7 @@ public class PiruPeaActivity extends ScopedInjectionActivity implements ArrayRec
     @Override
     protected List<Object> getModules() {
         // May need to change variable: true
-        return Arrays.asList(new SettingsPairSenseModule(true));
+        return Arrays.asList(new SettingsPairSenseModule(true), new DebugModule());
     }
 
     @Override
@@ -115,7 +118,8 @@ public class PiruPeaActivity extends ScopedInjectionActivity implements ArrayRec
         super.onDestroy();
 
         if (selectedPeripheral != null) {
-            selectedPeripheral.disconnect().subscribe(ignored -> {}, Functions.LOG_ERROR);
+            selectedPeripheral.disconnect().subscribe(ignored -> {
+            }, Functions.LOG_ERROR);
             hardwarePresenter.setPeripheral(null);
         }
     }
@@ -212,7 +216,8 @@ public class PiruPeaActivity extends ScopedInjectionActivity implements ArrayRec
 
     public void disconnect() {
         if (selectedPeripheral != null) {
-            selectedPeripheral.disconnect().subscribe(ignored -> {}, Functions.LOG_ERROR);
+            selectedPeripheral.disconnect().subscribe(ignored -> {
+            }, Functions.LOG_ERROR);
             hardwarePresenter.setPeripheral(null);
             this.selectedPeripheral = null;
         }
@@ -254,7 +259,7 @@ public class PiruPeaActivity extends ScopedInjectionActivity implements ArrayRec
                 new SettingsActivity.Builder(this);
         builder.setDefaultTitle(R.string.title_edit_wifi);
         builder.setFragmentClass(SelectWifiNetworkFragment.class);
-        builder.setWindowBackgroundColor(ContextCompat.getColor(this, R.color.background_onboarding));
+        builder.setWindowBackgroundColor(ContextCompat.getColor(this, R.color.onboarding_background));
         builder.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         startActivity(builder.toIntent());
     }

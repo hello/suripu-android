@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.provider.AlarmClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
 import com.segment.analytics.Properties;
@@ -27,7 +28,7 @@ import is.hello.sense.flows.smartalarm.modules.SmartAlarmDetailModule;
 import is.hello.sense.flows.smartalarm.ui.fragments.SmartAlarmDetailFragment;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.activities.OnboardingActivity;
-import is.hello.sense.ui.activities.ScopedInjectionActivity;
+import is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
@@ -36,7 +37,7 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.NotTested;
 
-public class SmartAlarmDetailActivity extends ScopedInjectionActivity
+public class SmartAlarmDetailActivity extends ScopedInjectionAppCompatActivity
         implements FragmentNavigation {
 
     //region static fields & functions
@@ -97,9 +98,14 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
         //noinspection ConstantConditions
-        getActionBar().setHomeAsUpIndicator(R.drawable.app_style_ab_cancel);
-        getActionBar().setHomeActionContentDescription(android.R.string.cancel);
-        getActionBar().setTitle(R.string.title_alarm);
+        //todo move to custom style
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.app_style_ab_cancel);
+            actionBar.setHomeActionContentDescription(android.R.string.cancel);
+            actionBar.setTitle(R.string.title_alarm);
+        }
         this.navigationDelegate = new FragmentNavigationDelegate(this,
                                                                  R.id.activity_navigation_container,
                                                                  stateSafeExecutor);
@@ -145,15 +151,15 @@ public class SmartAlarmDetailActivity extends ScopedInjectionActivity
     }
 
 
-    @NotTested
     @Override
-    public boolean onMenuItemSelected(final int featureId, @NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
         }
-        return super.onMenuItemSelected(featureId, item);
+        return super.onOptionsItemSelected(item);
     }
+
     //endregion
 
     //region FragmentNavigation

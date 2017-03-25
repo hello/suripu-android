@@ -3,7 +3,6 @@ package is.hello.sense.ui.widget.graphing.trends;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Build;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -25,8 +24,10 @@ import is.hello.sense.api.model.Condition;
 import is.hello.sense.api.model.v2.Annotation;
 import is.hello.sense.api.model.v2.Graph;
 import is.hello.sense.functional.Lists;
+import is.hello.sense.ui.widget.ImageTextView;
 import is.hello.sense.ui.widget.RoundedLinearLayout;
 import is.hello.sense.ui.widget.ShimmerDividerDrawable;
+import is.hello.sense.ui.widget.util.Styles;
 
 @SuppressLint("ViewConstructor")
 public class TrendFeedViewItem extends RoundedLinearLayout {
@@ -54,15 +55,15 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.item_trend_feed_view, this);
 
         setOrientation(VERTICAL);
-        setBackgroundResource(R.drawable.raised_item_normal);
+        setBackgroundColor(ContextCompat.getColor(getContext(), R.color.background_card));
 
         final Resources resources = getResources();
-        final int padding = resources.getDimensionPixelSize(R.dimen.gap_card_content);
+        final int padding = resources.getDimensionPixelSize(R.dimen.x2);
         setPadding(padding, 0, padding, padding);
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
                                          LayoutParams.WRAP_CONTENT));
 
-        final float cornerRadius = resources.getDimension(R.dimen.raised_item_corner_radius);
+        final float cornerRadius = resources.getDimension(R.dimen.small_radius);
         setCornerRadii(cornerRadius);
 
         final View divider = findViewById(R.id.item_trend_feed_view_divider);
@@ -75,7 +76,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
 
         final LayoutParams annotationsLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
                                                                       LayoutParams.WRAP_CONTENT);
-        annotationsLayoutParams.topMargin = resources.getDimensionPixelSize(R.dimen.gap_card_content);
+        annotationsLayoutParams.topMargin = resources.getDimensionPixelSize(R.dimen.x2);
 
         final LayoutParams graphLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
                                                                 LayoutParams.WRAP_CONTENT);
@@ -133,7 +134,7 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
                         textColor = condition.colorRes;
                     }
                 } else {
-                    textColor = R.color.trends_bargraph_annotation_text;
+                    textColor = R.color.trends_bar_graph_annotation_text;
                 }
                 final TextView valueText =
                         ((TextView) annotationView.findViewById(R.id.item_bargraph_annotation_value));
@@ -153,16 +154,16 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
 
     abstract static class StaticCardLayout extends FrameLayout {
         protected final ImageView image;
-        protected final TextView title;
+        protected final ImageTextView title;
         protected final TextView message;
         protected final Button action;
 
         StaticCardLayout(@NonNull final Context context) {
             super(context);
-            LayoutInflater.from(getContext()).inflate(R.layout.temp_item_message_card, this);
+            LayoutInflater.from(getContext()).inflate(R.layout.item_message_card, this);
             setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             this.image = (ImageView) findViewById(R.id.item_message_card_image);
-            this.title = (TextView) findViewById(R.id.item_message_card_title);
+            this.title = (ImageTextView) findViewById(R.id.item_message_card_image_text);
             this.message = (TextView) findViewById(R.id.item_message_card_message);
             this.action = (Button) findViewById(R.id.item_message_card_action);
         }
@@ -191,14 +192,10 @@ public class TrendFeedViewItem extends RoundedLinearLayout {
             title.setText(getResources().getString(R.string.title_trends_welcome));
             image.setImageResource(R.drawable.trends_first_day);
 
-            ((MarginLayoutParams) message.getLayoutParams()).topMargin = getResources().getDimensionPixelSize(R.dimen.gap_small);
+            ((MarginLayoutParams) message.getLayoutParams()).topMargin = getResources().getDimensionPixelSize(R.dimen.x1);
             message.setText(getResources().getString(R.string.message_trends_welcome));
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                //noinspection deprecation
-                message.setTextAppearance(getContext(), R.style.AppTheme_Text_Body_Small_New);
-            } else {
-                message.setTextAppearance(R.style.AppTheme_Text_Body_Small_New);
-            }
+
+            Styles.setTextAppearance(message, R.style.Body1_Secondary);
             action.setVisibility(GONE);
         }
     }
