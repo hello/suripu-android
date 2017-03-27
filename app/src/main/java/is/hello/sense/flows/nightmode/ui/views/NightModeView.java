@@ -66,8 +66,22 @@ implements RadioGroup.OnCheckedChangeListener{
         this.listener = listener;
     }
 
+    public void setOffMode() {
+        this.binding.viewNightModeOffRb.setChecked(true);
+    }
+
+    public void setAlwaysOnMode() {
+        this.binding.viewNightModeAlwaysOnRb.setChecked(true);
+    }
+
+    public void setScheduledMode() {
+        this.binding.viewNightModeScheduledRb.setChecked(true);
+    }
+
     public void setScheduledModeEnabled(final boolean enabled) {
-        this.binding.viewNightModeOffRb.setChecked(!enabled && !binding.viewNightModeAlwaysOnRb.isChecked());
+        if (!enabled && !binding.viewNightModeAlwaysOnRb.isChecked()) {
+            setOffMode();
+        }
         this.binding.viewNightModeScheduledRb.setEnabled(enabled);
         this.binding.viewNightModeScheduledInfo.setEnabled(enabled);
         this.binding.viewNightModeLocationPermission.setVisibility(enabled ? GONE : VISIBLE);

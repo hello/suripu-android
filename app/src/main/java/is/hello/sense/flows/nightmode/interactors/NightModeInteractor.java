@@ -46,7 +46,7 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
         return Observable.just(getCurrentMode());
     }
 
-    private Integer getCurrentMode() {
+    public Integer getCurrentMode() {
         if(apiSessionManager.hasSession()) {
             return persistentPreferencesInteractor.getInt(getNightModePrefKey(),
                                                           getDefaultMode());
