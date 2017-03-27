@@ -26,9 +26,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.AppCompat"/>
 
-        <activity
-            android:name="is.hello.sense.debug.WelcomeDialogsActivity"/>
-
         <meta-data
             android:name="com.mixpanel.android.MPConfig.ResourcePackageName"
             android:value="is.hello.sense"/>

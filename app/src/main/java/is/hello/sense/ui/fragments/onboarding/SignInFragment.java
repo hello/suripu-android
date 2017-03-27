@@ -136,7 +136,7 @@ public class SignInFragment extends InjectionFragment
 
             Views.setSafeOnClickListener(selectHost, ignored -> {
                 try {
-                    startActivity(new Intent(getActivity(), Class.forName("is.hello.sense.debug.EnvironmentActivity")));
+                    startActivity(new Intent(getActivity(), Class.forName("is.hello.sense.debug_menu_ui.EnvironmentActivity")));
                 } catch (ClassNotFoundException e) {
                     Log.e(getClass().getSimpleName(), "Could not find environment activity", e);
                 }
