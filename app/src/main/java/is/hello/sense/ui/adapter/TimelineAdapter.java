@@ -504,10 +504,10 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
 
             if (event.hasSound()) {
                 if (isSegmentPlaybackActive(position)) {
-                    iconImage.setImageResource(R.drawable.timeline_event_stop);
+                    iconImage.setImageResource(R.drawable.icon_stop_circle_24);
                     iconImage.setContentDescription(context.getString(R.string.accessibility_event_stop));
                 } else {
-                    iconImage.setImageResource(R.drawable.timeline_event_play);
+                    iconImage.setImageResource(R.drawable.icon_play_circle_24);
                     iconImage.setContentDescription(context.getString(R.string.accessibility_event_play));
                 }
 

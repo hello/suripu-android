@@ -149,21 +149,21 @@ public class TimelineEvent extends ApiResponse {
 
     public enum Type implements Enums.FromString {
         IN_BED(0, 0),
-        GENERIC_MOTION(R.drawable.timeline_generic_motion, R.string.accessibility_event_name_generic_motion),
-        PARTNER_MOTION(R.drawable.icon_bed_move_partner_24, R.string.accessibility_event_name_partner_moved),
-        GENERIC_SOUND(R.drawable.timeline_sound, R.string.accessibility_event_name_noise),
-        SNORED(R.drawable.timeline_snored, R.string.accessibility_event_name_snoring),
-        SLEEP_TALKED(R.drawable.timeline_sound, R.string.accessibility_event_name_talk),
-        LIGHT(R.drawable.timeline_light, R.string.accessibility_event_name_light),
-        LIGHTS_OUT(R.drawable.timeline_lights_out, R.string.accessibility_event_name_lights_out),
-        SUNSET(R.drawable.timeline_sunset, R.string.accessibility_event_name_sunset),
-        SUNRISE(R.drawable.timeline_sunrise, R.string.accessibility_event_name_sunrise),
+        GENERIC_MOTION(R.drawable.icon_bed_move_24, R.string.accessibility_event_name_generic_motion),
+        PARTNER_MOTION(R.drawable.icon_bed_move_both_24, R.string.accessibility_event_name_both_moved),
+        GENERIC_SOUND(R.drawable.icon_noise_24, R.string.accessibility_event_name_noise),
+        SNORED(R.drawable.icon_snoring_24, R.string.accessibility_event_name_snoring),
+        SLEEP_TALKED(R.drawable.icon_noise_24, R.string.accessibility_event_name_talk),
+        LIGHT(R.drawable.icon_light_24, R.string.accessibility_event_name_light),
+        LIGHTS_OUT(R.drawable.icon_light_off_24, R.string.accessibility_event_name_lights_out),
+        SUNSET(R.drawable.icon_sunset_24, R.string.accessibility_event_name_sunset),
+        SUNRISE(R.drawable.icon_sunrise_24, R.string.accessibility_event_name_sunrise),
         GOT_IN_BED(R.drawable.icon_bed_in_24, R.string.accessibility_event_name_got_in_bed),
-        FELL_ASLEEP(R.drawable.timeline_fell_asleep, R.string.accessibility_event_name_fell_asleep),
+        FELL_ASLEEP(R.drawable.icon_sleep_24, R.string.accessibility_event_name_fell_asleep),
         GOT_OUT_OF_BED(R.drawable.icon_bed_out_24, R.string.accessibility_event_name_got_out_of_bed),
-        WOKE_UP(R.drawable.timeline_woke_up, R.string.accessibility_event_name_woke_up),
-        ALARM_RANG(R.drawable.timeline_alarm_rang, R.string.accessibility_event_name_alarm_rang),
-        UNKNOWN(R.drawable.timeline_unknown, R.string.accessibility_event_name_unknown);
+        WOKE_UP(R.drawable.icon_face_happy_24, R.string.accessibility_event_name_woke_up),
+        ALARM_RANG(R.drawable.icon_alarm_24, R.string.accessibility_event_name_alarm_rang),
+        UNKNOWN(R.drawable.icon_question_24, R.string.accessibility_event_name_unknown);
 
         public final @DrawableRes int iconDrawableRes;
         public final @StringRes int accessibilityStringRes;

@@ -107,6 +107,7 @@
     <color name="sleep_light">@color/blue6_10</color>
     <color name="sleep_medium">@color/blue6_15</color>
     <color name="sleep_sound">@color/blue6_20</color>
+    <color name="timeline_event_icon">@color/active_icon</color>
 
     <!-- Trends -->
     <color name="trends_line_divider">@color/divider</color>

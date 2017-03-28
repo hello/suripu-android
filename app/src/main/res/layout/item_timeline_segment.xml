@@ -35,7 +35,7 @@
             android:layout_centerVertical="true"
             android:layout_alignParentStart="true"
             android:importantForAccessibility="no"
-            android:tint="@color/primary_icon"
+            android:tint="@color/timeline_event_icon"
             android:padding="@dimen/x2"
             tools:src="@drawable/icon_bed_move_partner_24"/>
 
