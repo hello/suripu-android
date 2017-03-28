@@ -19,6 +19,12 @@
     <color name="background_overlay">@color/black_50</color>
     <color name="background_drawer">@color/gray8</color>
 
+    <!-- Icon colors -->
+    <color name="active_icon">@color/white</color>
+    <color name="disabled_icon">@color/white_50</color>
+    <color name="primary_icon">@color/primary</color>
+    <color name="destructive_icon">@color/error</color>
+
     <!-- Alert colors -->
     <color name="sensor_alert">@color/red6</color>
     <color name="sensor_warning">@color/yellow6</color>

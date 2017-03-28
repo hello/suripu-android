@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/action_bar_height"
                 android:background="@color/background_card">
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/view_sense_bar_left_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -14,7 +15,10 @@
         android:paddingBottom="@dimen/x1"
         android:paddingStart="@dimen/x3"
         android:paddingEnd="@dimen/x3"
-        android:background="@drawable/ripple_selector"/>
+        android:background="@drawable/ripple_selector"
+        android:tint="@color/active_icon"
+        tools:src="@drawable/icon_calendar_24"
+        />
 
     <TextView
         android:id="@+id/view_sense_bar_text"
@@ -25,7 +29,7 @@
         android:paddingEnd="@dimen/x2"
         android:paddingStart="@dimen/x2"/>
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/view_sense_bar_right_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -35,5 +39,8 @@
         android:paddingBottom="@dimen/x1"
         android:paddingStart="@dimen/x3"
         android:paddingEnd="@dimen/x3"
-        android:background="@drawable/ripple_selector"/>
+        android:background="@drawable/ripple_selector"
+        android:tint="@color/active_icon"
+        tools:src="@drawable/icon_share_24"
+        />
 </RelativeLayout>

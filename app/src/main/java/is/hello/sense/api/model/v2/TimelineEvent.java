@@ -150,7 +150,7 @@ public class TimelineEvent extends ApiResponse {
     public enum Type implements Enums.FromString {
         IN_BED(0, 0),
         GENERIC_MOTION(R.drawable.timeline_generic_motion, R.string.accessibility_event_name_generic_motion),
-        PARTNER_MOTION(R.drawable.timeline_partner, R.string.accessibility_event_name_partner_moved),
+        PARTNER_MOTION(R.drawable.icon_bed_move_partner_24, R.string.accessibility_event_name_partner_moved),
         GENERIC_SOUND(R.drawable.timeline_sound, R.string.accessibility_event_name_noise),
         SNORED(R.drawable.timeline_snored, R.string.accessibility_event_name_snoring),
         SLEEP_TALKED(R.drawable.timeline_sound, R.string.accessibility_event_name_talk),
@@ -158,9 +158,9 @@ public class TimelineEvent extends ApiResponse {
         LIGHTS_OUT(R.drawable.timeline_lights_out, R.string.accessibility_event_name_lights_out),
         SUNSET(R.drawable.timeline_sunset, R.string.accessibility_event_name_sunset),
         SUNRISE(R.drawable.timeline_sunrise, R.string.accessibility_event_name_sunrise),
-        GOT_IN_BED(R.drawable.timeline_got_in_bed, R.string.accessibility_event_name_got_in_bed),
+        GOT_IN_BED(R.drawable.icon_bed_in_24, R.string.accessibility_event_name_got_in_bed),
         FELL_ASLEEP(R.drawable.timeline_fell_asleep, R.string.accessibility_event_name_fell_asleep),
-        GOT_OUT_OF_BED(R.drawable.timeline_got_out_of_bed, R.string.accessibility_event_name_got_out_of_bed),
+        GOT_OUT_OF_BED(R.drawable.icon_bed_out_24, R.string.accessibility_event_name_got_out_of_bed),
         WOKE_UP(R.drawable.timeline_woke_up, R.string.accessibility_event_name_woke_up),
         ALARM_RANG(R.drawable.timeline_alarm_rang, R.string.accessibility_event_name_alarm_rang),
         UNKNOWN(R.drawable.timeline_unknown, R.string.accessibility_event_name_unknown);
