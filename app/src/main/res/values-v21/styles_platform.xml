@@ -18,7 +18,7 @@
     <style name="Platform.ActionBar.TabView" parent="android:Widget.Material.Light.ActionBar.TabView" />
     <style name="Platform.ActionBar.ButtonCloseMode" parent="android:Widget.Material.Light.ActionButton.CloseMode" />
     <style name="Platform.ActionBar.ButtonOverflow" parent="android:style/Widget.Material.ActionButton.Overflow" />
-    <style name="Platform.Dialog" parent="android:Theme.Material.Light.Dialog.MinWidth">
+    <style name="Platform.Dialog" parent="Theme.AppCompat.DayNight.Dialog.MinWidth">
         <item name="android:colorPrimary">@color/primary</item>
         <item name="android:colorPrimaryDark">@color/primary_darkened</item>
         <item name="android:colorAccent">@color/primary</item>
@@ -28,11 +28,7 @@
         <item name="android:popupElevation">0dp</item>
         <item name="android:windowElevation">0dp</item>
     </style>
-    <style name="Platform.Dialog.MinWidth" parent="android:Theme.Material.Light.Dialog.MinWidth">
-        <item name="android:colorPrimary">@color/primary</item>
-        <item name="android:colorPrimaryDark">@color/primary_darkened</item>
-        <item name="android:colorAccent">@color/primary</item>
-    </style>
+
     <style name="Platform.Spinner" parent="android:style/Widget.Holo.Light.Spinner">
         <item name="android:elevation">0dp</item>
     </style>

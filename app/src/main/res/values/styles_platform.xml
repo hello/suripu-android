@@ -16,8 +16,8 @@
     <style name="Platform.ActionBar.TabView" parent="android:Widget.Holo.Light.ActionBar.TabView" />
     <style name="Platform.ActionBar.ButtonCloseMode" parent="android:Widget.Holo.Light.ActionButton.CloseMode" />
     <style name="Platform.ActionBar.ButtonOverflow" parent="android:style/Widget.Holo.ActionButton.Overflow" />
-    <style name="Platform.Dialog" parent="android:Theme.Holo.Dialog.MinWidth" />
-    <style name="Platform.Dialog.MinWidth" parent="android:Theme.Holo.Dialog.MinWidth" />
+    <style name="Platform.Dialog" parent="Theme.AppCompat.DayNight.Dialog.MinWidth" />
+
     <style name="Platform.Dialog.NoElevation" />
     <style name="Platform.Spinner" parent="android:style/Widget.Holo.Light.Spinner" />
     <style name="Platform.Button" parent="android:Widget.Holo.Light.Button" />
