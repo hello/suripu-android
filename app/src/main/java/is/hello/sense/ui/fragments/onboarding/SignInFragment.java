@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.onboarding;
 
-import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -119,7 +117,7 @@ public class SignInFragment extends InjectionFragment
                          .setDark(true)
                          .replaceHelpButton(forgotPassword);
 
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG_SCREEN_ENABLED) {
             final LinearLayout content = (LinearLayout) view.findViewById(R.id.fragment_onboarding_sign_in_content);
 
             final Button selectHost = new Button(getActivity());
@@ -134,13 +132,7 @@ public class SignInFragment extends InjectionFragment
             final int padding = getResources().getDimensionPixelSize(R.dimen.x1);
             selectHost.setPadding(padding, padding, padding, padding);
 
-            Views.setSafeOnClickListener(selectHost, ignored -> {
-                try {
-                    startActivity(new Intent(getActivity(), Class.forName("is.hello.sense.debug_menu_ui.EnvironmentActivity")));
-                } catch (ClassNotFoundException e) {
-                    Log.e(getClass().getSimpleName(), "Could not find environment activity", e);
-                }
-            });
+            Views.setSafeOnClickListener(selectHost, ignored -> Distribution.showDebugEnvironment(getActivity()));
 
             final LinearLayout.LayoutParams layoutParams =
                     new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
