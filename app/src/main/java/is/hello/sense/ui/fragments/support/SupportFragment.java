@@ -52,7 +52,7 @@ public class SupportFragment extends SenseFragment {
         final SettingsRecyclerAdapter.DetailItem contactUs =
                 new SettingsRecyclerAdapter.DetailItem(getString(R.string.title_contact_us),
                                                        this::contactUs);
-        contactUs.setIcon(R.drawable.icon_settings_email_24, R.string.title_contact_us);
+        contactUs.setIcon(R.drawable.icon_mail_24, R.string.title_contact_us);
         adapter.add(contactUs);
 
         decoration.addBottomInset(adapter.getItemCount(), verticalPadding);
