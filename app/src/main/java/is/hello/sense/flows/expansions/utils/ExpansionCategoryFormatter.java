@@ -141,9 +141,9 @@ public class ExpansionCategoryFormatter {
     public int getDisplayIconRes(@NonNull final Category category) {
         switch (category) {
             case LIGHT:
-                return R.drawable.icon_alarm_light;
+                return R.drawable.icon_light_24;
             case TEMPERATURE:
-                return R.drawable.icon_alarm_thermostat;
+                return R.drawable.icon_thermostat_24;
             default:
                 return R.drawable.error_white;
         }

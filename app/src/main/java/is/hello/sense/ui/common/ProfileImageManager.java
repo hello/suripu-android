@@ -100,7 +100,7 @@ public class ProfileImageManager {
         deleteOption = new SenseBottomSheet.Option(OPTION_ID_REMOVE_PICTURE)
                 .setTitle(R.string.action_remove_picture)
                 .setTitleColor(ContextCompat.getColor(context, R.color.error_text))
-                .setIcon(R.drawable.icon_alarm_delete);
+                .setIcon(R.drawable.icon_trash_24);
     }
 
     public void showPictureOptions() {

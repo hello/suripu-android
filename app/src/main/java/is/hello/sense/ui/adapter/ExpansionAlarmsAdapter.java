@@ -63,12 +63,14 @@ public class ExpansionAlarmsAdapter extends ArrayRecyclerAdapter<ExpansionAlarm,
     }
 
     public class ExpansionAlarmViewHolder extends ArrayRecyclerAdapter.ViewHolder {
+        private final ImageView iconImageView;
         private final TextView categoryNameTextView;
         private final TextView valueTextView;
         private final ImageView errorImageView;
 
         public ExpansionAlarmViewHolder(final View itemView) {
             super(itemView);
+            this.iconImageView = (ImageView) itemView.findViewById(R.id.item_row_expansion_alarm_icon);
             this.categoryNameTextView = (TextView) itemView.findViewById(R.id.item_row_expansion_alarm_category);
             this.valueTextView = (TextView) itemView.findViewById(R.id.item_row_expansion_alarm_value);
             this.errorImageView = (ImageView) itemView.findViewById(R.id.item_row_expansion_alarm_error);
@@ -88,12 +90,8 @@ public class ExpansionAlarmsAdapter extends ArrayRecyclerAdapter<ExpansionAlarm,
             if(expansionAlarm != null) {
                 this.errorImageView.setVisibility(View.GONE);
                 this.valueTextView.setVisibility(View.VISIBLE);
-                this.categoryNameTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                                                               ContextCompat.getDrawable(itemView.getContext(),
-                                                                                         expansionAlarm.getDisplayIcon()),
-                                                               null,
-                                                               null,
-                                                               null);
+                this.iconImageView.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(),
+                                                                              expansionAlarm.getDisplayIcon()));
                 this.categoryNameTextView.setText(expansionAlarm.getCategory().categoryDisplayString);
                 this.valueTextView.setText(expansionAlarm.getDisplayValue());
             } else {
