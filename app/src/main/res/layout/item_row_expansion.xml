@@ -35,7 +35,7 @@
             android:layout_marginStart="@dimen/x.5"
             android:layout_centerVertical="true"
             android:drawablePadding="@dimen/x.5"
-            style="@style/Body1.Link"
+            style="@style/Body1.Secondary"
             tools:text="Status"/>
 
     </RelativeLayout>
