@@ -111,7 +111,7 @@
 
             <TextView
                 android:id="@+id/view_smart_alarm_detail_tone_name"
-                style="@style/Body1.Link"
+                style="@style/Body1.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/no_sound_placeholder" />
@@ -148,7 +148,7 @@
 
             <TextView
                 android:id="@+id/view_smart_alarm_detail_repeat_days"
-                style="@style/Body1.Link"
+                style="@style/Body1.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -199,7 +199,7 @@
 
                     <TextView
                         android:id="@+id/view_smart_alarm_detail_expansions_light_value"
-                        style="@style/Body1.Link"
+                        style="@style/Body1.Secondary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center_vertical"
@@ -263,7 +263,7 @@
 
                     <TextView
                         android:id="@+id/view_smart_alarm_detail_expansions_temp_value"
-                        style="@style/Body1.Link"
+                        style="@style/Body1.Secondary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center_vertical"
