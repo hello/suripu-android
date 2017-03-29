@@ -3,6 +3,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            xmlns:tools="http://schemas.android.com/tools"
             android:background="@color/background_card"
             android:fillViewport="true">
 
@@ -44,12 +45,17 @@
             android:paddingLeft="@dimen/x3"
             android:paddingRight="@dimen/x3">
 
+            <android.support.v7.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="@dimen/x2"
+                android:tint="@color/active_icon"
+                android:src="@drawable/icon_alarm_24"/>
+
             <TextView
                 style="@style/Body1.Primary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawablePadding="@dimen/x3"
-                android:drawableStart="@drawable/icon_alarm_smart"
                 android:gravity="start|center_vertical"
                 android:text="@string/title_smart_alarm"/>
 
@@ -87,20 +93,25 @@
             android:paddingLeft="@dimen/x3"
             android:paddingRight="@dimen/x3">
 
+            <android.support.v7.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="@dimen/x2"
+                android:tint="@color/active_icon"
+                android:src="@drawable/icon_sound_24"/>
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/x1"
                 android:layout_weight="1"
-                android:drawablePadding="@dimen/x3"
-                android:drawableStart="@drawable/icon_alarm_tone"
                 android:gravity="start|center_vertical"
                 android:text="@string/title_alarm_tone"
                 style="@style/Body1.Primary"/>
 
             <TextView
                 android:id="@+id/view_smart_alarm_detail_tone_name"
-                style="@style/Body1.Link"
+                style="@style/Body1.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/no_sound_placeholder" />
@@ -119,20 +130,25 @@
             android:paddingLeft="@dimen/x3"
             android:paddingRight="@dimen/x3">
 
+            <android.support.v7.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="@dimen/x2"
+                android:tint="@color/active_icon"
+                android:src="@drawable/icon_refresh_24"/>
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/x1"
                 android:layout_weight="1"
-                android:drawablePadding="@dimen/x3"
-                android:drawableStart="@drawable/icon_alarm_repeat"
                 android:gravity="start|center_vertical"
                 android:text="@string/title_alarm_repeat"
                 style="@style/Body1.Primary"/>
 
             <TextView
                 android:id="@+id/view_smart_alarm_detail_repeat_days"
-                style="@style/Body1.Link"
+                style="@style/Body1.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -145,7 +161,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <LinearLayout
                 android:id="@+id/view_smart_alarm_detail_expansions_light_container"
@@ -157,12 +174,13 @@
                 android:paddingEnd="@dimen/x3"
                 android:paddingStart="@dimen/x3">
 
-                <ImageView
+                <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/view_smart_alarm_detail_expansions_light_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingEnd="@dimen/x3"
-                    android:src="@drawable/icon_alarm_light"/>
+                    android:paddingEnd="@dimen/x2"
+                    android:tint="@color/active_icon"
+                    android:src="@drawable/icon_light_24"/>
 
                 <TextView
                     android:id="@+id/view_smart_alarm_detail_expansions_light_label"
@@ -181,7 +199,7 @@
 
                     <TextView
                         android:id="@+id/view_smart_alarm_detail_expansions_light_value"
-                        style="@style/Body1.Link"
+                        style="@style/Body1.Secondary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center_vertical"
@@ -220,12 +238,13 @@
                 android:paddingEnd="@dimen/x3"
                 android:paddingStart="@dimen/x3">
 
-                <ImageView
+                <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/view_smart_alarm_detail_expansions_temp_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingEnd="@dimen/x3"
-                    android:src="@drawable/icon_alarm_thermostat"/>
+                    android:paddingEnd="@dimen/x2"
+                    android:tint="@color/active_icon"
+                    android:src="@drawable/icon_thermostat_24"/>
 
                 <TextView
                     android:id="@+id/view_smart_alarm_detail_expansions_temp_label"
@@ -244,7 +263,7 @@
 
                     <TextView
                         android:id="@+id/view_smart_alarm_detail_expansions_temp_value"
-                        style="@style/Body1.Link"
+                        style="@style/Body1.Secondary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|center_vertical"
@@ -285,13 +304,18 @@
             android:paddingLeft="@dimen/x3"
             android:paddingRight="@dimen/x3">
 
+            <android.support.v7.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingEnd="@dimen/x2"
+                android:tint="@color/destructive_icon"
+                android:src="@drawable/icon_trash_24"/>
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/x1"
                 android:layout_weight="1"
-                android:drawablePadding="@dimen/x3"
-                android:drawableStart="@drawable/icon_alarm_delete"
                 android:gravity="start|center_vertical"
                 android:text="@string/label_delete_alarm"
                 android:textColor="@color/error_text"
