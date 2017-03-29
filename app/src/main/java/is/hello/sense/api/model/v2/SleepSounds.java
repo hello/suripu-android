@@ -53,7 +53,7 @@ public class SleepSounds extends ApiResponse implements IListObject, SleepSounds
 
     @Override
     public int getImageRes() {
-        return R.drawable.icon_alarm_tone;
+        return R.drawable.icon_sound_24;
     }
 
     @Override

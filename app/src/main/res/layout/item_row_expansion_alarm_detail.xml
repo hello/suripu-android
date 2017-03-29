@@ -8,7 +8,16 @@
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingEnd="@dimen/x3"
-    android:paddingStart="@dimen/x3">
+    android:paddingStart="@dimen/x3"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/item_row_expansion_alarm_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingEnd="@dimen/x2"
+        android:tint="@color/primary_text"
+        tools:src="@drawable/icon_thermostat_24"/>
 
     <TextView
         android:id="@+id/item_row_expansion_alarm_category"
@@ -17,8 +26,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="@dimen/x1"
-        android:drawablePadding="@dimen/x3"
-        android:drawableStart="@drawable/icon_alarm_light"
         android:gravity="start|center_vertical"/>
 
     <FrameLayout
