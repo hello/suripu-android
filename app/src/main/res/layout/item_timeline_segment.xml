@@ -25,15 +25,19 @@
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
             android:textAllCaps="true"
-            style="@style/Caption1.Hint" />
+            style="@style/Caption1.Hint"
+            tools:text="11:59 PM"/>
 
-        <ImageView
+        <android.support.v7.widget.AppCompatImageView
             android:id="@+id/item_timeline_segment_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentStart="true"
-            android:importantForAccessibility="no" />
+            android:importantForAccessibility="no"
+            android:tint="@color/timeline_event_icon"
+            android:padding="@dimen/x2"
+            tools:src="@drawable/icon_bed_move_partner_24"/>
 
         <TextView
             android:id="@+id/item_timeline_segment_message"
@@ -47,7 +51,8 @@
             android:layout_centerVertical="true"
             android:gravity="start|center_vertical"
             style="@style/Body1.Secondary"
-            android:maxLines="2" />
+            android:maxLines="2"
+            tools:text="@string/accessibility_event_name_partner_moved"/>
 
     </RelativeLayout>
 

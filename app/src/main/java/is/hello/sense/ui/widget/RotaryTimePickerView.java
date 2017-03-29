@@ -25,6 +25,7 @@ import java.text.DateFormatSymbols;
 import java.util.Calendar;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Styles;
 
 public class RotaryTimePickerView extends LinearLayout implements RotaryPickerView.OnSelectionListener {
     private static final int PERIOD_AM = Calendar.AM;
@@ -82,7 +83,7 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         addView(hourPicker, pickerLayoutParams);
 
         final TextView hourMinuteDivider = new TextView(context);
-        hourMinuteDivider.setTextAppearance(context, RotaryPickerView.ITEM_TEXT_APPEARANCE_FOCUSED);
+        Styles.setTextAppearance(hourMinuteDivider, RotaryPickerView.ITEM_TEXT_APPEARANCE_FOCUSED);
         hourMinuteDivider.setText(":");
         hourMinuteDivider.setIncludeFontPadding(false);
         final int hourMinuteDividerYFix = Math.round(resources.getDisplayMetrics().scaledDensity * 4f);

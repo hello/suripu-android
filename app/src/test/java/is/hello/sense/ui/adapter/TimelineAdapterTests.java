@@ -239,7 +239,7 @@ public class TimelineAdapterTests extends SenseTestCase {
         assertThat(holder.containerLayoutParams.topMargin, is(equalTo(0)));
         assertThat(holder.containerLayoutParams.bottomMargin, is(equalTo(0)));
 
-        assertThat(holder.iconImage.getDrawable(), is(equalTo(ResourcesCompat.getDrawable(getResources(), R.drawable.timeline_generic_motion, null))));
+        assertThat(holder.iconImage.getDrawable(), is(equalTo(ResourcesCompat.getDrawable(getResources(), R.drawable.icon_bed_move_24, null))));
     }
 
     @Test

@@ -4,8 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_dialog_welcome_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/fragment_dialog_welcome">
+    android:layout_height="match_parent">
 
     <is.hello.sense.ui.widget.PageDots
         android:id="@+id/fragment_dialog_welcome_page_dots"
