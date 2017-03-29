@@ -44,7 +44,7 @@ public class SleepDurations extends ApiResponse implements IListObject, SleepSou
     @Override
     public int getImageRes() {
         return R.drawable.sounds_duration_icon;
-    }
+    } //todo replace
 
     @Override
     public IListObject getListObject() {
