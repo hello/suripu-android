@@ -12,7 +12,6 @@ import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,6 +58,7 @@ import is.hello.sense.ui.widget.ProfileImageView;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Distribution;
 import is.hello.sense.util.EditorActionHandler;
 import retrofit.mime.TypedFile;
 import rx.Observable;
@@ -167,7 +167,7 @@ public class RegisterFragment extends InjectionFragment
 
         OnboardingToolbar.of(this, view).setWantsBackButton(true);
 
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG_SCREEN_ENABLED) {
             final Button selectHost = new Button(getActivity());
             Styles.setTextAppearance(selectHost, R.style.Button_Flat);
             selectHost.setBackgroundResource(R.drawable.selectable_dark_bounded);
@@ -180,13 +180,7 @@ public class RegisterFragment extends InjectionFragment
             final int padding = getResources().getDimensionPixelSize(R.dimen.x1);
             selectHost.setPadding(padding, padding, padding, padding);
 
-            Views.setSafeOnClickListener(selectHost, ignored -> {
-                try {
-                    startActivity(new Intent(getActivity(), Class.forName("is.hello.sense.debug.EnvironmentActivity")));
-                } catch (final ClassNotFoundException e) {
-                    Log.e(getClass().getSimpleName(), "Could not find environment activity", e);
-                }
-            });
+            Views.setSafeOnClickListener(selectHost, ignored -> Distribution.showDebugEnvironment(getActivity()));
 
             final LinearLayout.LayoutParams layoutParams =
                     new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,

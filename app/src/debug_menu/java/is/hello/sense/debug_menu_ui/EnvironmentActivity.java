@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -74,9 +75,7 @@ public class EnvironmentActivity extends ScopedInjectionAppCompatActivity
 
     @Override
     protected List<Object> getModules() {
-        final List<Object> mods = super.getModules();
-        mods.add(new DebugModule());
-        return mods;
+        return Arrays.asList(new DebugModule());
     }
 
     @Override
