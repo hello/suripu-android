@@ -120,7 +120,7 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
                                        @NonNull Runnable onClick) {
         final Context context = getActivity();
         final Resources resources = context.getResources();
-
+        //todo inflate @layout/item_settings_detail
         final TextView itemView = new TextView(context);
         itemView.setBackgroundResource(R.drawable.selectable_dark_bounded);
         itemView.setTextColor(ContextCompat.getColorStateList(getActivity(), R.color.primary_text_selector));

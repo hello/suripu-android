@@ -46,7 +46,7 @@ public class SupportFragment extends SenseFragment {
         final SettingsRecyclerAdapter.DetailItem userGuide =
                 new SettingsRecyclerAdapter.DetailItem(getString(R.string.action_user_guide),
                                                        this::showUserGuide);
-        userGuide.setIcon(R.drawable.icon_settings_user_guide, R.string.action_user_guide);
+        userGuide.setIcon(R.drawable.icon_user_guide_24, R.string.action_user_guide);
         adapter.add(userGuide);
 
         final SettingsRecyclerAdapter.DetailItem contactUs =
@@ -59,7 +59,7 @@ public class SupportFragment extends SenseFragment {
         final SettingsRecyclerAdapter.DetailItem myTickets =
                 new SettingsRecyclerAdapter.DetailItem(getString(R.string.title_my_tickets),
                                                        this::showMyTickets);
-        myTickets.setIcon(R.drawable.icon_settings_my_tickets, R.string.title_my_tickets);
+        myTickets.setIcon(R.drawable.icon_tickets_24, R.string.title_my_tickets);
         adapter.add(myTickets);
 
         recyclerView.setAdapter(adapter);

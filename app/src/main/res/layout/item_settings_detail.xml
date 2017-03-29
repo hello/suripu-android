@@ -15,7 +15,7 @@
             android:layout_marginStart="@dimen/x2"
             android:importantForAccessibility="no"
             android:tint="@color/settings_icon_fill_color"
-            tools:src="@drawable/icon_settings_advanced"/>
+            tools:src="@drawable/icon_advanced_24"/>
 
 
         <TextView

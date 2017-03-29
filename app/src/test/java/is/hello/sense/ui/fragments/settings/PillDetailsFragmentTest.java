@@ -35,7 +35,7 @@ public class PillDetailsFragmentTest extends SenseTestCase {
         doReturn(true).when(testPill).shouldUpdate();
 
         final PillDetailsFragment fragment = setUpWith(testPill);
-        verify(fragment).addDeviceAction(eq(R.drawable.icon_settings_update),
+        verify(fragment).addDeviceAction(eq(R.drawable.icon_refresh_24),
                                          eq(R.string.action_update_firmware),
                                          any());
     }
@@ -46,7 +46,7 @@ public class PillDetailsFragmentTest extends SenseTestCase {
         doReturn(true).when(testPill).hasRemovableBattery();
 
         final PillDetailsFragment fragment = setUpWith(testPill);
-        verify(fragment).addDeviceAction(eq(R.drawable.icon_settings_battery),
+        verify(fragment).addDeviceAction(eq(R.drawable.icon_battery_24),
                                          eq(R.string.action_replace_battery),
                                          any());
     }
