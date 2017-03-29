@@ -192,6 +192,10 @@
         <item name="android:textColor">@color/black</item>
     </style>
 
+    <style name="AppTheme.Dialog.FullScreen.Welcome">
+        <item name="android:windowBackground">@color/transparent_overlay</item>
+    </style>
+
     <style name="AppTheme.Dialog.BottomSheet" parent="Platform.Dialog.NoElevation">
         <item name="android:windowBackground">@color/background_card</item>
         <item name="android:windowNoTitle">true</item>

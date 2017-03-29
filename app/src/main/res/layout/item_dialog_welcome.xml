@@ -3,22 +3,25 @@
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:background="@color/background_card">
 
     <Button
         android:id="@+id/fragment_dialog_welcome_item_dismiss"
-        style="@style/Button.Raised"
+        style="@style/Button.Flat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:text="@string/action_done"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <View
         android:id="@+id/fragment_dialog_welcome_item_dismiss_border"
         style="@style/Divider.Horizontal"
         android:layout_above="@id/fragment_dialog_welcome_item_dismiss"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -44,7 +47,8 @@
                 android:id="@+id/fragment_dialog_welcome_item_diagram"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:ignore="ContentDescription"/>
+                tools:ignore="ContentDescription"
+                tools:src="@drawable/welcome_dialog_alarm"/>
 
             <TextView
                 android:id="@+id/fragment_dialog_welcome_item_title"
@@ -53,7 +57,8 @@
                 android:layout_marginLeft="@dimen/x3"
                 android:layout_marginRight="@dimen/x3"
                 android:layout_marginTop="@dimen/x3"
-                style="@style/Title2.Primary"/>
+                style="@style/Title2.Primary"
+                tools:text="@string/welcome_dialog_alarm_title"/>
 
             <TextView
                 android:id="@+id/fragment_dialog_welcome_item_message"
@@ -63,7 +68,8 @@
                 android:layout_marginLeft="@dimen/x3"
                 android:layout_marginRight="@dimen/x3"
                 android:layout_marginTop="@dimen/x2"
-                style="@style/Body1.Secondary"/>
+                style="@style/Body1.Secondary"
+                tools:text="@string/welcome_dialog_alarm"/>
 
             <Space
                 android:layout_width="match_parent"
