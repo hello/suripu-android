@@ -49,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingRight="@dimen/x2"
-                android:tint="@color/primary_text"
+                android:tint="@color/active_icon"
                 android:src="@drawable/icon_alarm_24"/>
 
             <TextView
@@ -97,7 +97,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingRight="@dimen/x2"
-                android:tint="@color/primary_text"
+                android:tint="@color/active_icon"
                 android:src="@drawable/icon_sound_24"/>
 
             <TextView
@@ -134,7 +134,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingRight="@dimen/x2"
-                android:tint="@color/primary_text"
+                android:tint="@color/active_icon"
                 android:src="@drawable/icon_refresh_24"/>
 
             <TextView
@@ -179,7 +179,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingEnd="@dimen/x2"
-                    android:tint="@color/primary_text"
+                    android:tint="@color/active_icon"
                     android:src="@drawable/icon_light_24"/>
 
                 <TextView
@@ -243,7 +243,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingEnd="@dimen/x2"
-                    android:tint="@color/primary_text"
+                    android:tint="@color/active_icon"
                     android:src="@drawable/icon_thermostat_24"/>
 
                 <TextView
@@ -308,7 +308,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingEnd="@dimen/x2"
-                android:tint="@color/primary_text"
+                android:tint="@color/destructive_icon"
                 android:src="@drawable/icon_trash_24"/>
 
             <TextView
