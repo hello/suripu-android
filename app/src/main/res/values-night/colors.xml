@@ -19,6 +19,12 @@
     <color name="background_overlay">@color/black_50</color>
     <color name="background_drawer">@color/gray8</color>
 
+    <!-- Icon colors -->
+    <color name="active_icon">@color/white</color>
+    <color name="disabled_icon">@color/white_50</color>
+    <color name="primary_icon">@color/primary</color>
+    <color name="destructive_icon">@color/error</color>
+
     <!-- Alert colors -->
     <color name="sensor_alert">@color/red6</color>
     <color name="sensor_warning">@color/yellow6</color>
@@ -101,6 +107,7 @@
     <color name="sleep_light">@color/blue6_10</color>
     <color name="sleep_medium">@color/blue6_15</color>
     <color name="sleep_sound">@color/blue6_20</color>
+    <color name="timeline_event_icon">@color/active_icon</color>
 
     <!-- Trends -->
     <color name="trends_line_divider">@color/divider</color>

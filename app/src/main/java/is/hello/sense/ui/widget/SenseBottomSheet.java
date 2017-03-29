@@ -126,12 +126,12 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
 
     //region Populating
 
-    protected void addViewForOption(@NonNull Option option) {
-        View optionView = inflater.inflate(R.layout.item_bottom_sheet_option, optionsContainer, false);
+    protected void addViewForOption(@NonNull final Option option) {
+        final View optionView = inflater.inflate(R.layout.item_bottom_sheet_option, optionsContainer, false);
 
-        TextView title = (TextView) optionView.findViewById(R.id.item_bottom_sheet_option_title);
-        TextView description = (TextView) optionView.findViewById(R.id.item_bottom_sheet_option_description);
-        ImageView imageIcon = (ImageView) optionView.findViewById(R.id.item_bottom_sheet_option_icon);
+        final TextView title = (TextView) optionView.findViewById(R.id.item_bottom_sheet_option_title);
+        final TextView description = (TextView) optionView.findViewById(R.id.item_bottom_sheet_option_description);
+        final ImageView imageIcon = (ImageView) optionView.findViewById(R.id.item_bottom_sheet_option_icon);
 
         if (option.iconRes != 0) {
             imageIcon.setVisibility(View.VISIBLE);
@@ -139,7 +139,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         }
 
         if (option.getTitle() != null) {
-            String itemTitle = option.getTitle().resolve(getContext());
+            final String itemTitle = option.getTitle().resolve(getContext());
             title.setText(itemTitle);
         } else{
             title.setVisibility(View.GONE);
@@ -150,7 +150,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         }
 
         if (option.getDescription() != null) {
-            String itemDescription = option.getDescription().resolve(getContext());
+            final String itemDescription = option.getDescription().resolve(getContext());
             description.setText(itemDescription);
         } else {
             description.setVisibility(View.GONE);
@@ -162,9 +162,9 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
             title.setEnabled(false);
             description.setEnabled(false);
 
-            Drawable icon = title.getCompoundDrawablesRelative()[0];
+            final Drawable icon = title.getCompoundDrawablesRelative()[0];
             if (icon != null) {
-                icon.setAlpha(0x77);
+                icon.setAlpha(0x77); //todo use disabled color white50?
             }
         }
 

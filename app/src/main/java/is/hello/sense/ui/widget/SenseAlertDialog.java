@@ -1,6 +1,5 @@
 package is.hello.sense.ui.widget;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -9,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatDialog;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
@@ -27,7 +27,7 @@ import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Logger;
 
-public class SenseAlertDialog extends Dialog {
+public class SenseAlertDialog extends AppCompatDialog {
     public static final int NO_TITLE_ID = 0;
     private final LinearLayout container;
 

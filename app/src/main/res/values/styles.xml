@@ -163,9 +163,9 @@
         <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Tiny</item>
     </style>
 
-    <style name="AppTheme.Dialog.Simple" parent="Platform.Dialog.MinWidth">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowBackground">@color/background_card</item>
+    <style name="AppTheme.Dialog.Simple">
+        <item name="windowNoTitle">true</item>
+        <item name="android:background">@color/background_card</item>
     </style>
 
     <style name="AppTheme.Dialog.List">

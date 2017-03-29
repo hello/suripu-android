@@ -4,17 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.RippleDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
 import android.os.Build;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -34,7 +28,6 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.ScoreCondition;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.ui.widget.SleepScoreDrawable;
-import is.hello.sense.ui.widget.util.Drawing;
 import is.hello.sense.util.SafeOnClickListener;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
@@ -55,6 +48,7 @@ public class TimelineHeaderView extends RelativeLayout {
 
     private final ViewGroup cardContainer;
     private final TextView cardContents;
+    private final TextView sleepSummary;
 
     private boolean hasAnimated = false;
     private boolean animationEnabled = true;
@@ -122,7 +116,7 @@ public class TimelineHeaderView extends RelativeLayout {
 
         this.cardContents = (TextView) cardContainer.findViewById(R.id.view_timeline_header_card_contents);
 
-
+        this.sleepSummary = (TextView) cardContainer.findViewById(R.id.view_timeline_header_card_title);
         setScoreClickEnabled(false);
     }
 
@@ -184,28 +178,22 @@ public class TimelineHeaderView extends RelativeLayout {
             final SafeOnClickListener wrapper = new SafeOnClickListener(null, listener);
             final boolean clickEnabled = isScoreClickEnabled();
             scoreContainer.setOnClickListener(wrapper);
-            cardContainer.setOnClickListener(wrapper);
+            sleepSummary.setOnClickListener(wrapper);
             setScoreClickEnabled(clickEnabled);
         } else {
             scoreContainer.setOnClickListener(null);
-            cardContainer.setOnClickListener(null);
+            sleepSummary.setOnClickListener(null);
             setScoreClickEnabled(false);
         }
     }
 
     public void setScoreClickEnabled(final boolean enabled) {
         scoreContainer.setClickable(enabled);
-        cardContainer.setClickable(enabled);
+        sleepSummary.setClickable(enabled);
     }
 
     public boolean isScoreClickEnabled() {
-        return scoreContainer.isClickable() && cardContainer.isClickable();
-    }
-
-    public
-    @IdRes
-    int getCardViewId() {
-        return cardContainer.getId();
+        return scoreContainer.isClickable() && sleepSummary.isClickable();
     }
 
     public void setBackgroundSolid(final boolean backgroundSolid,

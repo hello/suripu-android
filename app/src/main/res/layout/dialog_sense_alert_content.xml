@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent">
+       xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
         android:id="@+id/dialog_sense_alert_title"
@@ -12,7 +11,9 @@
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
         android:drawablePadding="@dimen/x2"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:text="Alert Title"/>
 
     <!-- Lollipop 5.0 doesn't honor textColorLink in styles,
          it has to be included here to render correctly. -->
@@ -28,7 +29,9 @@
         android:overScrollMode="ifContentScrolls"
         android:scrollbars="vertical"
         android:textColorLink="@color/link_text_selector"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:text="@string/lorem_ipsum"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -46,14 +49,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@android:string/cancel"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            tools:visibility="visible"/>
 
         <View
             android:id="@+id/dialog_sense_alert_vertical_divider"
             style="@style/Divider.Vertical"
             android:layout_marginBottom="@dimen/x.5"
             android:layout_marginTop="@dimen/x.5"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            tools:visibility="visible"/>
 
         <Button
             android:id="@+id/dialog_sense_alert_ok"
@@ -61,7 +66,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@android:string/ok"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            tools:visibility="visible"/>
 
 
     </LinearLayout>
