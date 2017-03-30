@@ -45,7 +45,10 @@ import is.hello.sense.zendesk.AttachmentPicker;
 import is.hello.sense.zendesk.TicketsInteractor;
 import rx.Observable;
 
-public class TicketSubmitFragment extends InjectionFragment implements TextWatcher, ImageUploadHelper.ImageUploadProgressListener, Permission.PermissionDialogResources {
+public class TicketSubmitFragment extends InjectionFragment
+        implements TextWatcher,
+        ImageUploadHelper.ImageUploadProgressListener,
+        Permission.PermissionDialogResources {
     private static final String ARG_SUPPORT_TOPIC = TicketSubmitFragment.class.getName() + ".ARG_SUPPORT_TOPIC";
 
     @Inject
