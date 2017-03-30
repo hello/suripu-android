@@ -53,6 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:src="@drawable/sound_preview_play"
+                android:tint="@color/active_icon"
                 android:visibility="invisible"
                 />
         </FrameLayout>

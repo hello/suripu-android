@@ -8,8 +8,6 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Singleton;
-
 import is.hello.sense.R;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
@@ -71,7 +69,7 @@ public class SleepSoundStatus extends ApiResponse implements IListObject, SleepS
 
     @Override
     public int getImageRes() {
-        return R.drawable.sounds_volume_icon;
+        return R.drawable.icon_volume_24;
     }
 
     @Override
