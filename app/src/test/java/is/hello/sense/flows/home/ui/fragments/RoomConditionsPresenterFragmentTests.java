@@ -1,13 +1,11 @@
 package is.hello.sense.flows.home.ui.fragments;
 
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 import is.hello.sense.FragmentTest;
 import is.hello.sense.R;
@@ -71,7 +69,7 @@ public class RoomConditionsPresenterFragmentTests extends FragmentTest<RoomCondi
         final SensorResponse sensorResponse = new SensorResponse(sensors, status);
         fragment.bindConditions(sensorResponse);
         assertEquals(1, fragment.adapter.getItemCount());
-        assertEquals(SensorResponseAdapter.VIEW_SENSE_MISSING, fragment.adapter.getItemViewType(0));
+        assertEquals(SensorResponseAdapter.VIEW_ID_MESSAGE, fragment.adapter.getItemViewType(0));
     }
 
     @Test

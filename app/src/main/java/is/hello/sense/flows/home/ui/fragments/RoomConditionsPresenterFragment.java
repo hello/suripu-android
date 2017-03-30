@@ -165,7 +165,7 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
                                    this::conditionsUnavailable);
                 break;
             case NO_SENSE:
-                adapter.showSenseMissingCard();
+                adapter.showSenseMissingCard(getActivity());
                 break;
             default:
         }
@@ -188,7 +188,7 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
                                         R.string.action_retry,
                                         ignored -> this.sensorResponseInteractor.update());
         } else if (ApiException.statusEquals(e, 404)) {
-            this.adapter.showSenseMissingCard();
+            this.adapter.showSenseMissingCard(getActivity());
         } else {
             final StringRef messageRef = Errors.getDisplayMessage(e);
             final String message = messageRef != null
