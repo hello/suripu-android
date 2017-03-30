@@ -218,20 +218,17 @@ public class SensorGraphDrawable extends Drawable {
         // draw off the screen but keep the height equal to the last drawn point. This makes it so the graph doesn't drop in height near the end.
         this.drawingPath.lineTo(maxWidth * this.scaleFactor, getValueHeight(values[drawTo]));
 
-        // Draw the darker colored stroke around the graph.
-        canvas.drawPath(this.drawingPath, this.strokePaint);
-
         // Now draw below the graph.
-        this.drawingPath.lineTo(width * this.scaleFactor, maxHeight);
+        this.drawingPath.lineTo(maxWidth * this.scaleFactor, maxHeight);
 
         // Connect back to the start so it fills nicely.
         this.drawingPath.lineTo(-maxWidth, maxHeight);
 
-        // Prevent gradient from drawing over stroke path
-        this.drawingPath.offset(0, STROKE_WIDTH);
-
         // Fill the graph with the light colored gradient.
         canvas.drawPath(this.drawingPath, this.gradientPaint);
+
+        // Draw the darker colored stroke around the graph.
+        canvas.drawPath(this.drawingPath, this.strokePaint);
 
         // Draw the min/max text and horizontal line.
         drawScale(canvas);
