@@ -68,8 +68,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_toEndOf="@+id/view_expansion_detail_configuration_type_tv"
-                android:drawableEnd="@drawable/icon_chevron_right_24"
-                android:drawablePadding="@dimen/x1"
                 android:ellipsize="end"
                 android:gravity="end"
                 android:visibility="gone"
