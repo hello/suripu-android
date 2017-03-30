@@ -40,6 +40,12 @@
     <!-- Misc -->
     <dimen name="action_bar_height">@dimen/x6</dimen>
 
+    <!-- Divider Dimens -->
+    <dimen name="divider_inset_large">@dimen/x3</dimen>
+    <dimen name="divider_inset">@dimen/x2</dimen>
+    <dimen name="divider_size">1dp</dimen>
+    <dimen name="divider_size_thick">1dp</dimen>
+
     <!-- Button Dimens -->
     <dimen name="button_height">@dimen/x6</dimen>
     <dimen name="button_inset">@dimen/x.1</dimen>
@@ -77,8 +83,7 @@
 
     <dimen name="shadow_size">3dp</dimen>
     <dimen name="bottom_line">1dp</dimen>
-    <dimen name="divider_size">1dp</dimen>
-    <dimen name="divider_size_thick">1dp</dimen>
+
 
     <dimen name="small_radius">2dp</dimen>
     <dimen name="medium_radius">3dp</dimen>
@@ -167,5 +172,6 @@
     <dimen name="dialog_bottom_max_height">400dp</dimen>
     <dimen name="volume_picker_min_size">40dp</dimen>
     <dimen name="smart_alarm_expansion_attribution_row_height">44dp</dimen>
+
 
 </resources>
