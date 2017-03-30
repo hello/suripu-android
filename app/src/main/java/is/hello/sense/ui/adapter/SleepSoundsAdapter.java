@@ -285,7 +285,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
         @Override
         void bind(final int position) {
-            this.image.setImageResource(R.drawable.illustration_no_sense);
+            this.image.setImageResource(R.drawable.empty_no_sense_paired);
             this.message.setText(R.string.error_sleep_sounds_requires_device);
             action.setText(R.string.action_pair_sense);
         }
