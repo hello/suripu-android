@@ -137,4 +137,5 @@
     <color name="voice_volume_normal_color">@color/gray3</color>
 
     <color name="settings_icon_fill_color">@color/gray4</color>
+    <color name="sensor_graph_gradient">@color/sensor_unknown</color>
 </resources>

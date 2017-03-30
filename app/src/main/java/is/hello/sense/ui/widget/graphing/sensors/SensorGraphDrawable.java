@@ -1,6 +1,7 @@
 package is.hello.sense.ui.widget.graphing.sensors;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -11,9 +12,11 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.ColorUtils;
 import android.text.TextPaint;
 
 import is.hello.sense.R;
@@ -35,14 +38,6 @@ public class SensorGraphDrawable extends Drawable {
      * Distance from left and right to draw from.
      */
     private static final float TEXT_X_POSITION_RATIO = .05f;
-    /**
-     * Alpha value for the top of the gradient used to draw the graph.
-     */
-    private static final int GRADIENT_TOP_ALPHA = 100;
-    /**
-     * Alpha value for the bottom of the gradient used to draw the graph.
-     */
-    private static final int GRADIENT_BOTTOM_ALPHA = 40;
     /**
      * Width of graph lines
      */
@@ -106,25 +101,39 @@ public class SensorGraphDrawable extends Drawable {
                                          .buildWithStyle()
                                          .toString();
         // Sizes
+        final Resources resources = context.getResources();
         this.height = height;
-        this.lineDistance = context.getResources().getDimensionPixelSize(R.dimen.sensor_line_distance);
+        this.lineDistance = resources.getDimensionPixelSize(R.dimen.sensor_line_distance);
         this.textPositionOffset = this.height * TEXT_Y_POSITION_RATIO;
         this.minHeight = (int) ((this.height * MIN_HEIGHT_RATIO));
         this.maxHeight = (int) (textPositionOffset + lineDistance);
 
         // Paints
+        @ColorInt
         final int strokeColor = ContextCompat.getColor(context, sensor.getColor());
+
+        @ColorInt
+        final int gradientColor;
+        if (resources.getBoolean(R.bool.sensor_graph_gradient_matches_stroke_color)) {
+            gradientColor = strokeColor;
+        } else {
+            gradientColor = ContextCompat.getColor(context, R.color.sensor_graph_gradient);
+        }
+        final int topGradientAlpha = resources.getInteger(R.integer.sensor_graph_gradient_top_alpha);
+        final int bottomGradientAlpha = resources.getInteger(R.integer.sensor_graph_gradient_bottom_alpha);
         this.gradientPaint.setShader(new LinearGradient(0, this.maxHeight, 0, this.height,
-                                                        Color.argb(GRADIENT_TOP_ALPHA, Color.red(strokeColor), Color.green(strokeColor), Color.blue(strokeColor)),
-                                                        Color.argb(GRADIENT_BOTTOM_ALPHA, Color.red(strokeColor), Color.green(strokeColor), Color.blue(strokeColor)),
+                                                        ColorUtils.setAlphaComponent(gradientColor, topGradientAlpha),
+                                                        ColorUtils.setAlphaComponent(gradientColor, bottomGradientAlpha),
                                                         Shader.TileMode.MIRROR));
         this.gradientPaint.setStyle(Paint.Style.FILL);
 
         this.strokePaint.setColor(strokeColor);
         this.strokePaint.setStyle(Paint.Style.STROKE);
         this.strokePaint.setStrokeWidth(STROKE_WIDTH);
+        this.strokePaint.setStrokeCap(Paint.Cap.ROUND);
+        this.strokePaint.setStrokeJoin(Paint.Join.ROUND);
 
-        this.linePaint.setColor(ContextCompat.getColor(context, R.color.gray3));
+        this.linePaint.setColor(ContextCompat.getColor(context, R.color.divider));
         this.linePaint.setStyle(Paint.Style.STROKE);
         this.linePaint.setStrokeWidth(LIMIT_LINE_WIDTH);
 
