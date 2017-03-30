@@ -5,9 +5,11 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
+import android.graphics.CornerPathEffect;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PathEffect;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.Shader;
@@ -54,6 +56,12 @@ public class SensorGraphDrawable extends Drawable {
      * Colored portion of scrubber.
      */
     private static final float SCRUBBER_INNER_RADIUS = 6;
+
+    private static final float EXTRA_OFF_SCREEN_PX = 100;
+    /**
+     * How rounded the corners joining adjacent points should be
+     */
+    private static final PathEffect CORNER_PATH_EFFECT = new CornerPathEffect(10);
 
     public static final int NO_LOCATION = -1;
 
@@ -132,6 +140,8 @@ public class SensorGraphDrawable extends Drawable {
         this.strokePaint.setStrokeWidth(STROKE_WIDTH);
         this.strokePaint.setStrokeCap(Paint.Cap.ROUND);
         this.strokePaint.setStrokeJoin(Paint.Join.ROUND);
+        this.strokePaint.setPathEffect(CORNER_PATH_EFFECT);
+        this.strokePaint.setDither(true);
 
         this.linePaint.setColor(ContextCompat.getColor(context, R.color.divider));
         this.linePaint.setStyle(Paint.Style.STROKE);
@@ -179,7 +189,7 @@ public class SensorGraphDrawable extends Drawable {
      * (0, canvas.getHeight())         (canvas.getWidth(), canvas.getHeight())
      */
     @Override
-    public void draw(final Canvas canvas) {
+    public void draw(@NonNull final Canvas canvas) {
         this.drawingPath.reset();
         final float[] values = this.sensor.getSensorValues();
         if (values == null || values.length == 0) {
@@ -187,6 +197,8 @@ public class SensorGraphDrawable extends Drawable {
         }
         // Cast once
         final float width = canvas.getWidth();
+        final float maxWidth = Math.min(width + EXTRA_OFF_SCREEN_PX, canvas.getMaximumBitmapWidth());
+        final float maxHeight = Math.min(this.height + EXTRA_OFF_SCREEN_PX, canvas.getMaximumBitmapHeight());
 
         // distance between each value point;
         final double xIncrement = width / values.length;
@@ -197,26 +209,29 @@ public class SensorGraphDrawable extends Drawable {
             drawTo = values.length - 1;
         }
         // start the line off the screen.
-        this.drawingPath.moveTo(-width, this.height * 2);
+        this.drawingPath.moveTo(-maxWidth, maxHeight);
 
         for (int i = 0; i < drawTo; i++) {
             this.drawingPath.lineTo((float) (i * xIncrement), getValueHeight(values[i]));
         }
 
         // draw off the screen but keep the height equal to the last drawn point. This makes it so the graph doesn't drop in height near the end.
-        this.drawingPath.lineTo(width * this.scaleFactor, getValueHeight(values[drawTo]));
+        this.drawingPath.lineTo(maxWidth * this.scaleFactor, getValueHeight(values[drawTo]));
+
+        // Draw the darker colored stroke around the graph.
+        canvas.drawPath(this.drawingPath, this.strokePaint);
 
         // Now draw below the graph.
-        this.drawingPath.lineTo((width) * this.scaleFactor, this.height * 2);
+        this.drawingPath.lineTo(width * this.scaleFactor, maxHeight);
 
         // Connect back to the start so it fills nicely.
-        this.drawingPath.lineTo(-width, this.height * 2);
+        this.drawingPath.lineTo(-maxWidth, maxHeight);
 
-        // First fill the graph with the light colored gradient.
+        // Prevent gradient from drawing over stroke path
+        this.drawingPath.offset(0, STROKE_WIDTH);
+
+        // Fill the graph with the light colored gradient.
         canvas.drawPath(this.drawingPath, this.gradientPaint);
-
-        // Now draw the darker colored stroke around the graph.
-        canvas.drawPath(this.drawingPath, this.strokePaint);
 
         // Draw the min/max text and horizontal line.
         drawScale(canvas);
