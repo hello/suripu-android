@@ -71,7 +71,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         this.contentRoot = (RelativeLayout) findViewById(R.id.dialog_bottom_sheet_content);
         this.optionsContainer = (LinearLayout) findViewById(R.id.dialog_bottom_sheet_options);
 
-        Drawable divider = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.divider_horizontal_inset, null);
+        Drawable divider = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.divider_horizontal_inset_large, null);
         optionsContainer.setDividerDrawable(divider);
 
         this.titleText = (TextView) findViewById(R.id.dialog_bottom_sheet_title);

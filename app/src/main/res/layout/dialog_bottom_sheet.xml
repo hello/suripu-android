@@ -45,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/dialog_bottom_sheet_message_divider"
-            android:divider="@drawable/divider_horizontal_inset"
+            android:divider="@drawable/divider_horizontal_inset_large"
             android:showDividers="middle" />
 
     </RelativeLayout>
