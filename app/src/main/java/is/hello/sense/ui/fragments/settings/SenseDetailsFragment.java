@@ -144,7 +144,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         setEnabled(pairingMode, false);
         this.changeWiFi = addDeviceAction(R.drawable.icon_wifi_24, R.string.action_select_wifi_network, this::changeWifiNetwork);
         setEnabled(changeWiFi, false);
-        addDeviceAction(R.drawable.icon_settings_timezone, R.string.action_change_time_zone, this::changeTimeZone);
+        addDeviceAction(R.drawable.icon_clock_24, R.string.action_change_time_zone, this::changeTimeZone);
         addDeviceAction(R.drawable.icon_advanced_24, R.string.title_advanced, this::showAdvancedOptions);
         showActions();
 
