@@ -43,6 +43,7 @@
 
     <style name="Button.Flat.Primary">
         <item name="android:background">@color/primary</item>
+        <item name="android:textColor">@color/white_text</item>
     </style>
 
     <style name="Button.Flat.Link">

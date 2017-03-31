@@ -121,8 +121,7 @@ public class SignInFragment extends InjectionFragment
             final LinearLayout content = (LinearLayout) view.findViewById(R.id.fragment_onboarding_sign_in_content);
 
             final Button selectHost = new Button(getActivity());
-            Styles.setTextAppearance(selectHost, R.style.Button_Flat);
-            selectHost.setBackgroundResource(R.drawable.selectable_dark_bounded);
+            selectHost.setTextColor(ContextCompat.getColor(getActivity(), R.color.white_text));
             selectHost.setGravity(Gravity.CENTER);
             final Observable<String> apiUrl =
                     preferences.observableString(DynamicApiEndpoint.PREF_API_ENDPOINT_OVERRIDE,

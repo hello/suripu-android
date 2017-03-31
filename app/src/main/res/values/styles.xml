@@ -45,15 +45,13 @@
         <item name="senseBackgroundSecondary">@color/background_card</item>
     </style>
 
-    <style name="AppTheme.Onboarding" parent="AppTheme.NoActionBar">
-        <item name="android:windowBackground">@color/onboarding_background</item>
-    </style>
 
     <style name="AppTheme.AppCompat.NoActionBar.Onboarding">
         <item name="android:windowBackground">@color/background_card</item>
-        <!-- Todo after complete app compat transition move to AppTheme.AppCompat.NoActionBar-->
-        <item name="colorButtonNormal">@color/sense_flat_button_normal</item>
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
+
+        <!-- Todo after complete app compat transition move to AppTheme.AppCompat.NoActionBar-->
+      <!--  <item name="colorButtonNormal">@color/sense_flat_button_normal</item>
 
         <item name="android:buttonStyle">@style/AppTheme.Button</item>
         <item name="android:imageButtonStyle">@style/AppTheme.Button.Borderless</item>
@@ -66,7 +64,7 @@
 
         <item name="android:listSelector">@drawable/selectable_dark_bounded</item>
         <item name="android:listDivider">@color/border</item>
-        <item name="android:dividerHeight">@dimen/divider_size</item>
+        <item name="android:dividerHeight">@dimen/divider_size</item>-->
     </style>
 
     <style name="AppTheme.Expansions" parent="AppTheme.AppCompat.AppSettingsActivity">
