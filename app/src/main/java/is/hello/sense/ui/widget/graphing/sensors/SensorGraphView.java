@@ -58,7 +58,8 @@ public class SensorGraphView extends View implements ValueAnimator.AnimatorUpdat
         if (this.graphDrawable == null) {
             return;
         }
-        this.graphDrawable.setScaleFactor(animation.getAnimatedFraction());
+        this.factor = animation.getAnimatedFraction();
+        this.graphDrawable.setScaleFactor(factor);
         this.graphDrawable.invalidateSelf();
     }
 
@@ -118,8 +119,8 @@ public class SensorGraphView extends View implements ValueAnimator.AnimatorUpdat
         if (!this.animator.isStarted()
                 && System.currentTimeMillis() - startTime < this.animator.getDuration()) {
             this.animator.start();
-        } else {
-            animator.end();
+        } else if (graphDrawable != null) {
+            this.graphDrawable.invalidateSelf();
         }
     }
 
