@@ -80,6 +80,10 @@
     <style name="Display4" parent="AppTheme.Text.Header.H1.Thin">
     </style>
 
+    <style name="Display4.Blue">
+        <item name="android:textColor">@color/primary</item>
+    </style>
+
     <style name="Headline" parent="AppTheme.Text.Header.H4">
 
     </style>
