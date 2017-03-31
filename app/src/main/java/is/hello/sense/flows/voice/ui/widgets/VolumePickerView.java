@@ -70,8 +70,8 @@ public class VolumePickerView extends LinearLayout {
 
         int initialValue = 0;
         this.minSegmentSize = context.getResources().getDimensionPixelSize(R.dimen.volume_picker_min_size);
-        this.normalTickColor = ContextCompat.getColor(context, R.color.voice_volume_normal_color);
-        this.emphasizedTickColor = ContextCompat.getColor(context, R.color.voice_volume_emphasized_color);
+        this.normalTickColor = ContextCompat.getColor(context, R.color.dim);
+        this.emphasizedTickColor = ContextCompat.getColor(context, R.color.primary);
         this.defaultTickSize = getResources().getDimensionPixelSize(R.dimen.scale_view_tick);
         if (attrs != null) {
             initialValue = takeStateFromAttributes(attrs, defStyleAttr);

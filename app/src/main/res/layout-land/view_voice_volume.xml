@@ -12,7 +12,7 @@
         android:id="@+id/view_voice_volume_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/AppTheme.Text.VolumePicker.Title"
+        style="@style/Title2.Primary"
         android:text="@string/voice_select_volume"/>
 
     <TextView
@@ -57,8 +57,7 @@
             android:layout_gravity="center_horizontal|center_vertical"
             android:paddingEnd="@dimen/x4"
             android:gravity="center"
-            style="@style/Display4"
-            android:textColor="@color/voice_volume_emphasized_color"/>
+            style="@style/Display4.Blue"/>
     </LinearLayout>
 
     <android.support.v4.widget.Space
