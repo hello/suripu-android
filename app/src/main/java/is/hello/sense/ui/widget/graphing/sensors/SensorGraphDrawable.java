@@ -196,15 +196,14 @@ public class SensorGraphDrawable extends Drawable {
             return;
         }
         // Cast once
-        final float width = canvas.getWidth();
-        final float maxWidth = Math.min(width + EXTRA_OFF_SCREEN_PX, canvas.getMaximumBitmapWidth());
+        final float maxWidth = Math.min(canvas.getWidth() + EXTRA_OFF_SCREEN_PX, canvas.getMaximumBitmapWidth());
         final float maxHeight = Math.min(this.height + EXTRA_OFF_SCREEN_PX, canvas.getMaximumBitmapHeight());
 
         // distance between each value point;
-        final double xIncrement = width / values.length;
+        final double xIncrement = maxWidth / values.length;
 
         // determine how many values to draw for a smooth animation effect
-        int drawTo = (int) ((this.scaleFactor * width) / xIncrement);
+        int drawTo = (int) ((this.scaleFactor * maxWidth) / xIncrement);
         if (drawTo >= values.length) {
             drawTo = values.length - 1;
         }
