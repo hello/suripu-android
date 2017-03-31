@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -280,7 +279,7 @@ public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAla
         } else if (ApiException.statusEquals(e, 412)) {
             message = new SmartAlarmAdapter.Message(0,
                                                     StringRef.from(R.string.error_smart_alarm_requires_device));
-            message.titleIconRes = R.drawable.illustration_no_sense;
+            message.titleIconRes = R.drawable.empty_no_sense_paired;
             message.actionRes = R.string.action_pair_sense;
             message.onClickListener = ignored -> startActivity(OnboardingActivity.getPairOnlyIntent(getActivity()));
         } else {

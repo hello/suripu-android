@@ -27,7 +27,6 @@
 
             <EditText
                 android:id="@+id/view_search_list_search"
-                style="@style/EditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
