@@ -10,7 +10,6 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.StateListDrawable;
@@ -519,6 +518,14 @@ public final class Styles {
         final Drawable wrapDrawable = DrawableCompat.wrap(normalDrawable);
         DrawableCompat.setTint(wrapDrawable, ContextCompat.getColor(context, color));
         item.setIcon(wrapDrawable);
+    }
+
+    public static Drawable tintDrawable(@NonNull final Context context,
+                                        @DrawableRes final int drawableRes,
+                                        @ColorRes final int colorRes) {
+        final Drawable drawable = DrawableCompat.wrap(ContextCompat.getDrawable(context, drawableRes));
+        DrawableCompat.setTint(drawable, ContextCompat.getColor(context, colorRes));
+        return drawable;
     }
 
     public static Spanned fromHtml(@NonNull final String string) {

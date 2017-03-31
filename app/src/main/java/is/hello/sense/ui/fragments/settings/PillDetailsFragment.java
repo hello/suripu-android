@@ -62,12 +62,12 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
         showActions();
 
         if(shouldShowUpdateFirmwareAction()){
-            addDeviceAction(R.drawable.icon_settings_update, R.string.action_update_firmware, this::updateFirmware);
+            addDeviceAction(R.drawable.icon_refresh_24, R.string.action_update_firmware, this::updateFirmware);
         }
         if (shouldShowReplaceBatteryAction()) {
-            addDeviceAction(R.drawable.icon_settings_battery, R.string.action_replace_battery, this::replaceBattery);
+            addDeviceAction(R.drawable.icon_battery_24, R.string.action_replace_battery, this::replaceBattery);
         }
-        addDeviceAction(R.drawable.icon_settings_advanced, R.string.title_advanced, this::showAdvancedOptions);
+        addDeviceAction(R.drawable.icon_advanced_24, R.string.title_advanced, this::showAdvancedOptions);
 
         if (device.hasLowBattery()) {
             final TroubleshootingAlert alert = new TroubleshootingAlert()

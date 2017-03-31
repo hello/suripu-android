@@ -115,16 +115,19 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
         actionsContainer.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * todo refactor to use recyclerview and adapter pattern instead in future release
+     */
     protected TextView addDeviceAction(@DrawableRes int iconRes,
                                        @StringRes int titleRes,
                                        @NonNull Runnable onClick) {
         final Context context = getActivity();
         final Resources resources = context.getResources();
-
         final TextView itemView = new TextView(context);
         itemView.setBackgroundResource(R.drawable.selectable_dark_bounded);
         itemView.setTextColor(ContextCompat.getColorStateList(getActivity(), R.color.primary_text_selector));
-        itemView.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
+        itemView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                Styles.tintDrawable(context, iconRes, R.color.active_icon), null, null, null);
         itemView.setText(titleRes);
 
         final int itemTextHorizontalPadding = resources.getDimensionPixelSize(R.dimen.x3);

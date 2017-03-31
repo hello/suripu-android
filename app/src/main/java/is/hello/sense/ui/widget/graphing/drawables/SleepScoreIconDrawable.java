@@ -26,7 +26,6 @@ public class SleepScoreIconDrawable extends Drawable {
     private static final float TEXT_MARGIN_RATIO = .5f;
 
     private final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-    private final Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final int height;
@@ -36,12 +35,11 @@ public class SleepScoreIconDrawable extends Drawable {
 
     private SleepScoreIconDrawable(@NonNull final Builder builder) {
         final Context context = builder.context;
-        final int selectedColor = ContextCompat.getColor(context, R.color.blue6);
-        final int unselectedColor = ContextCompat.getColor(context, R.color.gray4);
-        final int fillColor = ContextCompat.getColor(context, R.color.blue2);
+        final int selectedColor = ContextCompat.getColor(context, R.color.primary_icon);
+        final int unselectedColor = ContextCompat.getColor(context, R.color.active_icon);
+        final int fillColor = ContextCompat.getColor(context, R.color.sleep_score_icon_fill);
         final int backgroundColor = ContextCompat.getColor(context, R.color.background_card);
 
-        this.backgroundPaint.setColor(backgroundColor);
         this.width = builder.width;
         this.height = builder.height;
         this.text = builder.text;
@@ -72,7 +70,6 @@ public class SleepScoreIconDrawable extends Drawable {
 
     @Override
     public void draw(final Canvas canvas) {
-        canvas.drawColor(this.backgroundPaint.getColor());
         final int centerX = canvas.getWidth() / 2;
         final int centerY = canvas.getHeight() / 2;
         final int radius;
@@ -87,25 +84,18 @@ public class SleepScoreIconDrawable extends Drawable {
 
     }
 
-
-    /**
-     * This does nothing
-     *
-     * @param alpha
-     */
     @Override
     public void setAlpha(final int alpha) {
-
+        this.circlePaint.setAlpha(alpha);
+        this.fillPaint.setAlpha(alpha);
+        this.textPaint.setAlpha(alpha);
     }
 
-    /**
-     * This does nothing
-     *
-     * @param colorFilter
-     */
     @Override
     public void setColorFilter(final ColorFilter colorFilter) {
-
+        this.circlePaint.setColorFilter(colorFilter);
+        this.fillPaint.setColorFilter(colorFilter);
+        this.textPaint.setColorFilter(colorFilter);
     }
 
     /**

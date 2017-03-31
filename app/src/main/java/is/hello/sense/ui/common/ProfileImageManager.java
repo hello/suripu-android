@@ -85,7 +85,7 @@ public class ProfileImageManager {
                     new SenseBottomSheet.Option(OPTION_ID_FROM_CAMERA)
                             .setTitle(R.string.action_take_photo)
                             .setTitleColor(ContextCompat.getColor(context, R.color.primary_text))
-                            .setIcon(R.drawable.settings_camera)
+                            .setIcon(R.drawable.icon_camera_24)
                        );
             minOptions = 3;
         } else {
