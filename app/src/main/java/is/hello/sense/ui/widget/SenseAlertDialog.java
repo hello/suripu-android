@@ -118,6 +118,16 @@ public class SenseAlertDialog extends AppCompatDialog {
         }
     }
 
+    private void updateButtonDivider() {
+        final boolean hasMultipleButtonText =
+                (negativeButton.getVisibility() == View.VISIBLE && positiveButton.getVisibility() == View.VISIBLE);
+        if (hasMultipleButtonText) {
+            verticalDivider.setVisibility(View.VISIBLE);
+        } else {
+            verticalDivider.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     public void setTitle(@Nullable final CharSequence title) {
         super.setTitle(title);
@@ -193,6 +203,8 @@ public class SenseAlertDialog extends AppCompatDialog {
             positiveButton.setVisibility(View.GONE);
         }
 
+        updateButtonDivider();
+
     }
 
     public void setPositiveButton(@StringRes final int titleId, @Nullable final OnClickListener onClickListener) {
@@ -207,12 +219,12 @@ public class SenseAlertDialog extends AppCompatDialog {
         if (title != null) {
             negativeButton.setVisibility(View.VISIBLE);
             negativeButton.setText(title);
-            verticalDivider.setVisibility(View.VISIBLE);
             Views.setSafeOnClickListener(negativeButton, createClickListener(onClickListener, DialogInterface.BUTTON_NEGATIVE));
         } else {
             negativeButton.setVisibility(View.GONE);
-            verticalDivider.setVisibility(View.GONE);
         }
+
+        updateButtonDivider();
 
     }
 
