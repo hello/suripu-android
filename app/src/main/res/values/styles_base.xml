@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- The following define empirical names of our styles. They should not be used directly. They
-         should be referenced in styles_text.xml with a proper design 'term'. The design term is
+         should be referenced in styles_text_typography.xml with a proper design 'term'. The design term is
          what should be used with your views. -->
     <style name="AppTheme.Text" parent="android:TextAppearance">
         <item name="android:textColorLink">@color/link_text_selector</item>
