@@ -254,10 +254,6 @@
         <item name="android:background">@drawable/selectable_dark_bounded</item>
     </style>
 
-    <style name="AppTheme.Button.Borderless.Question.Choice">
-        <item name="android:textColor">@color/link_text_selector</item>
-    </style>
-
     <style name="AppTheme.Button.Rounded">
         <item name="android:minHeight">@dimen/button_height</item>
         <item name="android:background">@drawable/sense_raised_button_selector</item>
