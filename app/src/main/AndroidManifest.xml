@@ -136,12 +136,12 @@
             android:name=".flows.expansions.ui.activities.ExpansionSettingsActivity"
             android:label="@string/expansion_list_title"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"
-            android:theme="@style/AppTheme.Expansions"/>
+            android:theme="@style/AppTheme.AppCompat.Expansions"/>
         <activity
             android:name=".flows.voice.ui.activities.VoiceSettingsActivity"
             android:label="@string/voice_settings_title"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"
-            android:theme="@style/AppTheme.Expansions"/>
+            android:theme="@style/AppTheme.AppCompat.Expansions"/>
         <activity
             android:name=".flows.voicecommands.ui.activities.VoiceCommandActivity"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"
@@ -159,17 +159,18 @@
             android:theme="@style/AppTheme.AppCompat.SearchListActivity">
         </activity>
 
-        <activity android:name=".flows.nightmode.ui.activities.NightModeActivity"
-                  android:label="@string/action_night_mode"
-                  android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
-                  android:theme="@style/AppTheme.AppCompat.NightModeActivity"
+        <activity
+            android:name=".flows.nightmode.ui.activities.NightModeActivity"
+            android:label="@string/action_night_mode"
+            android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
+            android:theme="@style/AppTheme.AppCompat.NightModeActivity"
             />
 
 
         <activity
             android:name=".flows.expansions.ui.activities.ExpansionValuePickerActivity"
             android:parentActivityName=".flows.smartalarm.ui.activities.SmartAlarmDetailActivity"
-            android:theme="@style/AppTheme.Expansions"/>
+            android:theme="@style/AppTheme.AppCompat.Expansions"/>
         <activity
             android:name="com.facebook.FacebookActivity"
             xmlns:tools="http://schemas.android.com/tools"
