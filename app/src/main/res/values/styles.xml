@@ -16,7 +16,7 @@
 
         <item name="android:buttonStyle">@style/Button.Raised</item>
         <item name="android:editTextStyle">@style/AppTheme.Text.EditText</item>
-        <item name="android:alertDialogStyle">@style/AppTheme.Dialog</item>
+        <item name="android:alertDialogStyle">@style/Dialog</item>
         <item name="android:spinnerStyle">@style/AppTheme.Spinner</item>
         <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
         <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Tiny</item>
@@ -59,22 +59,22 @@
 
     <!-- Dialogs -->
 
-    <style name="AppTheme.Dialog" parent="Platform.Dialog">
+    <style name="Dialog" parent="Platform.Dialog">
         <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
         <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Tiny</item>
     </style>
 
-    <style name="AppTheme.Dialog.Simple">
+    <style name="Dialog.Simple">
         <item name="windowNoTitle">true</item>
         <item name="android:background">@color/background_card</item>
     </style>
 
-    <style name="AppTheme.Dialog.List">
+    <style name="Dialog.List">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@color/transparent</item>
     </style>
 
-    <style name="AppTheme.Dialog.FullScreen">
+    <style name="Dialog.FullScreen">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">@color/transparent</item>
@@ -83,21 +83,15 @@
         </item>
     </style>
 
-    <style name="AppTheme.Dialog.FullScreen.Insight">
-        <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
-        </item>
+    <style name="Dialog.Loading" parent="Dialog.FullScreen">
+        <item name="android:textColor">@color/primary_text</item>
     </style>
 
-    <style name="AppTheme.Dialog.Loading" parent="AppTheme.Dialog.FullScreen">
-        <item name="android:textColor">@color/black</item>
-    </style>
-
-    <style name="AppTheme.Dialog.FullScreen.Welcome">
+    <style name="Dialog.FullScreen.Welcome">
         <item name="android:windowBackground">@color/transparent_overlay</item>
     </style>
 
-    <style name="AppTheme.Dialog.BottomSheet" parent="Platform.Dialog.NoElevation">
+    <style name="Dialog.BottomSheet" parent="Platform.Dialog.NoElevation">
         <item name="android:windowBackground">@color/background_card</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimations.BottomSlide</item>
@@ -107,16 +101,11 @@
         <item name="android:paddingBottom">0dp</item>
     </style>
 
-    <style name="AppTheme.Dialog.BottomAlert" parent="AppTheme.Dialog.BottomSheet">
+    <style name="Dialog.BottomAlert" parent="Dialog.BottomSheet">
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
     <style name="WindowAnimations" parent="android:style/Animation"/>
-
-    <style name="WindowAnimations.FadeOut">
-        <item name="android:windowEnterAnimation">@null</item>
-        <item name="android:windowExitAnimation">@anim/anime_fade_out</item>
-    </style>
 
     <style name="WindowAnimations.Fade">
         <item name="android:windowEnterAnimation">@anim/anime_fade_in</item>

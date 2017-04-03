@@ -45,7 +45,7 @@ public class SenseAlertDialog extends AppCompatDialog {
 
     @Deprecated // todo make private
     public SenseAlertDialog(@NonNull final Context context) {
-        this(context, R.style.AppTheme_Dialog_Simple);
+        this(context, R.style.Dialog_Simple);
     }
 
     @Deprecated // todo make private
@@ -75,7 +75,7 @@ public class SenseAlertDialog extends AppCompatDialog {
      */
     public static SenseAlertDialog newBottomSheetInstance(@NonNull final Context context) {
         final SenseAlertDialog dialog = new SenseAlertDialog(context,
-                                                             R.style.AppTheme_Dialog_BottomSheet,
+                                                             R.style.Dialog_BottomSheet,
                                                              R.layout.dialog_sense_bottom_sheet);
         final Window window = dialog.getWindow();
         window.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
