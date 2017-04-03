@@ -16,7 +16,7 @@
 
         <android.support.design.widget.TabLayout
             android:id="@+id/view_view_pager_tab_layout"
-            style="@style/AppTheme.AppCompat.NoActionBar.TabLayout"
+            style="@style/AppTheme.NoActionBar.TabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"/>
@@ -25,7 +25,7 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/view_view_pager_fab"
-        style="@style/AppTheme.AppCompat.Fab"
+        style="@style/AppTheme.Fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

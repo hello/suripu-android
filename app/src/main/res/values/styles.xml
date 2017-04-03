@@ -5,7 +5,7 @@
 
 
 
-    <style name="AppTheme.AppCompat.NoActionBar.Onboarding">
+    <style name="AppTheme.NoActionBar.Onboarding">
         <item name="android:windowBackground">@color/background_card</item>
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
     </style>
@@ -156,27 +156,27 @@
 
     <!-- Other -->
 
-    <style name="AppTheme.AppCompat.Card">
+    <style name="AppTheme.Card">
         <item name="android:background">@color/background_card</item>
         <item name="android:gravity">start|center_vertical</item>
         <item name="senseCornerRadius">@dimen/small_radius</item>
     </style>
 
-    <style name="AppTheme.AppCompat.LargeCard">
+    <style name="AppTheme.LargeCard">
         <item name="senseCornerRadius">@dimen/medium_radius</item>
     </style>
 
-    <style name="AppTheme.AppCompat.Card.Clickable">
+    <style name="AppTheme.Card.Clickable">
         <item name="android:background">@color/background_card</item> <!-- todo show ripple -->
     </style>
 
-    <style name="AppTheme.AppCompat.Card.VerticalPaddingItem">
+    <style name="AppTheme.Card.VerticalPaddingItem">
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:paddingTop">@dimen/x2</item>
         <item name="android:paddingBottom">@dimen/x2</item>
     </style>
 
-    <style name="AppTheme.Card.Item" parent="AppTheme.AppCompat.Card.VerticalPaddingItem">
+    <style name="AppTheme.Card.Item" parent="AppTheme.Card.VerticalPaddingItem">
         <item name="android:paddingLeft">@dimen/x2</item>
         <item name="android:paddingRight">@dimen/x2</item>
     </style>
@@ -239,7 +239,7 @@
 
     <!-- AppCompat Themes
     (mainly for use with https://developer.android.com/topic/libraries/support-library/features.html#design) -->
-    <style name="AppTheme.AppCompat" parent="Theme.AppCompat.Light">
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/primary</item>
         <!-- Dark variant of the primary branding color. By default, this is the color applied to
          the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
@@ -259,7 +259,7 @@
         <item name="colorSwitchThumbNormal">@color/primary</item>
         <!-- Inactive track color(75% transparency) -->
         <item name="android:windowBackground">@color/background</item>
-        <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
+        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
 
         <item name="senseTextAppearanceHeading">@style/Title2.Primary
         </item> <!-- todo confirm this doesn't break something -->
@@ -288,7 +288,7 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
-    <style name="AppTheme.AppCompat.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <!-- Dark variant of the primary branding color. By default, this is the color applied to
          the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
@@ -308,7 +308,7 @@
         <item name="colorSwitchThumbNormal">@color/primary</item>
         <!-- Inactive track color(75% transparency) -->
         <item name="android:windowBackground">@color/background</item>
-        <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
+        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
         <item name="senseTextAppearanceHeading">@style/Title2.Primary
         </item> <!-- todo confirm this doesn't break something -->
         <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
@@ -321,7 +321,7 @@
         <item name="editTextStyle">@style/EditText</item>
     </style>
 
-    <style name="AppTheme.AppCompat.ProgressBar" parent="Widget.AppCompat.ProgressBar">
+    <style name="AppTheme.ProgressBar" parent="Widget.AppCompat.ProgressBar">
         <item name="android:indeterminateOnly">true</item>
         <item name="android:indeterminateDrawable">@drawable/animated_progress_bar</item>
         <item name="android:indeterminateDuration">1000</item>
@@ -331,7 +331,7 @@
         <item name="android:maxHeight">55dp</item>
     </style>
 
-    <style name="AppTheme.AppCompat.NoActionBar.TabLayout" parent="Widget.Design.TabLayout">
+    <style name="AppTheme.NoActionBar.TabLayout" parent="Widget.Design.TabLayout">
         <item name="tabBackground">@color/background_card</item>
         <item name="android:textAllCaps">true</item>
         <item name="tabSelectedTextColor">@color/tablayout_focused</item>
@@ -342,43 +342,43 @@
         <item name="tabMaxWidth">0dp</item>
     </style>
 
-    <style name="AppTheme.AppCompat.NoActionBar.BottomBar" parent="AppTheme.AppCompat.NoActionBar.TabLayout">
+    <style name="AppTheme.NoActionBar.BottomBar" parent="AppTheme.NoActionBar.TabLayout">
         <item name="android:minHeight">@dimen/action_bar_height</item>
         <item name="tabIndicatorColor">@color/background_card</item>
         <item name="tabIndicatorHeight">0dp</item>
         <item name="android:layout_gravity">bottom</item>
     </style>
 
-    <style name="AppTheme.AppCompat.Fab" parent="Widget.Design.FloatingActionButton">
+    <style name="AppTheme.Fab" parent="Widget.Design.FloatingActionButton">
         <item name="backgroundTint">@color/primary</item>
     </style>
 
-    <style name="AppTheme.AppCompat.AppSettingsActivity">
+    <style name="AppTheme.AppSettingsActivity">
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/primary_darkened
         </item>
         <item name="android:windowBackground">@color/background_card</item>
     </style>
 
-    <style name="AppTheme.AppCompat.Expansions" parent="AppTheme.AppCompat.AppSettingsActivity">
+    <style name="AppTheme.Expansions" parent="AppTheme.AppSettingsActivity">
         <item name="android:windowBackground">@color/expansions_background</item>
     </style>
 
-    <style name="AppTheme.AppCompat.NoActionBar.VideoPlayer">
+    <style name="AppTheme.NoActionBar.VideoPlayer">
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/black</item>
     </style>
 
-    <style name="AppTheme.AppCompat.NotificationActivity" parent="AppTheme.AppCompat.AppSettingsActivity">
+    <style name="AppTheme.NotificationActivity" parent="AppTheme.AppSettingsActivity">
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_cancel</item>
         <item name="homeAsUpIndicator">@drawable/app_style_ab_cancel</item>
     </style>
 
-    <style name="AppTheme.AppCompat.SearchListActivity">
+    <style name="AppTheme.SearchListActivity">
         <item name="android:statusBarColor" tools:targetApi="lollipop">
             @color/primary_darkened
         </item>
     </style>
 
-    <style name="AppTheme.AppCompat.NightModeActivity" parent="AppTheme.AppCompat.AppSettingsActivity">
+    <style name="AppTheme.NightModeActivity" parent="AppTheme.AppSettingsActivity">
     </style>
 
 </resources>

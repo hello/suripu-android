@@ -4,7 +4,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        style="@style/AppTheme.AppCompat.Card">
+        style="@style/AppTheme.Card">
 
         <include android:id="@+id/item_welcome_card"
             layout="@layout/item_welcome_card"/>
