@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="Platform" />
-    <style name="Platform.Dialog" parent="Theme.AppCompat.DayNight.Dialog.MinWidth">
-        <item name="android:colorPrimary">@color/primary</item>
-        <item name="android:colorPrimaryDark">@color/primary_darkened</item>
-        <item name="android:colorAccent">@color/primary</item>
-    </style>
-</resources>
