@@ -226,7 +226,7 @@
         <item name="android:paddingRight">@dimen/x2</item>
     </style>
 
-    <style name="AppTheme.FadingScrollView">
+    <style name="FadingScrollView">
         <item name="android:fillViewport">true</item>
         <item name="android:fadingEdge">vertical</item>
         <item name="android:requiresFadingEdge">vertical</item>
