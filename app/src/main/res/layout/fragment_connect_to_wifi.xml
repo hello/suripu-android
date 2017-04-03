@@ -60,8 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:gravity="end|center_vertical"
-            style="@style/AppTheme.Spinner.Borderless"/>
+            android:gravity="end|center_vertical"/>
 
     </RelativeLayout>
 

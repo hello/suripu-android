@@ -2,7 +2,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Platform" />
     <style name="Platform.Light" parent="android:Theme.Holo.Light">
-        <item name="android:actionBarItemBackground">@drawable/app_theme_selectable_background</item>
         <item name="android:listChoiceIndicatorMultiple">@drawable/holo_check_selector</item>
     </style>
     <style name="Platform.Light.NoActionBar">
