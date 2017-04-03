@@ -4,7 +4,6 @@
     <style name="Platform.Dialog" parent="Theme.AppCompat.DayNight.Dialog.MinWidth" />
 
     <style name="Platform.Dialog.NoElevation" />
-    <style name="Platform.Spinner" parent="android:style/Widget.Holo.Light.Spinner" />
     <style name="Platform.EditText" parent="android:Widget.Holo.Light.EditText" />
 
     <style name="Platform.DayNight" parent="Theme.AppCompat.DayNight">
