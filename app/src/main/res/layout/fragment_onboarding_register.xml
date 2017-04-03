@@ -47,7 +47,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    style="@style/AppTheme.Facebook"/>
+                    style="@style/Facebook"/>
 
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/fragment_onboarding_register_import_facebook_info_button"

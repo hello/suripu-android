@@ -20,7 +20,7 @@
         android:orientation="horizontal">
 
         <RadioButton
-            style="@style/AppTheme.RadioButton"
+            style="@style/RadioButton"
             android:id="@+id/item_section_radio_button_left"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
             android:padding="@dimen/x1"/>
 
         <RadioButton
-            style="@style/AppTheme.RadioButton"
+            style="@style/RadioButton"
             android:id="@+id/item_section_radio_button_right"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
