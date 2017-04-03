@@ -6,7 +6,4 @@
         <item name="android:colorPrimaryDark">@color/primary_darkened</item>
         <item name="android:colorAccent">@color/primary</item>
     </style>
-    <style name="Platform.EditText" parent="android:Widget.Material.Light.EditText">
-        <item name="android:elevation">0dp</item>
-    </style>
 </resources>

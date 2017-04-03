@@ -121,7 +121,7 @@
 
     <!-- EditText -->
 
-    <style name="EditText" parent="Platform.EditText">
+    <style name="EditText" parent="Widget.AppCompat.EditText">
 
         <item name="android:paddingTop">@dimen/x1</item>
         <item name="android:paddingBottom">@dimen/x1</item>
@@ -133,6 +133,7 @@
         <item name="android:textColor">@color/primary_text_selector</item>
         <item name="android:textColorHint">@color/hint_text</item>
         <item name="android:textSize">@dimen/text_body</item>
+        <item name="android:elevation">0dp</item>
     </style>
 
     <!-- Specific Tinting -->

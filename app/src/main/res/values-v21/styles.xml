@@ -48,4 +48,16 @@
         <item name="android:popupElevation">0dp</item>
         <item name="android:windowElevation">0dp</item>
     </style>
+
+    <style name="EditText" parent="Widget.AppCompat.EditText">
+        <item name="android:paddingTop">@dimen/x1</item>
+        <item name="android:paddingBottom">@dimen/x1</item>
+        <item name="android:paddingLeft">@dimen/x.25</item>
+        <item name="android:paddingRight">@dimen/x.25</item>
+        <item name="android:background">@drawable/edit_text_background_selector</item>
+        <item name="android:textAppearance">@style/Body1.Primary</item>
+        <item name="android:textColor">@color/primary_text_selector</item>
+        <item name="android:textColorHint">@color/hint_text</item>
+        <item name="android:textSize">@dimen/text_body</item>
+    </style>
 </resources>
