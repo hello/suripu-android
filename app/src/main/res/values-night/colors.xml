@@ -104,9 +104,9 @@
 
     <!-- Timeline Sleep colors -->
     <color name="sleep_awake">@color/transparent</color>
-    <color name="sleep_light">@color/blue6_10</color>
-    <color name="sleep_medium">@color/blue6_15</color>
-    <color name="sleep_sound">@color/blue6_20</color>
+    <color name="sleep_light">@color/blue6_15</color>
+    <color name="sleep_medium">@color/blue6_25</color>
+    <color name="sleep_sound">@color/blue6_40</color>
     <color name="timeline_event_icon">@color/active_icon</color>
 
     <!-- Trends -->
@@ -133,9 +133,7 @@
     <color name="view_scale_tick_normal">@color/gray2</color>
     <color name="view_scale_tick_emphasized">@color/gray3</color>
 
-    <color name="voice_volume_emphasized_color">@color/blue6</color>
-    <color name="voice_volume_normal_color">@color/gray3</color>
-
-    <color name="settings_icon_fill_color">@color/gray4</color>
+    <color name="settings_icon_fill_color">@color/active_icon</color>
+    <color name="sleep_score_icon_fill">@color/background_card</color>
     <color name="sensor_graph_gradient">@color/white_12</color>
 </resources>

@@ -45,15 +45,13 @@
         <item name="senseBackgroundSecondary">@color/background_card</item>
     </style>
 
-    <style name="AppTheme.Onboarding" parent="AppTheme.NoActionBar">
-        <item name="android:windowBackground">@color/onboarding_background</item>
-    </style>
 
     <style name="AppTheme.AppCompat.NoActionBar.Onboarding">
         <item name="android:windowBackground">@color/background_card</item>
-        <!-- Todo after complete app compat transition move to AppTheme.AppCompat.NoActionBar-->
-        <item name="colorButtonNormal">@color/sense_flat_button_normal</item>
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
+
+        <!-- Todo after complete app compat transition move to AppTheme.AppCompat.NoActionBar-->
+      <!--  <item name="colorButtonNormal">@color/sense_flat_button_normal</item>
 
         <item name="android:buttonStyle">@style/AppTheme.Button</item>
         <item name="android:imageButtonStyle">@style/AppTheme.Button.Borderless</item>
@@ -66,7 +64,7 @@
 
         <item name="android:listSelector">@drawable/selectable_dark_bounded</item>
         <item name="android:listDivider">@color/border</item>
-        <item name="android:dividerHeight">@dimen/divider_size</item>
+        <item name="android:dividerHeight">@dimen/divider_size</item>-->
     </style>
 
     <style name="AppTheme.Expansions" parent="AppTheme.AppCompat.AppSettingsActivity">
@@ -198,7 +196,7 @@
 
     <style name="AppTheme.Dialog.BottomSheet" parent="Platform.Dialog.NoElevation">
         <item name="android:windowBackground">@color/background_card</item>
-        <item name="android:windowNoTitle">true</item>
+        <item name="windowNoTitle">true</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimations.BottomSlide</item>
         <item name="android:paddingTop">0dp</item>
         <item name="android:paddingLeft">0dp</item>
@@ -358,19 +356,6 @@
     </style>
 
     <!-- EditText -->
-    <!-- todo confirm this is needed -->
-    <style name="EditText" parent="Platform.EditText">
-        <item name="android:paddingTop">@dimen/x1</item>
-        <item name="android:paddingBottom">@dimen/x1</item>
-        <item name="android:paddingLeft">@dimen/x.25</item>
-        <item name="android:paddingRight">@dimen/x.25</item>
-
-        <item name="android:background">@drawable/edit_text_background_selector</item>
-        <item name="android:textAppearance">@style/Body1.Primary</item>
-        <item name="android:minHeight">@dimen/text_body_line_height</item>
-        <item name="android:textColor">@color/primary_text_selector</item>
-        <item name="android:textColorHint">@color/hint_text</item>
-    </style>
 
     <style name="AppTheme.Text.EditText" parent="Platform.EditText">
         <item name="android:minHeight">@dimen/edit_text_min_height</item>
@@ -383,13 +368,12 @@
         <item name="android:background">@drawable/edit_text_background_selector</item>
         <item name="android:textAppearance">@style/Body1.Primary</item>
         <item name="android:textColor">@color/primary_text_selector</item>
+        <item name="android:textColorHint">@color/hint_text</item>
     </style>
 
     <style name="AppTheme.Text.EditText.Onboarding">
         <item name="android:textSize">@dimen/text_body</item>
         <item name="android:minHeight">@dimen/text_body_line_height</item>
-        <item name="android:textAppearance">@style/Body1.Primary</item>
-        <item name="android:textColor">@color/primary_text_selector</item>
     </style>
 
     <!-- Specific Tinting -->
@@ -436,13 +420,6 @@
         <item name="android:fadingEdge">vertical</item>
         <item name="android:requiresFadingEdge">vertical</item>
         <item name="android:fadingEdgeLength">@dimen/shadow_size</item>
-    </style>
-
-    <style name="AppTheme.Text.VolumePicker.Title" parent="AppTheme.Text.Header.H5">
-    </style>
-
-    <style name="AppTheme.Text.VolumePicker.SelectedValue" parent="AppTheme.Text.Header.H1.Thin">
-
     </style>
 
     <!-- Progress Bars -->
@@ -532,6 +509,8 @@
         <item name="actionMenuTextColor">@color/white</item>
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
         <item name="homeAsUpIndicator">@drawable/app_style_ab_up</item>
+
+        <item name="editTextStyle">@style/AppTheme.Text.EditText</item>
     </style>
 
     <style name="ActionBar" parent="@style/Widget.AppCompat.ActionBar.Solid">
@@ -572,6 +551,8 @@
 
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
         </item>
+
+        <item name="editTextStyle">@style/AppTheme.Text.EditText</item>
     </style>
 
     <style name="AppTheme.AppCompat.ProgressBar" parent="Widget.AppCompat.ProgressBar">

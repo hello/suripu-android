@@ -43,6 +43,7 @@
 
     <style name="Button.Flat.Primary">
         <item name="android:background">@color/primary</item>
+        <item name="android:textColor">@color/white_text</item>
     </style>
 
     <style name="Button.Flat.Link">
@@ -78,6 +79,10 @@
     </style>
 
     <style name="Display4" parent="AppTheme.Text.Header.H1.Thin">
+    </style>
+
+    <style name="Display4.Blue">
+        <item name="android:textColor">@color/primary</item>
     </style>
 
     <style name="Headline" parent="AppTheme.Text.Header.H4">

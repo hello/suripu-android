@@ -15,6 +15,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:fillViewport="true"
+        android:scrollbars="none"
         android:orientation="vertical">
 
         <LinearLayout
@@ -48,12 +49,13 @@
                     android:layout_centerHorizontal="true"
                     style="@style/AppTheme.Button.Facebook"/>
 
-                <ImageButton
+                <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/fragment_onboarding_register_import_facebook_info_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/x1"
                     android:src="@drawable/info_button_icon_small_grey"
-                    android:layout_toRightOf="@+id/fragment_onboarding_register_import_facebook_button"
+                    android:layout_toEndOf="@+id/fragment_onboarding_register_import_facebook_button"
                     android:layout_centerVertical="true"/>
 
             </RelativeLayout>

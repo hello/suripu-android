@@ -1,15 +1,15 @@
 package is.hello.sense.ui.widget;
 
 import android.content.Context;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.EditText;
 
 import is.hello.sense.R;
 
-public class PasswordEditText extends EditText
+public class PasswordEditText extends AppCompatEditText
         implements View.OnTouchListener, View.OnFocusChangeListener{
     private final static int HIDDEN_INPUT_TYPE = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD;
     private final static int VISIBLE_INPUT_TYPE = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;

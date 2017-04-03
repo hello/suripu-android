@@ -60,7 +60,7 @@ public class AttachmentPicker {
 
         chooseSource.addOption(new SenseBottomSheet.Option(0)
                 .setTitle(R.string.action_take_photo)
-                .setIcon(R.drawable.settings_camera));
+                .setIcon(R.drawable.icon_camera_24));
         chooseSource.addOption(new SenseBottomSheet.Option(1)
                 .setTitle(R.string.action_pick_image)
                 .setIcon(R.drawable.settings_photo_library));

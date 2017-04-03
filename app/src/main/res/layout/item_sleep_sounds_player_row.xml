@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<is.hello.sense.ui.widget.RoundedRelativeLayout
+    android:id="@+id/item_sleep_sounds_sound_holder"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:paddingBottom="@dimen/x2"
+    android:paddingTop="@dimen/x2">
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/item_sleep_sounds_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/x2"
+        android:layout_marginRight="@dimen/x2"
+        android:tint="@color/active_icon"
+        tools:src="@drawable/icon_alarm_24"/>
+
+    <TextView
+        android:id="@+id/item_sleep_sounds_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/x1"
+        android:layout_toEndOf="@+id/item_sleep_sounds_image"
+        style="@style/Body1.Primary"
+        tools:text="Duration"/>
+
+    <TextView
+        android:id="@+id/item_sleep_sounds_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/x3"
+        style="@style/Body1.Secondary"
+        tools:text="30 minutes"/>
+</is.hello.sense.ui.widget.RoundedRelativeLayout>

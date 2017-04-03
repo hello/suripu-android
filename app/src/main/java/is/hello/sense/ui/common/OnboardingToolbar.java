@@ -11,6 +11,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatImageView;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +31,8 @@ public class OnboardingToolbar {
     private Fragment fragment;
     private final FrameLayout toolbarView;
 
-    private final ImageButton backButton;
-    private final ImageButton helpButton;
+    private final AppCompatImageView backButton;
+    private final AppCompatImageView helpButton;
     @ColorInt
     private final int iconPrimaryColor;
     private
@@ -61,17 +62,11 @@ public class OnboardingToolbar {
         this.toolbarView = (FrameLayout) toolbarView;
 
         final Context context = fragment.getActivity();
-        this.backButton = (ImageButton) toolbarView.findViewById(R.id.sub_fragment_onboarding_toolbar_back);
-        final Drawable backIcon = backButton.getDrawable().mutate();
+        this.backButton = (AppCompatImageView) toolbarView.findViewById(R.id.sub_fragment_onboarding_toolbar_back);
         this.iconPrimaryColor = ContextCompat.getColor(context, R.color.onboarding_icon_tint);
-        Drawables.setTintColor(backIcon, this.iconPrimaryColor);
-        backButton.setImageDrawable(backIcon);
         Views.setSafeOnClickListener(backButton, this::onBack);
 
-        this.helpButton = (ImageButton) toolbarView.findViewById(R.id.sub_fragment_onboarding_toolbar_help);
-        final Drawable helpIcon = helpButton.getDrawable().mutate();
-        Drawables.setTintColor(helpIcon, this.iconPrimaryColor);
-        helpButton.setImageDrawable(helpIcon);
+        this.helpButton = (AppCompatImageView) toolbarView.findViewById(R.id.sub_fragment_onboarding_toolbar_help);
         Views.setSafeOnClickListener(helpButton, this::onHelp);
         helpButton.setOnLongClickListener(this::onHelpLongClick);
 

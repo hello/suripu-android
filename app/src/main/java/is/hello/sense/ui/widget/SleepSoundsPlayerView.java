@@ -225,7 +225,7 @@ public class SleepSoundsPlayerView extends LinearLayout implements SleepSoundsAd
 
         public SleepSoundsPlayerRow(final @NonNull Context context, final @NonNull ISleepSoundsPlayerRowItem item) {
             super(context);
-            this.holder = inflateView(R.layout.item_sleep_sounds);  // todo change view name
+            this.holder = inflateView(R.layout.item_sleep_sounds_player_row);
             this.image = (ImageView) holder.findViewById(R.id.item_sleep_sounds_image);
             this.label = (TextView) holder.findViewById(R.id.item_sleep_sounds_label);
             this.value = (TextView) holder.findViewById(R.id.item_sleep_sounds_value);
