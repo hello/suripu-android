@@ -11,7 +11,6 @@
         <item name="android:dropDownListViewStyle">@style/AppTheme.DropDownListView</item>
         <item name="android:actionBarTabStyle">@style/AppTheme.ActionBarTabStyle</item>
         <item name="android:actionDropDownStyle">@style/AppTheme.DropDownNav</item>
-        <item name="android:actionBarStyle">@style/AppTheme.ActionBar.Solid</item>
         <item name="android:actionModeBackground">@drawable/app_theme_cab_background_top</item>
         <item name="android:actionModeSplitBackground">@drawable/app_theme_cab_background_bottom
         </item>
@@ -73,16 +72,6 @@
     <!-- Action Bar -->
 
     <style name="AppTheme.ActionBar" parent="Platform.ActionBar"/>
-
-    <style name="AppTheme.ActionBar.Solid">
-        <item name="android:background">@color/primary</item>
-        <item name="android:backgroundStacked">@color/primary</item>
-        <item name="android:backgroundSplit">@color/primary</item>
-        <item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
-        <item name="android:icon">@android:color/transparent</item>
-        <item name="android:titleTextStyle">@style/AppTheme.Text.ActionTitle</item>
-        <item name="android:subtitleTextStyle">@style/AppTheme.Text.ActionSubtitle</item>
-    </style>
 
     <style name="AppTheme.Text.ActionTitle">
         <item name="android:textSize">@dimen/text_h5</item>
