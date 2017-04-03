@@ -67,8 +67,6 @@
     <string name="error_room_conditions_unavailable">There was a problem displaying your sensor data. Please try again.</string>
     <string name="error_room_conditions_no_sense">You don‘t currently have a Sense connected to your account. Please pair with Sense to view current conditions.</string>
 
-    <string name="sensor_history_message_error">Could not load graph.</string>
-
     <string name="dialog_error_title">Error</string>
     <string name="dialog_error_generic_message">An unknown error has occurred.</string>
     <string name="dialog_loading_message">Loading…</string>
@@ -93,7 +91,6 @@
     <string name="error_account_password_insecure">Please enter a stronger password.</string>
     <string name="error_account_password_too_short">Passwords must be at least 6 characters.</string>
     <string name="error_account_invalid_credentials">The email address or password you entered is incorrect.</string>
-    <string name="error_account_incomplete_credentials">Please enter your email address and password.</string>
     <string name="error_mismatching_new_passwords">The passwords you entered do not match.</string>
     <string name="error_message_current_pw_wrong">The current password you entered is incorrect.</string>
     <string name="error_link_account_failed_multiple_times">Your account could not be linked with Sense. You can try changing the WiFi Sense is configured to.</string>
