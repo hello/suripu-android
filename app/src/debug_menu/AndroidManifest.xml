@@ -12,7 +12,7 @@
             android:name="is.hello.sense.ui.activities.DebugActivity"
             android:label="@string/activity_debug"
             android:launchMode="singleTop"
-            android:theme="@style/Platform.DayNight"/>
+            android:theme="@style/AppTheme"/>
 
         <activity
             android:name="net.hockeyapp.android.UpdateActivity"/>
