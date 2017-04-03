@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/primary</item>
+        <!-- Dark variant of the primary branding color. By default, this is the color applied to
+         the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
+        <item name="colorPrimaryDark">@color/primary</item>
+        <!-- Bright complement to the primary branding color. By default, this is the color applied
+         to framework controls (via colorControlActivated). -->
+        <item name="colorAccent">@color/primary</item>
+        <!-- The color applied to framework controls in their normal state. -->
+        <item name="colorControlNormal">@color/primary</item>
+        <!-- The color applied to framework controls in their activated (ex. checked) state. -->
+        <item name="colorControlActivated">@color/primary</item>
+        <!-- The color applied to framework control highlights (ex. ripples, list selectors). -->
+        <item name="colorControlHighlight">@color/primary</item>
+        <!-- The color applied to framework buttons in their normal state. -->
+        <item name="colorButtonNormal">@color/primary</item>
+        <!-- The color applied to framework switch thumbs in their normal state. -->
+        <item name="colorSwitchThumbNormal">@color/primary</item>
+        <!-- Inactive track color(75% transparency) -->
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
+
+        <item name="senseTextAppearanceHeading">@style/Title2.Primary
+        </item> <!-- todo confirm this doesn't break something -->
+        <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
+        <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
+        <item name="senseBackgroundSecondary">@color/background_card</item>
+
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
+        </item>
+        <!-- remove actionbar elevation for kitkat and older -->
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="actionBarStyle">@style/ActionBar</item>
+        <item name="actionMenuTextColor">@color/white</item>
+        <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
+        <item name="homeAsUpIndicator">@drawable/app_style_ab_up</item>
+
+        <item name="editTextStyle">@style/EditText</item>
+    </style>
+
+
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <!-- Dark variant of the primary branding color. By default, this is the color applied to
+         the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
+        <item name="colorPrimaryDark">@color/primary</item>
+        <!-- Bright complement to the primary branding color. By default, this is the color applied
+         to framework controls (via colorControlActivated). -->
+        <item name="colorAccent">@color/primary</item>
+        <!-- The color applied to framework controls in their normal state. -->
+        <item name="colorControlNormal">@color/primary</item>
+        <!-- The color applied to framework controls in their activated (ex. checked) state. -->
+        <item name="colorControlActivated">@color/primary</item>
+        <!-- The color applied to framework control highlights (ex. ripples, list selectors). -->
+        <item name="colorControlHighlight">@color/primary</item>
+        <!-- The color applied to framework buttons in their normal state. -->
+        <item name="colorButtonNormal">@color/primary</item>
+        <!-- The color applied to framework switch thumbs in their normal state. -->
+        <item name="colorSwitchThumbNormal">@color/primary</item>
+        <!-- Inactive track color(75% transparency) -->
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
+        <item name="senseTextAppearanceHeading">@style/Title2.Primary
+        </item> <!-- todo confirm this doesn't break something -->
+        <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
+        <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
+        <item name="senseBackgroundSecondary">@color/background_card</item>
+
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
+        </item>
+
+        <item name="editTextStyle">@style/EditText</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.Onboarding">
+        <item name="android:windowBackground">@color/background_card</item>
+        <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
+    </style>
+
+
+</resources>
