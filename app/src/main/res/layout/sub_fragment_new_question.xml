@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <is.hello.sense.ui.widget.RoundedLinearLayout
     android:id="@+id/sub_fragment_new_question"
-    style="@style/AppTheme.Card"
+    style="@style/AppTheme.AppCompat.Card"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

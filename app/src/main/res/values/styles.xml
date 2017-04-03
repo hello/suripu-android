@@ -2,57 +2,12 @@
 
     <!-- Themes -->
 
-    <style name="AppTheme" parent="Platform.Light">
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowBackground">@color/background</item>
-        <item name="android:textAppearance">@style/AppTheme.Text</item>
 
-        <item name="android:actionModeBackground">@drawable/app_theme_cab_background_top</item>
-        <item name="android:actionModeSplitBackground">@drawable/app_theme_cab_background_bottom
-        </item>
-        <item name="android:actionMenuTextColor">@color/white</item>
-        <item name="android:actionBarSize">@dimen/action_bar_height</item>
-        <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
-
-        <item name="android:buttonStyle">@style/Button.Raised</item>
-        <item name="android:editTextStyle">@style/EditText</item>
-        <item name="android:alertDialogStyle">@style/Dialog</item>
-        <item name="android:progressBarStyle">@style/ProgressBar</item>
-        <item name="android:progressBarStyleSmall">@style/ProgressBar.Tiny</item>
-        <item name="android:textColorLink">@color/link_text_selector</item>
-
-        <item name="android:listSelector">@drawable/selectable_dark_bounded</item>
-        <item name="android:listDivider">@color/border</item>
-        <item name="android:dividerHeight">@dimen/divider_size</item>
-
-        <item name="senseTextAppearanceHeading">@style/Title2.Primary</item>
-        <!-- todo confirm this doesn't break something -->
-        <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
-        <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
-
-        <item name="senseBackgroundSecondary">@color/background_card</item>
-    </style>
 
 
     <style name="AppTheme.AppCompat.NoActionBar.Onboarding">
         <item name="android:windowBackground">@color/background_card</item>
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
-
-        <!-- Todo after complete app compat transition move to AppTheme.AppCompat.NoActionBar-->
-        <!--  <item name="colorButtonNormal">@color/sense_flat_button_normal</item>
-
-          <item name="android:buttonStyle">@style/AppTheme.Button</item>
-          <item name="android:imageButtonStyle">@style/AppTheme.Button.Borderless</item>
-          <item name="android:editTextStyle">@style/AppTheme.Text.EditText</item>
-          <item name="android:alertDialogStyle">@style/AppTheme.Dialog</item>
-          <item name="android:spinnerStyle">@style/AppTheme.Spinner</item>
-          <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
-          <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Tiny</item>
-          <item name="android:textColorLink">@color/link_text_selector</item>
-
-          <item name="android:listSelector">@drawable/selectable_dark_bounded</item>
-          <item name="android:listDivider">@color/border</item>
-          <item name="android:dividerHeight">@dimen/divider_size</item>-->
     </style>
 
 
@@ -201,27 +156,27 @@
 
     <!-- Other -->
 
-    <style name="AppTheme.Card">
+    <style name="AppTheme.AppCompat.Card">
         <item name="android:background">@color/background_card</item>
         <item name="android:gravity">start|center_vertical</item>
         <item name="senseCornerRadius">@dimen/small_radius</item>
     </style>
 
-    <style name="AppTheme.LargeCard">
+    <style name="AppTheme.AppCompat.LargeCard">
         <item name="senseCornerRadius">@dimen/medium_radius</item>
     </style>
 
-    <style name="AppTheme.Card.Clickable">
+    <style name="AppTheme.AppCompat.Card.Clickable">
         <item name="android:background">@color/background_card</item> <!-- todo show ripple -->
     </style>
 
-    <style name="AppTheme.Card.VerticalPaddingItem">
+    <style name="AppTheme.AppCompat.Card.VerticalPaddingItem">
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:paddingTop">@dimen/x2</item>
         <item name="android:paddingBottom">@dimen/x2</item>
     </style>
 
-    <style name="AppTheme.Card.Item" parent="AppTheme.Card.VerticalPaddingItem">
+    <style name="AppTheme.Card.Item" parent="AppTheme.AppCompat.Card.VerticalPaddingItem">
         <item name="android:paddingLeft">@dimen/x2</item>
         <item name="android:paddingRight">@dimen/x2</item>
     </style>

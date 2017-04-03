@@ -2,7 +2,7 @@
 
 <is.hello.sense.ui.widget.RoundedRelativeLayout
     android:id="@+id/item_insight_card"
-    style="@style/AppTheme.Card.Clickable"
+    style="@style/AppTheme.AppCompat.Card.Clickable"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
