@@ -18,7 +18,6 @@
         </item>
         <item name="android:actionOverflowButtonStyle">@style/ActionOverflow</item>
         <item name="android:actionMenuTextColor">@color/white</item>
-        <item name="android:actionButtonStyle">@style/AppTheme.ActionButton</item>
         <item name="android:actionBarSize">@dimen/action_bar_height</item>
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
 
@@ -62,15 +61,6 @@
           <item name="android:listSelector">@drawable/selectable_dark_bounded</item>
           <item name="android:listDivider">@color/border</item>
           <item name="android:dividerHeight">@dimen/divider_size</item>-->
-    </style>
-
-    <style name="AppTheme.ActionButton" parent="android:Widget.Holo.Light.ActionButton">
-        <item name="android:textSize">@dimen/text_h6_5</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:paddingLeft">@dimen/x3</item>
-        <item name="android:paddingRight">@dimen/x3</item>
     </style>
 
     <style name="AppTheme.PopupMenu" parent="Platform.ListPopupWindow">
