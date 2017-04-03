@@ -9,7 +9,6 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowTitleSize">0dp</item>
     </style>
-    <style name="Platform.ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid" />
     <style name="Platform.ListPopupWindow" parent="android:style/Widget.Holo.Light.ListPopupWindow" />
     <style name="Platform.ListDropDown" parent="android:Widget.Holo.Light.ListView.DropDown" />
     <style name="Platform.ActionBar.TabView" parent="android:Widget.Holo.Light.ActionBar.TabView" />
