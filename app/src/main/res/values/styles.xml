@@ -232,16 +232,6 @@
         <item name="android:background">@drawable/sense_raised_button_selector</item>
     </style>
 
-    <style name="AppTheme.Button.Rounded">
-        <item name="android:minHeight">@dimen/button_height</item>
-        <item name="android:background">@drawable/sense_raised_button_selector</item>
-        <item name="android:textColor">@color/white_text</item>
-        <item name="android:textSize">@dimen/text_h6_5</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
     <style name="AppTheme.Button.Facebook">
         <item name="android:paddingTop">@dimen/x2</item>
         <item name="android:paddingBottom">@dimen/x2</item>

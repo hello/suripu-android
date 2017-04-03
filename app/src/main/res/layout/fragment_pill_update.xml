@@ -87,7 +87,7 @@
             android:layout_marginRight="@dimen/x3"
             android:layout_marginBottom="@dimen/x3"
             android:text="@string/action_retry"
-            style="@style/AppTheme.Button.Rounded"
+            style="@style/Button.Raised"
             android:visibility="gone"/>
 
     </LinearLayout>
