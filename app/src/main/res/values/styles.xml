@@ -116,7 +116,7 @@
         <item name="android:windowExitAnimation">@anim/anime_bottom_slide_down</item>
     </style>
 
-    <style name="AppTheme.Facebook">
+    <style name="Facebook">
         <item name="android:paddingTop">@dimen/x2</item>
         <item name="android:paddingBottom">@dimen/x2</item>
         <item name="android:paddingLeft">@dimen/x3</item>
@@ -129,7 +129,7 @@
     </style>
     <!-- Radio Buttons -->
 
-    <style name="AppTheme.RadioButton" parent="Widget.AppCompat.CompoundButton.RadioButton">
+    <style name="RadioButton" parent="Widget.AppCompat.CompoundButton.RadioButton">
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:paddingTop">@dimen/x2</item>
         <item name="android:paddingBottom">@dimen/x2</item>
@@ -141,7 +141,7 @@
     </style>
 
     <!-- In order to allow left padding of radio selector but has issues syncing state with recyclerview adapters when first rendered-->
-    <style name="AppTheme.RadioButton.Drawable">
+    <style name="RadioButton.Drawable">
         <item name="android:button">@null</item>
         <item name="android:drawableStart">@drawable/radio_selector</item>
         <item name="android:drawablePadding">@dimen/x3</item>
