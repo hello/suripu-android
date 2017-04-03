@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Platform" />
-    <style name="Platform.Light" parent="android:Theme.Holo.Light">
-        <item name="android:listChoiceIndicatorMultiple">@drawable/holo_check_selector</item>
-    </style>
     <style name="Platform.ListPopupWindow" parent="android:style/Widget.Holo.Light.ListPopupWindow" />
     <style name="Platform.ListDropDown" parent="android:Widget.Holo.Light.ListView.DropDown" />
     <style name="Platform.ActionBar.TabView" parent="android:Widget.Holo.Light.ActionBar.TabView" />
