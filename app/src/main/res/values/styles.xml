@@ -33,7 +33,7 @@
     </style>
 
 
-    <style name="Dialog.BottomSheet" parent="Platform.Dialog.NoElevation">
+    <style name="Dialog.BottomSheet">
         <item name="android:windowBackground">@color/background_card</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimations.BottomSlide</item>

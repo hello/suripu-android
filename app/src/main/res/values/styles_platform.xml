@@ -3,7 +3,6 @@
     <style name="Platform" />
     <style name="Platform.Dialog" parent="Theme.AppCompat.DayNight.Dialog.MinWidth" />
 
-    <style name="Platform.Dialog.NoElevation" />
     <style name="Platform.EditText" parent="android:Widget.Holo.Light.EditText" />
 
 
