@@ -25,7 +25,6 @@
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
 
         <item name="android:buttonStyle">@style/AppTheme.Button</item>
-        <item name="android:imageButtonStyle">@style/AppTheme.Button.Borderless</item>
         <item name="android:editTextStyle">@style/AppTheme.Text.EditText</item>
         <item name="android:alertDialogStyle">@style/AppTheme.Dialog</item>
         <item name="android:spinnerStyle">@style/AppTheme.Spinner</item>
@@ -231,15 +230,6 @@
         <item name="android:minHeight">@dimen/button_height</item>
         <item name="android:textAppearance">@style/AppTheme.Text.Header.H6.Medium</item>
         <item name="android:background">@drawable/sense_raised_button_selector</item>
-    </style>
-
-    <style name="AppTheme.Button.Borderless">
-        <item name="android:textAllCaps">true</item>
-        <item name="android:paddingTop">@dimen/x1</item>
-        <item name="android:paddingLeft">@dimen/x1</item>
-        <item name="android:paddingRight">@dimen/x1</item>
-        <item name="android:paddingBottom">@dimen/x1</item>
-        <item name="android:background">@drawable/ripple_selector</item>
     </style>
 
     <style name="AppTheme.Button.Rounded">

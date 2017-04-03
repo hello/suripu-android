@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            xmlns:tools="http://schemas.android.com/tools"
             android:background="@color/background_card"
             android:fillViewport="true">
 
@@ -49,8 +49,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingRight="@dimen/x2"
-                android:tint="@color/active_icon"
-                android:src="@drawable/icon_alarm_24"/>
+                android:src="@drawable/icon_alarm_24"
+                android:tint="@color/active_icon"/>
 
             <TextView
                 style="@style/Body1.Primary"
@@ -61,13 +61,13 @@
 
             <ImageButton
                 android:id="@+id/view_smart_alarm_detail_smart_help"
-                style="@style/AppTheme.Button.Borderless"
-                android:paddingTop="@dimen/x3"
-                android:paddingBottom="@dimen/x3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/x2"
+                android:layout_marginTop="@dimen/x2"
                 android:background="@color/transparent"
                 android:contentDescription="@string/action_help"
+                android:padding="@dimen/x1"
                 android:src="@drawable/info_button_icon_small"/>
 
             <Space
@@ -97,24 +97,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingRight="@dimen/x2"
-                android:tint="@color/active_icon"
-                android:src="@drawable/icon_sound_24"/>
+                android:src="@drawable/icon_sound_24"
+                android:tint="@color/active_icon"/>
 
             <TextView
+                style="@style/Body1.Primary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/x1"
                 android:layout_weight="1"
                 android:gravity="start|center_vertical"
-                android:text="@string/title_alarm_tone"
-                style="@style/Body1.Primary"/>
+                android:text="@string/title_alarm_tone"/>
 
             <TextView
                 android:id="@+id/view_smart_alarm_detail_tone_name"
                 style="@style/Body1.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/no_sound_placeholder" />
+                android:text="@string/no_sound_placeholder"/>
 
         </LinearLayout>
 
@@ -134,17 +134,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingRight="@dimen/x2"
-                android:tint="@color/active_icon"
-                android:src="@drawable/icon_refresh_24"/>
+                android:src="@drawable/icon_refresh_24"
+                android:tint="@color/active_icon"/>
 
             <TextView
+                style="@style/Body1.Primary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/x1"
                 android:layout_weight="1"
                 android:gravity="start|center_vertical"
-                android:text="@string/title_alarm_repeat"
-                style="@style/Body1.Primary"/>
+                android:text="@string/title_alarm_repeat"/>
 
             <TextView
                 android:id="@+id/view_smart_alarm_detail_repeat_days"
@@ -179,18 +179,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingEnd="@dimen/x2"
-                    android:tint="@color/active_icon"
-                    android:src="@drawable/icon_light_24"/>
+                    android:src="@drawable/icon_light_24"
+                    android:tint="@color/active_icon"/>
 
                 <TextView
                     android:id="@+id/view_smart_alarm_detail_expansions_light_label"
+                    style="@style/Body1.Primary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="@dimen/x1"
                     android:gravity="start|center_vertical"
-                    android:text="@string/expansion_category_lights"
-                    style="@style/Body1.Primary"/>
+                    android:text="@string/expansion_category_lights"/>
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -243,18 +243,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingEnd="@dimen/x2"
-                    android:tint="@color/active_icon"
-                    android:src="@drawable/icon_thermostat_24"/>
+                    android:src="@drawable/icon_thermostat_24"
+                    android:tint="@color/active_icon"/>
 
                 <TextView
                     android:id="@+id/view_smart_alarm_detail_expansions_temp_label"
+                    style="@style/Body1.Primary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="@dimen/x1"
                     android:gravity="start|center_vertical"
-                    android:text="@string/expansion_category_thermostat"
-                    style="@style/Body1.Primary"/>
+                    android:text="@string/expansion_category_thermostat"/>
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -308,18 +308,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingEnd="@dimen/x2"
-                android:tint="@color/destructive_icon"
-                android:src="@drawable/icon_trash_24"/>
+                android:src="@drawable/icon_trash_24"
+                android:tint="@color/destructive_icon"/>
 
             <TextView
+                style="@style/Body1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/x1"
                 android:layout_weight="1"
                 android:gravity="start|center_vertical"
                 android:text="@string/label_delete_alarm"
-                android:textColor="@color/error_text"
-                style="@style/Body1"/>
+                android:textColor="@color/error_text"/>
 
 
         </LinearLayout>
