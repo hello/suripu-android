@@ -1,24 +1,20 @@
 package is.hello.sense.ui.widget.graphing.sensors;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-
-import is.hello.sense.api.model.v2.sensors.Sensor;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 
 /**
  * Responsible for animating {@link SensorGraphDrawable} via elapsed time.
  */
-public class SensorGraphView extends View {
-    /**
-     * Frames per second.
-     */
-    private static final int FPS = 60;
+public class SensorGraphView extends View implements ValueAnimator.AnimatorUpdateListener {
+
     /**
      * Duration of animation in milliseconds.
      */
@@ -38,6 +34,7 @@ public class SensorGraphView extends View {
 
     private SensorGraphDrawable.ScrubberCallback scrubberCallback = null;
     private SensorGraphDrawable graphDrawable;
+    private final ValueAnimator animator;
 
     public SensorGraphView(final Context context) {
         this(context, null);
@@ -49,27 +46,21 @@ public class SensorGraphView extends View {
 
     public SensorGraphView(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        this.animator = ValueAnimator.ofFloat(0, 1);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator(context, attrs));
+        animator.setDuration(DURATION_MS);
+        animator.addUpdateListener(this);
         resetTimeToAnimate(StartDelay.SHORT);
     }
 
     @Override
-    protected void onDraw(final Canvas canvas) {
-        super.onDraw(canvas);
+    public void onAnimationUpdate(final ValueAnimator animation) {
         if (this.graphDrawable == null) {
             return;
         }
-        final long elapsedTime = System.currentTimeMillis() - this.startTime;
-        if (elapsedTime < 0) {
-            postInvalidateDelayed(Math.abs(elapsedTime));
-            return;
-        }
-        this.factor = (float) elapsedTime / (float) DURATION_MS;
-        this.graphDrawable.setScaleFactor(this.factor);
-        if (this.factor < 1) {
-            postInvalidateDelayed(DURATION_MS / FPS);
-        }
-
-
+        this.factor = animation.getAnimatedFraction();
+        this.graphDrawable.setScaleFactor(factor);
+        this.graphDrawable.invalidateSelf();
     }
 
     @Override
@@ -93,6 +84,7 @@ public class SensorGraphView extends View {
     }
 
     public void resetTimeToAnimate(final StartDelay delay) {
+        animator.setStartDelay(delay.getLength());
         this.startTime = System.currentTimeMillis() + delay.length;
         this.factor = 0;
     }
@@ -102,7 +94,7 @@ public class SensorGraphView extends View {
         this.graphDrawable.setScaleFactor(this.factor);
         this.graphDrawable.setScrubberCallback(scrubberCallback);
         setBackground(this.graphDrawable);
-        postInvalidate();
+        updateGraph();
     }
 
     public synchronized void setScrubberCallback(@Nullable final SensorGraphDrawable.ScrubberCallback callback) {
@@ -119,6 +111,18 @@ public class SensorGraphView extends View {
         this.scrubberCallback = null;
     }
 
+    /**
+     * Only animates graph once on first call.
+     * Subsequent calls just update graph with latest values.
+     */
+    public void updateGraph() {
+        if (!this.animator.isStarted()
+                && System.currentTimeMillis() - startTime < this.animator.getDuration()) {
+            this.animator.start();
+        } else if (graphDrawable != null) {
+            this.graphDrawable.invalidateSelf();
+        }
+    }
 
     public enum StartDelay {
         SHORT(250),

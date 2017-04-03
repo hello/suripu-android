@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Graphs -->
+    <integer name="sensor_graph_gradient_top_alpha">15</integer>
+    <integer name="sensor_graph_gradient_bottom_alpha">5</integer>
+</resources>
