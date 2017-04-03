@@ -23,6 +23,7 @@ import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatterTest;
 import is.hello.sense.flows.home.interactors.LastNightInteractorTest;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragmentTests;
+import is.hello.sense.flows.nightmode.TestNightModeModule;
 import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractorTest;
 import is.hello.sense.flows.settings.TestSettingsModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
@@ -69,6 +70,7 @@ import is.hello.sense.ui.adapter.SmartAlarmAdapterTests;
 import is.hello.sense.units.UnitFormatterTests;
 import is.hello.sense.util.BatteryUtil;
 import is.hello.sense.util.DateFormatterTests;
+import is.hello.sense.util.LocationUtil;
 import is.hello.sense.util.markup.MarkupProcessor;
 import rx.Observable;
 
@@ -80,6 +82,7 @@ import static org.mockito.Mockito.mock;
         includes = {
                 TestNotificationModule.class,
                 TestSettingsModule.class,
+                TestNightModeModule.class,
         },
     injects = {
             TimelineInteractorTests.class,
@@ -230,6 +233,16 @@ public final class TestModule {
                 .when(batteryUtil)
                 .getBatteryPercentage();
         return batteryUtil;
+    }
+
+    @Provides
+    @Singleton
+    LocationUtil provideLocationUtil() {
+        final LocationUtil locationUtil = mock(LocationUtil.class);
+        doReturn(null)
+                .when(locationUtil)
+                .getLastKnownLocation();
+        return locationUtil;
     }
 
     @Provides

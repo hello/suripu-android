@@ -175,6 +175,13 @@ public class DateFormatter extends Interactor {
 
     }
 
+    public static boolean isBetween(@NonNull final DateTime instant,
+                                    @NonNull final DateTime start,
+                                    @NonNull final DateTime end) {
+        return new Interval(start, end).contains(instant);
+
+    }
+
     //endregion
 
     //region Week Periods

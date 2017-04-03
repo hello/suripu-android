@@ -14,7 +14,6 @@ import is.hello.sense.SenseOTAModule;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.fb.FacebookApiModule;
-import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.BluetoothModule;
 import is.hello.sense.flows.generic.ui.activities.SearchListActivity;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
@@ -35,7 +34,6 @@ import is.hello.sense.flows.home.ui.fragments.TrendsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.VoiceFragment;
 import is.hello.sense.flows.home.ui.fragments.WeekTrendsFragment;
 import is.hello.sense.flows.nightmode.NightModeModule;
-import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.flows.settings.ui.activities.AppSettingsActivity;
 import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
@@ -45,7 +43,6 @@ import is.hello.sense.interactors.DeviceIssuesInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.interactors.InsightInfoInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
-import is.hello.sense.interactors.PersistentPreferencesInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.QuestionsInteractor;
 import is.hello.sense.interactors.SleepDurationsInteractor;
@@ -201,15 +198,5 @@ public class SenseAppModule {
     @Singleton
     public AlertsInteractor providesAlertsInteractor(@NonNull final ApiService apiService) {
         return new AlertsInteractor(apiService);
-    }
-
-    @Provides
-    @Singleton
-    public NightModeInteractor providesNightModeInteractor(@NonNull final PersistentPreferencesInteractor persistentPreferencesInteractor,
-                                                           @NonNull final ApiSessionManager apiSessionManager,
-                                                           @NonNull final Context applicationContext) {
-        return new NightModeInteractor(persistentPreferencesInteractor,
-                                       apiSessionManager,
-                                       applicationContext);
     }
 }

@@ -1,10 +1,10 @@
 package is.hello.sense.flows.nightmode.ui.fragments;
 
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatDelegate;
 
 import javax.inject.Inject;
 
+import is.hello.sense.flows.nightmode.NightMode;
 import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.flows.nightmode.ui.views.NightModeLocationPermission;
 import is.hello.sense.flows.nightmode.ui.views.NightModeView;
@@ -34,13 +34,13 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
     private void setInitialMode() {
         if (nightModeInteractor !=null) {
             switch (nightModeInteractor.getCurrentMode()) {
-                case AppCompatDelegate.MODE_NIGHT_NO:
+                case NightMode.OFF:
                     presenterView.setOffMode();
                     break;
-                case AppCompatDelegate.MODE_NIGHT_YES:
+                case NightMode.ON:
                     presenterView.setAlwaysOnMode();
                     break;
-                case AppCompatDelegate.MODE_NIGHT_AUTO:
+                case NightMode.AUTO:
                     presenterView.setScheduledMode();
                     break;
                 default:
@@ -60,17 +60,17 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
 
     @Override
     public void offModeSelected() {
-        this.setMode(AppCompatDelegate.MODE_NIGHT_NO);
+        this.setMode(NightMode.OFF);
     }
 
     @Override
     public void onModeSelected() {
-        this.setMode(AppCompatDelegate.MODE_NIGHT_YES);
+        this.setMode(NightMode.ON);
     }
 
     @Override
     public void scheduledModeSelected() {
-        this.setMode(AppCompatDelegate.MODE_NIGHT_AUTO);
+        this.setMode(NightMode.AUTO);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
         }
     }
 
-    private void setMode(@AppCompatDelegate.NightMode final int mode) {
+    private void setMode(@NightMode final int mode) {
         if (nightModeInteractor == null || nightModeInteractor.getCurrentMode().equals(mode)) {
             return;
         }

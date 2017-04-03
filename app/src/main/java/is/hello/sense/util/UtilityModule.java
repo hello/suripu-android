@@ -17,7 +17,8 @@ import is.hello.sense.ui.fragments.onboarding.RegisterFragment;
 import is.hello.sense.ui.fragments.pill.ConnectPillFragment;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 
-@Module(complete = false, injects = {
+@Module(library = true,
+        complete = false, injects = {
         AccountSettingsFragment.class,
         RegisterFragment.class,
         ListActivity.class,
@@ -25,6 +26,12 @@ import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
         ConnectPillFragment.class
 })
 public class UtilityModule {
+
+    @Provides
+    @Singleton
+    public LocationUtil providesLocationUtil(@NonNull final Context context) {
+        return new LocationUtil(context);
+    }
 
     @Provides
     @Singleton
