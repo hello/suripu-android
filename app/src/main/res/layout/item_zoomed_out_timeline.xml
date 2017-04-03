@@ -35,7 +35,7 @@
         android:layout_marginBottom="@dimen/x4"
         android:layout_gravity="center"
         android:visibility="visible"
-        style="@style/AppTheme.ProgressBar.Small" />
+        style="@style/ProgressBar.Small" />
 
     <FrameLayout
         android:id="@+id/item_zoomed_out_timeline_score_container"

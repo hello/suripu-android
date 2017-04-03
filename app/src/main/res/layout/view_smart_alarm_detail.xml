@@ -216,7 +216,7 @@
 
                     <ProgressBar
                         android:id="@+id/view_smart_alarm_detail_expansions_light_progress"
-                        style="@style/AppTheme.ProgressBar.Tiny"
+                        style="@style/ProgressBar.Tiny"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical|end"/>
@@ -280,7 +280,7 @@
 
                     <ProgressBar
                         android:id="@+id/view_smart_alarm_detail_expansions_temp_progress"
-                        style="@style/AppTheme.ProgressBar.Tiny"
+                        style="@style/ProgressBar.Tiny"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical|end"/>

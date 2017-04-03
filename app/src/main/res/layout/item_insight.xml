@@ -19,7 +19,7 @@
 
         <ProgressBar
             android:id="@+id/item_insight_image_loading"
-            style="@style/AppTheme.ProgressBar.White"
+            style="@style/ProgressBar.White"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>

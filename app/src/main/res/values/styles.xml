@@ -17,8 +17,8 @@
         <item name="android:buttonStyle">@style/Button.Raised</item>
         <item name="android:editTextStyle">@style/EditText</item>
         <item name="android:alertDialogStyle">@style/Dialog</item>
-        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
-        <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Tiny</item>
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
+        <item name="android:progressBarStyleSmall">@style/ProgressBar.Tiny</item>
         <item name="android:textColorLink">@color/link_text_selector</item>
 
         <item name="android:listSelector">@drawable/selectable_dark_bounded</item>
@@ -59,8 +59,8 @@
     <!-- Dialogs -->
 
     <style name="Dialog" parent="Platform.Dialog">
-        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
-        <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Tiny</item>
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
+        <item name="android:progressBarStyleSmall">@style/ProgressBar.Tiny</item>
     </style>
 
     <style name="Dialog.Simple">
@@ -235,7 +235,7 @@
 
     <!-- Progress Bars -->
 
-    <style name="AppTheme.ProgressBar" parent="android:Widget.Holo.ProgressBar">
+    <style name="ProgressBar" parent="android:Widget.Holo.ProgressBar">
         <item name="android:indeterminateOnly">true</item>
         <item name="android:indeterminateDrawable">@drawable/animated_progress_bar</item>
         <item name="android:indeterminateDuration">1000</item>
@@ -245,7 +245,7 @@
         <item name="android:maxHeight">55dp</item>
     </style>
 
-    <style name="AppTheme.ProgressBar.Small">
+    <style name="ProgressBar.Small">
         <item name="android:indeterminateDrawable">@drawable/animated_progress_bar_small</item>
         <item name="android:minWidth">40dp</item>
         <item name="android:maxWidth">40dp</item>
@@ -253,7 +253,7 @@
         <item name="android:maxHeight">40dp</item>
     </style>
 
-    <style name="AppTheme.ProgressBar.Tiny">
+    <style name="ProgressBar.Tiny">
         <item name="android:indeterminateDrawable">@drawable/animated_progress_bar_tiny</item>
         <item name="android:minWidth">20dp</item>
         <item name="android:maxWidth">20dp</item>
@@ -261,7 +261,7 @@
         <item name="android:maxHeight">20dp</item>
     </style>
 
-    <style name="AppTheme.ProgressBar.White">
+    <style name="ProgressBar.White">
         <item name="android:indeterminateDrawable">@drawable/animated_progress_bar_white</item>
         <item name="android:minWidth">28dp</item>
         <item name="android:maxWidth">28dp</item>
@@ -270,7 +270,7 @@
     </style>
 
     <!-- Has v21 style -->
-    <style name="AppTheme.ProgressBar.Horizontal" parent="android:Widget.Holo.ProgressBar.Horizontal">
+    <style name="ProgressBar.Horizontal" parent="android:Widget.Holo.ProgressBar.Horizontal">
         <item name="android:minWidth">164dp</item>
         <item name="android:maxWidth">164dp</item>
         <item name="android:secondaryProgress">100</item>
@@ -279,7 +279,7 @@
     <style name="FacebookTheme" parent="FacebookTheme.Base"/>
 
     <style name="FacebookTheme.Base" parent="android:Theme.Translucent.NoTitleBar">
-        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
     </style>
 
     <!-- AppCompat Themes
