@@ -242,18 +242,6 @@
         <item name="android:background">@drawable/ripple_selector</item>
     </style>
 
-    <style name="AppTheme.Button.Borderless.Question">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:paddingTop">@dimen/x3</item>
-        <item name="android:paddingLeft">@dimen/x3</item>
-        <item name="android:paddingRight">@dimen/x3</item>
-        <item name="android:paddingBottom">@dimen/x3</item>
-        <item name="android:textColor">@color/primary_text</item>
-        <item name="android:textSize">@dimen/text_h6_3</item>
-        <item name="android:background">@drawable/selectable_dark_bounded</item>
-    </style>
-
     <style name="AppTheme.Button.Rounded">
         <item name="android:minHeight">@dimen/button_height</item>
         <item name="android:background">@drawable/sense_raised_button_selector</item>
