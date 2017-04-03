@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Platform" />
-    <style name="Platform.ListDropDown" parent="android:Widget.Material.Light.ListView.DropDown" />
     <style name="Platform.ActionBar.TabView" parent="android:Widget.Material.Light.ActionBar.TabView" />
     <style name="Platform.ActionBar.ButtonCloseMode" parent="android:Widget.Material.Light.ActionButton.CloseMode" />
     <style name="Platform.ActionBar.ButtonOverflow" parent="android:style/Widget.Material.ActionButton.Overflow" />
