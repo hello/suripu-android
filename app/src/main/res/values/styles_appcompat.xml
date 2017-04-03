@@ -21,7 +21,7 @@
         <item name="colorSwitchThumbNormal">@color/primary</item>
         <!-- Inactive track color(75% transparency) -->
         <item name="android:windowBackground">@color/background</item>
-        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
 
         <item name="senseTextAppearanceHeading">@style/Title2.Primary
         </item> <!-- todo confirm this doesn't break something -->
@@ -62,7 +62,7 @@
         <item name="colorSwitchThumbNormal">@color/primary</item>
         <!-- Inactive track color(75% transparency) -->
         <item name="android:windowBackground">@color/background</item>
-        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
         <item name="senseTextAppearanceHeading">@style/Title2.Primary
         </item> <!-- todo confirm this doesn't break something -->
         <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>

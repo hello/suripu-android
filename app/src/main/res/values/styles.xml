@@ -183,7 +183,7 @@
 
     <!-- Progress Bars -->
 
-    <style name="ProgressBar" parent="android:Widget.Holo.ProgressBar">
+    <style name="ProgressBar" parent="Widget.AppCompat.ProgressBar">
         <item name="android:indeterminateOnly">true</item>
         <item name="android:indeterminateDrawable">@drawable/animated_progress_bar</item>
         <item name="android:indeterminateDuration">1000</item>
@@ -231,17 +231,6 @@
 
     <style name="ActionBarStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textColor">@color/white</item>
-    </style>
-
-
-    <style name="AppTheme.ProgressBar" parent="Widget.AppCompat.ProgressBar">
-        <item name="android:indeterminateOnly">true</item>
-        <item name="android:indeterminateDrawable">@drawable/animated_progress_bar</item>
-        <item name="android:indeterminateDuration">1000</item>
-        <item name="android:minWidth">55dp</item>
-        <item name="android:maxWidth">55dp</item>
-        <item name="android:minHeight">55dp</item>
-        <item name="android:maxHeight">55dp</item>
     </style>
 
     <style name="AppTheme.NoActionBar.TabLayout" parent="Widget.Design.TabLayout">
