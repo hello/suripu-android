@@ -10,7 +10,7 @@
 
         <is.hello.sense.flows.home.ui.views.HomeTabLayout
             android:id="@+id/view_home_tab_layout"
-            style="@style/AppTheme.NoActionBar.BottomBar"
+            style="@style/TabLayout.BottomBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"/>
