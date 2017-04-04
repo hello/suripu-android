@@ -4,6 +4,7 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import is.hello.sense.graph.InteractorSubject;
 import is.hello.sense.util.LocationUtil;
 import is.hello.sense.util.PersistentLocationManager;
 import rx.Observable;
@@ -12,6 +13,7 @@ public class LocationInteractor extends ValueInteractor {
 
     private final PersistentLocationManager locationManager;
     private final LocationUtil locationUtil;
+    public InteractorSubject<Location> locationSubject = this.subject;
 
     public LocationInteractor(@NonNull final PersistentLocationManager persistentLocationManager,
                               @NonNull final LocationUtil locationUtil) {
@@ -46,8 +48,13 @@ public class LocationInteractor extends ValueInteractor {
         return Observable.just(location);
     }
 
+    @Nullable
     public Location getLastKnownLocation() {
-        update();
-        return (Location) subject.getValue(); //todo if no previous value this will return nothing
+        update(); //todo decide if should not auto update when called
+        return (Location) subject.getValue();
+    }
+
+    public boolean hasLocation() {
+        return subject.getValue() != null;
     }
 }

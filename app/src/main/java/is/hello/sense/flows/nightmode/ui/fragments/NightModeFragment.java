@@ -1,6 +1,11 @@
 package is.hello.sense.flows.nightmode.ui.fragments;
 
+import android.location.Location;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v13.app.FragmentCompat;
+import android.view.View;
 
 import javax.inject.Inject;
 
@@ -8,6 +13,7 @@ import is.hello.sense.flows.nightmode.NightMode;
 import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.flows.nightmode.ui.views.NightModeLocationPermission;
 import is.hello.sense.flows.nightmode.ui.views.NightModeView;
+import is.hello.sense.interactors.LocationInteractor;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.util.Analytics;
@@ -17,18 +23,45 @@ import is.hello.sense.util.Analytics;
  */
 
 public class NightModeFragment extends PresenterFragment<NightModeView>
-        implements NightModeView.Listener {
+        implements NightModeView.Listener,
+        FragmentCompat.OnRequestPermissionsResultCallback {
 
     @Inject
     NightModeInteractor nightModeInteractor;
+    @Inject
+    LocationInteractor locationInteractor;
 
     private final LocationPermission locationPermission = new NightModeLocationPermission(this);
+    private boolean wantsScheduledMode = false;
+
     @Override
     public void initializePresenterView() {
         if(presenterView == null) {
             presenterView = new NightModeView(getActivity());
             this.setInitialMode();
             presenterView.setRadioGroupListener(this);
+        }
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        bindAndSubscribe(locationInteractor.locationSubject,
+                         this::bindLocation,
+                         this::presentLocationError);
+    }
+
+    private void presentLocationError(@NonNull
+                                      final Throwable throwable) {
+
+    }
+
+    private void bindLocation(@Nullable
+                              final Location location) {
+        updateScheduledModeView();
+        if (location != null && wantsScheduledMode) {
+            this.wantsScheduledMode = false;
+            this.setMode(NightMode.AUTO);
         }
     }
 
@@ -54,9 +87,7 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
     @Override
     public void onResume() {
         super.onResume();
-        if(hasPresenterView()) {
-            presenterView.setScheduledModeEnabled(locationPermission.isGranted());
-        }
+        this.locationInteractor.update();
     }
 
     @Override
@@ -71,12 +102,17 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
 
     @Override
     public void scheduledModeSelected() {
-        this.setMode(NightMode.AUTO);
+        this.wantsScheduledMode = true;
+        this.locationInteractor.update();
     }
 
     @Override
     public boolean onLocationPermissionLinkIntercepted() {
+        if (!locationPermission.isGranted()) {
             locationPermission.requestPermissionWithDialog();
+        } else if (!locationInteractor.hasLocation()) {
+            locationPermission.showEnableServiceInstructionsDialog();
+        }
         return true;
     }
 
@@ -85,11 +121,16 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
                                            @NonNull final String[] permissions,
                                            @NonNull final int[] grantResults) {
         if (locationPermission.isGrantedFromResult(requestCode, permissions, grantResults)) {
-            if(hasPresenterView()) {
-                presenterView.setScheduledModeEnabled(true);
-            }
+            locationInteractor.update(); //todo doesn't prompt here because only tries to refresh
         } else {
             locationPermission.showEnableInstructionsDialog();
+        }
+    }
+
+    private void updateScheduledModeView() {
+        if(hasPresenterView()) {
+            final boolean enabled = locationPermission.isGranted() && locationInteractor.hasLocation();
+            presenterView.setScheduledModeEnabled(enabled);
         }
     }
 

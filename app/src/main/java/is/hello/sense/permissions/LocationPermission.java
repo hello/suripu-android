@@ -39,4 +39,14 @@ public class LocationPermission extends Permission {
                                      R.string.request_permission_location_required_message,
                                      (dialog, which) -> UserSupport.showLocationPermissionMoreInfoPage(fragment.getActivity()));
     }
+
+    /**
+     * Show this dialog when permissions have been granted but Location services is disabled.
+     * This should redirect the user to device location settings.
+     */
+    public void showEnableServiceInstructionsDialog() {
+        showEnableInstructionsDialog(R.string.request_permission_location_required_title,
+                                     R.string.location_service_required_message,
+                                     null);
+    }
 }

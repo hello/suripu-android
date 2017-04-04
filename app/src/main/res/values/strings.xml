@@ -788,7 +788,7 @@
     <string name="night_mode_location_permission_disabled_msg">Location Services must be enabled for Sense to know local sunset and sunrise times.  <a href="#settings">Enable Location Services</a></string>
     <string name="night_mode_location_permission_message">Allow Sense to use your location to know sunrise and sunset times, local weather, and more?</string>
     <string name="night_mode_location_permission_required_message">Sense needs your location to know sunset and sunrise times. Please enable Location Services in <a href="#settings">Settings</a> to continue.</string>
-
+    <string name="location_service_required_message">Please enable Location Services in <a href="#location-settings">Location Settings</a> to continue.</string>
     <!-- endregion -->
 
 </resources>
