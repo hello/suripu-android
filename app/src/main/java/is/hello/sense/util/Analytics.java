@@ -833,6 +833,22 @@ public class Analytics {
 
     }
 
+    public interface NightMode {
+
+        String TRAIT = "Night Mode";
+        /**
+         * This property is sent and updated when user taps on / changes one of the options.
+         * If user hasn't made a selection, the property should not appear
+         */
+        String EVENT_CHANGED = "Changed Night Mode";
+
+        String PROP_SETTING = "setting";
+
+        String PROP_ON = "on";
+        String PROP_OFF = "off";
+        String PROP_AUTO = "auto";
+    }
+
 
     //region Lifecycle
 

@@ -10,6 +10,7 @@ import is.hello.sense.flows.nightmode.ui.views.NightModeLocationPermission;
 import is.hello.sense.flows.nightmode.ui.views.NightModeView;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.permissions.LocationPermission;
+import is.hello.sense.util.Analytics;
 
 /**
  * Control night mode settings
@@ -97,7 +98,27 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
             return;
         }
         nightModeInteractor.setMode(mode);
+        sendAnalytics(mode);
         getActivity().recreate();
 
+    }
+
+    private void sendAnalytics(@NightMode final int mode) {
+        final String setting;
+        switch (mode) {
+            case NightMode.OFF:
+                setting = Analytics.NightMode.PROP_OFF;
+                break;
+            case NightMode.ON:
+                setting = Analytics.NightMode.PROP_ON;
+                break;
+            case NightMode.AUTO:
+                setting = Analytics.NightMode.PROP_AUTO;
+                break;
+            default:
+                setting = Analytics.NightMode.PROP_OFF;
+        }
+        Analytics.trackEvent(Analytics.NightMode.EVENT_CHANGED,
+                             Analytics.createProperties(Analytics.NightMode.PROP_SETTING, setting));
     }
 }
