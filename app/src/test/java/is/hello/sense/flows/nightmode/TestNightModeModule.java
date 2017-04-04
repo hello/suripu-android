@@ -10,8 +10,8 @@ import dagger.Provides;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.flows.nightmode.interactors.NightModeInteractorTest;
+import is.hello.sense.interactors.LocationInteractor;
 import is.hello.sense.interactors.PersistentPreferencesInteractor;
-import is.hello.sense.util.LocationUtil;
 
 @Module(complete = false,
         injects = {
@@ -25,11 +25,11 @@ public class TestNightModeModule {
     public NightModeInteractor providesNightModeInteractor(@NonNull final PersistentPreferencesInteractor persistentPreferencesInteractor,
                                                            @NonNull final ApiSessionManager apiSessionManager,
                                                            @NonNull final Context applicationContext,
-                                                           @NonNull final LocationUtil locationUtil) {
+                                                           @NonNull final LocationInteractor locationInteractor) {
         return new NightModeInteractor(persistentPreferencesInteractor,
                                        apiSessionManager,
                                        applicationContext,
-                                       locationUtil);
+                                       locationInteractor);
     }
 
 }

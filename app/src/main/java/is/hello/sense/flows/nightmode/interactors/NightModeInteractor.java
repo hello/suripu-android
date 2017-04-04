@@ -18,11 +18,11 @@ import java.util.TimeZone;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.nightmode.NightMode;
 import is.hello.sense.graph.InteractorSubject;
+import is.hello.sense.interactors.LocationInteractor;
 import is.hello.sense.interactors.PersistentPreferencesInteractor;
 import is.hello.sense.interactors.ValueInteractor;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.InternalPrefManager;
-import is.hello.sense.util.LocationUtil;
 import rx.Observable;
 
 import static is.hello.sense.flows.nightmode.NightMode.AUTO;
@@ -37,12 +37,12 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
 
     public final InteractorSubject<Integer> currentNightMode = this.subject;
     private final ApiSessionManager apiSessionManager;
-    protected final LocationUtil locationUtil;
+    protected final LocationInteractor locationUtil;
 
     public NightModeInteractor(@NonNull final PersistentPreferencesInteractor persistentPreferencesInteractor,
                                @NonNull final ApiSessionManager apiSessionManager,
                                @NonNull final Context applicationContext,
-                               @NonNull final LocationUtil locationUtil) {
+                               @NonNull final LocationInteractor locationUtil) {
         super();
         this.apiSessionManager = apiSessionManager;
         this.persistentPreferencesInteractor = persistentPreferencesInteractor;
