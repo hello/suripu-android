@@ -33,7 +33,7 @@ public class SenseListDialog<T> extends Dialog
     private ProgressBar activityIndicator;
 
     public SenseListDialog(Context context) {
-        super(context, R.style.AppTheme_Dialog_List);
+        super(context, R.style.Dialog_List);
         initialize();
     }
 

@@ -10,7 +10,7 @@
 
         <RadioButton
             android:id="@+id/view_night_mode_off_rb"
-            style="@style/AppTheme.RadioButton.Drawable"
+            style="@style/RadioButton.Drawable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/action_off"/>
@@ -19,7 +19,7 @@
 
         <RadioButton
             android:id="@+id/view_night_mode_always_on_rb"
-            style="@style/AppTheme.RadioButton.Drawable"
+            style="@style/RadioButton.Drawable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/action_always_on"/>
@@ -28,7 +28,7 @@
 
         <RadioButton
             android:id="@+id/view_night_mode_scheduled_rb"
-            style="@style/AppTheme.RadioButton.Drawable"
+            style="@style/RadioButton.Drawable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/x1"

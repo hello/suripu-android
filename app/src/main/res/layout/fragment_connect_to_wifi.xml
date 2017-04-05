@@ -60,8 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:gravity="end|center_vertical"
-            style="@style/AppTheme.Spinner.Borderless"/>
+            android:gravity="end|center_vertical"/>
 
     </RelativeLayout>
 
@@ -90,6 +89,6 @@
         android:layout_marginRight="@dimen/x3"
         android:layout_marginBottom="@dimen/x3"
         android:text="@string/action_continue"
-        style="@style/AppTheme.Button.Rounded"/>
+        style="@style/Button.Raised"/>
 
 </LinearLayout>

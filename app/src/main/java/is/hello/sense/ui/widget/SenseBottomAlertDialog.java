@@ -36,7 +36,7 @@ public class SenseBottomAlertDialog extends Dialog {
     private final Button positiveButton;
 
     public SenseBottomAlertDialog(@NonNull final Context context) {
-        this(context,R.style.AppTheme_Dialog_BottomAlert);
+        this(context,R.style.Dialog_BottomAlert);
     }
 
     SenseBottomAlertDialog(@NonNull final Context context, final int style){

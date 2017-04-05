@@ -57,7 +57,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
         this.animatorContext = animatorContext;
 
         this.resources = activity.getResources();
-        this.dialog = new Dialog(activity, R.style.AppTheme_Dialog_FullScreen);
+        this.dialog = new Dialog(activity, R.style.Dialog_FullScreen);
         dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         dialog.getWindow().setWindowAnimations(R.style.WindowAnimations);
         dialog.setCancelable(true);

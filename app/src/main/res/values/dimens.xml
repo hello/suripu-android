@@ -74,9 +74,7 @@
     <dimen name="profile_image_size">104dp</dimen>
 
     <!-- Can't erase yet because of styles reference todo erase/reuse everything below this-->
-    <dimen name="text_body_line_height">24px</dimen>
 
-    <dimen name="edit_text_min_height">45dp</dimen>
     <dimen name="edit_text_dash_width">4dp</dimen>
     <dimen name="edit_text_dash_gap">4dp</dimen>
     <dimen name="edit_text_stroke_size">1dp</dimen>

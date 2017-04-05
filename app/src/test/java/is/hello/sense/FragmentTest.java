@@ -165,7 +165,7 @@ public abstract class FragmentTest<T extends PresenterFragment>
 
         @Override
         protected void onCreate(final Bundle savedInstanceState) {
-            setTheme(R.style.AppTheme_AppCompat_NoActionBar);
+            setTheme(R.style.AppTheme_NoActionBar);
             super.onCreate(savedInstanceState);
             final LinearLayout view = new LinearLayout(this, null, 0);
             @IdRes final int id = 1;

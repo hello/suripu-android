@@ -1,177 +1,157 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Themes -->
-
-    <style name="AppTheme" parent="Platform.Light">
-        <item name="android:windowContentOverlay">@null</item>
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/primary</item>
+        <!-- Dark variant of the primary branding color. By default, this is the color applied to
+         the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
+        <item name="colorPrimaryDark">@color/primary</item>
+        <!-- Bright complement to the primary branding color. By default, this is the color applied
+         to framework controls (via colorControlActivated). -->
+        <item name="colorAccent">@color/primary</item>
+        <!-- The color applied to framework controls in their normal state. -->
+        <item name="colorControlNormal">@color/primary</item>
+        <!-- The color applied to framework controls in their activated (ex. checked) state. -->
+        <item name="colorControlActivated">@color/primary</item>
+        <!-- The color applied to framework control highlights (ex. ripples, list selectors). -->
+        <item name="colorControlHighlight">@color/primary</item>
+        <!-- The color applied to framework buttons in their normal state. -->
+        <item name="colorButtonNormal">@color/primary</item>
+        <!-- The color applied to framework switch thumbs in their normal state. -->
+        <item name="colorSwitchThumbNormal">@color/primary</item>
+        <!-- Inactive track color(75% transparency) -->
         <item name="android:windowBackground">@color/background</item>
-        <item name="android:textAppearance">@style/AppTheme.Text</item>
-
-        <item name="android:popupMenuStyle">@style/AppTheme.PopupMenu</item>
-        <item name="android:dropDownListViewStyle">@style/AppTheme.DropDownListView</item>
-        <item name="android:actionBarTabStyle">@style/AppTheme.ActionBarTabStyle</item>
-        <item name="android:actionDropDownStyle">@style/AppTheme.DropDownNav</item>
-        <item name="android:actionBarStyle">@style/AppTheme.ActionBar.Solid</item>
-        <item name="android:actionModeBackground">@drawable/app_theme_cab_background_top</item>
-        <item name="android:actionModeSplitBackground">@drawable/app_theme_cab_background_bottom
-        </item>
-        <item name="android:actionModeCloseButtonStyle">@style/AppTheme.ActionButton.CloseMode
-        </item>
-        <item name="android:actionOverflowButtonStyle">@style/ActionOverflow</item>
-        <item name="android:actionMenuTextAppearance">@style/AppTheme.Text.ActionMenu</item>
-        <item name="android:actionMenuTextColor">@color/white</item>
-        <item name="android:actionButtonStyle">@style/AppTheme.ActionButton</item>
-        <item name="android:actionBarSize">@dimen/action_bar_height</item>
-        <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
-
-        <item name="android:buttonStyle">@style/AppTheme.Button</item>
-        <item name="android:imageButtonStyle">@style/AppTheme.Button.Borderless</item>
-        <item name="android:editTextStyle">@style/AppTheme.Text.EditText</item>
-        <item name="android:alertDialogStyle">@style/AppTheme.Dialog</item>
-        <item name="android:spinnerStyle">@style/AppTheme.Spinner</item>
-        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
-        <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Tiny</item>
-        <item name="android:textColorLink">@color/link_text_selector</item>
-
-        <item name="android:listSelector">@drawable/selectable_dark_bounded</item>
-        <item name="android:listDivider">@color/border</item>
-        <item name="android:dividerHeight">@dimen/divider_size</item>
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
 
         <item name="senseTextAppearanceHeading">@style/Title2.Primary
         </item> <!-- todo confirm this doesn't break something -->
         <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
         <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
-
         <item name="senseBackgroundSecondary">@color/background_card</item>
-    </style>
 
-
-    <style name="AppTheme.AppCompat.NoActionBar.Onboarding">
-        <item name="android:windowBackground">@color/background_card</item>
-        <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
-
-        <!-- Todo after complete app compat transition move to AppTheme.AppCompat.NoActionBar-->
-      <!--  <item name="colorButtonNormal">@color/sense_flat_button_normal</item>
-
-        <item name="android:buttonStyle">@style/AppTheme.Button</item>
-        <item name="android:imageButtonStyle">@style/AppTheme.Button.Borderless</item>
-        <item name="android:editTextStyle">@style/AppTheme.Text.EditText</item>
-        <item name="android:alertDialogStyle">@style/AppTheme.Dialog</item>
-        <item name="android:spinnerStyle">@style/AppTheme.Spinner</item>
-        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
-        <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Tiny</item>
-        <item name="android:textColorLink">@color/link_text_selector</item>
-
-        <item name="android:listSelector">@drawable/selectable_dark_bounded</item>
-        <item name="android:listDivider">@color/border</item>
-        <item name="android:dividerHeight">@dimen/divider_size</item>-->
-    </style>
-
-    <style name="AppTheme.Expansions" parent="AppTheme.AppCompat.AppSettingsActivity">
-        <item name="android:windowBackground">@color/expansions_background</item>
-    </style>
-
-
-    <style name="AppTheme.NoActionBar">
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowTitleSize">0dp</item>
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
         </item>
+        <!-- remove actionbar elevation for kitkat and older -->
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="actionBarStyle">@style/ActionBar</item>
+        <item name="actionMenuTextColor">@color/white</item>
+        <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
+        <item name="homeAsUpIndicator">@drawable/app_style_ab_up</item>
+
+        <item name="editTextStyle">@style/EditText</item>
     </style>
 
-    <style name="AppTheme.AppCompat.NoActionBar.Black">
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/black</item>
+
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <!-- Dark variant of the primary branding color. By default, this is the color applied to
+         the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
+        <item name="colorPrimaryDark">@color/primary</item>
+        <!-- Bright complement to the primary branding color. By default, this is the color applied
+         to framework controls (via colorControlActivated). -->
+        <item name="colorAccent">@color/primary</item>
+        <!-- The color applied to framework controls in their normal state. -->
+        <item name="colorControlNormal">@color/primary</item>
+        <!-- The color applied to framework controls in their activated (ex. checked) state. -->
+        <item name="colorControlActivated">@color/primary</item>
+        <!-- The color applied to framework control highlights (ex. ripples, list selectors). -->
+        <item name="colorControlHighlight">@color/primary</item>
+        <!-- The color applied to framework buttons in their normal state. -->
+        <item name="colorButtonNormal">@color/primary</item>
+        <!-- The color applied to framework switch thumbs in their normal state. -->
+        <item name="colorSwitchThumbNormal">@color/primary</item>
+        <!-- Inactive track color(75% transparency) -->
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
+        <item name="senseTextAppearanceHeading">@style/Title2.Primary
+        </item> <!-- todo confirm this doesn't break something -->
+        <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
+        <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
+        <item name="senseBackgroundSecondary">@color/background_card</item>
+
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
+        </item>
+
+        <item name="editTextStyle">@style/EditText</item>
     </style>
 
-    <!-- Action Bar -->
-
-    <style name="AppTheme.ActionBar" parent="Platform.ActionBar"/>
-
-    <style name="AppTheme.ActionBar.Solid">
-        <item name="android:background">@color/primary</item>
-        <item name="android:backgroundStacked">@color/primary</item>
-        <item name="android:backgroundSplit">@color/primary</item>
-        <item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
-        <item name="android:icon">@android:color/transparent</item>
-        <item name="android:titleTextStyle">@style/AppTheme.Text.ActionTitle</item>
-        <item name="android:subtitleTextStyle">@style/AppTheme.Text.ActionSubtitle</item>
-    </style>
-
-    <style name="AppTheme.Text.ActionTitle">
-        <item name="android:textSize">@dimen/text_h5</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:fontFamily">sans-serif</item>
-    </style>
-
-    <style name="AppTheme.Text.ActionSubtitle">
-        <item name="android:textSize">@dimen/text_body</item>
-        <item name="android:textColor">@color/secondary_text</item>
-        <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:paddingTop">2dp</item>
-    </style>
-
-    <style name="AppTheme.Text.ActionMenu">
-        <item name="android:textSize">@dimen/text_h6_3</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textAllCaps">false</item>
-    </style>
-
-    <style name="AppTheme.ActionButton" parent="android:Widget.Holo.Light.ActionButton">
-        <item name="android:textSize">@dimen/text_h6_5</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textAllCaps">true</item>
+    <!-- Buttons -->
+    <style name="Button">
+        <item name="android:paddingTop">@dimen/x1</item>
+        <item name="android:paddingBottom">@dimen/x1</item>
         <item name="android:paddingLeft">@dimen/x3</item>
         <item name="android:paddingRight">@dimen/x3</item>
+        <item name="android:textAppearance">@style/ButtonText</item>
+        <item name="android:background">@null</item>
+        <item name="android:height">@dimen/button_height</item>
+        <item name="android:hapticFeedbackEnabled">true</item>
     </style>
 
-    <style name="AppTheme.PopupMenu" parent="Platform.ListPopupWindow">
-        <item name="android:popupBackground">@drawable/app_theme_menu_dropdown_panel</item>
+    <style name="Button.Raised">
+        <item name="android:textColor">@color/white_text</item>
+        <item name="android:background">@drawable/sense_raised_button_selector</item>
     </style>
 
-    <style name="AppTheme.DropDownListView" parent="Platform.ListDropDown">
-        <item name="android:listSelector">@drawable/app_theme_selectable_background</item>
-        <item name="android:divider">@null</item>
-        <item name="android:dividerHeight">0dp</item>
+    <!-- Special case for fragment_onboarding_register.xml. Requires an activated state -->
+    <style name="Button.Raised.Onboarding">
+        <item name="android:background">@drawable/sense_raised_button_selector_onboarding</item>
     </style>
 
-    <style name="AppTheme.ActionBarTabStyle" parent="Platform.ActionBar.TabView">
-        <item name="android:background">@drawable/app_theme_tab_indicator_ab</item>
+    <style name="Button.Flat" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name="android:paddingTop">@dimen/x1</item>
+        <item name="android:paddingBottom">@dimen/x1</item>
+        <item name="android:paddingLeft">@dimen/x3</item>
+        <item name="android:paddingRight">@dimen/x3</item>
+        <item name="android:elevation" tools:targetApi="lollipop">0dp</item>
+        <item name="android:textColor">@color/primary_text_selector</item>
+        <item name="android:background">@drawable/sense_flat_button_selector</item>
     </style>
 
-    <style name="AppTheme.DropDownNav" parent="Platform.Spinner">
-        <item name="android:background">@drawable/spinner_background_selector</item>
-        <item name="android:popupBackground">@drawable/app_theme_menu_dropdown_panel</item>
-        <item name="android:dropDownSelector">@drawable/app_theme_selectable_background</item>
+    <style name="Button.Flat.Primary">
+        <item name="android:background">@color/primary</item>
+        <item name="android:textColor">@color/white_text</item>
     </style>
 
-    <style name="AppTheme.ActionButton.CloseMode" parent="Platform.ActionBar.ButtonCloseMode">
-        <item name="android:background">@drawable/app_theme_btn_cab_done</item>
+    <style name="Button.Flat.Link">
+        <item name="android:textColor">@color/link_text_selector</item>
     </style>
 
-    <style name="ActionOverflow" parent="Platform.ActionBar.ButtonOverflow">
-        <item name="android:src">@drawable/action_overflow</item>
+
+    <!-- TabLayouts -->
+    <style name="TabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabBackground">@color/background_card</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="tabSelectedTextColor">@color/tablayout_focused</item>
+        <item name="tabTextColor">@color/secondary_text</item>
+        <item name="tabIndicatorColor">@color/tablayout_focused</item>
+        <item name="tabPaddingStart">@dimen/x1</item>
+        <item name="tabGravity">fill</item>
+        <item name="tabMaxWidth">0dp</item>
+    </style>
+
+    <style name="TabLayout.BottomBar">
+        <item name="android:minHeight">@dimen/action_bar_height</item>
+        <item name="tabIndicatorColor">@color/background_card</item>
+        <item name="tabIndicatorHeight">0dp</item>
+        <item name="android:layout_gravity">bottom</item>
     </style>
 
     <!-- Dialogs -->
-
-    <style name="AppTheme.Dialog" parent="Platform.Dialog">
-        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
-        <item name="android:progressBarStyleSmall">@style/AppTheme.ProgressBar.Tiny</item>
+    <style name="Dialog" parent="Theme.AppCompat.Light.Dialog.MinWidth">
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
+        <item name="android:progressBarStyleSmall">@style/ProgressBar.Tiny</item>
     </style>
 
-    <style name="AppTheme.Dialog.Simple">
+    <style name="Dialog.Simple">
         <item name="windowNoTitle">true</item>
         <item name="android:background">@color/background_card</item>
     </style>
 
-    <style name="AppTheme.Dialog.List">
+    <style name="Dialog.List">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@color/transparent</item>
     </style>
 
-    <style name="AppTheme.Dialog.FullScreen">
+    <style name="Dialog.FullScreen">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">@color/transparent</item>
@@ -180,21 +160,16 @@
         </item>
     </style>
 
-    <style name="AppTheme.Dialog.FullScreen.Insight">
-        <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
-        </item>
-    </style>
-
-    <style name="AppTheme.Dialog.Loading" parent="AppTheme.Dialog.FullScreen">
-        <item name="android:textColor">@color/black</item>
-    </style>
-
-    <style name="AppTheme.Dialog.FullScreen.Welcome">
+    <style name="Dialog.FullScreen.Welcome">
         <item name="android:windowBackground">@color/transparent_overlay</item>
     </style>
 
-    <style name="AppTheme.Dialog.BottomSheet" parent="Platform.Dialog.NoElevation">
+    <style name="Dialog.Loading" parent="Dialog.FullScreen">
+        <item name="android:textColor">@color/primary_text</item>
+    </style>
+
+    <!-- Has v21 style -->
+    <style name="Dialog.BottomSheet">
         <item name="android:windowBackground">@color/background_card</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimations.BottomSlide</item>
@@ -204,16 +179,11 @@
         <item name="android:paddingBottom">0dp</item>
     </style>
 
-    <style name="AppTheme.Dialog.BottomAlert" parent="AppTheme.Dialog.BottomSheet">
+    <style name="Dialog.BottomAlert" parent="Dialog.BottomSheet">
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
     <style name="WindowAnimations" parent="android:style/Animation"/>
-
-    <style name="WindowAnimations.FadeOut">
-        <item name="android:windowEnterAnimation">@null</item>
-        <item name="android:windowExitAnimation">@anim/anime_fade_out</item>
-    </style>
 
     <style name="WindowAnimations.Fade">
         <item name="android:windowEnterAnimation">@anim/anime_fade_in</item>
@@ -225,61 +195,7 @@
         <item name="android:windowExitAnimation">@anim/anime_bottom_slide_down</item>
     </style>
 
-    <!-- Buttons -->
-
-    <style name="AppTheme.Button" parent="Platform.Button">
-        <item name="android:minHeight">@dimen/button_height</item>
-        <item name="android:textAppearance">@style/AppTheme.Text.Header.H6.Medium</item>
-        <item name="android:background">@drawable/sense_raised_button_selector</item>
-    </style>
-
-    <style name="AppTheme.Button.Borderless">
-        <item name="android:textAllCaps">true</item>
-        <item name="android:paddingTop">@dimen/x1</item>
-        <item name="android:paddingLeft">@dimen/x1</item>
-        <item name="android:paddingRight">@dimen/x1</item>
-        <item name="android:paddingBottom">@dimen/x1</item>
-        <item name="android:background">@drawable/ripple_selector</item>
-    </style>
-
-    <style name="AppTheme.Button.Borderless.Question">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:paddingTop">@dimen/x3</item>
-        <item name="android:paddingLeft">@dimen/x3</item>
-        <item name="android:paddingRight">@dimen/x3</item>
-        <item name="android:paddingBottom">@dimen/x3</item>
-        <item name="android:textColor">@color/primary_text</item>
-        <item name="android:textSize">@dimen/text_h6_3</item>
-        <item name="android:background">@drawable/selectable_dark_bounded</item>
-    </style>
-
-    <style name="AppTheme.Button.Borderless.Question.Choice">
-        <item name="android:textColor">@color/link_text_selector</item>
-    </style>
-
-    <style name="AppTheme.Button.Rounded">
-        <item name="android:minHeight">@dimen/button_height</item>
-        <item name="android:background">@drawable/sense_raised_button_selector</item>
-        <item name="android:textColor">@color/white_text</item>
-        <item name="android:textSize">@dimen/text_h6_5</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-
-    <style name="AppTheme.Button.ModeSelector">
-        <item name="android:background">@drawable/selectable_dark_bounded</item>
-        <item name="android:textColor">@color/text_color_selector_toggle_button</item>
-        <item name="android:textAppearance">@style/Body1</item>
-        <item name="android:paddingTop">@dimen/x2</item>
-        <item name="android:paddingLeft">@dimen/x2</item>
-        <item name="android:paddingRight">@dimen/x2</item>
-        <item name="android:paddingBottom">@dimen/x2</item>
-    </style>
-
-    <style name="AppTheme.Button.Facebook">
+    <style name="Facebook">
         <item name="android:paddingTop">@dimen/x2</item>
         <item name="android:paddingBottom">@dimen/x2</item>
         <item name="android:paddingLeft">@dimen/x3</item>
@@ -290,9 +206,15 @@
         <item name="android:drawablePadding">4dp</item>
         <item name="android:text">@string/action_autofill_from_facebook</item>
     </style>
-    <!-- Radio Buttons -->
 
-    <style name="AppTheme.RadioButton" parent="Widget.AppCompat.CompoundButton.RadioButton">
+    <style name="FacebookTheme" parent="FacebookTheme.Base"/>
+
+    <style name="FacebookTheme.Base" parent="android:Theme.Translucent.NoTitleBar">
+        <item name="android:progressBarStyle">@style/ProgressBar</item>
+    </style>
+
+    <!-- Radio Buttons -->
+    <style name="RadioButton" parent="Widget.AppCompat.CompoundButton.RadioButton">
         <item name="android:background">@drawable/selectable_dark_bounded</item>
         <item name="android:paddingTop">@dimen/x2</item>
         <item name="android:paddingBottom">@dimen/x2</item>
@@ -304,30 +226,13 @@
     </style>
 
     <!-- In order to allow left padding of radio selector but has issues syncing state with recyclerview adapters when first rendered-->
-    <style name="AppTheme.RadioButton.Drawable">
+    <style name="RadioButton.Drawable">
         <item name="android:button">@null</item>
         <item name="android:drawableStart">@drawable/radio_selector</item>
         <item name="android:drawablePadding">@dimen/x3</item>
     </style>
 
-
-
-    <!-- Spinners -->
-
-    <style name="AppTheme.Spinner" parent="Platform.Spinner">
-        <item name="android:background">@drawable/spinner_background_selector</item>
-        <item name="android:paddingEnd">14dp</item>
-        <item name="android:popupBackground">@drawable/app_theme_menu_dropdown_panel</item>
-        <item name="android:dropDownSelector">@drawable/app_theme_selectable_background</item>
-    </style>
-
-    <style name="AppTheme.Spinner.Borderless">
-        <item name="android:background">@color/transparent</item>
-        <item name="android:paddingEnd">0dp</item>
-    </style>
-
     <!-- Dividers -->
-
     <style name="Divider">
         <item name="android:background">@color/divider</item>
     </style>
@@ -345,20 +250,14 @@
         <item name="android:layout_marginLeft">@dimen/x9</item>
     </style>
 
-    <style name="Divider.Horizontal.Padded">
-        <item name="android:layout_marginTop">@dimen/x1</item>
-        <item name="android:layout_marginBottom">@dimen/x1</item>
-    </style>
-
     <style name="Divider.Vertical">
         <item name="android:layout_width">@dimen/divider_size</item>
         <item name="android:layout_height">match_parent</item>
     </style>
 
     <!-- EditText -->
-
-    <style name="AppTheme.Text.EditText" parent="Platform.EditText">
-        <item name="android:minHeight">@dimen/edit_text_min_height</item>
+    <!-- Has v21 style -->
+    <style name="EditText" parent="Widget.AppCompat.EditText">
 
         <item name="android:paddingTop">@dimen/x1</item>
         <item name="android:paddingBottom">@dimen/x1</item>
@@ -369,15 +268,10 @@
         <item name="android:textAppearance">@style/Body1.Primary</item>
         <item name="android:textColor">@color/primary_text_selector</item>
         <item name="android:textColorHint">@color/hint_text</item>
-    </style>
-
-    <style name="AppTheme.Text.EditText.Onboarding">
         <item name="android:textSize">@dimen/text_body</item>
-        <item name="android:minHeight">@dimen/text_body_line_height</item>
     </style>
 
     <!-- Specific Tinting -->
-
     <style name="TintOverride"/>
 
     <style name="TintOverride.SleepScore"/>
@@ -388,7 +282,7 @@
 
     <style name="TintOverride.SleepScore.Alert"/>
 
-    <!-- Other -->
+    <!-- Cards -->
 
     <style name="AppTheme.Card">
         <item name="android:background">@color/background_card</item>
@@ -415,7 +309,7 @@
         <item name="android:paddingRight">@dimen/x2</item>
     </style>
 
-    <style name="AppTheme.FadingScrollView">
+    <style name="FadingScrollView">
         <item name="android:fillViewport">true</item>
         <item name="android:fadingEdge">vertical</item>
         <item name="android:requiresFadingEdge">vertical</item>
@@ -424,7 +318,7 @@
 
     <!-- Progress Bars -->
 
-    <style name="AppTheme.ProgressBar" parent="android:Widget.Holo.ProgressBar">
+    <style name="ProgressBar" parent="Widget.AppCompat.ProgressBar">
         <item name="android:indeterminateOnly">true</item>
         <item name="android:indeterminateDrawable">@drawable/animated_progress_bar</item>
         <item name="android:indeterminateDuration">1000</item>
@@ -434,7 +328,7 @@
         <item name="android:maxHeight">55dp</item>
     </style>
 
-    <style name="AppTheme.ProgressBar.Small">
+    <style name="ProgressBar.Small">
         <item name="android:indeterminateDrawable">@drawable/animated_progress_bar_small</item>
         <item name="android:minWidth">40dp</item>
         <item name="android:maxWidth">40dp</item>
@@ -442,7 +336,7 @@
         <item name="android:maxHeight">40dp</item>
     </style>
 
-    <style name="AppTheme.ProgressBar.Tiny">
+    <style name="ProgressBar.Tiny">
         <item name="android:indeterminateDrawable">@drawable/animated_progress_bar_tiny</item>
         <item name="android:minWidth">20dp</item>
         <item name="android:maxWidth">20dp</item>
@@ -450,7 +344,7 @@
         <item name="android:maxHeight">20dp</item>
     </style>
 
-    <style name="AppTheme.ProgressBar.White">
+    <style name="ProgressBar.White">
         <item name="android:indeterminateDrawable">@drawable/animated_progress_bar_white</item>
         <item name="android:minWidth">28dp</item>
         <item name="android:maxWidth">28dp</item>
@@ -459,60 +353,13 @@
     </style>
 
     <!-- Has v21 style -->
-    <style name="AppTheme.ProgressBar.Horizontal" parent="android:Widget.Holo.ProgressBar.Horizontal">
+    <style name="ProgressBar.Horizontal" parent="android:Widget.Holo.ProgressBar.Horizontal">
         <item name="android:minWidth">164dp</item>
         <item name="android:maxWidth">164dp</item>
         <item name="android:secondaryProgress">100</item>
     </style>
 
-    <style name="FacebookTheme" parent="FacebookTheme.Base"/>
-
-    <style name="FacebookTheme.Base" parent="android:Theme.Translucent.NoTitleBar">
-        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
-    </style>
-
-    <!-- AppCompat Themes
-    (mainly for use with https://developer.android.com/topic/libraries/support-library/features.html#design) -->
-    <style name="AppTheme.AppCompat" parent="Theme.AppCompat.Light">
-        <item name="colorPrimary">@color/primary</item>
-        <!-- Dark variant of the primary branding color. By default, this is the color applied to
-         the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
-        <item name="colorPrimaryDark">@color/primary</item>
-        <!-- Bright complement to the primary branding color. By default, this is the color applied
-         to framework controls (via colorControlActivated). -->
-        <item name="colorAccent">@color/primary</item>
-        <!-- The color applied to framework controls in their normal state. -->
-        <item name="colorControlNormal">@color/primary</item>
-        <!-- The color applied to framework controls in their activated (ex. checked) state. -->
-        <item name="colorControlActivated">@color/primary</item>
-        <!-- The color applied to framework control highlights (ex. ripples, list selectors). -->
-        <item name="colorControlHighlight">@color/primary</item>
-        <!-- The color applied to framework buttons in their normal state. -->
-        <item name="colorButtonNormal">@color/primary</item>
-        <!-- The color applied to framework switch thumbs in their normal state. -->
-        <item name="colorSwitchThumbNormal">@color/primary</item>
-        <!-- Inactive track color(75% transparency) -->
-        <item name="android:windowBackground">@color/background</item>
-        <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
-
-        <item name="senseTextAppearanceHeading">@style/Title2.Primary
-        </item> <!-- todo confirm this doesn't break something -->
-        <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
-        <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
-        <item name="senseBackgroundSecondary">@color/background_card</item>
-
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
-        </item>
-        <!-- remove actionbar elevation for kitkat and older -->
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="actionBarStyle">@style/ActionBar</item>
-        <item name="actionMenuTextColor">@color/white</item>
-        <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
-        <item name="homeAsUpIndicator">@drawable/app_style_ab_up</item>
-
-        <item name="editTextStyle">@style/AppTheme.Text.EditText</item>
-    </style>
-
+    <!-- ActionBar -->
     <style name="ActionBar" parent="@style/Widget.AppCompat.ActionBar.Solid">
         <item name="titleTextStyle">@style/ActionBarStyle</item>
         <item name="elevation">0dp</item>
@@ -522,89 +369,42 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
-    <style name="AppTheme.AppCompat.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/primary</item>
-        <!-- Dark variant of the primary branding color. By default, this is the color applied to
-         the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
-        <item name="colorPrimaryDark">@color/primary</item>
-        <!-- Bright complement to the primary branding color. By default, this is the color applied
-         to framework controls (via colorControlActivated). -->
-        <item name="colorAccent">@color/primary</item>
-        <!-- The color applied to framework controls in their normal state. -->
-        <item name="colorControlNormal">@color/primary</item>
-        <!-- The color applied to framework controls in their activated (ex. checked) state. -->
-        <item name="colorControlActivated">@color/primary</item>
-        <!-- The color applied to framework control highlights (ex. ripples, list selectors). -->
-        <item name="colorControlHighlight">@color/primary</item>
-        <!-- The color applied to framework buttons in their normal state. -->
-        <item name="colorButtonNormal">@color/primary</item>
-        <!-- The color applied to framework switch thumbs in their normal state. -->
-        <item name="colorSwitchThumbNormal">@color/primary</item>
-        <!-- Inactive track color(75% transparency) -->
-        <item name="android:windowBackground">@color/background</item>
-        <item name="android:progressBarStyle">@style/AppTheme.AppCompat.ProgressBar</item>
-        <item name="senseTextAppearanceHeading">@style/Title2.Primary
-        </item> <!-- todo confirm this doesn't break something -->
-        <item name="senseTextAppearanceSubheading">@style/Body1.Secondary</item>
-        <item name="senseTextAppearanceFieldLabel">@style/Body1.Hint</item>
-        <item name="senseBackgroundSecondary">@color/background_card</item>
-
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/status_bar_normal
-        </item>
-
-        <item name="editTextStyle">@style/AppTheme.Text.EditText</item>
-    </style>
-
-    <style name="AppTheme.AppCompat.ProgressBar" parent="Widget.AppCompat.ProgressBar">
-        <item name="android:indeterminateOnly">true</item>
-        <item name="android:indeterminateDrawable">@drawable/animated_progress_bar</item>
-        <item name="android:indeterminateDuration">1000</item>
-        <item name="android:minWidth">55dp</item>
-        <item name="android:maxWidth">55dp</item>
-        <item name="android:minHeight">55dp</item>
-        <item name="android:maxHeight">55dp</item>
-    </style>
-
-    <style name="AppTheme.AppCompat.NoActionBar.TabLayout" parent="Widget.Design.TabLayout">
-        <item name="tabBackground">@color/background_card</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="tabSelectedTextColor">@color/tablayout_focused</item>
-        <item name="tabTextColor">@color/secondary_text</item>
-        <item name="tabIndicatorColor">@color/tablayout_focused</item>
-        <item name="tabPaddingStart">@dimen/x1</item>
-        <item name="tabGravity">fill</item>
-        <item name="tabMaxWidth">0dp</item>
-    </style>
-
-    <style name="AppTheme.AppCompat.NoActionBar.BottomBar" parent="AppTheme.AppCompat.NoActionBar.TabLayout">
-        <item name="android:minHeight">@dimen/action_bar_height</item>
-        <item name="tabIndicatorColor">@color/background_card</item>
-        <item name="tabIndicatorHeight">0dp</item>
-        <item name="android:layout_gravity">bottom</item>
-    </style>
-
-    <style name="AppTheme.AppCompat.Fab" parent="Widget.Design.FloatingActionButton">
+    <style name="Fab" parent="Widget.Design.FloatingActionButton">
         <item name="backgroundTint">@color/primary</item>
     </style>
 
-    <style name="AppTheme.AppCompat.AppSettingsActivity">
+    <!-- Activities -->
+    <style name="AppTheme.NoActionBar.OnboardingActivity">
+        <item name="android:windowBackground">@color/background_card</item>
+        <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
+    </style>
+
+    <style name="AppTheme.AppSettingsActivity">
         <item name="android:statusBarColor" tools:targetApi="lollipop">@color/primary_darkened
         </item>
         <item name="android:windowBackground">@color/background_card</item>
     </style>
 
-    <style name="AppTheme.AppCompat.NotificationActivity" parent="AppTheme.AppCompat.AppSettingsActivity">
+    <style name="AppTheme.Expansions" parent="AppTheme.AppSettingsActivity">
+        <item name="android:windowBackground">@color/expansions_background</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.VideoPlayer">
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/black</item>
+    </style>
+
+    <style name="AppTheme.NotificationActivity" parent="AppTheme.AppSettingsActivity">
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_cancel</item>
         <item name="homeAsUpIndicator">@drawable/app_style_ab_cancel</item>
     </style>
 
-    <style name="AppTheme.AppCompat.SearchListActivity">
+    <style name="AppTheme.SearchListActivity">
         <item name="android:statusBarColor" tools:targetApi="lollipop">
             @color/primary_darkened
         </item>
     </style>
 
-    <style name="AppTheme.AppCompat.NightModeActivity" parent="AppTheme.AppCompat.AppSettingsActivity">
+    <style name="AppTheme.NightModeActivity" parent="AppTheme.AppSettingsActivity">
     </style>
 
 </resources>

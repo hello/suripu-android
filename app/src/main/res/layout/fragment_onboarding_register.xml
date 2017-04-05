@@ -10,7 +10,7 @@
 
     <ScrollView
         android:id="@+id/fragment_onboarding_register_scroll_view"
-        style="@style/AppTheme.FadingScrollView"
+        style="@style/FadingScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -47,7 +47,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    style="@style/AppTheme.Button.Facebook"/>
+                    style="@style/Facebook"/>
 
                 <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/fragment_onboarding_register_import_facebook_info_button"

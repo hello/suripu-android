@@ -164,7 +164,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen_Welcome);
+        final Dialog dialog = new Dialog(getActivity(), R.style.Dialog_FullScreen_Welcome);
         dialog.setContentView(R.layout.fragment_dialog_welcome);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(true);

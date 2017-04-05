@@ -60,7 +60,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     //region Lifecycle
 
     public SenseBottomSheet(@NonNull Context context) {
-        super(context, R.style.AppTheme_Dialog_BottomSheet);
+        super(context, R.style.Dialog_BottomSheet);
 
         setContentView(R.layout.dialog_bottom_sheet);
         setCancelable(true);
