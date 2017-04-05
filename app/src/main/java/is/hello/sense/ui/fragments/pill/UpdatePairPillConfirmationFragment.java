@@ -30,7 +30,7 @@ public class UpdatePairPillConfirmationFragment extends SenseFragment implements
                 .setPrimaryOnClickListener(this::onPrimaryClick)
                 .setToolbarOnHelpClickListener(this::onHelpClick)
                 .setDiagramVideo(Uri.parse(getString(R.string.diagram_onboarding_clip_pill)))
-                .setDiagramImage(R.drawable.onboarding_clip_pill);
+                .setDiagramImage(R.drawable.vid_sleep_pill_attach);
         return view;
     }
 
