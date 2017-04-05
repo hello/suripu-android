@@ -31,7 +31,7 @@ public class OnboardingSmartAlarmFragment extends SenseFragment {
                 .setHeadingText(R.string.onboarding_title_smart_alarm)
                 .setSubheadingText(R.string.onboarding_info_smart_alarm)
                 .setDiagramVideo(Uri.parse(getString(R.string.diagram_onboarding_smart_alarm)))
-                .setDiagramImage(R.drawable.onboarding_smart_alarm)
+                .setDiagramImage(R.drawable.vid_smart_alarm_onboarding)
                 .setPrimaryButtonText(R.string.action_set_smart_alarm_now)
                 .setPrimaryOnClickListener(ignored -> complete(true))
                 .setSecondaryButtonText(R.string.action_do_later)
