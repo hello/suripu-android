@@ -19,7 +19,7 @@
         android:textAllCaps="false"/>
 
     <ScrollView
-        style="@style/AppTheme.FadingScrollView"
+        style="@style/FadingScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -74,7 +74,7 @@
 
     <Button
         android:id="@+id/fragment_onboarding_sign_in_go"
-        style="@style/AppTheme.Button.Rounded"
+        style="@style/Button.Raised"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/x3"

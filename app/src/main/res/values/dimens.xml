@@ -74,9 +74,7 @@
     <dimen name="profile_image_size">104dp</dimen>
 
     <!-- Can't erase yet because of styles reference todo erase/reuse everything below this-->
-    <dimen name="text_body_line_height">24px</dimen>
 
-    <dimen name="edit_text_min_height">45dp</dimen>
     <dimen name="edit_text_dash_width">4dp</dimen>
     <dimen name="edit_text_dash_gap">4dp</dimen>
     <dimen name="edit_text_stroke_size">1dp</dimen>
@@ -151,6 +149,8 @@
 
     <dimen name="sensor_graph_height">112dp</dimen>
     <dimen name="sensor_line_distance">5dp</dimen>
+    <integer name="sensor_graph_gradient_top_alpha">30</integer>
+    <integer name="sensor_graph_gradient_bottom_alpha">5</integer>
 
     <!-- Timeline -->
     <dimen name="timeline_gap_bottom">96dp</dimen>

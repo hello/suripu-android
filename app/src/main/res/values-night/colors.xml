@@ -135,4 +135,5 @@
 
     <color name="settings_icon_fill_color">@color/active_icon</color>
     <color name="sleep_score_icon_fill">@color/background_card</color>
+    <color name="sensor_graph_gradient">@color/white_12</color>
 </resources>

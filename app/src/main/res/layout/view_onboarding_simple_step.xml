@@ -32,7 +32,7 @@
 
     <ScrollView
         android:id="@+id/view_onboarding_simple_step_contents_scroll"
-        style="@style/AppTheme.FadingScrollView"
+        style="@style/FadingScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/view_onboarding_simple_step_secondary"

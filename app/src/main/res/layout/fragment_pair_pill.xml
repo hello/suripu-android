@@ -55,14 +55,14 @@
 
         <ProgressBar
             android:id="@+id/fragment_pair_pill_activity"
-            style="@style/AppTheme.ProgressBar.Small"
+            style="@style/ProgressBar.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>
 
         <ProgressBar
             android:id="@+id/fragment_pair_pill_progress_determinate"
-            style="@style/AppTheme.ProgressBar.Horizontal"
+            style="@style/ProgressBar.Horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

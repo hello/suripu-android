@@ -41,7 +41,7 @@
 
         <Button
             android:id="@+id/fragment_change_name_submit"
-            style="@style/AppTheme.Button.Rounded"
+            style="@style/Button.Raised"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/action_change_name"/>

@@ -40,9 +40,9 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
     OnSelectionChangedListener onSelectionChangedListener;
 
     @ColorRes
-    private int buttonSelectedColorRes = R.color.text_color_selector_toggle_button; // default color
+    private int buttonSelectedColorRes = R.color.primary_text_selector; // default color
     @ColorRes
-    private int buttonNotSelectedColorRes = R.color.text_color_selector_toggle_button; // default color
+    private int buttonNotSelectedColorRes = R.color.primary_text_selector; // default color
 
 
     //region Lifecycle
@@ -284,7 +284,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
             optionButton = new ToggleButton(context);
         } else {
             optionButton = new ToggleButton(context, null,
-                                            R.style.AppTheme_Button_ModeSelector);
+                                            R.style.Button_Flat_Primary);
 
         }
 

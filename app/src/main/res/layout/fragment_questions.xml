@@ -48,13 +48,13 @@
             android:layout_gravity="center"
             android:text="@string/action_submit"
             android:visibility="invisible"
-            style="@style/AppTheme.Button.Rounded" />
+            style="@style/Button.Raised" />
 
         <Button
             android:id="@+id/fragment_questions_skip"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            style="@style/AppTheme.Button.Borderless.Question"
+            style="@style/Button.Flat"
             android:text="@string/action_skip_question"/>
 
     </FrameLayout>

@@ -45,7 +45,7 @@ public class SenseAlertDialog extends AppCompatDialog {
 
     @Deprecated // todo make private
     public SenseAlertDialog(@NonNull final Context context) {
-        this(context, R.style.AppTheme_Dialog_Simple);
+        this(context, R.style.Dialog_Simple);
     }
 
     @Deprecated // todo make private
@@ -75,7 +75,7 @@ public class SenseAlertDialog extends AppCompatDialog {
      */
     public static SenseAlertDialog newBottomSheetInstance(@NonNull final Context context) {
         final SenseAlertDialog dialog = new SenseAlertDialog(context,
-                                                             R.style.AppTheme_Dialog_BottomSheet,
+                                                             R.style.Dialog_BottomSheet,
                                                              R.layout.dialog_sense_bottom_sheet);
         final Window window = dialog.getWindow();
         window.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
@@ -115,6 +115,16 @@ public class SenseAlertDialog extends AppCompatDialog {
             if (topViewDivider != null) {
                 topViewDivider.setVisibility(View.GONE);
             }
+        }
+    }
+
+    private void updateButtonDivider() {
+        final boolean hasMultipleButtonText =
+                (negativeButton.getVisibility() == View.VISIBLE && positiveButton.getVisibility() == View.VISIBLE);
+        if (hasMultipleButtonText) {
+            verticalDivider.setVisibility(View.VISIBLE);
+        } else {
+            verticalDivider.setVisibility(View.GONE);
         }
     }
 
@@ -193,6 +203,8 @@ public class SenseAlertDialog extends AppCompatDialog {
             positiveButton.setVisibility(View.GONE);
         }
 
+        updateButtonDivider();
+
     }
 
     public void setPositiveButton(@StringRes final int titleId, @Nullable final OnClickListener onClickListener) {
@@ -207,12 +219,12 @@ public class SenseAlertDialog extends AppCompatDialog {
         if (title != null) {
             negativeButton.setVisibility(View.VISIBLE);
             negativeButton.setText(title);
-            verticalDivider.setVisibility(View.VISIBLE);
             Views.setSafeOnClickListener(negativeButton, createClickListener(onClickListener, DialogInterface.BUTTON_NEGATIVE));
         } else {
             negativeButton.setVisibility(View.GONE);
-            verticalDivider.setVisibility(View.GONE);
         }
+
+        updateButtonDivider();
 
     }
 
