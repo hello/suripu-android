@@ -114,13 +114,8 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
      * If no user session (logged out) also use default mode;
      */
     public void updateToMatchPrefAndSession() {
-        if(!apiSessionManager.hasSession()) {
-            AppCompatDelegate.setDefaultNightMode(getAppCompatMode(getDefaultMode()));
-            return;
-        }
         @NightMode
-        int accountPrefNightMode = persistentPreferencesInteractor.getInt(getNightModePrefKey(),
-                                                                                getDefaultMode());
+        int accountPrefNightMode = getCurrentMode();
 
         if (accountPrefNightMode == AUTO) {
             accountPrefNightMode = getModeBasedOnLocationAndTime();
@@ -130,7 +125,6 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
         update();
     }
 
-    //todo this needs to be done on a background observable thread
     @VisibleForTesting
     @NightMode
     protected int getModeBasedOnLocationAndTime() {

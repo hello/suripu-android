@@ -41,7 +41,8 @@ public class LocationInteractor extends ValueInteractor {
     @Nullable
     @Override
     protected Observable<Location> provideUpdateObservable() {
-        return locationUtil.getLastKnownLocationV2().map( location -> {
+        return locationUtil.getLastKnownLocationV2()
+                           .map(location -> {
             if (location != null) {
                 locationManager.storeLocation(location);
             } else {

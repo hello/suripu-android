@@ -13,6 +13,7 @@ import android.support.v4.content.PermissionChecker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
@@ -117,7 +118,11 @@ public class LocationUtil {
                                                    .build();
     }
 
-    private static class GetLastKnownLocationCallback extends ClientConnectionCallBacks<Location> {
+    private static class GetLastKnownLocationCallback extends ClientConnectionCallBacks<Location>
+            implements LocationListener {
+
+        @Nullable
+        private static LocationListener sharedListener; //todo not thread safe
 
         GetLastKnownLocationCallback(@NonNull final Observer<Location> observer) {
             super(observer);
@@ -127,7 +132,32 @@ public class LocationUtil {
         @Override
         protected void onClientConnected(@NonNull final Observer<Location> observer,
                                          @NonNull final GoogleApiClient client) {
-            observer.onNext(LocationServices.FusedLocationApi.getLastLocation(client));
+            final Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(client);
+
+            removePendingUpdateRequest();
+            observer.onNext(lastLocation);
+            if (lastLocation != null) {
+                observer.onCompleted();
+            } else {
+                sharedListener = this; //todo last sharedListener will listen even in background til update
+                LocationServices.FusedLocationApi.requestLocationUpdates(client,
+                                                                         createLocationRequest(),
+                                                                         sharedListener);
+            }
+        }
+
+        @Override
+        public void onLocationChanged(final Location location) {
+            observer.onNext(location);
+            removePendingUpdateRequest();
+            observer.onCompleted();
+        }
+
+        private void removePendingUpdateRequest() {
+            if (sharedListener != null) {
+                LocationServices.FusedLocationApi.removeLocationUpdates(client, sharedListener);
+                sharedListener = null;
+            }
         }
     }
 
@@ -137,11 +167,7 @@ public class LocationUtil {
 
         RequestLocationSettingChangeCallback(@NonNull final Observer<Status> observer) {
             super(observer);
-            final LocationRequest locationRequest = LocationRequest.create()
-                           .setFastestInterval(1000) //millis
-                           .setExpirationTime(5 * 1000) //millis
-                           .setPriority(LocationRequest.PRIORITY_LOW_POWER);
-            this.locationSettingsRequest = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
+            this.locationSettingsRequest = new LocationSettingsRequest.Builder().addLocationRequest(createLocationRequest())
                                                                                 .setAlwaysShow(true)
                                                                                 .build();
         }
@@ -152,6 +178,7 @@ public class LocationUtil {
             LocationServices.SettingsApi.checkLocationSettings(client, locationSettingsRequest)
                                         .setResultCallback( callback -> {
                                             observer.onNext(callback.getStatus());
+                                            observer.onCompleted();
                                         });
         }
     }
@@ -160,9 +187,9 @@ public class LocationUtil {
             GoogleApiClient.ConnectionCallbacks,
             GoogleApiClient.OnConnectionFailedListener {
 
-        private final Observer<T> observer;
+        final Observer<T> observer;
         @Nullable
-        private GoogleApiClient client;
+        GoogleApiClient client;
 
         ClientConnectionCallBacks(@NonNull final Observer<T> observer) {
             this.observer = observer;
@@ -194,6 +221,12 @@ public class LocationUtil {
 
         public void setClient(@NonNull final GoogleApiClient client) {
             this.client = client;
+        }
+
+        protected LocationRequest createLocationRequest() {
+            return LocationRequest.create()
+                                  .setFastestInterval(1000) //millis
+                                  .setPriority(LocationRequest.PRIORITY_LOW_POWER);
         }
     }
 }
