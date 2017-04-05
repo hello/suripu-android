@@ -28,7 +28,7 @@ public class HomeViewPagerPresenterDelegate extends BaseViewPagerPresenterDelega
                 new HomeFragmentPagerAdapter.HomeItem(TrendsPresenterFragment.class,
                                                       TrendsPresenterFragment.class.getSimpleName(),
                                                       R.drawable.icon_trends_24,
-                                                      R.drawable.icon_trends_active_24),
+                                                      R.drawable.icon_trends_24_duo),
                 new HomeFragmentPagerAdapter.HomeItem(FeedPresenterFragment.class,
                                                       FeedPresenterFragment.class.getSimpleName(),
                                                       R.drawable.icon_insight_24,
