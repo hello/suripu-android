@@ -136,7 +136,7 @@
     </style>
 
     <!-- Dialogs -->
-    <style name="Dialog" parent="Theme.AppCompat.Light.Dialog">
+    <style name="Dialog" parent="Theme.AppCompat.Light.Dialog.MinWidth">
         <item name="android:progressBarStyle">@style/ProgressBar</item>
         <item name="android:progressBarStyleSmall">@style/ProgressBar.Tiny</item>
     </style>

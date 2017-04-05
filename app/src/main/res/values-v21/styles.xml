@@ -35,8 +35,14 @@
         <item name="android:secondaryProgressTint">@color/gray3</item>
     </style>
 
+    <style name="Dialog.NoElevation">
+        <item name="android:elevation">0dp</item>
+        <item name="android:popupElevation">0dp</item>
+        <item name="android:windowElevation">0dp</item>
+    </style>
 
-    <style name="Dialog.BottomSheet">
+
+    <style name="Dialog.BottomSheet" parent="Dialog.NoElevation">
         <item name="android:windowBackground">@color/background_card</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimations.BottomSlide</item>
@@ -44,9 +50,7 @@
         <item name="android:paddingLeft">0dp</item>
         <item name="android:paddingRight">0dp</item>
         <item name="android:paddingBottom">0dp</item>
-        <item name="android:elevation">0dp</item>
-        <item name="android:popupElevation">0dp</item>
-        <item name="android:windowElevation">0dp</item>
+
     </style>
 
     <style name="EditText" parent="Widget.AppCompat.EditText">
