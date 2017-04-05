@@ -243,7 +243,7 @@ public final class TestModule {
         final LocationUtil locationUtil = mock(LocationUtil.class);
         doReturn(null)
                 .when(locationUtil)
-                .getLastKnownLocation();
+                .getLastKnownLocationV2();
         return locationUtil;
     }
 

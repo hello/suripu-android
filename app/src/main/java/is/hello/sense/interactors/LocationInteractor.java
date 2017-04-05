@@ -4,6 +4,8 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.google.android.gms.common.api.Status;
+
 import is.hello.sense.graph.InteractorSubject;
 import is.hello.sense.util.LocationUtil;
 import is.hello.sense.util.PersistentLocationManager;
@@ -39,13 +41,14 @@ public class LocationInteractor extends ValueInteractor {
     @Nullable
     @Override
     protected Observable<Location> provideUpdateObservable() {
-        Location location = locationUtil.getLastKnownLocation();
-        if (location != null) {
-            locationManager.storeLocation(location);
-        } else {
-            location = locationManager.retrieveLocation();
-        }
-        return Observable.just(location);
+        return locationUtil.getLastKnownLocationV2().map( location -> {
+            if (location != null) {
+                locationManager.storeLocation(location);
+            } else {
+                location = locationManager.retrieveLocation();
+            }
+            return location;
+        });
     }
 
     @Nullable
@@ -56,5 +59,10 @@ public class LocationInteractor extends ValueInteractor {
 
     public boolean hasLocation() {
         return subject.getValue() != null;
+    }
+
+    @NonNull
+    public Observable<Status> getRequestSettingsChangeObservable() {
+        return locationUtil.requestSettingsChange();
     }
 }
