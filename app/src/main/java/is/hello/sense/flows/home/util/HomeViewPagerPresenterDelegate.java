@@ -24,7 +24,7 @@ public class HomeViewPagerPresenterDelegate extends BaseViewPagerPresenterDelega
                 new HomeFragmentPagerAdapter.HomeItem(TimelinePagerPresenterFragment.class,
                                                       TimelinePagerPresenterFragment.class.getSimpleName(),
                                                       R.drawable.icon_sense_24,
-                                                      R.drawable.icon_sense_active_24),
+                                                      R.drawable.icon_sense_24_duo),
                 new HomeFragmentPagerAdapter.HomeItem(TrendsPresenterFragment.class,
                                                       TrendsPresenterFragment.class.getSimpleName(),
                                                       R.drawable.icon_trends_24,
@@ -40,7 +40,7 @@ public class HomeViewPagerPresenterDelegate extends BaseViewPagerPresenterDelega
                 new HomeFragmentPagerAdapter.HomeItem(RoomConditionsPresenterFragment.class,
                                                       RoomConditionsPresenterFragment.class.getSimpleName(),
                                                       R.drawable.icon_sense_24,
-                                                      R.drawable.icon_sense_active_24)
+                                                      R.drawable.icon_sense_24_duo)
         };
     }
 
