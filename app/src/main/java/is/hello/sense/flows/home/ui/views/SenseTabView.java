@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import is.hello.sense.R;
 import is.hello.sense.ui.widget.graphing.drawables.SleepScoreIconDrawable;
+import is.hello.sense.ui.widget.util.Styles;
 
 public class SenseTabView extends FrameLayout {
 
@@ -63,7 +64,7 @@ public class SenseTabView extends FrameLayout {
 
     public SenseTabView setDrawables(@DrawableRes final int normal,
                                      @DrawableRes final int active) {
-        return setDrawables(ContextCompat.getDrawable(getContext(), normal),
+        return setDrawables(Styles.tintDrawable(getContext(), normal, R.color.active_icon),
                             ContextCompat.getDrawable(getContext(), active));
     }
 

@@ -36,7 +36,7 @@ public class HomeViewPagerPresenterDelegate extends BaseViewPagerPresenterDelega
                 new HomeFragmentPagerAdapter.HomeItem(SoundsPresenterFragment.class,
                                                       SoundsPresenterFragment.class.getSimpleName(),
                                                       R.drawable.icon_sounds_24,
-                                                      R.drawable.icon_sound_active_24),
+                                                      R.drawable.icon_sounds_24_duo),
                 new HomeFragmentPagerAdapter.HomeItem(RoomConditionsPresenterFragment.class,
                                                       RoomConditionsPresenterFragment.class.getSimpleName(),
                                                       R.drawable.icon_sense_24,
