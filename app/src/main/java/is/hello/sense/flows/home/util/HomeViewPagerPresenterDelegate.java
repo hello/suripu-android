@@ -32,7 +32,7 @@ public class HomeViewPagerPresenterDelegate extends BaseViewPagerPresenterDelega
                 new HomeFragmentPagerAdapter.HomeItem(FeedPresenterFragment.class,
                                                       FeedPresenterFragment.class.getSimpleName(),
                                                       R.drawable.icon_insight_24,
-                                                      R.drawable.icon_insight_active_24),
+                                                      R.drawable.icon_insight_24_duo),
                 new HomeFragmentPagerAdapter.HomeItem(SoundsPresenterFragment.class,
                                                       SoundsPresenterFragment.class.getSimpleName(),
                                                       R.drawable.icon_sounds_24,
