@@ -37,17 +37,17 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
 
     public final InteractorSubject<Integer> currentNightMode = this.subject;
     private final ApiSessionManager apiSessionManager;
-    protected final LocationInteractor locationUtil;
+    protected final LocationInteractor locationInteractor;
 
     public NightModeInteractor(@NonNull final PersistentPreferencesInteractor persistentPreferencesInteractor,
                                @NonNull final ApiSessionManager apiSessionManager,
                                @NonNull final Context applicationContext,
-                               @NonNull final LocationInteractor locationUtil) {
+                               @NonNull final LocationInteractor locationInteractor) {
         super();
         this.apiSessionManager = apiSessionManager;
         this.persistentPreferencesInteractor = persistentPreferencesInteractor;
         this.applicationContext = applicationContext;
-        this.locationUtil = locationUtil;
+        this.locationInteractor = locationInteractor;
     }
 
     @Override
@@ -128,7 +128,7 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
     @VisibleForTesting
     @NightMode
     protected int getModeBasedOnLocationAndTime() {
-        final Location location = locationUtil.getLastKnownLocation();
+        final Location location = locationInteractor.getLastKnownLocation();
         if (location == null) {
             return getDefaultMode();
         }

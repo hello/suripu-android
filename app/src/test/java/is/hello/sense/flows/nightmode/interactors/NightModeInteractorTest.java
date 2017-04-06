@@ -5,6 +5,8 @@ import android.location.Location;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
+import java.util.Calendar;
+
 import javax.inject.Inject;
 
 import is.hello.sense.flows.nightmode.NightMode;
@@ -19,6 +21,13 @@ import static org.mockito.Mockito.mock;
 public class NightModeInteractorTest extends InjectionTestCase {
     @Inject
     NightModeInteractor nightModeInteractor;
+
+    private DateTime getCurrentDate(final int hourOfDay) {
+        return new DateTime(Calendar.getInstance().getTimeInMillis())
+                .withHourOfDay(hourOfDay)
+                .withMinuteOfHour(0)
+                .withSecondOfMinute(0);
+    }
 
     @Test
     public void getModeBasedOnLocationAndTime() throws Exception {
@@ -36,22 +45,22 @@ public class NightModeInteractorTest extends InjectionTestCase {
 
         final boolean oneAM = nightModeInteractor.isNightTime(locationMock,
                                                                getTimeZone("America/Los_Angeles"),
-                                                               DateTime.now().withHourOfDay(0));
+                                                               getCurrentDate(1));
         assertThat(oneAM, equalTo(true));
 
         final boolean tenPM = nightModeInteractor.isNightTime(locationMock,
                                                                getTimeZone("America/Los_Angeles"),
-                                                               DateTime.now().withHourOfDay(20));
+                                                               getCurrentDate(20));
         assertThat(tenPM, equalTo(true));
 
         final boolean nineAM = nightModeInteractor.isNightTime(locationMock,
                                                                getTimeZone("America/Los_Angeles"),
-                                                               DateTime.now().withHourOfDay(9));
+                                                               getCurrentDate(9));
         assertThat(nineAM, equalTo(false));
 
         final boolean fourPM = nightModeInteractor.isNightTime(locationMock,
                                                                getTimeZone("America/Los_Angeles"),
-                                                               DateTime.now().withHourOfDay(16));
+                                                               getCurrentDate(16));
         assertThat(fourPM, equalTo(false));
     }
 

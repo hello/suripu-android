@@ -241,9 +241,10 @@ public final class TestModule {
     @Singleton
     LocationUtil provideLocationUtil() {
         final LocationUtil locationUtil = mock(LocationUtil.class);
-        doReturn(null)
+        doReturn(Observable.just(null))
                 .when(locationUtil)
                 .getLastKnownLocationV2();
+
         return locationUtil;
     }
 
