@@ -125,7 +125,7 @@ public class ConfigurationsInteractor extends ValueInteractor<ArrayList<Configur
         if(selectedConfig == null){
             return new Configuration.Empty(Constants.EMPTY_STRING,
                                            Constants.EMPTY_STRING,
-                                           R.drawable.error_white);
+                                           R.drawable.icon_warning_24);
         } else {
             return selectedConfig;
         }

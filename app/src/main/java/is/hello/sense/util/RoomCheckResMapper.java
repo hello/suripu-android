@@ -106,7 +106,7 @@ public class RoomCheckResMapper {
             }
             case UNKNOWN:
             default:
-                return R.drawable.error_white;
+                return R.drawable.icon_warning_24;
         }
     }
 
@@ -145,7 +145,7 @@ public class RoomCheckResMapper {
             }
             case UNKNOWN:
             default:
-                return R.drawable.error_white;
+                return R.drawable.icon_warning_24;
         }
     }
 }
