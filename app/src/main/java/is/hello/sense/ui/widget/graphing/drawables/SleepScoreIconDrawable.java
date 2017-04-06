@@ -22,7 +22,6 @@ import static is.hello.sense.util.PaintUtil.getCorrectTextSize;
  */
 //todo use this with new timeline navigation bar
 public class SleepScoreIconDrawable extends Drawable {
-    private static final float CIRCLE_THICKNESS_RATIO = .1f;
     private static final float TEXT_MARGIN_RATIO = .5f;
 
     private final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
@@ -43,6 +42,11 @@ public class SleepScoreIconDrawable extends Drawable {
         this.width = builder.width;
         this.height = builder.height;
         this.text = builder.text;
+        this.circlePaint.setStyle(Paint.Style.STROKE);
+        this.circlePaint.setDither(true);
+        this.circlePaint.setStrokeWidth(context.getResources()
+                                               .getDimensionPixelSize(R.dimen.icon_stroke_width));
+
         if (builder.isSelected) {
             this.circlePaint.setColor(selectedColor);
             this.textPaint.setColor(selectedColor);
@@ -78,8 +82,8 @@ public class SleepScoreIconDrawable extends Drawable {
         } else {
             radius = centerX;
         }
-        canvas.drawCircle(centerX, centerY, radius, this.circlePaint);
-        canvas.drawCircle(centerX, centerY, radius - radius * CIRCLE_THICKNESS_RATIO, this.fillPaint);
+        canvas.drawCircle(centerX, centerY, radius, this.fillPaint);
+        canvas.drawCircle(centerX, centerY, radius - (this.circlePaint.getStrokeWidth() / 2), this.circlePaint);
         drawAndCenterText(canvas, this.textPaint, this.text);
 
     }
