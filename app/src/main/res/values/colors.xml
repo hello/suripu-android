@@ -24,6 +24,7 @@
     <color name="disabled_icon">@color/black_25</color>
     <color name="primary_icon">@color/primary</color>
     <color name="destructive_icon">@color/error</color>
+    <color name="action_bar_menu_icon">@color/white</color>
 
     <!-- Alert colors -->
     <color name="sensor_alert">@color/error</color>

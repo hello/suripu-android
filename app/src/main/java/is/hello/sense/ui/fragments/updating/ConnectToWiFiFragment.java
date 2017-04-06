@@ -32,6 +32,7 @@ import is.hello.sense.presenters.connectwifi.BaseConnectWifiPresenter;
 import is.hello.sense.ui.common.OnboardingToolbar;
 import is.hello.sense.ui.fragments.BasePresenterFragment;
 import is.hello.sense.ui.widget.LabelEditText;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.EditorActionHandler;
 
@@ -125,6 +126,10 @@ public class ConnectToWiFiFragment extends BasePresenterFragment
     @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         inflater.inflate(R.menu.help, menu);
+        final MenuItem infoItem = menu.findItem(R.id.action_help);
+        if(infoItem != null){
+            Styles.tintMenuIcon(getActivity(), infoItem, R.color.action_bar_menu_icon);
+        }
     }
 
     @Override

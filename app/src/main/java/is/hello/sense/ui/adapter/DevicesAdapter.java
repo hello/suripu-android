@@ -13,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -396,7 +397,13 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             }
             status2.setText(color.nameRes);
             status2Label.setCompoundDrawablePadding(resources.getDimensionPixelSize(R.dimen.x2));
-            status2Label.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.info_button_icon_small, 0);
+            status2Label.setCompoundDrawablesWithIntrinsicBounds(null,
+                                                                 null,
+                                                                 Styles.tintDrawable(activity,
+                                                                                     R.drawable.icon_info_24,
+                                                                                     R.color.primary_icon),
+                                                                 null);
+            status2Label.setGravity(Gravity.CENTER_VERTICAL);
 
             status3Label.setText(R.string.label_firmware_version);
             status3.setText(device.firmwareVersion);
