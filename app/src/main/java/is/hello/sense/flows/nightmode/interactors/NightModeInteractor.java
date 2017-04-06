@@ -5,10 +5,20 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatDelegate;
 
+import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
+import com.luckycatlabs.sunrisesunset.dto.Location;
+
+import org.joda.time.DateTime;
+
+import java.util.Calendar;
+import java.util.TimeZone;
+
+import is.hello.sense.api.model.UserLocation;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.graph.InteractorSubject;
 import is.hello.sense.interactors.PersistentPreferencesInteractor;
 import is.hello.sense.interactors.ValueInteractor;
+import is.hello.sense.util.DateFormatter;
 import rx.Observable;
 
 public class NightModeInteractor extends ValueInteractor<Integer> {
@@ -72,7 +82,13 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
         }
         @AppCompatDelegate.NightMode
         final int accountPrefNightMode = persistentPreferencesInteractor.getCurrentNightMode();
-        AppCompatDelegate.setDefaultNightMode(accountPrefNightMode);
+        if (accountPrefNightMode != AppCompatDelegate.MODE_NIGHT_AUTO) {
+            AppCompatDelegate.setDefaultNightMode(accountPrefNightMode);
+        } else if (isNightTime()) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
         update();
     }
 
@@ -90,5 +106,23 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
 
     public int getConfigMode(@NonNull final Resources resources) {
         return resources.getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+    }
+
+    private boolean isNightTime() {
+        return isNightTime(TimeZone.getDefault(), DateTime.now());
+    }
+
+    private boolean isNightTime(@NonNull final TimeZone timeZone,
+                                @NonNull final DateTime dateTime) {
+        final UserLocation userLocation = persistentPreferencesInteractor.getUserLocation();
+        if (userLocation == null) {
+            return false;
+        }
+        final Location location = new Location(userLocation.getLatitude(), userLocation.getLongitude());
+        final SunriseSunsetCalculator calculator = new SunriseSunsetCalculator(location, timeZone);
+
+        return !DateFormatter.isBetween(dateTime,
+                                        new DateTime(calculator.getOfficialSunriseCalendarForDate(Calendar.getInstance()).getTimeInMillis()),
+                                        new DateTime(calculator.getOfficialSunsetCalendarForDate(Calendar.getInstance()).getTimeInMillis()));
     }
 }

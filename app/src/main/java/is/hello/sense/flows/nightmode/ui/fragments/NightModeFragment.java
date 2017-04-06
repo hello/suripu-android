@@ -2,26 +2,41 @@ package is.hello.sense.flows.nightmode.ui.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.View;
 
+import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
+import com.luckycatlabs.sunrisesunset.dto.Location;
+
+import java.util.TimeZone;
+
 import javax.inject.Inject;
 
+import is.hello.sense.R;
+import is.hello.sense.api.model.UserLocation;
+import is.hello.sense.flows.generic.ui.interactors.LocationInteractor;
 import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.flows.nightmode.ui.views.NightModeLocationPermission;
 import is.hello.sense.flows.nightmode.ui.views.NightModeView;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.permissions.LocationPermission;
+import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.util.DateFormatter;
 
 /**
  * Control night mode settings
  */
 public class NightModeFragment extends PresenterFragment<NightModeView>
-        implements NightModeView.Listener {
+        implements NightModeView.Listener,
+        LocationInteractor.Listener {
 
     @Inject
     NightModeInteractor nightModeInteractor;
+
+    @Inject
+    LocationInteractor locationInteractor;
 
     private final LocationPermission locationPermission = new NightModeLocationPermission(this);
 
@@ -32,6 +47,7 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
             presenterView = new NightModeView(getActivity());
             setInitialMode();
             presenterView.setListener(this);
+            locationInteractor.setListener(this);
         }
     }
 
@@ -69,7 +85,6 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
     //endregion
 
     //region NightModeView.Listener
-
     @Override
     public void offModeSelected() {
         this.setMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -82,7 +97,7 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
 
     @Override
     public void scheduledModeSelected() {
-        this.setMode(AppCompatDelegate.MODE_NIGHT_AUTO);
+        this.locationInteractor.requestLocation();
     }
 
     @Override
@@ -90,11 +105,38 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
         locationPermission.requestPermissionWithDialog();
         return true;
     }
-
     //endregion
 
+    //region LocationInteractor.Listener
+    @Override
+    public void onUserLocationReceived(final boolean hasLatLong) {
+        if (hasLatLong) {
+            setMode(AppCompatDelegate.MODE_NIGHT_AUTO);
+        } else {
+            presentUserLocationError();
+        }
+    }
+    //endregion
 
     //region methods
+    private void presentUserLocationError() {
+        if (presenterView == null) {
+            return;
+        }
+        new SenseAlertDialog.Builder()
+                .setTitle(R.string.nightmode_scheduled_error_title)
+                .setMessage(R.string.nightmode_scheduled_error_message)
+                .setPositiveButton(android.R.string.ok, null)
+                .build(getActivity())
+                .show();
+        if (nightModeInteractor.getCurrentMode().equals(AppCompatDelegate.MODE_NIGHT_YES)) {
+            this.presenterView.setAlwaysOnMode();
+        } else {
+            this.presenterView.setOffMode();
+        }
+    }
+
+
     private void setInitialMode() {
         if (nightModeInteractor == null) {
             this.presenterView.setOffMode();

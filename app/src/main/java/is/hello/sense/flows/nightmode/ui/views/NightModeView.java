@@ -32,6 +32,7 @@ public class NightModeView extends BindedPresenterView<ViewNightModeBinding> {
         this.binding.viewNightModeOff.setOnClickListener(this::offClickListener);
         this.binding.viewNightModeAlwaysOn.setOnClickListener(this::onClickListener);
         this.binding.viewNightModeScheduled.setOnClickListener(this::scheduleClickListener);
+        this.binding.viewNightModeScheduledInfo.setOnClickListener(this::scheduleClickListener);
     }
 
     @Override
@@ -44,6 +45,7 @@ public class NightModeView extends BindedPresenterView<ViewNightModeBinding> {
         this.binding.viewNightModeOff.setOnClickListener(null);
         this.binding.viewNightModeAlwaysOn.setOnClickListener(null);
         this.binding.viewNightModeScheduled.setOnClickListener(null);
+        this.binding.viewNightModeScheduledInfo.setOnClickListener(null);
         this.listener = null;
     }
 
