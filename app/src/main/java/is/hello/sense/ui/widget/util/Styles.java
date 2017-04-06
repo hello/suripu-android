@@ -528,6 +528,15 @@ public final class Styles {
         return drawable;
     }
 
+    public static Drawable tintDrawableWithStates(@NonNull final Context context,
+                                                  @DrawableRes final int drawableRes,
+                                                  @ColorRes final int colorStateListRes) {
+        final Drawable drawable = DrawableCompat.wrap(ContextCompat.getDrawable(context, drawableRes)
+                                                                   .mutate());
+        DrawableCompat.setTintList(drawable, ContextCompat.getColorStateList(context, colorStateListRes));
+        return drawable;
+    }
+
     public static Spanned fromHtml(@NonNull final String string) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return Html.fromHtml(string, Html.FROM_HTML_MODE_LEGACY);
