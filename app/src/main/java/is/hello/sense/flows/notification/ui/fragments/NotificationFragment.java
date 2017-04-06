@@ -62,7 +62,8 @@ public class NotificationFragment extends PresenterFragment<NotificationView>
     @Override
     public void onResume() {
         super.onResume();
-        this.notificationSettingsAdapter.showNotificationHeader(!NotificationManagerCompat.from(getActivity()).areNotificationsEnabled());
+        this.notificationSettingsAdapter.showNotificationHeader(!NotificationManagerCompat.from(getActivity())
+                                                                                          .areNotificationsEnabled());
     }
 
     @Override

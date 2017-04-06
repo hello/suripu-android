@@ -3,6 +3,7 @@ package is.hello.sense.ui.widget;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.DrawableRes;
@@ -97,6 +98,10 @@ public class ImageTextView extends LinearLayout {
 
     public void setImageResource(@DrawableRes final int drawableRes) {
         this.imageView.setImageResource(drawableRes);
+    }
+
+    public void setImageResource(@Nullable final Drawable drawable) {
+        this.imageView.setImageDrawable(drawable);
     }
 
     public void setTextViewVisibility(final boolean setVisible) {

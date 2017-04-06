@@ -2,7 +2,6 @@ package is.hello.sense.ui.adapter;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,9 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -221,14 +217,12 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
         }
 
         public ItemMessageCardViewHolder(@NonNull final ViewGroup parent,
-                                         @DrawableRes final int drawableRes,
                                          @StringRes final int titleRes,
                                          @StringRes final int messageRes,
                                          @StringRes final int actionRes,
                                          @Nullable final View.OnClickListener clickListener) {
             super(inflate(R.layout.item_message_card, parent));
             this.binding.itemMessageCardImageText.setText(titleRes);
-            this.binding.itemMessageCardImageText.setImageResource(drawableRes);
             this.binding.itemMessageCardMessage.setText(messageRes);
             this.binding.itemMessageCardAction.setText(actionRes);
             this.binding.itemMessageCardAction.setOnClickListener(clickListener);
