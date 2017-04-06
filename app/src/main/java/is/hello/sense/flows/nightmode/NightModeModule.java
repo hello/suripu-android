@@ -12,11 +12,13 @@ import is.hello.sense.flows.generic.ui.interactors.LocationInteractor;
 import is.hello.sense.flows.nightmode.ui.activities.NightModeActivity;
 import is.hello.sense.flows.nightmode.ui.fragments.NightModeFragment;
 import is.hello.sense.interactors.PersistentPreferencesInteractor;
+import is.hello.sense.ui.activities.LaunchActivity;
 
 @Module(complete = false,
         injects = {
                 NightModeActivity.class,
                 NightModeFragment.class,
+                LaunchActivity.class
         }
 )
 public class NightModeModule {

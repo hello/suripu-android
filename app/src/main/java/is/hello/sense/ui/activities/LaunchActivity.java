@@ -12,8 +12,10 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.flows.generic.ui.interactors.LocationInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
+import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.notifications.NotificationPressedInterceptorCounter;
 import is.hello.sense.rating.LocalUsageTracker;
@@ -34,6 +36,10 @@ public class LaunchActivity extends InjectionActivity {
     LocalUsageTracker localUsageTracker;
     @Inject
     NotificationPressedInterceptorCounter notificationPressedInterceptorCounter;
+    @Inject
+    NightModeInteractor nightModeInteractor;
+    @Inject
+    LocationInteractor locationInteractor;
 
     /**
      * Included to force {@link ApiService} to be initialized before
@@ -82,6 +88,17 @@ public class LaunchActivity extends InjectionActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        locationInteractor.resume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        locationInteractor.pause();
+    }
 
     private void showHomeActivity() {
         final Intent intent = new Intent(this, HomeActivity.class);
@@ -112,6 +129,7 @@ public class LaunchActivity extends InjectionActivity {
 
     private void bounce() {
         if (sessionManager.hasSession() && preferences.getBoolean(PreferencesInteractor.ONBOARDING_COMPLETED, false)) {
+            nightModeInteractor.updateToMatchPrefAndSession();
             if (!shouldFinish()) {
                 showHomeActivity();
             }
