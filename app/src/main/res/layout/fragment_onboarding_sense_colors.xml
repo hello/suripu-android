@@ -72,7 +72,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/fragment_onboarding_sense_colors_background"
-        app:sensePlaceholder="@drawable/diagram_onboarding_sense_colors"
+        app:sensePlaceholder="@drawable/vid_conditions"
         app:senseDiagramVideo="@string/diagram_onboarding_sense_colors"
         app:senseAutoStart="false" />
 

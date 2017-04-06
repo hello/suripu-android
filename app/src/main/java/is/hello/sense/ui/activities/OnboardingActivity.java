@@ -575,7 +575,7 @@ public class OnboardingActivity extends ScopedInjectionAppCompatActivity
         builder.setHeadingText(R.string.title_intro_sleep_pill);
         builder.setSubheadingText(R.string.info_intro_sleep_pill);
         builder.setDiagramVideo(Uri.parse(getString(R.string.diagram_onboarding_clip_pill)));
-        builder.setDiagramImage(R.drawable.onboarding_clip_pill);
+        builder.setDiagramImage(R.drawable.vid_sleep_pill_attach);
         builder.setCompact(true);
         builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_PILL_PLACEMENT);
         builder.setHelpStep(UserSupport.HelpStep.PILL_PLACEMENT);

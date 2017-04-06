@@ -46,7 +46,7 @@
             android:contentDescription="@string/info_pair_pill"
             app:senseAutoStart="false"
             app:senseDiagramVideo="@string/diagram_onboarding_pair_pill"
-            app:sensePlaceholder="@drawable/onboarding_shake_pill"/>
+            app:sensePlaceholder="@drawable/vid_sleep_pill_pairing"/>
 
         <Space
             android:layout_width="match_parent"
