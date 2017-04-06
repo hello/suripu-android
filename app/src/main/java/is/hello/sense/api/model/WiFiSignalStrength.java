@@ -9,10 +9,10 @@ import is.hello.sense.api.gson.Enums;
 
 public enum WiFiSignalStrength implements Enums.FromString{
 
-    NONE(R.string.accessibility_wifi_signal_strength_none, R.drawable.icon_wifi_none),
-    BAD(R.string.accessibility_wifi_signal_strength_bad, R.drawable.icon_wifi_bad),
-    FAIR(R.string.accessibility_wifi_signal_strength_fair, R.drawable.icon_wifi_fair),
-    GOOD(R.string.accessibility_wifi_signal_strength_good, R.drawable.icon_wifi_good);
+    NONE(R.string.accessibility_wifi_signal_strength_none, R.drawable.icon_wifi_none_24),
+    BAD(R.string.accessibility_wifi_signal_strength_bad, R.drawable.icon_wifi_bad_24),
+    FAIR(R.string.accessibility_wifi_signal_strength_fair, R.drawable.icon_wifi_fair_24),
+    GOOD(R.string.accessibility_wifi_signal_strength_good, R.drawable.icon_wifi_24); //todo decide if new enum should be made for full bars
 
     public final @StringRes int accessibilityString;
     public final @DrawableRes int icon;
