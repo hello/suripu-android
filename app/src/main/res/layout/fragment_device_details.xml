@@ -21,18 +21,31 @@
             android:layout_marginEnd="@dimen/x3"
             android:visibility="visible">
 
-            <TextView
-                android:id="@+id/fragment_device_details_alert_title_text"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/fragment_device_details_alert_title_container"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/Body2.Primary"
-                android:text="@string/app_name"
-                android:drawableStart="@drawable/icon_warning"
-                android:drawablePadding="@dimen/x1"
-                android:gravity="center"
+                android:orientation="horizontal"
                 android:layout_marginTop="@dimen/x5"
-                android:layout_marginStart="@dimen/x1"
-                android:layout_marginBottom="@dimen/x1"/>
+                android:layout_marginBottom="@dimen/x1">
+
+                <ImageView
+                    android:id="@+id/fragment_device_details_alert_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_warning_24"
+                    android:tint="@color/destructive_icon"
+                    android:padding="@dimen/x1"/>
+
+                <TextView
+                    android:id="@+id/fragment_device_details_alert_title_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Body2.Primary"
+                    android:text="@string/app_name"
+                    android:layout_gravity="center_vertical"/>
+
+            </LinearLayout>
 
             <ProgressBar
                 android:id="@+id/fragment_device_details_alert_busy"

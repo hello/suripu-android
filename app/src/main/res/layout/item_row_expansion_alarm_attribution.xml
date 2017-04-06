@@ -47,7 +47,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start|center_vertical"
-            android:src="@drawable/icon_warning"
+            android:src="@drawable/icon_warning_24"
+            android:tint="@color/destructive_icon"
             android:visibility="gone"/>
 
     </FrameLayout>

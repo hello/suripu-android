@@ -211,7 +211,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start|center_vertical"
-                        android:src="@drawable/icon_warning"
+                        android:src="@drawable/icon_warning_24"
+                        android:tint="@color/destructive_icon"
                         android:visibility="gone"/>
 
                     <ProgressBar
@@ -275,8 +276,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start|center_vertical"
-                        android:src="@drawable/icon_warning"
-                        android:visibility="gone"/>
+                        android:src="@drawable/icon_warning_24"
+                        android:tint="@color/destructive_icon"
+                        android:visibility="gone"
+                        tools:visibility="visible"/>
 
                     <ProgressBar
                         android:id="@+id/view_smart_alarm_detail_expansions_temp_progress"

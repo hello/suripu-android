@@ -163,11 +163,11 @@ public class ConfigSelectionFragment extends PresenterFragment<ConfigSelectionVi
         if (expansion != null) {
             return new Configuration.Empty(getString(R.string.expansions_configuration_selection_item_missing_title_format, expansion.getConfigurationType()),
                                            getString(R.string.expansions_configuration_selection_item_missing_subtitle_format, expansion.getCompanyName(), expansion.getConfigurationType()),
-                                           R.drawable.icon_warning);
+                                           R.drawable.icon_warning_24);
         } else {
             return new Configuration.Empty(getString(R.string.expansions_configuration_selection_empty_title_default),
                                            getString(R.string.expansions_configuration_selection_empty_subtitle_default),
-                                           R.drawable.icon_warning);
+                                           R.drawable.icon_warning_24);
         }
     }
 

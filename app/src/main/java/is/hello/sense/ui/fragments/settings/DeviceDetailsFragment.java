@@ -35,6 +35,7 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
     private TextView alertText;
     private Button primaryAlertAction;
     private Button secondaryAlertAction;
+    private ViewGroup alertTitleContainer;
     private TextView alertTitleText;
 
     private LinearLayout actionsContainer;
@@ -68,6 +69,7 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
         this.alertContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_alert);
         this.alertBusy = (ProgressBar) alertContainer.findViewById(R.id.fragment_device_details_alert_busy);
         this.alertText = (TextView) alertContainer.findViewById(R.id.fragment_device_details_alert_text);
+        this.alertTitleContainer = (ViewGroup) alertContainer.findViewById(R.id.fragment_device_details_alert_title_container);
         this.alertTitleText = (TextView) alertContainer.findViewById(R.id.fragment_device_details_alert_title_text);
         this.primaryAlertAction = (Button) alertContainer.findViewById(R.id.fragment_device_details_alert_action);
         this.secondaryAlertAction = (Button) alertContainer.findViewById(R.id.fragment_device_details_alert_action_secondary);
@@ -87,6 +89,7 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
         this.alertContainer = null;
         this.alertBusy = null;
         this.alertText = null;
+        this.alertTitleContainer = null;
         this.alertTitleText = null;
         this.primaryAlertAction = null;
 
@@ -159,7 +162,7 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
 
     protected void showBlockingAlert(@StringRes int messageRes) {
         if (getView() != null) {
-            alertTitleText.setVisibility(View.GONE);
+            alertTitleContainer.setVisibility(View.GONE);
             alertBusy.setVisibility(View.VISIBLE);
             primaryAlertAction.setVisibility(View.GONE);
             secondaryAlertAction.setVisibility(View.GONE);
@@ -177,7 +180,7 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
         primaryAlertAction.setVisibility(View.VISIBLE);
 
         if (alert.title != null) {
-            alertTitleText.setVisibility(View.VISIBLE);
+            alertTitleContainer.setVisibility(View.VISIBLE);
             alertTitleText.setText(alert.title.resolve(getActivity()));
         }
         alertText.setGravity(Gravity.TOP | Gravity.START);
