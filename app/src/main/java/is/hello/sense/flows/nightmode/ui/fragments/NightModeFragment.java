@@ -29,8 +29,7 @@ import is.hello.sense.util.DateFormatter;
  * Control night mode settings
  */
 public class NightModeFragment extends PresenterFragment<NightModeView>
-        implements NightModeView.Listener,
-        LocationInteractor.Listener {
+        implements NightModeView.Listener {
 
     @Inject
     NightModeInteractor nightModeInteractor;
@@ -47,7 +46,6 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
             presenterView = new NightModeView(getActivity());
             setInitialMode();
             presenterView.setListener(this);
-            locationInteractor.setListener(this);
         }
     }
 
@@ -60,6 +58,7 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
     @Override
     public void onResume() {
         super.onResume();
+        this.locationInteractor.resume();
         if (hasPresenterView()) {
             final boolean hasLocationPermission = this.locationPermission.isGranted();
             final boolean currentModeIsAuto = this.nightModeInteractor.getCurrentMode() == AppCompatDelegate.MODE_NIGHT_AUTO;
@@ -68,6 +67,12 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
             }
             this.presenterView.setScheduledModeEnabled(hasLocationPermission);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        this.locationInteractor.pause();
     }
 
     @Override
@@ -97,24 +102,19 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
 
     @Override
     public void scheduledModeSelected() {
-        this.locationInteractor.requestLocation();
+        final UserLocation userLocation = this.locationInteractor.getCurrentUserLocation();
+        if (userLocation == null) {
+            presentUserLocationError();
+        } else {
+            debugLog("current user location: " + userLocation.toString());
+            setMode(AppCompatDelegate.MODE_NIGHT_AUTO);
+        }
     }
 
     @Override
     public boolean onLocationPermissionLinkIntercepted() {
         locationPermission.requestPermissionWithDialog();
         return true;
-    }
-    //endregion
-
-    //region LocationInteractor.Listener
-    @Override
-    public void onUserLocationReceived(final boolean hasLatLong) {
-        if (hasLatLong) {
-            setMode(AppCompatDelegate.MODE_NIGHT_AUTO);
-        } else {
-            presentUserLocationError();
-        }
     }
     //endregion
 
@@ -140,6 +140,11 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
     private void setInitialMode() {
         if (nightModeInteractor == null) {
             this.presenterView.setOffMode();
+            return;
+        }
+        if (nightModeInteractor.getCurrentMode().equals(AppCompatDelegate.MODE_NIGHT_AUTO) && locationInteractor.getCurrentUserLocation() == null) {
+            this.presenterView.setOffMode();
+            this.setMode(AppCompatDelegate.MODE_NIGHT_NO);
             return;
         }
 

@@ -74,6 +74,10 @@ public class PersistentPreferencesInteractor extends BasePreferencesInteractor {
         }
     }
 
+    public void clearUserLocation() {
+        edit().remove(getUserLocationKey()).apply();
+    }
+
     @AppCompatDelegate.NightMode
     public int getCurrentNightMode() {
         switch (getInt(getNightModeSettingKey(), AppCompatDelegate.MODE_NIGHT_NO)) {

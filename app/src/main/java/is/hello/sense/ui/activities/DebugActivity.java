@@ -85,6 +85,8 @@ public class DebugActivity extends InjectionActivity {
         adapter.add(new DetailItem("View Log", this::viewLog));
         adapter.add(new DetailItem("Clear Log", this::clearLog));
 
+        adapter.add(new DetailItem("Clear UserLocation prefs", this::clearUserLocationPrefs));
+
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
         adapter.add(new DetailItem("Share Log", this::sendLog));
 
@@ -176,6 +178,11 @@ public class DebugActivity extends InjectionActivity {
                          });
     }
 
+    public void clearUserLocationPrefs() {
+        this.persistentPreferences.clearUserLocation();
+        Toast.makeText(getApplicationContext(), "Forgot UserLocation for account: " + InternalPrefManager.getAccountId(this), Toast.LENGTH_SHORT).show();
+    }
+
     public void sendLog() {
         bindAndSubscribe(SessionLogger.flush(), ignored -> {
             Intent intent = new Intent(Intent.ACTION_SEND);
@@ -191,9 +198,9 @@ public class DebugActivity extends InjectionActivity {
         Toast.makeText(getApplicationContext(), "Forgot welcome dialogs", Toast.LENGTH_SHORT).show();
     }
 
-    public void clearTutorials(){
+    public void clearTutorials() {
         Tutorial.clearTutorials(this);
-        Toast.makeText(getApplicationContext(), "Forgot tutorials for account: "+ InternalPrefManager.getAccountId(this), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Forgot tutorials for account: " + InternalPrefManager.getAccountId(this), Toast.LENGTH_SHORT).show();
     }
 
     public void reEnableReviewPrompt() {

@@ -1,19 +1,21 @@
 package is.hello.sense.flows.generic.ui.interactors;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import android.support.v4.app.ActivityCompat;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 
 import is.hello.sense.api.model.UserLocation;
@@ -21,11 +23,12 @@ import is.hello.sense.interactors.PersistentPreferencesInteractor;
 
 public class LocationInteractor
         implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
     private final Context context;
     private final GoogleApiClient apiClient;
-    private Listener listener;
-
+    private final LocationRequest locationRequest;
+    private final LocationSettingsRequest locationSettingsRequest;
     private final PersistentPreferencesInteractor persistentPreferencesInteractor;
 
     public LocationInteractor(@NonNull final Context context,
@@ -36,79 +39,99 @@ public class LocationInteractor
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+        this.locationRequest = new LocationRequest()
+                .setInterval(10000)
+                .setFastestInterval(5000)
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        this.locationSettingsRequest = new LocationSettingsRequest.Builder()
+                .addLocationRequest(this.locationRequest)
+                .build();
         this.persistentPreferencesInteractor = prefs;
     }
 
+    // region ConnectionCallbacks
     @Override
     public void onConnected(@Nullable final Bundle bundle) {
-        if (this.listener == null) {
-            return;
+        if (hasPermissions()) {
+            //noinspection MissingPermission
+            handleResult(LocationServices.FusedLocationApi.getLastLocation(apiClient));
         }
-        //todo check permission
-        final Location location = LocationServices.FusedLocationApi.getLastLocation(apiClient);
-        handleResult(location);
     }
 
     @Override
     public void onConnectionSuspended(final int i) {
         handleResult(null);
     }
+    //endregion
 
+    //region OnConnectionFailedListener
     @Override
     public void onConnectionFailed(@NonNull final ConnectionResult connectionResult) {
         handleResult(null);
     }
 
-    public void setListener(@NonNull final Listener listener) {
-        this.listener = listener;
+    //endregion
+
+    //region LocationListener
+    @Override
+    public void onLocationChanged(final Location location) {
+        handleResult(location);
+
+    }
+    //endregion
+
+    //region methods
+    public void resume() {
+        this.apiClient.connect();
+        startLocationUpdates();
     }
 
-    public void requestLocation() {
-        this.apiClient.connect();
-        hasLocationSettings();
+    public void pause() {
+        if (this.apiClient.isConnected()) {
+            stopLocationUpdates();
+        }
+        this.apiClient.disconnect();
     }
+
+    private void startLocationUpdates() {
+        LocationServices.SettingsApi
+                .checkLocationSettings(
+                        apiClient,
+                        locationSettingsRequest)
+                .setResultCallback(locationSettingsResult -> {
+                    final Status status = locationSettingsResult.getStatus();
+                    switch (status.getStatusCode()) {
+                        case LocationSettingsStatusCodes.SUCCESS:
+                            if (hasPermissions()) {
+                                //noinspection MissingPermission
+                                LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, locationRequest, LocationInteractor.this);
+                            }
+                            break;
+                    }
+                });
+    }
+
+    private void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                apiClient,
+                this).setResultCallback(status -> {
+        });
+    }
+
 
     private void handleResult(@Nullable final Location location) {
-        this.apiClient.disconnect();
         final UserLocation userLocation = location == null ? null : new UserLocation(location.getLatitude(), location.getLongitude());
         this.persistentPreferencesInteractor.saveUserLocation(userLocation);
-        if (listener == null) {
-            return;
-        }
-        this.listener.onUserLocationReceived(userLocation != null);
     }
 
-    private void hasLocationSettings() {
-        final LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(createLocationRequest());
-
-        LocationServices.SettingsApi.checkLocationSettings(apiClient,
-                                                           builder.build())
-                                    .setResultCallback(result -> {
-                                        final Status status = result.getStatus();
-                                        final LocationSettingsStates states = result.getLocationSettingsStates();
-                                        Log.e("LocInt", "Status: " + status.getStatusMessage());
-                                        Log.e("LocInt", "States: " + states.toString());
-
-                                    });
-
+    public UserLocation getCurrentUserLocation() {
+        return this.persistentPreferencesInteractor.getUserLocation();
     }
 
-    protected LocationRequest createLocationRequest() {
-        final LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(100);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        return mLocationRequest;
+    private boolean hasPermissions() {
+        return ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
+    //endregion
 
-    protected LocationSettingsRequest buildLocationSettingsRequest() {
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
-        builder.addLocationRequest(createLocationRequest());
-        return builder.build();
-    }
-
-    public interface Listener {
-        void onUserLocationReceived(final boolean hasLatLong);
-    }
 }
