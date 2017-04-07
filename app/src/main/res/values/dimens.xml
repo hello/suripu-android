@@ -110,9 +110,6 @@
     <dimen name="interaction_slide_negative">-70dp</dimen>
     <dimen name="interaction_slide_positive">70dp</dimen>
 
-    <dimen name="view_rotary_picker_item_height">55sp</dimen>
-
-
     <dimen name="sense_voice_circles_x1">146dp</dimen>
     <dimen name="sense_voice_circles_x2">192dp</dimen>
     <dimen name="sense_voice_circles_x3">236dp</dimen>
@@ -127,12 +124,7 @@
 
     <dimen name="graph_point_size">5dp</dimen>
 
-    <dimen name="condition_graph_height">30dp</dimen>
-    <dimen name="history_graph_height">175dp</dimen>
-
     <dimen name="series_graph_min_height">200dp</dimen>
-    <dimen name="series_graph_line_size">1dp</dimen>
-    <dimen name="series_graph_shadow_radius">4dp</dimen>
     <dimen name="series_graph_offscreen_inset">8dp</dimen>
 
     <dimen name="trends_bargraph_highlight_top_margin">16dp</dimen>

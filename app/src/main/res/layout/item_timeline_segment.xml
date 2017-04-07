@@ -36,8 +36,7 @@
             android:layout_alignParentStart="true"
             android:importantForAccessibility="no"
             android:tint="@color/timeline_event_icon"
-            android:padding="@dimen/x2"
-            tools:src="@drawable/icon_bed_move_partner_24"/>
+            android:padding="@dimen/x2"/>
 
         <TextView
             android:id="@+id/item_timeline_segment_message"
