@@ -523,7 +523,8 @@ public final class Styles {
     public static Drawable tintDrawable(@NonNull final Context context,
                                         @DrawableRes final int drawableRes,
                                         @ColorRes final int colorRes) {
-        final Drawable drawable = DrawableCompat.wrap(ContextCompat.getDrawable(context, drawableRes));
+        final Drawable drawable = DrawableCompat.wrap(ContextCompat.getDrawable(context, drawableRes)
+                                                                   .mutate());
         DrawableCompat.setTint(drawable, ContextCompat.getColor(context, colorRes));
         return drawable;
     }
