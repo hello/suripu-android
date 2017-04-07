@@ -13,6 +13,7 @@ import com.segment.analytics.Properties;
 import javax.inject.Inject;
 
 import is.hello.buruberi.util.Rx;
+import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.home.ui.fragments.HomePresenterFragment;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
@@ -98,8 +99,12 @@ public class HomeActivity extends FragmentNavigationActivity
         } else if (intent.hasExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD));
         }
+    }
 
-
+    @Override
+    public void recreate() {
+        super.recreate();
+        setStatusBarColorRes(R.color.status_bar_normal);
     }
 
     //region Onboarding flow provider
