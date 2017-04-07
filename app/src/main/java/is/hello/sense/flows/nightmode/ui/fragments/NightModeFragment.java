@@ -1,9 +1,7 @@
 package is.hello.sense.flows.nightmode.ui.fragments;
 
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatDelegate;
-import android.view.View;
 
 import javax.inject.Inject;
 
@@ -39,12 +37,6 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
             setInitialMode();
             presenterView.setListener(this);
         }
-    }
-
-    @Override
-    public void onViewCreated(final View view,
-                              final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
