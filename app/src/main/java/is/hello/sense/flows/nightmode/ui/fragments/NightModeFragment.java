@@ -2,14 +2,8 @@ package is.hello.sense.flows.nightmode.ui.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.View;
-
-import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
-import com.luckycatlabs.sunrisesunset.dto.Location;
-
-import java.util.TimeZone;
 
 import javax.inject.Inject;
 
@@ -19,11 +13,9 @@ import is.hello.sense.flows.generic.ui.interactors.LocationInteractor;
 import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.flows.nightmode.ui.views.NightModeLocationPermission;
 import is.hello.sense.flows.nightmode.ui.views.NightModeView;
-import is.hello.sense.functional.Functions;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.widget.SenseAlertDialog;
-import is.hello.sense.util.DateFormatter;
 
 /**
  * Control night mode settings
@@ -58,7 +50,7 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
     @Override
     public void onResume() {
         super.onResume();
-        this.locationInteractor.resume();
+        this.locationInteractor.start();
         if (hasPresenterView()) {
             final boolean hasLocationPermission = this.locationPermission.isGranted();
             final boolean currentModeIsAuto = this.nightModeInteractor.getCurrentMode() == AppCompatDelegate.MODE_NIGHT_AUTO;
@@ -72,7 +64,7 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
     @Override
     public void onPause() {
         super.onPause();
-        this.locationInteractor.pause();
+        this.locationInteractor.stop();
     }
 
     @Override
@@ -105,8 +97,8 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
         final UserLocation userLocation = this.locationInteractor.getCurrentUserLocation();
         if (userLocation == null) {
             presentUserLocationError();
+            this.locationInteractor.start();
         } else {
-            debugLog("current user location: " + userLocation.toString());
             setMode(AppCompatDelegate.MODE_NIGHT_AUTO);
         }
     }
@@ -159,7 +151,6 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
                 presenterView.setScheduledMode();
                 break;
             default:
-                debugLog("no case found for current night mode defaulting to off.");
                 presenterView.setOffMode();
         }
 

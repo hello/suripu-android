@@ -10,6 +10,10 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import is.hello.sense.flows.generic.ui.interactors.LocationInteractor;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
+import is.hello.sense.flows.nightmode.ui.fragments.NightModeFragment;
+import is.hello.sense.interactors.PersistentPreferencesInteractor;
 import is.hello.sense.interactors.PhoneBatteryInteractor;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.common.ProfileImageManager;
@@ -22,7 +26,9 @@ import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
         RegisterFragment.class,
         ListActivity.class,
         PhoneBatteryInteractor.class,
-        ConnectPillFragment.class
+        ConnectPillFragment.class,
+        HomeActivity.class,
+        NightModeFragment.class
 })
 public class UtilityModule {
 
@@ -81,5 +87,12 @@ public class UtilityModule {
     @Singleton
     SenseCache.FirmwareCache providesFirmwareCache(@NonNull final Context context) {
         return new SenseCache.FirmwareCache(context);
+    }
+
+    @Provides
+    @Singleton
+    LocationInteractor provideLocationInteractor(@NonNull final Context context,
+                                                 @NonNull final PersistentPreferencesInteractor persistentPreferencesInteractor) {
+        return new LocationInteractor(context, persistentPreferencesInteractor);
     }
 }

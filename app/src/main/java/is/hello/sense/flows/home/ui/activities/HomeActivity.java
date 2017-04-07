@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatDelegate;
 
 import com.segment.analytics.Properties;
 
@@ -15,6 +16,7 @@ import javax.inject.Inject;
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.flows.generic.ui.interactors.LocationInteractor;
 import is.hello.sense.flows.home.ui.fragments.HomePresenterFragment;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
@@ -39,6 +41,9 @@ public class HomeActivity extends FragmentNavigationActivity
 
     @Inject
     NightModeInteractor nightModeInteractor;
+    @Inject
+    LocationInteractor locationInteractor;
+
 
     public static Intent getIntent(@NonNull final Context context,
                                    @OnboardingActivity.Flow final int fromFlow) {
@@ -49,22 +54,30 @@ public class HomeActivity extends FragmentNavigationActivity
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        locationInteractor.stop();
+    }
+
+    @Override
     protected void onCreate(@NonNull final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //todo resolve onResume issue after theme change on scheduled mode
         final int initialConfigMode = nightModeInteractor.getConfigMode(getResources());
         bindAndSubscribe(nightModeInteractor.currentNightMode,
                          mode -> {
                              if (nightModeInteractor.requiresRecreate(initialConfigMode,
                                                                       getResources())) {
                                  recreate();
-                             }},
+                             }
+                         },
                          Functions.LOG_ERROR);
     }
 
     @Override
     protected void onCreateAction() {
+        if (AppCompatDelegate.MODE_NIGHT_AUTO == this.nightModeInteractor.getCurrentMode()) {
+            this.locationInteractor.start();
+        }
         final Intent intent = getIntent();
         if (intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));

@@ -1,12 +1,14 @@
 package is.hello.sense.flows.generic.ui.interactors;
 
 import android.content.Context;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -34,7 +36,7 @@ public class LocationInteractor
     public LocationInteractor(@NonNull final Context context,
                               @NonNull final PersistentPreferencesInteractor prefs) {
         this.context = context;
-        this.apiClient = new GoogleApiClient.Builder(context)
+        this.apiClient = new GoogleApiClient.Builder(this.context)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
@@ -54,7 +56,12 @@ public class LocationInteractor
     public void onConnected(@Nullable final Bundle bundle) {
         if (hasPermissions()) {
             //noinspection MissingPermission
-            handleResult(LocationServices.FusedLocationApi.getLastLocation(apiClient));
+            final Location location = LocationServices.FusedLocationApi.getLastLocation(apiClient);
+            if (location == null) {
+                startLocationUpdates();
+            } else {
+                handleResult(location);
+            }
         }
     }
 
@@ -81,16 +88,17 @@ public class LocationInteractor
     //endregion
 
     //region methods
-    public void resume() {
-        this.apiClient.connect();
-        startLocationUpdates();
+    public void start() {
+        if (!this.apiClient.isConnected() && !this.apiClient.isConnecting()) {
+            this.apiClient.connect();
+        }
     }
 
-    public void pause() {
-        if (this.apiClient.isConnected()) {
+    public void stop() {
+        if (this.apiClient.isConnecting() || this.apiClient.isConnected()) {
             stopLocationUpdates();
+            this.apiClient.disconnect();
         }
-        this.apiClient.disconnect();
     }
 
     private void startLocationUpdates() {
@@ -114,14 +122,14 @@ public class LocationInteractor
     private void stopLocationUpdates() {
         LocationServices.FusedLocationApi.removeLocationUpdates(
                 apiClient,
-                this).setResultCallback(status -> {
-        });
+                this);
     }
 
 
     private void handleResult(@Nullable final Location location) {
-        final UserLocation userLocation = location == null ? null : new UserLocation(location.getLatitude(), location.getLongitude());
-        this.persistentPreferencesInteractor.saveUserLocation(userLocation);
+        if (location != null) {
+            this.persistentPreferencesInteractor.saveUserLocation(new UserLocation(location.getLatitude(), location.getLongitude()));
+        }
     }
 
     public UserLocation getCurrentUserLocation() {
@@ -132,6 +140,6 @@ public class LocationInteractor
         return ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
-    //endregion
 
+    //endregion
 }

@@ -38,8 +38,6 @@ public class LaunchActivity extends InjectionActivity {
     NotificationPressedInterceptorCounter notificationPressedInterceptorCounter;
     @Inject
     NightModeInteractor nightModeInteractor;
-    @Inject
-    LocationInteractor locationInteractor;
 
     /**
      * Included to force {@link ApiService} to be initialized before
@@ -86,18 +84,6 @@ public class LaunchActivity extends InjectionActivity {
         } else {
             bounce();
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        locationInteractor.resume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        locationInteractor.pause();
     }
 
     private void showHomeActivity() {
