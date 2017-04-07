@@ -2,6 +2,7 @@ package is.hello.sense.ui.adapter;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -12,9 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -24,6 +22,7 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.databinding.ItemMessageCardBinding;
 import is.hello.sense.flows.notification.ui.adapters.NotificationSettingsAdapter;
+import is.hello.sense.ui.widget.util.Styles;
 
 public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
@@ -221,17 +220,22 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
         }
 
         public ItemMessageCardViewHolder(@NonNull final ViewGroup parent,
-                                         @DrawableRes final int drawableRes,
                                          @StringRes final int titleRes,
                                          @StringRes final int messageRes,
                                          @StringRes final int actionRes,
                                          @Nullable final View.OnClickListener clickListener) {
             super(inflate(R.layout.item_message_card, parent));
             this.binding.itemMessageCardImageText.setText(titleRes);
-            this.binding.itemMessageCardImageText.setImageResource(drawableRes);
             this.binding.itemMessageCardMessage.setText(messageRes);
             this.binding.itemMessageCardAction.setText(actionRes);
             this.binding.itemMessageCardAction.setOnClickListener(clickListener);
+        }
+
+        public void setImageIcon(@DrawableRes final int iconRes,
+                                 @ColorRes final int tintRes) {
+            binding.itemMessageCardImageText.setImageResource(Styles.tintDrawable(itemView.getContext(),
+                                                                                  iconRes,
+                                                                                  tintRes));
         }
     }
 

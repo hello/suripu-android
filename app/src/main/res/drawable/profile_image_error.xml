@@ -8,7 +8,8 @@
           android:height="@dimen/profile_image_size"
           android:width="@dimen/profile_image_size"/>
     <item>
-        <bitmap android:src="@drawable/error_white"
-            android:gravity="center"/>
+        <bitmap android:src="@drawable/icon_warning_24"
+                android:tint="@color/white_text"
+                android:gravity="center"/>
     </item>
 </layer-list>

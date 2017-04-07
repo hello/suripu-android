@@ -108,7 +108,7 @@ public class ExpansionDetailPickerFragment extends PresenterFragment<ExpansionDe
         inflater.inflate(R.menu.info_menu, menu);
         final MenuItem infoItem = menu.findItem(R.id.action_info);
         if(infoItem != null){
-            Styles.tintMenuIcon(getActivity(), infoItem, R.color.white);
+            Styles.tintMenuIcon(getActivity(), infoItem, R.color.action_bar_menu_icon);
         }
     }
 

@@ -145,7 +145,7 @@ public class ExpansionCategoryFormatter {
             case TEMPERATURE:
                 return R.drawable.icon_thermostat_24;
             default:
-                return R.drawable.error_white;
+                return R.drawable.icon_warning_24;
         }
     }
 

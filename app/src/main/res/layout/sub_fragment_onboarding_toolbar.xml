@@ -20,10 +20,9 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical|end"
-        android:padding="0dp"
         android:tint="@color/onboarding_icon_tint"
         android:scaleType="center"
-        android:src="@drawable/action_info"
+        android:src="@drawable/icon_info_24"
         android:layout_marginEnd="@dimen/x3"
         android:contentDescription="@string/action_help"/>
 

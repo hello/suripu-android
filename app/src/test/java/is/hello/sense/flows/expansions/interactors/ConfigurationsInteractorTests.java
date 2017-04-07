@@ -48,11 +48,11 @@ public class ConfigurationsInteractorTests extends InjectionTestCase {
     @Test
     public void shouldNotResubscribeTests(){
         assertFalse(configurationsInteractor.shouldResubscribe(
-                Collections.singletonList(new Configuration.Empty("", "", R.drawable.error_white)),
+                Collections.singletonList(new Configuration.Empty("", "", R.drawable.icon_warning_24)),
                 System.currentTimeMillis()));
 
         assertFalse(configurationsInteractor.shouldResubscribe(
-                Collections.singletonList(new Configuration.Empty("", "", R.drawable.error_white)),
+                Collections.singletonList(new Configuration.Empty("", "", R.drawable.icon_warning_24)),
                 System.currentTimeMillis() - ConfigurationsInteractor.FILTER_NULL_EMPTY_CONFIG_LIST_DURATION_MILLIS));
 
         assertFalse(configurationsInteractor.shouldResubscribe(

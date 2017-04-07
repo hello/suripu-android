@@ -17,6 +17,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.model.v2.expansions.Expansion;
 import is.hello.sense.flows.expansions.ui.widget.ExpansionImageView;
 import is.hello.sense.mvp.view.PresenterView;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 
 @SuppressLint("ViewConstructor")
@@ -58,7 +59,12 @@ public class ExpansionDetailView extends PresenterView {
         this.enabledContainer = (ViewGroup) connectedContainer.findViewById(R.id.view_expansion_detail_enabled_container);
         this.enabledTextView = (TextView) enabledContainer.findViewById(R.id.view_expansion_detail_enabled_tv);
         this.enabledTextView.setCompoundDrawablePadding(getResources().getDimensionPixelSize(R.dimen.x1));
-        this.enabledTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.info_button_icon_small, 0);
+        this.enabledTextView.setCompoundDrawablesWithIntrinsicBounds(null,
+                                                                     null,
+                                                                     Styles.tintDrawable(activity,
+                                                                                         R.drawable.icon_info_24,
+                                                                                         R.color.primary_icon),
+                                                                     null);
         this.enabledSwitch = (CompoundButton) enabledContainer.findViewById(R.id.view_expansion_detail_configuration_selection_switch);
         // connected and configurations found
         this.configurationErrorImageView = (ImageView) connectedContainer.findViewById(R.id.view_expansion_detail_configuration_error);

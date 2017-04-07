@@ -92,6 +92,12 @@
     <color name="sense_raised_button_shadow_light">@color/black_80</color>
     <color name="sense_raised_button_shadow_dark">@color/black_80</color>
 
+    <!-- Switch Colors -->
+    <color name="switch_thumb_enabled">@color/primary</color>
+    <color name="switch_thumb_disabled">#B9BDC3</color>
+    <color name="switch_track_enabled">@color/blue6_50</color>
+    <color name="switch_track_disabled">#61666E</color>
+
     <!-- TabLayout Colors -->
     <color name="tablayout_focused">@color/primary_text</color>
 

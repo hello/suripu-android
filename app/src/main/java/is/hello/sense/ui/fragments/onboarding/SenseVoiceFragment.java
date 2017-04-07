@@ -163,7 +163,6 @@ public class SenseVoiceFragment extends BaseHardwareFragment {
         Views.setTimeOffsetOnClickListener(skipButton,this::onSkip);
         toolbar = OnboardingToolbar.of(this, view)
                                    .setOnHelpClickListener(ignored -> showVoiceTipDialog(true, this::onVoiceTipDismissed))
-                                   .setHelpButtonIcon(R.drawable.info_button_icon_small)
                                    .setWantsHelpButton(false)
                                    .setWantsBackButton(false);
 

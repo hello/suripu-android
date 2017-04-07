@@ -213,6 +213,12 @@
         <item name="android:progressBarStyle">@style/ProgressBar</item>
     </style>
 
+    <!-- Switch / Toggle Button -->
+    <style name="Switch">
+        <item name="thumbTint">@color/switch_thumb_selector</item>
+        <item name="trackTint">@color/switch_track_selector</item>
+    </style>
+
     <!-- Radio Buttons -->
     <style name="RadioButton" parent="Widget.AppCompat.CompoundButton.RadioButton">
         <item name="android:background">@drawable/selectable_dark_bounded</item>
