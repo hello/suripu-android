@@ -14,7 +14,6 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.api.model.NotificationSetting;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 
 public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<NotificationSetting, ArrayRecyclerAdapter.ViewHolder> {
@@ -116,9 +115,8 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
                   R.string.notification_settings_enabled_link,
                   NotificationSettingsAdapter.this::showSettings);
 
-            binding.itemMessageCardImageText.setImageResource(Styles.tintDrawable(itemView.getContext(),
-                                                                                  R.drawable.icon_warning_24,
-                                                                                  R.color.destructive_icon));
+            setImageIcon(R.drawable.icon_warning_24,
+                         R.color.destructive_icon);
         }
     }
 

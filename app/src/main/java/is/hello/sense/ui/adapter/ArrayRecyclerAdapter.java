@@ -2,6 +2,8 @@ package is.hello.sense.ui.adapter;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,6 +22,7 @@ import java.util.List;
 import is.hello.sense.R;
 import is.hello.sense.databinding.ItemMessageCardBinding;
 import is.hello.sense.flows.notification.ui.adapters.NotificationSettingsAdapter;
+import is.hello.sense.ui.widget.util.Styles;
 
 public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
@@ -226,6 +229,13 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
             this.binding.itemMessageCardMessage.setText(messageRes);
             this.binding.itemMessageCardAction.setText(actionRes);
             this.binding.itemMessageCardAction.setOnClickListener(clickListener);
+        }
+
+        public void setImageIcon(@DrawableRes final int iconRes,
+                                 @ColorRes final int tintRes) {
+            binding.itemMessageCardImageText.setImageResource(Styles.tintDrawable(itemView.getContext(),
+                                                                                  iconRes,
+                                                                                  tintRes));
         }
     }
 

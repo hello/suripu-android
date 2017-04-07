@@ -313,7 +313,8 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 }
                 if (wiFiInfo.getSignalStrength() != null) {
                     @DrawableRes final int iconRes = wiFiInfo.getSignalStrength().icon;
-                    status1.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
+                    status1.setCompoundDrawablesRelativeWithIntrinsicBounds(Styles.tintDrawable(activity, iconRes, R.color.active_icon),
+                                                                            null, null, null);
                 } else {
                     status1.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
                 }
