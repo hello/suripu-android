@@ -178,11 +178,10 @@ public class SettingsRecyclerAdapter extends ArrayRecyclerAdapter<SettingsRecycl
         private final ItemSettingsToggleBinding binding;
         private final CompoundButton checkButton;
 
-        @SuppressWarnings("RedundantCast")
         ToggleViewHolder(@NonNull final View itemView) {
             super(itemView);
             this.binding = DataBindingUtil.bind(itemView);
-            this.checkButton = ( (CompoundButton) this.binding.itemSettingsToggleCheckBox.widgetSwitch);
+            this.checkButton = this.binding.itemSettingsToggleCheckBox.widgetSwitch;
             this.checkButton.setOnCheckedChangeListener(this);
         }
 
