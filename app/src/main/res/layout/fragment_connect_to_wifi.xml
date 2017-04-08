@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
               xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical">
 
-    <include layout="@layout/sub_fragment_onboarding_toolbar" />
+    <include layout="@layout/sub_fragment_onboarding_toolbar"/>
 
     <TextView
         android:id="@+id/fragment_connect_to_wifi_title"
+        style="@style/Title2.Primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/x3"
         android:layout_marginBottom="@dimen/x2"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
-        style="@style/Title2.Primary"
+        android:layout_marginTop="@dimen/x3"
         android:text="@string/title_sign_into_wifi_selection"/>
 
     <TextView
         android:id="@+id/fragment_connect_to_wifi_info"
+        style="@style/Body1.Secondary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/x2"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
-        style="@style/Body1.Secondary"
         android:text="@string/label_wifi_network_name"/>
 
     <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:minHeight="@dimen/x1" />
+        android:minHeight="@dimen/x1"/>
 
     <RelativeLayout
         android:id="@+id/fragment_connect_to_wifi_other_container"
@@ -41,26 +41,25 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
-        android:background="@drawable/edit_text_background_normal"
         android:visibility="gone">
+
 
         <EditText
             android:id="@+id/fragment_connect_to_wifi_network"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingEnd="@dimen/x6"
             android:nextFocusForward="@+id/fragment_connect_to_wifi_password"
             android:imeOptions="actionNext|flagNoExtractUi"
             android:hint="@string/label_network_name"
             tools:ignore="RtlSymmetry" />
 
         <Spinner
+            android:background="@null"
             android:id="@+id/fragment_connect_to_wifi_security"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:gravity="end|center_vertical"/>
+            android:layout_alignParentEnd="true"/>
+
 
     </RelativeLayout>
 
@@ -70,25 +69,26 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
+        android:layout_marginTop="@dimen/x3"
         android:imeOptions="actionSend|flagNoExtractUi"
-        app:labelText="@string/label_password"
-        app:isPassword="true"/>
+        app:isPassword="true"
+        app:labelText="@string/label_password"/>
 
     <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:minHeight="@dimen/x1" />
+        android:minHeight="@dimen/x1"/>
 
     <Button
         android:id="@+id/fragment_connect_to_wifi_continue"
+        style="@style/Button.Raised"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/x1"
+        android:layout_marginBottom="@dimen/x3"
         android:layout_marginLeft="@dimen/x3"
         android:layout_marginRight="@dimen/x3"
-        android:layout_marginBottom="@dimen/x3"
-        android:text="@string/action_continue"
-        style="@style/Button.Raised"/>
+        android:layout_marginTop="@dimen/x1"
+        android:text="@string/action_continue"/>
 
 </LinearLayout>
