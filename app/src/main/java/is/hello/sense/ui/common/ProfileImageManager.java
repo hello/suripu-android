@@ -103,7 +103,7 @@ public class ProfileImageManager {
                 .setTitle(R.string.action_remove_picture)
                 .setTitleColor(ContextCompat.getColor(context, R.color.error_text))
                 .setIcon(R.drawable.icon_trash_24)
-                .setIconTintRes(R.color.error);
+                .setIconTintRes(R.color.destructive_icon);
     }
 
     public void showPictureOptions() {

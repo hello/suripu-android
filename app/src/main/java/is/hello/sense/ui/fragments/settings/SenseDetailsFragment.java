@@ -556,7 +556,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                             .setTitleColor(ContextCompat.getColor(getActivity(), R.color.error_text))
                             .setDescription(R.string.description_factory_reset)
                             .setIcon(R.drawable.settings_factory_reset)
-                            .setIconTintRes(R.color.error)
+                            .setIconTintRes(R.color.destructive_icon)
                        );
         }
         BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(R.string.title_advanced, options);
