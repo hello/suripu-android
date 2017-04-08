@@ -33,6 +33,7 @@ import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.StatusBarColorProvider;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.fragments.VideoPlayerActivity;
+import is.hello.sense.ui.widget.ImageTextView;
 import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.OnViewPagerChangeAdapter;
 import is.hello.sense.ui.widget.util.Views;
@@ -345,8 +346,8 @@ public class IntroductionFragment extends SenseFragment
                 final View view = inflater.inflate(R.layout.item_onboarding_introduction_first,
                                                    container, false);
 
-                final Button watchVideo =
-                        (Button) view.findViewById(R.id.item_onboarding_intro_first_watch_video);
+                final ImageTextView watchVideo =
+                        (ImageTextView) view.findViewById(R.id.item_onboarding_intro_first_watch_video);
                 watchVideo.setOnClickListener(onWatchVideoClick);
 
                 return new StaticViewHolder(view);
