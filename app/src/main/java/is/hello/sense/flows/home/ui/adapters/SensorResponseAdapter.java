@@ -117,7 +117,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
                 case PARTICULATES:
                 case CO2:
                 case TVOC:
-                    if(firstAirQualitySensorPosition == RecyclerView.NO_POSITION) {
+                    if (firstAirQualitySensorPosition == RecyclerView.NO_POSITION) {
                         firstAirQualitySensorPosition = normalSensors.size();
                         normalSensors.add(sensor);
                     }
@@ -132,16 +132,16 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     }
 
     private void addSensorToGroupAt(final int key,
-                                    @NonNull final Sensor sensor){
+                                    @NonNull final Sensor sensor) {
         final List<Sensor> group = this.sensorGroupArray.get(key, new ArrayList<>());
         group.add(sensor);
         this.sensorGroupArray.put(key, group);
     }
 
-    private void removeSingleSensorGroupsAt(@NonNull final int ... keys) {
-        for(final int key : keys) {
+    private void removeSingleSensorGroupsAt(@NonNull final int... keys) {
+        for (final int key : keys) {
             final List<Sensor> sensors = this.sensorGroupArray.get(key);
-            if(sensors != null && sensors.size() <= 1) {
+            if (sensors != null && sensors.size() <= 1) {
                 this.sensorGroupArray.remove(key);
             }
         }
@@ -178,7 +178,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
                        context.getString(R.string.error_room_conditions_no_sense),
                        R.string.action_pair_sense,
                        v -> SensorResponseAdapter.this.dispatchErrorItemClicked()
-                       );
+                      );
     }
 
     public void displayMessage(final boolean messageWantsSenseIcon,
@@ -305,6 +305,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             this.value = (TextView) itemView.findViewById(R.id.item_server_response_value);
             this.descriptor = (TextView) itemView.findViewById(R.id.item_server_response_descriptor);
             this.graphView = (SensorGraphView) itemView.findViewById(R.id.item_server_response_graph);
+            this.descriptor.setAllCaps(false);
         }
 
         @Override
