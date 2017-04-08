@@ -31,4 +31,5 @@
     <string name="accessibility_wifi_signal_strength_bad">WiFi signal strength: Poor</string>
     <string name="accessibility_wifi_signal_strength_fair">WiFi signal strength: Fair</string>
     <string name="accessibility_wifi_signal_strength_good">WiFi signal strength: Good</string>
+    <string name="accessibility_profile_picture_button">open profile picture source options</string>
 </resources>
