@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -73,9 +74,9 @@ public class TicketDetailFragment extends InjectionFragment
 
     private CommentAdapter adapter;
     private AttachmentContainerHost attachmentHost;
-    private ImageButton attach;
+    private ImageView attach;
     private EditText commentText;
-    private ImageButton sendComment;
+    private ImageView sendComment;
     private ProgressBar loadingIndicator;
     private final ExternalStoragePermission externalStoragePermission = new ExternalStoragePermission(this);
 
@@ -113,8 +114,6 @@ public class TicketDetailFragment extends InjectionFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_ticket_detail, container, false);
 
-        final Resources resources = getResources();
-
         this.attachmentHost = (AttachmentContainerHost) view.findViewById(R.id.fragment_ticket_detail_comment_attachments);
         attachmentHost.setState(imageUploadHelper);
         // A retrolambda bug prevents a method reference from working here.
@@ -132,13 +131,13 @@ public class TicketDetailFragment extends InjectionFragment
         recyclerView.setAdapter(adapter);
 
         final @ColorInt int tintColor = ContextCompat.getColor(getActivity(), R.color.ticket_detail_icon_tint);
-        this.attach = (ImageButton) view.findViewById(R.id.fragment_ticket_detail_comment_attach);
+        this.attach = (ImageView) view.findViewById(R.id.fragment_ticket_detail_comment_attach);
         final Drawable attachDrawable = attach.getDrawable().mutate();
         Drawables.setTintColor(attachDrawable, tintColor);
         attach.setImageDrawable(attachDrawable);
         Views.setSafeOnClickListener(attach, ignored -> showAttachOptions());
 
-        this.sendComment = (ImageButton) view.findViewById(R.id.fragment_ticket_detail_comment_send);
+        this.sendComment = (ImageView) view.findViewById(R.id.fragment_ticket_detail_comment_send);
         final Drawable sendDrawable = sendComment.getDrawable().mutate();
         Drawables.setTintColor(sendDrawable, tintColor);
         sendComment.setImageDrawable(sendDrawable);
@@ -390,10 +389,8 @@ public class TicketDetailFragment extends InjectionFragment
                 final String detailString = resources.getQuantityString(R.plurals.item_support_comment_detail_attachments,
                                                                         attachmentCount, date, attachmentCount);
                 holder.detail.setText(detailString);
-                holder.itemView.setBackgroundResource(R.drawable.background_timeline_header_card_selector);
             } else {
                 holder.detail.setText(date);
-                holder.itemView.setBackgroundResource(R.drawable.background_timeline_header_card);
             }
         }
 
