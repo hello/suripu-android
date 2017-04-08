@@ -111,10 +111,6 @@ public class ImageTextView extends LinearLayout {
         this.imageView.setImageDrawable(drawable);
     }
 
-    public void setImageResource(@Nullable final Drawable drawable) {
-        this.imageView.setImageDrawable(drawable);
-    }
-
     public void setTextViewVisibility(final boolean setVisible) {
         this.textView.setVisibility(setVisible ? VISIBLE : GONE);
     }

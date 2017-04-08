@@ -233,7 +233,7 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
 
         public void setImageIcon(@DrawableRes final int iconRes,
                                  @ColorRes final int tintRes) {
-            binding.itemMessageCardImageText.setImageResource(Styles.tintDrawable(itemView.getContext(),
+            binding.itemMessageCardImageText.setImageDrawable(Styles.tintDrawable(itemView.getContext(),
                                                                                   iconRes,
                                                                                   tintRes));
         }
