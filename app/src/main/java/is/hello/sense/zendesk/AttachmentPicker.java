@@ -59,11 +59,13 @@ public class AttachmentPicker {
         chooseSource.setTitle(R.string.action_add_attachment);
 
         chooseSource.addOption(new SenseBottomSheet.Option(0)
-                .setTitle(R.string.action_take_photo)
-                .setIcon(R.drawable.icon_camera_24));
+                                       .setTitle(R.string.action_take_photo)
+                                       .setIcon(R.drawable.icon_camera_24)
+                                       .setIconTintRes(R.color.active_icon));
         chooseSource.addOption(new SenseBottomSheet.Option(1)
-                .setTitle(R.string.action_pick_image)
-                .setIcon(R.drawable.settings_photo_library));
+                                       .setTitle(R.string.action_pick_image)
+                                       .setIcon(R.drawable.settings_photo_library)
+                                       .setIconTintRes(R.color.active_icon));
 
         chooseSource.setOnOptionSelectedListener(option -> {
             switch (option.getOptionId()) {
