@@ -86,6 +86,7 @@ public class ProfileImageManager {
                             .setTitle(R.string.action_take_photo)
                             .setTitleColor(ContextCompat.getColor(context, R.color.primary_text))
                             .setIcon(R.drawable.icon_camera_24)
+                            .setIconTintRes(R.color.active_icon)
                        );
             minOptions = 3;
         } else {
@@ -96,11 +97,13 @@ public class ProfileImageManager {
                         .setTitle(R.string.action_import_from_gallery)
                         .setTitleColor(ContextCompat.getColor(context, R.color.primary_text))
                         .setIcon(R.drawable.settings_photo_library)
+                        .setIconTintRes(R.color.active_icon)
                    );
         deleteOption = new SenseBottomSheet.Option(OPTION_ID_REMOVE_PICTURE)
                 .setTitle(R.string.action_remove_picture)
                 .setTitleColor(ContextCompat.getColor(context, R.color.error_text))
-                .setIcon(R.drawable.icon_trash_24);
+                .setIcon(R.drawable.icon_trash_24)
+                .setIconTintRes(R.color.error);
     }
 
     public void showPictureOptions() {

@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -135,7 +136,13 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
 
         if (option.iconRes != 0) {
             imageIcon.setVisibility(View.VISIBLE);
-            imageIcon.setImageResource(option.iconRes);
+            if (option.iconTintRes  == 0){
+                imageIcon.setImageResource(option.iconRes);
+            }else {
+                imageIcon.setImageDrawable(Styles.tintDrawable(getContext(),
+                                                               option.iconRes,
+                                                               option.iconTintRes));
+            }
         }
 
         if (option.getTitle() != null) {
@@ -319,6 +326,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         private @Nullable StringRef title;
         private @Nullable StringRef description;
         private @DrawableRes int iconRes;
+        private @ColorRes int iconTintRes;
         private boolean enabled = true;
 
         public Option(int optionId) {
@@ -339,6 +347,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
             this.description = in.readParcelable(StringRef.class.getClassLoader());
             this.iconRes = in.readInt();
             this.enabled = in.readByte() != 0;
+            this.iconTintRes = in.readInt();
         }
 
         @Override
@@ -354,6 +363,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
             out.writeParcelable(description, flags);
             out.writeInt(iconRes);
             out.writeByte((byte) (enabled ? 1 : 0));
+            out.writeInt(iconTintRes);
         }
 
         public static final Creator<Option> CREATOR = new Creator<Option>() {
@@ -435,6 +445,15 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
 
         public Option setEnabled(boolean enabled) {
             this.enabled = enabled;
+            return this;
+        }
+
+        public int getIconRes() {
+            return iconRes;
+        }
+
+        public Option setIconTintRes(@ColorRes int iconTintRes) {
+            this.iconTintRes = iconTintRes;
             return this;
         }
 

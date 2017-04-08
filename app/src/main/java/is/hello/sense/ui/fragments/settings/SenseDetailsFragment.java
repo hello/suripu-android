@@ -90,7 +90,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     private boolean blockConnection = false;
     private boolean didEnableBluetooth = false;
 
-    private @Nullable SenseNetworkStatus currentWifiNetwork;
+    private
+    @Nullable
+    SenseNetworkStatus currentWifiNetwork;
 
     private final LocationPermission locationPermission = new LocationPermission(this);
     private final BroadcastReceiver PERIPHERAL_CLEARED = new BroadcastReceiver() {
@@ -545,6 +547,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                         .setTitleColor(ContextCompat.getColor(getActivity(), R.color.primary_text))
                         .setDescription(R.string.description_replace_this_sense)
                         .setIcon(R.drawable.icon_advanced_24)
+                        .setIconTintRes(R.color.active_icon)
                    );
         if (hardwarePresenter.isConnected()) {
             options.add(
@@ -553,6 +556,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                             .setTitleColor(ContextCompat.getColor(getActivity(), R.color.error_text))
                             .setDescription(R.string.description_factory_reset)
                             .setIcon(R.drawable.settings_factory_reset)
+                            .setIconTintRes(R.color.error)
                        );
         }
         BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(R.string.title_advanced, options);
