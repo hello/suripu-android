@@ -4,7 +4,7 @@
     android:id="@+id/fragment_dialog_loading_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/fragment_dialog_loading_overlay"
+    android:background="@color/background_card"
     android:keepScreenOn="true">
 
     <ImageView
