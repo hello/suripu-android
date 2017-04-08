@@ -58,9 +58,16 @@ public class ImageTextView extends LinearLayout {
             @StyleRes final int textAppearanceRes = a.getResourceId(R.styleable.ImageTextView_textStyle, Constants.NONE);
             @DimenRes final int leftTextPaddingRes = a.getResourceId(R.styleable.ImageTextView_leftTextPadding, Constants.NONE);
             @ColorRes final int textColorRes = a.getResourceId(R.styleable.ImageTextView_textColor, Constants.NONE);
+            @ColorRes final int tintColorRes = a.getResourceId(R.styleable.ImageTextView_tintColor, Constants.NONE);
             // ImageView
             if (imageRes != Constants.NONE) {
-                setImageResource(imageRes);
+                if (tintColorRes == Constants.NONE) {
+                    setImageResource(imageRes);
+                } else {
+                    setImageDrawable(Styles.tintDrawable(getContext(),
+                                                         imageRes,
+                                                         tintColorRes));
+                }
             }
 
             // TextView
@@ -100,7 +107,7 @@ public class ImageTextView extends LinearLayout {
         this.imageView.setImageResource(drawableRes);
     }
 
-    public void setImageResource(@Nullable final Drawable drawable) {
+    public void setImageDrawable(@Nullable final Drawable drawable) {
         this.imageView.setImageDrawable(drawable);
     }
 

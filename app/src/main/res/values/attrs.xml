@@ -91,5 +91,6 @@
         <attr name="labelText"/>
         <attr name="leftTextPadding" format="reference"/>
         <attr name="textColor" format="reference"/>
+        <attr name="tintColor" format="reference"/>
     </declare-styleable>
 </resources>
