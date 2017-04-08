@@ -5,12 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:divider="@drawable/divider_horizontal"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:showDividers="middle"
     android:visibility="visible"
     tools:showIn="@layout/view_expansion_detail">
+
+    <View style="@style/Divider.Horizontal"/>
 
     <LinearLayout
         android:id="@+id/view_expansion_detail_enabled_container"
@@ -39,6 +39,8 @@
             layout="@layout/widget_switch"/>
 
     </LinearLayout>
+
+    <View style="@style/Divider.Horizontal.LeftInset"/>
 
     <FrameLayout
         android:id="@+id/view_expansion_detail_configuration_selection_container"
