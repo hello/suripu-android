@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.content.LocalBroadcastManager;
@@ -120,6 +121,9 @@ public class SenseApplication extends MultiDexApplication {
 
         this.refWatcher = LeakCanary.install(this);
 
+        nightModeInteractor.currentNightMode.subscribe(this::onNextNightModeUpdate,
+                                                       Functions.LOG_ERROR);
+
         nightModeInteractor.updateToMatchPrefAndSession(); //if application was destroyed need to update again
 
         final Observable<Intent> onLogOut = Rx.fromLocalBroadcast(this, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
@@ -149,8 +153,7 @@ public class SenseApplication extends MultiDexApplication {
         super.onTrimMemory(level);
 
         if (level >= TRIM_MEMORY_MODERATE) {
-            Logger.debug(getClass().getSimpleName(), "Clearing picasso memory cache");
-            picassoMemoryCache.clear();
+            clearPicassoCache();
         }
     }
 
@@ -173,5 +176,14 @@ public class SenseApplication extends MultiDexApplication {
      */
     public ObjectGraph createScopedObjectGraph(final List<Object> modules) {
         return graph.plus(modules.toArray());
+    }
+
+    private void clearPicassoCache() {
+        Logger.debug(getClass().getSimpleName(), "Clearing picasso memory cache");
+        picassoMemoryCache.clear();
+    }
+
+    private void onNextNightModeUpdate(@NonNull final Integer mode) {
+        clearPicassoCache();
     }
 }
