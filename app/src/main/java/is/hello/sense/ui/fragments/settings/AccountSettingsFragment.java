@@ -83,7 +83,7 @@ public class AccountSettingsFragment extends InjectionFragment
 
     private final AccountSettingsRecyclerAdapter.CircleItem profilePictureItem =
             new AccountSettingsRecyclerAdapter.CircleItem(
-                    stateSafeExecutor.bind(this::changePicture)
+                    this::changePicture
             );
 
     private SettingsRecyclerAdapter.DetailItem nameItem;
