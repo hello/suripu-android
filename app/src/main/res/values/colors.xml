@@ -53,7 +53,7 @@
 
     <!-- Misc -->
     <color name="transparent">@color/white_00</color>
-    <color name="transparent_overlay">@color/black_70</color>
+    <color name="transparent_overlay">@color/black_50</color>
     <color name="ripple">@color/divider</color>
     <color name="status_bar_normal">@color/gray3</color>
     <color name="timeline_transparent_overlay">@color/transparent_overlay</color>
