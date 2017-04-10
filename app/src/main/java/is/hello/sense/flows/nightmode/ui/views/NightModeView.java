@@ -34,6 +34,7 @@ public class NightModeView extends BindedPresenterView<ViewNightModeBinding> {
         this.binding.viewNightModeScheduled.setOnClickListener(this::scheduleClickListener);
         this.binding.viewNightModeScheduledInfo.setOnClickListener(this::scheduleClickListener);
     }
+    //region BindedPresenterView
 
     @Override
     protected int getLayoutRes() {
@@ -48,9 +49,10 @@ public class NightModeView extends BindedPresenterView<ViewNightModeBinding> {
         this.binding.viewNightModeScheduledInfo.setOnClickListener(null);
         this.listener = null;
     }
+    //endregion
 
-
-    public void offClickListener(final View ignored) {
+    //region methods
+    private void offClickListener(final View ignored) {
         if (this.listener == null) {
             return;
         }
@@ -58,7 +60,7 @@ public class NightModeView extends BindedPresenterView<ViewNightModeBinding> {
         this.listener.offModeSelected();
     }
 
-    public void onClickListener(final View ignored) {
+    private void onClickListener(final View ignored) {
         if (this.listener == null) {
             return;
         }
@@ -67,7 +69,7 @@ public class NightModeView extends BindedPresenterView<ViewNightModeBinding> {
     }
 
 
-    public void scheduleClickListener(final View ignored) {
+    private void scheduleClickListener(final View ignored) {
         if (this.listener == null) {
             return;
         }
@@ -122,6 +124,7 @@ public class NightModeView extends BindedPresenterView<ViewNightModeBinding> {
             return false;
         });
     }
+    //endregion
 
     public interface Listener {
         void offModeSelected();

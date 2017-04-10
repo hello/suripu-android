@@ -18,10 +18,14 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 
+import is.hello.sense.api.model.LocStatus;
 import is.hello.sense.api.model.UserLocation;
+import is.hello.sense.graph.InteractorSubject;
 import is.hello.sense.interactors.PersistentPreferencesInteractor;
+import is.hello.sense.interactors.ValueInteractor;
+import rx.Observable;
 
-public class LocationInteractor
+public class LocationInteractor extends ValueInteractor<LocStatus>
         implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
@@ -30,6 +34,9 @@ public class LocationInteractor
     private final LocationRequest locationRequest;
     private final LocationSettingsRequest locationSettingsRequest;
     private final PersistentPreferencesInteractor persistentPreferencesInteractor;
+    private Status status;
+
+    public InteractorSubject<LocStatus> statusSubject = subject;
 
     public LocationInteractor(@NonNull final Context context,
                               @NonNull final PersistentPreferencesInteractor prefs) {
@@ -48,6 +55,23 @@ public class LocationInteractor
                 .build();
         this.persistentPreferencesInteractor = prefs;
     }
+
+    //region ValueInteractor
+    @Override
+    protected boolean isDataDisposable() {
+        return true;
+    }
+
+    @Override
+    protected boolean canUpdate() {
+        return true;
+    }
+
+    @Override
+    protected Observable<LocStatus> provideUpdateObservable() {
+        return Observable.just(new LocStatus(this.status));
+    }
+    //endregion
 
     // region ConnectionCallbacks
     @Override
@@ -86,16 +110,30 @@ public class LocationInteractor
     //endregion
 
     //region methods
+    public void forget() {
+        this.status = null;
+        this.subject.forget();
+    }
+
+    /**
+     * Start looking for the users location. Will stop on success.
+     */
     public void start() {
-        if (!this.apiClient.isConnected() && !this.apiClient.isConnecting()) {
+        if (this.apiClient.isConnected()) {
+            stopLocationUpdates();
+            startLocationUpdates();
+        } else if (!this.apiClient.isConnecting()) {
             this.apiClient.connect();
         }
     }
 
     public void stop() {
-        if (this.apiClient.isConnecting() || this.apiClient.isConnected()) {
+        if (this.apiClient.isConnecting()) {
+            this.apiClient.disconnect();
+        } else if (this.apiClient.isConnected()) {
             stopLocationUpdates();
             this.apiClient.disconnect();
+
         }
     }
 
@@ -113,6 +151,10 @@ public class LocationInteractor
                                 LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, locationRequest, LocationInteractor.this);
                             }
                             break;
+                        default:
+                            this.status = status;
+                            update();
+                            break;
                     }
                 });
     }
@@ -123,9 +165,11 @@ public class LocationInteractor
                 this);
     }
 
-
     private void handleResult(@Nullable final Location location) {
-        if (location != null) {
+        if (location == null) {
+            this.status = null;
+            this.update();
+        } else {
             this.persistentPreferencesInteractor.saveUserLocation(new UserLocation(location.getLatitude(), location.getLongitude()));
         }
     }
