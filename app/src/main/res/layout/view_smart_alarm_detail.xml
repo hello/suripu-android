@@ -81,7 +81,7 @@
 
         </LinearLayout>
 
-        <View style="@style/Divider.Horizontal"/>
+        <View style="@style/Divider.Horizontal.LeftInset"/>
 
         <LinearLayout
             android:id="@+id/view_smart_alarm_detail_tone"
@@ -118,7 +118,7 @@
 
         </LinearLayout>
 
-        <View style="@style/Divider.Horizontal"/>
+        <View style="@style/Divider.Horizontal.LeftInset"/>
 
         <LinearLayout
             android:id="@+id/view_smart_alarm_detail_repeat"
@@ -154,7 +154,7 @@
 
         </LinearLayout>
 
-        <View style="@style/Divider.Horizontal"/>
+        <View style="@style/Divider.Horizontal.LeftInset"/>
 
         <LinearLayout
             android:id="@+id/view_smart_alarm_detail_expansions_container"
@@ -227,7 +227,7 @@
             </LinearLayout>
 
             <View
-                style="@style/Divider.Horizontal"/>
+                style="@style/Divider.Horizontal.LeftInset"/>
 
             <LinearLayout
                 android:id="@+id/view_smart_alarm_detail_expansions_temp_container"
@@ -295,7 +295,7 @@
 
         <View
             android:id="@+id/view_smart_alarm_detail_delete_divider"
-            style="@style/Divider.Horizontal"/>
+            style="@style/Divider.Horizontal.LeftInset"/>
 
         <LinearLayout
             android:id="@+id/view_smart_alarm_detail_delete"
