@@ -96,6 +96,8 @@
 
     </FrameLayout>
 
+    <View style="@style/Divider.Horizontal.LeftInset"/>
+
     <LinearLayout
         android:id="@+id/view_expansion_detail_remove_access_container"
         style="@style/AppTheme.Card.Item"
