@@ -305,7 +305,6 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
             this.value = (TextView) itemView.findViewById(R.id.item_server_response_value);
             this.descriptor = (TextView) itemView.findViewById(R.id.item_server_response_descriptor);
             this.graphView = (SensorGraphView) itemView.findViewById(R.id.item_server_response_graph);
-            this.descriptor.setAllCaps(false);
         }
 
         @Override
