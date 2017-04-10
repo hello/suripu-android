@@ -34,8 +34,6 @@
         <include
             android:id="@+id/item_settings_toggle_check_box"
             layout="@layout/widget_switch"
-            android:layout_width="@dimen/widget_switch_width"
-            android:layout_height="@dimen/widget_switch_height"
             android:clickable="false"
             android:focusable="false"/>
 

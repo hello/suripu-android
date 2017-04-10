@@ -24,9 +24,7 @@
 
         <include
             android:id="@+id/item_notification_settings_switch"
-            layout="@layout/widget_switch"
-            android:layout_width="@dimen/widget_switch_width"
-            android:layout_height="@dimen/widget_switch_height"/>
+            layout="@layout/widget_switch"/>
     </LinearLayout>
 
     <View
