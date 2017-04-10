@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Themes -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light">
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight">
         <item name="colorPrimary">@color/primary</item>
         <!-- Dark variant of the primary branding color. By default, this is the color applied to
          the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
@@ -41,7 +41,7 @@
     </style>
 
 
-    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <!-- Dark variant of the primary branding color. By default, this is the color applied to
          the status bar (via statusBarColor) and navigation bar (via navigationBarColor). -->
@@ -75,7 +75,7 @@
     </style>
 
     <!-- Buttons -->
-    <style name="Button">
+    <style name="Button" parent="@style/Widget.AppCompat.Button.Borderless">
         <item name="android:paddingTop">@dimen/x1</item>
         <item name="android:paddingBottom">@dimen/x1</item>
         <item name="android:paddingLeft">@dimen/x3</item>
@@ -96,11 +96,12 @@
         <item name="android:background">@drawable/sense_raised_button_selector_onboarding</item>
     </style>
 
-    <style name="Button.Flat" parent="@style/Widget.AppCompat.Button.Borderless">
+    <style name="Button.Flat">
         <item name="android:paddingTop">@dimen/x1</item>
         <item name="android:paddingBottom">@dimen/x1</item>
         <item name="android:paddingLeft">@dimen/x3</item>
         <item name="android:paddingRight">@dimen/x3</item>
+        <item name="android:textAppearance">@style/ButtonText</item>
         <item name="android:elevation" tools:targetApi="lollipop">0dp</item>
         <item name="android:textColor">@color/primary_text_selector</item>
         <item name="android:background">@drawable/sense_flat_button_selector</item>
