@@ -20,6 +20,6 @@ public class LoadingInteractor extends ValueInteractor<VoidResponse> {
 
     @Override
     protected Observable<VoidResponse> provideUpdateObservable() {
-        return Observable.create(subscriber -> subscriber.onNext(new VoidResponse()));
+        return Observable.just(new VoidResponse());
     }
 }
