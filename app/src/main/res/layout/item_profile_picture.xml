@@ -2,7 +2,8 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    >
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/item_profile_picture_image"
@@ -12,15 +13,16 @@
         android:layout_centerInParent="true"
         android:src="@drawable/default_profile_picture"/>
 
-    <ImageButton
+    <ImageView
         android:id="@+id/item_profile_picture_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/item_profile_picture_image"
+        android:background="@drawable/profile_picture_button_background"
+        android:src="@drawable/icon_add_circle_24"
+        android:tint="@color/primary_icon"
         android:layout_alignBottom="@id/item_profile_picture_image"
-        android:paddingLeft="-2dp"
-        android:src="@drawable/icon_plus_button"
-        android:background="@color/transparent"/>
+        android:layout_alignEnd="@id/item_profile_picture_image"
+        android:contentDescription="@string/accessibility_profile_picture_button"/>
 
     <ProgressBar
         android:id="@+id/item_profile_progress_bar"

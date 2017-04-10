@@ -58,7 +58,7 @@ public class AccountSettingsRecyclerAdapter extends SettingsRecyclerAdapter {
 
         public void reset(){
             picasso.load(imageView.getDefaultProfileRes())
-                    .into(imageView);
+                   .into(imageView);
         }
     }
 
