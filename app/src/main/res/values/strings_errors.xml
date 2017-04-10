@@ -151,6 +151,6 @@
     <string name="notification_settings_generic_error_message">There was a problem updating notifications. Please try again.</string>
 
     <string name="nightmode_scheduled_error_title">Night Mode</string>
-    <string name="nightmode_scheduled_error_message">Your location could not be determined at this time. Try moving to a different location and try again.</string>
+    <string name="nightmode_scheduled_error_message">Your location could not be determined at this time. Please try again later.</string>
 
 </resources>
