@@ -23,6 +23,7 @@ import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatterTest;
 import is.hello.sense.flows.home.interactors.LastNightInteractorTest;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragmentTests;
+import is.hello.sense.flows.nightmode.TestNightModeModule;
 import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractorTest;
 import is.hello.sense.flows.settings.TestSettingsModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
@@ -34,6 +35,7 @@ import is.hello.sense.interactors.DeviceIssuesInteractorTests;
 import is.hello.sense.interactors.DevicesInteractor;
 import is.hello.sense.interactors.InsightsInteractor;
 import is.hello.sense.interactors.InsightsInteractorTests;
+import is.hello.sense.interactors.LocationInteractor;
 import is.hello.sense.interactors.PersistentPreferencesInteractor;
 import is.hello.sense.interactors.PersistentPreferencesInteractorTests;
 import is.hello.sense.interactors.PhoneBatteryInteractor;
@@ -69,6 +71,8 @@ import is.hello.sense.ui.adapter.SmartAlarmAdapterTests;
 import is.hello.sense.units.UnitFormatterTests;
 import is.hello.sense.util.BatteryUtil;
 import is.hello.sense.util.DateFormatterTests;
+import is.hello.sense.util.LocationUtil;
+import is.hello.sense.util.PersistentLocationManager;
 import is.hello.sense.util.markup.MarkupProcessor;
 import rx.Observable;
 
@@ -80,6 +84,7 @@ import static org.mockito.Mockito.mock;
         includes = {
                 TestNotificationModule.class,
                 TestSettingsModule.class,
+                TestNightModeModule.class,
         },
     injects = {
             TimelineInteractorTests.class,
@@ -230,6 +235,33 @@ public final class TestModule {
                 .when(batteryUtil)
                 .getBatteryPercentage();
         return batteryUtil;
+    }
+
+    @Provides
+    @Singleton
+    LocationUtil provideLocationUtil() {
+        final LocationUtil locationUtil = mock(LocationUtil.class);
+        doReturn(Observable.just(null))
+                .when(locationUtil)
+                .getLastKnownLocationV2();
+
+        return locationUtil;
+    }
+
+    @Provides
+    @Singleton
+    public PersistentLocationManager providesLocationManager(@NonNull final PersistentPreferencesInteractor persistentPreferencesInteractor,
+                                                             @NonNull final Gson gson) {
+        return new PersistentLocationManager(persistentPreferencesInteractor,
+                                             gson);
+    }
+
+    @Provides
+    @Singleton
+    public LocationInteractor providesLocationInteractor(@NonNull final PersistentLocationManager locationManager,
+                                                         @NonNull final LocationUtil locationUtil) {
+        return new LocationInteractor(locationManager,
+                                      locationUtil);
     }
 
     @Provides

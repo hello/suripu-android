@@ -62,6 +62,7 @@ import static is.hello.sense.ui.common.UserSupport.showContactForm;
 import static is.hello.sense.ui.common.UserSupport.showDeviceFeatures;
 import static is.hello.sense.ui.common.UserSupport.showForDeviceIssue;
 import static is.hello.sense.ui.common.UserSupport.showForHelpStep;
+import static is.hello.sense.ui.common.UserSupport.showLocationSettings;
 import static is.hello.sense.ui.common.UserSupport.showSupportedDevices;
 import static is.hello.sense.ui.common.UserSupport.showUserGuide;
 
@@ -306,6 +307,11 @@ public final class Styles {
 
                 case "#settings": {
                     clickableSpan = new SimpleClickableSpan(v -> showAppSettings(activity));
+                    break;
+                }
+
+                case "#location-settings": {
+                    clickableSpan = new SimpleClickableSpan(v -> showLocationSettings(activity));
                     break;
                 }
 

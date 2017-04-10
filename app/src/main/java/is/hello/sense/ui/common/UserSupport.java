@@ -194,6 +194,18 @@ public class UserSupport {
         }
     }
 
+    public static void showLocationSettings(@NonNull final Activity from) {
+        try {
+            from.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+        } catch (final ActivityNotFoundException e) {
+            final SenseAlertDialog alertDialog = new SenseAlertDialog(from);
+            alertDialog.setTitle(R.string.dialog_error_title);
+            alertDialog.setMessage("Error could not find location settings");
+            alertDialog.setPositiveButton(android.R.string.ok, null);
+            alertDialog.show();
+        }
+    }
+
     public static void showUpdatePill(@NonNull final Activity from) {
         Logger.debug(TAG,"showUpdatePill()");
         from.startActivityForResult(

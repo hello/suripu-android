@@ -4,12 +4,15 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.support.annotation.NonNull;
 
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import is.hello.sense.interactors.LocationInteractor;
+import is.hello.sense.interactors.PersistentPreferencesInteractor;
 import is.hello.sense.interactors.PhoneBatteryInteractor;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.common.ProfileImageManager;
@@ -17,7 +20,8 @@ import is.hello.sense.ui.fragments.onboarding.RegisterFragment;
 import is.hello.sense.ui.fragments.pill.ConnectPillFragment;
 import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
 
-@Module(complete = false, injects = {
+@Module(library = true,
+        complete = false, injects = {
         AccountSettingsFragment.class,
         RegisterFragment.class,
         ListActivity.class,
@@ -25,6 +29,28 @@ import is.hello.sense.ui.fragments.settings.AccountSettingsFragment;
         ConnectPillFragment.class
 })
 public class UtilityModule {
+
+    @Provides
+    @Singleton
+    public PersistentLocationManager providesLocationManager(@NonNull final PersistentPreferencesInteractor persistentPreferencesInteractor,
+                                                   @NonNull final Gson gson) {
+        return new PersistentLocationManager(persistentPreferencesInteractor,
+                                             gson);
+    }
+
+    @Provides
+    @Singleton
+    public LocationUtil providesLocationUtil(@NonNull final Context context) {
+        return new LocationUtil(context);
+    }
+
+    @Provides
+    @Singleton
+    public LocationInteractor providesLocationInteractor(@NonNull final PersistentLocationManager locationManager,
+                                                         @NonNull final LocationUtil locationUtil) {
+        return new LocationInteractor(locationManager,
+                                      locationUtil);
+    }
 
     @Provides
     @Singleton
