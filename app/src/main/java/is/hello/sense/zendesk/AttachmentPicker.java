@@ -64,7 +64,7 @@ public class AttachmentPicker {
                                        .setIconTintRes(R.color.active_icon));
         chooseSource.addOption(new SenseBottomSheet.Option(1)
                                        .setTitle(R.string.action_pick_image)
-                                       .setIcon(R.drawable.settings_photo_library)
+                                       .setIcon(R.drawable.icon_photo_library_24)
                                        .setIconTintRes(R.color.active_icon));
 
         chooseSource.setOnOptionSelectedListener(option -> {
