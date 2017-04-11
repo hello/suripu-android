@@ -3,6 +3,7 @@ package is.hello.sense.flows.nightmode.interactors;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AppCompatDelegate;
 
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
@@ -64,6 +65,11 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
         return AppCompatDelegate.MODE_NIGHT_NO;
     }
 
+    /**
+     * {@link AppCompatDelegate#MODE_NIGHT_AUTO} isn't used.  What looks like AUTO is actually a
+     * well made illusion flipping between on and off.
+     * @param mode
+     */
     public void setMode(@AppCompatDelegate.NightMode final int mode) {
         persistentPreferencesInteractor.saveNightMode(mode);
         updateToMatchPrefAndSession();
@@ -112,7 +118,8 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
         return isNightTime(TimeZone.getDefault(), DateTime.now());
     }
 
-    private boolean isNightTime(@NonNull final TimeZone timeZone,
+    @VisibleForTesting
+    protected boolean isNightTime(@NonNull final TimeZone timeZone,
                                 @NonNull final DateTime dateTime) {
         final UserLocation userLocation = persistentPreferencesInteractor.getUserLocation();
         if (userLocation == null) {

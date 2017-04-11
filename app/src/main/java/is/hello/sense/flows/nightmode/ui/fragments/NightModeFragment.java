@@ -21,7 +21,6 @@ import is.hello.sense.flows.nightmode.ui.views.NightModeLocationPermission;
 import is.hello.sense.flows.nightmode.ui.views.NightModeView;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.mvp.presenters.PresenterFragment;
-import is.hello.sense.permissions.LocationPermission;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -38,7 +37,7 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
     @Inject
     LocationInteractor locationInteractor;
 
-    private final LocationPermission locationPermission = new NightModeLocationPermission(this);
+    private final NightModeLocationPermission nightModeLocationPermission = new NightModeLocationPermission(this);
     private Subscription statusSubscription = Subscriptions.empty();
 
     //region PresenterFragment
@@ -56,7 +55,7 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
         super.onResume();
         this.locationInteractor.start();
         if (hasPresenterView()) {
-            final boolean hasLocationPermission = this.locationPermission.isGranted();
+            final boolean hasLocationPermission = this.nightModeLocationPermission.isGranted();
             final boolean currentModeIsAuto = this.nightModeInteractor.getCurrentMode() == AppCompatDelegate.MODE_NIGHT_AUTO;
             if (!hasLocationPermission && currentModeIsAuto) {
                 this.presenterView.setOffMode();
@@ -75,12 +74,12 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
     public void onRequestPermissionsResult(final int requestCode,
                                            @NonNull final String[] permissions,
                                            @NonNull final int[] grantResults) {
-        if (locationPermission.isGrantedFromResult(requestCode, permissions, grantResults)) {
+        if (nightModeLocationPermission.isGrantedFromResult(requestCode, permissions, grantResults)) {
             if (hasPresenterView()) {
                 presenterView.setScheduledModeEnabled(true);
             }
         } else {
-            locationPermission.showEnableInstructionsDialog();
+            nightModeLocationPermission.showEnableInstructionsDialog();
         }
     }
 
@@ -91,7 +90,9 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == NightModeActivity.REQUEST_LOCATION_STATUS && resultCode == Activity.RESULT_OK) {
             this.scheduledModeSelected();
-            this.presenterView.setScheduledMode();
+            if (presenterView != null) {
+                this.presenterView.setScheduledMode();
+            }
         }
     }
     //endregion
@@ -125,7 +126,7 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
 
     @Override
     public boolean onLocationPermissionLinkIntercepted() {
-        locationPermission.requestPermissionWithDialog();
+        nightModeLocationPermission.requestPermissionWithDialog();
         return true;
     }
     //endregion
@@ -138,12 +139,12 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
             presentUserLocationError();
         } else {
             try {
+
                 locStatus.getStatus().startResolutionForResult(getActivity(), NightModeActivity.REQUEST_LOCATION_STATUS);
             } catch (final IntentSender.SendIntentException e) {
                 presentUserLocationError();
             }
         }
-
     }
 
     private void presentUserLocationError() {
