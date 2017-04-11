@@ -309,10 +309,7 @@ public final class Player implements MediaPlayer.OnPreparedListener,
         return mediaPlayer.getDuration();
     }
 
-    public boolean seekTo(int position) {
-        if (!mediaPlayer.isPlaying()) {
-            return false;
-        }
+    public boolean seekTo(final int position) {
         try {
             mediaPlayer.seekTo(position);
             return true;

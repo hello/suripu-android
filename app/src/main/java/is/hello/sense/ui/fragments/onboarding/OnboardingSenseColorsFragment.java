@@ -55,6 +55,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
     private float nextButtonMaxY, nextButtonMinY;
 
     private boolean hasCurrentConditions = false;
+    private boolean isFirstView = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,9 +86,6 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
         senseRed.setScaleY(BACKGROUND_SENSE_SCALE);
 
         this.senseWave = (DiagramVideoView) view.findViewById(R.id.fragment_onboarding_sense_colors_final);
-        this.senseWave.setPlaceholder(R.drawable.vid_conditions);
-        senseWave.setDataSource(Uri.parse(getString(R.string.diagram_onboarding_sense_colors)));
-        senseWave.setAlpha(0f);
 
         this.viewPager = (ViewPager) view.findViewById(R.id.fragment_onboarding_sense_colors_pager);
 
@@ -242,12 +240,13 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
                 senseYellow.setAlpha(1f);
                 senseRed.setAlpha(0f);
             } else if (position == POSITION_ALERT) {
-                senseWave.suspendPlayback(false);
+                senseWave.suspendPlayback(isFirstView);
 
                 senseGreen.setAlpha(0f);
                 senseYellow.setAlpha(0f);
                 senseRed.setAlpha(1f);
             } else if (position == POSITION_WAVE) {
+                isFirstView = false;
                 senseBackground.setAlpha(0f);
                 senseGreen.setAlpha(0f);
 
@@ -260,9 +259,6 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
                 senseRed.setAlpha(0f);
 
                 senseWave.setAlpha(1);
-                senseWave.startPlayback();
-                senseWave.startPlayback();
-                senseWave.startPlayback();
                 senseWave.startPlayback();
 
                 nextButton.setY(nextButtonMinY);
