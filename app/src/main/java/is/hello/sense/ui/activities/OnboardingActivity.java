@@ -519,7 +519,7 @@ public class OnboardingActivity extends ScopedInjectionAppCompatActivity
                     new SimpleStepFragment.Builder(this);
             builder.setHeadingText(R.string.title_setup_sense);
             builder.setSubheadingText(R.string.info_setup_sense);
-            builder.setDiagramImage(R.drawable.onboarding_sense_intro);
+            builder.setDiagramImage(R.drawable.edu_room_check);
             builder.setNextFragmentClass(PairSenseFragment.class);
             if (isPairOnly()) {
                 builder.setAnalyticsEvent(Analytics.Settings.EVENT_SENSE_SETUP);
@@ -597,7 +597,7 @@ public class OnboardingActivity extends ScopedInjectionAppCompatActivity
         introBuilder.setNextFragmentClass(OnboardingRoomCheckFragment.class);
         introBuilder.setHeadingText(R.string.onboarding_title_room_check);
         introBuilder.setSubheadingText(R.string.onboarding_info_room_check);
-        introBuilder.setDiagramImage(R.drawable.onboarding_sense_intro);
+        introBuilder.setDiagramImage(R.drawable.edu_room_check);
         introBuilder.setExitAnimationName(ANIMATION_ROOM_CHECK);
         introBuilder.setNextWantsBackStackEntry(false);
         introBuilder.setAnalyticsEvent(Analytics.Onboarding.EVENT_ROOM_CHECK);
