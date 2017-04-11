@@ -167,10 +167,10 @@ public class SenseUpgradeActivity extends ScopedInjectionAppCompatActivity
             } else if (responseCode == PairSensePresenter.REQUEST_NEEDS_LOCATION_PERMISSION) {
                 showSetLocation();
             } else {
-                showSenseUpdateReady();
+                showSenseUpgradeReady();
             }
         } else if (fragment instanceof ConnectToWiFiFragment) {
-            showSenseUpdateReady();
+            showSenseUpgradeReady();
         } else if (fragment instanceof SenseUpgradeReadyFragment) {
             checkSenseOTAStatus();
             showUnpairPillFragment();
@@ -231,7 +231,7 @@ public class SenseUpgradeActivity extends ScopedInjectionAppCompatActivity
     }
 
 
-    public void showSenseUpdateReady() {
+    public void showSenseUpgradeReady() {
         pushFragment(new SenseUpgradeReadyFragment(), null, false);
     }
 
