@@ -136,9 +136,11 @@ public class OnboardingActivity extends ScopedInjectionAppCompatActivity
     @Override
     protected List<Object> getModules() {
         if (getIntent() != null && isPairOnly()) {
-            return Arrays.asList(new OnboardingModule(), new SettingsPairSenseModule(true));
+            return Arrays.asList(new OnboardingModule(),
+                                 SettingsPairSenseModule.newPairOnlyInstance());
         }
-        return Arrays.asList(new OnboardingModule(), new OnboardingPairSenseModule());
+        return Arrays.asList(new OnboardingModule(),
+                             new OnboardingPairSenseModule());
     }
 
     @Override
