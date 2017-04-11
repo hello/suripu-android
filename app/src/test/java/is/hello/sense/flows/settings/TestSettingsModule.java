@@ -16,7 +16,7 @@ injects = {
 })
 public class TestSettingsModule {
 
-    private final boolean shouldUseToolbar = true;
+    private final boolean shouldUseToolbar = false;
 
     @Provides
     @Singleton
