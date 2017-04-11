@@ -384,10 +384,10 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             final TroubleshootingAlert alert = new TroubleshootingAlert()
                     .setTitle(StringRef.from(R.string.error_sense_not_found_title))
                     .setMessage(StringRef.from(R.string.error_sense_not_found))
-                    .setPrimaryButtonTitle(R.string.action_troubleshoot)
-                    .setPrimaryButtonOnClick(() -> showSupportFor(UserSupport.DeviceIssue.CANNOT_CONNECT_TO_SENSE))
-                    .setSecondaryButtonTitle(R.string.action_retry)
-                    .setSecondaryButtonOnClick(this::connectToPeripheral);
+                    .setSecondaryButtonTitle(R.string.action_troubleshoot)
+                    .setSecondaryButtonOnClick(() -> showSupportFor(UserSupport.DeviceIssue.CANNOT_CONNECT_TO_SENSE))
+                    .setPrimaryButtonTitle(R.string.action_retry)
+                    .setPrimaryButtonOnClick(this::connectToPeripheral);
             showTroubleshootingAlert(alert);
 
             if (hardwarePresenter.shouldPromptForHighPowerScan()) {
