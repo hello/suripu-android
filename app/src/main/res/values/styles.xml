@@ -420,7 +420,7 @@
     </style>
 
     <style name="AppTheme.NightModeActivity" parent="AppTheme.AppSettingsActivity">
-        <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
+
     </style>
 
 </resources>
