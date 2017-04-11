@@ -1,7 +1,6 @@
 package is.hello.sense.ui.fragments.onboarding;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -55,7 +54,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
     private float nextButtonMaxY, nextButtonMinY;
 
     private boolean hasCurrentConditions = false;
-    private boolean isFirstView = true;
+    private boolean shouldRewindVideo = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -240,13 +239,13 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
                 senseYellow.setAlpha(1f);
                 senseRed.setAlpha(0f);
             } else if (position == POSITION_ALERT) {
-                senseWave.suspendPlayback(isFirstView);
+                senseWave.suspendPlayback(shouldRewindVideo);
 
                 senseGreen.setAlpha(0f);
                 senseYellow.setAlpha(0f);
                 senseRed.setAlpha(1f);
             } else if (position == POSITION_WAVE) {
-                isFirstView = false;
+                shouldRewindVideo = false;
                 senseBackground.setAlpha(0f);
                 senseGreen.setAlpha(0f);
 
