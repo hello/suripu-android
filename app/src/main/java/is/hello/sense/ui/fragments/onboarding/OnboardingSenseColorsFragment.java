@@ -1,6 +1,7 @@
 package is.hello.sense.ui.fragments.onboarding;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -84,6 +85,8 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
         senseRed.setScaleY(BACKGROUND_SENSE_SCALE);
 
         this.senseWave = (DiagramVideoView) view.findViewById(R.id.fragment_onboarding_sense_colors_final);
+        this.senseWave.setPlaceholder(R.drawable.vid_conditions);
+        senseWave.setDataSource(Uri.parse(getString(R.string.diagram_onboarding_sense_colors)));
         senseWave.setAlpha(0f);
 
         this.viewPager = (ViewPager) view.findViewById(R.id.fragment_onboarding_sense_colors_pager);
@@ -256,7 +259,10 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
                 senseRed.setScaleY(1f);
                 senseRed.setAlpha(0f);
 
-                senseWave.setAlpha(1f);
+                senseWave.setAlpha(1);
+                senseWave.startPlayback();
+                senseWave.startPlayback();
+                senseWave.startPlayback();
                 senseWave.startPlayback();
 
                 nextButton.setY(nextButtonMinY);
