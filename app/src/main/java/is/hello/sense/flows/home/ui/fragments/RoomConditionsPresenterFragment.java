@@ -93,6 +93,10 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
         bindAndSubscribe(this.sensorResponseInteractor.sensors,
                          this::bindConditions,
                          this::conditionsUnavailable);
+
+        if(getUserVisibleHint()) {
+            onVisibleToUser();
+        }
     }
 
     @Override
@@ -230,9 +234,13 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
     public void setVisibleToUser(final boolean isVisible) {
         super.setVisibleToUser(isVisible);
         if (isVisible) {
-            Analytics.trackEvent(Analytics.Backside.EVENT_CURRENT_CONDITIONS, null);
-            this.sensorResponseInteractor.update();
+            onVisibleToUser();
         }
+    }
+
+    private void onVisibleToUser() {
+        Analytics.trackEvent(Analytics.Backside.EVENT_CURRENT_CONDITIONS, null);
+        this.sensorResponseInteractor.update();
     }
 
 }
