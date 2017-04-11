@@ -7,13 +7,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.app.TaskStackBuilder;
 
 import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
-import is.hello.sense.flows.nightmode.ui.activities.NightModeActivity;
 import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
+import is.hello.sense.flows.nightmode.ui.activities.NightModeActivity;
 import is.hello.sense.flows.notification.ui.activities.NotificationActivity;
 import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.settings.ui.views.AppSettingsView;
@@ -44,7 +45,10 @@ public class AppSettingsActivity extends FragmentNavigationActivity
                          mode -> {
                              if (nightModeInteractor.requiresRecreate(initialConfigMode,
                                                                       getResources())) {
-                                 recreate();
+                                 final TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(this);
+                                 taskStackBuilder.addParentStack(this);
+                                 taskStackBuilder.addNextIntent(new Intent(this, AppSettingsActivity.class));
+                                 taskStackBuilder.startActivities();
                              }},
                          Functions.LOG_ERROR);
     }
