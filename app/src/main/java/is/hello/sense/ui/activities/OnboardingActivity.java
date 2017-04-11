@@ -318,6 +318,10 @@ public class OnboardingActivity extends ScopedInjectionAppCompatActivity
             }
         } else if (fragment instanceof HaveSenseReadyFragment) {
             showRegistration();
+        } else if (fragment instanceof SelectWifiNetworkFragment) {
+          if (responseCode == Activity.RESULT_CANCELED) {
+              back();
+          }
         } else if (fragment instanceof ConnectToWiFiFragment) {
             showPairPill(true);
         } else if (fragment instanceof EnableNotificationFragment) {
