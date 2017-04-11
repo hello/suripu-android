@@ -16,6 +16,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.segment.analytics.Properties;
 
 
 import is.hello.sense.api.model.LocStatus;
@@ -23,6 +24,7 @@ import is.hello.sense.api.model.UserLocation;
 import is.hello.sense.graph.InteractorSubject;
 import is.hello.sense.interactors.PersistentPreferencesInteractor;
 import is.hello.sense.interactors.ValueInteractor;
+import is.hello.sense.util.Analytics;
 import rx.Observable;
 
 public class LocationInteractor extends ValueInteractor<LocStatus>
@@ -89,6 +91,7 @@ public class LocationInteractor extends ValueInteractor<LocStatus>
 
     @Override
     public void onConnectionSuspended(final int i) {
+        Analytics.trackError(getClass().getSimpleName() + " onConnectionSuspended - " + i, null, null, null, false);
         handleResult(null);
     }
     //endregion
@@ -96,6 +99,7 @@ public class LocationInteractor extends ValueInteractor<LocStatus>
     //region OnConnectionFailedListener
     @Override
     public void onConnectionFailed(@NonNull final ConnectionResult connectionResult) {
+        Analytics.trackError(getClass().getSimpleName() + " onConnectionFailed - " + connectionResult.toString(), null, null, null, false);
         handleResult(null);
     }
 
