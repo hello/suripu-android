@@ -95,6 +95,13 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
             }
         }
     }
+
+    @Override
+    protected void onRelease() {
+        super.onRelease();
+        statusSubscription.unsubscribe();
+    }
+
     //endregion
 
     //region NightModeView.Listener
