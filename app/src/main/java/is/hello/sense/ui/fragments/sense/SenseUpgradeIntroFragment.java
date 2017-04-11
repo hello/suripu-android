@@ -36,7 +36,7 @@ public class SenseUpgradeIntroFragment extends BasePresenterFragment
         this.view = new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.title_upgrade_sense_voice)
                 .setSubheadingText(R.string.info_upgrade_sense_voice)
-                .setDiagramImage(R.drawable.onboarding_sense_intro)
+                .setDiagramImage(R.drawable.edu_room_check)
                 .setPrimaryButtonText(R.string.action_continue)
                 .setPrimaryOnClickListener(presenter::onPrimaryClicked)
                 .setSecondaryButtonText(R.string.action_upgrade_sense_voice_help)

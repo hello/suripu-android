@@ -43,7 +43,7 @@ public class SenseResetOriginalFragment extends BasePresenterFragment
                 .setHeadingText(R.string.title_sense_reset_original)
                 .setSubheadingText(R.string.info_sense_reset_original)
                 .setToolbarOnHelpClickListener(this::onHelp)
-                .setDiagramImage(R.drawable.sense_reset_original)
+                .setDiagramImage(R.drawable.sense_upgrade_original)
                 .setWantsSecondaryButton(false)
                 .setPrimaryButtonText(R.string.action_reset_sense_original)
                 .setPrimaryOnClickListener(this::onNext);
