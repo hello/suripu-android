@@ -16,6 +16,8 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.fb.FacebookApiModule;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.bluetooth.BluetoothModule;
+import is.hello.sense.flows.generic.interactors.LoadingInteractor;
+import is.hello.sense.flows.generic.ui.activities.LoadingActivity;
 import is.hello.sense.flows.generic.ui.activities.SearchListActivity;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
@@ -162,6 +164,7 @@ import is.hello.sense.zendesk.ZendeskModule;
                 HomePresenterFragment.class,
 
                 FragmentNavigationActivity.class,
+                LoadingActivity.class
         }
 )
 @SuppressWarnings("UnusedDeclaration")
@@ -211,5 +214,10 @@ public class SenseAppModule {
         return new NightModeInteractor(persistentPreferencesInteractor,
                                        apiSessionManager,
                                        applicationContext);
+    }
+    @Provides
+    @Singleton
+    public LoadingInteractor providesLoadingInteractor(){
+        return new LoadingInteractor();
     }
 }

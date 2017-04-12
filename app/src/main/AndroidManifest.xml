@@ -55,6 +55,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+
         <activity
             android:name=".flows.home.ui.activities.HomeActivity"
             android:label="@string/app_name"
@@ -66,6 +67,9 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name=".flows.generic.ui.activities.LoadingActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".flows.timeline.ui.activities.TimelineActivity"
             android:label="@string/action_timeline"

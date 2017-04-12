@@ -13,7 +13,10 @@ import com.segment.analytics.Properties;
 import javax.inject.Inject;
 
 import is.hello.buruberi.util.Rx;
+import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.flows.generic.interactors.LoadingInteractor;
+import is.hello.sense.flows.generic.ui.activities.LoadingActivity;
 import is.hello.sense.flows.home.ui.fragments.HomePresenterFragment;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
@@ -35,9 +38,14 @@ public class HomeActivity extends FragmentNavigationActivity
 
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     private static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
+    private static final String KEY_IS_CHANGING_THEMES = HomeActivity.class.getName() + ".KEY_IS_CHANGING_THEMES";
+
+    private boolean isChangingThemes = false;
 
     @Inject
     NightModeInteractor nightModeInteractor;
+    @Inject
+    LoadingInteractor loadingInteractor;
 
     public static Intent getIntent(@NonNull final Context context,
                                    @OnboardingActivity.Flow final int fromFlow) {
@@ -57,8 +65,11 @@ public class HomeActivity extends FragmentNavigationActivity
                          mode -> {
                              if (nightModeInteractor.requiresRecreate(initialConfigMode,
                                                                       getResources())) {
+                                 LoadingActivity.startActivity(this, getString(R.string.label_updating_night_mode));
+                                 isChangingThemes = true;
                                  recreate();
-                             }},
+                             }
+                         },
                          Functions.LOG_ERROR);
     }
 
@@ -71,6 +82,14 @@ public class HomeActivity extends FragmentNavigationActivity
         pushFragment(new HomePresenterFragment(), null, false);
     }
 
+    @Override
+    protected void onReCreateAction(@NonNull final Bundle savedInstanceState) {
+        super.onReCreateAction(savedInstanceState);
+        if (savedInstanceState.getBoolean(KEY_IS_CHANGING_THEMES, false)) {
+            loadingInteractor.update();
+        }
+
+    }
 
     @Override
     protected void onPostCreate(final Bundle savedInstanceState) {
@@ -98,8 +117,12 @@ public class HomeActivity extends FragmentNavigationActivity
         } else if (intent.hasExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(HomeActivity.EXTRA_NOTIFICATION_PAYLOAD));
         }
+    }
 
-
+    @Override
+    protected void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(KEY_IS_CHANGING_THEMES, isChangingThemes);
     }
 
     //region Onboarding flow provider
