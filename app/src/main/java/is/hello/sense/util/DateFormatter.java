@@ -174,7 +174,13 @@ public class DateFormatter extends Interactor {
         return Math.abs(Days.daysBetween(today, creationDate).getDays()) > 3;
 
     }
+    
+    public static boolean isBetween(@NonNull final DateTime instant,
+                                    @NonNull final DateTime start,
+                                    @NonNull final DateTime end) {
+        return new Interval(start, end).contains(instant);
 
+    }
     //endregion
 
     //region Week Periods

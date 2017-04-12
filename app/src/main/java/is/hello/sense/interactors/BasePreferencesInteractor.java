@@ -91,6 +91,9 @@ public class BasePreferencesInteractor extends Interactor {
         }
     }
 
+    protected Context getAppContext(){
+        return context.getApplicationContext();
+    }
     //endregion
 
 

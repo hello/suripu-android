@@ -223,6 +223,7 @@ dependencies {
 
     compile 'com.google.firebase:firebase-core:9.8.0'
     compile 'com.google.firebase:firebase-messaging:9.8.0'
+    compile 'com.google.android.gms:play-services-location:9.8.0'
 
     compile 'com.squareup.picasso:picasso:2.5.3-SNAPSHOT'
     compile 'me.grantland:autofittextview:0.2.1'
@@ -232,6 +233,7 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.13.1'
     compile 'no.nordicsemi.android:dfu:0.6.3'
     compile 'com.bugsnag:bugsnag-android:3.2.6'
+    compile 'com.luckycatlabs:SunriseSunsetCalculator:1.2'
 
     testCompile 'org.robolectric:shadows-multidex:3.2.1'
     testCompile 'org.robolectric:robolectric:3.2.1'

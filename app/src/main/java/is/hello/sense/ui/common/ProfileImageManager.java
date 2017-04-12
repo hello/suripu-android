@@ -96,7 +96,7 @@ public class ProfileImageManager {
                 new SenseBottomSheet.Option(OPTION_ID_FROM_GALLERY)
                         .setTitle(R.string.action_import_from_gallery)
                         .setTitleColor(ContextCompat.getColor(context, R.color.primary_text))
-                        .setIcon(R.drawable.settings_photo_library)
+                        .setIcon(R.drawable.icon_photo_library_24)
                         .setIconTintRes(R.color.active_icon)
                    );
         deleteOption = new SenseBottomSheet.Option(OPTION_ID_REMOVE_PICTURE)

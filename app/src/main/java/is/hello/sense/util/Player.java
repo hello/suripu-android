@@ -197,7 +197,7 @@ public final class Player implements MediaPlayer.OnPreparedListener,
             if (timesLooped >= timesToLoop) {
                 stop();
                 onEventListener.onPlaybackStopped(this, true);
-            }else {
+            } else {
                 mp.start();
                 timesLooped++;
             }
@@ -231,7 +231,6 @@ public final class Player implements MediaPlayer.OnPreparedListener,
             setState(STATE_LOADED);
         }
     }
-
     public void setDataSource(@NonNull Uri source, boolean startWhenPrepared) {
         setDataSource(source, startWhenPrepared, 0);
     }
@@ -310,7 +309,7 @@ public final class Player implements MediaPlayer.OnPreparedListener,
         return mediaPlayer.getDuration();
     }
 
-    public boolean seekTo(int position) {
+    public boolean seekTo(final int position) {
         try {
             mediaPlayer.seekTo(position);
             return true;

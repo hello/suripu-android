@@ -33,7 +33,7 @@ public class VoiceCompleteFragment extends SenseFragment {
         this.view =  new OnboardingSimpleStepView(this, inflater)
                 .setHeadingText(R.string.onboarding_voice_complete_title)
                 .setSubheadingText(R.string.onboarding_voice_complete_message)
-                .setDiagramImage(R.drawable.onboarding_sense_complete)
+                .setDiagramImage(R.drawable.edu_voice_complete)
                 .setPrimaryButtonText(R.string.action_done)
                 .setPrimaryOnClickListener(this::complete)
                 .setWantsSecondaryButton(false)
