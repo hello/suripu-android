@@ -21,6 +21,7 @@ import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractorTests;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatterTest;
 import is.hello.sense.flows.home.interactors.LastNightInteractorTest;
+import is.hello.sense.flows.home.ui.adapters.SensorResponseAdapterTest;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragmentTests;
 import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractorTest;
@@ -135,6 +136,7 @@ import static org.mockito.Mockito.mock;
 
             RoomConditionsPresenterFragment.class,
             RoomConditionsPresenterFragmentTests.class,
+            SensorResponseAdapterTest.class,
 
             SensorLabelInteractorTest.class,
 
@@ -150,7 +152,7 @@ import static org.mockito.Mockito.mock;
 
 
             LastNightInteractorTest.class,
-            SleepSoundsInteractorTest.class
+            SleepSoundsInteractorTest.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")
