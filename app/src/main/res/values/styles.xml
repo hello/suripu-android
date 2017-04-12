@@ -381,6 +381,10 @@
     </style>
 
     <!-- Activities -->
+    <style name="AppTheme.NoActionBar.NoPreview">
+        <item name="android:windowDisablePreview">true</item>
+    </style>
+
     <style name="AppTheme.Fade">
         <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
     </style>
