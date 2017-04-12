@@ -253,7 +253,6 @@ public class DiagramVideoView extends FrameLayout implements Player.OnEventListe
 
 
     //region Attributes
-
     public void setPlaceholder(@DrawableRes int drawableRes) {
         final Drawable drawable = ResourcesCompat.getDrawable(getResources(), drawableRes, null);
         setPlaceholder(drawable);

@@ -54,6 +54,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
     private float nextButtonMaxY, nextButtonMinY;
 
     private boolean hasCurrentConditions = false;
+    private boolean shouldRewindVideo = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,7 +85,6 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
         senseRed.setScaleY(BACKGROUND_SENSE_SCALE);
 
         this.senseWave = (DiagramVideoView) view.findViewById(R.id.fragment_onboarding_sense_colors_final);
-        senseWave.setAlpha(0f);
 
         this.viewPager = (ViewPager) view.findViewById(R.id.fragment_onboarding_sense_colors_pager);
 
@@ -239,12 +239,13 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
                 senseYellow.setAlpha(1f);
                 senseRed.setAlpha(0f);
             } else if (position == POSITION_ALERT) {
-                senseWave.suspendPlayback(false);
+                senseWave.suspendPlayback(shouldRewindVideo);
 
                 senseGreen.setAlpha(0f);
                 senseYellow.setAlpha(0f);
                 senseRed.setAlpha(1f);
             } else if (position == POSITION_WAVE) {
+                shouldRewindVideo = false;
                 senseBackground.setAlpha(0f);
                 senseGreen.setAlpha(0f);
 
@@ -256,7 +257,7 @@ public class OnboardingSenseColorsFragment extends InjectionFragment {
                 senseRed.setScaleY(1f);
                 senseRed.setAlpha(0f);
 
-                senseWave.setAlpha(1f);
+                senseWave.setAlpha(1);
                 senseWave.startPlayback();
 
                 nextButton.setY(nextButtonMinY);
