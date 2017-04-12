@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.mvp.view.PresenterView;
 
-public abstract class BaseHomeFragment<T extends PresenterView> extends ControllerPresenterFragment<T> {
+public abstract class HomeControllerPresenterFragment<T extends PresenterView> extends ControllerPresenterFragment<T> {
     @Inject
     NightModeInteractor nightModeInteractor;
 

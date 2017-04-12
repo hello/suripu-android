@@ -22,7 +22,7 @@ import is.hello.sense.flows.home.ui.views.TimelinePagerView;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TimelineInteractor;
-import is.hello.sense.mvp.presenters.BaseHomeFragment;
+import is.hello.sense.mvp.presenters.HomeControllerPresenterFragment;
 import is.hello.sense.notifications.Notification;
 import is.hello.sense.notifications.NotificationInteractor;
 import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
@@ -31,7 +31,7 @@ import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.Logger;
 
-public class TimelinePagerPresenterFragment extends BaseHomeFragment<TimelinePagerView>
+public class TimelinePagerPresenterFragment extends HomeControllerPresenterFragment<TimelinePagerView>
         implements ViewPager.OnPageChangeListener,
         TimelineFragment.Parent,
         HomeActivity.ScrollUp {

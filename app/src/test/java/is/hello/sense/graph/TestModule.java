@@ -23,6 +23,7 @@ import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatterTest;
 import is.hello.sense.flows.home.interactors.LastNightInteractorTest;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragmentTests;
+import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractorTest;
 import is.hello.sense.flows.settings.TestSettingsModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
@@ -63,6 +64,7 @@ import is.hello.sense.interactors.questions.ApiQuestionProviderTests;
 import is.hello.sense.interactors.questions.ReviewQuestionProviderTests;
 import is.hello.sense.interactors.settings.SettingsPairSenseInteractorTests;
 import is.hello.sense.interactors.upgrade.UpgradePairSenseInteractorTests;
+import is.hello.sense.mvp.presenters.HomeControllerPresenterFragment;
 import is.hello.sense.notifications.TestNotificationModule;
 import is.hello.sense.rating.LocalUsageTrackerTests;
 import is.hello.sense.ui.adapter.SmartAlarmAdapterTests;
@@ -248,5 +250,13 @@ public final class TestModule {
     @Singleton
     ConfigurationsInteractor providesConfigurationInteractor(final ApiService service){
         return new ConfigurationsInteractor(service);
+    }
+
+    @Provides
+    @Singleton
+    public NightModeInteractor providesNightModeInteractor(@NonNull final PersistentPreferencesInteractor persistentPreferencesInteractor,
+                                                           @NonNull final ApiSessionManager apiSessionManager) {
+        return new NightModeInteractor(persistentPreferencesInteractor,
+                                       apiSessionManager);
     }
 }
