@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AppCompatDelegate;
+import android.util.Log;
 
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 import com.luckycatlabs.sunrisesunset.dto.Location;
@@ -51,6 +52,7 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
         return Observable.just(getCurrentMode());
     }
 
+    @AppCompatDelegate.NightMode
     public Integer getCurrentMode() {
         if (apiSessionManager.hasSession()) {
             return persistentPreferencesInteractor.getCurrentNightMode();
@@ -68,6 +70,7 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
     /**
      * {@link AppCompatDelegate#MODE_NIGHT_AUTO} isn't used.  What looks like AUTO is actually a
      * well made illusion flipping between on and off.
+     *
      * @param mode
      */
     public void setMode(@AppCompatDelegate.NightMode final int mode) {
@@ -89,13 +92,25 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
         @AppCompatDelegate.NightMode
         final int accountPrefNightMode = persistentPreferencesInteractor.getCurrentNightMode();
         if (accountPrefNightMode != AppCompatDelegate.MODE_NIGHT_AUTO) {
+            Log.e("updateSession", "Night Mode: " + accountPrefNightMode);
             AppCompatDelegate.setDefaultNightMode(accountPrefNightMode);
         } else if (isNightTime()) {
+            Log.e("updateSession", "Night Mode On");
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
+            Log.e("updateSession", "Night Mode Off");
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
+        Log.e("updateSession", "Updating");
         update();
+    }
+
+
+    public void updateIfAuto() {
+        Log.e("Update", "if Auto");
+        if (getCurrentMode() == AppCompatDelegate.MODE_NIGHT_AUTO) {
+            updateToMatchPrefAndSession();
+        }
     }
 
     /**
@@ -107,6 +122,7 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
     public boolean requiresRecreate(final int initialConfigMode,
                                     @NonNull final Resources current) {
         final int currentConfigMode = getConfigMode(current);
+        Log.e("requiresRecreate: ", "current config: " + currentConfigMode);
         return currentConfigMode != initialConfigMode;
     }
 
@@ -120,7 +136,7 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
 
     @VisibleForTesting
     protected boolean isNightTime(@NonNull final TimeZone timeZone,
-                                @NonNull final DateTime dateTime) {
+                                  @NonNull final DateTime dateTime) {
         final UserLocation userLocation = persistentPreferencesInteractor.getUserLocation();
         if (userLocation == null) {
             return false;

@@ -27,7 +27,6 @@ import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
 import is.hello.sense.api.model.v2.InsightType;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
-import is.hello.sense.flows.home.ui.adapters.StaticFragmentAdapter;
 import is.hello.sense.flows.home.ui.views.InsightsView;
 import is.hello.sense.graph.Scope;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
@@ -36,7 +35,7 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.QuestionsInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.interactors.questions.ReviewQuestionProvider;
-import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
+import is.hello.sense.mvp.presenters.BaseHomeFragment;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.common.UserSupport;
@@ -54,7 +53,7 @@ import is.hello.sense.util.Share;
 import rx.Observable;
 
 @NotTested //enough
-public class InsightsFragment extends ControllerPresenterFragment<InsightsView> implements
+public class InsightsFragment extends BaseHomeFragment<InsightsView> implements
         InsightsAdapter.InteractionListener,
         InsightInfoFragment.Parent,
         InsightsAdapter.OnRetry,

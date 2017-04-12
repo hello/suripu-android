@@ -28,7 +28,7 @@ import is.hello.sense.flows.sensordetails.ui.activities.SensorDetailActivity;
 import is.hello.sense.flows.settings.ui.activities.AppSettingsActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
-import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
+import is.hello.sense.mvp.presenters.BaseHomeFragment;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.common.UpdateTimer;
@@ -39,7 +39,7 @@ import is.hello.sense.util.Logger;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-public class RoomConditionsPresenterFragment extends ControllerPresenterFragment<RoomConditionsView>
+public class RoomConditionsPresenterFragment extends BaseHomeFragment<RoomConditionsView>
         implements ArrayRecyclerAdapter.OnItemClickedListener<Sensor>,
         SensorResponseAdapter.ErrorItemClickListener,
         HomeActivity.ScrollUp {
@@ -57,6 +57,7 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
     private UpdateTimer updateTimer;
     @NonNull
     private Subscription postSensorSubscription = Subscriptions.empty();
+
 
     @Override
     public final void initializePresenterView() {

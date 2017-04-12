@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatDelegate;
+import android.util.Log;
 
 import com.segment.analytics.Properties;
 
@@ -43,7 +44,7 @@ public class HomeActivity extends FragmentNavigationActivity
     NightModeInteractor nightModeInteractor;
     @Inject
     LocationInteractor locationInteractor;
-
+    private int initialConfigMode;
 
     public static Intent getIntent(@NonNull final Context context,
                                    @OnboardingActivity.Flow final int fromFlow) {
@@ -62,12 +63,16 @@ public class HomeActivity extends FragmentNavigationActivity
     @Override
     protected void onCreate(@NonNull final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final int initialConfigMode = nightModeInteractor.getConfigMode(getResources());
+        initialConfigMode = nightModeInteractor.getConfigMode(getResources());
         bindAndSubscribe(nightModeInteractor.currentNightMode,
                          mode -> {
+                             Log.e("NightMode Change", "Initial Config: " + initialConfigMode);
                              if (nightModeInteractor.requiresRecreate(initialConfigMode,
                                                                       getResources())) {
+                                 Log.e("NightMode Change", "Recreate");
+                                 //todo replace
                                  recreate();
+
                              }
                          },
                          Functions.LOG_ERROR);
