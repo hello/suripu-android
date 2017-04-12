@@ -39,6 +39,11 @@ public class HomeActivity extends FragmentNavigationActivity
         implements
         OnboardingFlowProvider {
 
+    /**
+     * Apply values supplied to this bundle when first starting home activity and fragment
+     */
+    public static final String EXTRA_ON_START_ARGS = HomeActivity.class.getName() + ".EXTRA_ON_START_ARGS";
+    public static final String EXTRA_HOME_SHOW_ALERTS = HomeActivity.class.getName() + ".EXTRA_HOME_SHOW_ALERTS";
     public static final String EXTRA_HOME_NAV_INDEX = HomeActivity.class.getName() + ".EXTRA_HOME_NAV_INDEX";
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     private static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
@@ -54,10 +59,14 @@ public class HomeActivity extends FragmentNavigationActivity
      * @param from activity to return at top.
      */
     public static void recreateTaskStack(@NonNull final Activity from) {
+        final Bundle homeOnStartArgs = new Bundle();
+        homeOnStartArgs.putInt(EXTRA_HOME_NAV_INDEX, HomeViewPagerPresenterDelegate.CONDITIONS_ICON_KEY);
+        homeOnStartArgs.putBoolean(EXTRA_HOME_SHOW_ALERTS, false);
+
         final TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(from);
         taskStackBuilder.addNextIntentWithParentStack(new Intent(from, from.getClass()));
-        taskStackBuilder.editIntentAt(0).putExtra(EXTRA_HOME_NAV_INDEX,
-                                                  HomeViewPagerPresenterDelegate.CONDITIONS_ICON_KEY);
+        taskStackBuilder.editIntentAt(0)
+                        .putExtra(EXTRA_ON_START_ARGS, homeOnStartArgs);
         taskStackBuilder.startActivities();
     }
 
@@ -98,8 +107,8 @@ public class HomeActivity extends FragmentNavigationActivity
         if (intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
         }
-        if (intent != null && intent.hasExtra(EXTRA_HOME_NAV_INDEX)) {
-            pushFragment(HomePresenterFragment.newInstance(intent.getIntExtra(EXTRA_HOME_NAV_INDEX, 0)),
+        if (intent != null && intent.hasExtra(EXTRA_ON_START_ARGS)) {
+            pushFragment(HomePresenterFragment.newInstance(intent.getBundleExtra(EXTRA_ON_START_ARGS)),
                          null,
                          false);
         } else {

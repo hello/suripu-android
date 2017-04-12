@@ -3,6 +3,7 @@ package is.hello.sense.flows.home.ui.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.view.View;
 
 import java.util.List;
@@ -51,7 +52,8 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
     @Inject
     PreferencesInteractor preferencesInteractor;
 
-    private SensorResponseAdapter adapter;
+    @VisibleForTesting
+    protected SensorResponseAdapter adapter;
     private UpdateTimer updateTimer;
     @NonNull
     private Subscription postSensorSubscription = Subscriptions.empty();
