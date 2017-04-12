@@ -11,6 +11,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatDelegate;
 
 import com.bugsnag.android.Bugsnag;
 import com.bugsnag.android.Severity;
@@ -833,6 +834,40 @@ public class Analytics {
 
     }
 
+    public interface NightMode {
+
+        String TRAIT = "Night Mode";
+        /**
+         * This property is sent and updated when user taps on / changes one of the options.
+         * If user hasn't made a selection, the property should not appear
+         */
+        String EVENT_CHANGED = "Changed Night Mode";
+
+        String PROP_SETTING = "setting";
+
+        String PROP_ON = "on";
+        String PROP_OFF = "off";
+        String PROP_AUTO = "auto";
+    }
+
+    private static String getNightModeProperty(@AppCompatDelegate.NightMode final int mode) {
+        final String property;
+        switch (mode) {
+            case AppCompatDelegate.MODE_NIGHT_NO:
+                property = Analytics.NightMode.PROP_OFF;
+                break;
+            case AppCompatDelegate.MODE_NIGHT_YES:
+                property = Analytics.NightMode.PROP_ON;
+                break;
+            case AppCompatDelegate.MODE_NIGHT_AUTO:
+                property = Analytics.NightMode.PROP_AUTO;
+                break;
+            default:
+                property = NightMode.PROP_OFF;
+        }
+        return property;
+    }
+
 
     //region Lifecycle
 
@@ -957,6 +992,13 @@ public class Analytics {
 
         segment.identify(traits);
         segment.flush();
+    }
+
+    public static void trackNightMode(@AppCompatDelegate.NightMode final int mode) {
+        final String property = getNightModeProperty(mode);
+        trackTrait(NightMode.TRAIT, property);
+        trackEvent(Analytics.NightMode.EVENT_CHANGED,
+                   Analytics.createProperties(Analytics.NightMode.PROP_SETTING, property));
     }
 
     public static void signOut() {
