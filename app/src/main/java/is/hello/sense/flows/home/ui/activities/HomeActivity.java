@@ -1,5 +1,6 @@
 package is.hello.sense.flows.home.ui.activities;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatDelegate;
 
 import com.segment.analytics.Properties;
@@ -18,6 +20,7 @@ import is.hello.sense.R;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.generic.ui.interactors.LocationInteractor;
 import is.hello.sense.flows.home.ui.fragments.HomePresenterFragment;
+import is.hello.sense.flows.home.util.HomeViewPagerPresenterDelegate;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.functional.Functions;
@@ -36,6 +39,12 @@ public class HomeActivity extends FragmentNavigationActivity
         implements
         OnboardingFlowProvider {
 
+    /**
+     * Apply values supplied to this bundle when first starting home activity and fragment
+     */
+    public static final String EXTRA_ON_START_ARGS = HomeActivity.class.getName() + ".EXTRA_ON_START_ARGS";
+    public static final String EXTRA_HOME_SHOW_ALERTS = HomeActivity.class.getName() + ".EXTRA_HOME_SHOW_ALERTS";
+    public static final String EXTRA_HOME_NAV_INDEX = HomeActivity.class.getName() + ".EXTRA_HOME_NAV_INDEX";
     public static final String EXTRA_NOTIFICATION_PAYLOAD = HomeActivity.class.getName() + ".EXTRA_NOTIFICATION_PAYLOAD";
     private static final String EXTRA_ONBOARDING_FLOW = HomeActivity.class.getName() + ".EXTRA_ONBOARDING_FLOW";
 
@@ -44,6 +53,22 @@ public class HomeActivity extends FragmentNavigationActivity
     @Inject
     LocationInteractor locationInteractor;
 
+
+    /**
+     * Assumes {@link HomeActivity} is first intent of stack.
+     * @param from activity to return at top.
+     */
+    public static void recreateTaskStack(@NonNull final Activity from) {
+        final Bundle homeOnStartArgs = new Bundle();
+        homeOnStartArgs.putInt(EXTRA_HOME_NAV_INDEX, HomeViewPagerPresenterDelegate.CONDITIONS_ICON_KEY);
+        homeOnStartArgs.putBoolean(EXTRA_HOME_SHOW_ALERTS, false);
+
+        final TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(from);
+        taskStackBuilder.addNextIntentWithParentStack(new Intent(from, from.getClass()));
+        taskStackBuilder.editIntentAt(0)
+                        .putExtra(EXTRA_ON_START_ARGS, homeOnStartArgs);
+        taskStackBuilder.startActivities();
+    }
 
     public static Intent getIntent(@NonNull final Context context,
                                    @OnboardingActivity.Flow final int fromFlow) {
@@ -82,7 +107,13 @@ public class HomeActivity extends FragmentNavigationActivity
         if (intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
         }
-        pushFragment(new HomePresenterFragment(), null, false);
+        if (intent != null && intent.hasExtra(EXTRA_ON_START_ARGS)) {
+            pushFragment(HomePresenterFragment.newInstance(intent.getBundleExtra(EXTRA_ON_START_ARGS)),
+                         null,
+                         false);
+        } else {
+            pushFragment(new HomePresenterFragment(), null, false);
+        }
     }
 
 
@@ -188,7 +219,6 @@ public class HomeActivity extends FragmentNavigationActivity
         }
         return null;
     }
-
 
     public interface ScrollUp {
         void scrollUp();

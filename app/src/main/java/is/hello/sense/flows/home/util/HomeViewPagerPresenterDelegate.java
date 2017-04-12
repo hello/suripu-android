@@ -15,7 +15,7 @@ public class HomeViewPagerPresenterDelegate extends BaseViewPagerPresenterDelega
     public final int TRENDS_ICON_KEY = 1;
     public final int FEED_ICON_KEY = 2;
     public final int SOUNDS_ICON_KEY = 3;
-    public final int CONDITIONS_ICON_KEY = 4;
+    public static final int CONDITIONS_ICON_KEY = 4;
 
     @NonNull
     @Override

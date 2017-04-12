@@ -12,8 +12,9 @@ import javax.inject.Inject;
 
 import is.hello.sense.R;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
-import is.hello.sense.flows.nightmode.ui.activities.NightModeActivity;
+import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
+import is.hello.sense.flows.nightmode.ui.activities.NightModeActivity;
 import is.hello.sense.flows.notification.ui.activities.NotificationActivity;
 import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.settings.ui.views.AppSettingsView;
@@ -31,6 +32,7 @@ import is.hello.sense.util.Share;
 public class AppSettingsActivity extends FragmentNavigationActivity
         implements FragmentNavigation {
 
+
     @Inject
     NightModeInteractor nightModeInteractor;
 
@@ -44,7 +46,7 @@ public class AppSettingsActivity extends FragmentNavigationActivity
                          mode -> {
                              if (nightModeInteractor.requiresRecreate(initialConfigMode,
                                                                       getResources())) {
-                                 recreate();
+                                 HomeActivity.recreateTaskStack(this);
                              }},
                          Functions.LOG_ERROR);
     }

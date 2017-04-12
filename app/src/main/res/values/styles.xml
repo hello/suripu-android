@@ -38,6 +38,7 @@
         <item name="homeAsUpIndicator">@drawable/app_style_ab_up</item>
 
         <item name="editTextStyle">@style/EditText</item>
+
     </style>
 
 
@@ -380,6 +381,18 @@
     </style>
 
     <!-- Activities -->
+    <style name="AppTheme.NoActionBar.NoPreview">
+        <item name="android:windowDisablePreview">true</item>
+    </style>
+
+    <style name="AppTheme.Fade">
+        <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.Fade">
+        <item name="android:windowAnimationStyle">@style/WindowAnimations.Fade</item>
+    </style>
+
     <style name="AppTheme.NoActionBar.OnboardingActivity">
         <item name="android:windowBackground">@color/background_card</item>
         <item name="android:homeAsUpIndicator">@drawable/app_style_ab_up</item>
@@ -411,6 +424,7 @@
     </style>
 
     <style name="AppTheme.NightModeActivity" parent="AppTheme.AppSettingsActivity">
+
     </style>
 
 </resources>

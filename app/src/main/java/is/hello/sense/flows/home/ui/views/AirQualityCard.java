@@ -28,7 +28,7 @@ public class AirQualityCard extends LinearLayout {
     }
 
     public AirQualityCard(@NonNull final Context context, final AttributeSet attrs) {
-        this(context, attrs, -1);
+        this(context, attrs, 0);
     }
 
     public AirQualityCard(@NonNull final Context context, final AttributeSet attrs, final int defStyleAttr) {
