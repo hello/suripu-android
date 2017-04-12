@@ -206,10 +206,8 @@ public class SenseAppModule {
     @Provides
     @Singleton
     public NightModeInteractor providesNightModeInteractor(@NonNull final PersistentPreferencesInteractor persistentPreferencesInteractor,
-                                                           @NonNull final ApiSessionManager apiSessionManager,
-                                                           @NonNull final Context applicationContext) {
+                                                           @NonNull final ApiSessionManager apiSessionManager) {
         return new NightModeInteractor(persistentPreferencesInteractor,
-                                       apiSessionManager,
-                                       applicationContext);
+                                       apiSessionManager);
     }
 }
