@@ -41,7 +41,7 @@ public class SettingsActivity extends ScopedInjectionAppCompatActivity
     @Override
     protected List<Object> getModules() {
         return Arrays.asList(
-                new SettingsPairSenseModule(false));
+                SettingsPairSenseModule.newEditWifiOnlyInstance());
     }
 
     public static final String EXTRA_DEFAULT_TITLE = SettingsActivity.class.getName() + ".EXTRA_DEFAULT_TITLE";

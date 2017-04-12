@@ -68,7 +68,8 @@ public class PiruPeaActivity extends ScopedInjectionAppCompatActivity implements
     @Override
     protected List<Object> getModules() {
         // May need to change variable: true
-        return Arrays.asList(new SettingsPairSenseModule(true), new DebugModule());
+        return Arrays.asList(SettingsPairSenseModule.newPairOnlyInstance(),
+                             new DebugModule());
     }
 
     @Override

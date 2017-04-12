@@ -16,9 +16,11 @@ injects = {
 })
 public class TestSettingsModule {
 
+    private final boolean shouldUseToolbar = false;
+
     @Provides
     @Singleton
     public SettingsSelectWifiNetworkPresenter providesSettingsSelectWifiNetworkPresenter(@NonNull final HardwareInteractor hardwareInteractor) {
-        return new SettingsSelectWifiNetworkPresenter(hardwareInteractor);
+        return new SettingsSelectWifiNetworkPresenter(hardwareInteractor, shouldUseToolbar);
     }
 }

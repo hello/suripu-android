@@ -136,9 +136,11 @@ public class OnboardingActivity extends ScopedInjectionAppCompatActivity
     @Override
     protected List<Object> getModules() {
         if (getIntent() != null && isPairOnly()) {
-            return Arrays.asList(new OnboardingModule(), new SettingsPairSenseModule(true));
+            return Arrays.asList(new OnboardingModule(),
+                                 SettingsPairSenseModule.newPairOnlyInstance());
         }
-        return Arrays.asList(new OnboardingModule(), new OnboardingPairSenseModule());
+        return Arrays.asList(new OnboardingModule(),
+                             new OnboardingPairSenseModule());
     }
 
     @Override
@@ -316,6 +318,10 @@ public class OnboardingActivity extends ScopedInjectionAppCompatActivity
             }
         } else if (fragment instanceof HaveSenseReadyFragment) {
             showRegistration();
+        } else if (fragment instanceof SelectWifiNetworkFragment) {
+          if (responseCode == Activity.RESULT_CANCELED) {
+              back();
+          }
         } else if (fragment instanceof ConnectToWiFiFragment) {
             showPairPill(true);
         } else if (fragment instanceof EnableNotificationFragment) {
