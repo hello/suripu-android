@@ -43,6 +43,9 @@ import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.SystemAlertDialogFragment;
 import is.hello.sense.util.Logger;
 
+import static is.hello.sense.flows.home.ui.activities.HomeActivity.EXTRA_HOME_NAV_INDEX;
+import static is.hello.sense.flows.home.ui.activities.HomeActivity.EXTRA_HOME_SHOW_ALERTS;
+
 
 public class HomePresenterFragment extends PresenterFragment<HomeView>
         implements
@@ -76,6 +79,12 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     private final HomeViewPagerPresenterDelegate viewPagerDelegate = new HomeViewPagerPresenterDelegate();
     private boolean shouldShowAlerts = true;
 
+    public static HomePresenterFragment newInstance(@Nullable final Bundle args) {
+        final HomePresenterFragment fragment = new HomePresenterFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     //region PresenterFragment
     @Override
     public void initializePresenterView() {
@@ -105,8 +114,15 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         addInteractor(this.unreadStateInteractor);
 
         if (savedInstanceState == null) {
-            this.shouldShowAlerts = true;
-            this.presenterView.setCurrentItem(this.viewPagerDelegate.getStartingItemPosition());
+            final Bundle args = getArguments();
+            if (args != null) {
+                this.shouldShowAlerts = args.getBoolean(EXTRA_HOME_SHOW_ALERTS, true);
+                this.presenterView.setCurrentItem(args.getInt(EXTRA_HOME_NAV_INDEX,
+                                                              this.viewPagerDelegate.getStartingItemPosition()));
+            } else {
+                this.shouldShowAlerts = true;
+                this.presenterView.setCurrentItem(this.viewPagerDelegate.getStartingItemPosition());
+            }
         } else {
             this.shouldShowAlerts = false;
         }

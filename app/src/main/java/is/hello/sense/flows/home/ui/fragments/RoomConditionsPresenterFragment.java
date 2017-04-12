@@ -53,7 +53,7 @@ public class RoomConditionsPresenterFragment extends HomeControllerPresenterFrag
     PreferencesInteractor preferencesInteractor;
 
     @VisibleForTesting
-    public SensorResponseAdapter adapter;
+    protected SensorResponseAdapter adapter;
     private UpdateTimer updateTimer;
     @NonNull
     private Subscription postSensorSubscription = Subscriptions.empty();
@@ -94,6 +94,10 @@ public class RoomConditionsPresenterFragment extends HomeControllerPresenterFrag
         bindAndSubscribe(this.sensorResponseInteractor.sensors,
                          this::bindConditions,
                          this::conditionsUnavailable);
+
+        if(getUserVisibleHint()) {
+            onVisibleToUser();
+        }
     }
 
     @Override
@@ -231,9 +235,13 @@ public class RoomConditionsPresenterFragment extends HomeControllerPresenterFrag
     public void setVisibleToUser(final boolean isVisible) {
         super.setVisibleToUser(isVisible);
         if (isVisible) {
-            Analytics.trackEvent(Analytics.Backside.EVENT_CURRENT_CONDITIONS, null);
-            this.sensorResponseInteractor.update();
+            onVisibleToUser();
         }
+    }
+
+    private void onVisibleToUser() {
+        Analytics.trackEvent(Analytics.Backside.EVENT_CURRENT_CONDITIONS, null);
+        this.sensorResponseInteractor.update();
     }
 
 }
