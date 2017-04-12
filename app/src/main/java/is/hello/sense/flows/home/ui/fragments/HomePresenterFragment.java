@@ -115,16 +115,12 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
 
         if (savedInstanceState == null) {
             final Bundle args = getArguments();
-            if (args != null && args.containsKey(EXTRA_HOME_SHOW_ALERTS)) {
+            if (args != null) {
                 this.shouldShowAlerts = args.getBoolean(EXTRA_HOME_SHOW_ALERTS, true);
-            } else {
-                this.shouldShowAlerts = true;
-            }
-
-            if (args != null && args.containsKey(EXTRA_HOME_NAV_INDEX)) {
                 this.presenterView.setCurrentItem(args.getInt(EXTRA_HOME_NAV_INDEX,
                                                               this.viewPagerDelegate.getStartingItemPosition()));
             } else {
+                this.shouldShowAlerts = true;
                 this.presenterView.setCurrentItem(this.viewPagerDelegate.getStartingItemPosition());
             }
         } else {
