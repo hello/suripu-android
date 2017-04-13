@@ -3,6 +3,7 @@ package is.hello.sense.ui.adapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -31,6 +32,7 @@ import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.SenseBar;
 import is.hello.sense.ui.widget.timeline.TimelineSegmentDrawable;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
@@ -464,6 +466,15 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
             this.dateText = (TextView) itemView.findViewById(R.id.item_timeline_segment_date);
 
             container.setPivotX(0f);
+
+            /*
+              Explicitly tinting background here for kit kat devices. See sense_flat_button_selector.xml
+             */
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+                this.container.setBackground(Styles.tintDrawableWithStates(context,
+                                                                           R.drawable.background_timeline_event_selector,
+                                                                           R.color.timeline_event_background_selector));
+            }
         }
 
         //region Binding
