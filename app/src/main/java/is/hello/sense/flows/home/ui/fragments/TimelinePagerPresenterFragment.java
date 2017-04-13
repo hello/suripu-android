@@ -47,7 +47,6 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
 
     private static final String KEY_LAST_UPDATED = TimelinePagerPresenterFragment.class.getSimpleName() + "KEY_LAST_UPDATED";
 
-    public boolean shouldJumpToLastNightOnUserVisible = false;
     private final BroadcastReceiver onTimeChanged = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, final Intent intent) {

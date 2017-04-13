@@ -62,6 +62,10 @@ public class HomeView extends BindedPresenterView<ViewHomeBinding> {
         this.binding.viewHomeExtendedViewPager.setCurrentItem(item);
     }
 
+    public int getCurrentItem() {
+        return this.binding.viewHomeExtendedViewPager.getCurrentItem();
+    }
+
     /**
      * @param index position of fragment we need.
      * @return fragment if found else null.

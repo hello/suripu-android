@@ -24,6 +24,7 @@ import is.hello.sense.flows.home.interactors.LastNightInteractorTest;
 import is.hello.sense.flows.home.ui.adapters.SensorResponseAdapterTest;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragmentTests;
+import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractorTest;
 import is.hello.sense.flows.settings.TestSettingsModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
@@ -250,5 +251,13 @@ public final class TestModule {
     @Singleton
     ConfigurationsInteractor providesConfigurationInteractor(final ApiService service){
         return new ConfigurationsInteractor(service);
+    }
+
+    @Provides
+    @Singleton
+    public NightModeInteractor providesNightModeInteractor(@NonNull final PersistentPreferencesInteractor persistentPreferencesInteractor,
+                                                           @NonNull final ApiSessionManager apiSessionManager) {
+        return new NightModeInteractor(persistentPreferencesInteractor,
+                                       apiSessionManager);
     }
 }

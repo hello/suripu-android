@@ -58,6 +58,7 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
     @NonNull
     private Subscription postSensorSubscription = Subscriptions.empty();
 
+
     @Override
     public final void initializePresenterView() {
         if (this.presenterView == null) {

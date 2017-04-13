@@ -48,9 +48,11 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
 
     @Override
     protected Observable<Integer> provideUpdateObservable() {
-        return Observable.just(getCurrentMode());
-    }
+            return Observable.just(getCurrentMode());
 
+     }
+
+    @AppCompatDelegate.NightMode
     public Integer getCurrentMode() {
         if (apiSessionManager.hasSession()) {
             return persistentPreferencesInteractor.getCurrentNightMode();
@@ -68,6 +70,7 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
     /**
      * {@link AppCompatDelegate#MODE_NIGHT_AUTO} isn't used.  What looks like AUTO is actually a
      * well made illusion flipping between on and off.
+     *
      * @param mode
      */
     public void setMode(@AppCompatDelegate.NightMode final int mode) {
@@ -98,6 +101,13 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
         update();
     }
 
+
+    public void updateIfAuto() {
+        if (getCurrentMode() == AppCompatDelegate.MODE_NIGHT_AUTO) {
+            updateToMatchPrefAndSession();
+        }
+    }
+
     /**
      * @param initialConfigMode should be fetched from {@link NightModeInteractor#getConfigMode(Resources)}
      *                          during onCreate to compare after updates occur.
@@ -120,7 +130,7 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
 
     @VisibleForTesting
     protected boolean isNightTime(@NonNull final TimeZone timeZone,
-                                @NonNull final DateTime dateTime) {
+                                  @NonNull final DateTime dateTime) {
         final UserLocation userLocation = persistentPreferencesInteractor.getUserLocation();
         if (userLocation == null) {
             return false;

@@ -202,12 +202,4 @@ public class SenseAppModule {
     public AlertsInteractor providesAlertsInteractor(@NonNull final ApiService apiService) {
         return new AlertsInteractor(apiService);
     }
-
-    @Provides
-    @Singleton
-    public NightModeInteractor providesNightModeInteractor(@NonNull final PersistentPreferencesInteractor persistentPreferencesInteractor,
-                                                           @NonNull final ApiSessionManager apiSessionManager) {
-        return new NightModeInteractor(persistentPreferencesInteractor,
-                                       apiSessionManager);
-    }
 }

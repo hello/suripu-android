@@ -33,7 +33,7 @@ public class HomeTabLayout extends SenseTabLayout<HomeTabLayout.Listener> {
     protected View createTabCustomView(final int position,
                                        @NonNull final HomeFragmentPagerAdapter adapter,
                                        @NonNull final HomeFragmentPagerAdapter.HomeItem item) {
-        if(position == adapter.getTimelineItemPosition()) {
+        if (position == adapter.getTimelineItemPosition()) {
             return createSleepScoreTabView(getCurrentTimeline());
         } else {
             return super.createTabCustomView(position, adapter, item);
@@ -63,7 +63,6 @@ public class HomeTabLayout extends SenseTabLayout<HomeTabLayout.Listener> {
     //endregion
 
     //region sleep score
-
     public void updateTabWithSleepScore(@Nullable final Timeline timeline,
                                         final int position) {
         final TabLayout.Tab tab = getTabAt(position);
@@ -84,7 +83,6 @@ public class HomeTabLayout extends SenseTabLayout<HomeTabLayout.Listener> {
             return this.listener.getCurrentTimeline();
         }
         return null;
-
     }
 
     private SenseTabView createSleepScoreTabView(@Nullable final Timeline timeline) {

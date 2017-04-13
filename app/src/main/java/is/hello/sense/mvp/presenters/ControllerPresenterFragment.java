@@ -24,4 +24,18 @@ public abstract class ControllerPresenterFragment<T extends PresenterView> exten
     }
 
 
+    @CallSuper
+    @Override
+    public void onResume() {
+        //debugLog("onResume"); //useful for debugging
+        super.onResume();
+    }
+
+    @CallSuper
+    @Override
+    public void onPause() {
+        //debugLog("onPause"); //useful for debugging
+        super.onPause();
+    }
+
 }
