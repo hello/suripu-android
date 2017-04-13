@@ -16,7 +16,6 @@ import rx.subscriptions.Subscriptions;
  * to ensure that work is only run within safe conditions. Used to ensure that no work is
  * done by activities and fragments that are paused or destroyed.
  *
- * @see is.hello.sense.ui.activities.SenseActivity
  * @see is.hello.sense.ui.common.InjectionFragment
  */
 public class StateSafeScheduler extends Scheduler {

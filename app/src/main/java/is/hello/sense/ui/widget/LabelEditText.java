@@ -95,7 +95,7 @@ public class LabelEditText extends RelativeLayout {
 
     public void removeError() {
         label.setText(labelText);
-        Styles.setTextAppearance(label, R.style.Label);
+        Styles.setTextAppearance(label, R.style.Caption2_Secondary);
         input.setBackgroundResource(R.drawable.edit_text_background_selector);
     }
 
@@ -107,7 +107,7 @@ public class LabelEditText extends RelativeLayout {
         if (error != null && !error.isEmpty()) {
             label.setText(String.format("%s %s %s", labelText, DASH, error));
         }
-        Styles.setTextAppearance(label, R.style.Label_Error);
+        Styles.setTextAppearance(label, R.style.Caption2_Error);
         input.setBackgroundResource(R.drawable.edit_text_background_error);
     }
 

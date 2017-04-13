@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- PARTIAL -->
+
+    <application>
+
+        <activity
+            android:name="is.hello.sense.debug_menu_ui.EnvironmentActivity"
+            android:theme="@style/AppTheme"/>
+
+        <activity
+            android:name="is.hello.sense.ui.activities.DebugActivity"
+            android:label="@string/activity_debug"
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme"/>
+
+        <activity
+            android:name="net.hockeyapp.android.UpdateActivity"/>
+
+        <activity
+            android:name="net.hockeyapp.android.FeedbackActivity"/>
+
+        <activity
+            android:name="is.hello.sense.debug_menu_ui.PiruPeaActivity"
+            android:label="Piru-Pea"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"/>
+
+        <meta-data
+            android:name="com.mixpanel.android.MPConfig.ResourcePackageName"
+            android:value="is.hello.sense"/>
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/FACEBOOK_APP_ID"/>
+
+    </application>
+
+</manifest>

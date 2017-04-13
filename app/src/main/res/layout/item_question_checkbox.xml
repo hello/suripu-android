@@ -4,7 +4,6 @@
     android:id="@+id/item_question_checkbox"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:drawablePadding="@dimen/gap_small"
+    android:drawablePadding="@dimen/x1"
     android:drawableStart="@drawable/selector_question_checkbox"
-    android:textColor="@color/text_color_selector_question_checkbox"
-    style="@style/AppTheme.Button.Borderless.Question"/>
+    style="@style/Button.Flat.Link"/>

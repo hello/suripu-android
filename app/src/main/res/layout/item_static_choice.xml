@@ -5,10 +5,10 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/gap_medium"
-    android:paddingBottom="@dimen/gap_medium"
-    android:paddingLeft="@dimen/gap_outer"
-    android:paddingRight="@dimen/gap_outer">
+    android:paddingTop="@dimen/x2"
+    android:paddingBottom="@dimen/x2"
+    android:paddingLeft="@dimen/x3"
+    android:paddingRight="@dimen/x3">
 
     <ImageView
         android:id="@+id/item_static_choice_checked"
@@ -32,10 +32,10 @@
         android:id="@+id/item_static_choice_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/gap_large"
+        android:layout_marginStart="@dimen/x3"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@id/item_static_choice_checked"
-        android:textAppearance="@style/AppTheme.Text.Body"
+        style="@style/Body1.Primary"
         android:text="@string/app_name"/>
 
 </RelativeLayout>

@@ -180,7 +180,7 @@ public final class SensorDetailView extends PresenterView
                                                                                 this.unitFormatter,
                                                                                 this.graphHeight,
                                                                                 labels));
-            this.sensorGraphView.invalidate();
+
             postDelayed(() -> this.subNavSelector.setEnabled(true), delay.getLength());
         });
     }

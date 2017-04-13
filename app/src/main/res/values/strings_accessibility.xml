@@ -20,6 +20,7 @@
     <string name="accessibility_event_name_sunrise">Sunrise</string>
     <string name="accessibility_event_name_woke_up">Woke up</string>
     <string name="accessibility_event_name_partner_moved">Partner moved</string>
+    <string name="accessibility_event_name_both_moved">Both you and your partner moved</string>
     <string name="accessibility_event_name_got_out_of_bed">Out of bed</string>
     <string name="accessibility_event_name_got_in_bed">In bed</string>
     <string name="accessibility_event_name_fell_asleep">Sleeping</string>
@@ -30,4 +31,5 @@
     <string name="accessibility_wifi_signal_strength_bad">WiFi signal strength: Poor</string>
     <string name="accessibility_wifi_signal_strength_fair">WiFi signal strength: Fair</string>
     <string name="accessibility_wifi_signal_strength_good">WiFi signal strength: Good</string>
+    <string name="accessibility_profile_picture_button">open profile picture source options</string>
 </resources>

@@ -9,10 +9,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatImageView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,6 +59,7 @@ import is.hello.sense.ui.widget.ProfileImageView;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.Distribution;
 import is.hello.sense.util.EditorActionHandler;
 import retrofit.mime.TypedFile;
 import rx.Observable;
@@ -156,7 +157,7 @@ public class RegisterFragment extends InjectionFragment
         Views.setSafeOnClickListener(autofillFacebookButton, stateSafeExecutor, (v) -> bindFacebookProfile(false));
         facebookPresenter.init();
 
-        final ImageButton facebookInfoButton = (ImageButton) view.findViewById(R.id.fragment_onboarding_register_import_facebook_info_button);
+        final AppCompatImageView facebookInfoButton = (AppCompatImageView) view.findViewById(R.id.fragment_onboarding_register_import_facebook_info_button);
         Views.setSafeOnClickListener(facebookInfoButton, stateSafeExecutor, v -> this.showFacebookInfoBottomSheet(true));
 
         profileImageManager = builder.build(this);
@@ -167,9 +168,9 @@ public class RegisterFragment extends InjectionFragment
 
         OnboardingToolbar.of(this, view).setWantsBackButton(true);
 
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG_SCREEN_ENABLED) {
             final Button selectHost = new Button(getActivity());
-            Styles.setTextAppearance(selectHost, R.style.AppTheme_Button_Borderless_Accent_Bounded);
+            Styles.setTextAppearance(selectHost, R.style.Button_Flat);
             selectHost.setBackgroundResource(R.drawable.selectable_dark_bounded);
             selectHost.setGravity(Gravity.CENTER);
             final Observable<String> apiUrl =
@@ -177,21 +178,15 @@ public class RegisterFragment extends InjectionFragment
                                                  apiEndpoint.getUrl());
             bindAndSubscribe(apiUrl, selectHost::setText, Functions.LOG_ERROR);
 
-            final int padding = getResources().getDimensionPixelSize(R.dimen.gap_small);
+            final int padding = getResources().getDimensionPixelSize(R.dimen.x1);
             selectHost.setPadding(padding, padding, padding, padding);
 
-            Views.setSafeOnClickListener(selectHost, ignored -> {
-                try {
-                    startActivity(new Intent(getActivity(), Class.forName("is.hello.sense.debug.EnvironmentActivity")));
-                } catch (final ClassNotFoundException e) {
-                    Log.e(getClass().getSimpleName(), "Could not find environment activity", e);
-                }
-            });
+            Views.setSafeOnClickListener(selectHost, ignored -> Distribution.showDebugEnvironment(getActivity()));
 
             final LinearLayout.LayoutParams layoutParams =
                     new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                                   ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.bottomMargin = getResources().getDimensionPixelSize(R.dimen.gap_small);
+            layoutParams.bottomMargin = getResources().getDimensionPixelSize(R.dimen.x1);
             credentialsContainer.addView(selectHost, layoutParams);
         }
 
@@ -255,7 +250,7 @@ public class RegisterFragment extends InjectionFragment
 
     @Override
     public int getStatusBarColor(@NonNull final Resources resources) {
-        return ContextCompat.getColor(getActivity(), R.color.status_bar_grey);
+        return ContextCompat.getColor(getActivity(), R.color.status_bar_normal);
     }
 
     @Override

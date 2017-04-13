@@ -5,5 +5,5 @@
     <item android:state_first="true" android:drawable="@drawable/sense_voice_circles_purple"/>
     <item android:state_last="true" android:drawable="@drawable/sense_voice_circles_blue"/>
     <item android:state_middle="true" android:drawable="@drawable/sense_voice_circles_red"/>
-    <item android:drawable="@drawable/error_white"/>
+    <item android:drawable="@drawable/icon_warning_24"/>
 </selector>

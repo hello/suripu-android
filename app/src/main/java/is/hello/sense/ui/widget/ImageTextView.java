@@ -3,10 +3,14 @@ package is.hello.sense.ui.widget;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.annotation.StyleRes;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -50,13 +54,20 @@ public class ImageTextView extends LinearLayout {
 
         try {
             final String text = a.getString(R.styleable.ImageTextView_labelText);
-            final int imageRes = a.getResourceId(R.styleable.ImageTextView_leftImage, Constants.NONE);
-            final int textAppearanceRes = a.getResourceId(R.styleable.ImageTextView_textStyle, Constants.NONE);
-            final int leftTextPaddingRes = a.getResourceId(R.styleable.ImageTextView_leftTextPadding, Constants.NONE);
-
+            @DrawableRes final int imageRes = a.getResourceId(R.styleable.ImageTextView_leftImage, Constants.NONE);
+            @StyleRes final int textAppearanceRes = a.getResourceId(R.styleable.ImageTextView_textStyle, Constants.NONE);
+            @DimenRes final int leftTextPaddingRes = a.getResourceId(R.styleable.ImageTextView_leftTextPadding, Constants.NONE);
+            @ColorRes final int textColorRes = a.getResourceId(R.styleable.ImageTextView_textColor, Constants.NONE);
+            @ColorRes final int tintColorRes = a.getResourceId(R.styleable.ImageTextView_tintColor, Constants.NONE);
             // ImageView
             if (imageRes != Constants.NONE) {
-                setImageResource(imageRes);
+                if (tintColorRes == Constants.NONE) {
+                    setImageResource(imageRes);
+                } else {
+                    setImageDrawable(Styles.tintDrawable(getContext(),
+                                                         imageRes,
+                                                         tintColorRes));
+                }
             }
 
             // TextView
@@ -66,6 +77,9 @@ public class ImageTextView extends LinearLayout {
                               Constants.NONE,
                               Constants.NONE);
             setText(text);
+            if (textColorRes != Constants.NONE) {
+                setTextColor(textColorRes);
+            }
 
         } finally {
             a.recycle();
@@ -81,8 +95,20 @@ public class ImageTextView extends LinearLayout {
         this.textView.setText(string);
     }
 
+    public CharSequence getText() {
+        return this.textView.getText();
+    }
+
+    public void setTextColor(@ColorRes final int textColor) {
+        this.textView.setTextColor(ContextCompat.getColor(getContext(), textColor));
+    }
+
     public void setImageResource(@DrawableRes final int drawableRes) {
         this.imageView.setImageResource(drawableRes);
+    }
+
+    public void setImageDrawable(@Nullable final Drawable drawable) {
+        this.imageView.setImageDrawable(drawable);
     }
 
     public void setTextViewVisibility(final boolean setVisible) {

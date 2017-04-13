@@ -3,6 +3,7 @@ package is.hello.sense.ui.adapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,10 +26,15 @@ public class TimeZoneAdapter extends RecyclerView.Adapter<TimeZoneAdapter.BaseVi
     private final int itemHorizontalPadding;
     private final int itemVerticalPadding;
     private final int drawablePadding;
+    private final int primaryTextColor;
+    private final int secondaryTextColor;
 
-    public TimeZoneAdapter(@NonNull Context context, @NonNull OnClickListener clickListener) {
+    public TimeZoneAdapter(@NonNull final Context context,
+                           @NonNull final OnClickListener clickListener) {
         this.context = context;
 
+        this.primaryTextColor = ContextCompat.getColor(context, R.color.primary_text_selector);
+        this.secondaryTextColor = ContextCompat.getColor(context, R.color.secondary_text_selector);
         final Resources resources = context.getResources();
 
         final String[] timeZoneArray = resources.getStringArray(R.array.timezone_names);
@@ -36,25 +42,28 @@ public class TimeZoneAdapter extends RecyclerView.Adapter<TimeZoneAdapter.BaseVi
         this.timeZoneNames[0] = context.getString(R.string.label_choose_time_zone);
         System.arraycopy(timeZoneArray, 0, this.timeZoneNames, 1, timeZoneArray.length);
 
-        this.itemHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_outer);
-        this.itemVerticalPadding = resources.getDimensionPixelSize(R.dimen.gap_outer_half);
-        this.drawablePadding = resources.getDimensionPixelSize(R.dimen.gap_large);
+        this.itemHorizontalPadding = resources.getDimensionPixelSize(R.dimen.x3);
+        this.itemVerticalPadding = resources.getDimensionPixelSize(R.dimen.x2);
+        this.drawablePadding = resources.getDimensionPixelSize(R.dimen.x3);
 
         this.clickListener = clickListener;
     }
 
-    protected String getDisplayName(int position) {
+    protected String getDisplayName(final int position) {
         return timeZoneNames[position];
     }
 
     @Override
-    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BaseViewHolder onCreateViewHolder(final ViewGroup parent,
+                                             final int viewType) {
         if (viewType == VIEW_TYPE_HEADER) {
             final TextView headerText = new TextView(context, null,
-                                                     R.attr.senseTextAppearanceFieldLabel);
+                                                     R.style.Body1_Secondary);
+            headerText.setTextColor(secondaryTextColor);
             return new HeaderViewHolder(headerText);
         } else {
-            final TextView timeZoneText = new TextView(context, null, R.style.AppTheme_Text_Body);
+            final TextView timeZoneText = new TextView(context, null, R.style.Body1_Primary);
+            timeZoneText.setTextColor(primaryTextColor);
             timeZoneText.setCompoundDrawablesWithIntrinsicBounds(R.drawable.radio_off, 0, 0, 0);
             timeZoneText.setCompoundDrawablePadding(drawablePadding);
             timeZoneText.setBackgroundResource(R.drawable.selectable_dark_bounded);
@@ -64,7 +73,7 @@ public class TimeZoneAdapter extends RecyclerView.Adapter<TimeZoneAdapter.BaseVi
 
 
     @Override
-    public int getItemViewType(int position) {
+    public int getItemViewType(final int position) {
         if (position == 0) {
             return VIEW_TYPE_HEADER;
         } else {
@@ -95,7 +104,7 @@ public class TimeZoneAdapter extends RecyclerView.Adapter<TimeZoneAdapter.BaseVi
     class HeaderViewHolder extends BaseViewHolder {
         final TextView header;
 
-        HeaderViewHolder(@NonNull TextView view) {
+        HeaderViewHolder(@NonNull final TextView view) {
             super(view);
 
             this.header = view;
@@ -111,7 +120,7 @@ public class TimeZoneAdapter extends RecyclerView.Adapter<TimeZoneAdapter.BaseVi
     class TimeZoneViewHolder extends BaseViewHolder {
         final TextView title;
 
-        TimeZoneViewHolder(@NonNull TextView view) {
+        TimeZoneViewHolder(@NonNull final TextView view) {
             super(view);
 
             this.title = view;
@@ -119,7 +128,7 @@ public class TimeZoneAdapter extends RecyclerView.Adapter<TimeZoneAdapter.BaseVi
                              itemHorizontalPadding, itemVerticalPadding);
         }
 
-        void bind(int position) {
+        void bind(final int position) {
             title.setText(getDisplayName(position));
             title.setOnClickListener((view) -> {
                 title.setCompoundDrawablesWithIntrinsicBounds(R.drawable.radio_on, 0, 0, 0);

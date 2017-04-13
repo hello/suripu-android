@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.ProgressBar;
 
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.ui.activities.appcompat.SenseActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.util.SessionLogger;
 
@@ -23,7 +25,7 @@ public class SessionLogViewerActivity extends SenseActivity {
     private ProgressBar activityIndicator;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_session_log_viewer);
 
@@ -42,38 +44,33 @@ public class SessionLogViewerActivity extends SenseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         webView.destroy();
     }
 
     @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-
         webView.saveState(outState);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.session_log_viewer, menu);
-
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_session_log_viewer, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    public boolean onMenuItemSelected(int featureId, @NonNull MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         if (item.getItemId() == R.id.action_reload) {
             reload();
             return true;
         }
-
-        return super.onMenuItemSelected(featureId, item);
+        return super.onOptionsItemSelected(item);
     }
 
-
     public void reload() {
-        String logFilePath = SessionLogger.getLogFilePath(this);
-        String url = "file://" + Uri.encode(logFilePath, "/.");
+        final String logFilePath = SessionLogger.getLogFilePath(this);
+        final String url = "file://" + Uri.encode(logFilePath, "/.");
         webView.loadUrl(url);
     }
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/x7"
@@ -10,47 +11,47 @@
             android:id="@+id/item_settings_detail_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/x2"
             android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/x2"
             android:importantForAccessibility="no"
             android:tint="@color/settings_icon_fill_color"
-            tools:src="@drawable/icon_settings_advanced"/>
+            tools:src="@drawable/icon_advanced_24"/>
 
 
         <TextView
             android:id="@+id/item_settings_detail_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/item_settings_detail_icon"
-            android:layout_marginStart="@dimen/x3"
-            android:layout_gravity="center_vertical"
             android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/x3"
+            android:layout_toEndOf="@id/item_settings_detail_icon"
             android:gravity="start"
-            android:textAppearance="@style/AppTheme.Text.Body"
+            style="@style/Body1.Primary"
             tools:text="@string/app_name"/>
 
         <TextView
             android:id="@+id/item_settings_detail_detail"
+            style="@style/Body1.Secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/item_settings_detail_title"
             android:layout_alignParentEnd="true"
-            android:layout_marginStart="@dimen/x1"
-            android:layout_marginEnd="@dimen/x3"
-            android:layout_marginTop="@dimen/x2"
-            android:layout_marginBottom="@dimen/x1"
             android:layout_centerVertical="true"
-            android:gravity="end|center_vertical"
-            android:textAppearance="@style/AppTheme.Text.Body.MidSized.Dim"
-            android:text="@string/missing_data_placeholder"
+            android:layout_marginBottom="@dimen/x1"
+            android:layout_marginEnd="@dimen/x3"
+            android:layout_marginStart="@dimen/x1"
+            android:layout_marginTop="@dimen/x2"
+            android:layout_toEndOf="@id/item_settings_detail_title"
             android:ellipsize="end"
-            android:maxLines="1"/>
+            android:gravity="end|center_vertical"
+            android:maxLines="1"
+            android:text="@string/missing_data_placeholder"/>
 
         <View
             android:id="@+id/item_settings_detail_divider"
             style="@style/Divider.Horizontal"
-            android:layout_alignStart="@id/item_settings_detail_title"
-            android:layout_alignParentBottom="true"/>
+            android:layout_alignParentBottom="true"
+            android:layout_alignStart="@id/item_settings_detail_title"/>
 
     </RelativeLayout>
 </layout>

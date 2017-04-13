@@ -40,9 +40,9 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
     OnSelectionChangedListener onSelectionChangedListener;
 
     @ColorRes
-    private int buttonSelectedColorRes = R.color.text_color_selector_toggle_button; // default color
+    private int buttonSelectedColorRes = R.color.primary_text_selector; // default color
     @ColorRes
-    private int buttonNotSelectedColorRes = R.color.text_color_selector_toggle_button; // default color
+    private int buttonNotSelectedColorRes = R.color.primary_text_selector; // default color
 
 
     //region Lifecycle
@@ -284,7 +284,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
             optionButton = new ToggleButton(context);
         } else {
             optionButton = new ToggleButton(context, null,
-                                            R.style.AppTheme_Button_ModeSelector);
+                                            R.style.Button_Flat_Primary);
 
         }
 
@@ -292,9 +292,9 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
         optionButton.setTextOff(titleOff);
         optionButton.setText(titleOff);
         optionButton.setGravity(Gravity.CENTER);
-        optionButton.setMinimumHeight(resources.getDimensionPixelSize(R.dimen.button_min_size));
+        optionButton.setMinimumHeight(resources.getDimensionPixelSize(R.dimen.action_bar_height));
         optionButton.setBackgroundResource(R.drawable.selectable_dark_bounded);
-        optionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(R.dimen.text_size_body_mid_sized));
+        optionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelOffset(R.dimen.text_h6_5));
         optionButton.setTextColor(Styles.getColorStateList(resources, buttonNotSelectedColorRes, null));
         applyButtonStyles(optionButton, false);
 
@@ -302,7 +302,7 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
             final View divider = Styles.createVerticalDivider(context,
                                                               ViewGroup.LayoutParams.MATCH_PARENT);
             final LayoutParams layoutParams = new LayoutParams(divider.getLayoutParams());
-            final int margin = resources.getDimensionPixelSize(R.dimen.gap_medium);
+            final int margin = resources.getDimensionPixelSize(R.dimen.x2);
             layoutParams.setMargins(0, margin, 0, margin);
             addView(divider, layoutParams);
         }
@@ -325,10 +325,10 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
     private void applyButtonStyles(@NonNull final ToggleButton optionButton, final boolean isSelected) {
         final Resources resources = getResources();
         if (isSelected) {
-            Styles.setTextAppearance(optionButton, R.style.AppTheme_Text_Body_Bold);
+            Styles.setTextAppearance(optionButton, R.style.Body1_Primary);
             optionButton.setTextColor(Styles.getColorStateList(resources, buttonSelectedColorRes, null));
         } else {
-            Styles.setTextAppearance(optionButton, R.style.AppTheme_Text_Body);
+            Styles.setTextAppearance(optionButton, R.style.Body1_Secondary);
             optionButton.setTextColor(Styles.getColorStateList(resources, buttonNotSelectedColorRes, null));
         }
         optionButton.setChecked(isSelected);

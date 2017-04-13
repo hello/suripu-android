@@ -33,7 +33,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
     public DividerItemDecoration(@NonNull final Context context,
                                  @NonNull final Rect inset) {
         this.height = context.getResources().getDimensionPixelSize(R.dimen.divider_size);
-        paint.setColor(ContextCompat.getColor(context, R.color.border));
+        paint.setColor(ContextCompat.getColor(context, R.color.divider));
         this.inset = inset;
     }
 

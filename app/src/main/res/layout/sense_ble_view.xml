@@ -17,7 +17,7 @@
         android:id="@+id/sense_ble_image_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/sense_scan_ble"
+        android:src="@drawable/edu_update_sense"
         android:adjustViewBounds="true"
         />
 

@@ -151,12 +151,12 @@ public class LoadingView extends LinearLayout {
         Resources resources = getResources();
 
         TextView textView = new TextView(getContext());
-        textView.setTextAppearance(getContext(), R.style.AppTheme_Text_Body);
+        textView.setTextAppearance(getContext(), R.style.Body1_Secondary);
         textView.setSingleLine();
         textView.setText(text);
 
         LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        layoutParams.topMargin = resources.getDimensionPixelSize(R.dimen.gap_medium);
+        layoutParams.topMargin = resources.getDimensionPixelSize(R.dimen.x2);
         addView(textView, layoutParams);
 
         this.doneText = text;

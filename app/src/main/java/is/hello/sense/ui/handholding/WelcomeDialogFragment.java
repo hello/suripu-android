@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.net.Uri;
@@ -41,7 +40,6 @@ import is.hello.sense.ui.handholding.util.WelcomeDialogParser;
 import is.hello.sense.ui.widget.DiagramVideoView;
 import is.hello.sense.ui.widget.PageDots;
 import is.hello.sense.ui.widget.util.Drawing;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.Constants;
@@ -166,7 +164,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final Dialog dialog = new Dialog(getActivity(), R.style.AppTheme_Dialog_FullScreen);
+        final Dialog dialog = new Dialog(getActivity(), R.style.Dialog_FullScreen_Welcome);
         dialog.setContentView(R.layout.fragment_dialog_welcome);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(true);
@@ -200,7 +198,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
 
         this.adapter = new ItemAdapter();
 
-        final int pageMargin = getResources().getDimensionPixelSize(R.dimen.gap_medium);
+        final int pageMargin = getResources().getDimensionPixelSize(R.dimen.x2);
         viewPager.setClipToPadding(false);
         viewPager.setPadding(pageMargin, 0, pageMargin, 0);
         viewPager.setPageMargin(pageMargin);
@@ -351,13 +349,6 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
                 this.dismissButtonDivider = itemView.findViewById(R.id.fragment_dialog_welcome_item_dismiss_border);
                 this.dismissButton = (Button) itemView.findViewById(R.id.fragment_dialog_welcome_item_dismiss);
                 Views.setSafeOnClickListener(dismissButton, ignored -> dismissAllowingStateLoss());
-
-                final Resources resources = getResources();
-                final float bottomCornerRadius = resources.getDimension(R.dimen.button_corner_radius);
-                final int normal = resources.getColor(R.color.background_light);
-                final int pressed = resources.getColor(R.color.light_accent_extra_dimmed);
-                dismissButton.setBackground(Styles.newRoundedBorderlessButtonBackground(0f, bottomCornerRadius,
-                                                                                        normal, pressed));
             }
 
             protected abstract THeader onProvideHeader(@NonNull LinearLayout parent);
@@ -458,7 +449,7 @@ public class WelcomeDialogFragment extends SenseDialogFragment {
                final  Uri diagramUri = Uri.parse(item.diagramVideo);
                 header.setDataSource(diagramUri);
 
-                final int radius = getResources().getDimensionPixelSize(R.dimen.raised_item_corner_radius);
+                final int radius = getResources().getDimensionPixelSize(R.dimen.small_radius);
                 final float[] cornerRadii = {
                         radius, radius, radius, radius,
                         0f, 0f, 0f, 0f,

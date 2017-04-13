@@ -2,10 +2,11 @@ package is.hello.sense.ui.widget;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
-public class SpinnerImageView extends ImageView {
+
+public class SpinnerImageView extends AppCompatImageView {
     private int deltaRotation = 5; // degrees
     private int spinnerInterval = 1; // ms
     private boolean wantsToSpin = false;

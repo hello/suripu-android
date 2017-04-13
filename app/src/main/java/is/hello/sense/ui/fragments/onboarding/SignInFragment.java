@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments.onboarding;
 
-import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +29,7 @@ import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.api.sessions.OAuthCredentials;
+import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountInteractor;
 import is.hello.sense.interactors.DevicesInteractor;
@@ -65,6 +64,8 @@ public class SignInFragment extends InjectionFragment
     AccountInteractor accountPresenter;
     @Inject
     PreferencesInteractor preferences;
+    @Inject
+    NightModeInteractor nightModeInteractor;
     @Inject
     DevicesInteractor devicesInteractor;
 
@@ -116,33 +117,26 @@ public class SignInFragment extends InjectionFragment
                          .setDark(true)
                          .replaceHelpButton(forgotPassword);
 
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG_SCREEN_ENABLED) {
             final LinearLayout content = (LinearLayout) view.findViewById(R.id.fragment_onboarding_sign_in_content);
 
             final Button selectHost = new Button(getActivity());
-            Styles.setTextAppearance(selectHost, R.style.AppTheme_Button_Borderless_Accent_Bounded);
-            selectHost.setBackgroundResource(R.drawable.selectable_dark_bounded);
+            selectHost.setTextColor(ContextCompat.getColor(getActivity(), R.color.white_text));
             selectHost.setGravity(Gravity.CENTER);
             final Observable<String> apiUrl =
                     preferences.observableString(DynamicApiEndpoint.PREF_API_ENDPOINT_OVERRIDE,
                                                  apiEndpoint.getUrl());
             bindAndSubscribe(apiUrl, selectHost::setText, Functions.LOG_ERROR);
 
-            final int padding = getResources().getDimensionPixelSize(R.dimen.gap_small);
+            final int padding = getResources().getDimensionPixelSize(R.dimen.x1);
             selectHost.setPadding(padding, padding, padding, padding);
 
-            Views.setSafeOnClickListener(selectHost, ignored -> {
-                try {
-                    startActivity(new Intent(getActivity(), Class.forName("is.hello.sense.debug.EnvironmentActivity")));
-                } catch (ClassNotFoundException e) {
-                    Log.e(getClass().getSimpleName(), "Could not find environment activity", e);
-                }
-            });
+            Views.setSafeOnClickListener(selectHost, ignored -> Distribution.showDebugEnvironment(getActivity()));
 
             final LinearLayout.LayoutParams layoutParams =
                     new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                                   ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.bottomMargin = getResources().getDimensionPixelSize(R.dimen.gap_small);
+            layoutParams.bottomMargin = getResources().getDimensionPixelSize(R.dimen.x1);
             content.addView(selectHost, layoutParams);
         }
 
@@ -166,7 +160,7 @@ public class SignInFragment extends InjectionFragment
     public
     @ColorInt
     int getStatusBarColor(@NonNull final Resources resources) {
-        return ContextCompat.getColor(getActivity(), R.color.light_accent_darkened);
+        return ContextCompat.getColor(getActivity(), R.color.status_bar_primary_darkened);
     }
 
     @Override
@@ -225,6 +219,7 @@ public class SignInFragment extends InjectionFragment
                                  Analytics.trackSignIn(account.getId(),
                                                        account.getFullName(),
                                                        account.getEmail());
+                                 nightModeInteractor.updateToMatchPrefAndSession();
                                  getOnboardingActivity().showHomeActivity(OnboardingActivity.FLOW_SIGN_IN);
                              },
                              e -> {

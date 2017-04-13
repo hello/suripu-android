@@ -110,11 +110,13 @@ public class NotificationSettingsAdapter extends ArrayRecyclerAdapter<Notificati
     private class HeaderViewHolder extends ItemMessageCardViewHolder {
         public HeaderViewHolder(@NonNull final ViewGroup parent) {
             super(parent,
-                  R.drawable.icon_warning,
                   R.string.notification_settings_enabled_title,
                   R.string.notification_settings_enabled_body,
                   R.string.notification_settings_enabled_link,
                   NotificationSettingsAdapter.this::showSettings);
+
+            setImageIcon(R.drawable.icon_warning_24,
+                         R.color.destructive_icon);
         }
     }
 

@@ -10,7 +10,6 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.StateListDrawable;
@@ -228,14 +227,6 @@ public final class Styles {
         return assembleReadingAndUnit(String.format("%.0f", value), suffix, UNIT_STYLE_SUPERSCRIPT);
     }
 
-    public static
-    @NonNull
-    GradientDrawable createGraphFillGradientDrawable(@NonNull Resources resources) {
-        return new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{
-                resources.getColor(R.color.graph_fill_gradient_top),
-                resources.getColor(R.color.graph_fill_gradient_bottom),
-        });
-    }
 
     public static void applyRefreshLayoutStyle(@NonNull SwipeRefreshLayout refreshLayout) {
         refreshLayout.setColorSchemeResources(R.color.sensor_alert,
@@ -256,7 +247,7 @@ public final class Styles {
             return null;
         }
 
-        final @ColorInt int emphasisColor = resources.getColor(R.color.black);
+        final @ColorInt int emphasisColor = resources.getColor(R.color.primary_text);
         final SpannableStringBuilder toFormat = new SpannableStringBuilder(source);
         final MarkupStyleSpan[] spans = toFormat.getSpans(0, toFormat.length(),
                                                           MarkupStyleSpan.class);
@@ -527,6 +518,24 @@ public final class Styles {
         final Drawable wrapDrawable = DrawableCompat.wrap(normalDrawable);
         DrawableCompat.setTint(wrapDrawable, ContextCompat.getColor(context, color));
         item.setIcon(wrapDrawable);
+    }
+
+    public static Drawable tintDrawable(@NonNull final Context context,
+                                        @DrawableRes final int drawableRes,
+                                        @ColorRes final int colorRes) {
+        final Drawable drawable = DrawableCompat.wrap(ContextCompat.getDrawable(context, drawableRes)
+                                                                   .mutate());
+        DrawableCompat.setTint(drawable, ContextCompat.getColor(context, colorRes));
+        return drawable;
+    }
+
+    public static Drawable tintDrawableWithStates(@NonNull final Context context,
+                                                  @DrawableRes final int drawableRes,
+                                                  @ColorRes final int colorStateListRes) {
+        final Drawable drawable = DrawableCompat.wrap(ContextCompat.getDrawable(context, drawableRes)
+                                                                   .mutate());
+        DrawableCompat.setTintList(drawable, ContextCompat.getColorStateList(context, colorStateListRes));
+        return drawable;
     }
 
     public static Spanned fromHtml(@NonNull final String string) {

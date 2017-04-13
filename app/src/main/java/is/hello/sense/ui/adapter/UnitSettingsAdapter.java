@@ -112,8 +112,8 @@ public class UnitSettingsAdapter extends RecyclerView.Adapter<UnitSettingsAdapte
             this.radioGroup = (RadioGroup) view.findViewById(R.id.item_section_radio_group);
         }
 
-        void bind(int position) {
-            UnitItem item = getUnitItem(position);
+        void bind(final int position) {
+            final UnitItem item = getUnitItem(position);
             if (item == null){
                 return;
             }
@@ -122,8 +122,7 @@ public class UnitSettingsAdapter extends RecyclerView.Adapter<UnitSettingsAdapte
             leftButton.setText(item.leftValueRes);
             rightButton.setText(item.rightValueRes);
             radioGroup.setOnCheckedChangeListener(null);
-            boolean itemValue = getUnitItemValue(item.key);
-            if (itemValue){
+            if (getUnitItemValue(item.key)){
                 rightButton.setChecked(true);
                 leftButton.setChecked(false);
             } else {
@@ -131,7 +130,7 @@ public class UnitSettingsAdapter extends RecyclerView.Adapter<UnitSettingsAdapte
                 rightButton.setChecked(false);
             }
             radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-                boolean newValue = ((RadioButton) group.getChildAt(1)).isChecked();
+                final boolean newValue = ((RadioButton) group.getChildAt(1)).isChecked();
                 setUnitItemValue(item.key, newValue);
                 radioChangeListener.onRadioValueChanged(item.key, newValue);
                 notifyDataSetChanged();
@@ -142,7 +141,7 @@ public class UnitSettingsAdapter extends RecyclerView.Adapter<UnitSettingsAdapte
     //endregion
 
     public static class UnitItem {
-        @StringRes public final String key;
+        public final String key;
         @StringRes public int titleRes;
         @StringRes public int leftValueRes;
         @StringRes public int rightValueRes;

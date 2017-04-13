@@ -96,17 +96,20 @@ public class BubbleTrendGraphView extends TrendGraphView {
 
             this.minBubbleHeight = resources.getDimensionPixelSize(R.dimen.trends_bubblegraph_min_height);
             this.titleTopMargin = resources.getDimensionPixelSize(R.dimen.trends_bubblegraph_title_top_margin);
+            final int whiteTextColor = ContextCompat.getColor(context, R.color.white_text);
+            this.lightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubble_graph_light_bubble));
+            this.mediumPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubble_graph_medium_bubble));
+            this.deepPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubble_graph_deep_bubble));
 
-            this.lightPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubblegraph_light_bubble));
-            this.mediumPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubblegraph_medium_bubble));
-            this.deepPaint.setColor(ContextCompat.getColor(context, R.color.trends_bubblegraph_deep_bubble));
-
-            Drawing.updateTextPaintFromStyle(textValuePaint, context, R.style.AppTheme_Text_Trends_BubbleGraph);
-            Drawing.updateTextPaintFromStyle(textPercentPaint, context, R.style.AppTheme_Text_Trends_BubbleGraph);
+            Drawing.updateTextPaintFromStyle(textValuePaint, context, R.style.Display1);
+            Drawing.updateTextPaintFromStyle(textPercentPaint, context, R.style.Display1);
+            textValuePaint.setColor(whiteTextColor);
             textPercentPaint.setAlpha(178);
-            Drawing.updateTextPaintFromStyle(textTitlePaint, context, R.style.AppTheme_Text_Trends_BubbleGraph_Title);
+            textPercentPaint.setColor(whiteTextColor);
+            Drawing.updateTextPaintFromStyle(textTitlePaint, context, R.style.Caption1);
+            textTitlePaint.setColor(whiteTextColor);
             this.percentOffset = resources.getDimensionPixelOffset(R.dimen.trends_bubblegraph_percent_offset);
-            textTitlePaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_size_trends_bubblegraph_title));
+            textTitlePaint.setTextSize(resources.getDimensionPixelSize(R.dimen.text_h8));
             this.totalGraphHeight = context.getResources().getDimensionPixelSize(R.dimen.trends_bubblegraph_max_height);
         }
 

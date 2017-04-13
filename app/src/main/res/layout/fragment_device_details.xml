@@ -1,79 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/background_card"
             android:fillViewport="true"
-            android:background="@color/background_light">
+            android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/fragment_device_details_container"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/fragment_device_details_alert"
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/gap_outer"
-            android:layout_marginEnd="@dimen/gap_outer"
+            android:layout_marginEnd="@dimen/x3"
+            android:layout_marginStart="@dimen/x3"
+            android:orientation="vertical"
             android:visibility="visible">
 
-            <TextView
-                android:id="@+id/fragment_device_details_alert_title_text"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/fragment_device_details_alert_title_container"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/AppTheme.Text.Body.MidSized"
-                android:text="@string/app_name"
-                android:drawableLeft="@drawable/icon_warning"
-                android:drawablePadding="@dimen/gap_small"
-                android:gravity="center"
-                android:layout_marginTop="@dimen/device_detail_progress_margin"
-                android:layout_marginLeft="@dimen/gap_xsmall"
-                android:layout_marginBottom="@dimen/device_detail_text_margin"
-                android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
+                android:layout_marginBottom="@dimen/x1"
+                android:layout_marginTop="@dimen/x5"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/fragment_device_details_alert_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/x1"
+                    android:src="@drawable/icon_warning_24"
+                    android:tint="@color/destructive_icon"/>
+
+                <TextView
+                    android:id="@+id/fragment_device_details_alert_title_text"
+                    style="@style/Body2.Primary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/app_name"/>
+
+            </LinearLayout>
 
             <ProgressBar
                 android:id="@+id/fragment_device_details_alert_busy"
+                style="@style/ProgressBar.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/device_detail_progress_margin"
-                android:layout_marginBottom="@dimen/device_detail_text_margin"
                 android:layout_gravity="center_horizontal"
-                android:visibility="gone"
-                style="@style/AppTheme.ProgressBar.Small" />
+                android:layout_marginBottom="@dimen/x4"
+                android:layout_marginTop="@dimen/x5"
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/fragment_device_details_alert_text"
+                style="@style/Body1.Secondary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textAppearance="@style/AppTheme.Text.Body.MidSized"
-                android:text="@string/app_name"
-                android:lineSpacingMultiplier="@dimen/line_multiple_body"/>
-
-            <Button
-                android:id="@+id/fragment_device_details_alert_action"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/gap_small"
-                android:layout_marginBottom="@dimen/gap_small"
-                android:text="@string/action_troubleshoot"
-                style="@style/AppTheme.Button.Rounded" />
+                android:text="@string/app_name"/>
 
             <Button
                 android:id="@+id/fragment_device_details_alert_action_secondary"
+                style="@style/Button.Flat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/x1"
+                android:layout_marginTop="@dimen/x2"
                 android:text="@string/action_retry"
-                android:visibility="gone"
-                style="@style/AppTheme.Button.Borderless.Accent.Bounded.Lowercase" />
+                android:visibility="gone"/>
+
+            <Button
+                android:id="@+id/fragment_device_details_alert_action"
+                style="@style/Button.Raised"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/action_troubleshoot"/>
+
 
             <View
-                android:layout_marginTop="@dimen/device_detail_text_margin"
-                style="@style/Divider.Horizontal" />
+                style="@style/Divider.Horizontal"
+                android:layout_marginTop="@dimen/x4"/>
 
         </LinearLayout>
 
@@ -81,16 +93,16 @@
             android:id="@+id/fragment_device_details_actions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/gap_small"
-            android:paddingBottom="@dimen/gap_small"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/x1"
+            android:paddingTop="@dimen/x1"/>
 
-        <View style="@style/Divider.Horizontal" />
+        <View style="@style/Divider.Horizontal"/>
 
         <include
+            layout="@layout/item_device_support_footer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            layout="@layout/item_device_support_footer" />
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 

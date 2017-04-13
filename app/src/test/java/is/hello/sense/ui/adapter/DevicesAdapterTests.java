@@ -97,7 +97,7 @@ public class DevicesAdapterTests extends SenseTestCase {
         assertThat(holder.title.getText().toString(), is(equalTo("Sense")));
         assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
         assertThat(holder.lastSeen.getCurrentTextColor(),
-                   is(equalTo(getResources().getColor(R.color.text_dark))));
+                   is(equalTo(getResources().getColor(R.color.secondary_text))));
         assertThat(holder.status1Label.getText().toString(), is(equalTo("Wi-Fi")));
         assertThat(holder.status1.getText().toString(), is(equalTo("Mostly Radiation")));
         assertThat(holder.status2Label.getText().toString(), is(equalTo("Firmware")));
@@ -122,7 +122,7 @@ public class DevicesAdapterTests extends SenseTestCase {
         assertThat(senseHolder.title.getText().toString(), is(equalTo("Sense")));
         assertThat(senseHolder.lastSeen.getText().toString(), is(equalTo("5 days ago")));
         assertThat(senseHolder.lastSeen.getCurrentTextColor(),
-                   is(equalTo(getResources().getColor(R.color.destructive_accent))));
+                   is(equalTo(getResources().getColor(R.color.error_text))));
         assertThat(senseHolder.status1Label.getText().toString(), is(equalTo("Wi-Fi")));
         assertThat(senseHolder.status1.getText().toString(), is(equalTo("--")));
         assertThat(senseHolder.status2Label.getText().toString(), is(equalTo("Firmware")));
@@ -146,7 +146,7 @@ public class DevicesAdapterTests extends SenseTestCase {
         assertThat(holder.title.getText().toString(), is(equalTo("Sense")));
         assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
         assertThat(holder.lastSeen.getCurrentTextColor(),
-                   is(equalTo(getResources().getColor(R.color.text_dark))));
+                   is(equalTo(getResources().getColor(R.color.secondary_text))));
         assertThat(holder.status1Label.getText().toString(), is(equalTo("Wi-Fi")));
         assertThat(holder.status1.getText().toString(), is(equalTo("--")));
         assertThat(holder.status2Label.getText().toString(), is(equalTo("Firmware")));
@@ -170,7 +170,7 @@ public class DevicesAdapterTests extends SenseTestCase {
         assertThat(holder.title.getText().toString(), is(equalTo("Sense")));
         assertThat(holder.lastSeen.getText().toString(), is(equalTo("2 hours ago")));
         assertThat(holder.lastSeen.getCurrentTextColor(),
-                   is(equalTo(getResources().getColor(R.color.text_dark))));
+                   is(equalTo(getResources().getColor(R.color.secondary_text))));
         assertThat(holder.status1Label.getText().toString(), is(equalTo("Wi-Fi")));
         assertThat(holder.status1.getText().toString(), is(equalTo("Connected")));
         assertThat(holder.status2Label.getText().toString(), is(equalTo("Firmware")));

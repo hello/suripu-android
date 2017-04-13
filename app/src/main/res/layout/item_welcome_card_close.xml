@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
-    <is.hello.sense.ui.widget.RoundedLinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -15,12 +15,11 @@
 
         <TextView
             android:id="@+id/item_welcome_close"
-            style="@style/AppTheme.Card.Item"
+            style="@style/Button.Flat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="@dimen/x1"
             android:text="@string/action_close"/>
 
-    </is.hello.sense.ui.widget.RoundedLinearLayout>
+    </LinearLayout>
 </layout>

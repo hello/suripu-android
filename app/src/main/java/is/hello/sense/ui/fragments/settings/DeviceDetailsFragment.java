@@ -35,6 +35,7 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
     private TextView alertText;
     private Button primaryAlertAction;
     private Button secondaryAlertAction;
+    private ViewGroup alertTitleContainer;
     private TextView alertTitleText;
 
     private LinearLayout actionsContainer;
@@ -68,6 +69,7 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
         this.alertContainer = (LinearLayout) view.findViewById(R.id.fragment_device_details_alert);
         this.alertBusy = (ProgressBar) alertContainer.findViewById(R.id.fragment_device_details_alert_busy);
         this.alertText = (TextView) alertContainer.findViewById(R.id.fragment_device_details_alert_text);
+        this.alertTitleContainer = (ViewGroup) alertContainer.findViewById(R.id.fragment_device_details_alert_title_container);
         this.alertTitleText = (TextView) alertContainer.findViewById(R.id.fragment_device_details_alert_title_text);
         this.primaryAlertAction = (Button) alertContainer.findViewById(R.id.fragment_device_details_alert_action);
         this.secondaryAlertAction = (Button) alertContainer.findViewById(R.id.fragment_device_details_alert_action_secondary);
@@ -87,6 +89,7 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
         this.alertContainer = null;
         this.alertBusy = null;
         this.alertText = null;
+        this.alertTitleContainer = null;
         this.alertTitleText = null;
         this.primaryAlertAction = null;
 
@@ -115,21 +118,23 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
         actionsContainer.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * todo refactor to use recyclerview and adapter pattern instead in future release
+     */
     protected TextView addDeviceAction(@DrawableRes int iconRes,
                                        @StringRes int titleRes,
                                        @NonNull Runnable onClick) {
         final Context context = getActivity();
         final Resources resources = context.getResources();
-
         final TextView itemView = new TextView(context);
         itemView.setBackgroundResource(R.drawable.selectable_dark_bounded);
-        Styles.setTextAppearance(itemView, R.style.AppTheme_Text_Body);
-        itemView.setTextColor(ContextCompat.getColorStateList(getActivity(), R.color.text_color_selector_dark));
-        itemView.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
+        itemView.setTextColor(ContextCompat.getColorStateList(getActivity(), R.color.primary_text_selector));
+        itemView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                Styles.tintDrawable(context, iconRes, R.color.active_icon), null, null, null);
         itemView.setText(titleRes);
 
-        final int itemTextHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_outer);
-        final int itemTextVerticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
+        final int itemTextHorizontalPadding = resources.getDimensionPixelSize(R.dimen.x3);
+        final int itemTextVerticalPadding = resources.getDimensionPixelSize(R.dimen.x2);
         itemView.setPadding(itemTextHorizontalPadding, itemTextVerticalPadding,
                             itemTextHorizontalPadding, itemTextVerticalPadding);
         itemView.setCompoundDrawablePadding(itemTextHorizontalPadding);
@@ -157,13 +162,12 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
 
     protected void showBlockingAlert(@StringRes int messageRes) {
         if (getView() != null) {
-            alertTitleText.setVisibility(View.GONE);
+            alertTitleContainer.setVisibility(View.GONE);
             alertBusy.setVisibility(View.VISIBLE);
             primaryAlertAction.setVisibility(View.GONE);
             secondaryAlertAction.setVisibility(View.GONE);
 
             alertText.setGravity(Gravity.CENTER);
-            Styles.setTextAppearance(alertText, R.style.AppTheme_Text_Body_MidSized_DarkText);
             alertText.setText(messageRes);
 
             alertContainer.setVisibility(View.VISIBLE);
@@ -176,11 +180,10 @@ public abstract class DeviceDetailsFragment<TDevice extends BaseDevice> extends 
         primaryAlertAction.setVisibility(View.VISIBLE);
 
         if (alert.title != null) {
-            alertTitleText.setVisibility(View.VISIBLE);
+            alertTitleContainer.setVisibility(View.VISIBLE);
             alertTitleText.setText(alert.title.resolve(getActivity()));
         }
         alertText.setGravity(Gravity.TOP | Gravity.START);
-        Styles.setTextAppearance(alertText, R.style.AppTheme_Text_Body_MidSized);
         alertText.setText(alert.message.resolve(getActivity()));
 
         if (alert.primaryButtonTitle != 0 && alert.primaryButtonOnClick != null) {

@@ -14,14 +14,14 @@ import is.hello.sense.R;
 import is.hello.sense.flows.voice.modules.VoiceSettingsModule;
 import is.hello.sense.flows.voice.ui.fragments.VoiceSettingsListFragment;
 import is.hello.sense.flows.voice.ui.fragments.VoiceVolumeFragment;
-import is.hello.sense.ui.activities.ScopedInjectionActivity;
+import is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 
 import static is.hello.sense.flows.voice.ui.fragments.VoiceSettingsListFragment.RESULT_VOLUME_SELECTED;
 
-public class VoiceSettingsActivity extends ScopedInjectionActivity
+public class VoiceSettingsActivity extends ScopedInjectionAppCompatActivity
         implements FragmentNavigation {
 
     private FragmentNavigationDelegate navigationDelegate;

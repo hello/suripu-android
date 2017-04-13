@@ -57,7 +57,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
         this.animatorContext = animatorContext;
 
         this.resources = activity.getResources();
-        this.dialog = new Dialog(activity, R.style.AppTheme_Dialog_FullScreen);
+        this.dialog = new Dialog(activity, R.style.Dialog_FullScreen);
         dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         dialog.getWindow().setWindowAnimations(R.style.WindowAnimations);
         dialog.setCancelable(true);
@@ -68,7 +68,7 @@ public class TimelineInfoOverlay implements Handler.Callback {
         this.tooltip = (TextView) activity.getLayoutInflater().inflate(R.layout.timeline_tooltip_textview, contents, false);
         contents.addView(tooltip);
 
-        this.backgroundColor = ContextCompat.getColor(activity, R.color.background_light_overlay);
+        this.backgroundColor = ContextCompat.getColor(activity, R.color.timeline_transparent_overlay);
         final TypedValue typedValue = new TypedValue();
         resources.getValue(R.dimen.timeline_segment_item_end_max_fraction, typedValue, true);
         this.maxBackgroundWidthFraction = typedValue.getFloat();

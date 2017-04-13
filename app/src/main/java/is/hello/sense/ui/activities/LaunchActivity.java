@@ -12,12 +12,14 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.flows.generic.ui.interactors.LocationInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
+import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.notifications.NotificationPressedInterceptorCounter;
 import is.hello.sense.rating.LocalUsageTracker;
-import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.activities.appcompat.InjectionActivity;
 import is.hello.sense.ui.widget.SenseAlertDialog;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Constants;
@@ -34,6 +36,8 @@ public class LaunchActivity extends InjectionActivity {
     LocalUsageTracker localUsageTracker;
     @Inject
     NotificationPressedInterceptorCounter notificationPressedInterceptorCounter;
+    @Inject
+    NightModeInteractor nightModeInteractor;
 
     /**
      * Included to force {@link ApiService} to be initialized before
@@ -82,7 +86,6 @@ public class LaunchActivity extends InjectionActivity {
         }
     }
 
-
     private void showHomeActivity() {
         final Intent intent = new Intent(this, HomeActivity.class);
         if (AlarmClock.ACTION_SHOW_ALARMS.equals(getIntent().getAction())) {
@@ -112,6 +115,7 @@ public class LaunchActivity extends InjectionActivity {
 
     private void bounce() {
         if (sessionManager.hasSession() && preferences.getBoolean(PreferencesInteractor.ONBOARDING_COMPLETED, false)) {
+            nightModeInteractor.updateToMatchPrefAndSession();
             if (!shouldFinish()) {
                 showHomeActivity();
             }

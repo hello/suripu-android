@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Button
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/item_question_single_choice"
+    style="@style/Button.Flat.Link"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    style="@style/AppTheme.Button.Borderless.Question.Choice" />
+    android:layout_height="match_parent"/>

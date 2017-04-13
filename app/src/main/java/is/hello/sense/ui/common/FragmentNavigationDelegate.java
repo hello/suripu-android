@@ -16,7 +16,6 @@ import android.view.Window;
 
 import is.hello.go99.animators.AnimatorTemplate;
 import is.hello.sense.R;
-import is.hello.sense.ui.activities.SenseActivity;
 import is.hello.sense.ui.widget.util.Windows;
 import is.hello.sense.util.Logger;
 import is.hello.sense.util.StateSafeExecutor;

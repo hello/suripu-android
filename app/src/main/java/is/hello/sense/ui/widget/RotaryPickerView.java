@@ -29,8 +29,8 @@ import is.hello.sense.ui.widget.util.Views;
 
 public class RotaryPickerView extends RecyclerView implements View.OnClickListener {
     public static final int DEFAULT_UNFOCUSED_ITEM_COUNT = 2;
-    public static final @StyleRes int ITEM_TEXT_APPEARANCE = R.style.AppTheme_Text_RotaryPickerItem;
-    public static final @StyleRes int ITEM_TEXT_APPEARANCE_FOCUSED = R.style.AppTheme_Text_RotaryPickerItem_Focused;
+    public static final @StyleRes int ITEM_TEXT_APPEARANCE = R.style.Display1;
+    public static final @StyleRes int ITEM_TEXT_APPEARANCE_FOCUSED = R.style.Body1_Blue;
 
     //region Internal
 
@@ -88,8 +88,8 @@ public class RotaryPickerView extends RecyclerView implements View.OnClickListen
         final Resources resources = getResources();
 
         this.layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
-        this.itemVerticalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
-        this.itemHorizontalPadding = resources.getDimensionPixelSize(R.dimen.gap_medium);
+        this.itemVerticalPadding = resources.getDimensionPixelSize(R.dimen.x2);
+        this.itemHorizontalPadding = resources.getDimensionPixelSize(R.dimen.x2);
 
         final TextPaint measuringPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         Drawing.updateTextPaintFromStyle(measuringPaint, context, ITEM_TEXT_APPEARANCE_FOCUSED);

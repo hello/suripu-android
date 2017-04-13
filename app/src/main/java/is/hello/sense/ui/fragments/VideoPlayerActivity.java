@@ -1,6 +1,5 @@
 package is.hello.sense.ui.fragments;
 
-import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,15 +11,17 @@ import android.widget.VideoView;
 
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.ui.activities.SenseActivity;
+import is.hello.sense.ui.activities.appcompat.SenseActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 
 import static is.hello.go99.animators.MultiAnimator.animatorFor;
 
 public class VideoPlayerActivity extends SenseActivity {
     private static final String EXTRA_URI = VideoPlayerActivity.class.getName() + ".EXTRA_URI";
+    private static final String ARG_POSITION = "currentPosition";
 
     private VideoView videoView;
+    private int tempPosition = 0;
 
     public static Bundle getArguments(@NonNull final Uri uri) {
         final Bundle bundle = new Bundle();
@@ -68,40 +69,44 @@ public class VideoPlayerActivity extends SenseActivity {
         });
 
         videoView.setOnCompletionListener((player) -> finish());
-
-
-        if (savedInstanceState != null) {
-            videoView.seekTo(savedInstanceState.getInt("currentPosition", 0));
-        }
-
-        videoView.start();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
+        if (videoView != null) {
+            outState.putInt(ARG_POSITION, videoView.getCurrentPosition());
+        }
+    }
 
-        outState.putInt("currentPosition", videoView.getCurrentPosition());
+    @Override
+    protected void onRestoreInstanceState(@NonNull final Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        tempPosition = savedInstanceState.getInt(ARG_POSITION, 0);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
+        tempPosition = videoView.getCurrentPosition();
         videoView.pause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        videoView.seekTo(tempPosition);
+        videoView.start();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        videoView.setOnPreparedListener(null);
-        videoView.setOnErrorListener(null);
-        videoView.setOnCompletionListener(null);
-    }
-
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
+        if (videoView != null) {
+            videoView.setOnPreparedListener(null);
+            videoView.setOnErrorListener(null);
+            videoView.setOnCompletionListener(null);
+            videoView = null;
+        }
     }
 }

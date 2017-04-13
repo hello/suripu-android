@@ -1,7 +1,6 @@
 package is.hello.sense;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.IdRes;
@@ -166,7 +165,7 @@ public abstract class FragmentTest<T extends PresenterFragment>
 
         @Override
         protected void onCreate(final Bundle savedInstanceState) {
-            setTheme(R.style.AppTheme_AppCompat_NoActionBar);
+            setTheme(R.style.AppTheme_NoActionBar);
             super.onCreate(savedInstanceState);
             final LinearLayout view = new LinearLayout(this, null, 0);
             @IdRes final int id = 1;

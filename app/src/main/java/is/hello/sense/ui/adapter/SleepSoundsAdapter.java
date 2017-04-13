@@ -1,7 +1,6 @@
 package is.hello.sense.ui.adapter;
 
 import android.content.Context;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -24,7 +23,9 @@ import is.hello.sense.api.model.v2.SleepSoundsState;
 import is.hello.sense.api.model.v2.Sound;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.ui.activities.OnboardingActivity;
+import is.hello.sense.ui.widget.ImageTextView;
 import is.hello.sense.ui.widget.SleepSoundsPlayerView;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.Constants;
 
 public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.BaseViewHolder> {
@@ -126,15 +127,15 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
             return new SleepSoundsPlayerViewHolder(inflater.inflate(R.layout.item_rounded_linearlayout, parent, false),
                                                    playerView);
         } else if (viewType == AdapterState.FIRMWARE_UPDATE.ordinal()) {
-            return new FwUpdateStateViewHolder(inflater.inflate(R.layout.temp_item_message_card, parent, false));
+            return new FwUpdateStateViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         } else if (viewType == AdapterState.SOUNDS_DOWNLOAD.ordinal()) {
-            return new NoSoundsStateViewHolder(inflater.inflate(R.layout.temp_item_message_card, parent, false));
+            return new NoSoundsStateViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         } else if (viewType == AdapterState.OFFLINE.ordinal()) {
-            return new OfflineViewHolder(inflater.inflate(R.layout.temp_item_message_card, parent, false));
+            return new OfflineViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         } else if (viewType == AdapterState.SENSE_NOT_PAIRED.ordinal()) {
-            return new SenseNotPairedViewHolder(inflater.inflate(R.layout.temp_item_message_card, parent, false));
+            return new SenseNotPairedViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
         }
-        return new ErrorViewHolder(inflater.inflate(R.layout.temp_item_message_card, parent, false));
+        return new ErrorViewHolder(inflater.inflate(R.layout.item_message_card, parent, false));
     }
 
 
@@ -181,27 +182,22 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     public static abstract class SleepStateViewHolder extends BaseViewHolder {
         protected final ImageView image;
-        protected final TextView title;
+        protected final ImageTextView title;
         protected final TextView message;
 
         SleepStateViewHolder(final @NonNull View view) {
             super(view);
 
             this.image = (ImageView) view.findViewById(R.id.item_message_card_image);
-            this.title = (TextView) view.findViewById(R.id.item_message_card_title);
+            this.title = (ImageTextView) view.findViewById(R.id.item_message_card_image_text);
             this.message = (TextView) view.findViewById(R.id.item_message_card_message);
 
             final Button action = (Button) view.findViewById(R.id.item_message_card_action);
             action.setVisibility(View.GONE);
 
             title.setGravity(Gravity.CENTER_HORIZONTAL);
+            Styles.setTextAppearance(message, R.style.Body1_Secondary);
 
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                //noinspection deprecation
-                message.setTextAppearance(view.getContext(), R.style.AppTheme_Text_Body_Small_New);
-            } else {
-                message.setTextAppearance(R.style.AppTheme_Text_Body_Small_New);
-            }
         }
     }
 
@@ -213,7 +209,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         @Override
         void bind(final int position) {
             this.title.setText(R.string.sense_offline_title);
-            this.image.setImageResource(R.drawable.illustration_sense_offline);
+            this.image.setImageResource(R.drawable.empty_sense_error);
             this.message.setText(R.string.sense_offline_message);
 
         }
@@ -229,7 +225,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         void bind(final int ignored) {
             this.title.setText(R.string.sleep_sounds_state_no_sounds_title);
             this.message.setText(R.string.sleep_sounds_state_no_sounds_message);
-            this.image.setImageResource(R.drawable.illustration_sense_download);
+            this.image.setImageResource(R.drawable.empty_sense_download);
         }
     }
 
@@ -243,7 +239,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         void bind(final int ignored) {
             this.title.setText(R.string.sense_state_fw_update_title);
             this.message.setText(R.string.sleep_sounds_state_fw_update_message);
-            this.image.setImageResource(R.drawable.illustration_sense_update);
+            this.image.setImageResource(R.drawable.empty_sense_update);
         }
     }
 
@@ -258,7 +254,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
         ErrorViewHolder(final @NonNull View view) {
             super(view);
 
-            final TextView title = (TextView) view.findViewById(R.id.item_message_card_title);
+            final ImageTextView title = (ImageTextView) view.findViewById(R.id.item_message_card_image_text);
             title.setVisibility(View.GONE);
 
             this.message = (TextView) view.findViewById(R.id.item_message_card_message);
@@ -281,6 +277,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
     public class SenseNotPairedViewHolder extends ErrorViewHolder {
         protected final ImageView image;
+
         SenseNotPairedViewHolder(final @NonNull View view) {
             super(view);
             this.image = (ImageView) view.findViewById(R.id.item_message_card_image);
@@ -288,7 +285,7 @@ public class SleepSoundsAdapter extends RecyclerView.Adapter<SleepSoundsAdapter.
 
         @Override
         void bind(final int position) {
-            this.image.setImageResource(R.drawable.illustration_no_sense);
+            this.image.setImageResource(R.drawable.empty_no_sense_paired);
             this.message.setText(R.string.error_sleep_sounds_requires_device);
             action.setText(R.string.action_pair_sense);
         }

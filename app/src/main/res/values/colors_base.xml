@@ -2,23 +2,37 @@
 <resources>
     <color name="white">#ffffff</color>
     <color name="white_00">#00ffffff</color>
+    <color name="white_12">#1fffffff</color>
     <color name="white_40">#66ffffff</color>
     <color name="white_50">#80ffffff</color>
     <color name="white_60">#99ffffff</color>
+    <color name="white_70">#b3ffffff</color>
     <color name="white_75">#bfffffff</color>
 
 
     <color name="black">#000000</color>
+    <color name="black_00">#00000000</color>
     <color name="black_06">#10000000</color>
     <color name="black_10">#19000000</color>
+    <color name="black_12">#1e000000</color>
     <color name="black_13">#22000000</color>
+    <color name="black_17">#2b000000</color>
+    <color name="black_20">#33000000</color>
     <color name="black_25">#40000000</color>
     <color name="black_27">#45000000</color>
+    <color name="black_38">#61000000</color>
+    <color name="black_40">#66000000</color>
     <color name="black_50">#80000000</color>
     <color name="black_53">#86000000</color>
+    <color name="black_54">#7f000000</color>
     <color name="black_70">#b3000000</color>
+    <color name="black_80">#cc000000</color>
+    <color name="black_87">#de000000</color>
+
 
     <!-- Gray -->
+    <color name="gray9">#212121</color>
+    <color name="gray8">#424242</color>
     <color name="gray7">#0C1B30</color>
     <color name="gray6">#162B48</color>
     <color name="gray6_70">#b3162B48</color>
@@ -50,7 +64,12 @@
     <color name="blue6">#009AFF</color>
     <color name="blue6_80">#cc009aff</color>
     <color name="blue6_50">#80009aff</color>
+    <color name="blue6_40">#66009aff</color>
     <color name="blue6_30">#4d009aff</color>
+    <color name="blue6_25">#40009aff</color>
+    <color name="blue6_20">#33009aff</color>
+    <color name="blue6_15">#26009aff</color>
+    <color name="blue6_10">#19009aff</color>
     <color name="blue5">#4CB9FF</color>
     <color name="blue4">#7FCDFF</color>
     <color name="blue3">#B2E1FF</color>

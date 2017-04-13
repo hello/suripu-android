@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="diagram_onboarding_pair_pill">http://hellocdn.net/mobile/sense/onboarding/pairing_your_sleep_pill@2x_dark.mp4</string>
+    <string name="diagram_onboarding_clip_pill">http://hellocdn.net/mobile/sense/onboarding/attach_sleep_pill_dark.mp4</string>
+    <string name="diagram_onboarding_smart_alarm">http://hellocdn.net/mobile/sense/onboarding/smart_alarm_onboarding@2x_dark.mp4</string>
+    <string name="diagram_onboarding_sense_colors">http://hellocdn.net/mobile/sense/onboarding/bedroom_condition@2x_dark.mp4</string>
+</resources>

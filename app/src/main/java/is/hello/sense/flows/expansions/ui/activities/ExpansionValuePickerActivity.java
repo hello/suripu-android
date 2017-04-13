@@ -19,12 +19,12 @@ import is.hello.sense.api.model.v2.expansions.ExpansionValueRange;
 import is.hello.sense.flows.expansions.modules.ExpansionPickerModule;
 import is.hello.sense.flows.expansions.ui.fragments.ConfigSelectionFragment;
 import is.hello.sense.flows.expansions.ui.fragments.ExpansionDetailPickerFragment;
-import is.hello.sense.ui.activities.ScopedInjectionActivity;
+import is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.FragmentNavigationDelegate;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 
-public class ExpansionValuePickerActivity extends ScopedInjectionActivity
+public class ExpansionValuePickerActivity extends ScopedInjectionAppCompatActivity
         implements FragmentNavigation {
 
     public static final String EXTRA_EXPANSION_ALARM = ExpansionValuePickerActivity.class.getName() + "EXTRA_EXPANSION_ALARM";

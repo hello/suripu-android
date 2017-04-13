@@ -36,6 +36,7 @@ import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
+import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
@@ -63,8 +64,6 @@ import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Logger;
 import rx.Observable;
 
-import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_connection_state;
-
 public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         implements OnBackPressedInterceptor, FragmentCompat.OnRequestPermissionsResultCallback {
     private static final int REQUEST_CODE_WIFI = 0x94;
@@ -91,7 +90,9 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     private boolean blockConnection = false;
     private boolean didEnableBluetooth = false;
 
-    private @Nullable SenseNetworkStatus currentWifiNetwork;
+    private
+    @Nullable
+    SenseNetworkStatus currentWifiNetwork;
 
     private final LocationPermission locationPermission = new LocationPermission(this);
     private final BroadcastReceiver PERIPHERAL_CLEARED = new BroadcastReceiver() {
@@ -141,12 +142,12 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        this.pairingMode = addDeviceAction(R.drawable.icon_settings_pairing_mode, R.string.action_enter_pairing_mode, this::putIntoPairingMode);
+        this.pairingMode = addDeviceAction(R.drawable.icon_refresh_24, R.string.action_enter_pairing_mode, this::putIntoPairingMode);
         setEnabled(pairingMode, false);
-        this.changeWiFi = addDeviceAction(R.drawable.icon_settings_wifi, R.string.action_select_wifi_network, this::changeWifiNetwork);
+        this.changeWiFi = addDeviceAction(R.drawable.icon_wifi_24, R.string.action_select_wifi_network, this::changeWifiNetwork);
         setEnabled(changeWiFi, false);
-        addDeviceAction(R.drawable.icon_settings_timezone, R.string.action_change_time_zone, this::changeTimeZone);
-        addDeviceAction(R.drawable.icon_settings_advanced, R.string.title_advanced, this::showAdvancedOptions);
+        addDeviceAction(R.drawable.icon_clock_24, R.string.action_change_time_zone, this::changeTimeZone);
+        addDeviceAction(R.drawable.icon_advanced_24, R.string.title_advanced, this::showAdvancedOptions);
         showActions();
 
         IntentFilter fatalErrors = new IntentFilter(HardwareInteractor.ACTION_CONNECTION_LOST);
@@ -191,7 +192,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_CODE_WIFI) {
+        if (requestCode == REQUEST_CODE_WIFI && resultCode == Activity.RESULT_OK) {
             if (hardwarePresenter.isConnected()) {
                 hideAlert();
                 checkConnectivityState(true);
@@ -259,13 +260,11 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         clearActions();
     }
 
-    private void showConnectedSenseActions(@Nullable SenseNetworkStatus network) {
+    private void showConnectedSenseActions(@Nullable final SenseNetworkStatus network) {
         setEnabled(pairingMode, true);
         setEnabled(changeWiFi, true);
 
-        if (network == null ||
-                TextUtils.isEmpty(network.ssid) ||
-                wifi_connection_state.IP_RETRIEVED != network.connectionState) {
+        if (!isValidWifi(network)) {
             final TroubleshootingAlert alert = new TroubleshootingAlert()
                     .setTitle(StringRef.from(R.string.error_sense_no_connectivity_title))
                     .setMessage(StringRef.from(R.string.error_sense_no_connectivity))
@@ -385,10 +384,10 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
             final TroubleshootingAlert alert = new TroubleshootingAlert()
                     .setTitle(StringRef.from(R.string.error_sense_not_found_title))
                     .setMessage(StringRef.from(R.string.error_sense_not_found))
-                    .setPrimaryButtonTitle(R.string.action_troubleshoot)
-                    .setPrimaryButtonOnClick(() -> showSupportFor(UserSupport.DeviceIssue.CANNOT_CONNECT_TO_SENSE))
-                    .setSecondaryButtonTitle(R.string.action_retry)
-                    .setSecondaryButtonOnClick(this::connectToPeripheral);
+                    .setSecondaryButtonTitle(R.string.action_troubleshoot)
+                    .setSecondaryButtonOnClick(() -> showSupportFor(UserSupport.DeviceIssue.CANNOT_CONNECT_TO_SENSE))
+                    .setPrimaryButtonTitle(R.string.action_retry)
+                    .setPrimaryButtonOnClick(this::connectToPeripheral);
             showTroubleshootingAlert(alert);
 
             if (hardwarePresenter.shouldPromptForHighPowerScan()) {
@@ -412,9 +411,18 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         Logger.error(SenseDetailsFragment.class.getSimpleName(), "Could not reconnect to Sense.", e);
     }
 
+    /*
+    Todo belongs in an Interactor
+     */
+    public boolean isValidWifi(@Nullable final SenseNetworkStatus wifi) {
+        return wifi != null
+                && !TextUtils.isEmpty(wifi.ssid)
+                && SenseCommandProtos.wifi_connection_state.IP_RETRIEVED == wifi.connectionState;
+    }
 
-    public void checkConnectivityState(boolean ignoreCachedNetwork) {
-        if (!ignoreCachedNetwork && currentWifiNetwork != null) {
+
+    public void checkConnectivityState(final boolean ignoreCachedNetwork) {
+        if (!ignoreCachedNetwork && isValidWifi(currentWifiNetwork)) {
             showConnectedSenseActions(currentWifiNetwork);
         } else {
             showBlockingAlert(R.string.title_checking_connectivity);
@@ -452,7 +460,7 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
                 new SettingsActivity.Builder(getActivity());
         builder.setDefaultTitle(R.string.title_edit_wifi);
         builder.setFragmentClass(SelectWifiNetworkFragment.class);
-        builder.setWindowBackgroundColor(ContextCompat.getColor(getActivity(), R.color.background_onboarding));
+        builder.setWindowBackgroundColor(ContextCompat.getColor(getActivity(), R.color.onboarding_background));
         builder.setOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         startActivityForResult(builder.toIntent(), REQUEST_CODE_WIFI);
     }
@@ -536,17 +544,19 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
         options.add(
                 new SenseBottomSheet.Option(OPTION_ID_REPLACE_SENSE)
                         .setTitle(R.string.action_replace_this_sense)
-                        .setTitleColor(ContextCompat.getColor(getActivity(), R.color.text_dark))
+                        .setTitleColor(ContextCompat.getColor(getActivity(), R.color.primary_text))
                         .setDescription(R.string.description_replace_this_sense)
-                        .setIcon(R.drawable.settings_advanced)
+                        .setIcon(R.drawable.icon_advanced_24)
+                        .setIconTintRes(R.color.active_icon)
                    );
         if (hardwarePresenter.isConnected()) {
             options.add(
                     new SenseBottomSheet.Option(OPTION_ID_FACTORY_RESET)
                             .setTitle(R.string.action_factory_reset)
-                            .setTitleColor(ContextCompat.getColor(getActivity(), R.color.destructive_accent))
+                            .setTitleColor(ContextCompat.getColor(getActivity(), R.color.error_text))
                             .setDescription(R.string.description_factory_reset)
-                            .setIcon(R.drawable.settings_factory_reset)
+                            .setIcon(R.drawable.icon_reset_24)
+                            .setIconTintRes(R.color.destructive_icon)
                        );
         }
         BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(R.string.title_advanced, options);

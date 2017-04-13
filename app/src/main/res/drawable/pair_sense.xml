@@ -3,9 +3,9 @@
     <item>
         <bitmap
             android:gravity="bottom"
-            android:src="@drawable/onboarding_sense_background" />
+            android:src="@drawable/background_table" />
     </item>
-    <item android:bottom="@dimen/onboarding_sense_inset_bottom">
+    <item android:bottom="@dimen/x3">
         <bitmap android:gravity="center"
                 android:src="@drawable/pair_sense_blue" />
     </item>

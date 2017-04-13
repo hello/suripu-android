@@ -2,6 +2,7 @@ package is.hello.sense.ui.activities;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
@@ -12,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
@@ -21,10 +23,11 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
-import is.hello.sense.ui.common.InjectionActivity;
+import is.hello.sense.ui.activities.appcompat.InjectionActivity;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.ui.widget.SpinnerImageView;
+import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.util.IListObject;
 import is.hello.sense.util.IListObject.IListItem;
 import is.hello.sense.util.Player;
@@ -348,42 +351,46 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     }
 
     public class SimpleViewHolder extends BaseViewHolder {
+        private final int[] STATE_NORMAL = new int[]{android.R.attr.state_enabled};
+        private final int[] STATE_SELECTED = new int[]{android.R.attr.state_activated, android.R.attr.state_checked};
+        private final ImageView selector;
         protected final TextView title;
         protected final TextView status;
         protected final SpinnerImageView image;
         protected final View view;
         protected final View playerHolder;
-
-        @DrawableRes
-        protected final int onImage;
-
-        @DrawableRes
-        protected final int offImage;
-
+        protected final ViewGroup titleContainer;
 
         SimpleViewHolder(@NonNull final View view) {
             super(view);
             this.view = view;
-            this.title = (TextView) view.findViewById(R.id.item_list_name);
+            this.titleContainer = (ViewGroup) view.findViewById(R.id.item_list_name_container);
+            this.selector = (ImageView) titleContainer.findViewById(R.id.item_list_selector);
+            this.title = (TextView) titleContainer.findViewById(R.id.item_list_name);
             this.image = (SpinnerImageView) view.findViewById(R.id.item_list_play_image);
             this.status = (TextView) view.findViewById(R.id.item_list_player_status);
             this.playerHolder = view.findViewById(R.id.item_list_player_holder);
 
+            final Drawable selector;
+
             if (selectionTracker.isMultiple) {
-                this.onImage = R.drawable.holo_check_on;
-                this.offImage = R.drawable.holo_check_off;
+                selector = Styles.tintDrawableWithStates(view.getContext(),
+                                                         R.drawable.checkbox_selector,
+                                                         R.color.icon_color_selector);
             } else {
-                this.onImage = R.drawable.radio_on;
-                this.offImage = R.drawable.radio_off;
+                selector = Styles.tintDrawableWithStates(view.getContext(),
+                                                         R.drawable.radio_selector,
+                                                         R.color.icon_color_selector);
             }
+            this.selector.setImageDrawable(selector);
         }
 
         protected void selectedState() {
-            title.setCompoundDrawablesWithIntrinsicBounds(onImage, 0, 0, 0);
+            this.selector.setImageState(STATE_SELECTED, true);
         }
 
-        public void unselectedState() {
-            title.setCompoundDrawablesWithIntrinsicBounds(offImage, 0, 0, 0);
+        protected void unselectedState() {
+            this.selector.setImageState(STATE_NORMAL, false);
         }
 
         public String getTitle() {
@@ -399,7 +406,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                 unselectedState();
             }
 
-            title.setOnClickListener(v -> {
+            titleContainer.setOnClickListener(v -> {
                 if (selectionTracker.contains(itemId) && !selectionTracker.isMultiple) {
                     return;
                 }
@@ -449,7 +456,7 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
                 status.setText(null);
             }
 
-            title.setOnClickListener(v -> {
+            titleContainer.setOnClickListener(v -> {
                 if (selectionTracker.contains(itemId)) {
                     return;
                 }

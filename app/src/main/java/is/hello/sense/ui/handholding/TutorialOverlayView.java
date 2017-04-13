@@ -93,19 +93,19 @@ public class TutorialOverlayView extends RelativeLayout {
                 = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                              shadowHeight);
         if (tutorial.descriptionGravity == Gravity.TOP) {
-            shadow.setBackgroundResource(R.drawable.shadow_top_down);
+            shadow.setBackgroundResource(R.drawable.shadow_from_top_to_bottom);
             descriptionContainer.addView(shadow, descriptionContainer.getChildCount(), shadowLayoutParams);
 
             final View topLine = new View(activity);
-            topLine.setBackgroundResource(R.color.light_accent_dimmed);
+            topLine.setBackgroundResource(R.color.tutorial_interaction_view_dimmed);
             final int topLineHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
             final ViewGroup.LayoutParams topLineLayoutParams
                     = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                                  topLineHeight);
             descriptionContainer.addView(topLine, 0, topLineLayoutParams);
         } else {
-            descriptionContainer.setBackgroundResource(R.color.light_accent);
-            shadow.setBackgroundResource(R.drawable.shadow_bottom_up);
+            descriptionContainer.setBackgroundResource(R.color.tutorial_interaction_view);
+            shadow.setBackgroundResource(R.drawable.shadow_from_bottom_to_top);
             descriptionContainer.addView(shadow, 0, shadowLayoutParams);
         }
 

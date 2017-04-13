@@ -11,7 +11,7 @@
         android:id="@+id/view_voice_volume_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/AppTheme.Text.VolumePicker.Title"
+        style="@style/Title2.Primary"
         android:text="@string/voice_select_volume"/>
 
     <TextView
@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/x2"
-        style="@style/AppTheme.Text.Body.Paragraph"
+        style="@style/Body1.Secondary"
         android:text="@string/voice_volume_description"/>
 
     <Space
@@ -33,8 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/x4"
         android:layout_gravity="center_horizontal"
-        style="@style/AppTheme.Text.VolumePicker.SelectedValue"
-        android:textColor="@color/voice_volume_emphasized_color"/>
+        style="@style/Display4.Blue"/>
 
     <is.hello.sense.flows.voice.ui.widgets.VolumePickerView
         android:id="@+id/view_voice_volume_scale"
@@ -57,7 +56,7 @@
         android:id="@+id/view_voice_volume_done_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/AppTheme.Button.Rounded"
+        style="@style/Button.Raised"
         android:text="@string/action_done"/>
 
 </LinearLayout>

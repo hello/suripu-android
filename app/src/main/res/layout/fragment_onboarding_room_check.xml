@@ -2,33 +2,33 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:keepScreenOn="true">
+    android:keepScreenOn="true"
+    android:orientation="vertical">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/x3"
         android:layout_alignBottom="@+id/fragment_onboarding_room_check_sense"
+        android:layout_marginTop="@dimen/x3"
+        android:importantForAccessibility="no"
         android:scaleType="fitXY"
         android:src="@drawable/onboarding_sense_background"
-        android:importantForAccessibility="no"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"/>
 
     <ImageView
         android:id="@+id/fragment_onboarding_room_check_sense"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/x6"
-        android:layout_marginBottom="@dimen/x3"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:paddingBottom="@dimen/onboarding_sense_inset_bottom"
-        android:src="@drawable/onboarding_sense_grey"
-        android:contentDescription="@string/app_name"/>
+        android:layout_marginBottom="@dimen/x3"
+        android:layout_marginTop="@dimen/x6"
+        android:contentDescription="@string/app_name"
+        android:paddingBottom="@dimen/x3"
+        android:src="@drawable/onboarding_sense_grey"/>
 
     <LinearLayout
         android:id="@+id/fragment_onboarding_room_check_content"
@@ -42,42 +42,42 @@
             android:id="@+id/fragment_onboarding_room_check_sensors_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="none"
-            android:fillViewport="false">
+            android:fillViewport="false"
+            android:scrollbars="none">
 
             <LinearLayout
                 android:id="@+id/fragment_onboarding_room_check_sensors"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/x2"
                 android:layout_marginLeft="@dimen/x3"
                 android:layout_marginRight="@dimen/x3"
-                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/x2"
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 android:gravity="center"
+                android:orientation="horizontal"
                 tools:ignore="ScrollViewSize"/>
         </HorizontalScrollView>
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"/>
 
         <TextView
             android:id="@+id/fragment_onboarding_room_check_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="@dimen/x3"
             android:gravity="center_horizontal|top"
-            android:textAppearance="@style/AppTheme.Text.Body"
+            android:maxLines="2"
+            android:minHeight="@dimen/x3"
             android:text="@string/dialog_loading_message"
-            android:maxLines="2"/>
+            android:textAppearance="@style/Body1.Secondary"/>
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"/>
 
         <RelativeLayout
             android:id="@+id/fragment_onboarding_room_check_score_layout"
@@ -88,30 +88,30 @@
 
             <TextView
                 android:id="@+id/fragment_onboarding_room_check_score_tv"
+                style="@style/Display4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/AppTheme.Text.Score.Big"
                 android:layout_centerInParent="true"/>
 
             <TextView
                 android:id="@+id/fragment_onboarding_room_check_score_unit_tv"
+                style="@style/Headline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/x.5"
-                android:layout_toRightOf="@id/fragment_onboarding_room_check_score_tv"
                 android:layout_alignParentTop="true"
-                android:paddingTop="@dimen/x2"
-                android:textAppearance="@style/AppTheme.Text.Score.Unit"
-                android:maxLines="1"
                 android:layout_gravity="top"
-                android:includeFontPadding="false"/>
+                android:layout_marginStart="@dimen/x.5"
+                android:layout_toEndOf="@id/fragment_onboarding_room_check_score_tv"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:paddingTop="@dimen/x2"/>
 
         </RelativeLayout>
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"/>
 
     </LinearLayout>
 

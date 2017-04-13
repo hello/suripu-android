@@ -84,7 +84,7 @@ public class SearchListView extends BindedPresenterView<ViewSearchListBinding>
     public void afterTextChanged(final Editable s) {
         final String text = s.toString();
         if (text.isEmpty()) {
-            this.binding.viewSearchListClose.setVisibility(GONE);
+            this.binding.viewSearchListClose.setVisibility(INVISIBLE);
         } else {
             this.binding.viewSearchListClose.setVisibility(VISIBLE);
         }

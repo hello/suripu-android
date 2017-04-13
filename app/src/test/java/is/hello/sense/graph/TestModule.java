@@ -21,9 +21,12 @@ import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractor;
 import is.hello.sense.flows.expansions.interactors.ConfigurationsInteractorTests;
 import is.hello.sense.flows.expansions.utils.ExpansionCategoryFormatterTest;
 import is.hello.sense.flows.home.interactors.LastNightInteractorTest;
+import is.hello.sense.flows.home.ui.adapters.SensorResponseAdapterTest;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragment;
 import is.hello.sense.flows.home.ui.fragments.RoomConditionsPresenterFragmentTests;
+import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.flows.sensordetails.interactors.SensorLabelInteractorTest;
+import is.hello.sense.flows.settings.TestSettingsModule;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.interactors.AccountInteractor;
@@ -76,7 +79,10 @@ import static org.mockito.Mockito.mock;
 
 @Module(
         library = true,
-        includes = {TestNotificationModule.class},
+        includes = {
+                TestNotificationModule.class,
+                TestSettingsModule.class,
+        },
     injects = {
             TimelineInteractorTests.class,
             TimelineInteractor.class,
@@ -131,6 +137,7 @@ import static org.mockito.Mockito.mock;
 
             RoomConditionsPresenterFragment.class,
             RoomConditionsPresenterFragmentTests.class,
+            SensorResponseAdapterTest.class,
 
             SensorLabelInteractorTest.class,
 
@@ -146,7 +153,7 @@ import static org.mockito.Mockito.mock;
 
 
             LastNightInteractorTest.class,
-            SleepSoundsInteractorTest.class
+            SleepSoundsInteractorTest.class,
     }
 )
 @SuppressWarnings("UnusedDeclaration")
@@ -244,5 +251,13 @@ public final class TestModule {
     @Singleton
     ConfigurationsInteractor providesConfigurationInteractor(final ApiService service){
         return new ConfigurationsInteractor(service);
+    }
+
+    @Provides
+    @Singleton
+    public NightModeInteractor providesNightModeInteractor(@NonNull final PersistentPreferencesInteractor persistentPreferencesInteractor,
+                                                           @NonNull final ApiSessionManager apiSessionManager) {
+        return new NightModeInteractor(persistentPreferencesInteractor,
+                                       apiSessionManager);
     }
 }

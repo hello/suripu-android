@@ -53,10 +53,11 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
     PreferencesInteractor preferencesInteractor;
 
     @VisibleForTesting
-    public SensorResponseAdapter adapter;
+    protected SensorResponseAdapter adapter;
     private UpdateTimer updateTimer;
     @NonNull
     private Subscription postSensorSubscription = Subscriptions.empty();
+
 
     @Override
     public final void initializePresenterView() {
@@ -93,6 +94,10 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
         bindAndSubscribe(this.sensorResponseInteractor.sensors,
                          this::bindConditions,
                          this::conditionsUnavailable);
+
+        if(getUserVisibleHint()) {
+            onVisibleToUser();
+        }
     }
 
     @Override
@@ -165,7 +170,7 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
                                    this::conditionsUnavailable);
                 break;
             case NO_SENSE:
-                adapter.showSenseMissingCard();
+                adapter.showSenseMissingCard(getActivity());
                 break;
             default:
         }
@@ -188,7 +193,7 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
                                         R.string.action_retry,
                                         ignored -> this.sensorResponseInteractor.update());
         } else if (ApiException.statusEquals(e, 404)) {
-            this.adapter.showSenseMissingCard();
+            this.adapter.showSenseMissingCard(getActivity());
         } else {
             final StringRef messageRef = Errors.getDisplayMessage(e);
             final String message = messageRef != null
@@ -230,9 +235,13 @@ public class RoomConditionsPresenterFragment extends ControllerPresenterFragment
     public void setVisibleToUser(final boolean isVisible) {
         super.setVisibleToUser(isVisible);
         if (isVisible) {
-            Analytics.trackEvent(Analytics.Backside.EVENT_CURRENT_CONDITIONS, null);
-            this.sensorResponseInteractor.update();
+            onVisibleToUser();
         }
+    }
+
+    private void onVisibleToUser() {
+        Analytics.trackEvent(Analytics.Backside.EVENT_CURRENT_CONDITIONS, null);
+        this.sensorResponseInteractor.update();
     }
 
 }

@@ -8,8 +8,6 @@ public final class Constants {
     public static final String PERSISTENT_PREFS = "persistent_prefs";
 
     public static final String INTERNAL_PREFS = "internal_prefs";
-    public static final String INTERNAL_PREF_BACKSIDE_CURRENT_ITEM = "underside_current_item";
-    public static final String INTERNAL_PREF_BACKSIDE_CURRENT_ITEM_LAST_UPDATED = "underside_current_item_last_updated";
     public static final String INTERNAL_PREF_ACCOUNT_ID = "INTERNAL_PREF_ACCOUNT_ID";
 
     //todo remove if no longer storing locally

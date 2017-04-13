@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.content.LocalBroadcastManager;
@@ -24,6 +25,7 @@ import dagger.ObjectGraph;
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.api.ApiModule;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.SenseAppModule;
 import is.hello.sense.notifications.NotificationActivityLifecycleListener;
@@ -46,6 +48,8 @@ public class SenseApplication extends MultiDexApplication {
     LruCache picassoMemoryCache;
     @Inject
     NotificationActivityLifecycleListener notificationActivityLifecycleListener;
+    @Inject
+    NightModeInteractor nightModeInteractor;
 
     private static SenseApplication instance = null;
 
@@ -83,7 +87,7 @@ public class SenseApplication extends MultiDexApplication {
         if (!isRunningInRobolectric) {
             Bugsnag.init(this);
             Bugsnag.setReleaseStage(BuildConfig.BUILD_TYPE);
-            Bugsnag.setNotifyReleaseStages("release");
+            Bugsnag.setNotifyReleaseStages("release", "development");
         }
 
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -117,6 +121,11 @@ public class SenseApplication extends MultiDexApplication {
 
         this.refWatcher = LeakCanary.install(this);
 
+        nightModeInteractor.currentNightMode.subscribe(this::onNextNightModeUpdate,
+                                                       Functions.LOG_ERROR);
+
+        nightModeInteractor.updateToMatchPrefAndSession(); //if application was destroyed need to update again
+
         final Observable<Intent> onLogOut = Rx.fromLocalBroadcast(this, new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT));
         onLogOut.observeOn(Rx.mainThreadScheduler())
                 .subscribe(ignored -> {
@@ -131,6 +140,8 @@ public class SenseApplication extends MultiDexApplication {
 
                     NotificationMessageReceiver.cancelShownMessages(this);
 
+                    nightModeInteractor.updateToMatchPrefAndSession();
+
                     final Intent launchIntent = new Intent(this, LaunchActivity.class);
                     launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(launchIntent);
@@ -142,8 +153,7 @@ public class SenseApplication extends MultiDexApplication {
         super.onTrimMemory(level);
 
         if (level >= TRIM_MEMORY_MODERATE) {
-            Logger.debug(getClass().getSimpleName(), "Clearing picasso memory cache");
-            picassoMemoryCache.clear();
+            clearPicassoCache();
         }
     }
 
@@ -166,5 +176,14 @@ public class SenseApplication extends MultiDexApplication {
      */
     public ObjectGraph createScopedObjectGraph(final List<Object> modules) {
         return graph.plus(modules.toArray());
+    }
+
+    private void clearPicassoCache() {
+        Logger.debug(getClass().getSimpleName(), "Clearing picasso memory cache");
+        picassoMemoryCache.clear();
+    }
+
+    private void onNextNightModeUpdate(@NonNull final Integer mode) {
+        clearPicassoCache();
     }
 }

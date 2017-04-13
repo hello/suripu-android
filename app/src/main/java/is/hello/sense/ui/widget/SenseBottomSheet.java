@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -60,7 +61,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
     //region Lifecycle
 
     public SenseBottomSheet(@NonNull Context context) {
-        super(context, R.style.AppTheme_Dialog_BottomSheet);
+        super(context, R.style.Dialog_BottomSheet);
 
         setContentView(R.layout.dialog_bottom_sheet);
         setCancelable(true);
@@ -71,7 +72,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         this.contentRoot = (RelativeLayout) findViewById(R.id.dialog_bottom_sheet_content);
         this.optionsContainer = (LinearLayout) findViewById(R.id.dialog_bottom_sheet_options);
 
-        Drawable divider = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.divider_horizontal_inset, null);
+        Drawable divider = ResourcesCompat.getDrawable(getContext().getResources(), R.drawable.divider_horizontal_inset_large, null);
         optionsContainer.setDividerDrawable(divider);
 
         this.titleText = (TextView) findViewById(R.id.dialog_bottom_sheet_title);
@@ -126,20 +127,26 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
 
     //region Populating
 
-    protected void addViewForOption(@NonNull Option option) {
-        View optionView = inflater.inflate(R.layout.item_bottom_sheet_option, optionsContainer, false);
+    protected void addViewForOption(@NonNull final Option option) {
+        final View optionView = inflater.inflate(R.layout.item_bottom_sheet_option, optionsContainer, false);
 
-        TextView title = (TextView) optionView.findViewById(R.id.item_bottom_sheet_option_title);
-        TextView description = (TextView) optionView.findViewById(R.id.item_bottom_sheet_option_description);
-        ImageView imageIcon = (ImageView) optionView.findViewById(R.id.item_bottom_sheet_option_icon);
+        final TextView title = (TextView) optionView.findViewById(R.id.item_bottom_sheet_option_title);
+        final TextView description = (TextView) optionView.findViewById(R.id.item_bottom_sheet_option_description);
+        final ImageView imageIcon = (ImageView) optionView.findViewById(R.id.item_bottom_sheet_option_icon);
 
         if (option.iconRes != 0) {
             imageIcon.setVisibility(View.VISIBLE);
-            imageIcon.setImageResource(option.iconRes);
+            if (option.iconTintRes  == 0){
+                imageIcon.setImageResource(option.iconRes);
+            }else {
+                imageIcon.setImageDrawable(Styles.tintDrawable(getContext(),
+                                                               option.iconRes,
+                                                               option.iconTintRes));
+            }
         }
 
         if (option.getTitle() != null) {
-            String itemTitle = option.getTitle().resolve(getContext());
+            final String itemTitle = option.getTitle().resolve(getContext());
             title.setText(itemTitle);
         } else{
             title.setVisibility(View.GONE);
@@ -150,7 +157,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         }
 
         if (option.getDescription() != null) {
-            String itemDescription = option.getDescription().resolve(getContext());
+            final String itemDescription = option.getDescription().resolve(getContext());
             description.setText(itemDescription);
         } else {
             description.setVisibility(View.GONE);
@@ -162,9 +169,9 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
             title.setEnabled(false);
             description.setEnabled(false);
 
-            Drawable icon = title.getCompoundDrawablesRelative()[0];
+            final Drawable icon = title.getCompoundDrawablesRelative()[0];
             if (icon != null) {
-                icon.setAlpha(0x77);
+                icon.setAlpha(0x77); //todo use disabled color white50?
             }
         }
 
@@ -235,10 +242,10 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         this.wantsBigTitle = wantsBigTitle;
 
         if (wantsBigTitle) {
-            Styles.setTextAppearance(titleText, R.style.AppTheme_Text_Body);
+            Styles.setTextAppearance(titleText, R.style.Body1_Primary);
             titleText.setAllCaps(false);
         } else {
-            Styles.setTextAppearance(titleText, R.style.AppTheme_Text_SectionHeading);
+            Styles.setTextAppearance(titleText, R.style.Caption2_Secondary);
         }
     }
 
@@ -319,6 +326,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
         private @Nullable StringRef title;
         private @Nullable StringRef description;
         private @DrawableRes int iconRes;
+        private @ColorRes int iconTintRes;
         private boolean enabled = true;
 
         public Option(int optionId) {
@@ -339,6 +347,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
             this.description = in.readParcelable(StringRef.class.getClassLoader());
             this.iconRes = in.readInt();
             this.enabled = in.readByte() != 0;
+            this.iconTintRes = in.readInt();
         }
 
         @Override
@@ -354,6 +363,7 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
             out.writeParcelable(description, flags);
             out.writeInt(iconRes);
             out.writeByte((byte) (enabled ? 1 : 0));
+            out.writeInt(iconTintRes);
         }
 
         public static final Creator<Option> CREATOR = new Creator<Option>() {
@@ -435,6 +445,15 @@ public class SenseBottomSheet extends Dialog implements View.OnClickListener {
 
         public Option setEnabled(boolean enabled) {
             this.enabled = enabled;
+            return this;
+        }
+
+        public int getIconRes() {
+            return iconRes;
+        }
+
+        public Option setIconTintRes(@ColorRes int iconTintRes) {
+            this.iconTintRes = iconTintRes;
             return this;
         }
 

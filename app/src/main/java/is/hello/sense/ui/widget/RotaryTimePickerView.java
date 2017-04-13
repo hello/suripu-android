@@ -3,15 +3,7 @@ package is.hello.sense.ui.widget;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.Paint;
-import android.graphics.PixelFormat;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -25,6 +17,7 @@ import java.text.DateFormatSymbols;
 import java.util.Calendar;
 
 import is.hello.sense.R;
+import is.hello.sense.ui.widget.util.Styles;
 
 public class RotaryTimePickerView extends LinearLayout implements RotaryPickerView.OnSelectionListener {
     private static final int PERIOD_AM = Calendar.AM;
@@ -64,11 +57,10 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
 
         setOrientation(HORIZONTAL);
         setGravity(Gravity.CENTER);
-        setBackground(new BackgroundDrawable(resources));
 
         final LayoutParams pickerLayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
                                                                  LayoutParams.WRAP_CONTENT);
-        final int hourMinutePadding = resources.getDimensionPixelSize(R.dimen.gap_large);
+        final int hourMinutePadding = resources.getDimensionPixelSize(R.dimen.x3);
 
         this.hourPicker = new RotaryPickerView(context);
         hourPicker.setOnSelectionListener(this);
@@ -82,7 +74,7 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
         addView(hourPicker, pickerLayoutParams);
 
         final TextView hourMinuteDivider = new TextView(context);
-        hourMinuteDivider.setTextAppearance(context, RotaryPickerView.ITEM_TEXT_APPEARANCE_FOCUSED);
+        Styles.setTextAppearance(hourMinuteDivider, RotaryPickerView.ITEM_TEXT_APPEARANCE_FOCUSED);
         hourMinuteDivider.setText(":");
         hourMinuteDivider.setIncludeFontPadding(false);
         final int hourMinuteDividerYFix = Math.round(resources.getDisplayMetrics().scaledDensity * 4f);
@@ -273,80 +265,6 @@ public class RotaryTimePickerView extends LinearLayout implements RotaryPickerVi
     }
 
     //endregion
-
-
-    private static class BackgroundDrawable extends Drawable {
-        private final Paint paint = new Paint();
-        private final Rect focusBackgroundRect = new Rect();
-        private final int itemHeightHalf;
-        private final int shadowHeight;
-
-        private final GradientDrawable backgroundDrawable;
-        private final GradientDrawable shadowDrawable;
-
-        BackgroundDrawable(@NonNull Resources resources) {
-            this.itemHeightHalf = resources.getDimensionPixelSize(R.dimen.view_rotary_picker_item_height) / 2;
-            this.shadowHeight = resources.getDimensionPixelSize(R.dimen.shadow_size);
-
-            final @ColorInt int[] backgroundColors = {
-                    resources.getColor(R.color.background),
-                    resources.getColor(R.color.background_light),
-            };
-            this.backgroundDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                                                           backgroundColors);
-
-            final @ColorInt int[] shadowColors = {
-                    Color.TRANSPARENT,
-                    resources.getColor(R.color.view_time_picker_shadow_end),
-            };
-            this.shadowDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                                                       shadowColors);
-
-            paint.setColor(resources.getColor(R.color.background_light));
-        }
-
-        @Override
-        public void draw(Canvas canvas) {
-            backgroundDrawable.draw(canvas);
-            canvas.drawRect(focusBackgroundRect, paint);
-
-            shadowDrawable.setOrientation(GradientDrawable.Orientation.TOP_BOTTOM);
-            shadowDrawable.setBounds(focusBackgroundRect.left, focusBackgroundRect.top - shadowHeight,
-                                     focusBackgroundRect.right, focusBackgroundRect.top);
-            shadowDrawable.draw(canvas);
-
-            shadowDrawable.setOrientation(GradientDrawable.Orientation.BOTTOM_TOP);
-            shadowDrawable.setBounds(focusBackgroundRect.left, focusBackgroundRect.bottom,
-                                     focusBackgroundRect.right, focusBackgroundRect.bottom + shadowHeight);
-            shadowDrawable.draw(canvas);
-        }
-
-        @Override
-        public void setAlpha(int alpha) {
-            paint.setAlpha(alpha);
-            backgroundDrawable.setAlpha(alpha);
-        }
-
-        @Override
-        public void setColorFilter(ColorFilter cf) {
-            paint.setColorFilter(cf);
-            backgroundDrawable.setColorFilter(cf);
-        }
-
-        @Override
-        protected void onBoundsChange(Rect bounds) {
-            backgroundDrawable.setBounds(bounds);
-            focusBackgroundRect.set(bounds.left, bounds.centerY() - itemHeightHalf,
-                                    bounds.right, bounds.centerY() + itemHeightHalf);
-        }
-
-        @Override
-        public int getOpacity() {
-            return paint.getAlpha() == 255
-                    ? PixelFormat.OPAQUE
-                    : PixelFormat.TRANSLUCENT;
-        }
-    }
 
     public interface OnSelectionListener {
         void onSelectionWillChange();

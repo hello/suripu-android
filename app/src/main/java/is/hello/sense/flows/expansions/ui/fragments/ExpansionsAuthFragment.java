@@ -1,6 +1,5 @@
 package is.hello.sense.flows.expansions.ui.fragments;
 
-import android.app.ActionBar;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
@@ -23,6 +22,7 @@ import is.hello.sense.api.sessions.ApiSessionManager;
 import is.hello.sense.flows.expansions.interactors.ExpansionDetailsInteractor;
 import is.hello.sense.flows.expansions.ui.views.ExpansionsAuthView;
 import is.hello.sense.mvp.presenters.PresenterFragment;
+import is.hello.sense.ui.activities.appcompat.SenseActivity;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.widget.CustomWebViewClient;
@@ -41,7 +41,7 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setHasOptionsMenu(true);
-        setActionBarHomeAsUpIndicator(R.drawable.app_style_ab_cancel);
+        setHomeAsUpIndicator(R.drawable.app_style_ab_cancel);
         addInteractor(expansionDetailsInteractor);
 
         lockOrientation(true);
@@ -95,7 +95,7 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
     @Override
     protected void onRelease() {
         super.onRelease();
-        setActionBarHomeAsUpIndicator(R.drawable.app_style_ab_up);
+        setHomeAsUpIndicator(R.drawable.app_style_ab_up);
         if(client != null){
             client.setListener(null);
             client = null;
@@ -144,18 +144,17 @@ public class ExpansionsAuthFragment extends PresenterFragment<ExpansionsAuthView
         return presenterView != null && presenterView.loadPreviousUrl();
     }
 
-    public void setActionBarHomeAsUpIndicator(@DrawableRes final int drawableRes) {
-        final ActionBar actionBar = this.getActivity().getActionBar();
-        if(actionBar != null) {
-            this.getActivity().getActionBar().setHomeAsUpIndicator(drawableRes);
-        }
-    }
-
     private void lockOrientation(final boolean lock) {
         if(getActivity() != null){
             getActivity().setRequestedOrientation(
                     lock ? ActivityInfo.SCREEN_ORIENTATION_LOCKED : ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
                                                  );
+        }
+    }
+
+    private void setHomeAsUpIndicator(@DrawableRes final int drawableRes) {
+        if( getActivity() instanceof SenseActivity) {
+            ((SenseActivity) getActivity()).setHomeAsUpIndicator(drawableRes);
         }
     }
 

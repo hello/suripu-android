@@ -7,11 +7,11 @@
 
     <TextView
         android:id="@+id/item_section_radio_text"
+        style="@style/Caption2.Secondary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
         android:layout_marginBottom="@dimen/x3"
-        android:textAppearance="@style/AppTheme.Text.SectionHeading.Large"/>
+        android:text="@string/app_name"/>
 
     <RadioGroup
         android:id="@+id/item_section_radio_group"
@@ -20,17 +20,19 @@
         android:orientation="horizontal">
 
         <RadioButton
+            style="@style/RadioButton"
             android:id="@+id/item_section_radio_button_left"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="@dimen/gap_xsmall"/>
+            android:padding="@dimen/x1"/>
 
         <RadioButton
+            style="@style/RadioButton"
             android:id="@+id/item_section_radio_button_right"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="@dimen/gap_xsmall"/>
+            android:padding="@dimen/x1"/>
     </RadioGroup>
 </LinearLayout>

@@ -3,26 +3,24 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/gap_medium"
-    android:paddingBottom="@dimen/gap_medium"
-    android:paddingLeft="@dimen/gap_outer"
-    android:paddingRight="@dimen/gap_outer"
+    android:paddingTop="@dimen/x2"
+    android:paddingBottom="@dimen/x2"
+    android:paddingLeft="@dimen/x3"
+    android:paddingRight="@dimen/x3"
     android:background="@drawable/selectable_dark_bounded">
 
     <TextView
         android:id="@+id/item_support_ticket_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/gap_small"
+        android:layout_marginBottom="@dimen/x1"
         android:ellipsize="end"
-        android:lineSpacingMultiplier="@dimen/line_multiple_body"
-        android:textAppearance="@style/AppTheme.Text.Body.MidSized" />
+        style="@style/Body1.Secondary"/>
 
     <TextView
         android:id="@+id/item_support_ticket_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/text_medium"
-        android:textAppearance="@style/AppTheme.Text.Body.Small"/>
+        style="@style/Body1.Primary"/>
 
 </LinearLayout>

@@ -13,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -209,7 +210,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         public void bind(final int position) {
             final Drawable chevron = getChevronDrawable();
             if(chevron != null) {
-                Drawables.setTintColor(chevron, ContextCompat.getColor(activity, R.color.light_accent));
+                Drawables.setTintColor(chevron, ContextCompat.getColor(activity, R.color.devices_adapter_chevron));
             }
             title.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, chevron, null);
         }
@@ -293,9 +294,9 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
             final SenseDevice device = (SenseDevice) getItem(position);
             lastSeen.setText(device.getLastUpdatedDescription(lastSeen.getContext()));
             if (device.isMissing()) {
-                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.destructive_accent));
+                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.error_text));
             } else {
-                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.text_dark));
+                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.secondary_text));
             }
 
             status1Label.setText(R.string.label_wifi);
@@ -312,13 +313,12 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 }
                 if (wiFiInfo.getSignalStrength() != null) {
                     @DrawableRes final int iconRes = wiFiInfo.getSignalStrength().icon;
-                    status1.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
+                    status1.setCompoundDrawablesRelativeWithIntrinsicBounds(Styles.tintDrawable(activity, iconRes, R.color.active_icon),
+                                                                            null, null, null);
                 } else {
                     status1.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
                 }
             }
-
-            Styles.setTextAppearance(status1, R.style.AppTheme_Text_Body);
 
             status2Label.setText(R.string.label_firmware_version);
             status2.setText(device.firmwareVersion);
@@ -377,9 +377,9 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
 
             lastSeen.setText(device.getLastUpdatedDescription(lastSeen.getContext()));
             if (device.isMissing()) {
-                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.destructive_accent));
+                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.error_text));
             } else {
-                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.text_dark));
+                lastSeen.setTextColor(ContextCompat.getColor(activity, R.color.secondary_text));
             }
 
             status1Label.setText(R.string.label_battery_level);
@@ -389,11 +389,6 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 state = BaseDevice.State.UNKNOWN;
             }
             status1.setText(state.nameRes);
-            if (state == BaseDevice.State.UNKNOWN) {
-                Styles.setTextAppearance(status1, R.style.AppTheme_Text_Body_Bold);
-            } else {
-                Styles.setTextAppearance(status1, R.style.AppTheme_Text_Body);
-            }
 
             status2Label.setText(R.string.label_color);
 
@@ -402,8 +397,14 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 color = SleepPillDevice.Color.UNKNOWN;
             }
             status2.setText(color.nameRes);
-            status2Label.setCompoundDrawablePadding(resources.getDimensionPixelSize(R.dimen.gap_medium));
-            status2Label.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.info_button_icon_small, 0);
+            status2Label.setCompoundDrawablePadding(resources.getDimensionPixelSize(R.dimen.x2));
+            status2Label.setCompoundDrawablesWithIntrinsicBounds(null,
+                                                                 null,
+                                                                 Styles.tintDrawable(activity,
+                                                                                     R.drawable.icon_info_24,
+                                                                                     R.color.primary_icon),
+                                                                 null);
+            status2Label.setGravity(Gravity.CENTER_VERTICAL);
 
             status3Label.setText(R.string.label_firmware_version);
             status3.setText(device.firmwareVersion);
@@ -414,7 +415,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 actionButton.setEnabled(true);
                 actionButton.setVisibility(View.VISIBLE);
             } else {
-                status3.setTextColor(ContextCompat.getColor(activity, R.color.standard));
+                status3.setTextColor(ContextCompat.getColor(activity, R.color.secondary_text));
                 actionButton.setVisibility(View.GONE);
                 actionButton.setEnabled(false);
             }

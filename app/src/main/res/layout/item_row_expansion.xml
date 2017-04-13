@@ -24,8 +24,7 @@
             android:layout_toEndOf="@+id/item_icon_iv"
             android:layout_marginStart="@dimen/x2"
             android:layout_centerVertical="true"
-            style="@style/AppTheme.Text.Body.Bold"
-            android:textColor="@color/text_color_selector_body_new"
+            style="@style/Body1.Primary"
             tools:text="Expansion Title"/>
 
         <TextView
@@ -36,8 +35,7 @@
             android:layout_marginStart="@dimen/x.5"
             android:layout_centerVertical="true"
             android:drawablePadding="@dimen/x.5"
-            style="@style/AppTheme.Text.Body.MidSized"
-            android:textColor="@color/text_color_selector_body_new"
+            style="@style/Body1.Secondary"
             tools:text="Status"/>
 
     </RelativeLayout>

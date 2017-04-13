@@ -20,6 +20,7 @@ public class AppSettingsView extends BindedPresenterView<ViewAppSettingsBinding>
     public static final int INDEX_SUPPORT = 1005;
     public static final int INDEX_SHARE = 1006;
     public static final int INDEX_DEBUG = 1007;
+    public static final int INDEX_NIGHT_MODE = 1008;
 
     private Listener listener = null;
 
@@ -30,6 +31,7 @@ public class AppSettingsView extends BindedPresenterView<ViewAppSettingsBinding>
         Views.setTimeOffsetOnClickListener(this.binding.viewAppSettingsNotifications, v -> onClicked(INDEX_NOTIFICATIONS));
         Views.setTimeOffsetOnClickListener(this.binding.viewAppSettingsExpansions, v -> onClicked(INDEX_EXPANSIONS));
         Views.setTimeOffsetOnClickListener(this.binding.viewAppSettingsVoice, v -> onClicked(INDEX_VOICE));
+        Views.setTimeOffsetOnClickListener(this.binding.viewAppSettingsNightMode, v -> onClicked(INDEX_NIGHT_MODE));
         Views.setTimeOffsetOnClickListener(this.binding.viewAppSettingsSupport, v -> onClicked(INDEX_SUPPORT));
         Views.setTimeOffsetOnClickListener(this.binding.viewAppSettingsShare, v -> onClicked(INDEX_SHARE));
         Views.setTimeOffsetOnClickListener(this.binding.viewAppSettingsDebug, v -> onClicked(INDEX_DEBUG));

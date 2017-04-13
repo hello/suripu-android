@@ -29,11 +29,11 @@ public class FadingEdgesItemDecoration extends PaddingItemDecoration {
         this.edges = edges;
 
         if (style == Style.ROUNDED_EDGES) {
-            this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.rounded_shadow_top_down, null);
-            this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.rounded_shadow_bottom_up, null);
+            this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_from_top_to_bottom, null);
+            this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_from_bottom_to_top, null);
         } else {
-            this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_top_down, null);
-            this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_bottom_up, null);
+            this.topEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_from_top_to_bottom, null);
+            this.bottomEdge = ResourcesCompat.getDrawable(resources, R.drawable.shadow_from_bottom_to_top, null);
         }
     }
 
@@ -48,7 +48,7 @@ public class FadingEdgesItemDecoration extends PaddingItemDecoration {
 
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
-        if(parent == null || parent.getAdapter() == null){
+        if (parent == null || parent.getAdapter() == null) {
             return;
         }
         final int itemCount = parent.getAdapter().getItemCount();

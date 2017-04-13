@@ -7,24 +7,22 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/gap_outer"
-    android:background="@color/background_onboarding"
+    android:padding="@dimen/x3"
+    android:background="@color/background_card"
     android:clickable="true">
 
     <TextView
         android:id="@+id/fragment_onboarding_register_weight_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?attr/senseTextAppearanceHeading"
-        android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+        style="@style/Title2.Primary"
         android:text="@string/title_register_weight"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
-        android:textAppearance="?attr/senseTextAppearanceSubheading"
-        android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
+        android:layout_marginTop="@dimen/x1"
+        style="@style/Body1.Secondary"
         android:text="@string/onboarding_register_info_explanation"/>
 
     <Space
@@ -36,8 +34,9 @@
         android:id="@+id/fragment_onboarding_register_weight_scale_reading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/gap_medium"
-        android:textAppearance="@style/AppTheme.Text.ScaleReading"
+        android:layout_marginBottom="@dimen/x2"
+        style="@style/Display4"
+        android:textColor="@color/scale_display_text"
         android:gravity="center" />
 
     <is.hello.sense.ui.widget.ScaleView
@@ -58,16 +57,16 @@
         android:id="@+id/fragment_onboarding_skip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
+        android:layout_marginTop="@dimen/x1"
         android:text="@string/action_skip"
-        style="@style/AppTheme.Button.Borderless.Accent.Bounded.Lowercase"/>
+        style="@style/Button.Flat"/>
 
     <Button
         android:id="@+id/fragment_onboarding_next"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/gap_small"
+        android:layout_marginTop="@dimen/x1"
         android:text="@string/action_continue"
-        style="@style/AppTheme.Button.Rounded"/>
+        style="@style/Button.Raised"/>
 
 </LinearLayout>

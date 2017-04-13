@@ -31,9 +31,20 @@ import is.hello.sense.ui.fragments.updating.SelectWifiNetworkFragment;
 )
 public class SettingsPairSenseModule {
     private final boolean shouldLinkAccount;
+    private final boolean shouldUseToolBar;
 
-    public SettingsPairSenseModule(final boolean shouldLinkAccount) {
+    public static SettingsPairSenseModule newPairOnlyInstance() {
+        return new SettingsPairSenseModule(true, true);
+    }
+
+    public static SettingsPairSenseModule newEditWifiOnlyInstance() {
+        return new SettingsPairSenseModule(false, false);
+    }
+
+    public SettingsPairSenseModule(final boolean shouldLinkAccount,
+                                   final boolean shouldUseToolBar) {
         this.shouldLinkAccount = shouldLinkAccount;
+        this.shouldUseToolBar = shouldUseToolBar;
     }
 
     @Provides
@@ -54,13 +65,15 @@ public class SettingsPairSenseModule {
                                                 apiService,
                                                 pairSenseInteractor,
                                                 preferencesInteractor,
-                                                shouldLinkAccount);
+                                                shouldLinkAccount,
+                                                shouldUseToolBar);
     }
 
     @Provides
     @Singleton
     BaseSelectWifiNetworkPresenter providesSelectWifiNetworkPresenter(final HardwareInteractor interactor) {
-        return new SettingsSelectWifiNetworkPresenter(interactor);
+        return new SettingsSelectWifiNetworkPresenter(interactor,
+                                                      shouldUseToolBar);
     }
 
     @Provides

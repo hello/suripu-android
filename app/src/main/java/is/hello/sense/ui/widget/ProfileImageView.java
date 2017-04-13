@@ -11,7 +11,6 @@ import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -25,7 +24,7 @@ import is.hello.sense.util.StateSafeExecutor;
 
 public class ProfileImageView extends FrameLayout implements Target {
 
-    private final ImageButton plusButton;
+    private final ImageView plusButton;
     private final ImageView profileImage;
     private final ProgressBar progressBar;
 
@@ -41,8 +40,9 @@ public class ProfileImageView extends FrameLayout implements Target {
         super(context, attrs, defStyleAttr);
         final View view = LayoutInflater.from(context).inflate(R.layout.item_profile_picture,this,false);
         this.profileImage = (ImageView) view.findViewById(R.id.item_profile_picture_image);
-        this.plusButton = (ImageButton) view.findViewById(R.id.item_profile_picture_button);
+        this.plusButton = (ImageView) view.findViewById(R.id.item_profile_picture_button);
         this.progressBar = (ProgressBar) view.findViewById(R.id.item_profile_progress_bar);
+
         this.addView(view);
     }
 
@@ -64,7 +64,8 @@ public class ProfileImageView extends FrameLayout implements Target {
         setButtonClickListener(null, listener);
     }
 
-    public void setButtonClickListener(@Nullable final StateSafeExecutor stateSafeExecutor, @NonNull final OnClickListener listener){
+    public void setButtonClickListener(@Nullable final StateSafeExecutor stateSafeExecutor,
+                                       @NonNull final OnClickListener listener){
         plusButton.setHapticFeedbackEnabled(true);
         Views.setSafeOnClickListener(plusButton, stateSafeExecutor, v -> {
             v.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
@@ -73,7 +74,8 @@ public class ProfileImageView extends FrameLayout implements Target {
     }
 
     @Override
-    public void onBitmapLoaded(@NonNull final Bitmap bitmap, @NonNull final Picasso.LoadedFrom from) {
+    public void onBitmapLoaded(@NonNull final Bitmap bitmap,
+                               @NonNull final Picasso.LoadedFrom from) {
         progressBar.setVisibility(GONE);
         profileImage.setImageDrawable(new BitmapDrawable(getResources(), bitmap));
     }

@@ -13,6 +13,7 @@ import is.hello.sense.util.Analytics;
 public class SettingsConnectWifiPresenter extends BaseConnectWifiPresenter {
 
     private final boolean shouldLinkAccount;
+    private final boolean shouldUseToolbar;
 
     public SettingsConnectWifiPresenter(
             @NonNull final HardwareInteractor hardwareInteractor,
@@ -20,9 +21,16 @@ public class SettingsConnectWifiPresenter extends BaseConnectWifiPresenter {
             @NonNull final ApiService apiService,
             @NonNull final PairSenseInteractor pairSenseInteractor,
             @NonNull final PreferencesInteractor preferencesInteractor,
-            final boolean shouldLinkAccount) {
+            final boolean shouldLinkAccount,
+            final boolean shouldUseToolbar) {
         super(hardwareInteractor, devicesInteractor, apiService, pairSenseInteractor, preferencesInteractor);
         this.shouldLinkAccount = shouldLinkAccount;
+        this.shouldUseToolbar = shouldUseToolbar;
+    }
+
+    @Override
+    protected boolean shouldUseToolbar() {
+        return shouldUseToolbar;
     }
 
     @Override

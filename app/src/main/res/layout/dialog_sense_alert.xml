@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:senseCornerRadius="@dimen/card_large_corner_radius">
+    app:senseCornerRadius="@dimen/medium_radius">
 
     <include layout="@layout/dialog_sense_alert_content" />
 

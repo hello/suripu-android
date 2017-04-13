@@ -67,7 +67,6 @@ public class BottomSheetDialogFragment extends SenseDialogFragment implements Se
                 bottomSheet.setTitle(null);
             }
             bottomSheet.setWantsDividers(getArguments().getBoolean(ARG_WANTS_DIVIDERS, false));
-            bottomSheet.setWantsBigTitle(getArguments().getBoolean(ARG_WANTS_BIG_TITLE, false));
             ArrayList<Option> options = getArguments().getParcelableArrayList(ARG_OPTIONS);
             if (options != null) {
                 bottomSheet.addOptions(options);
@@ -81,9 +80,6 @@ public class BottomSheetDialogFragment extends SenseDialogFragment implements Se
         getArguments().putBoolean(ARG_WANTS_DIVIDERS, wantsDividers);
     }
 
-    public void setWantsBigTitle(boolean wantsBigTitle) {
-        getArguments().putBoolean(ARG_WANTS_BIG_TITLE, wantsBigTitle);
-    }
 
     //endregion
 

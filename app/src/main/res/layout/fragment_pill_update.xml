@@ -21,8 +21,7 @@
             android:layout_marginLeft="@dimen/x3"
             android:layout_marginRight="@dimen/x3"
             android:layout_marginBottom="@dimen/x2"
-            android:textAppearance="?attr/senseTextAppearanceHeading"
-            android:lineSpacingMultiplier="@dimen/line_multiple_heading"
+            style="@style/Title2.Primary"
             android:text="@string/title_update_sleep_pill"/>
 
         <TextView
@@ -31,8 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/x3"
             android:layout_marginRight="@dimen/x3"
-            android:textAppearance="?attr/senseTextAppearanceSubheading"
-            android:lineSpacingMultiplier="@dimen/line_multiple_subheading"
+            style="@style/Body1.Secondary"
             android:text="@string/info_update_sleep_pill"/>
 
         <Space
@@ -55,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            style="@style/AppTheme.ProgressBar.Horizontal"/>
+            style="@style/ProgressBar.Horizontal"/>
 
         <TextView
             android:id="@+id/fragment_update_pill_status"
@@ -66,8 +64,7 @@
             android:layout_marginRight="@dimen/x3"
             android:layout_marginBottom="@dimen/x3"
             android:gravity="center"
-            android:textAppearance="@style/AppTheme.Text.Body.MidSized.Dim"
-            android:textColor="@color/text_detail_grey"
+            style="@style/Body1.Secondary"
             android:text="@string/label_searching_for_pill"/>
 
         <Button
@@ -79,7 +76,7 @@
             android:layout_marginTop="@dimen/x3"
             android:layout_marginBottom="@dimen/x1"
             android:text="@string/action_try_again_later"
-            style="@style/AppTheme.Button.Borderless.Accent.Bounded.Lowercase"
+            style="@style/Button.Flat"
             android:visibility="gone"/>
 
         <Button
@@ -90,7 +87,7 @@
             android:layout_marginRight="@dimen/x3"
             android:layout_marginBottom="@dimen/x3"
             android:text="@string/action_retry"
-            style="@style/AppTheme.Button.Rounded"
+            style="@style/Button.Raised"
             android:visibility="gone"/>
 
     </LinearLayout>

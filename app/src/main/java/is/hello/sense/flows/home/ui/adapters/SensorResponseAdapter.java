@@ -1,5 +1,6 @@
 package is.hello.sense.flows.home.ui.adapters;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -25,6 +26,7 @@ import is.hello.sense.api.model.v2.sensors.SensorType;
 import is.hello.sense.databinding.ItemSensorGroupBinding;
 import is.hello.sense.databinding.ItemWelcomeCardBinding;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
+import is.hello.sense.ui.widget.ImageTextView;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphDrawable;
 import is.hello.sense.ui.widget.graphing.sensors.SensorGraphView;
 import is.hello.sense.ui.widget.util.Views;
@@ -35,14 +37,12 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     public static final int VIEW_ID_MESSAGE = 1;
     public static final int VIEW_SENSOR_GROUP = 2;
     public static final int VIEW_WELCOME_CARD = 3;
-    public static final int VIEW_SENSE_MISSING = 4;
 
 
     private final LayoutInflater inflater;
     private final int graphHeight;
     private boolean messageWantsSenseIcon;
     private boolean showWelcomeCard = false;
-    private boolean showSenseMissingCard = false;
     /**
      * Groups lists of sensors mapped to the index of first sensor in normal sensor list
      */
@@ -79,7 +79,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     //region adapter overrides
     @Override
     public Sensor getItem(final int position) {
-        if (this.messageBody != null || this.showSenseMissingCard) {
+        if (this.messageBody != null) {
             return super.getItem(position);
         }
         return super.getItem(position - (this.showWelcomeCard ? 1 : 0));
@@ -89,8 +89,6 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     public int getItemViewType(final int position) {
         if (this.messageBody != null) {
             return VIEW_ID_MESSAGE;
-        } else if (this.showSenseMissingCard) {
-            return VIEW_SENSE_MISSING;
         } else if (this.showWelcomeCard && position == 0) {
             return VIEW_WELCOME_CARD;
         } else if (this.sensorGroupArray.get(position) != null) {
@@ -101,7 +99,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
     @Override
     public int getItemCount() {
-        if (this.messageBody != null || this.showSenseMissingCard) {
+        if (this.messageBody != null) {
             return 1;
         }
         final int welcomeCardCount = this.showWelcomeCard ? 1 : 0;
@@ -119,7 +117,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
                 case PARTICULATES:
                 case CO2:
                 case TVOC:
-                    if(firstAirQualitySensorPosition == RecyclerView.NO_POSITION) {
+                    if (firstAirQualitySensorPosition == RecyclerView.NO_POSITION) {
                         firstAirQualitySensorPosition = normalSensors.size();
                         normalSensors.add(sensor);
                     }
@@ -134,16 +132,16 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     }
 
     private void addSensorToGroupAt(final int key,
-                                    @NonNull final Sensor sensor){
+                                    @NonNull final Sensor sensor) {
         final List<Sensor> group = this.sensorGroupArray.get(key, new ArrayList<>());
         group.add(sensor);
         this.sensorGroupArray.put(key, group);
     }
 
-    private void removeSingleSensorGroupsAt(@NonNull final int ... keys) {
-        for(final int key : keys) {
+    private void removeSingleSensorGroupsAt(@NonNull final int... keys) {
+        for (final int key : keys) {
             final List<Sensor> sensors = this.sensorGroupArray.get(key);
-            if(sensors != null && sensors.size() <= 1) {
+            if (sensors != null && sensors.size() <= 1) {
                 this.sensorGroupArray.remove(key);
             }
         }
@@ -153,8 +151,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     public BaseViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         switch (viewType) {
             case VIEW_ID_MESSAGE:
-            case VIEW_SENSE_MISSING:
-                return new ErrorViewHolder(this.inflater.inflate(R.layout.temp_item_message_card, parent, false));
+                return new ErrorViewHolder(this.inflater.inflate(R.layout.item_message_card, parent, false));
             case VIEW_SENSOR:
                 return new SensorViewHolder(SensorResponseAdapter.this.inflater.inflate(R.layout.item_sensor_response, parent, false));
             case VIEW_SENSOR_GROUP:
@@ -174,12 +171,14 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     //endregion
 
     //region adapter helpers
-    public void showSenseMissingCard() {
-        clear();
-        dismissMessage();
+    public void showSenseMissingCard(@NonNull final Context context) {
         this.showWelcomeCard = false;
-        this.showSenseMissingCard = true;
-        notifyDataSetChanged();
+        displayMessage(true,
+                       0,
+                       context.getString(R.string.error_room_conditions_no_sense),
+                       R.string.action_pair_sense,
+                       v -> SensorResponseAdapter.this.dispatchErrorItemClicked()
+                      );
     }
 
     public void displayMessage(final boolean messageWantsSenseIcon,
@@ -197,7 +196,6 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
     }
 
     public void dismissMessage() {
-        this.showSenseMissingCard = false;
         this.messageTitle = 0;
         this.messageBody = null;
         this.messageActionTitle = 0;
@@ -235,7 +233,7 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
         public WelcomeCardViewHolder(@NonNull final View itemView) {
             super(itemView);
             final ItemWelcomeCardBinding binding = DataBindingUtil.bind(itemView);
-            binding.itemWelcomeImage.setImageResource(R.drawable.conditions_welcome);
+            binding.itemWelcomeImage.setImageResource(R.drawable.feature_sensors);
             binding.itemWelcomeTitle.setText(R.string.room_conditions_welcome_title);
             binding.itemWelcomeMessage.setText(R.string.room_conditions_welcome_message);
         }
@@ -243,56 +241,48 @@ public class SensorResponseAdapter extends ArrayRecyclerAdapter<Sensor, SensorRe
 
     private class ErrorViewHolder extends BaseViewHolder {
         final View view;
-        final TextView titleTextView;
+        final ImageTextView titleImageTextView;
         final TextView messageTextView;
         final ImageView imageView;
         final Button button;
 
         public ErrorViewHolder(@NonNull final View view) {
             super(view);
-            this.titleTextView = (TextView) view.findViewById(R.id.item_message_card_title);
+            this.titleImageTextView = (ImageTextView) view.findViewById(R.id.item_message_card_image_text);
             this.messageTextView = (TextView) view.findViewById(R.id.item_message_card_message);
             this.view = view;
             this.imageView = (ImageView) view.findViewById(R.id.item_message_card_image);
             this.button = (Button) view.findViewById(R.id.item_message_card_action);
-            if (SensorResponseAdapter.this.showSenseMissingCard) {
-                this.titleTextView.setVisibility(View.GONE);
-                this.imageView.setImageResource(R.drawable.illustration_no_sense);
-                this.messageTextView.setText(R.string.error_room_conditions_no_sense);
-                this.button.setText(R.string.action_pair_sense);
-                this.button.setOnClickListener(v -> SensorResponseAdapter.this.dispatchErrorItemClicked());
-
-            }
         }
 
         @Override
         public void bind(final int position) {
             super.bind(position);
-            if (!SensorResponseAdapter.this.showSenseMissingCard) {
-                if (SensorResponseAdapter.this.messageTitle != 0) {
-                    this.titleTextView.setText(SensorResponseAdapter.this.messageTitle);
-                    this.titleTextView.setVisibility(View.VISIBLE);
-                } else {
-                    this.titleTextView.setVisibility(View.GONE);
-                }
 
-                final ImageView image = (ImageView) this.view.findViewById(R.id.item_message_card_image);
-                if (SensorResponseAdapter.this.messageWantsSenseIcon) {
-                    image.setImageResource(R.drawable.illustration_no_sense);
-                    image.setVisibility(View.VISIBLE);
-                } else {
-                    image.setVisibility(View.GONE);
-                }
-
-                final TextView messageText = (TextView) this.view.findViewById(R.id.item_message_card_message);
-                messageText.setText(SensorResponseAdapter.this.messageBody);
-
-                final Button action = (Button) this.view.findViewById(R.id.item_message_card_action);
-                action.setText(SensorResponseAdapter.this.messageActionTitle);
-                if (SensorResponseAdapter.this.messageActionOnClick != null) {
-                    Views.setSafeOnClickListener(action, SensorResponseAdapter.this.messageActionOnClick);
-                }
+            if (SensorResponseAdapter.this.messageTitle != 0) {
+                this.titleImageTextView.setText(SensorResponseAdapter.this.messageTitle);
+                this.titleImageTextView.setVisibility(View.VISIBLE);
+            } else {
+                this.titleImageTextView.setVisibility(View.GONE);
             }
+
+            final ImageView image = (ImageView) this.view.findViewById(R.id.item_message_card_image);
+            if (SensorResponseAdapter.this.messageWantsSenseIcon) {
+                image.setImageResource(R.drawable.empty_no_sense_paired);
+                image.setVisibility(View.VISIBLE);
+            } else {
+                image.setVisibility(View.GONE);
+            }
+
+            final TextView messageText = (TextView) this.view.findViewById(R.id.item_message_card_message);
+            messageText.setText(SensorResponseAdapter.this.messageBody);
+
+            final Button action = (Button) this.view.findViewById(R.id.item_message_card_action);
+            action.setText(SensorResponseAdapter.this.messageActionTitle);
+            if (SensorResponseAdapter.this.messageActionOnClick != null) {
+                Views.setSafeOnClickListener(action, SensorResponseAdapter.this.messageActionOnClick);
+            }
+
         }
     }
 

@@ -1,13 +1,10 @@
 package is.hello.sense.flows.home.ui.fragments;
 
 
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 import is.hello.sense.FragmentTest;
 import is.hello.sense.R;
@@ -16,7 +13,6 @@ import is.hello.sense.api.model.v2.sensors.SensorResponse;
 import is.hello.sense.api.model.v2.sensors.SensorStatus;
 import is.hello.sense.api.model.v2.sensors.SensorsDataResponse;
 import is.hello.sense.flows.home.ui.adapters.SensorResponseAdapter;
-import is.hello.sense.interactors.PreferencesInteractor;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -71,7 +67,7 @@ public class RoomConditionsPresenterFragmentTests extends FragmentTest<RoomCondi
         final SensorResponse sensorResponse = new SensorResponse(sensors, status);
         fragment.bindConditions(sensorResponse);
         assertEquals(1, fragment.adapter.getItemCount());
-        assertEquals(SensorResponseAdapter.VIEW_SENSE_MISSING, fragment.adapter.getItemViewType(0));
+        assertEquals(SensorResponseAdapter.VIEW_ID_MESSAGE, fragment.adapter.getItemViewType(0));
     }
 
     @Test
@@ -81,31 +77,4 @@ public class RoomConditionsPresenterFragmentTests extends FragmentTest<RoomCondi
         assertEquals(1, fragment.adapter.getItemCount());
         assertEquals(SensorResponseAdapter.VIEW_WELCOME_CARD, fragment.adapter.getItemViewType(0));
     }
-
-    @Test
-    public void sensorViewHolderBindsCorrectly() {
-       fragment.preferencesInteractor
-                .edit()
-                .putBoolean(PreferencesInteractor.USE_CELSIUS, true)
-                .commit();
-
-        final List<Sensor> sensors = Sensor.generateTestCaseList();
-        fragment.bindDataResponse(new SensorsDataResponse(), sensors);
-
-        final SensorResponseAdapter.SensorViewHolder viewHolder = fragment.adapter.new SensorViewHolder(
-                fragment.getActivity().getLayoutInflater().inflate(R.layout.item_sensor_response, Mockito.any(), false));
-
-        viewHolder.bind(0);
-        assertEquals("0°", viewHolder.value.getText().toString());
-        viewHolder.bind(1);
-        assertEquals("1%", viewHolder.value.getText().toString());
-        viewHolder.bind(2);
-        assertEquals("2.0", viewHolder.value.getText().toString());
-        assertEquals("lx", viewHolder.descriptor.getText().toString());
-        viewHolder.bind(3);
-        assertEquals("3", viewHolder.value.getText().toString());
-        assertEquals("µg/m³", viewHolder.descriptor.getText().toString());
-    }
-
-
 }

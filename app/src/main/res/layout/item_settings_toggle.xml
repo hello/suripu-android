@@ -28,14 +28,12 @@
             android:layout_marginTop="@dimen/x1"
             android:layout_marginBottom="@dimen/x1"
             android:gravity="start"
-            android:textAppearance="@style/AppTheme.Text.Body"
+            style="@style/Body1.Primary"
             tools:text="@string/app_name"/>
 
         <include
             android:id="@+id/item_settings_toggle_check_box"
             layout="@layout/widget_switch"
-            android:layout_width="@dimen/widget_switch_width"
-            android:layout_height="@dimen/widget_switch_height"
             android:clickable="false"
             android:focusable="false"/>
 

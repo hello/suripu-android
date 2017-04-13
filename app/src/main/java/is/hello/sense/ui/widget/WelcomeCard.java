@@ -33,8 +33,8 @@ public class WelcomeCard extends FrameLayout {
                        final AttributeSet attrs,
                        final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        this.binding = DataBindingUtil.inflate(LayoutInflater.from(context),
-                                               R.layout.item_welcome_card_close, this, true);
+        LayoutInflater.from(context).inflate(R.layout.item_welcome_card_close, this);
+        this.binding = DataBindingUtil.bind(getChildAt(0));
     }
 
     @Override
@@ -57,7 +57,6 @@ public class WelcomeCard extends FrameLayout {
 
     public void showCloseButton(final boolean isVisible) {
         if (isVisible) {
-            this.binding.getRoot().setBackgroundResource(R.drawable.raised_item_normal);
             this.binding.itemWelcomeCloseDivider.setVisibility(VISIBLE);
             this.binding.itemWelcomeClose.setVisibility(VISIBLE);
         } else {

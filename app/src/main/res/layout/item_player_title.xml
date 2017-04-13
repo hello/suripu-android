@@ -33,9 +33,9 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:gravity="center"
-            style="@style/AppTheme.Text.Player.Title"
-            android:paddingBottom="@dimen/gap_card_content"
-            android:paddingTop="@dimen/gap_card_content"
+            style="@style/Body2.Primary"
+            android:paddingBottom="@dimen/x2"
+            android:paddingTop="@dimen/x2"
             />
 
         <RelativeLayout

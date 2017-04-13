@@ -17,8 +17,10 @@
         android:required="true"/>
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
@@ -59,7 +61,7 @@
             android:name=".flows.home.ui.activities.HomeActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.AppCompat.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar.NoPreview">
             <intent-filter>
                 <action android:name="android.intent.action.SHOW_ALARMS"/>
 
@@ -76,28 +78,29 @@
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Onboarding"
+            android:theme="@style/AppTheme.NoActionBar.OnboardingActivity"
             android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".ui.activities.PillUpdateActivity"
             android:launchMode="singleTop"
             android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Onboarding"
+            android:theme="@style/AppTheme.NoActionBar.OnboardingActivity"
             android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".ui.activities.SenseUpgradeActivity"
             android:launchMode="singleTop"
             android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Onboarding"
+            android:theme="@style/AppTheme.NoActionBar.OnboardingActivity"
             android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".flows.sensordetails.ui.activities.SensorDetailActivity"
-            android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"
+            android:theme="@style/AppTheme"/>
         <activity
             android:name=".flows.smartalarm.ui.activities.SmartAlarmDetailActivity"
-            android:label="@string/app_name">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.SET_ALARM"/>
                 <action android:name="android.intent.onClick.SET_ALARM"/>
@@ -108,28 +111,29 @@
         <activity
             android:name=".ui.activities.SessionLogViewerActivity"
             android:label="Session Log"
-            android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+            android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
+            android:theme="@style/AppTheme"/>
         <activity
             android:name=".ui.fragments.VideoPlayerActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
-            android:theme="@style/AppTheme.NoActionBar.Black"/>
+            android:theme="@style/AppTheme.NoActionBar.VideoPlayer"/>
         <activity
             android:name=".ui.common.FragmentNavigationActivity"
-            android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+            android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
+            android:theme="@style/AppTheme.AppSettingsActivity"/>
         <activity
             android:name=".flows.settings.ui.activities.AppSettingsActivity"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"
-            android:theme="@style/AppTheme.AppCompat.AppSettingsActivity"/>
+            android:theme="@style/AppTheme.AppSettingsActivity"/>
 
         <activity
-            android:name=".ui.activities.HardwareFragmentActivity"
-            android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"/>
-        <activity
             android:name=".ui.activities.ListActivity"
-            android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"
+            android:theme="@style/AppTheme.AppSettingsActivity"/>
         <activity
             android:name=".ui.activities.SettingsActivity"
-            android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+            android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
+            android:theme="@style/AppTheme.AppSettingsActivity"/>
         <activity
             android:name=".flows.expansions.ui.activities.ExpansionSettingsActivity"
             android:label="@string/expansion_list_title"
@@ -142,19 +146,27 @@
             android:theme="@style/AppTheme.Expansions"/>
         <activity
             android:name=".flows.voicecommands.ui.activities.VoiceCommandActivity"
-            android:parentActivityName=".flows.home.ui.activities.HomeActivity"/>
+            android:parentActivityName=".flows.home.ui.activities.HomeActivity"
+            android:theme="@style/AppTheme.AppSettingsActivity"/>
 
         <activity
             android:name=".flows.notification.ui.activities.NotificationActivity"
             android:label="@string/label_notifications"
             android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
-            android:theme="@style/AppTheme.AppCompat.NotificationActivity"/>
+            android:theme="@style/AppTheme.NotificationActivity"/>
 
         <activity
             android:name=".flows.generic.ui.activities.SearchListActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.AppCompat.SearchListActivity">
+            android:theme="@style/AppTheme.SearchListActivity">
         </activity>
+
+        <activity
+            android:name=".flows.nightmode.ui.activities.NightModeActivity"
+            android:label="@string/action_night_mode"
+            android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
+            android:theme="@style/AppTheme.NightModeActivity"
+            />
 
 
         <activity

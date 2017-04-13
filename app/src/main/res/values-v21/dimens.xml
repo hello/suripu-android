@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Switch -->
-
-    <dimen name="widget_switch_width">44dp</dimen>
-    <dimen name="widget_switch_height">28dp</dimen>
-</resources>

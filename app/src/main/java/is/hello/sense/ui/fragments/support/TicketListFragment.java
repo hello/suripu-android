@@ -56,7 +56,7 @@ public class TicketListFragment extends InjectionFragment implements AdapterView
 
         final ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
-        listView.setDivider(ResourcesCompat.getDrawable(getResources(), R.drawable.divider_horizontal_inset, null));
+        listView.setDivider(ResourcesCompat.getDrawable(getResources(), R.drawable.divider_horizontal_inset_large, null));
 
         this.adapter = new TicketAdapter(getActivity());
         listView.setAdapter(adapter);

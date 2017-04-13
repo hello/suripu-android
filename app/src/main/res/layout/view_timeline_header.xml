@@ -21,7 +21,8 @@
             android:layout_marginBottom="@dimen/x1"
             android:layout_centerInParent="true"
             android:importantForAccessibility="no"
-            android:textAppearance="@style/AppTheme.Text.Score.Big" />
+            android:textAppearance="@style/Display4"
+            />
 
     </RelativeLayout>
 
@@ -34,7 +35,7 @@
         android:paddingTop="@dimen/x1"
         android:paddingBottom="@dimen/x1"
         android:orientation="vertical"
-        android:background="@drawable/selectable_dark_bounded">
+        >
 
         <TextView
             android:id="@+id/view_timeline_header_card_contents"
@@ -47,8 +48,7 @@
             android:minLines="2"
             android:ellipsize="end"
             android:gravity="center"
-            android:textAppearance="@style/Body.New"
-            android:lineSpacingMultiplier="@dimen/line_multiple_body_small"
+            style="@style/Body1.Primary"
             android:text="@string/missing_data_placeholder"/>
 
         <TextView
@@ -60,14 +60,14 @@
             android:layout_marginEnd="@dimen/x3"
             android:gravity="center"
             android:text="@string/label_sleep_summary"
-            android:textAppearance="@style/AppTheme.Text.Timeline.Summary.Title"/>
+            style="@style/Button.Flat.Link"/>
 
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/x4"
-        android:background="@color/background_light"
+        android:background="@color/background_card"
         android:layout_below="@id/view_timeline_header_card"
         android:layout_alignParentBottom="true"/>
 </merge>

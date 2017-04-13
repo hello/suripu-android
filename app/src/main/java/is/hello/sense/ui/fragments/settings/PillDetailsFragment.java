@@ -62,12 +62,12 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
         showActions();
 
         if(shouldShowUpdateFirmwareAction()){
-            addDeviceAction(R.drawable.icon_settings_update, R.string.action_update_firmware, this::updateFirmware);
+            addDeviceAction(R.drawable.icon_refresh_24, R.string.action_update_firmware, this::updateFirmware);
         }
         if (shouldShowReplaceBatteryAction()) {
-            addDeviceAction(R.drawable.icon_settings_battery, R.string.action_replace_battery, this::replaceBattery);
+            addDeviceAction(R.drawable.icon_battery_24, R.string.action_replace_battery, this::replaceBattery);
         }
-        addDeviceAction(R.drawable.icon_settings_advanced, R.string.title_advanced, this::showAdvancedOptions);
+        addDeviceAction(R.drawable.icon_advanced_24, R.string.title_advanced, this::showAdvancedOptions);
 
         if (device.hasLowBattery()) {
             final TroubleshootingAlert alert = new TroubleshootingAlert()
@@ -166,11 +166,11 @@ public class PillDetailsFragment extends DeviceDetailsFragment<SleepPillDevice> 
     public void showAdvancedOptions() {
         Analytics.trackEvent(Analytics.Backside.EVENT_PILL_ADVANCED, null);
 
-        ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
+        final ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
         options.add(
             new SenseBottomSheet.Option(OPTION_ID_REPLACE_PILL)
                     .setTitle(R.string.action_replace_sleep_pill)
-                    .setTitleColor(getResources().getColor(R.color.light_accent))
+                    .setTitleColor(getResources().getColor(R.color.link_text_selector))
                     .setDescription(R.string.description_replace_sleep_pill)
         );
         BottomSheetDialogFragment advancedOptions = BottomSheetDialogFragment.newInstance(R.string.title_advanced, options);

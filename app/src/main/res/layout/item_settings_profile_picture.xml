@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/gap_outer">
+    android:layout_marginBottom="@dimen/x3">
 
     <is.hello.sense.ui.widget.ProfileImageView
         android:id="@+id/item_profile_picture"
