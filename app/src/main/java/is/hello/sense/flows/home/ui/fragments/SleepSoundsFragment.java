@@ -29,7 +29,7 @@ import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SleepSoundsInteractor;
 import is.hello.sense.interactors.SleepSoundsStatusInteractor;
-import is.hello.sense.mvp.presenters.HomeControllerPresenterFragment;
+import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
 import is.hello.sense.ui.activities.ListActivity;
 import is.hello.sense.ui.adapter.SleepSoundsAdapter;
@@ -45,7 +45,7 @@ import rx.subscriptions.Subscriptions;
 import static is.hello.sense.util.Constants.EMPTY_STRING;
 
 @NotTested
-public class SleepSoundsFragment extends HomeControllerPresenterFragment<SleepSoundsView>
+public class SleepSoundsFragment extends ControllerPresenterFragment<SleepSoundsView>
         implements
         SleepSoundsAdapter.InteractionListener,
         SleepSoundsAdapter.Retry,

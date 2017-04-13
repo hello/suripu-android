@@ -96,13 +96,19 @@ public class HomeActivity extends FragmentNavigationActivity
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        this.nightModeInteractor.updateIfAuto();
+    }
+
+    @Override
     protected void onCreate(@NonNull final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initialConfigMode = nightModeInteractor.getConfigMode(getResources());
         final int initialNightMode = AppCompatDelegate.getDefaultNightMode();
         bindAndSubscribe(nightModeInteractor.currentNightMode,
                          mode -> {
-                             if (mode != initialNightMode
+                             if (AppCompatDelegate.getDefaultNightMode() != initialNightMode
                                      || nightModeInteractor.requiresRecreate(initialConfigMode, getResources())) {
                                  recreate();
                              }
@@ -159,7 +165,6 @@ public class HomeActivity extends FragmentNavigationActivity
 
     @Override
     public void recreate() {
-        super.recreate();
         final HomePresenterFragment fragment = getHomePresenterFragment();
         final int indexPosition;
         if (fragment == null) {

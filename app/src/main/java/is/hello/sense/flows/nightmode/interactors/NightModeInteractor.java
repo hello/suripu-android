@@ -48,12 +48,9 @@ public class NightModeInteractor extends ValueInteractor<Integer> {
 
     @Override
     protected Observable<Integer> provideUpdateObservable() {
-        @AppCompatDelegate.NightMode final int mode = getCurrentMode();
-        if (mode != AppCompatDelegate.MODE_NIGHT_AUTO) {
-            return Observable.just(mode);
-        }
-        return Observable.just(isNightTime() ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-    }
+            return Observable.just(getCurrentMode());
+
+     }
 
     @AppCompatDelegate.NightMode
     public Integer getCurrentMode() {

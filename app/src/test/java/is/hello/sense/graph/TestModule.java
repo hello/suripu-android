@@ -65,7 +65,6 @@ import is.hello.sense.interactors.questions.ApiQuestionProviderTests;
 import is.hello.sense.interactors.questions.ReviewQuestionProviderTests;
 import is.hello.sense.interactors.settings.SettingsPairSenseInteractorTests;
 import is.hello.sense.interactors.upgrade.UpgradePairSenseInteractorTests;
-import is.hello.sense.mvp.presenters.HomeControllerPresenterFragment;
 import is.hello.sense.notifications.TestNotificationModule;
 import is.hello.sense.rating.LocalUsageTrackerTests;
 import is.hello.sense.ui.adapter.SmartAlarmAdapterTests;

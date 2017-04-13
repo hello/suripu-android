@@ -35,7 +35,7 @@ import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.QuestionsInteractor;
 import is.hello.sense.interactors.UnreadStateInteractor;
 import is.hello.sense.interactors.questions.ReviewQuestionProvider;
-import is.hello.sense.mvp.presenters.HomeControllerPresenterFragment;
+import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.rating.LocalUsageTracker;
 import is.hello.sense.ui.adapter.InsightsAdapter;
 import is.hello.sense.ui.common.UserSupport;
@@ -53,7 +53,7 @@ import is.hello.sense.util.Share;
 import rx.Observable;
 
 @NotTested //enough
-public class InsightsFragment extends HomeControllerPresenterFragment<InsightsView> implements
+public class InsightsFragment extends ControllerPresenterFragment<InsightsView> implements
         InsightsAdapter.InteractionListener,
         InsightInfoFragment.Parent,
         InsightsAdapter.OnRetry,

@@ -23,6 +23,7 @@ import is.hello.sense.flows.home.ui.views.HomeView;
 import is.hello.sense.flows.home.util.HomeFragmentPagerAdapter;
 import is.hello.sense.flows.home.util.HomeViewPagerPresenterDelegate;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
+import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.Scope;
@@ -75,6 +76,8 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     UnreadStateInteractor unreadStateInteractor;
     @Inject
     NotificationInteractor notificationInteractor;
+    @Inject
+    NightModeInteractor nightModeInteractor;
 
     private final HomeViewPagerPresenterDelegate viewPagerDelegate = new HomeViewPagerPresenterDelegate();
     private boolean shouldShowAlerts = true;
@@ -112,6 +115,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         addInteractor(this.alertsInteractor);
         addInteractor(this.lastNightInteractor);
         addInteractor(this.unreadStateInteractor);
+        addInteractor(this.nightModeInteractor);
 
         if (savedInstanceState == null) {
             final Bundle args = getArguments();
@@ -208,6 +212,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         if (fragmentPosition == HomeViewPagerPresenterDelegate.SLEEP_ICON_KEY) {
             jumpToLastNight();
         }
+        this.nightModeInteractor.updateIfAuto();
     }
 
     @Nullable

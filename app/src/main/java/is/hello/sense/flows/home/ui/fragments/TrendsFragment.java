@@ -16,13 +16,13 @@ import is.hello.sense.flows.home.ui.adapters.TrendsAdapter;
 import is.hello.sense.flows.home.ui.views.TrendsView;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.TrendsInteractor;
-import is.hello.sense.mvp.presenters.HomeControllerPresenterFragment;
+import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.ui.widget.graphing.trends.TrendFeedViewItem;
 import is.hello.sense.ui.widget.graphing.trends.TrendGraphView;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.DateFormatter;
 
-public abstract class TrendsFragment extends HomeControllerPresenterFragment<TrendsView>
+public abstract class TrendsFragment extends ControllerPresenterFragment<TrendsView>
         implements
         TrendFeedViewItem.OnRetry,
         TrendGraphView.AnimationCallback,

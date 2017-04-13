@@ -29,7 +29,7 @@ import is.hello.sense.flows.smartalarm.ui.activities.SmartAlarmDetailActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.PreferencesInteractor;
 import is.hello.sense.interactors.SmartAlarmInteractor;
-import is.hello.sense.mvp.presenters.HomeControllerPresenterFragment;
+import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
 import is.hello.sense.mvp.presenters.ViewPagerPresenterFragment;
 import is.hello.sense.ui.activities.OnboardingActivity;
 import is.hello.sense.ui.adapter.SmartAlarmAdapter;
@@ -44,7 +44,7 @@ import is.hello.sense.util.NotTested;
 import rx.Observable;
 
 @NotTested
-public class SmartAlarmListFragment extends HomeControllerPresenterFragment<SmartAlarmListView>
+public class SmartAlarmListFragment extends ControllerPresenterFragment<SmartAlarmListView>
         implements
         SmartAlarmAdapter.InteractionListener,
         HomeActivity.ScrollUp,
