@@ -10,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatDelegate;
-import android.util.Log;
 
 import com.segment.analytics.Properties;
 
@@ -57,6 +56,7 @@ public class HomeActivity extends FragmentNavigationActivity
 
     /**
      * Assumes {@link HomeActivity} is first intent of stack.
+     *
      * @param from activity to return at top.
      */
     public static void recreateTaskStack(@NonNull final Activity from) {
@@ -89,15 +89,12 @@ public class HomeActivity extends FragmentNavigationActivity
     protected void onCreate(@NonNull final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initialConfigMode = nightModeInteractor.getConfigMode(getResources());
+        final int initialNightMode = AppCompatDelegate.getDefaultNightMode();
         bindAndSubscribe(nightModeInteractor.currentNightMode,
                          mode -> {
-                             Log.e("NightMode Change", "Initial Config: " + initialConfigMode);
-                             if (nightModeInteractor.requiresRecreate(initialConfigMode,
-                                                                      getResources())) {
-                                 Log.e("NightMode Change", "Recreate");
-                                 //todo replace
+                             if (mode != initialNightMode
+                                     || nightModeInteractor.requiresRecreate(initialConfigMode, getResources())) {
                                  recreate();
-
                              }
                          },
                          Functions.LOG_ERROR);
