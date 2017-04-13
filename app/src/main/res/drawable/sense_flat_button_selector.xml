@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- has v21 asset -->
-    <item android:drawable="@drawable/sense_flat_button_pressed" android:state_pressed="true"/>
-    <item android:drawable="@drawable/sense_flat_button_normal"/>
+    <!-- has v21 asset
+
+    The color reference inside @drawable/sense_flat_button_normal or pressed of this selector
+    sometimes does not change properly when theme changes in kit kat devices.
+
+    Using the color reference itself instead of shape drawable fixes this issue.
+
+    -->
+    <item android:drawable="@color/sense_flat_button_pressed" android:state_pressed="true"/>
+    <item android:drawable="@color/sense_flat_button_normal"/>
 </selector>

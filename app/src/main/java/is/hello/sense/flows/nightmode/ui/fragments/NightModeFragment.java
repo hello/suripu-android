@@ -22,6 +22,7 @@ import is.hello.sense.flows.nightmode.ui.views.NightModeView;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.mvp.presenters.PresenterFragment;
 import is.hello.sense.ui.widget.SenseAlertDialog;
+import is.hello.sense.util.Analytics;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
@@ -206,6 +207,7 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
         if (nightModeInteractor == null || nightModeInteractor.getCurrentMode().equals(mode)) {
             return;
         }
+        Analytics.trackNightMode(mode);
         nightModeInteractor.setMode(mode);
         getActivity().recreate();
 
