@@ -40,7 +40,15 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
      * This is very important for {@link #setPrimaryItem(ViewGroup, int, Object)} and
      * {@link #findFragment(int)}.
      */
-    private int lastPosition = Constants.NONE;
+    protected int lastPosition = Constants.NONE;
+
+    /**
+     * When true will do an additional call to {@link #alertFragmentVisible(int, boolean)} with the
+     * currently shown lastPosition. Important for scheduled night mode to recreate and select
+     * the currently visible fragment.
+     * }
+     */
+    private boolean forceAlertFragment = false;
 
     /**
      * A known hack for mimicking {@link FragmentPagerAdapter#makeFragmentName(int, long)}.
@@ -82,8 +90,21 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
                                final int position,
                                final Object object) {
         if (lastPosition == position) {
-            return;
+            /*
+                HomeActivity uses onResume to control its first fragment. When tabs are pressed
+                alertFragmentVisible alerts fragments of changes. When the HomeActivity recreates
+                itself, it will start a fragment (that doesn't normally start on app launch) with
+                onResume. This isn't enough to tell the fragment it's visible. forceAlertFragment is
+                used as a flag that will force this function to call alertFragmentVisible with the
+                starting fragment position.
+             */
+            if (!forceAlertFragment) {
+                return; // skip
+            }
+            forceAlertFragment = false;
         }
+
+
         alertFragmentVisible(lastPosition, false);
         lastPosition = position;
         super.setPrimaryItem(container, lastPosition, object);
@@ -119,8 +140,8 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
      * @param position
      * @param isVisible
      */
-    private final void alertFragmentVisible(final int position,
-                                            final boolean isVisible) {
+    public final void alertFragmentVisible(final int position,
+                                           final boolean isVisible) {
         final Fragment fragment = findFragment(position);
         if (!(fragment instanceof BaseFragmentPagerAdapter.Controller)) {
             return;
@@ -142,7 +163,7 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
      */
     @Nullable
     public final Fragment findFragment(final int id) {
-        if (containerId == View.NO_ID){
+        if (containerId == View.NO_ID) {
             return null;
         }
         return fragmentManager.findFragmentByTag(makeFragmentName(containerId, getItemId(id)));
@@ -155,7 +176,7 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
      */
     @Nullable
     public final Fragment findCurrentFragment() {
-        if (containerId == View.NO_ID){
+        if (containerId == View.NO_ID) {
             return null;
         }
         if (lastPosition == Constants.NONE) {
@@ -170,6 +191,9 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
      * to tell the current Fragment it is now visible.
      */
     public final void onResume() {
+        if (lastPosition == Constants.NONE) {
+            forceAlertFragment = true;
+        }
         alertFragmentVisible(lastPosition, true);
     }
 
@@ -179,6 +203,7 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
      * to tell the current Fragment it is now invisible.
      */
     public final void onPause() {
+        forceAlertFragment = false;
         alertFragmentVisible(lastPosition, false);
     }
 

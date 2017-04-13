@@ -54,16 +54,26 @@ public class HomeActivity extends FragmentNavigationActivity
     LocationInteractor locationInteractor;
     private int initialConfigMode;
 
+    public static Bundle createNightModeBundle(final int indexPosition) {
+        final Bundle homeOnStartArgs = new Bundle();
+        homeOnStartArgs.putInt(EXTRA_HOME_NAV_INDEX, indexPosition);
+        homeOnStartArgs.putBoolean(EXTRA_HOME_SHOW_ALERTS, false);
+        return homeOnStartArgs;
+
+    }
+
     /**
      * Assumes {@link HomeActivity} is first intent of stack.
      *
      * @param from activity to return at top.
      */
     public static void recreateTaskStack(@NonNull final Activity from) {
-        final Bundle homeOnStartArgs = new Bundle();
-        homeOnStartArgs.putInt(EXTRA_HOME_NAV_INDEX, HomeViewPagerPresenterDelegate.CONDITIONS_ICON_KEY);
-        homeOnStartArgs.putBoolean(EXTRA_HOME_SHOW_ALERTS, false);
+        recreateTaskStack(from, HomeViewPagerPresenterDelegate.CONDITIONS_ICON_KEY);
+    }
 
+    public static void recreateTaskStack(@NonNull final Activity from,
+                                         final int indexPosition) {
+        final Bundle homeOnStartArgs = createNightModeBundle(indexPosition);
         final TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(from);
         taskStackBuilder.addNextIntentWithParentStack(new Intent(from, from.getClass()));
         taskStackBuilder.editIntentAt(0)
@@ -106,16 +116,16 @@ public class HomeActivity extends FragmentNavigationActivity
             this.locationInteractor.start();
         }
         final Intent intent = getIntent();
-        if (intent != null && intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
+        if (intent == null) {
+            showHomePresenterFragment(null);
+            return;
+        }
+        if (intent.hasExtra(EXTRA_NOTIFICATION_PAYLOAD)) {
             dispatchNotification(intent.getBundleExtra(EXTRA_NOTIFICATION_PAYLOAD));
         }
-        if (intent != null && intent.hasExtra(EXTRA_ON_START_ARGS)) {
-            pushFragment(HomePresenterFragment.newInstance(intent.getBundleExtra(EXTRA_ON_START_ARGS)),
-                         null,
-                         false);
-        } else {
-            pushFragment(new HomePresenterFragment(), null, false);
-        }
+        showHomePresenterFragment(intent.getBundleExtra(EXTRA_ON_START_ARGS));
+
+
     }
 
 
@@ -150,7 +160,20 @@ public class HomeActivity extends FragmentNavigationActivity
     @Override
     public void recreate() {
         super.recreate();
-        setStatusBarColorRes(R.color.status_bar_normal);
+        final HomePresenterFragment fragment = getHomePresenterFragment();
+        final int indexPosition;
+        if (fragment == null) {
+            indexPosition = HomeViewPagerPresenterDelegate.SLEEP_ICON_KEY;
+        } else {
+            indexPosition = fragment.getCurrentTabPosition();
+        }
+        finish();
+        overridePendingTransition(R.anim.anime_fade_in,
+                                  R.anim.anime_fade_out);
+        startActivity(getIntent().putExtra(EXTRA_ON_START_ARGS, createNightModeBundle(indexPosition)));
+        overridePendingTransition(R.anim.anime_fade_in,
+                                  R.anim.anime_fade_out);
+
     }
 
     //region Onboarding flow provider
@@ -211,6 +234,10 @@ public class HomeActivity extends FragmentNavigationActivity
     }
 
     //endregion
+
+    private void showHomePresenterFragment(@Nullable final Bundle bundle) {
+        pushFragment(HomePresenterFragment.newInstance(bundle), null, false);
+    }
 
 
     @Nullable

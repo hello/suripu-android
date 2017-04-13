@@ -205,7 +205,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         }
         this.unreadStateInteractor.update();
         this.presenterView.setCurrentItem(fragmentPosition);
-        if (fragmentPosition == this.viewPagerDelegate.SLEEP_ICON_KEY) {
+        if (fragmentPosition == HomeViewPagerPresenterDelegate.SLEEP_ICON_KEY) {
             jumpToLastNight();
         }
     }
@@ -225,7 +225,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     @Nullable
     @Override
     public TimelineFragment.Parent getTimelineParent() {
-        final Fragment fragment = this.presenterView.getFragmentWithIndex(this.viewPagerDelegate.SLEEP_ICON_KEY);
+        final Fragment fragment = this.presenterView.getFragmentWithIndex(HomeViewPagerPresenterDelegate.SLEEP_ICON_KEY);
         if (fragment instanceof TimelineFragment.Parent) {
             return (TimelineFragment.Parent) fragment;
         }
@@ -403,26 +403,33 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
      */
     private void bindLastNightTimeline(@Nullable final Timeline timeLine) {
         this.presenterView.updateTabWithSleepScore(timeLine,
-                                                   this.viewPagerDelegate.SLEEP_ICON_KEY);
+                                                   HomeViewPagerPresenterDelegate.SLEEP_ICON_KEY);
+    }
+
+    public int getCurrentTabPosition() {
+        if (this.presenterView == null) {
+            return this.viewPagerDelegate.getStartingItemPosition();
+        }
+        return this.presenterView.getCurrentItem();
     }
 
     @VisibleForTesting
     @NonNull
     protected HomeFragmentPagerAdapter createAdapter() {
         return new HomeFragmentPagerAdapter(getChildFragmentManager(),
-                                            viewPagerDelegate.SLEEP_ICON_KEY,
+                                            HomeViewPagerPresenterDelegate.SLEEP_ICON_KEY,
                                             viewPagerDelegate.getViewPagerItems());
     }
 
     public void selectTimelineTab() {
-        this.presenterView.setCurrentItem(this.viewPagerDelegate.SLEEP_ICON_KEY);
+        this.presenterView.setCurrentItem(HomeViewPagerPresenterDelegate.SLEEP_ICON_KEY);
     }
 
     public void selectTrendsTab() {
         this.presenterView.setCurrentItem(this.viewPagerDelegate.TRENDS_ICON_KEY);
     }
 
-    public void selectFeedTab(){
+    public void selectFeedTab() {
         this.presenterView.setCurrentItem(this.viewPagerDelegate.FEED_ICON_KEY);
     }
 
@@ -431,7 +438,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     }
 
     public void selectConditionsTab() {
-        this.presenterView.setCurrentItem(this.viewPagerDelegate.CONDITIONS_ICON_KEY);
+        this.presenterView.setCurrentItem(HomeViewPagerPresenterDelegate.CONDITIONS_ICON_KEY);
     }
 
     //endregion

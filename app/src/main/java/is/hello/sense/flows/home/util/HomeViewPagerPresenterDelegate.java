@@ -11,7 +11,7 @@ import is.hello.sense.flows.home.ui.fragments.TrendsPresenterFragment;
 import is.hello.sense.mvp.util.BaseViewPagerPresenterDelegate;
 
 public class HomeViewPagerPresenterDelegate extends BaseViewPagerPresenterDelegate {
-    public final int SLEEP_ICON_KEY = 0;
+    public static final int SLEEP_ICON_KEY = 0;
     public final int TRENDS_ICON_KEY = 1;
     public final int FEED_ICON_KEY = 2;
     public final int SOUNDS_ICON_KEY = 3;
