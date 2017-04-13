@@ -140,7 +140,7 @@ public abstract class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
      * @param position
      * @param isVisible
      */
-    public final void alertFragmentVisible(final int position,
+    private final void alertFragmentVisible(final int position,
                                            final boolean isVisible) {
         final Fragment fragment = findFragment(position);
         if (!(fragment instanceof BaseFragmentPagerAdapter.Controller)) {
