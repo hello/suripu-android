@@ -163,6 +163,7 @@ public class TimelineEvent extends ApiResponse {
         GOT_OUT_OF_BED(R.drawable.icon_bed_out_24, R.string.accessibility_event_name_got_out_of_bed),
         WOKE_UP(R.drawable.icon_face_happy_24, R.string.accessibility_event_name_woke_up),
         ALARM_RANG(R.drawable.icon_alarm_24, R.string.accessibility_event_name_alarm_rang),
+        SLEEP_DISTURBANCE(R.drawable.icon_noise_24, R.string.accessibility_event_name_noise),
         UNKNOWN(R.drawable.icon_question_24, R.string.accessibility_event_name_unknown);
 
         public final @DrawableRes int iconDrawableRes;

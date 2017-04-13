@@ -469,7 +469,7 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
         //region Binding
 
         @Override
-        void bindEvent(int position, @NonNull TimelineEvent event) {
+        void bindEvent(final int position, @NonNull final TimelineEvent event) {
             super.bindEvent(position, event);
 
             setExcludedFromParallax(event.getSleepState() == TimelineEvent.SleepState.AWAKE);
