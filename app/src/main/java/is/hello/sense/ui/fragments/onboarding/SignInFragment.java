@@ -43,7 +43,6 @@ import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.LoadingDialogFragment;
 import is.hello.sense.ui.widget.LabelEditText;
-import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Distribution;
