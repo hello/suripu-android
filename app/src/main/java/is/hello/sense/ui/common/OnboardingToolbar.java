@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
