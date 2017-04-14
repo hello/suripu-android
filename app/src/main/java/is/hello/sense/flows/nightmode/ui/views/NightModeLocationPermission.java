@@ -1,9 +1,9 @@
 package is.hello.sense.flows.nightmode.ui.views;
 
+import android.Manifest;
 import android.app.Fragment;
 import android.support.annotation.NonNull;
 
-import is.hello.sense.Manifest;
 import is.hello.sense.R;
 import is.hello.sense.permissions.Permission;
 import is.hello.sense.util.Constants;

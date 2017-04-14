@@ -1,11 +1,11 @@
 package is.hello.sense.permissions;
 
 
+import android.Manifest;
 import android.app.Fragment;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
-import is.hello.sense.Manifest;
 import is.hello.sense.R;
 import is.hello.sense.ui.common.UserSupport;
 
