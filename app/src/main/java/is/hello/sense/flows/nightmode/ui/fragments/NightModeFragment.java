@@ -89,11 +89,8 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
                                  final int resultCode,
                                  final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == NightModeActivity.REQUEST_LOCATION_STATUS && resultCode == Activity.RESULT_OK) {
-            this.scheduledModeSelected();
-            if (presenterView != null) {
-                this.presenterView.setScheduledMode();
-            }
+        if (requestCode == NightModeActivity.REQUEST_LOCATION_STATUS) {
+            revertMode(); // let user click again
         }
     }
 
@@ -123,6 +120,11 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
         this.statusSubscription.unsubscribe();
         final UserLocation userLocation = this.locationInteractor.getCurrentUserLocation();
         if (userLocation == null) {
+            if (LocationInteractor.hasLocationServicesEnabled(getActivity())) {
+                revertMode();
+                presentUserLocationError();
+                return;
+            }
             this.locationInteractor.forget();
             this.statusSubscription = this.locationInteractor.statusSubject.subscribe(this::bindLocStatus,
                                                                                       Functions.LOG_ERROR);
