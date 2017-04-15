@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
+import android.util.Log;
 
 import org.joda.time.DateTimeZone;
 
@@ -244,17 +245,21 @@ public class HardwareInteractor extends BaseHardwareInteractor {
         logEvent("connectToPeripheral(" + peripheral + ")");
 
         if (peripheral == null) {
+            Log.e(getClass().getSimpleName(), "connectToPeripheral | peripheral == null");
             return noDeviceError();
         }
 
         if (peripheral.isConnected()) {
+            Log.e(getClass().getSimpleName(), "connectToPeripheral | peripheral.isConnected == true");
             logEvent("already paired with peripheral " + peripheral);
 
             return Observable.just(ConnectProgress.CONNECTED);
         }
 
+        Log.e(getClass().getSimpleName(), "connectToPeripheral | connect");
         return pending.bind(TOKEN_CONNECT, () -> {
-            return peripheral.connect().doOnCompleted(() -> {
+            return peripheral.davesConnect().doOnCompleted(() -> {
+                Log.e(getClass().getSimpleName(), "connectToPeripheral: " + peripheral.toString());
                 logEvent("pairedWithPeripheral(" + peripheral + ")");
                 setLastPeripheralAddress(peripheral.getAddress());
             }).doOnError(e -> {

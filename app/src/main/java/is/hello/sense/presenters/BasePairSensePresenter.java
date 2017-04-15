@@ -188,14 +188,14 @@ public abstract class BasePairSensePresenter<T extends BasePairSensePresenter.Ou
         showBlockingActivity(R.string.title_pushing_data);
 
         bindAndSubscribe(devicesInteractor.getDevicesWithRetry(),
-                devices -> {
-                        if(devices != null) { //todo should preferences be updated to reflect no device found?
-                            preferencesInteractor.setDevice(devices.getSense());
-                        }
-                        onFinished();
-                }, error -> {
-                       Logger.error(getClass().getSimpleName(), "Could not get features from Sense, ignoring.", error);
-                       onFinished();
+                         devices -> {
+                             if (devices != null) { //todo should preferences be updated to reflect no device found?
+                                 preferencesInteractor.setDevice(devices.getSense());
+                             }
+                             onFinished();
+                         }, error -> {
+                    Logger.error(getClass().getSimpleName(), "Could not get features from Sense, ignoring.", error);
+                    onFinished();
                 });
     }
 
