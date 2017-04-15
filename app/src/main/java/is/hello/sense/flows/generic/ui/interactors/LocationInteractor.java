@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -17,7 +16,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.segment.analytics.Properties;
 
 
 import is.hello.sense.api.model.LocStatus;
@@ -40,22 +38,6 @@ public class LocationInteractor extends ValueInteractor<LocStatus>
     private Status status;
 
     public InteractorSubject<LocStatus> statusSubject = subject;
-
-    /**
-     * Checks if location services are enabled.
-     *
-     * @param context Android context
-     * @return true if services are enabled.
-     */
-    public static boolean hasLocationServicesEnabled(@NonNull final Context context) {
-        int locationMode = Settings.Secure.LOCATION_MODE_OFF;
-        try {
-            locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
-        } catch (final Settings.SettingNotFoundException e) {
-            return false;
-        }
-        return locationMode != Settings.Secure.LOCATION_MODE_OFF;
-    }
 
     public LocationInteractor(@NonNull final Context context,
                               @NonNull final PersistentPreferencesInteractor prefs) {
@@ -170,6 +152,8 @@ public class LocationInteractor extends ValueInteractor<LocStatus>
                             if (hasPermissions()) {
                                 //noinspection MissingPermission
                                 LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, locationRequest, LocationInteractor.this);
+                                this.status = status;
+                                update();
                             }
                             break;
                         default:

@@ -1,6 +1,5 @@
 package is.hello.sense.flows.nightmode.ui.fragments;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.support.annotation.NonNull;
@@ -120,11 +119,7 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
         this.statusSubscription.unsubscribe();
         final UserLocation userLocation = this.locationInteractor.getCurrentUserLocation();
         if (userLocation == null) {
-            if (LocationInteractor.hasLocationServicesEnabled(getActivity())) {
-                revertMode();
-                presentUserLocationError();
-                return;
-            }
+
             this.locationInteractor.forget();
             this.statusSubscription = this.locationInteractor.statusSubject.subscribe(this::bindLocStatus,
                                                                                       Functions.LOG_ERROR);
@@ -145,11 +140,10 @@ public class NightModeFragment extends PresenterFragment<NightModeView>
     private void bindLocStatus(@Nullable final LocStatus locStatus) {
         this.statusSubscription.unsubscribe();
         revertMode();
-        if (locStatus == null || locStatus.getStatus().getStatusCode() != LocationSettingsStatusCodes.RESOLUTION_REQUIRED) {
+        if (locStatus == null || locStatus.getStatus() == null || LocationSettingsStatusCodes.RESOLUTION_REQUIRED != locStatus.getStatus().getStatusCode()) {
             presentUserLocationError();
         } else {
             try {
-
                 locStatus.getStatus().startResolutionForResult(getActivity(), NightModeActivity.REQUEST_LOCATION_STATUS);
             } catch (final IntentSender.SendIntentException e) {
                 presentUserLocationError();
