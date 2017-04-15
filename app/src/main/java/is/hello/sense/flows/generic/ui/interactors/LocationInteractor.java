@@ -16,7 +16,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.segment.analytics.Properties;
 
 
 import is.hello.sense.api.model.LocStatus;
@@ -153,6 +152,8 @@ public class LocationInteractor extends ValueInteractor<LocStatus>
                             if (hasPermissions()) {
                                 //noinspection MissingPermission
                                 LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, locationRequest, LocationInteractor.this);
+                                this.status = status;
+                                update();
                             }
                             break;
                         default:
