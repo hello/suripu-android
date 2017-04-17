@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 
@@ -60,7 +59,6 @@ public abstract class BaseHardwareInteractor extends Interactor {
         this.context = context;
         this.bluetoothStack = bluetoothStack;
         this.respondToError = e -> {
-            Log.e(getClass().getSimpleName(), "response to error: " + e.getMessage());
             if (BuruberiException.isInstabilityLikely(e)) {
                 clearPeripheral();
                 pending.clear();
@@ -231,11 +229,9 @@ public abstract class BaseHardwareInteractor extends Interactor {
         logEvent("runLedAnimation()");
 
         if (peripheral == null) {
-            Log.e(getClass().getSimpleName(), "runLedAnimation missing peripheral");
             return noDeviceError();
         }
 
-        Log.e(getClass().getSimpleName(), "runLedAnimation has peripheral");
         return peripheral.runLedAnimation(animationType)
                          .doOnError(this.respondToError);
     }

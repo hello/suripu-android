@@ -9,13 +9,13 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
-import android.util.Log;
 
 import org.joda.time.DateTimeZone;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -245,26 +245,22 @@ public class HardwareInteractor extends BaseHardwareInteractor {
         logEvent("connectToPeripheral(" + peripheral + ")");
 
         if (peripheral == null) {
-            Log.e(getClass().getSimpleName(), "connectToPeripheral | peripheral == null");
             return noDeviceError();
         }
 
         if (peripheral.isConnected()) {
-            Log.e(getClass().getSimpleName(), "connectToPeripheral | peripheral.isConnected == true");
             logEvent("already paired with peripheral " + peripheral);
 
             return Observable.just(ConnectProgress.CONNECTED);
         }
 
-        Log.e(getClass().getSimpleName(), "connectToPeripheral | connect");
         return pending.bind(TOKEN_CONNECT, () -> {
             return peripheral.davesConnect().doOnCompleted(() -> {
-                Log.e(getClass().getSimpleName(), "connectToPeripheral: " + peripheral.toString());
                 logEvent("pairedWithPeripheral(" + peripheral + ")");
                 setLastPeripheralAddress(peripheral.getAddress());
             }).doOnError(e -> {
                 logEvent("failed to pair with peripheral " + peripheral + ": " + e);
-            });
+            }).timeout(1, TimeUnit.MINUTES);
         });
     }
 

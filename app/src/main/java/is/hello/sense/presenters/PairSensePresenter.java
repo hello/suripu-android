@@ -2,10 +2,8 @@ package is.hello.sense.presenters;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.util.Log;
 import android.view.View;
 
 import is.hello.commonsense.bluetooth.SensePeripheral;
@@ -121,20 +119,15 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
 
     public void completePeripheralPair() {
         if (hasPeripheralPair()) {
-            Log.e(getClass().getSimpleName(), "completePeripheralPair | clearBond()");
             bindAndSubscribe(hardwareInteractor.clearBond(),
                              ignored -> completePeripheralPair()
                     ,
                              e -> presentError(e, "Clearing Bond"));
         } else {
-            Log.e(getClass().getSimpleName(), "completePeripheralPair | connectToPeripheral()");
             bindAndSubscribe(hardwareInteractor.connectToPeripheral(),
                              status -> {
                                  if (hasConnectivity(status)) {
-                                     Log.e(getClass().getSimpleName(), "we're connected");
                                      checkConnectivityAndContinue();
-                                 } else {
-                                     Log.e(getClass().getSimpleName(), "we're not connected");
                                  }
                              },
                              e -> presentError(e, "Connecting to Sense"));
@@ -142,20 +135,15 @@ public abstract class PairSensePresenter extends BasePairSensePresenter<PairSens
     }
 
     private void checkConnectivityAndContinue() {
-        Log.e(getClass().getSimpleName(), "checkConnectivityAndContinue | start");
         showHardwareActivity(() -> {
-            Log.e(getClass().getSimpleName(), "showingHardwareActivity");
             bindAndSubscribe(hardwareInteractor.currentWifiNetwork(), network -> {
 
                 if (network.connectionState == SenseCommandProtos.wifi_connection_state.IP_RETRIEVED) {
-                    Log.e(getClass().getSimpleName(), "network has wifi");
                     checkLinkedAccount();
                 } else {
-                    Log.e(getClass().getSimpleName(), "network missing wifi");
                     continueToWifi();
                 }
             }, e -> {
-                Log.e(getClass().getSimpleName(), "failed to get network");
                 Logger.error(getClass().getSimpleName(), "Could not get Sense's wifi network", e);
                 continueToWifi();
             });
