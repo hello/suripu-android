@@ -92,14 +92,19 @@ public class UnitFormatter extends Interactor {
         }
     }
 
+    public boolean isCelsius() {
+        return preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric);
+    }
+
     /**
      * Always use this method when need to convert temperature.
      * Defaults converter based on {@link Locale#getCountry()} if user never modifies unit pref in settings.
+     *
      * @return proper expected {@link UnitConverter} for temperature
      */
     @NonNull
-    public UnitConverter getTemperatureUnitConverter(){
-        if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
+    public UnitConverter getTemperatureUnitConverter() {
+        if (isCelsius()) {
             return UnitConverter.IDENTITY;
         } else {
             return UnitOperations::celsiusToFahrenheit;
@@ -107,8 +112,8 @@ public class UnitFormatter extends Interactor {
     }
 
     @NonNull
-    public UnitConverter getReverseTemperatureUnitConverter(){
-        if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
+    public UnitConverter getReverseTemperatureUnitConverter() {
+        if (isCelsius()) {
             return UnitConverter.IDENTITY;
         } else {
             return UnitOperations::fahrenheitToCelsius;
@@ -121,6 +126,18 @@ public class UnitFormatter extends Interactor {
         switch (type) {
             case TEMPERATURE: {
                 return getTemperatureUnitConverter();
+            }
+            default: {
+                return UnitConverter.IDENTITY;
+            }
+        }
+    }
+
+    @NonNull
+    public UnitConverter getUnitReverseConverterForSensor(@NonNull final SensorType type) {
+        switch (type) {
+            case TEMPERATURE: {
+                return getReverseTemperatureUnitConverter();
             }
             default: {
                 return UnitConverter.IDENTITY;
@@ -173,7 +190,7 @@ public class UnitFormatter extends Interactor {
         String measuredIn = Constants.EMPTY_STRING;
         switch (type) {
             case TEMPERATURE:
-                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
+                if (isCelsius()) {
                     measuredIn = ApiService.UNIT_TEMPERATURE_CELSIUS.toUpperCase();
                 } else {
                     measuredIn = ApiService.UNIT_TEMPERATURE_US_CUSTOMARY.toUpperCase();
@@ -188,7 +205,7 @@ public class UnitFormatter extends Interactor {
     public int getAboutStringRes(@NonNull final SensorType type) {
         switch (type) {
             case TEMPERATURE:
-                if (preferences.getBoolean(PreferencesInteractor.USE_CELSIUS, defaultMetric)) {
+                if (isCelsius()) {
                     return R.string.sensor_about_temperature_celsius;
                 } else {
                     return R.string.sensor_about_temperature_fahrenheit;
@@ -221,12 +238,12 @@ public class UnitFormatter extends Interactor {
                                           @NonNull final SensorType type) {
 
         final UnitConverter converter = getUnitConverterForSensor(type);
-        if(UnitConverter.IDENTITY.equals(converter)){
+        if (UnitConverter.IDENTITY.equals(converter)) {
             return scales;
         }
         final List<Scale> converted = new ArrayList<>(scales.size());
 
-        for(final Scale scale : scales){
+        for (final Scale scale : scales) {
             converted.add(new Scale(scale.getName(),
                                     converter.convert(scale.getMin()),
                                     converter.convert(scale.getMax()),
