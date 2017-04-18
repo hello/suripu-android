@@ -28,7 +28,6 @@ public class SleepScoreIconDrawable extends Drawable {
     private final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     private final Paint circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final int maxTextSize;
     private final int height;
     private final int width;
     private final String text;
@@ -40,7 +39,7 @@ public class SleepScoreIconDrawable extends Drawable {
         final int unselectedColor = ContextCompat.getColor(context, R.color.active_icon);
         final int fillColor = ContextCompat.getColor(context, R.color.sleep_score_icon_fill);
         final int backgroundColor = ContextCompat.getColor(context, R.color.background_card);
-
+        final int maxTextSize = context.getResources().getDimensionPixelSize(R.dimen.sleep_score_drawable_text_size);
         this.width = builder.width;
         this.height = builder.height;
         this.text = builder.text;
@@ -48,7 +47,6 @@ public class SleepScoreIconDrawable extends Drawable {
         this.circlePaint.setDither(true);
         this.circlePaint.setStrokeWidth(context.getResources()
                                                .getDimensionPixelSize(R.dimen.icon_stroke_width));
-        this.maxTextSize = context.getResources().getDimensionPixelSize(R.dimen.sleep_score_drawable_text_size);
         if (builder.isSelected) {
             this.circlePaint.setColor(selectedColor);
             this.textPaint.setColor(selectedColor);
@@ -77,7 +75,7 @@ public class SleepScoreIconDrawable extends Drawable {
     }
 
     @Override
-    public void draw(final Canvas canvas) {
+    public void draw(@NonNull final Canvas canvas) {
         final int centerX = canvas.getWidth() / 2;
         final int centerY = canvas.getHeight() / 2;
         final int radius;
