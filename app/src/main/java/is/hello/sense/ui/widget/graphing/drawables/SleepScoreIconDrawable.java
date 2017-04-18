@@ -39,7 +39,7 @@ public class SleepScoreIconDrawable extends Drawable {
         final int unselectedColor = ContextCompat.getColor(context, R.color.active_icon);
         final int fillColor = ContextCompat.getColor(context, R.color.sleep_score_icon_fill);
         final int backgroundColor = ContextCompat.getColor(context, R.color.background_card);
-        final int maxTextSize = context.getResources().getDimensionPixelSize(R.dimen.sleep_score_drawable_text_size);
+        final int maxTextSize = context.getResources().getDimensionPixelSize(R.dimen.sleep_score_icon_drawable_text_size);
         this.width = builder.width;
         this.height = builder.height;
         this.text = builder.text;
