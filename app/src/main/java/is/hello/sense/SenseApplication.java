@@ -119,7 +119,7 @@ public class SenseApplication extends MultiDexApplication {
             return;
         }
 
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.USE_LEAK_CANARY) {
             this.refWatcher = LeakCanary.install(this);
         }else {
             this.refWatcher = RefWatcher.DISABLED;
