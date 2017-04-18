@@ -40,6 +40,7 @@
     <!-- Misc -->
     <dimen name="action_bar_height">@dimen/x6</dimen>
     <dimen name="icon_stroke_width">1dp</dimen>
+    <dimen name="sleep_score_drawable_text_size">@dimen/text_h7_2</dimen>
 
     <!-- Divider Dimens -->
     <dimen name="divider_inset_large">@dimen/x3</dimen>

@@ -14,13 +14,17 @@ public class PaintUtil {
     public static void getCorrectTextSize(@NonNull final TextPaint paint,
                                           @Nullable final String text,
                                           final int maxWidth,
-                                          final int maxHeight) {
+                                          final int maxHeight,
+                                          final int maxTextSize) {
         if (text == null || text.isEmpty()) {
             return;
         }
         paint.setTextSize(0);
         final Rect textBounds = new Rect();
         while (doesTextFit(paint, text, textBounds, maxWidth, maxHeight)) {
+            if (maxTextSize != Constants.NONE && maxTextSize <= paint.getTextSize()) {
+                return;
+            }
             paint.setTextSize(paint.getTextSize() + 1);
         }
     }
