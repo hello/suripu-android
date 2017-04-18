@@ -86,6 +86,7 @@ android {
         def FACEBOOK_APP_ID = "FACEBOOK_APP_ID"
         def GCM_AUTH_ENTITY_IDS = "GCM_AUTH_TOKEN_IDS"
         def IS_BETA = "IS_BETA"
+        def USE_LEAK_CANARY = "USE_LEAK_CANARY"
 
         def TRUE = "true"
         def FALSE = "false"
@@ -102,6 +103,7 @@ android {
             resValue TYPE_RES_STRING, FACEBOOK_APP_ID, '"' + "372438546161587" + '"'
             buildConfigField TYPE_STRING, GCM_AUTH_ENTITY_IDS, '"' + "88512303154,222711285636" + '"'
             buildConfigField TYPE_BOOLEAN, IS_BETA, TRUE
+            buildConfigField TYPE_BOOLEAN, USE_LEAK_CANARY, TRUE
 
             signingConfig signingConfigs.debug
 
@@ -111,6 +113,8 @@ android {
         }
 
         development {
+            buildConfigField TYPE_BOOLEAN, USE_LEAK_CANARY, FALSE
+
             initWith debug
             signingConfig signingConfigs.debug
 
@@ -129,6 +133,7 @@ android {
             resValue TYPE_RES_STRING, FACEBOOK_APP_ID, '"' + "372438546161587" + '"'
             buildConfigField TYPE_STRING, GCM_AUTH_ENTITY_IDS, '"' + "88512303154,222711285636" + '"'
             buildConfigField TYPE_BOOLEAN, IS_BETA, FALSE
+            buildConfigField TYPE_BOOLEAN, USE_LEAK_CANARY, FALSE
 
             signingConfig signingConfigs.release
 
