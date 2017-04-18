@@ -342,6 +342,13 @@ public class SenseDetailsFragment extends DeviceDetailsFragment<SenseDevice>
     }
 
     public void enableBluetooth() {
+        // calling hardwarePresenter.turnOnBluetooth() when already enabled will never trigger onNext
+        if (bluetoothStack.isEnabled()) {
+            this.didEnableBluetooth = true;
+            connectToPeripheral();
+            return;
+        }
+
         showBlockingAlert(R.string.title_turning_on);
         bindAndSubscribe(hardwarePresenter.turnOnBluetooth(),
                          ignored -> {
