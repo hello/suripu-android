@@ -65,7 +65,7 @@ public class SensorGraphDrawable extends Drawable {
      */
     private static final PathEffect CORNER_PATH_EFFECT = new CornerPathEffect(20);
 
-    private static final int NO_LOCATION = Constants.NONE;
+    public static final int NO_LOCATION = Constants.NONE;
     /**
      * Will draw every "INCREMENT" points. So in this example every 1 of 3 points will be drawn.
      */
