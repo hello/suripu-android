@@ -140,49 +140,43 @@ public final class SensorDetailView extends PresenterView
     }
 
     public final void updateSensor(@NonNull final Sensor sensor) {
-        post(() -> {
-            showCalibratingState(sensor.isCalibrating());
-            final SensorType type = sensor.getType();
-            this.scaleList.renderScales(unitFormatter.getConvertedScales(sensor.getScales(), type),
-                                        unitFormatter.getMeasuredInString(type));
-            this.about.setText(unitFormatter.getAboutStringRes(type));
+        showCalibratingState(sensor.isCalibrating());
+        final SensorType type = sensor.getType();
+        this.scaleList.renderScales(unitFormatter.getConvertedScales(sensor.getScales(), type),
+                                    unitFormatter.getMeasuredInString(type));
+        this.about.setText(unitFormatter.getAboutStringRes(type));
 
-            updateColorScheme(ContextCompat.getColor(getContext(), sensor.getColor()));
-        });
+        updateColorScheme(ContextCompat.getColor(getContext(), sensor.getColor()));
     }
 
     public final void bindError() {
-        post(() -> {
-            updateColorScheme(noDataColor);
-            this.scrollView.setGraphView(null);
-            this.messageTextView.setText(R.string.sensor_detail_no_data);
-            this.progressBar.setVisibility(GONE);
-            this.subNavSelector.setEnabled(true);
-            this.valueTextView.setTextColor(noDataColor);
-            this.valueTextView.setText(R.string.missing_data_placeholder);
-        });
+        updateColorScheme(noDataColor);
+        this.scrollView.setGraphView(null);
+        this.messageTextView.setText(R.string.sensor_detail_no_data);
+        this.progressBar.setVisibility(GONE);
+        this.subNavSelector.setEnabled(true);
+        this.valueTextView.setTextColor(noDataColor);
+        this.valueTextView.setText(R.string.missing_data_placeholder);
 
     }
 
     public void setGraph(@NonNull final Sensor sensor,
                          @NonNull final SensorGraphView.StartDelay delay,
                          @NonNull final String[] labels) {
-        post(() -> {
-            this.scrollView.setGraphView(sensorGraphView);
-            this.valueTextView.setText(unitFormatter.createUnitBuilder(sensor)
-                                                    .buildWithStyle());
-            this.messageTextView.setText(sensor.getMessage());
-            this.progressBar.setVisibility(GONE);
-            this.sensorGraphView.setVisibility(VISIBLE);
-            this.sensorGraphView.resetTimeToAnimate(delay);
-            this.sensorGraphView.setSensorGraphDrawable(new SensorGraphDrawable(this.context,
-                                                                                sensor,
-                                                                                this.unitFormatter,
-                                                                                this.graphHeight,
-                                                                                labels));
+        this.scrollView.setGraphView(sensorGraphView);
+        this.valueTextView.setText(unitFormatter.createUnitBuilder(sensor)
+                                                .buildWithStyle());
+        this.messageTextView.setText(sensor.getMessage());
+        this.progressBar.setVisibility(GONE);
+        this.sensorGraphView.setVisibility(VISIBLE);
+        this.sensorGraphView.resetTimeToAnimate(delay);
+        this.sensorGraphView.setSensorGraphDrawable(new SensorGraphDrawable(this.context,
+                                                                            sensor,
+                                                                            this.unitFormatter,
+                                                                            this.graphHeight,
+                                                                            labels));
 
-            postDelayed(() -> this.subNavSelector.setEnabled(true), delay.getLength());
-        });
+        postDelayed(() -> this.subNavSelector.setEnabled(true), delay.getLength());
     }
 
     public void smoothScrollBy(final int dY) {
@@ -190,30 +184,24 @@ public final class SensorDetailView extends PresenterView
     }
 
     private void refreshWithProgress() {
-        post(() -> {
-            this.progressBar.setVisibility(VISIBLE);
-            this.sensorGraphView.setVisibility(INVISIBLE);
-        });
+        this.progressBar.setVisibility(VISIBLE);
+        this.sensorGraphView.setVisibility(INVISIBLE);
     }
 
     public final void setValueAndMessage(@Nullable final CharSequence value, @Nullable final String message) {
-        post(() -> {
-            this.valueTextView.setText(value);
-            this.messageTextView.setText(message);
+        this.valueTextView.setText(value);
+        this.messageTextView.setText(message);
 
-        });
 
     }
 
     private void updateColorScheme(final int color) {
-        post(() -> {
-            this.subNavSelector.setBackground(new TabsBackgroundDrawable(context.getResources(),
-                                                                         TabsBackgroundDrawable.Style.SUBNAV,
-                                                                         color));
-            this.subNavSelector.getButtonAt(0).setBackgroundColor(color);
-            this.subNavSelector.getButtonAt(1).setBackgroundColor(color);
-            this.valueTextView.setTextColor(color);
-        });
+        this.subNavSelector.setBackground(new TabsBackgroundDrawable(context.getResources(),
+                                                                     TabsBackgroundDrawable.Style.SUBNAV,
+                                                                     color));
+        this.subNavSelector.getButtonAt(0).setBackgroundColor(color);
+        this.subNavSelector.getButtonAt(1).setBackgroundColor(color);
+        this.valueTextView.setTextColor(color);
     }
 
     private void showCalibratingState(final boolean show) {
