@@ -39,6 +39,8 @@ import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.flows.settings.ui.activities.AppSettingsActivity;
 import is.hello.sense.flows.settings.ui.fragments.AppSettingsFragment;
 import is.hello.sense.flows.voice.interactors.VoiceSettingsInteractor;
+import is.hello.sense.flows.voicecommands.ui.activities.VoiceCommandDetailActivity;
+import is.hello.sense.flows.voicecommands.ui.fragments.VoiceCommandDetailFragment;
 import is.hello.sense.graph.annotations.GlobalSharedPreferences;
 import is.hello.sense.graph.annotations.PersistentSharedPreferences;
 import is.hello.sense.interactors.DeviceIssuesInteractor;
@@ -162,6 +164,8 @@ import is.hello.sense.zendesk.ZendeskModule;
                 HomePresenterFragment.class,
 
                 FragmentNavigationActivity.class,
+                VoiceCommandDetailActivity.class,
+                VoiceCommandDetailFragment.class,
         }
 )
 @SuppressWarnings("UnusedDeclaration")

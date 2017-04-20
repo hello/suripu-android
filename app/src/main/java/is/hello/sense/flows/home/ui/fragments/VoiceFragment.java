@@ -4,10 +4,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 
+import com.squareup.picasso.Picasso;
+
+import javax.inject.Inject;
+
+import is.hello.sense.api.model.v2.voice.VoiceCommandTopic;
+import is.hello.sense.flows.home.interactors.VoiceCommandResponseInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.adapters.VoiceCommandsAdapter;
 import is.hello.sense.flows.home.ui.views.VoiceView;
-import is.hello.sense.flows.voicecommands.ui.activities.VoiceCommandActivity;
+import is.hello.sense.flows.voicecommands.ui.activities.VoiceCommandDetailActivity;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.AccountPreferencesInteractor;
 import is.hello.sense.mvp.presenters.ControllerPresenterFragment;
@@ -18,36 +24,47 @@ import is.hello.sense.util.NotTested;
 @NotTested // enough
 public class VoiceFragment extends ControllerPresenterFragment<VoiceView>
         implements
-        ArrayRecyclerAdapter.OnItemClickedListener<VoiceCommandsAdapter.VoiceCommand>,
+        VoiceView.Listener,
+        ArrayRecyclerAdapter.ErrorHandler,
         HomeActivity.ScrollUp {
 
-    private VoiceCommandsAdapter adapter;
     private AccountPreferencesInteractor sharedPreferences;
+
+    @Inject
+    VoiceCommandResponseInteractor voiceCommandResponseInteractor;
+
+    @Inject
+    Picasso picasso;
 
     //region PresenterFragment
     @Override
     public void initializePresenterView() {
         if (this.presenterView == null) {
-            this.adapter = new VoiceCommandsAdapter(getActivity().getLayoutInflater());
-            this.adapter.setOnItemClickedListener(this);
+            final VoiceCommandsAdapter adapter = new VoiceCommandsAdapter(getActivity(),
+                                                                          this.picasso);
+            adapter.setErrorHandler(this);
             this.presenterView = new VoiceView(getActivity(),
-                                               this.adapter);
+                                               adapter,
+                                               this);
         }
     }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sharedPreferences = AccountPreferencesInteractor.newInstance(getActivity());
-        addInteractor(sharedPreferences);
+        this.sharedPreferences = AccountPreferencesInteractor.newInstance(getActivity());
+        addInteractor(this.sharedPreferences);
     }
 
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        bindAndSubscribe(sharedPreferences.observableBoolean(AccountPreferencesInteractor.VOICE_WELCOME_CARD, false),
+        bindAndSubscribe(this.sharedPreferences.observableBoolean(AccountPreferencesInteractor.VOICE_WELCOME_CARD, false),
                          this::showWelcomeCard,
                          Functions.LOG_ERROR);
+        bindAndSubscribe(this.voiceCommandResponseInteractor.commands,
+                         this.presenterView::bindVoiceCommands,
+                         this::presentError);
     }
 
     //endRegion
@@ -57,47 +74,60 @@ public class VoiceFragment extends ControllerPresenterFragment<VoiceView>
         super.setVisibleToUser(isVisible);
         if (isVisible) {
             Analytics.trackEvent(Analytics.Backside.EVENT_VOICE_TAB, null);
+            if (this.voiceCommandResponseInteractor != null) {
+                this.voiceCommandResponseInteractor.update();
+            }
         }
     }
+
     //endregion
 
-    //region  ArrayRecyclerAdapter.OnItemClickedListener
+    //region  VoiceView.Listener
     @Override
-    public void onItemClicked(final int position,
-                              @NonNull final VoiceCommandsAdapter.VoiceCommand item) {
+    public void onTopicClicked(@NonNull final VoiceCommandTopic item) {
         Analytics.trackEvent(Analytics.Backside.EVENT_VOICE_EXAMPLES,
-                             Analytics.createProperties(Analytics.Backside.PROP_VOICE_EXAMPLES, item));
-        startActivity(VoiceCommandActivity.getIntent(getActivity(),
-                                                     item.name()));
+                             Analytics.createProperties(Analytics.Backside.PROP_VOICE_EXAMPLES, item.getTitle()));
+        startActivity(VoiceCommandDetailActivity.getIntent(getActivity(), item));
     }
     //endregion
 
-    //region scrollup
+    //region ErrorHandler
+    @Override
+    public void retry() {
+        this.presenterView.showProgress();
+        this.voiceCommandResponseInteractor.update();
+    }
+
+    //endregion
+    //region ScrollUp
     @Override
     public void scrollUp() {
-        if (presenterView == null) {
+        if (this.presenterView == null) {
             return;
         }
-        presenterView.scrollUp();
+        this.presenterView.scrollUp();
     }
     //endregion
 
     //region methods
     private void showWelcomeCard(final boolean wasShown) {
         if (wasShown) {
-            this.adapter.showWelcomeCard(null);
+            this.presenterView.showWelcomeCard(null);
         } else {
-            this.adapter.showWelcomeCard(this::onWelcomeCardCloseClicked);
+            this.presenterView.showWelcomeCard(this::onWelcomeCardCloseClicked);
         }
-        this.presenterView.setInsetForWelcomeCard(!wasShown);
     }
 
     private void onWelcomeCardCloseClicked(@NonNull final View ignored) {
-        sharedPreferences.edit()
-                         .putBoolean(AccountPreferencesInteractor.VOICE_WELCOME_CARD, true)
-                         .apply();
+        this.sharedPreferences.edit()
+                              .putBoolean(AccountPreferencesInteractor.VOICE_WELCOME_CARD, true)
+                              .apply();
     }
 
+    private void presentError(@NonNull final Throwable throwable) {
+        this.presenterView.showError();
+
+    }
     //endregion
 
 }

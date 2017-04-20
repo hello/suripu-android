@@ -10,14 +10,22 @@
         android:paddingStart="@dimen/x2"
         android:paddingTop="@dimen/x2">
 
-        <ImageView
-            android:id="@+id/item_voice_command_image"
+        <ProgressBar
+            android:id="@+id/item_voice_command_spinner"
+            style="@style/ProgressBar.Tiny"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
+            android:layout_alignStart="@+id/item_voice_command_image"
+            android:layout_centerVertical="true"/>
+
+        <ImageView
+            android:id="@+id/item_voice_command_image"
+            android:layout_width="@dimen/x4"
+            android:layout_height="@dimen/x4"
+            android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:paddingEnd="@dimen/x2"
-            tools:src="@drawable/icon_conditions_large"/>
+            android:layout_marginEnd="@dimen/x2"/>
 
         <LinearLayout
             android:id="@+id/item_voice_command_container"

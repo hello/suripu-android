@@ -146,7 +146,7 @@
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"
             android:theme="@style/AppTheme.Expansions"/>
         <activity
-            android:name=".flows.voicecommands.ui.activities.VoiceCommandActivity"
+            android:name=".flows.voicecommands.ui.activities.VoiceCommandDetailActivity"
             android:parentActivityName=".flows.home.ui.activities.HomeActivity"
             android:theme="@style/AppTheme.AppSettingsActivity"/>
 
@@ -168,7 +168,6 @@
             android:parentActivityName=".flows.settings.ui.activities.AppSettingsActivity"
             android:theme="@style/AppTheme.NightModeActivity"
             />
-
 
         <activity
             android:name=".flows.expansions.ui.activities.ExpansionValuePickerActivity"

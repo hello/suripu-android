@@ -253,7 +253,6 @@ public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder
 
         @Override
         public void onClick(final View ignored) {
-            super.onClick(ignored);
             if (ArrayRecyclerAdapter.this.errorHandler == null) {
                 return;
             }
