@@ -5,12 +5,23 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.File;
+import java.lang.reflect.Field;
 
 import javax.inject.Inject;
 
@@ -19,6 +30,7 @@ import is.hello.sense.R;
 import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiEndpoint;
 import is.hello.sense.api.sessions.ApiSessionManager;
+import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.flows.expansions.ui.activities.ExpansionSettingsActivity;
 import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
 import is.hello.sense.functional.Functions;
@@ -118,7 +130,13 @@ public class DebugActivity extends InjectionActivity {
         decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
         adapter.add(new DetailItem("Reset app usage stats", this::resetAppUsage));
         adapter.add(new DetailItem("View Room Conditions Welcome Card", this::viewRoomConditionsWelcomeCard));
+        decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
         adapter.add(new DetailItem("Toggle Night Mode", this::toggleNightMode));
+        adapter.add(new DetailItem("Print current session information", this::printCurrentSessionInformation));
+        decoration.addBottomInset(adapter.getItemCount(), sectionPadding);
+        adapter.add(new DetailItem("Change current session account id", () -> this.update(updateSessionAccountId)));
+        adapter.add(new DetailItem("Print internal pref account id", this::printCurrentInternalPrefAccountId));
+        adapter.add(new DetailItem("Change current  internal pref account id", () -> this.update(updateInternalPrefAccountId)));
         adapter.add(new DetailItem("Log Out", this::logOut));
 
         recyclerView.setAdapter(adapter);
@@ -273,5 +291,96 @@ public class DebugActivity extends InjectionActivity {
         finish();
     }
 
+    public void printCurrentSessionInformation() {
+        final OAuthSession session = sessionManager.getSession();
+        if (session == null) {
+            Log.e(getClass().getSimpleName(), "current session is null");
+            Toast.makeText(this, "current session is null", Toast.LENGTH_LONG).show();
+            return;
+        }
+        Log.e(getClass().getSimpleName(), "current session is : " + session.toString());
+        Toast.makeText(this, "current session is : " + session.toString(), Toast.LENGTH_LONG).show();
+    }
+
+
+    public void update(@Nullable final Update update) {
+        if (update == null) {
+            return;
+        }
+        //Layout params
+        final ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        // EditText
+        final EditText editText = new EditText(this);
+        editText.setLayoutParams(layoutParams);
+
+        // Button
+        final Button button = new Button(this);
+        button.setText("Save");
+        button.setLayoutParams(layoutParams);
+
+        // LinearLayout
+        final LinearLayout view = new LinearLayout(this);
+        view.setOrientation(LinearLayout.VERTICAL);
+        view.setLayoutParams(layoutParams);
+        view.addView(editText);
+        view.addView(button);
+
+        // Dialog
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(view)
+                .show();
+        final WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        final Window window = dialog.getWindow();
+        lp.copyFrom(window.getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        window.setAttributes(lp);
+
+
+        button.setOnClickListener(v -> {
+            update.update(editText.getText().toString());
+            dialog.dismiss();
+        });
+    }
+
+    private Update updateSessionAccountId = new Update() {
+        @Override
+        public void update(@NonNull final String text) {
+            final OAuthSession session = sessionManager.getSession();
+            if (session == null) {
+                Log.e(getClass().getSimpleName(), "current session is null. Stopping");
+                Toast.makeText(DebugActivity.this, "current session is null. Stopping", Toast.LENGTH_LONG).show();
+                return;
+            }
+            try {
+                final Field accountId = session.getClass().getDeclaredField("accountId");
+                accountId.setAccessible(true);
+                accountId.set(session, text);
+                sessionManager.setSession(session);
+                printCurrentSessionInformation();
+            } catch (final Exception e) {
+                Log.e(getClass().getSimpleName(), "Failed to update session account id. Stopping");
+                Toast.makeText(DebugActivity.this, "Failed to update session account id. Stopping", Toast.LENGTH_LONG).show();
+            }
+        }
+    };
+
+
+    public void printCurrentInternalPrefAccountId() {
+        final String id = InternalPrefManager.getAccountId(this);
+        Log.e(getClass().getSimpleName(), "current internal pref account id : " + id);
+        Toast.makeText(this, "current internal pref account id : " + id, Toast.LENGTH_LONG).show();
+    }
+
+
+    private Update updateInternalPrefAccountId = text -> {
+        InternalPrefManager.setAccountId(DebugActivity.this, text);
+        printCurrentInternalPrefAccountId();
+    };
+
+    private interface Update {
+        void update(@NonNull final String text);
+    }
 
 }

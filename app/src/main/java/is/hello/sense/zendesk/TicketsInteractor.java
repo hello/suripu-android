@@ -3,7 +3,6 @@ package is.hello.sense.zendesk;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.zendesk.sdk.feedback.ZendeskFeedbackConfiguration;
 import com.zendesk.sdk.feedback.impl.ZendeskFeedbackConnector;
@@ -22,13 +21,12 @@ import javax.inject.Inject;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.SupportTopic;
-import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.api.sessions.OAuthSession;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.InteractorSubject;
 import is.hello.sense.graph.SafeObserverWrapper;
 import is.hello.sense.interactors.Interactor;
 import is.hello.sense.util.Analytics;
+import is.hello.sense.util.InternalPrefManager;
 import rx.Observable;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -46,8 +44,6 @@ public class TicketsInteractor extends Interactor {
     Context context;
     @Inject
     ApiService apiService;
-    @Inject
-    ApiSessionManager sessionManager;
 
     // Request doesn't implement Serializable,
     // so we can't use ValueInteractor<T>. Yay.
@@ -116,8 +112,7 @@ public class TicketsInteractor extends Interactor {
 
                 @Override
                 public String getAdditionalInfo() {
-                    final OAuthSession session = sessionManager.getSession();
-                    final String accountId = session != null ? session.getAccountId() : "";
+                    final String accountId = InternalPrefManager.getAccountId(context);
                     return String.format(Locale.US, "Id: %s\nSense Id: %s",
                                          accountId, Analytics.getSenseId());
                 }

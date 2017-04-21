@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import is.hello.sense.R;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.sessions.ApiSessionManager;
-import is.hello.sense.flows.generic.ui.interactors.LocationInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
 import is.hello.sense.flows.nightmode.interactors.NightModeInteractor;
@@ -52,27 +51,29 @@ public class LaunchActivity extends InjectionActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState == null) {
-            localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.APP_LAUNCHED);
-            if (sessionManager.hasSession()) {
-                apiService.getAccount(false).subscribe(account -> {
-                    InternalPrefManager.setAccountId(this, account.getId());
-                    Analytics.backFillUserInfo(account.getFullName(), account.getEmail());
-                    Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
-                }, e -> {
-                    Logger.error(getClass().getSimpleName(), "Could not load user info", e);
-                    Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
-                });
-            } else {
+        localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.APP_LAUNCHED);
+        if (sessionManager.hasSession()) {
+            final boolean trackingUser = Analytics.trackUserIdentifier(InternalPrefManager.getAccountId(this), true);
+            final String fallbackAccountId = sessionManager.getSession().getAccountId();
+            apiService.getAccount(false).subscribe(account -> {
+                InternalPrefManager.setAccountId(this, account.getId());
+                if (!trackingUser) {
+                    Analytics.trackUserIdentifier(account.getId(), true);
+                }
+                Analytics.backFillUserInfo(account.getFullName(), account.getEmail());
                 Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
-            }
+            }, e -> {
+                if (!trackingUser) {
+                    InternalPrefManager.setAccountId(this, fallbackAccountId);
+                    Analytics.trackUserIdentifier(fallbackAccountId, true);
+                }
+                Logger.error(getClass().getSimpleName(), "Could not load user info", e);
+                Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
+            });
+        } else {
+            Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
         }
 
-        if (sessionManager.getSession() != null) {
-            final String accountId = sessionManager.getSession().getAccountId();
-            InternalPrefManager.setAccountId(this, accountId);
-            Analytics.trackUserIdentifier(accountId, true);
-        }
     }
 
     @Override
