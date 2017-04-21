@@ -1,5 +1,7 @@
 package is.hello.sense.api.sessions;
 
+import android.content.Context;
+
 import com.google.gson.annotations.SerializedName;
 
 import is.hello.sense.api.model.ApiResponse;
@@ -37,6 +39,13 @@ public class OAuthSession extends ApiResponse {
         return tokenType;
     }
 
+    /**
+     * Only use when initially signing in or registering.
+     * Do not rely on this account id to be in sync with account id stored on server.
+     * Only because the session may persist longer over multiple releases.
+     * See {@link is.hello.sense.util.InternalPrefManager#getAccountId(Context)}
+     * @return potentially out of sync account id
+     */
     public String getAccountId() {
         return accountId;
     }

@@ -9,7 +9,7 @@ public class InternalPrefManager {
     private static final String EMPTY = "";
 
     public static SharedPreferences getInternalPrefs(@NonNull final Context context) {
-        return context.getSharedPreferences(Constants.INTERNAL_PREFS, 0);
+        return context.getSharedPreferences(Constants.INTERNAL_PREFS, Context.MODE_PRIVATE);
     }
 
     public static void clearPrefs(@NonNull final Context context) {
