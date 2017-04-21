@@ -119,11 +119,7 @@ public class SenseApplication extends MultiDexApplication {
             return;
         }
 
-        if (BuildConfig.USE_LEAK_CANARY) {
-            this.refWatcher = LeakCanary.install(this);
-        }else {
-            this.refWatcher = RefWatcher.DISABLED;
-        }
+        this.refWatcher = LeakCanary.install(this);
 
         nightModeInteractor.currentNightMode.subscribe(this::onNextNightModeUpdate,
                                                        Functions.LOG_ERROR);

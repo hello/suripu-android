@@ -103,7 +103,6 @@ android {
             resValue TYPE_RES_STRING, FACEBOOK_APP_ID, '"' + "372438546161587" + '"'
             buildConfigField TYPE_STRING, GCM_AUTH_ENTITY_IDS, '"' + "88512303154,222711285636" + '"'
             buildConfigField TYPE_BOOLEAN, IS_BETA, TRUE
-            buildConfigField TYPE_BOOLEAN, USE_LEAK_CANARY, TRUE
 
             signingConfig signingConfigs.debug
 
@@ -113,7 +112,6 @@ android {
         }
 
         development {
-            buildConfigField TYPE_BOOLEAN, USE_LEAK_CANARY, FALSE
 
             initWith debug
             signingConfig signingConfigs.debug
@@ -133,7 +131,6 @@ android {
             resValue TYPE_RES_STRING, FACEBOOK_APP_ID, '"' + "372438546161587" + '"'
             buildConfigField TYPE_STRING, GCM_AUTH_ENTITY_IDS, '"' + "88512303154,222711285636" + '"'
             buildConfigField TYPE_BOOLEAN, IS_BETA, FALSE
-            buildConfigField TYPE_BOOLEAN, USE_LEAK_CANARY, FALSE
 
             signingConfig signingConfigs.release
 
@@ -250,7 +247,7 @@ dependencies {
     debugCompile 'net.hockeyapp.android:HockeySDK:3.5.0'
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     developmentCompile 'net.hockeyapp.android:HockeySDK:3.5.0'
-    developmentCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
+    developmentCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     provided 'com.squareup.dagger:dagger-compiler:1.2.2'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
 }
