@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 public class InternalPrefManager {
     private static final String EMPTY = "";
@@ -20,6 +21,7 @@ public class InternalPrefManager {
     }
 
     public static void setAccountId(@NonNull final Context context, @Nullable final String id) {
+        //  Log.e(InternalPrefManager.class.getSimpleName(), "setAccountId( " + id + " )"); // useful for debugging
         getInternalPrefs(context)
                 .edit()
                 .putString(Constants.INTERNAL_PREF_ACCOUNT_ID, id == null ? EMPTY : id)
@@ -28,12 +30,14 @@ public class InternalPrefManager {
 
     @NonNull
     public static String getAccountId(@NonNull final Context context) {
-        return getInternalPrefs(context)
+        final String id = getInternalPrefs(context)
                 .getString(Constants.INTERNAL_PREF_ACCOUNT_ID, EMPTY);
+        //  Log.e(InternalPrefManager.class.getSimpleName(), "getAccountId() = " + id); // useful for debugging
+        return id;
     }
 
     public static boolean hasAccountId(@NonNull final Context context) {
-        final String accountId =  getAccountId(context);
+        final String accountId = getAccountId(context);
         return !EMPTY.equals(accountId);
     }
 

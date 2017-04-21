@@ -16,14 +16,14 @@ public abstract class ApiSessionManager {
 
     protected final Context context;
 
-    protected ApiSessionManager(@NonNull Context context) {
+    protected ApiSessionManager(@NonNull final Context context) {
         this.context = context;
 
-        BroadcastReceiver receiver = new BroadcastReceiver() {
+        final BroadcastReceiver receiver = new BroadcastReceiver() {
             private long timeOfLastReception = 0;
 
             @Override
-            public void onReceive(Context context, Intent intent) {
+            public void onReceive(final Context context, final Intent intent) {
                 if ((System.currentTimeMillis() - timeOfLastReception) > 1000) {
                     onSessionInvalidated();
                     this.timeOfLastReception = System.currentTimeMillis();
@@ -37,18 +37,21 @@ public abstract class ApiSessionManager {
     //region Abstract
 
     protected abstract void storeOAuthSession(@Nullable OAuthSession session);
-    protected abstract @Nullable OAuthSession retrieveOAuthSession();
+
+    @Nullable
+    protected abstract OAuthSession retrieveOAuthSession();
 
     //endregion
 
 
     //region Accessors
 
-    public final void setSession(@Nullable OAuthSession session) {
+    public final void setSession(@Nullable final OAuthSession session) {
         storeOAuthSession(session);
     }
 
-    public final @Nullable OAuthSession getSession() {
+    @Nullable
+    public final OAuthSession getSession() {
         return retrieveOAuthSession();
     }
 
@@ -56,8 +59,9 @@ public abstract class ApiSessionManager {
         return retrieveOAuthSession() != null;
     }
 
-    public @Nullable String getAccessToken() {
-        OAuthSession session = getSession();
+    @Nullable
+    public String getAccessToken() {
+        final OAuthSession session = getSession();
         if (session != null) {
             return session.getAccessToken();
         } else {
@@ -68,7 +72,7 @@ public abstract class ApiSessionManager {
     //endregion
 
 
-    protected void onSessionInvalidated() {
+    private void onSessionInvalidated() {
         Logger.warn(getClass().getSimpleName(), "Session invalidated, logging out.");
         logOut();
     }
