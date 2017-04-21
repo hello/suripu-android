@@ -66,8 +66,8 @@ public class VoiceFragment extends ControllerPresenterFragment<VoiceView>
                          this.presenterView::bindVoiceCommands,
                          this::presentError);
     }
+    //endregion
 
-    //endRegion
     //region Controller
     @Override
     public void setVisibleToUser(final boolean isVisible) {
@@ -79,7 +79,6 @@ public class VoiceFragment extends ControllerPresenterFragment<VoiceView>
             }
         }
     }
-
     //endregion
 
     //region  VoiceView.Listener
@@ -97,8 +96,8 @@ public class VoiceFragment extends ControllerPresenterFragment<VoiceView>
         this.presenterView.showProgress();
         this.voiceCommandResponseInteractor.update();
     }
-
     //endregion
+
     //region ScrollUp
     @Override
     public void scrollUp() {

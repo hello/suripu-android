@@ -28,11 +28,12 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandTopic
     private static final int VIEW_ITEM = 1;
     private static final int VIEW_WELCOME = 2;
 
+    private final Picasso picasso;
+    private final int imageSize;
+
     private boolean hasError = false;
     private View.OnClickListener welcomeCardListener = null;
 
-    private final Picasso picasso;
-    private final int imageSize;
 
     public VoiceCommandsAdapter(@NonNull final Context context,
                                 @NonNull final Picasso picasso) {
@@ -46,7 +47,7 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandTopic
         if (this.hasError) {
             return 1;
         }
-        return super.getItemCount() + (this.welcomeCardListener == null ? 0 : 1);
+        return super.getItemCount() + (showWelcomeCard()? 0 : 1);
     }
 
     @Override
@@ -67,7 +68,7 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandTopic
             return null;
         }
 
-        return super.getItem(position - (this.welcomeCardListener == null ? 0 : 1));
+        return super.getItem(position - (showWelcomeCard() ? 0 : 1));
     }
 
 
