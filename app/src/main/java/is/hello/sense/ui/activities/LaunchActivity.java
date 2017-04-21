@@ -53,13 +53,20 @@ public class LaunchActivity extends InjectionActivity {
 
         localUsageTracker.incrementAsync(LocalUsageTracker.Identifier.APP_LAUNCHED);
         if (sessionManager.hasSession()) {
-            Analytics.trackUserIdentifier(InternalPrefManager.getAccountId(this), true);
-
+            final boolean trackingUser = Analytics.trackUserIdentifier(InternalPrefManager.getAccountId(this), true);
+            final String fallbackAccountId = sessionManager.getSession().getAccountId();
             apiService.getAccount(false).subscribe(account -> {
                 InternalPrefManager.setAccountId(this, account.getId());
+                if (!trackingUser) {
+                    Analytics.trackUserIdentifier(account.getId(), true);
+                }
                 Analytics.backFillUserInfo(account.getFullName(), account.getEmail());
                 Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
             }, e -> {
+                if (!trackingUser) {
+                    InternalPrefManager.setAccountId(this, fallbackAccountId);
+                    Analytics.trackUserIdentifier(fallbackAccountId, true);
+                }
                 Logger.error(getClass().getSimpleName(), "Could not load user info", e);
                 Analytics.trackEvent(Analytics.Global.APP_LAUNCHED, null);
             });

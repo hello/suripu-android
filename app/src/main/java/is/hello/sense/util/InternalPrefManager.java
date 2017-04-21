@@ -26,9 +26,15 @@ public class InternalPrefManager {
                 .apply();
     }
 
+    @NonNull
     public static String getAccountId(@NonNull final Context context) {
         return getInternalPrefs(context)
                 .getString(Constants.INTERNAL_PREF_ACCOUNT_ID, EMPTY);
+    }
+
+    public static boolean hasAccountId(@NonNull final Context context) {
+        final String accountId =  getAccountId(context);
+        return !EMPTY.equals(accountId);
     }
 
 
