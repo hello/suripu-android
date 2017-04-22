@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -38,7 +39,7 @@ public class SleepScoreIconDrawable extends Drawable {
         final int unselectedColor = ContextCompat.getColor(context, R.color.active_icon);
         final int fillColor = ContextCompat.getColor(context, R.color.sleep_score_icon_fill);
         final int backgroundColor = ContextCompat.getColor(context, R.color.background_card);
-
+        final int maxTextSize = context.getResources().getDimensionPixelSize(R.dimen.sleep_score_icon_drawable_text_size);
         this.width = builder.width;
         this.height = builder.height;
         this.text = builder.text;
@@ -46,7 +47,6 @@ public class SleepScoreIconDrawable extends Drawable {
         this.circlePaint.setDither(true);
         this.circlePaint.setStrokeWidth(context.getResources()
                                                .getDimensionPixelSize(R.dimen.icon_stroke_width));
-
         if (builder.isSelected) {
             this.circlePaint.setColor(selectedColor);
             this.textPaint.setColor(selectedColor);
@@ -56,10 +56,12 @@ public class SleepScoreIconDrawable extends Drawable {
             this.textPaint.setColor(unselectedColor);
             this.fillPaint.setColor(backgroundColor);
         }
+        this.textPaint.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL)); // if this is reused make a util function in the future
         getCorrectTextSize(textPaint,
                            text,
                            getIntrinsicWidth() - (int) (getIntrinsicWidth() * TEXT_MARGIN_RATIO),
-                           getIntrinsicHeight() - (int) (getIntrinsicHeight() * TEXT_MARGIN_RATIO));
+                           getIntrinsicHeight() - (int) (getIntrinsicHeight() * TEXT_MARGIN_RATIO),
+                           maxTextSize);
     }
 
     @Override
@@ -73,7 +75,7 @@ public class SleepScoreIconDrawable extends Drawable {
     }
 
     @Override
-    public void draw(final Canvas canvas) {
+    public void draw(@NonNull final Canvas canvas) {
         final int centerX = canvas.getWidth() / 2;
         final int centerY = canvas.getHeight() / 2;
         final int radius;

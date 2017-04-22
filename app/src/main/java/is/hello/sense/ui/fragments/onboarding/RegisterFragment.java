@@ -60,6 +60,7 @@ import is.hello.sense.ui.widget.util.Views;
 import is.hello.sense.util.Analytics;
 import is.hello.sense.util.Distribution;
 import is.hello.sense.util.EditorActionHandler;
+import is.hello.sense.util.InternalPrefManager;
 import retrofit.mime.TypedFile;
 import rx.Observable;
 
@@ -391,6 +392,8 @@ public class RegisterFragment extends InjectionFragment
                                                                   passwordTextLET.getInputText());
         bindAndSubscribe(apiService.authorize(credentials), session -> {
             sessionManager.setSession(session);
+
+            InternalPrefManager.setAccountId(getActivity(), session.getAccountId());
 
             preferences.putLocalDate(PreferencesInteractor.ACCOUNT_CREATION_DATE,
                                      LocalDate.now());

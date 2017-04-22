@@ -57,7 +57,7 @@ public class SensorGraphDrawable extends Drawable {
      */
     private static final float SCRUBBER_INNER_RADIUS = 6;
 
-    private static final float EXTRA_OFF_SCREEN_PX = 100;
+    private static final float EXTRA_OFF_SCREEN_PX = 10;
     /**
      * How rounded the corners joining adjacent points should be
      */
@@ -196,14 +196,15 @@ public class SensorGraphDrawable extends Drawable {
             return;
         }
         // Cast once
-        final float maxWidth = Math.min(canvas.getWidth() + EXTRA_OFF_SCREEN_PX, canvas.getMaximumBitmapWidth());
+        final float visibleWidth = canvas.getWidth(); //use when drawing on visible portion of canvas
+        final float maxWidth = Math.min(visibleWidth + EXTRA_OFF_SCREEN_PX, canvas.getMaximumBitmapWidth());
         final float maxHeight = Math.min(this.height + EXTRA_OFF_SCREEN_PX, canvas.getMaximumBitmapHeight());
 
         // distance between each value point;
-        final double xIncrement = maxWidth / values.length;
+        final double xIncrement = visibleWidth / values.length;
 
         // determine how many values to draw for a smooth animation effect
-        int drawTo = (int) ((this.scaleFactor * maxWidth) / xIncrement);
+        int drawTo = (int) ((this.scaleFactor * visibleWidth) / xIncrement);
         if (drawTo >= values.length) {
             drawTo = values.length - 1;
         }
@@ -214,8 +215,12 @@ public class SensorGraphDrawable extends Drawable {
             this.drawingPath.lineTo((float) (i * xIncrement), getValueHeight(values[i]));
         }
 
-        // draw off the screen but keep the height equal to the last drawn point. This makes it so the graph doesn't drop in height near the end.
-        this.drawingPath.lineTo(maxWidth * this.scaleFactor, getValueHeight(values[drawTo]));
+        if (scaleFactor == 1) {
+            // draw off the screen but keep the height equal to the last drawn point. This makes it so the graph doesn't drop in height near the end.
+            this.drawingPath.lineTo(maxWidth * this.scaleFactor, getValueHeight(values[drawTo]));
+        } else {
+            drawingPath.lineTo(visibleWidth * scaleFactor, getValueHeight(values[drawTo]));
+        }
 
         // Draw the darker colored stroke around the graph.
         canvas.drawPath(this.drawingPath, this.strokePaint);

@@ -47,7 +47,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 25
         versionCode generateVersionCode()
-        versionName "2.1.0"
+        versionName "2.1.1"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
     }
@@ -86,6 +86,7 @@ android {
         def FACEBOOK_APP_ID = "FACEBOOK_APP_ID"
         def GCM_AUTH_ENTITY_IDS = "GCM_AUTH_TOKEN_IDS"
         def IS_BETA = "IS_BETA"
+        def USE_LEAK_CANARY = "USE_LEAK_CANARY"
 
         def TRUE = "true"
         def FALSE = "false"
@@ -111,6 +112,7 @@ android {
         }
 
         development {
+
             initWith debug
             signingConfig signingConfigs.debug
 
@@ -228,7 +230,7 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.3-SNAPSHOT'
     compile 'me.grantland:autofittextview:0.2.1'
     compile 'de.hdodenhof:circleimageview:2.0.0'
-    compile 'is.hello.commonsense:ble:2017.02.22.1'
+    compile 'is.hello.commonsense:ble:2017.04.17.1'
     compile 'is.hello:anime-android-go-99:0.5.0'
     compile 'com.facebook.android:facebook-android-sdk:4.13.1'
     compile 'no.nordicsemi.android:dfu:0.6.3'
@@ -245,7 +247,7 @@ dependencies {
     debugCompile 'net.hockeyapp.android:HockeySDK:3.5.0'
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     developmentCompile 'net.hockeyapp.android:HockeySDK:3.5.0'
-    developmentCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
+    developmentCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     provided 'com.squareup.dagger:dagger-compiler:1.2.2'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
 }

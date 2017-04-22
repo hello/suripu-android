@@ -224,6 +224,7 @@ public class SignInFragment extends InjectionFragment
                              e -> {
                                  Logger.warn(getClass().getSimpleName(),
                                              "Could not update local account state", e);
+                                 InternalPrefManager.setAccountId(getActivity(), session.getAccountId());
                                  Analytics.trackSignIn(session.getAccountId(), null, null);
                                  getOnboardingActivity().showHomeActivity(OnboardingActivity.FLOW_SIGN_IN);
                              });

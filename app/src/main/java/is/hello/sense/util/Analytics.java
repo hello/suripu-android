@@ -912,8 +912,17 @@ public class Analytics {
         return traits;
     }
 
-    public static void trackUserIdentifier(@NonNull final String accountId,
-                                          final boolean includeSegment) {
+    /**
+     * @param accountId to track user
+     * @param includeSegment to use segmentation analytics
+     * @return true if user tracking started successfully
+     */
+    public static boolean trackUserIdentifier(@NonNull final String accountId,
+                                              final boolean includeSegment) {
+        if (accountId.isEmpty()) {
+            Logger.warn(Analytics.LOG_TAG, "Unable to begin session for empty accountId");
+            return false;
+        }
         Logger.info(Analytics.LOG_TAG, "Began session for " + accountId);
 
         if (!SenseApplication.isRunningInRobolectric()) {
@@ -924,6 +933,8 @@ public class Analytics {
                 segment.flush();
             }
         }
+
+        return true;
     }
 
     public static void trackRegistration(@NonNull final String accountId,
