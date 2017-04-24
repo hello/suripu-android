@@ -36,7 +36,7 @@
             android:id="@+id/view_home_progress_overlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/gray6_70"
+            android:background="@color/transparent_overlay"
             android:clickable="true"
             android:focusable="true"
             android:visibility="gone">
