@@ -169,6 +169,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         }
         this.lastNightInteractor.update();
         if (shouldUpdateAlerts()) {
+            this.alertsInteractor.alert.forget();
             this.alertsInteractor.update();
         }
     }
