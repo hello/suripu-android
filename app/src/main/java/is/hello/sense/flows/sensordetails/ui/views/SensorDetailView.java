@@ -33,12 +33,6 @@ public final class SensorDetailView extends PresenterView
      */
     private static final float GRAPH_HEIGHT_RATIO = .65f;
 
-    /**
-     * How long to wait before scrolling the view for tutorials.
-     */
-    private static final int TUTORIAL_SCROLL_DELAY_MS = 250;
-
-
     private final SelectorView subNavSelector;
     private final ImageView calibrationImageView;
     private final TextView valueTextView;
@@ -175,12 +169,11 @@ public final class SensorDetailView extends PresenterView
                                                                             this.unitFormatter,
                                                                             this.graphHeight,
                                                                             labels));
-
-        postDelayed(() -> this.subNavSelector.setEnabled(true), delay.getLength());
+        this.subNavSelector.setEnabled(true);
     }
 
     public void smoothScrollBy(final int dY) {
-        postDelayed(() -> this.scrollView.smoothScrollTo(0, dY), TUTORIAL_SCROLL_DELAY_MS);
+        this.scrollView.smoothScrollTo(0, dY);
     }
 
     private void refreshWithProgress() {
