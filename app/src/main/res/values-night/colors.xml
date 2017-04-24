@@ -65,8 +65,6 @@
     <color name="smart_alarm_header_background">@color/primary</color>
     <color name="insight_illustration_background">@color/background</color>
     <color name="expansions_background">@color/background_card</color>
-    <color name="timeline_share_background_gradient_top">@color/gray1</color>
-    <color name="timeline_share_background_gradient_bottom">@color/white</color>
     <color name="timeline_event_background_normal">@color/background_card</color>
     <color name="timeline_event_background_pressed">@color/gray8</color>
     <color name="questions_divider">@color/divider</color>

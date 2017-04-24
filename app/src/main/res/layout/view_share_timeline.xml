@@ -5,7 +5,7 @@
     <RelativeLayout
         android:layout_width="@dimen/timeline_shareable_view_width"
         android:layout_height="@dimen/timeline_shareable_view_height"
-        android:background="@color/background_card"
+        android:background="@color/white"
         android:padding="@dimen/x2">
 
 
@@ -30,12 +30,13 @@
 
             <TextView
                 android:id="@+id/view_share_timeline_slept_for_time"
-                style="@style/Title2.Secondary"
+                style="@style/Title2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center_horizontal"
                 android:lineSpacingExtra="@dimen/x.5"
+                android:textColor="@color/share_secondary_text"
                 tools:text="It took you 7 minutes to fall asleep. You slept a total 6.3 hours and woke up 1 time during the night."/>
 
             <LinearLayout
@@ -60,11 +61,12 @@
 
         <TextView
             android:id="@+id/view_share_timeline_date"
-            style="@style/Caption1.Primary"
+            style="@style/Caption1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
+            android:textColor="@color/share_primary_text"
             tools:targetApi="lollipop"
             tools:text="January 18, 2017"/>
     </RelativeLayout>
