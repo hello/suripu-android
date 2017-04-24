@@ -530,6 +530,7 @@ public class OnboardingActivity extends ScopedInjectionAppCompatActivity
             if (isPairOnly()) {
                 builder.setAnalyticsEvent(Analytics.Settings.EVENT_SENSE_SETUP);
             } else {
+                builder.setShowBuySenseSecondaryAction(true);
                 builder.setAnalyticsEvent(Analytics.Onboarding.EVENT_SENSE_SETUP);
             }
             builder.setHelpStep(UserSupport.HelpStep.SETTING_UP_SENSE);
