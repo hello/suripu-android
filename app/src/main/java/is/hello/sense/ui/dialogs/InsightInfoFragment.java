@@ -87,8 +87,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
 
     @UsedInTransition
     private View rootView;
-    @UsedInTransition
-    private View fillView;
 
     @UsedInTransition
     private ExtendedScrollView scrollView;
@@ -136,7 +134,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         final Bundle arguments = getArguments();
         final String category = arguments.getString(ARG_CATEGORY);
         if (category != null) {
@@ -163,7 +160,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         this.rootView = inflater.inflate(R.layout.fragment_insight_info, container, false);
-        this.fillView = rootView.findViewById(R.id.fragment_insight_info_fill);
         this.progress = (ProgressBar) rootView.findViewById(R.id.fragment_insight_info_progress);
         this.illustrationImage =
                 (ParallaxImageView) rootView.findViewById(R.id.fragment_insight_info_illustration);
@@ -313,7 +309,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     @Override
     protected void onExitAnimatorEnd() {
         this.rootView = null;
-        this.fillView = null;
         this.scrollView = null;
         this.topShadow = null;
         this.bottomShadow = null;
@@ -556,7 +551,6 @@ public class InsightInfoFragment extends AnimatedInjectionFragment
     }
 
 //endregion
-
     private void shareInsightSuccess(@NonNull final ShareUrl shareUrl) {
         final Share.Text text = Share.text(shareUrl.getUrlForSharing(getActivity()));
         if (category != null) {
