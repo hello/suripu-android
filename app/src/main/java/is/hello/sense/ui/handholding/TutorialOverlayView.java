@@ -246,7 +246,7 @@ public class TutorialOverlayView extends RelativeLayout {
         this.interactionView = new InteractionView(getContext());
 
         final int interactionMidX = interactionView.getMinimumWidth() / 2;
-        final int interactionMidY = interactionView.getMinimumHeight() / 2;
+        final int interactionMidY = interactionView.getMinimumHeight();
 
         final Rect anchorFrame = new Rect();
         Views.getFrameInWindow(anchorView, anchorFrame);
