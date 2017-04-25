@@ -17,12 +17,11 @@ import java.util.List;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.Timeline;
+import is.hello.sense.flows.home.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.flows.timeline.TimelineModule;
 import is.hello.sense.ui.activities.appcompat.ScopedInjectionAppCompatActivity;
 import is.hello.sense.ui.fragments.TimelineInfoFragment;
-import is.hello.sense.ui.fragments.ZoomedOutTimelineFragment;
 import is.hello.sense.util.Analytics;
-import is.hello.sense.util.DateFormatter;
 
 /**
  * Activity that handles displaying sleep score history
@@ -38,7 +37,6 @@ public class TimelineActivity extends ScopedInjectionAppCompatActivity
     private final BroadcastReceiver onTimeChanged = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, final Intent intent) {
-            final LocalDate newToday = DateFormatter.todayForTimeline();
         }
     };
 
