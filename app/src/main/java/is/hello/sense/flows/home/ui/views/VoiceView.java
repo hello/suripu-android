@@ -86,7 +86,7 @@ public class VoiceView extends PresenterView
     }
 
     public void bindVoiceCommands(@NonNull final VoiceCommandResponse response) {
-        this.adapter.add(response);
+        this.adapter.replaceAll(response.getVoiceCommandTopics());
         this.recyclerView.setVisibility(VISIBLE);
         this.progressBar.setVisibility(GONE);
     }

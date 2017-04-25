@@ -10,29 +10,35 @@
         android:paddingStart="@dimen/x2"
         android:paddingTop="@dimen/x2">
 
-        <ProgressBar
-            android:id="@+id/item_voice_command_spinner"
-            style="@style/ProgressBar.Tiny"
+        <RelativeLayout
+            android:id="@+id/item_voice_command_icon_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignStart="@+id/item_voice_command_image"
-            android:layout_centerVertical="true"/>
+            android:layout_alignParentStart="true">
 
-        <ImageView
-            android:id="@+id/item_voice_command_image"
-            android:layout_width="@dimen/x4"
-            android:layout_height="@dimen/x4"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="@dimen/x2"/>
+            <ProgressBar
+                android:id="@+id/item_voice_command_spinner"
+                style="@style/ProgressBar.Tiny"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"/>
+
+            <ImageView
+                android:id="@+id/item_voice_command_image"
+                android:layout_width="@dimen/x4"
+                android:layout_height="@dimen/x4"
+                android:layout_centerInParent="true"
+                android:layout_marginEnd="@dimen/x2"
+                android:src="@drawable/icon_voice_blueback"
+                android:visibility="invisible"/>
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/item_voice_command_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:layout_toEndOf="@id/item_voice_command_image"
+            android:layout_toEndOf="@id/item_voice_command_icon_container"
             android:orientation="vertical">
 
             <TextView

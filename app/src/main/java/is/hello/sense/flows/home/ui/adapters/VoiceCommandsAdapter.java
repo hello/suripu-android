@@ -14,9 +14,9 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import is.hello.sense.R;
-import is.hello.sense.api.model.v2.voice.VoiceCommandResponse;
 import is.hello.sense.api.model.v2.voice.VoiceCommandTopic;
 import is.hello.sense.databinding.ItemVoiceCommandBinding;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
@@ -47,7 +47,7 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandTopic
         if (this.hasError) {
             return 1;
         }
-        return super.getItemCount() + (showWelcomeCard()? 0 : 1);
+        return super.getItemCount() + (showWelcomeCard() ? 1 : 0);
     }
 
     @Override
@@ -68,9 +68,14 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandTopic
             return null;
         }
 
-        return super.getItem(position - (showWelcomeCard() ? 0 : 1));
+        return super.getItem(position - (showWelcomeCard() ? 1 : 0));
     }
 
+    @Override
+    public boolean replaceAll(@NonNull final Collection<? extends VoiceCommandTopic> collection) {
+        this.hasError = false;
+        return super.replaceAll(collection);
+    }
 
     @Override
     public ArrayRecyclerAdapter.ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
@@ -116,12 +121,6 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandTopic
         return this.welcomeCardListener != null;
     }
 
-    public void add(@NonNull final VoiceCommandResponse voiceCommandResponse) {
-        clear();
-        this.hasError = false;
-        addAll(voiceCommandResponse.getVoiceCommandTopics());
-    }
-
     public abstract class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder {
 
         public BaseViewHolder(@NonNull final View itemView) {
@@ -142,7 +141,7 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandTopic
             super.bind(position);
             final VoiceCommandTopic voiceCommandTopic = getItem(position);
             final String photoUrl = voiceCommandTopic.getMultiDensityImage()
-                                                     .getUrl(this.binding.getRoot().getResources());
+                                                     .getUrl(this.itemView.getResources());
             VoiceCommandsAdapter.this.picasso.load(photoUrl)
                                              .resize(VoiceCommandsAdapter.this.imageSize,
                                                      VoiceCommandsAdapter.this.imageSize)
@@ -153,7 +152,7 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandTopic
             this.itemView.setOnClickListener(v -> dispatchItemClicked(position, voiceCommandTopic));
             if (position == getItemCount() - 1) {
                 this.binding.itemVoiceCommandDivider.setVisibility(View.INVISIBLE);
-            }else {
+            } else {
                 this.binding.itemVoiceCommandDivider.setVisibility(View.VISIBLE);
             }
         }
