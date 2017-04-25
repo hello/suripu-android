@@ -31,7 +31,6 @@ import is.hello.sense.api.model.Devices;
 import is.hello.sense.api.model.PlaceholderDevice;
 import is.hello.sense.api.model.SenseDevice;
 import is.hello.sense.api.model.SleepPillDevice;
-import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.widget.util.Drawables;
 import is.hello.sense.ui.widget.util.Styles;
 import is.hello.sense.ui.widget.util.Views;
@@ -358,7 +357,7 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (event.getRawX() >= status2Label.getWidth() - status2Label.getCompoundDrawables()[2].getIntrinsicWidth()) {
                         if (onDeviceInteractionListener != null){
-                            onDeviceInteractionListener.onInfoClick();
+                            onDeviceInteractionListener.onPillInfoClick();
                         }
                         return true;
                     }
@@ -584,6 +583,6 @@ public class DevicesAdapter extends ArrayRecyclerAdapter<BaseDevice, DevicesAdap
         void onPlaceholderInteraction(@NonNull PlaceholderDevice.Type type);
         void onUpdateDevice(@NonNull BaseDevice device);
         void onScrollBy(int x, int y);
-        void onInfoClick();
+        void onPillInfoClick();
     }
 }

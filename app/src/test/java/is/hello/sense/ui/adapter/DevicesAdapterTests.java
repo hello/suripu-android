@@ -81,7 +81,7 @@ public class DevicesAdapterTests extends SenseTestCase {
         }
 
         @Override
-        public void onInfoClick() {
+        public void onPillInfoClick() {
             //override
         }
     }

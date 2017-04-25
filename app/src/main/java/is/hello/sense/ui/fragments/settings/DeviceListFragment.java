@@ -227,7 +227,7 @@ public class DeviceListFragment extends InjectionFragment
     //region DeviceInteractionListener
 
     @Override
-    public void onInfoClick() {
+    public void onPillInfoClick() {
         WelcomeDialogFragment.show(getActivity(), R.xml.welcome_dialog_pill_color, true);
     }
 
