@@ -8,6 +8,7 @@ import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
 
+import is.hello.sense.api.model.v2.voice.VoiceCommandResponse;
 import is.hello.sense.api.model.v2.voice.VoiceCommandTopic;
 import is.hello.sense.flows.home.interactors.VoiceCommandResponseInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
@@ -63,7 +64,7 @@ public class VoiceFragment extends ControllerPresenterFragment<VoiceView>
                          this::showWelcomeCard,
                          Functions.LOG_ERROR);
         bindAndSubscribe(this.voiceCommandResponseInteractor.commands,
-                         this.presenterView::bindVoiceCommands,
+                         this::bindVoiceCommands,
                          this::presentError);
     }
     //endregion
@@ -115,6 +116,10 @@ public class VoiceFragment extends ControllerPresenterFragment<VoiceView>
         } else {
             this.presenterView.showWelcomeCard(this::onWelcomeCardCloseClicked);
         }
+    }
+
+    private void bindVoiceCommands(@NonNull final VoiceCommandResponse response) {
+        this.presenterView.bindVoiceCommands(response.getVoiceCommandTopics());
     }
 
     private void onWelcomeCardCloseClicked(@NonNull final View ignored) {

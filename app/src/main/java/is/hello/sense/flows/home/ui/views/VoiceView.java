@@ -9,8 +9,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ProgressBar;
 
+import java.util.List;
+
 import is.hello.sense.R;
-import is.hello.sense.api.model.v2.voice.VoiceCommandResponse;
 import is.hello.sense.api.model.v2.voice.VoiceCommandTopic;
 import is.hello.sense.flows.home.ui.adapters.VoiceCommandsAdapter;
 import is.hello.sense.mvp.view.PresenterView;
@@ -85,8 +86,8 @@ public class VoiceView extends PresenterView
         this.setInsetForWelcomeCard(onClickListener != null);
     }
 
-    public void bindVoiceCommands(@NonNull final VoiceCommandResponse response) {
-        this.adapter.replaceAll(response.getVoiceCommandTopics());
+    public void bindVoiceCommands(@NonNull final List<VoiceCommandTopic> topicList) {
+        this.adapter.replaceAll(topicList);
         this.recyclerView.setVisibility(VISIBLE);
         this.progressBar.setVisibility(GONE);
     }
