@@ -111,7 +111,8 @@ public class ZoomedOutTimelineInteractor extends Interactor {
                               .observeOn(this.updateScheduler);
     }
 
-    private Observable<Timeline> retrieveAndCacheTimeline(@NonNull final LocalDate date) {
+    @VisibleForTesting
+    Observable<Timeline> retrieveAndCacheTimeline(@NonNull final LocalDate date) {
         final Timeline existingTimeline = this.cachedTimelines.get(date);
         if (existingTimeline != null) {
             return Observable.just(existingTimeline);

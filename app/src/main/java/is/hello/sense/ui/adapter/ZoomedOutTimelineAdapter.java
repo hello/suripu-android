@@ -28,16 +28,15 @@ import is.hello.sense.util.Logger;
 import rx.functions.Action1;
 
 public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTimelineAdapter.ViewHolder> {
-    private final ZoomedOutTimelineInteractor presenter;
+    private final ZoomedOutTimelineInteractor interactor;
     private final int count;
 
-    private
     @Nullable
-    OnItemClickedListener onItemClickedListener;
+    private OnItemClickedListener onItemClickedListener;
 
-    public ZoomedOutTimelineAdapter(@NonNull final ZoomedOutTimelineInteractor presenter,
+    public ZoomedOutTimelineAdapter(@NonNull final ZoomedOutTimelineInteractor interactor,
                                     @NonNull final LocalDate oldestDate) {
-        this.presenter = presenter;
+        this.interactor = interactor;
 
         LocalDate today = DateFormatter.todayForTimeline();
         if (today.equals(oldestDate)) {
@@ -51,7 +50,7 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
 
     @Override
     public int getItemCount() {
-        return count;
+        return this.count;
     }
 
     @Override
@@ -66,31 +65,31 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
     @Override
     public void onBindViewHolder(final ViewHolder holder,
                                  final int position) {
-        final LocalDate date = presenter.getDateAt(position);
-        final Timeline timeline = presenter.getCachedTimeline(date);
+        final LocalDate date = this.interactor.getDateAt(position);
+        final Timeline timeline = this.interactor.getCachedTimeline(date);
         holder.bind(date, timeline);
 
-        presenter.addDataView(holder);
+        this.interactor.addDataView(holder);
     }
 
     @Override
     public void onViewDetachedFromWindow(final ViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
-        presenter.removeDataView(holder);
+        this.interactor.removeDataView(holder);
     }
 
     @Override
     public void onViewRecycled(final ViewHolder holder) {
         super.onViewRecycled(holder);
         holder.unbind();
-        presenter.removeDataView(holder);
+        this.interactor.removeDataView(holder);
     }
 
     @Override
     public void onDetachedFromRecyclerView(final RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
 
-        presenter.clearDataViews();
+        this.interactor.clearDataViews();
     }
 
     //endregion
@@ -171,6 +170,7 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
                 cancelAnimation(true);
                 this.hasTimeline = false;
             } else {
+                showLoading(false);
                 showScore = true;
                 if (isTimelineEmpty(timeline)) {
                     final int sleepScoreColor = ContextCompat.getColor(itemView.getContext(),
@@ -249,7 +249,7 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
 
         @Override
         public void onUpdateAvailable(@NonNull final Timeline timeline) {
-            if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+            if (wantsUpdates()) {
                 bind(date, timeline);
             }
         }
@@ -267,6 +267,7 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
             Anime.cancelAll(progressBar, scoreContainer, preview);
             showLoading(showLoading);
         }
+
         //endregion
 
         //region view support
