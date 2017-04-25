@@ -33,6 +33,7 @@ public class ZoomedOutTimelineFragment extends PresenterFragment<ZoomedOutTimeli
     PreferencesInteractor preferences;
 
     private OnTimelineDateSelectedListener listener = null;
+    private LocalDate startDate;
 
     public static ZoomedOutTimelineFragment newInstance(@NonNull final LocalDate startTime,
                                                         @Nullable final Timeline firstTimeline) {
@@ -51,8 +52,9 @@ public class ZoomedOutTimelineFragment extends PresenterFragment<ZoomedOutTimeli
             final ZoomedOutTimelineAdapter adapter = new ZoomedOutTimelineAdapter(this.zoomedOutTimelineInteractor,
                                                                                   this.preferences.getAccountCreationDate());
             this.presenterView = new ZoomedOutTimelineView(getActivity(),
-                                                           adapter);
-            this.presenterView.setListener(this);
+                                                           adapter,
+                                                           this,
+                                                           zoomedOutTimelineInteractor.getDatePosition(startDate));
         }
     }
 
@@ -62,6 +64,7 @@ public class ZoomedOutTimelineFragment extends PresenterFragment<ZoomedOutTimeli
         if (!(getActivity() instanceof OnTimelineDateSelectedListener)) {
             throw new IllegalStateException("Activity must implement OnTimelineDateSelectedListener");
         }
+        this.startDate = (LocalDate) getArguments().getSerializable(ARG_START_DATE);
         this.listener = ((OnTimelineDateSelectedListener) getActivity());
         this.zoomedOutTimelineInteractor.setFirstDate(DateFormatter.lastNight());
         addInteractor(this.zoomedOutTimelineInteractor);
@@ -71,7 +74,6 @@ public class ZoomedOutTimelineFragment extends PresenterFragment<ZoomedOutTimeli
     public void onViewCreated(final View view,
                               final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final LocalDate startDate = (LocalDate) getArguments().getSerializable(ARG_START_DATE);
         if (getArguments().containsKey(ARG_FIRST_TIMELINE)) {
             if (startDate != null) {
                 final Timeline firstTimeline = (Timeline) getArguments().getSerializable(ARG_FIRST_TIMELINE);

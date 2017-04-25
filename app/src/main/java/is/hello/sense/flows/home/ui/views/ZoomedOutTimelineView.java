@@ -28,13 +28,15 @@ public class ZoomedOutTimelineView extends PresenterView
     private Listener listener = null;
 
     public ZoomedOutTimelineView(@NonNull final Activity activity,
-                                 @NonNull final ZoomedOutTimelineAdapter zoomedOutTimelineAdapter) {
+                                 @NonNull final ZoomedOutTimelineAdapter zoomedOutTimelineAdapter,
+                                 @Nullable final Listener listener,
+                                 final int position) {
         super(activity);
         this.monthTextView = (TextView) findViewById(R.id.fragment_zoomed_out_timeline_month);
         this.recyclerView = (RecyclerView) findViewById(R.id.fragment_zoomed_out_timeline_recycler_view);
         this.todayButton = (Button) findViewById(R.id.fragment_zoomed_out_timeline_today);
         this.layoutManager = new ZoomedOutTimelineLayoutManager(activity);
-
+        this.listener = listener;
         this.recyclerView.addItemDecoration(new ZoomedOutTimelineDecoration(getResources()));
         this.recyclerView.addOnScrollListener(new SnappingScrollListener());
         this.recyclerView.setLayoutManager(this.layoutManager);
@@ -42,16 +44,21 @@ public class ZoomedOutTimelineView extends PresenterView
         this.recyclerView.setAdapter(zoomedOutTimelineAdapter);
 
         this.todayButton.setOnClickListener(this::jumpToToday);
-        // The second item from the right at the beginning of the
-        // navigator is a special case. Because the item is already
-        // visible without scrolling, the layout manager will try to
-        // take a shortcut and not scroll at all. So we have to give
-        // a specific offset if we want it to be centered. Of course,
-        // we can only get the offset after layout.
-        this.layoutManager.postLayout(() -> this.recyclerView.post(() -> {
-            jumpToToday(null);
-            retrieveTimelines();
-        }));
+        if (position == 0) {
+            // The second item from the right at the beginning of the
+            // navigator is a special case. Because the item is already
+            // visible without scrolling, the layout manager will try to
+            // take a shortcut and not scroll at all. So we have to give
+            // a specific offset if we want it to be centered. Of course,
+            // we can only get the offset after layout.
+            this.layoutManager.postLayout(() -> this.recyclerView.post(() -> {
+                jumpToToday(null);
+                retrieveTimelines();
+            }));
+        } else {
+            layoutManager.scrollToPosition(position);
+            recyclerView.post(this::retrieveTimelines);
+        }
     }
 
     //region PresenterView
