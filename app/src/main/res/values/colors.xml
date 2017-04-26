@@ -130,8 +130,13 @@
     <color name="trends_bubble_graph_medium_bubble">@color/blue5</color>
     <color name="trends_bubble_graph_deep_bubble">@color/blue6</color>
 
+    <!-- Share stuff -->
+    <color name="share_primary_text">@color/black_87</color>
+    <color name="share_secondary_text">@color/black_54</color>
+
     <!-- could use cleaning, but good enough for now -->
     <color name="border">@color/gray2</color>
+
 
     <color name="text_rotary_picker_focused">@color/link_text</color>
     <color name="text_rotary_picker_unfocused">@color/secondary_text</color>
