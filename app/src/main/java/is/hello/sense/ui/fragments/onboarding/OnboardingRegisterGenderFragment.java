@@ -98,11 +98,11 @@ public class OnboardingRegisterGenderFragment extends SenseFragment {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 final String selectedGender = data.getStringExtra(SearchListFragment.EXTRA_SELECTION);
                 if (selectedGender != null) {
-                    // currentGender is set to OTHER from onOtherClick
+                    this.currentGender = Gender.OTHER;
                     this.currentOtherGender = selectedGender;
-                    updateView();
                 }
             }
+            updateView();
         }
     }
 
@@ -172,7 +172,6 @@ public class OnboardingRegisterGenderFragment extends SenseFragment {
                                                   SearchListActivity.GENDER_LIST,
                                                   this.currentOtherGender,
                                                   GENDER_REQUEST);
-        this.currentGender = Gender.OTHER;
     }
 
     public void setImages(@DrawableRes final int maleRes,

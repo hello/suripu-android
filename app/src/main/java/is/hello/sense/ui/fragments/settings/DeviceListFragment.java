@@ -38,6 +38,7 @@ import is.hello.sense.ui.common.InjectionFragment;
 import is.hello.sense.ui.common.ScrollEdge;
 import is.hello.sense.ui.common.UserSupport;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
+import is.hello.sense.ui.handholding.WelcomeDialogFragment;
 import is.hello.sense.ui.recycler.DividerItemDecoration;
 import is.hello.sense.ui.recycler.FadingEdgesItemDecoration;
 import is.hello.sense.util.Analytics;
@@ -224,6 +225,11 @@ public class DeviceListFragment extends InjectionFragment
     }
 
     //region DeviceInteractionListener
+
+    @Override
+    public void onPillInfoClick() {
+        WelcomeDialogFragment.show(getActivity(), R.xml.welcome_dialog_pill_color, true);
+    }
 
     @Override
     public void onPlaceholderInteraction(@NonNull final PlaceholderDevice.Type type) {

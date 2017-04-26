@@ -79,6 +79,11 @@ public class DevicesAdapterTests extends SenseTestCase {
         public void onScrollBy(int x, int y) {
             //override
         }
+
+        @Override
+        public void onPillInfoClick() {
+            //override
+        }
     }
 
     //endregion
