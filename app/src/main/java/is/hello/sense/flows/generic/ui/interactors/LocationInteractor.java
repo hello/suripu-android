@@ -17,7 +17,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 
-
 import is.hello.sense.api.model.LocStatus;
 import is.hello.sense.api.model.UserLocation;
 import is.hello.sense.graph.InteractorSubject;
@@ -32,8 +31,6 @@ public class LocationInteractor extends ValueInteractor<LocStatus>
         LocationListener {
     private final Context context;
     private final GoogleApiClient apiClient;
-    private final LocationRequest locationRequest;
-    private final LocationSettingsRequest locationSettingsRequest;
     private final PersistentPreferencesInteractor persistentPreferencesInteractor;
     private Status status;
 
@@ -46,13 +43,6 @@ public class LocationInteractor extends ValueInteractor<LocStatus>
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
-                .build();
-        this.locationRequest = new LocationRequest()
-                .setInterval(10000)
-                .setFastestInterval(5000)
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        this.locationSettingsRequest = new LocationSettingsRequest.Builder()
-                .addLocationRequest(this.locationRequest)
                 .build();
         this.persistentPreferencesInteractor = prefs;
     }
@@ -141,17 +131,20 @@ public class LocationInteractor extends ValueInteractor<LocStatus>
     }
 
     private void startLocationUpdates() {
+        final LocationRequest currentRequest = getLocationRequest();
         LocationServices.SettingsApi
                 .checkLocationSettings(
                         apiClient,
-                        locationSettingsRequest)
+                        getLocationSettingsRequest(currentRequest))
                 .setResultCallback(locationSettingsResult -> {
                     final Status status = locationSettingsResult.getStatus();
                     switch (status.getStatusCode()) {
                         case LocationSettingsStatusCodes.SUCCESS:
                             if (hasPermissions()) {
                                 //noinspection MissingPermission
-                                LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, locationRequest, LocationInteractor.this);
+                                LocationServices.FusedLocationApi.requestLocationUpdates(apiClient,
+                                                                                         currentRequest,
+                                                                                         LocationInteractor.this);
                                 this.status = status;
                                 update();
                             }
@@ -186,6 +179,27 @@ public class LocationInteractor extends ValueInteractor<LocStatus>
     private boolean hasPermissions() {
         return ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @NonNull
+    private LocationRequest getLocationRequest() {
+        final int priority;
+        if (this.getCurrentUserLocation() != null) {
+            priority = LocationRequest.PRIORITY_LOW_POWER;
+        } else {
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY;
+        }
+        return new LocationRequest()
+                .setInterval(10000)
+                .setFastestInterval(5000)
+                .setPriority(priority);
+    }
+
+    @NonNull
+    private LocationSettingsRequest getLocationSettingsRequest(@NonNull final LocationRequest request) {
+        return new LocationSettingsRequest.Builder()
+                .addLocationRequest(request)
+                .build();
     }
 
     //endregion
