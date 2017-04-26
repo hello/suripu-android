@@ -109,6 +109,7 @@ public class SensorGraphView extends View implements ValueAnimator.AnimatorUpdat
             this.graphDrawable.setScrubberCallback(null);
         }
         this.scrubberCallback = null;
+        this.animator.cancel();
     }
 
     /**

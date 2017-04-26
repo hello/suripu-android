@@ -253,7 +253,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
         final Activity activity = getActivity();
         if (activity instanceof SensorDetailActivity) {
             // Some bug occurs when you try to change the actionbar from the main thread causing everything to freeze but never crash.
-            this.presenterView.post(() -> ((SensorDetailActivity) activity).setActionbarColor(colorRes));
+            ((SensorDetailActivity) activity).setActionbarColor(colorRes);
         }
 
     }
