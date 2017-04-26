@@ -44,20 +44,12 @@ public class SystemAlertDialogFragment extends BottomAlertDialogFragment<AlertDi
         dispatchAlertAction();
     }
 
-    private void dispatchAlertAction(){
+    private void dispatchAlertAction() {
         final Properties properties = Analytics.createProperties(
                 Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION,
                 Analytics.Timeline.PROP_EVENT_SYSTEM_ALERT_ACTION_NOW); //todo make more specific
         Analytics.trackEvent(Analytics.Timeline.EVENT_SYSTEM_ALERT_ACTION, properties);
-        switch (alert.getAnalyticPropertyType()){
-            case SENSE_MUTED:
-                getActionHandler().unMuteSense();
-                break;
-            case EXPANSION_UNREACHABLE:
-            case UNKNOWN:
-            default:
-                //do nothing
-        }
+        getActionHandler().handleAlert(alert.getAnalyticPropertyType());
     }
 
     @VisibleForTesting

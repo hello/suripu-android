@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.FragmentTest;
+import is.hello.sense.api.model.v2.alerts.Category;
 import is.hello.sense.flows.home.util.OnboardingFlowProvider;
 import is.hello.sense.graph.Scope;
 import is.hello.sense.ui.activities.OnboardingActivity;
@@ -14,6 +15,8 @@ import rx.Scheduler;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class HomePresenterFragmentTest extends FragmentTest<HomePresenterFragment> {
@@ -72,6 +75,19 @@ public class HomePresenterFragmentTest extends FragmentTest<HomePresenterFragmen
         fragment.selectConditionsTab();
         verify(fragment.presenterView).setCurrentItem(4);
 
+    }
+
+    @Test
+    public void handleAlert() throws Exception {
+        doAnswer(invocation -> null).when(fragment).unMuteSense();
+        doAnswer(invocation -> null).when(fragment).startDevicesActivity();
+        fragment.handleAlert(Category.SENSE_MUTED);
+        verify(fragment, times(1)).unMuteSense();
+        fragment.handleAlert(Category.SENSE_NOT_PAIRED);
+        fragment.handleAlert(Category.SENSE_NOT_PAIRED);
+        fragment.handleAlert(Category.SLEEP_PILL_NOT_PAIRED);
+        fragment.handleAlert(Category.SLEEP_PILL_NOT_SEEN);
+        verify(fragment, times(4)).startDevicesActivity();
     }
 
     public static class TestHomeActivity extends FragmentTestActivity

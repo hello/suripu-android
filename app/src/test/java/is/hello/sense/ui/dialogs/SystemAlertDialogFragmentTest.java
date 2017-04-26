@@ -30,7 +30,7 @@ public class SystemAlertDialogFragmentTest extends SenseTestCase {
     }
 
     @Test
-    public void onPositiveButtonClickedForMuteSenseAlert() throws Exception {
+    public void onPositiveButtonClickedForAlert() throws Exception {
         final Alert mutedAlert = new Alert("Sense muted",
                                            "Body test",
                                            Category.SENSE_MUTED);
@@ -45,6 +45,6 @@ public class SystemAlertDialogFragmentTest extends SenseTestCase {
         startFragment(spyFragment);
         spyFragment.onPositiveButtonClicked();
 
-        verify(mockActionHandler).unMuteSense();
+        verify(mockActionHandler).handleAlert(Category.SENSE_MUTED);
     }
 }
