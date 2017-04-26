@@ -49,10 +49,6 @@ public class ProfileImageManager {
     private static final int OPTION_ID_FROM_GALLERY = 2;
     private static final int OPTION_ID_REMOVE_PICTURE = 4;
 
-    private static final String PREFS = "profile_image_manager_prefs";
-    private static final String PHOTO_URI_KEY = "PHOTO_URI_KEY";
-    private static final String PHOTO_SOURCE_KEY = "PHOTO_SOURCE_KEY";
-
     private final int minOptions;
     private final Fragment fragment;
     private final ImageUtil imageUtil;
@@ -60,7 +56,7 @@ public class ProfileImageManager {
     private final ExternalStoragePermission permission;
     private final ArrayList<SenseBottomSheet.Option> options = new ArrayList<>();
     private final SenseBottomSheet.Option deleteOption;
-    private final SharedPreferences preferences;
+    private final ImageUtil.PhotoHelper photoHelper;
 
     private boolean showOptions;
 
@@ -68,7 +64,7 @@ public class ProfileImageManager {
                                 @NonNull final ImageUtil imageUtil,
                                 @NonNull final FilePathUtil filePathUtil) {
         final Context context = fragment.getActivity();
-        this.preferences = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        this.photoHelper = imageUtil.createPhotoHelper(fragment);
         this.fragment = fragment;
         this.imageUtil = imageUtil;
         this.filePathUtil = filePathUtil;
@@ -104,6 +100,17 @@ public class ProfileImageManager {
                 .setTitleColor(ContextCompat.getColor(context, R.color.error_text))
                 .setIcon(R.drawable.icon_trash_24)
                 .setIconTintRes(R.color.destructive_icon);
+    }
+
+    public void saveCustomSource(final Source source){
+        this.photoHelper.saveSource(source);
+
+    }
+    /**
+     * Trim cache and preferences
+     */
+    public void clear() {
+        photoHelper.clear();
     }
 
     public void showPictureOptions() {
@@ -153,17 +160,17 @@ public class ProfileImageManager {
             final int optionID = data.getIntExtra(BottomSheetDialogFragment.RESULT_OPTION_ID, -1);
             handlePictureOptionSelection(optionID);
         } else if (requestCode == REQUEST_CODE_CAMERA) {
-            final Uri photoUri = getUri();
+            final Uri photoUri = photoHelper.getUri();
             if (Uri.EMPTY.equals(photoUri)) {
                 setShowOptions(true);
                 //Todo display error that the image uri was lost somehow
                 //getListener().onImageUriFetchError(new Throwable(), R.string.error_account_fetch_image_uri_message, R.string.error_account_fetch_image_uri_title );
                 return true;
             }
-            saveSource(CAMERA); // in case the user took a few days to return.
+            photoHelper.saveSource(CAMERA); // in case the user took a few days to return.
             getListener().onFromCamera(photoUri);
         } else if (requestCode == REQUEST_CODE_GALLERY) {
-            saveSource(GALLERY);
+            photoHelper.saveSource(GALLERY);
             final Uri imageUri = data.getData();
             getListener().onFromGallery(imageUri);
         } else {
@@ -192,13 +199,6 @@ public class ProfileImageManager {
                         .observeOn(Rx.mainThreadScheduler());
     }
 
-    /**
-     * Trim cache and preferences
-     */
-    public void clear() {
-        imageUtil.trimCache();
-        preferences.edit().clear().apply();
-    }
 
     //region permission checks
 
@@ -237,33 +237,18 @@ public class ProfileImageManager {
     }
 
     private void handleFacebookOption() {
-        saveSource(FACEBOOK);
+        photoHelper.saveSource(FACEBOOK);
         getListener().onImportFromFacebook();
     }
 
     private void handleCameraOption() {
-        final File imageFile = imageUtil.createFile(false);
-        if (imageFile == null) {
-            return;
-        }
-        saveSource(CAMERA);
-        final Uri takePhotoUri;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            // https://inthecheesefactory.com/blog/how-to-share-access-to-file-with-fileprovider-on-android-nougat/en
-            takePhotoUri = FileProvider.getUriForFile(fragment.getActivity(),
-                                                      fragment.getActivity().getApplicationContext().getPackageName() + ".provider",
-                                                      imageFile);
-        } else {
-            takePhotoUri = Uri.fromFile(imageFile);
-        }
-        saveUri(takePhotoUri);
-        Fetch.imageFromCamera().to(fragment, takePhotoUri);
+        photoHelper.takeAPhoto();
     }
 
     private void handleGalleryOption() {
         if (permission.isGranted()) {
-            saveSource(GALLERY);
-            Fetch.imageFromGallery().to(fragment);
+            //noinspection MissingPermission
+            photoHelper.loadAPhoto();
         } else {
             permission.requestPermission();
         }
@@ -276,29 +261,6 @@ public class ProfileImageManager {
 
     //endregion
 
-    private void saveUri(@NonNull final Uri uri) {
-        preferences.edit()
-                   .putString(PHOTO_URI_KEY, uri.toString())
-                   .apply();
-    }
-
-    @NonNull
-    private Uri getUri() {
-        final String photoUriString = preferences.getString(PHOTO_URI_KEY, "");
-        return photoUriString.isEmpty() ? Uri.EMPTY : Uri.parse(photoUriString);
-    }
-
-    public void saveSource(@NonNull final Source source) {
-        preferences.edit()
-                   .putString(PHOTO_SOURCE_KEY, source.name())
-                   .apply();
-    }
-
-    @NonNull
-    private Source getSource() {
-        final String value = preferences.getString(PHOTO_SOURCE_KEY, "");
-        return Source.fromString(value);
-    }
 
     public void compressImage(@Nullable final Uri imageUri) {
         compressImageObservable(imageUri)
@@ -307,7 +269,7 @@ public class ProfileImageManager {
     }
 
     private void compressImageSuccess(@NonNull final TypedFile compressedFile) {
-        getListener().onImageCompressedSuccess(compressedFile, getSource());
+        getListener().onImageCompressedSuccess(compressedFile, photoHelper.getSource());
 
     }
 

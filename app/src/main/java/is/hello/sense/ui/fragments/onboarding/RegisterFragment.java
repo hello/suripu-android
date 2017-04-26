@@ -478,7 +478,7 @@ public class RegisterFragment extends InjectionFragment
         final String email = profile.getEmail();
         if (!TextUtils.isEmpty(facebookImageUrl)) {
             updateProfileImage(Uri.parse(facebookImageUrl));
-            profileImageManager.saveSource(Analytics.ProfilePhoto.Source.FACEBOOK);
+            profileImageManager.saveCustomSource(Analytics.ProfilePhoto.Source.FACEBOOK);
         }
         if (!TextUtils.isEmpty(firstName)) {
             firstNameTextLET.setInputText(firstName);

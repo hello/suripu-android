@@ -1,16 +1,22 @@
 package is.hello.sense.util;
 
+import android.Manifest;
+import android.app.Fragment;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresPermission;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.content.FileProvider;
 
 import com.squareup.picasso.Picasso;
 
@@ -24,6 +30,9 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import rx.Observable;
+
+import static is.hello.sense.util.Analytics.ProfilePhoto.Source.CAMERA;
+import static is.hello.sense.util.Analytics.ProfilePhoto.Source.GALLERY;
 
 public class ImageUtil {
 
@@ -44,13 +53,19 @@ public class ImageUtil {
 
     final StorageUtil storageUtil;
     final Picasso picasso;
+    private final SharedPreferences sharedPreferences;
 
     private final Context context;
 
     private final SenseCache.ImageCache imageCache;
 
-    public ImageUtil(@NonNull final Context context, @NonNull final StorageUtil storageUtil, @NonNull final Picasso picasso, @NonNull final SenseCache.ImageCache imageCache) {
+    public ImageUtil(@NonNull final Context context,
+                     @NonNull final SharedPreferences sharedPreferences,
+                     @NonNull final StorageUtil storageUtil,
+                     @NonNull final Picasso picasso,
+                     @NonNull final SenseCache.ImageCache imageCache) {
         this.context = context;
+        this.sharedPreferences = sharedPreferences;
         this.storageUtil = storageUtil;
         this.picasso = picasso;
         this.imageCache = imageCache;
@@ -243,11 +258,11 @@ public class ImageUtil {
         return bitmap;*/
         //TODO hardcoded to resize to 1000. Tested 1100 but is rejected by server
         return picasso.load(Uri.parse(path))
-                .resize(1000,1000)
-                .config(Bitmap.Config.ARGB_8888)
-                .centerInside()
-                .onlyScaleDown()
-                .get();
+                      .resize(1000, 1000)
+                      .config(Bitmap.Config.ARGB_8888)
+                      .centerInside()
+                      .onlyScaleDown()
+                      .get();
     }
 
     private int getRotationFromExifData(@NonNull final String path) throws IOException {
@@ -273,5 +288,77 @@ public class ImageUtil {
         imageCache.trimCache();
     }
 
+    public PhotoHelper createPhotoHelper(final Fragment fragment) {
+        return new PhotoHelper(fragment);
+    }
+
+    public class PhotoHelper {
+        private static final String PHOTO_SOURCE_KEY = "PHOTO_SOURCE_KEY";
+        private static final String PHOTO_URI_KEY = "PHOTO_URI_KEY";
+        private final Fragment fragment;
+
+        private PhotoHelper(final Fragment fragment) {
+            this.fragment = fragment;
+        }
+
+        /**
+         * Trim cache and preferences
+         */
+        public void clear() {
+            trimCache();
+            ImageUtil.this.sharedPreferences.edit().clear().apply();
+        }
+
+        private void saveUri(@NonNull final Uri uri) {
+            sharedPreferences.edit()
+                             .putString(PHOTO_URI_KEY, uri.toString())
+                             .apply();
+        }
+
+        @NonNull
+        public Uri getUri() {
+            final String photoUriString = sharedPreferences.getString(PHOTO_URI_KEY, "");
+            return photoUriString.isEmpty() ? Uri.EMPTY : Uri.parse(photoUriString);
+        }
+
+        private Uri getPhotoUri(@NonNull final File file) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                // https://inthecheesefactory.com/blog/how-to-share-access-to-file-with-fileprovider-on-android-nougat/en
+                return FileProvider.getUriForFile(fragment.getActivity(),
+                                                  fragment.getActivity().getApplicationContext().getPackageName() + ".provider",
+                                                  file);
+            }
+            return Uri.fromFile(file);
+        }
+
+        public void saveSource(@NonNull final Analytics.ProfilePhoto.Source source) {
+            sharedPreferences.edit()
+                             .putString(PHOTO_SOURCE_KEY, source.name())
+                             .apply();
+        }
+
+        @NonNull
+        public Analytics.ProfilePhoto.Source getSource() {
+            final String value = sharedPreferences.getString(PHOTO_SOURCE_KEY, "");
+            return Analytics.ProfilePhoto.Source.fromString(value);
+        }
+
+        public void takeAPhoto() {
+            final File imageFile = createFile(false);
+            if (imageFile == null) {
+                return;
+            }
+            saveSource(CAMERA);
+            final Uri takePhotoUri = getPhotoUri(imageFile);
+            saveUri(takePhotoUri);
+            Fetch.imageFromCamera().to(fragment, takePhotoUri);
+        }
+
+        @RequiresPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+        public void loadAPhoto() {
+            saveSource(GALLERY);
+            Fetch.imageFromGallery().to(fragment);
+        }
+    }
 
 }
