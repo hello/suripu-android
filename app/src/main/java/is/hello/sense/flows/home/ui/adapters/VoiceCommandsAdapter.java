@@ -1,83 +1,124 @@
 package is.hello.sense.flows.home.ui.adapters;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.support.annotation.DrawableRes;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+
 import java.util.ArrayList;
+import java.util.Collection;
 
 import is.hello.sense.R;
-import is.hello.sense.api.gson.Enums;
+import is.hello.sense.api.model.v2.voice.VoiceCommandTopic;
 import is.hello.sense.databinding.ItemVoiceCommandBinding;
 import is.hello.sense.ui.adapter.ArrayRecyclerAdapter;
 import is.hello.sense.ui.widget.WelcomeCard;
 
 
-public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdapter.VoiceCommand, VoiceCommandsAdapter.BaseViewHolder> {
+public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandTopic, ArrayRecyclerAdapter.ViewHolder> {
+    private static final int VIEW_ERROR = 0;
     private static final int VIEW_ITEM = 1;
     private static final int VIEW_WELCOME = 2;
-    private final LayoutInflater inflater;
 
+    private final Picasso picasso;
+    private final int imageSize;
+
+    private boolean hasError = false;
     private View.OnClickListener welcomeCardListener = null;
 
-    public VoiceCommandsAdapter(@NonNull final LayoutInflater inflater) {
+
+    public VoiceCommandsAdapter(@NonNull final Context context,
+                                @NonNull final Picasso picasso) {
         super(new ArrayList<>());
-        this.inflater = inflater;
-        super.add(VoiceCommand.ALARM);
-        super.add(VoiceCommand.SLEEP);
-        super.add(VoiceCommand.ROOM);
-        super.add(VoiceCommand.EXPANSIONS);
+        this.picasso = picasso;
+        this.imageSize = context.getResources().getDimensionPixelSize(R.dimen.x4);
     }
 
     @Override
     public int getItemCount() {
-        return super.getItemCount() + (welcomeCardListener == null ? 0 : 1);
+        if (this.hasError) {
+            return 1;
+        }
+        return super.getItemCount() + (showWelcomeCard() ? 1 : 0);
     }
 
     @Override
     public int getItemViewType(final int position) {
-        if (welcomeCardListener != null && position == 0) {
-            return VIEW_WELCOME;
+        if (this.hasError) {
+            return VIEW_ERROR;
         }
 
+        if (showWelcomeCard() && position == 0) {
+            return VIEW_WELCOME;
+        }
         return VIEW_ITEM;
     }
 
     @Override
-    public VoiceCommand getItem(final int position) {
-        if (welcomeCardListener != null && position == 0) {
+    public VoiceCommandTopic getItem(final int position) {
+        if (this.welcomeCardListener != null && position == 0) {
             return null;
         }
 
-        return super.getItem(position - (welcomeCardListener == null ? 0 : 1));
+        return super.getItem(position - (showWelcomeCard() ? 1 : 0));
     }
 
     @Override
-    public BaseViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
+    public boolean replaceAll(@NonNull final Collection<? extends VoiceCommandTopic> collection) {
+        this.hasError = false;
+        return super.replaceAll(collection);
+    }
+
+    @Override
+    public ArrayRecyclerAdapter.ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         switch (viewType) {
+            case VIEW_ERROR:
+                return new ErrorViewHolder(parent);
             case VIEW_WELCOME:
                 return new WelcomeCardViewHolder(new WelcomeCard(parent.getContext()));
             case VIEW_ITEM:
-                return new ItemViewHolder(VoiceCommandsAdapter.this.inflater.inflate(R.layout.item_voice_command, parent, false));
+                return new ItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_voice_command, parent, false));
             default:
                 throw new IllegalStateException("Unexpected Voice Command type");
         }
     }
 
     @Override
-    public void onBindViewHolder(final BaseViewHolder holder, final int position) {
+    public void onBindViewHolder(final ArrayRecyclerAdapter.ViewHolder holder, final int position) {
         holder.bind(position);
     }
-
 
     public void showWelcomeCard(@Nullable final View.OnClickListener welcomeCardListener) {
         this.welcomeCardListener = welcomeCardListener;
         this.notifyDataSetChanged();
+    }
+
+    public void showError() {
+        // if it already has an error return.
+        if (this.hasError) {
+            return;
+        }
+        // If there are voice commands don't show the error.
+        if (getItemCount() > 1) {
+            return;
+        }
+        if (!showWelcomeCard() && getItemCount() > 0) {
+            return;
+        }
+        this.hasError = true;
+        notifyDataSetChanged();
+    }
+
+    private boolean showWelcomeCard() {
+        return this.welcomeCardListener != null;
     }
 
     public abstract class BaseViewHolder extends ArrayRecyclerAdapter.ViewHolder {
@@ -87,7 +128,7 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdap
         }
     }
 
-    public class ItemViewHolder extends BaseViewHolder {
+    public class ItemViewHolder extends BaseViewHolder implements Target {
         private final ItemVoiceCommandBinding binding;
 
         public ItemViewHolder(@NonNull final View itemView) {
@@ -98,14 +139,45 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdap
         @Override
         public void bind(final int position) {
             super.bind(position);
-            final VoiceCommand voiceCommand = getItem(position);
-            this.binding.itemVoiceCommandImage.setImageResource(voiceCommand.imageRes);
-            this.binding.itemVoiceCommandTitle.setText(voiceCommand.titleRes);
-            this.binding.itemVoiceCommandBody.setText(voiceCommand.bodyRes);
-            this.itemView.setOnClickListener(v -> dispatchItemClicked(position, voiceCommand));
+            final VoiceCommandTopic voiceCommandTopic = getItem(position);
+            final String photoUrl = voiceCommandTopic.getMultiDensityImage()
+                                                     .getUrl(this.itemView.getResources());
+            VoiceCommandsAdapter.this.picasso.load(photoUrl)
+                                             .resize(VoiceCommandsAdapter.this.imageSize,
+                                                     VoiceCommandsAdapter.this.imageSize)
+                                             .error(R.drawable.icon_voice_blueback)
+                                             .into(this);
+            this.binding.itemVoiceCommandTitle.setText(voiceCommandTopic.getTitle());
+            this.binding.itemVoiceCommandBody.setText(voiceCommandTopic.getFirstCommand());
+            this.itemView.setOnClickListener(v -> dispatchItemClicked(position, voiceCommandTopic));
             if (position == getItemCount() - 1) {
                 this.binding.itemVoiceCommandDivider.setVisibility(View.INVISIBLE);
+            } else {
+                this.binding.itemVoiceCommandDivider.setVisibility(View.VISIBLE);
             }
+        }
+
+        @Override
+        public void onBitmapLoaded(final Bitmap bitmap,
+                                   final Picasso.LoadedFrom from) {
+            this.binding.itemVoiceCommandSpinner.setVisibility(View.INVISIBLE);
+            this.binding.itemVoiceCommandImage.setVisibility(View.VISIBLE);
+            this.binding.itemVoiceCommandImage.setImageBitmap(bitmap);
+        }
+
+        @Override
+        public void onBitmapFailed(final Drawable errorDrawable) {
+            this.binding.itemVoiceCommandSpinner.setVisibility(View.INVISIBLE);
+            this.binding.itemVoiceCommandImage.setVisibility(View.VISIBLE);
+            this.binding.itemVoiceCommandImage.setImageDrawable(errorDrawable);
+
+        }
+
+        @Override
+        public void onPrepareLoad(final Drawable placeHolderDrawable) {
+            this.binding.itemVoiceCommandSpinner.setVisibility(View.VISIBLE);
+            this.binding.itemVoiceCommandImage.setVisibility(View.INVISIBLE);
+            this.binding.itemVoiceCommandImage.setImageDrawable(null);
         }
     }
 
@@ -116,43 +188,9 @@ public class VoiceCommandsAdapter extends ArrayRecyclerAdapter<VoiceCommandsAdap
             itemView.setContent(R.drawable.sense_with_voice,
                                 R.string.welcome_to_voice_title,
                                 R.string.welcome_to_voice_body);
-            itemView.setOnCloseButtonListener(welcomeCardListener);
+            itemView.setOnCloseButtonListener(VoiceCommandsAdapter.this.welcomeCardListener);
         }
     }
 
-    public enum VoiceCommand implements Enums.FromString {
 
-        ALARM(R.drawable.icon_sounds,
-              R.string.voice_alarm_title,
-              R.string.voice_alarm_message),
-        SLEEP(R.drawable.icon_sleep,
-              R.string.voice_sleep_title,
-              R.string.voice_sleep_message),
-        ROOM(R.drawable.icon_conditions,
-             R.string.voice_rc_title,
-             R.string.voice_rc_message),
-        EXPANSIONS(R.drawable.icon_expansions,
-                   R.string.voice_expansion_title,
-                   R.string.voice_expansion_message);
-
-        @DrawableRes
-        private final int imageRes;
-
-        @StringRes
-        private final int titleRes;
-        @StringRes
-        private final int bodyRes;
-
-        VoiceCommand(@DrawableRes final int imageRes,
-                     @StringRes final int titleRes,
-                     @StringRes final int bodyRes) {
-            this.imageRes = imageRes;
-            this.titleRes = titleRes;
-            this.bodyRes = bodyRes;
-        }
-
-        public static VoiceCommand fromString(@Nullable final String string) {
-            return Enums.fromString(string, values(), ALARM);
-        }
-    }
 }
