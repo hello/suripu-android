@@ -378,7 +378,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         final boolean existingAlert = this.isShowingAlert();
         switch (alert.getCategory()) {
             case EXPANSION_UNREACHABLE:
-                return valid && !existingAlert; // always show valid unreacahable alerts whenever we get them
+                return valid && !existingAlert; // always show valid unreachable alerts whenever we get them
             case SENSE_MUTED:
             default:
                 return valid && !existingAlert && this.shouldShowAlerts;
