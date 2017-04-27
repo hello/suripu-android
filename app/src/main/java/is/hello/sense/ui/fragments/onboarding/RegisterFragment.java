@@ -91,8 +91,10 @@ public class RegisterFragment extends InjectionFragment
     private LabelEditText lastNameTextLET;
     private LabelEditText emailTextLET;
     private LabelEditText passwordTextLET;
+    private AppCompatImageView facebookInfoButton;
 
     private Button nextButton;
+    private Button selectHost = null;
 
     private LinearLayout credentialsContainer;
     private Uri imageUri = Uri.EMPTY;
@@ -157,7 +159,7 @@ public class RegisterFragment extends InjectionFragment
         Views.setSafeOnClickListener(autofillFacebookButton, stateSafeExecutor, (v) -> bindFacebookProfile(false));
         facebookPresenter.init();
 
-        final AppCompatImageView facebookInfoButton = (AppCompatImageView) view.findViewById(R.id.fragment_onboarding_register_import_facebook_info_button);
+        facebookInfoButton = (AppCompatImageView) view.findViewById(R.id.fragment_onboarding_register_import_facebook_info_button);
         Views.setSafeOnClickListener(facebookInfoButton, stateSafeExecutor, v -> this.showFacebookInfoBottomSheet(true));
 
         profileImageManager = builder.build(this);
@@ -169,7 +171,7 @@ public class RegisterFragment extends InjectionFragment
         OnboardingToolbar.of(this, view).setWantsBackButton(true);
 
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
-            final Button selectHost = new Button(getActivity());
+            selectHost = new Button(getActivity());
             Styles.setTextAppearance(selectHost, R.style.Button_Flat);
             selectHost.setBackgroundResource(R.drawable.selectable_dark_bounded);
             selectHost.setGravity(Gravity.CENTER);
@@ -196,34 +198,63 @@ public class RegisterFragment extends InjectionFragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
         this.showFacebookInfoBottomSheet(false);
-        this.profileImageManager.hidePictureOptions();
+        if (this.selectHost != null) {
+            this.selectHost.setOnClickListener(null);
+            this.selectHost = null;
+        }
 
-        firstNameTextLET.removeTextChangedListener(this);
-        this.firstNameTextLET = null;
+        if (this.profileImageManager != null) {
+            this.profileImageManager.hidePictureOptions();
+            this.profileImageManager = null;
+        }
 
-        lastNameTextLET.removeTextChangedListener(this);
-        this.lastNameTextLET = null;
+        if (this.facebookInfoButton != null) {
+            this.facebookInfoButton.setOnClickListener(null);
+            this.facebookInfoButton = null;
+        }
 
-        emailTextLET.removeTextChangedListener(this);
-        this.emailTextLET = null;
+        if (this.firstNameTextLET != null) {
+            this.firstNameTextLET.removeTextChangedListener(this);
+            this.firstNameTextLET = null;
+        }
 
-        passwordTextLET.removeTextChangedListener(this);
-        passwordTextLET.setOnEditorActionListener(null);
-        this.passwordTextLET = null;
+        if (this.lastNameTextLET != null) {
+            this.lastNameTextLET.removeTextChangedListener(this);
+            this.lastNameTextLET = null;
+        }
 
-        this.nextButton.setOnClickListener(null);
-        this.nextButton = null;
+        if (this.emailTextLET != null) {
+            this.emailTextLET.removeTextChangedListener(this);
+            this.emailTextLET = null;
+        }
+
+        if (this.passwordTextLET != null) {
+            this.passwordTextLET.removeTextChangedListener(this);
+            this.passwordTextLET.setOnEditorActionListener(null);
+            this.passwordTextLET = null;
+        }
+
+        if (this.nextButton != null) {
+            this.nextButton.setOnClickListener(null);
+            this.nextButton = null;
+        }
+
+        if (this.profileImageView != null) {
+            this.profileImageView.setOnClickListener(null);
+            this.profileImageView.setButtonClickListener(null);
+            this.profileImageView = null;
+        }
+
+        if (this.autofillFacebookButton != null) {
+            this.autofillFacebookButton.setOnClickListener(null);
+            this.autofillFacebookButton = null;
+        }
+
+        if (this.facebookPresenter != null) {
+            this.facebookPresenter.logout();
+        }
         this.credentialsContainer = null;
-
-        this.profileImageView.setOnClickListener(null);
-        this.profileImageView.setButtonClickListener(null);
-        this.autofillFacebookButton.setOnClickListener(null);
-        this.profileImageView = null;
-        this.profileImageManager = null;
-        this.autofillFacebookButton = null;
-        this.facebookPresenter.logout();
     }
 
     @Override
@@ -512,7 +543,7 @@ public class RegisterFragment extends InjectionFragment
         FacebookInfoDialogFragment bottomSheet = (FacebookInfoDialogFragment) getFragmentManager().findFragmentByTag(FacebookInfoDialogFragment.TAG);
         if (bottomSheet != null && !shouldShow) {
             bottomSheet.dismissSafely();
-        } else if(bottomSheet == null && shouldShow){
+        } else if (bottomSheet == null && shouldShow) {
             bottomSheet = FacebookInfoDialogFragment.newInstance();
             bottomSheet.setTargetFragment(RegisterFragment.this, OPTION_FACEBOOK_DESCRIPTION);
             bottomSheet.showAllowingStateLoss(getFragmentManager(), FacebookInfoDialogFragment.TAG);
