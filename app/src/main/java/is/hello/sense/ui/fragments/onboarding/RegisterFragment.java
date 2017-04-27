@@ -94,6 +94,7 @@ public class RegisterFragment extends InjectionFragment
     private AppCompatImageView facebookInfoButton;
 
     private Button nextButton;
+    private Button selectHost = null;
 
     private LinearLayout credentialsContainer;
     private Uri imageUri = Uri.EMPTY;
@@ -101,7 +102,6 @@ public class RegisterFragment extends InjectionFragment
     private final static int OPTION_FACEBOOK_DESCRIPTION = 0x66;
     private final static String ACCOUNT_INSTANCE_KEY = "account";
     private final static String URI_INSTANCE_KEY = "uri";
-    private OnDestroyListener destroyListener = null;
 
     //region Lifecycle
 
@@ -171,7 +171,7 @@ public class RegisterFragment extends InjectionFragment
         OnboardingToolbar.of(this, view).setWantsBackButton(true);
 
         if (BuildConfig.DEBUG_SCREEN_ENABLED) {
-            final Button selectHost = new Button(getActivity());
+            selectHost = new Button(getActivity());
             Styles.setTextAppearance(selectHost, R.style.Button_Flat);
             selectHost.setBackgroundResource(R.drawable.selectable_dark_bounded);
             selectHost.setGravity(Gravity.CENTER);
@@ -190,7 +190,6 @@ public class RegisterFragment extends InjectionFragment
                                                   ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutParams.bottomMargin = getResources().getDimensionPixelSize(R.dimen.x1);
             credentialsContainer.addView(selectHost, layoutParams);
-            destroyListener = () -> selectHost.setOnClickListener(null);
         }
 
         return view;
@@ -200,9 +199,9 @@ public class RegisterFragment extends InjectionFragment
     public void onDestroyView() {
         super.onDestroyView();
         this.showFacebookInfoBottomSheet(false);
-        if (this.destroyListener != null) {
-            this.destroyListener.onDestroy();
-            this.destroyListener = null;
+        if (this.selectHost != null) {
+            this.selectHost.setOnClickListener(null);
+            this.selectHost = null;
         }
 
         if (this.profileImageManager != null) {
@@ -641,9 +640,5 @@ public class RegisterFragment extends InjectionFragment
                 runOnActivatedCommand.run();
             }
         }
-    }
-
-    public interface OnDestroyListener {
-        void onDestroy();
     }
 }
