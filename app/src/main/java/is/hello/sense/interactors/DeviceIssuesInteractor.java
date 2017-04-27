@@ -58,17 +58,9 @@ public class DeviceIssuesInteractor extends ScopedValueInteractor<DeviceIssuesIn
             Analytics.setSenseVersion(sense.hardwareVersion);
         }
 
-        if (sense == null) {
-            return Issue.NO_SENSE_PAIRED;
-        } else if (sense.getHoursSinceLastUpdated() >= BaseDevice.MISSING_THRESHOLD_HRS && shouldReportSenseMissing()) {
-            return Issue.SENSE_MISSING;
-        } else if (pill == null) {
-            return Issue.NO_SLEEP_PILL_PAIRED;
-        } else if (pill.state == BaseDevice.State.LOW_BATTERY && shouldReportLowBattery()) {
+        if (pill != null && pill.state == BaseDevice.State.LOW_BATTERY && shouldReportLowBattery()) {
             return Issue.SLEEP_PILL_LOW_BATTERY;
-        } else if (pill.getHoursSinceLastUpdated() >= BaseDevice.MISSING_THRESHOLD_HRS && shouldReportPillMissing()) {
-            return Issue.SLEEP_PILL_MISSING;
-        } else if (pill.shouldUpdate() && shouldReportPillUpdate()){
+        } else if (pill != null && pill.shouldUpdate() && shouldReportPillUpdate()){
             return Issue.SLEEP_PILL_FIRMWARE_UPDATE_AVAILABLE;
         }
 
@@ -113,16 +105,6 @@ public class DeviceIssuesInteractor extends ScopedValueInteractor<DeviceIssuesIn
         return (lastShown == null || Days.daysBetween(lastShown, DateTime.now()).getDays() >= 1);
     }
 
-    boolean shouldReportSenseMissing() {
-        final DateTime lastShown = getSenseMissingAlertLastShown();
-        return (lastShown == null || Days.daysBetween(lastShown, DateTime.now()).getDays() >= 1);
-    }
-
-    boolean shouldReportPillMissing() {
-        final DateTime lastShown = getPillMissingAlertLastShown();
-        return (lastShown == null || Days.daysBetween(lastShown, DateTime.now()).getDays() >= 1);
-    }
-
     boolean shouldReportPillUpdate() {
         final DateTime lastShown = getPillUpdateAlertLastShown();
         return lastShown == null || Hours.hoursBetween(lastShown, DateTime.now()).isGreaterThan(Hours.ONE);
@@ -143,21 +125,9 @@ public class DeviceIssuesInteractor extends ScopedValueInteractor<DeviceIssuesIn
 
     public void updateLastShown(@NonNull final Issue issue){
         switch (issue) {
-            case SENSE_MISSING:
-                preferences.edit()
-                           .putLong(PreferencesInteractor.SENSE_ALERT_LAST_SHOWN,
-                                    DateTimeUtils.currentTimeMillis())
-                           .apply();
-                break;
             case SLEEP_PILL_LOW_BATTERY:
                 preferences.edit()
                            .putLong(PreferencesInteractor.SYSTEM_ALERT_LAST_SHOWN,
-                                    DateTimeUtils.currentTimeMillis())
-                           .apply();
-                break;
-            case SLEEP_PILL_MISSING:
-                preferences.edit()
-                           .putLong(PreferencesInteractor.PILL_MISSING_ALERT_LAST_SHOWN,
                                     DateTimeUtils.currentTimeMillis())
                            .apply();
                 break;
@@ -166,26 +136,10 @@ public class DeviceIssuesInteractor extends ScopedValueInteractor<DeviceIssuesIn
 
     public enum Issue {
         NONE(Constants.NONE, Constants.NONE, Constants.NONE, Constants.NONE),
-        NO_SENSE_PAIRED(Analytics.Timeline.SYSTEM_ALERT_TYPE_SENSE_NOT_PAIRED,
-                        R.string.issue_title_no_sense,
-                        R.string.issue_message_no_sense,
-                        R.string.action_fix_now),
-        SENSE_MISSING(Analytics.Timeline.SYSTEM_ALERT_TYPE_SENSE_NOT_SEEN,
-                      R.string.issue_title_missing_sense,
-                      R.string.issue_message_missing_sense,
-                      R.string.action_fix_now),
-        NO_SLEEP_PILL_PAIRED(Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_NOT_PAIRED,
-                             R.string.issue_title_no_pill,
-                             R.string.issue_message_no_pill,
-                             R.string.action_fix_now),
         SLEEP_PILL_LOW_BATTERY(Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_LOW_BATTERY,
                                R.string.issue_title_low_battery,
                                R.string.issue_message_low_battery,
                                R.string.action_replace),
-        SLEEP_PILL_MISSING(Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_NOT_SEEN,
-                           R.string.issue_title_missing_pill,
-                           R.string.issue_message_missing_pill,
-                           R.string.action_fix_now),
         SLEEP_PILL_FIRMWARE_UPDATE_AVAILABLE(Analytics.Timeline.SYSTEM_ALERT_TYPE_PILL_FIRMWARE_UPDATE_AVAILABLE,
                                              R.string.issue_title_pill_firmware_update_available,
                                              R.string.issue_message_pill_firmware_update_available,

@@ -61,6 +61,6 @@ public class Alert extends ApiResponse {
     }
 
     public interface ActionHandler {
-        void unMuteSense();
+        void handleAlert(@NonNull final Category alertCategory);
     }
 }

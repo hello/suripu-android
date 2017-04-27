@@ -409,9 +409,6 @@ public class Analytics {
 
         String EVENT_TIMELINE_SWIPE = "Timeline swipe";
 
-        String EVENT_TIMELINE_OPENED = "Timeline opened";
-        String EVENT_TIMELINE_CLOSED = "Timeline closed";
-
         String EVENT_SLEEP_SCORE_BREAKDOWN = "Sleep Score breakdown";
         String EVENT_SHARE = "Share Timeline";
 
@@ -433,11 +430,7 @@ public class Analytics {
         String EVENT_SYSTEM_ALERT = "System Alert";
 
         String PROP_SYSTEM_ALERT_TYPE = "Type";
-        int SYSTEM_ALERT_TYPE_SENSE_NOT_PAIRED = 2;
-        int SYSTEM_ALERT_TYPE_PILL_NOT_PAIRED = 4;
         int SYSTEM_ALERT_TYPE_PILL_LOW_BATTERY = 5;
-        int SYSTEM_ALERT_TYPE_SENSE_NOT_SEEN = 6;
-        int SYSTEM_ALERT_TYPE_PILL_NOT_SEEN = 7;
         int SYSTEM_ALERT_TYPE_PILL_FIRMWARE_UPDATE_AVAILABLE = 8;
 
         String EVENT_SYSTEM_ALERT_ACTION = "System Alert Action";
@@ -455,7 +448,6 @@ public class Analytics {
 
         String EVENT_TRENDS = "Trends";
 
-        String EVENT_MAIN_VIEW = "Main View";
         String EVENT_INSIGHT_DETAIL = "Insight Detail";
         String EVENT_QUESTION = "Question";
         String EVENT_SKIP_QUESTION = "Skip Question";

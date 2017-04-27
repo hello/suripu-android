@@ -15,6 +15,7 @@ import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.UpdateCheckIn;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.api.model.v2.alerts.Alert;
+import is.hello.sense.api.model.v2.alerts.Category;
 import is.hello.sense.flows.home.interactors.AlertsInteractor;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
@@ -42,6 +43,7 @@ import is.hello.sense.ui.dialogs.DeviceIssueDialogFragment;
 import is.hello.sense.ui.dialogs.ErrorDialogFragment;
 import is.hello.sense.ui.dialogs.InsightInfoFragment;
 import is.hello.sense.ui.dialogs.SystemAlertDialogFragment;
+import is.hello.sense.ui.fragments.settings.DeviceListFragment;
 import is.hello.sense.util.Logger;
 
 import static is.hello.sense.flows.home.ui.activities.HomeActivity.EXTRA_HOME_NAV_INDEX;
@@ -138,6 +140,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
                              this::bindDeviceIssue,
                              Functions.LOG_ERROR);
         }
+        this.alertsInteractor.alert.forget();
         bindAndSubscribe(this.alertsInteractor.alert,
                          this::bindAlert,
                          Functions.LOG_ERROR);
@@ -254,7 +257,32 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
     //endregion
     //Alert Actionhandler
     @Override
-    public void unMuteSense() {
+    public void handleAlert(@NonNull final Category alertCategory) {
+        switch (alertCategory) {
+            case SENSE_MUTED:
+                this.unMuteSense();
+                break;
+            case REVIEW_ACCOUNTS_PAIRED_TO_SENSE:
+                //todo handle
+                break;
+            case SENSE_NOT_PAIRED:
+            case SENSE_NOT_SEEN:
+            case SLEEP_PILL_NOT_PAIRED:
+            case SLEEP_PILL_NOT_SEEN:
+                this.startDevicesActivity();
+                break;
+            case EXPANSION_UNREACHABLE:
+            case UNKNOWN:
+                //do nothing
+                break;
+            default:
+                throw new IllegalStateException("unhandled alert category " + alertCategory);
+        }
+    }
+
+
+    @VisibleForTesting
+    protected void unMuteSense() {
         this.presenterView.showProgressOverlay(true);
         this.voiceSettingsInteractor.setSenseId(this.preferencesInteractor.getString(PreferencesInteractor.PAIRED_SENSE_ID,
                                                                                      VoiceSettingsInteractor.EMPTY_ID));
@@ -268,6 +296,11 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
                                                      },
                                                      () -> this.presenterView.showProgressOverlay(false))
              );
+    }
+
+    @VisibleForTesting
+    protected void startDevicesActivity() {
+        DeviceListFragment.startStandaloneFrom(getActivity());
     }
 
     //endregion
@@ -345,7 +378,7 @@ public class HomePresenterFragment extends PresenterFragment<HomeView>
         final boolean existingAlert = this.isShowingAlert();
         switch (alert.getCategory()) {
             case EXPANSION_UNREACHABLE:
-                return valid && !existingAlert; // always show valid unreacahable alerts whenever we get them
+                return valid && !existingAlert; // always show valid unreachable alerts whenever we get them
             case SENSE_MUTED:
             default:
                 return valid && !existingAlert && this.shouldShowAlerts;

@@ -353,7 +353,7 @@ public interface ApiService {
 
     //region Alerts
 
-    @GET("/v2/alerts")
+    @GET("/v3/alerts")
     Observable<ArrayList<Alert>> getAlerts();
 
     //endregion

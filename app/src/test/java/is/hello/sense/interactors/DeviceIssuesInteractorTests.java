@@ -5,8 +5,6 @@ import org.joda.time.DateTimeUtils;
 import org.junit.After;
 import org.junit.Test;
 
-import java.util.ArrayList;
-
 import javax.inject.Inject;
 
 import is.hello.sense.api.model.BaseDevice;
@@ -44,36 +42,6 @@ public class DeviceIssuesInteractorTests extends InjectionTestCase {
     }
 
     @Test
-    public void topIssueNoSense() throws Exception {
-        final Devices devices = new Devices(new ArrayList<>(), new ArrayList<>());
-        final DeviceIssuesInteractor.Issue issue = presenter.getTopIssue(devices);
-        assertThat(issue, is(equalTo(DeviceIssuesInteractor.Issue.NO_SENSE_PAIRED)));
-    }
-
-    @Test
-    public void topIssueMissingSense() throws Exception {
-        final SenseDevice missingSense = new SenseDevice(BaseDevice.State.UNKNOWN,
-                                                         SenseDevice.Color.BLACK,
-                                                         null,
-                                                         null,
-                                                         new DateTime(0),
-                                                         null,
-                                                         SenseDevice.HardwareVersion.SENSE);
-        final Devices devices = new Devices(Lists.newArrayList(missingSense),
-                                            new ArrayList<>());
-        final DeviceIssuesInteractor.Issue issue = presenter.getTopIssue(devices);
-        assertThat(issue, is(equalTo(DeviceIssuesInteractor.Issue.SENSE_MISSING)));
-    }
-
-    @Test
-    public void topIssueNoPill() throws Exception {
-        final Devices devices = new Devices(Lists.newArrayList(createOkSense()),
-                                            new ArrayList<>());
-        final DeviceIssuesInteractor.Issue issue = presenter.getTopIssue(devices);
-        assertThat(issue, is(equalTo(DeviceIssuesInteractor.Issue.NO_SLEEP_PILL_PAIRED)));
-    }
-
-    @Test
     public void topIssueLowBatteryPill() throws Exception {
         final SleepPillDevice lowBatteryPill = new SleepPillDevice(BaseDevice.State.LOW_BATTERY,
                                                                    SleepPillDevice.Color.BLUE,
@@ -85,20 +53,6 @@ public class DeviceIssuesInteractorTests extends InjectionTestCase {
                                             Lists.newArrayList(lowBatteryPill));
         final DeviceIssuesInteractor.Issue issue = presenter.getTopIssue(devices);
         assertThat(issue, is(equalTo(DeviceIssuesInteractor.Issue.SLEEP_PILL_LOW_BATTERY)));
-    }
-
-    @Test
-    public void topIssueMissingPill() throws Exception {
-        final SleepPillDevice missingPill = new SleepPillDevice(BaseDevice.State.UNKNOWN,
-                                                                SleepPillDevice.Color.BLUE,
-                                                                null,
-                                                                null,
-                                                                new DateTime(0),
-                                                                0);
-        final Devices devices = new Devices(Lists.newArrayList(createOkSense()),
-                                            Lists.newArrayList(missingPill));
-        final DeviceIssuesInteractor.Issue issue = presenter.getTopIssue(devices);
-        assertThat(issue, is(equalTo(DeviceIssuesInteractor.Issue.SLEEP_PILL_MISSING)));
     }
 
     @Test

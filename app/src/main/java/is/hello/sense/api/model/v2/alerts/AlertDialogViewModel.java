@@ -60,9 +60,14 @@ implements DialogViewModel<Category>{
 
     private String getPositiveButtonText(final Category category,
                                          final Resources resources) {
-        switch (category){
+        switch (category) {
             case SENSE_MUTED:
                 return resources.getString(R.string.action_unmute);
+            case SENSE_NOT_PAIRED:
+            case SENSE_NOT_SEEN:
+            case SLEEP_PILL_NOT_PAIRED:
+            case SLEEP_PILL_NOT_SEEN:
+                return resources.getString(R.string.action_fix_now);
             default:
                 return resources.getString(R.string.action_okay);
         }
@@ -73,6 +78,11 @@ implements DialogViewModel<Category>{
         switch (category){
             case SENSE_MUTED:
                 return resources.getString(R.string.action_okay);
+            case SENSE_NOT_PAIRED:
+            case SENSE_NOT_SEEN:
+            case SLEEP_PILL_NOT_PAIRED:
+            case SLEEP_PILL_NOT_SEEN:
+                return resources.getString(R.string.action_fix_later);
             default:
                 return resources.getString(R.string.empty);
         }
