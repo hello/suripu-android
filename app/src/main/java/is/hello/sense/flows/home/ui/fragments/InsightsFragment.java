@@ -262,7 +262,7 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
             return;
         }
         final InsightInfoFragment infoFragment = InsightInfoFragment.newInstance(insight, getResources());
-        infoFragment.show(fragment.getChildFragmentManager(),
+        infoFragment.show(fragment.getFragmentManager(),
                           R.id.view_home_container,
                           InsightInfoFragment.TAG);
         this.selectedInsightHolder = viewHolder;
