@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="App" type="AndroidRunConfigurationType" factoryName="Android Application">
     <module name="app" />
@@ -33,3 +34,4 @@
     <method />
   </configuration>
 </component>
+
