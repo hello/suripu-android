@@ -36,12 +36,13 @@ public class ZoomedOutTimelineInteractor extends Interactor {
 
     //region Lifecycle
 
-    @Inject public ZoomedOutTimelineInteractor(@NonNull ApiService apiService) {
+    @Inject
+    public ZoomedOutTimelineInteractor(@NonNull final ApiService apiService) {
         this.apiService = apiService;
     }
 
     @Override
-    public void onRestoreState(@NonNull Bundle savedState) {
+    public void onRestoreState(@NonNull final Bundle savedState) {
         super.onRestoreState(savedState);
 
         final LocalDate firstDate = (LocalDate) savedState.getSerializable(STATE_KEY_FIRST_DATE);
@@ -53,17 +54,17 @@ public class ZoomedOutTimelineInteractor extends Interactor {
     @Nullable
     @Override
     public Bundle onSaveState() {
-        Bundle savedState = new Bundle();
+        final Bundle savedState = new Bundle();
         savedState.putSerializable(STATE_KEY_FIRST_DATE, firstDate);
         return savedState;
     }
 
     @Override
-    public void onTrimMemory(int level) {
+    public void onTrimMemory(final int level) {
         super.onTrimMemory(level);
 
         if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
-            cachedTimelines.evictAll();
+            this.cachedTimelines.evictAll();
         }
     }
 
@@ -72,17 +73,18 @@ public class ZoomedOutTimelineInteractor extends Interactor {
 
     //region Dates
 
-    public void setFirstDate(@NonNull LocalDate firstDate) {
+    public void setFirstDate(@NonNull final LocalDate firstDate) {
         this.firstDate = firstDate;
-        cachedTimelines.evictAll();
+        this.cachedTimelines.evictAll();
     }
 
-    public @NonNull LocalDate getDateAt(int position) {
-        return firstDate.minusDays(position);
+    @NonNull
+    public LocalDate getDateAt(final int position) {
+        return this.firstDate.minusDays(position);
     }
 
-    public int getDatePosition(@NonNull LocalDate dateTime) {
-        return Days.daysBetween(dateTime, firstDate).getDays() - 1;
+    public int getDatePosition(@NonNull final LocalDate dateTime) {
+        return Days.daysBetween(dateTime, this.firstDate).getDays() - 1;
     }
 
     //endregion
@@ -90,25 +92,28 @@ public class ZoomedOutTimelineInteractor extends Interactor {
 
     //region Vending Timelines
 
-    public void cacheTimeline(@NonNull LocalDate date, @Nullable Timeline timeline) {
+    public void cacheTimeline(@NonNull final LocalDate date,
+                              @Nullable final Timeline timeline) {
         if (timeline != null) {
-            cachedTimelines.put(date, timeline);
+            this.cachedTimelines.put(date, timeline);
         } else {
-            cachedTimelines.remove(date);
+            this.cachedTimelines.remove(date);
         }
     }
 
-    public @Nullable Timeline getCachedTimeline(@NonNull LocalDate date) {
-        return cachedTimelines.get(date);
+    @Nullable
+    public Timeline getCachedTimeline(@NonNull final LocalDate date) {
+        return this.cachedTimelines.get(date);
     }
 
-    public Observable<Timeline> retrieveTimeline(@NonNull LocalDate date) {
-        return apiService.timelineForDate(date.toString(ApiService.DATE_FORMAT))
-                         .observeOn(updateScheduler);
+    private Observable<Timeline> retrieveTimeline(@NonNull final LocalDate date) {
+        return this.apiService.timelineForDate(date.toString(ApiService.DATE_FORMAT))
+                              .observeOn(this.updateScheduler);
     }
 
-    public Observable<Timeline> retrieveAndCacheTimeline(@NonNull LocalDate date) {
-        Timeline existingTimeline = cachedTimelines.get(date);
+    @VisibleForTesting
+    Observable<Timeline> retrieveAndCacheTimeline(@NonNull final LocalDate date) {
+        final Timeline existingTimeline = this.cachedTimelines.get(date);
         if (existingTimeline != null) {
             return Observable.just(existingTimeline);
         } else {
@@ -125,28 +130,28 @@ public class ZoomedOutTimelineInteractor extends Interactor {
 
     //region View holder hooks
 
-    public void addDataView(@NonNull DataView presenterView) {
-        dataViews.add(presenterView);
+    public void addDataView(@NonNull final DataView presenterView) {
+        this.dataViews.add(presenterView);
     }
 
-    public void removeDataView(@NonNull DataView presenterView) {
-        dataViews.remove(presenterView);
+    public void removeDataView(@NonNull final DataView presenterView) {
+        this.dataViews.remove(presenterView);
     }
 
     public void clearDataViews() {
-        for(DataView dataView : dataViews){
+        for (final DataView dataView : this.dataViews) {
             dataView.cancelAnimation(false);
         }
-        dataViews.clear();
+        this.dataViews.clear();
     }
 
     public void retrieveTimelines() {
-        for (DataView dataView : dataViews) {
+        for (final DataView dataView : this.dataViews) {
             if (!dataView.wantsUpdates()) {
                 continue;
             }
 
-            Observable<Timeline> timeline = retrieveAndCacheTimeline(dataView.getDate());
+            final Observable<Timeline> timeline = retrieveAndCacheTimeline(dataView.getDate());
             timeline.subscribe(dataView::onUpdateAvailable, dataView::onUpdateFailed);
         }
     }
@@ -162,7 +167,7 @@ public class ZoomedOutTimelineInteractor extends Interactor {
     }
 
     @VisibleForTesting
-    void setUpdateScheduler(@NonNull Scheduler scheduler) {
+    void setUpdateScheduler(@NonNull final Scheduler scheduler) {
         this.updateScheduler = scheduler;
     }
 
@@ -171,9 +176,13 @@ public class ZoomedOutTimelineInteractor extends Interactor {
 
     public interface DataView {
         LocalDate getDate();
+
         boolean wantsUpdates();
+
         void onUpdateAvailable(@NonNull Timeline timeline);
+
         void onUpdateFailed(Throwable e);
+
         void cancelAnimation(boolean showLoading);
     }
 }

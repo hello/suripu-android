@@ -13,6 +13,8 @@ import android.widget.TextView;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 
+import java.util.Locale;
+
 import is.hello.go99.Anime;
 import is.hello.go99.animators.MultiAnimator;
 import is.hello.sense.R;
@@ -26,14 +28,15 @@ import is.hello.sense.util.Logger;
 import rx.functions.Action1;
 
 public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTimelineAdapter.ViewHolder> {
-    private final ZoomedOutTimelineInteractor presenter;
+    private final ZoomedOutTimelineInteractor interactor;
     private final int count;
 
-    private @Nullable OnItemClickedListener onItemClickedListener;
+    @Nullable
+    private OnItemClickedListener onItemClickedListener;
 
-    public ZoomedOutTimelineAdapter(@NonNull final ZoomedOutTimelineInteractor presenter,
+    public ZoomedOutTimelineAdapter(@NonNull final ZoomedOutTimelineInteractor interactor,
                                     @NonNull final LocalDate oldestDate) {
-        this.presenter = presenter;
+        this.interactor = interactor;
 
         LocalDate today = DateFormatter.todayForTimeline();
         if (today.equals(oldestDate)) {
@@ -47,44 +50,46 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
 
     @Override
     public int getItemCount() {
-        return count;
+        return this.count;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int position) {
+    public ViewHolder onCreateViewHolder(final ViewGroup viewGroup,
+                                         final int position) {
         final View itemView = LayoutInflater.from(viewGroup.getContext())
-                                      .inflate(R.layout.item_zoomed_out_timeline, viewGroup, false);
+                                            .inflate(R.layout.item_zoomed_out_timeline, viewGroup, false);
         return new ViewHolder(itemView,
                               ZoomedOutTimelineAdapter.this::dispatchClick);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        final LocalDate date = presenter.getDateAt(position);
-        final Timeline timeline = presenter.getCachedTimeline(date);
+    public void onBindViewHolder(final ViewHolder holder,
+                                 final int position) {
+        final LocalDate date = this.interactor.getDateAt(position);
+        final Timeline timeline = this.interactor.getCachedTimeline(date);
         holder.bind(date, timeline);
 
-        presenter.addDataView(holder);
+        this.interactor.addDataView(holder);
     }
 
     @Override
-    public void onViewDetachedFromWindow(ViewHolder holder) {
+    public void onViewDetachedFromWindow(final ViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
-        presenter.removeDataView(holder);
+        this.interactor.removeDataView(holder);
     }
 
     @Override
-    public void onViewRecycled(ViewHolder holder) {
+    public void onViewRecycled(final ViewHolder holder) {
         super.onViewRecycled(holder);
         holder.unbind();
-        presenter.removeDataView(holder);
+        this.interactor.removeDataView(holder);
     }
 
     @Override
-    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+    public void onDetachedFromRecyclerView(final RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
 
-        presenter.clearDataViews();
+        this.interactor.clearDataViews();
     }
 
     //endregion
@@ -92,11 +97,11 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
 
     //region Click Listener
 
-    public void setOnItemClickedListener(@Nullable OnItemClickedListener onItemClickedListener) {
+    public void setOnItemClickedListener(@Nullable final OnItemClickedListener onItemClickedListener) {
         this.onItemClickedListener = onItemClickedListener;
     }
 
-    private void dispatchClick(@NonNull ViewHolder viewHolder) {
+    private void dispatchClick(@NonNull final ViewHolder viewHolder) {
         // View dispatches OnClickListener#onClick(View) calls on
         // the next looper cycle. It's possible for the adapter's
         // containing recycler view to update and invalidate a
@@ -116,22 +121,21 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
 
     public static class ViewHolder extends RecyclerView.ViewHolder
             implements ZoomedOutTimelineInteractor.DataView {
-        public final TextView dayNumber;
-        public final TextView dayName;
+        private final TextView dayNumber;
+        private final TextView dayName;
         public final TextView score;
-        public final TimelinePreviewView preview;
-        public final SleepScoreDrawable scoreDrawable;
+        private final TimelinePreviewView preview;
+        private final SleepScoreDrawable scoreDrawable;
         public final ProgressBar progressBar;
-        public final View scoreContainer;
+        private final View scoreContainer;
         private boolean hasTimeline = false;
         private boolean showScore = false;
         private LocalDate date;
 
 
-
         //region Lifecycle
 
-        private ViewHolder(@NonNull View itemView) {
+        private ViewHolder(@NonNull final View itemView) {
             super(itemView);
             this.dayNumber = (TextView) itemView.findViewById(R.id.item_zoomed_out_timeline_day_number);
             this.dayName = (TextView) itemView.findViewById(R.id.item_zoomed_out_timeline_day_name);
@@ -146,29 +150,31 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
         }
 
         protected ViewHolder(@NonNull final View itemView,
-                          @NonNull final Action1<ViewHolder> dispatchClick) {
+                             @NonNull final Action1<ViewHolder> dispatchClick) {
             this(itemView);
-            itemView.setOnClickListener( ignored -> dispatchClick.call(this));
+            itemView.setOnClickListener(ignored -> dispatchClick.call(this));
         }
 
-        private boolean isTimelineEmpty(@NonNull Timeline timeline) { //todo use TimelineInteractor static isValid methods
+        private boolean isTimelineEmpty(@NonNull final Timeline timeline) { //todo use TimelineInteractor static isValid methods
             return (timeline.getScore() == null ||
                     timeline.getScoreCondition() == ScoreCondition.UNAVAILABLE ||
                     timeline.getScoreCondition() == ScoreCondition.INCOMPLETE);
         }
 
-        private void bind(@NonNull LocalDate date, @Nullable Timeline timeline) {
+        private void bind(@NonNull final LocalDate date,
+                          @Nullable final Timeline timeline) {
             this.date = date;
             dayNumber.setText(date.toString("d"));
             dayName.setText(date.toString("EE"));
-            if (timeline == null ){
+            if (timeline == null) {
                 cancelAnimation(true);
                 this.hasTimeline = false;
-            }else {
+            } else {
+                showLoading(false);
                 showScore = true;
                 if (isTimelineEmpty(timeline)) {
                     final int sleepScoreColor = ContextCompat.getColor(itemView.getContext(),
-                                                                 ScoreCondition.UNAVAILABLE.colorRes);
+                                                                       ScoreCondition.UNAVAILABLE.colorRes);
                     score.setText(null);
                     score.setTextColor(sleepScoreColor);
                     scoreDrawable.setFillColor(sleepScoreColor);
@@ -179,11 +185,13 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
                 } else {
                     final Integer sleepScore = timeline.getScore();
                     final int sleepScoreColor = ContextCompat.getColor(itemView.getContext(),
-                                                                 timeline.getScoreCondition().colorRes);
-                    score.setText(Integer.toString(sleepScore));
+                                                                       timeline.getScoreCondition().colorRes);
+                    score.setText(String.format(Locale.getDefault(), "%d", sleepScore));
                     score.setTextColor(sleepScoreColor);
                     scoreDrawable.setFillColor(sleepScoreColor);
-                    scoreDrawable.setValue(sleepScore);
+                    if (sleepScore != null) {
+                        scoreDrawable.setValue(sleepScore);
+                    }
 
                     preview.setTimelineEvents(timeline.getEvents());
 
@@ -240,14 +248,14 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
         }
 
         @Override
-        public void onUpdateAvailable(@NonNull Timeline timeline) {
-            if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+        public void onUpdateAvailable(@NonNull final Timeline timeline) {
+            if (wantsUpdates()) {
                 bind(date, timeline);
             }
         }
 
         @Override
-        public void onUpdateFailed(Throwable e) {
+        public void onUpdateFailed(final Throwable e) {
             if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                 Logger.error(getClass().getSimpleName(), "Could not load item " + getAdapterPosition(), e);
                 bind(date, null);
@@ -255,15 +263,16 @@ public class ZoomedOutTimelineAdapter extends RecyclerView.Adapter<ZoomedOutTime
         }
 
         @Override
-        public void cancelAnimation(boolean showLoading) {
+        public void cancelAnimation(final boolean showLoading) {
             Anime.cancelAll(progressBar, scoreContainer, preview);
             showLoading(showLoading);
         }
+
         //endregion
 
         //region view support
 
-        private void showLoading(boolean show) {
+        private void showLoading(final boolean show) {
             if (show) {
                 scoreContainer.setVisibility(View.GONE);
                 preview.setVisibility(View.GONE);
