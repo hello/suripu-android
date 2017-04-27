@@ -187,13 +187,19 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (player != null) {
-            player.recycle();
+        if (this.player != null) {
+            this.player.recycle();
         }
-        listAdapter = null;
-        selectionTracker = null;
+
+        if (this.listAdapter != null) {
+            this.listAdapter.release();
+            this.listAdapter = null;
+        }
+
+        this.selectionTracker = null;
+
         if (isFinishing()) {
-            audioCache.trimCache();
+            this.audioCache.trimCache();
         }
     }
 
@@ -293,6 +299,12 @@ public class ListActivity extends InjectionActivity implements Player.OnEventLis
         public ListAdapter(@NonNull final IListObject IListObject, final boolean wantsPlayer) {
             this.IListObject = IListObject;
             this.wantsPlayer = wantsPlayer;
+        }
+
+        public void release() {
+            if (IListObject.getListItems() != null) {
+                IListObject.getListItems().clear();
+            }
         }
 
         @Override
