@@ -41,25 +41,29 @@ public enum Tutorial {
                    R.id.fragment_timeline_recycler,
                    Interaction.SWIPE_RIGHT,
                    Analytics.createBreadcrumbTrackingProperties(Source.TIMELINE,
-                                                                Description.SWIPE_TIMELINE)),
+                                                                Description.SWIPE_TIMELINE),
+                   true),
     TAP_INSIGHT_CARD(R.string.tutorial_tap_insight_card,
                      Gravity.BOTTOM,
                      R.id.item_insight_card,
                      Interaction.TAP,
                      Analytics.createBreadcrumbTrackingProperties(Source.INSIGHTS,
-                                                                  Description.TAP_INSIGHT_CARD)),
+                                                                  Description.TAP_INSIGHT_CARD),
+                     true),
     SENSOR_DETAILS_SCRUB(R.string.tutorial_scrub_sensor_history,
                          Gravity.BOTTOM,
-                         R.id.fragment_sensor_detail_graph_view,
+                         R.id.fragment_sensor_detail_root,
                          Interaction.TAP,
                          Analytics.createBreadcrumbTrackingProperties(Source.SENSOR_GRAPH,
-                                                                      Description.SCRUB_GRAPH)),
+                                                                      Description.SCRUB_GRAPH),
+                         true),
     SENSOR_DETAILS_SCROLL(R.string.tutorial_scroll_sensor_history,
-                         Gravity.BOTTOM,
-                         R.id.fragment_sensor_detail_graph_view,
-                         Interaction.SWIPE_UP,
-                         Analytics.createBreadcrumbTrackingProperties(Source.SENSOR_GRAPH,
-                                                                      Description.SCRUB_GRAPH));
+                          Gravity.BOTTOM,
+                          R.id.fragment_sensor_detail_root,
+                          Interaction.SWIPE_UP,
+                          Analytics.createBreadcrumbTrackingProperties(Source.SENSOR_GRAPH,
+                                                                       Description.SCRUB_GRAPH),
+                          false);
 
     public final
     @StringRes
@@ -70,17 +74,20 @@ public enum Tutorial {
     int anchorId;
     public final Interaction interaction;
     public final Properties properties; //todo remove properties as well if not tracking breadcrumb end event
+    public final boolean wantsShadow;
 
     Tutorial(@StringRes final int descriptionRes,
              final int descriptionGravity,
              @IdRes final int anchorId,
              @NonNull final Interaction interaction,
-             @NonNull final Properties properties) {
+             @NonNull final Properties properties,
+             final boolean wantsShadow) {
         this.descriptionRes = descriptionRes;
         this.descriptionGravity = descriptionGravity;
         this.anchorId = anchorId;
         this.interaction = interaction;
         this.properties = properties;
+        this.wantsShadow = wantsShadow;
     }
 
     /**

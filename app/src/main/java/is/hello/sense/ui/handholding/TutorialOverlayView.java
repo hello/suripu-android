@@ -69,6 +69,22 @@ public class TutorialOverlayView extends RelativeLayout {
 
     //region Creation
 
+    public static TutorialOverlayView showAsBubble(@NonNull final Activity activity,
+                                                   @NonNull final Tutorial tutorial) {
+        final TutorialOverlayView tutorialOverlayView = new TutorialOverlayView(activity, tutorial);
+        tutorialOverlayView.descriptionContainer.setBackgroundResource(R.color.white_00);
+        final int extraRoom = activity.getResources().getDimensionPixelSize(R.dimen.x2);
+        final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                                                           ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.gravity = Gravity.CENTER_HORIZONTAL;
+        lp.bottomMargin = extraRoom;
+        tutorialOverlayView.descriptionText.setLayoutParams(lp);
+        tutorialOverlayView.descriptionText.setBackgroundResource(R.drawable.bubble);
+        tutorialOverlayView.descriptionText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        tutorialOverlayView.descriptionText.setPadding(extraRoom, 0, extraRoom, 0);
+        return tutorialOverlayView;
+    }
+
     public TutorialOverlayView(@NonNull final Activity activity, @NonNull final Tutorial tutorial) {
         super(activity);
 
@@ -87,26 +103,28 @@ public class TutorialOverlayView extends RelativeLayout {
         dismissIcon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
         descriptionText.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, dismissIcon, null);
 
-        final View shadow = new View(activity);
-        final int shadowHeight = resources.getDimensionPixelSize(R.dimen.shadow_size);
-        final ViewGroup.LayoutParams shadowLayoutParams
-                = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                             shadowHeight);
-        if (tutorial.descriptionGravity == Gravity.TOP) {
-            shadow.setBackgroundResource(R.drawable.shadow_from_top_to_bottom);
-            descriptionContainer.addView(shadow, descriptionContainer.getChildCount(), shadowLayoutParams);
-
-            final View topLine = new View(activity);
-            topLine.setBackgroundResource(R.color.tutorial_interaction_view_dimmed);
-            final int topLineHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
-            final ViewGroup.LayoutParams topLineLayoutParams
+        if (tutorial.wantsShadow) {
+            final View shadow = new View(activity);
+            final int shadowHeight = resources.getDimensionPixelSize(R.dimen.shadow_size);
+            final ViewGroup.LayoutParams shadowLayoutParams
                     = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                 topLineHeight);
-            descriptionContainer.addView(topLine, 0, topLineLayoutParams);
-        } else {
-            descriptionContainer.setBackgroundResource(R.color.tutorial_interaction_view);
-            shadow.setBackgroundResource(R.drawable.shadow_from_bottom_to_top);
-            descriptionContainer.addView(shadow, 0, shadowLayoutParams);
+                                                 shadowHeight);
+            shadow.setBackgroundResource(R.drawable.shadow_from_top_to_bottom);
+            if (tutorial.descriptionGravity == Gravity.TOP) {
+                descriptionContainer.addView(shadow, descriptionContainer.getChildCount(), shadowLayoutParams);
+
+                final View topLine = new View(activity);
+                topLine.setBackgroundResource(R.color.tutorial_interaction_view_dimmed);
+                final int topLineHeight = resources.getDimensionPixelSize(R.dimen.divider_size);
+                final ViewGroup.LayoutParams topLineLayoutParams
+                        = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                     topLineHeight);
+                descriptionContainer.addView(topLine, 0, topLineLayoutParams);
+            } else {
+                descriptionContainer.setBackgroundResource(R.color.tutorial_interaction_view);
+                shadow.setBackgroundResource(R.drawable.shadow_from_bottom_to_top);
+                descriptionContainer.addView(shadow, 0, shadowLayoutParams);
+            }
         }
 
         addView(descriptionContainer, tutorial.generateDescriptionLayoutParams());
@@ -196,18 +214,6 @@ public class TutorialOverlayView extends RelativeLayout {
         post(() -> show(containerRes));
     }
 
-    public void showAsBubble() {
-        descriptionContainer.setBackgroundResource(R.color.white_00);
-        final int extraRoom = getResources().getDimensionPixelSize(R.dimen.x2);
-        final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                                                           ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.gravity = Gravity.CENTER_HORIZONTAL;
-        lp.bottomMargin = extraRoom;
-        descriptionText.setLayoutParams(lp);
-        descriptionText.setBackgroundResource(R.drawable.bubble);
-        descriptionText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-        descriptionText.setPadding(extraRoom, 0, extraRoom, 0);
-    }
 
     public void dismiss(final boolean animate) {
         if (container != null) {

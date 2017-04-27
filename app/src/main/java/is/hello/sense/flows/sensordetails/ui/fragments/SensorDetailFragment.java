@@ -278,9 +278,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
             } else if (Tutorial.SENSOR_DETAILS_SCROLL.shouldShow(getActivity())) {
                 scrollUp = false;
                 hasShownATutorial = true;
-                this.tutorialOverlayView = new TutorialOverlayView(getActivity(),
-                                                                   Tutorial.SENSOR_DETAILS_SCROLL);
-                this.tutorialOverlayView.showAsBubble();
+                this.tutorialOverlayView = TutorialOverlayView.showAsBubble(getActivity(), Tutorial.SENSOR_DETAILS_SCROLL);
             } else {
                 scrollUp = false;
             }
