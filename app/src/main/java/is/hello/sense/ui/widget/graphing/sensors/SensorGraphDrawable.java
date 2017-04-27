@@ -24,7 +24,9 @@ import android.text.TextPaint;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
 import is.hello.sense.ui.widget.util.Drawing;
+import is.hello.sense.units.UnitConverter;
 import is.hello.sense.units.UnitFormatter;
+import is.hello.sense.util.Constants;
 
 
 public class SensorGraphDrawable extends Drawable {
@@ -61,9 +63,17 @@ public class SensorGraphDrawable extends Drawable {
     /**
      * How rounded the corners joining adjacent points should be
      */
-    private static final PathEffect CORNER_PATH_EFFECT = new CornerPathEffect(10);
+    private static final PathEffect CORNER_PATH_EFFECT = new CornerPathEffect(20);
 
-    public static final int NO_LOCATION = -1;
+    public static final int NO_LOCATION = Constants.NONE;
+    /**
+     * Will draw every "INCREMENT" points. So in this example every 1 of 3 points will be drawn.
+     */
+    private static final int INCREMENT = 3;
+    /**
+     * The minimum difference that should exist between max - min.
+     */
+    private static final float MAX_MIN_GAP = 5;
 
     private final Sensor sensor;
     private final int height;
@@ -100,7 +110,9 @@ public class SensorGraphDrawable extends Drawable {
                                final int height,
                                @Nullable final String[] labels) {
         this.sensor = sensor;
-        this.limits = new ValueLimits(sensor.getSensorValues());
+        this.limits = new ValueLimits(sensor.getSensorValues(),
+                                      unitFormatter.getUnitConverterForSensor(sensor.getType()),
+                                      unitFormatter.getUnitReverseConverterForSensor(sensor.getType()));
         this.labels = labels;
         this.formattedMin = unitFormatter.createUnitBuilder(sensor.getType(), this.limits.min)
                                          .buildWithStyle()
@@ -141,7 +153,6 @@ public class SensorGraphDrawable extends Drawable {
         this.strokePaint.setStrokeCap(Paint.Cap.ROUND);
         this.strokePaint.setStrokeJoin(Paint.Join.ROUND);
         this.strokePaint.setPathEffect(CORNER_PATH_EFFECT);
-        //this.strokePaint.setDither(true);
 
         this.linePaint.setColor(ContextCompat.getColor(context, R.color.divider));
         this.linePaint.setStyle(Paint.Style.STROKE);
@@ -210,9 +221,12 @@ public class SensorGraphDrawable extends Drawable {
         }
         // start the line off the screen.
         this.drawingPath.moveTo(-maxWidth, maxHeight);
-
         for (int i = 0; i < drawTo; i++) {
-            this.drawingPath.lineTo((float) (i * xIncrement), getValueHeight(values[i]));
+            // only draw every 3 points.
+            // However if the value is the max value we must draw that too.
+            if (i % INCREMENT == 0 || values[i] == this.limits.max) {
+                this.drawingPath.lineTo((float) (i * xIncrement), getValueHeight(values[i]));
+            }
         }
 
         if (scaleFactor == 1) {
@@ -355,34 +369,49 @@ public class SensorGraphDrawable extends Drawable {
         private float max = 0f;
         private final float valueDifference;
 
-        public ValueLimits(@NonNull final float[] sensorValues) {
-            min = (float) Sensor.NO_VALUE;
-            max = (float) Sensor.NO_VALUE;
+        public ValueLimits(@NonNull final float[] sensorValues,
+                           @NonNull final UnitConverter unitConverter,
+                           @NonNull final UnitConverter reverseUnitConverter) {
+            this.min = (float) Sensor.NO_VALUE;
+            this.max = (float) Sensor.NO_VALUE;
             if (sensorValues.length > 0) {
                 for (final float sensorValue : sensorValues) {
                     if (sensorValue == Sensor.NO_VALUE) {
                         continue;
                     }
-                    if (min == Sensor.NO_VALUE) {
-                        min = sensorValue;
-                        max = sensorValue;
+                    if (this.min == Sensor.NO_VALUE) {
+                        this.min = sensorValue;
+                        this.max = sensorValue;
                         continue;
                     }
-                    if (sensorValue < min) {
-                        min = sensorValue;
+                    if (sensorValue < this.min) {
+                        this.min = sensorValue;
                         continue;
                     }
-                    if (sensorValue > max) {
-                        max = sensorValue;
+                    if (sensorValue > this.max) {
+                        this.max = sensorValue;
                     }
                 }
             }
 
-            if (max == min) {
-                max += 1;
+            if (this.min != Sensor.NO_VALUE) {
+                // The following will smooth out our graphs by increasing the gap between the min
+                // and max values.
+                final float convertedMin = unitConverter.convert(this.min);
+                final float convertedMax = unitConverter.convert(this.max);
+                if (convertedMax - convertedMin < MAX_MIN_GAP) {
+                    if (convertedMax - MAX_MIN_GAP < 0) {
+                        if (convertedMax == 0) {
+                            this.max += 1;
+                        } else {
+                            this.max = reverseUnitConverter.convert(convertedMin + MAX_MIN_GAP);
+                        }
+                    } else {
+                        this.min = reverseUnitConverter.convert(convertedMax - MAX_MIN_GAP);
+                    }
+                }
             }
-            this.valueDifference = max - min;
-
+            this.valueDifference = this.max - this.min;
         }
     }
 
