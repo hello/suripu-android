@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import is.hello.sense.R;
 import is.hello.sense.ui.common.FragmentNavigation;
 import is.hello.sense.ui.common.SenseFragment;
 import is.hello.sense.ui.common.UserSupport;
@@ -39,10 +40,13 @@ public final class SimpleStepFragment extends SenseFragment {
     private static final String ARG_NEXT_ARGUMENTS = SimpleStepFragment.class.getName() + ".ARG_NEXT_ARGUMENTS";
     private static final String ARG_EXIT_ANIMATION_NAME = SimpleStepFragment.class.getName() + ".ARG_EXIT_ANIMATION_NAME";
     private static final String ARG_NEXT_WANTS_BACK_STACK = SimpleStepFragment.class.getName() + ".ARG_NEXT_WANTS_BACK_STACK";
+    private static final String ARG_SHOW_BUY_SENSE_SECONDARY_ACTION = SimpleStepFragment.class.getName() + ".ARG_SHOW_BUY_SENSE_SECONDARY_ACTION";
 
     private UserSupport.HelpStep helpStep;
     private OnboardingSimpleStepView stepView;
-    private @Nullable ExitAnimationProvider exitAnimationProvider;
+    private
+    @Nullable
+    ExitAnimationProvider exitAnimationProvider;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -75,7 +79,7 @@ public final class SimpleStepFragment extends SenseFragment {
             final Uri location = Uri.parse(arguments.getString(ARG_DIAGRAM_VIDEO));
             stepView.setDiagramVideo(location);
             stepView.setDiagramInset(arguments.getInt(ARG_DIAGRAM_INSET_START_RES, 0),
-                                 arguments.getInt(ARG_DIAGRAM_INSET_END_RES, 0));
+                                     arguments.getInt(ARG_DIAGRAM_INSET_END_RES, 0));
 
             if (arguments.containsKey(ARG_DIAGRAM_RES)) {
                 stepView.setDiagramImage(arguments.getInt(ARG_DIAGRAM_RES));
@@ -83,14 +87,24 @@ public final class SimpleStepFragment extends SenseFragment {
         } else if (arguments.containsKey(ARG_DIAGRAM_RES)) {
             stepView.setDiagramImage(arguments.getInt(ARG_DIAGRAM_RES));
             stepView.setDiagramInset(arguments.getInt(ARG_DIAGRAM_INSET_START_RES, 0),
-                                 arguments.getInt(ARG_DIAGRAM_INSET_END_RES, 0));
+                                     arguments.getInt(ARG_DIAGRAM_INSET_END_RES, 0));
             stepView.setDiagramEdgeToEdge(arguments.getBoolean(ARG_DIAGRAM_EDGE_TO_EDGE, true));
         }
 
         stepView.setCompact(arguments.getBoolean(ARG_COMPACT, false));
 
         stepView.setPrimaryOnClickListener(this::next);
-        stepView.setWantsSecondaryButton(false);
+
+        if (arguments.getBoolean(ARG_SHOW_BUY_SENSE_SECONDARY_ACTION, false)) {
+            stepView.setWantsSecondaryButton(true);
+            stepView.setSecondaryButtonText(R.string.action_buy_sense);
+            stepView.setSecondaryOnClickListener(v -> {
+                Analytics.trackEvent(Analytics.Onboarding.EVENT_NO_SENSE, null);
+                UserSupport.openUri(getActivity(), Uri.parse(UserSupport.ORDER_URL));
+            });
+        } else {
+            stepView.setWantsSecondaryButton(false);
+        }
 
         if (arguments.getBoolean(ARG_HIDE_TOOLBAR, false)) {
             stepView.hideToolbar();
@@ -108,7 +122,7 @@ public final class SimpleStepFragment extends SenseFragment {
     public void onDestroyView() {
         super.onDestroyView();
 
-        if(this.stepView != null) {
+        if (this.stepView != null) {
             this.stepView.destroy();
             this.stepView = null;
         }
@@ -251,6 +265,11 @@ public final class SimpleStepFragment extends SenseFragment {
             return this;
         }
 
+        public Builder setShowBuySenseSecondaryAction(final boolean show) {
+            arguments.putBoolean(ARG_SHOW_BUY_SENSE_SECONDARY_ACTION, show);
+            return this;
+        }
+
         //endregion
 
 
@@ -310,9 +329,8 @@ public final class SimpleStepFragment extends SenseFragment {
          * The provider must run the provided onComplete
          * Runnable after all animation is completed.
          *
-         * @param view          The simple step view whose contents must be animated.
-         * @param onComplete    The completion handler provided by the static step fragment.
-         *
+         * @param view       The simple step view whose contents must be animated.
+         * @param onComplete The completion handler provided by the static step fragment.
          * @see OnboardingSimpleStepView
          */
         void executeAnimation(@NonNull OnboardingSimpleStepView view, @NonNull Runnable onComplete);
