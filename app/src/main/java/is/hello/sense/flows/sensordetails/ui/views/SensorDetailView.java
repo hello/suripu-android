@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.sensors.Sensor;
@@ -51,7 +52,8 @@ public final class SensorDetailView extends PresenterView
     public SensorDetailView(@NonNull final Activity activity,
                             @NonNull final UnitFormatter unitFormatter,
                             @NonNull final SelectorView.OnSelectionChangedListener listener,
-                            @NonNull final SensorGraphDrawable.ScrubberCallback scrubberCallback) {
+                            @NonNull final SensorGraphDrawable.ScrubberCallback scrubberCallback,
+                            final boolean hideLastWeekOption) {
         super(activity);
         this.noDataColor = ContextCompat.getColor(getContext(), R.color.dim);
         this.unitFormatter = unitFormatter;
@@ -65,9 +67,11 @@ public final class SensorDetailView extends PresenterView
         this.scaleList = (SensorScaleList) findViewById(R.id.fragment_sensor_detail_scales);
         this.about = (TextView) findViewById(R.id.fragment_sensor_detail_about_body);
         this.scrollView.setGraphView(sensorGraphView);
-        this.subNavSelector.addOption(R.string.sensor_detail_last_day, false);
-        this.subNavSelector.addOption(R.string.sensor_detail_past_week, false);
-        this.subNavSelector.setSelectedButton(subNavSelector.getButtonAt(0));
+        final ToggleButton lastDayButton = this.subNavSelector.addOption(R.string.sensor_detail_last_day, false);
+        if (hideLastWeekOption) {
+            this.subNavSelector.addOption(R.string.sensor_detail_past_week, false);
+        }
+        this.subNavSelector.setSelectedButton(lastDayButton);
         this.subNavSelector.setOnSelectionChangedListener(this);
         this.subNavSelector.setButtonSelectedColorRes(R.color.white);
         this.subNavSelector.setButtonNotSelectedColorRes(R.color.white_60);
@@ -117,7 +121,7 @@ public final class SensorDetailView extends PresenterView
                 progressBarLayoutParams.setMargins(0, topMargin + (graphHeight / 2) - progressBar.getHeight() / 2, 0, 0);
                 progressBar.setLayoutParams(progressBarLayoutParams);
                 getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                subNavSelector.getButtonAt(0).callOnClick();
+                lastDayButton.callOnClick();
             }
         });
     }
@@ -192,8 +196,9 @@ public final class SensorDetailView extends PresenterView
         this.subNavSelector.setBackground(new TabsBackgroundDrawable(context.getResources(),
                                                                      TabsBackgroundDrawable.Style.SUBNAV,
                                                                      color));
-        this.subNavSelector.getButtonAt(0).setBackgroundColor(color);
-        this.subNavSelector.getButtonAt(1).setBackgroundColor(color);
+        for(final ToggleButton button : this.subNavSelector.getButtons()) {
+            button.setBackgroundColor(color);
+        }
         this.valueTextView.setTextColor(color);
     }
 

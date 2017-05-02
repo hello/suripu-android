@@ -9,6 +9,7 @@ import android.view.View;
 
 import javax.inject.Inject;
 
+import is.hello.sense.SenseApplication;
 import is.hello.sense.flows.home.util.FeedViewPagerPresenterDelegate;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.HasVoiceInteractor;
@@ -40,7 +41,7 @@ public class FeedPresenterFragment extends ViewPagerPresenterFragment
                               final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bindAndSubscribe(hasVoiceInteractor.hasVoice,
-                         this::bindVoiceSettings,
+                         hasVoice -> this.bindVoiceSettings(hasVoice && !SenseApplication.isLTS()),
                          Functions.LOG_ERROR);
         hasVoiceInteractor.update();
     }
@@ -48,8 +49,8 @@ public class FeedPresenterFragment extends ViewPagerPresenterFragment
 
     //region methods
     @VisibleForTesting
-    public void bindVoiceSettings(final boolean hasVoice) {
-        if (hasVoice) {
+    public void bindVoiceSettings(final boolean showVoiceTab) {
+        if (showVoiceTab) {
             presenterView.unlockViewPager(this);
         } else {
             presenterView.lockViewPager(getStartingItemPosition());
