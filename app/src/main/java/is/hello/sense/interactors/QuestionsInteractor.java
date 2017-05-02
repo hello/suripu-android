@@ -54,10 +54,10 @@ import rx.Scheduler;
 
         final IntentFilter loggedOut = new IntentFilter(ApiSessionManager.ACTION_LOGGED_OUT);
         final Observable<Intent> logOutSignal = Rx.fromLocalBroadcast(context, loggedOut);
-        logOutSignal.subscribe(this::onUserLoggedOut, Functions.LOG_ERROR);
+        logOutSignal.subscribe(ignore -> this.forgetQuestion(), Functions.LOG_ERROR);
     }
 
-    public void onUserLoggedOut(@NonNull Intent ignored) {
+    public void forgetQuestion() {
         question.onNext(null);
     }
 

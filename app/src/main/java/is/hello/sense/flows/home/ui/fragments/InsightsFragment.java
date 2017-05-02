@@ -22,6 +22,7 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Question;
 import is.hello.sense.api.model.v2.Insight;
@@ -169,6 +170,8 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
 
         if (!questionsInteractor.hasQuestion()) {
             updateQuestion();
+        } else if (SenseApplication.isLTS()) {
+            questionsInteractor.forgetQuestion();
         }
     }
 
@@ -302,6 +305,10 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
     //region Questions
 
     public final void updateQuestion() {
+        if (SenseApplication.isLTS()) {
+            Logger.info(InsightsFragment.class.getSimpleName(), "lts mode - skipping updateQuestion");
+            return;
+        }
         final Observable<Boolean> stageOne = deviceIssuesInteractor.latest().map(issue -> (
                 issue == DeviceIssuesInteractor.Issue.NONE
                         && localUsageTracker.isUsageAcceptableForRatingPrompt()

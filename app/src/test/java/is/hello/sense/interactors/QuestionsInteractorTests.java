@@ -1,6 +1,5 @@
 package is.hello.sense.interactors;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import org.junit.After;
@@ -134,8 +133,7 @@ public class QuestionsInteractorTests extends InjectionTestCase {
         Sync.wrap(presenter.question)
             .assertThat(notNullValue());
 
-        Intent intent = new Intent(ApiSessionManager.ACTION_LOGGED_OUT);
-        presenter.onUserLoggedOut(intent);
+        presenter.forgetQuestion();
 
         Sync.wrap(presenter.question)
             .assertThat(nullValue());
