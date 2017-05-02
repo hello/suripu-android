@@ -81,7 +81,9 @@
 
         </LinearLayout>
 
-        <View style="@style/Divider.Horizontal.LeftInset"/>
+        <View
+            android:id="@+id/view_smart_alarm_detail_smart_divider"
+            style="@style/Divider.Horizontal.LeftInset"/>
 
         <LinearLayout
             android:id="@+id/view_smart_alarm_detail_tone"

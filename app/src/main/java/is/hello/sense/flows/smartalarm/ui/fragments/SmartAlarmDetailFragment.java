@@ -26,6 +26,7 @@ import javax.inject.Inject;
 
 import is.hello.commonsense.util.StringRef;
 import is.hello.sense.R;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.api.model.Alarm;
 import is.hello.sense.api.model.ApiException;
 import is.hello.sense.api.model.VoidResponse;
@@ -341,6 +342,7 @@ public class SmartAlarmDetailFragment extends PresenterFragment<SmartAlarmDetail
     private void updateUIForAlarm() {
         this.presenterView.setTime(this.dateFormatter.formatAsAlarmTime(this.alarm.getTime(),
                                                                         this.use24Time));
+        this.presenterView.showSmartAlarmRow(!SenseApplication.isLTS());
         this.presenterView.setSmartAlarmToggle(this.alarm.isSmart(),
                                                this::onSmartAlarmToggled);
         this.presenterView.setRepeatDaysTextView(this.alarm.getRepeatSummary(getActivity(),
