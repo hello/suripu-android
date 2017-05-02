@@ -86,7 +86,6 @@ android {
         def FACEBOOK_APP_ID = "FACEBOOK_APP_ID"
         def GCM_AUTH_ENTITY_IDS = "GCM_AUTH_TOKEN_IDS"
         def IS_BETA = "IS_BETA"
-        def USE_LEAK_CANARY = "USE_LEAK_CANARY"
 
         def TRUE = "true"
         def FALSE = "false"
@@ -153,6 +152,16 @@ android {
             java.srcDirs = ['src/debug_menu/java', 'src/debug/java']
             res.srcDirs = ['src/debug_menu/res', 'src/debug/res']
             assets.srcDirs = ['src/debug_menu/assets', 'src/debug/assets']
+        }
+    }
+
+    productFlavors {
+
+        // Lifetime support - reduced feature set supported by client in order to reduce server costs
+        lts {
+        }
+
+        full {
         }
     }
 }

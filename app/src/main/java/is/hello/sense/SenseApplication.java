@@ -61,6 +61,10 @@ public class SenseApplication extends MultiDexApplication {
         return "robolectric".equals(Build.FINGERPRINT);
     }
 
+    public static boolean isLTS() {
+        return BuildConfig.FLAVOR.equals("lts");
+    }
+
     public static RefWatcher getRefWatcher() {
         return instance.refWatcher;
     }
@@ -86,8 +90,8 @@ public class SenseApplication extends MultiDexApplication {
         final boolean isRunningInRobolectric = isRunningInRobolectric();
         if (!isRunningInRobolectric) {
             Bugsnag.init(this);
-            Bugsnag.setReleaseStage(BuildConfig.BUILD_TYPE);
-            Bugsnag.setNotifyReleaseStages("release", "development");
+            Bugsnag.setReleaseStage(String.format("%s_%s", BuildConfig.FLAVOR, BuildConfig.BUILD_TYPE));
+            Bugsnag.setNotifyReleaseStages("full_release", "full_development");
         }
 
         FacebookSdk.sdkInitialize(getApplicationContext());
