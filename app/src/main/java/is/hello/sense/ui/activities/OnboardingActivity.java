@@ -25,6 +25,7 @@ import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.util.Rx;
 import is.hello.sense.BuildConfig;
 import is.hello.sense.R;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.Account;
 import is.hello.sense.api.model.Alarm;
@@ -646,7 +647,7 @@ public class OnboardingActivity extends ScopedInjectionAppCompatActivity
     }
 
     private void checkHasVoiceFeature() {
-        if (preferences.hasVoice()) {
+        if (preferences.hasVoice() && !SenseApplication.isLTS()) {
             showSenseVoice();
         } else {
             showDone();

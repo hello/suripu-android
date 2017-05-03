@@ -13,6 +13,7 @@ import javax.inject.Inject;
 
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.sense.R;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.SenseUpgradeModule;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.interactors.CurrentSenseInteractor;
@@ -284,7 +285,7 @@ public class SenseUpgradeActivity extends ScopedInjectionAppCompatActivity
     }
 
     private void checkHasVoiceFeature() {
-        if (preferencesInteractor.hasVoice()) {
+        if (preferencesInteractor.hasVoice() && !SenseApplication.isLTS()) {
             showSenseVoice();
         } else {
             showResetOriginalSense();
