@@ -22,6 +22,7 @@
         "apk_name": "app-lts-development",
         "assemble_command": "assembleLtsDevelopment",
         "hockey_app_id": "805427569ce2035dcda0b99e4d984256",
+        "requires_branch": "lts_mode",
         "reveal": false
     },
     "synonyms": {

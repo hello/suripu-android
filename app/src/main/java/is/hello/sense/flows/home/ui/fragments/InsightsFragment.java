@@ -307,6 +307,7 @@ public class InsightsFragment extends ControllerPresenterFragment<InsightsView> 
     public final void updateQuestion() {
         if (SenseApplication.isLTS()) {
             Logger.info(InsightsFragment.class.getSimpleName(), "lts mode - skipping updateQuestion");
+            bindQuestion(null);
             return;
         }
         final Observable<Boolean> stageOne = deviceIssuesInteractor.latest().map(issue -> (
