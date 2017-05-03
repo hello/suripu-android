@@ -53,7 +53,7 @@ public final class SensorDetailView extends PresenterView
                             @NonNull final UnitFormatter unitFormatter,
                             @NonNull final SelectorView.OnSelectionChangedListener listener,
                             @NonNull final SensorGraphDrawable.ScrubberCallback scrubberCallback,
-                            final boolean hideLastWeekOption) {
+                            final boolean showLastWeekOption) {
         super(activity);
         this.noDataColor = ContextCompat.getColor(getContext(), R.color.dim);
         this.unitFormatter = unitFormatter;
@@ -68,7 +68,7 @@ public final class SensorDetailView extends PresenterView
         this.about = (TextView) findViewById(R.id.fragment_sensor_detail_about_body);
         this.scrollView.setGraphView(sensorGraphView);
         final ToggleButton lastDayButton = this.subNavSelector.addOption(R.string.sensor_detail_last_day, false);
-        if (hideLastWeekOption) {
+        if (showLastWeekOption) {
             this.subNavSelector.addOption(R.string.sensor_detail_past_week, false);
         }
         this.subNavSelector.setSelectedButton(lastDayButton);

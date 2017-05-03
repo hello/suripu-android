@@ -90,7 +90,7 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
                                                       this.unitFormatter,
                                                       this,
                                                       this,
-                                                      SenseApplication.isLTS());
+                                                      !SenseApplication.isLTS());
             this.presenterView.updateSensor(this.sensor);
         }
     }
