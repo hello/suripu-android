@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import is.hello.sense.R;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.api.gson.Enums;
 import is.hello.sense.api.model.ApiResponse;
 import is.hello.sense.functional.Lists;
@@ -100,6 +101,9 @@ public class TimelineEvent extends ApiResponse {
     }
 
     public boolean hasActions() {
+        if (SenseApplication.isLTS()) {
+            return false;
+        }
         return !Lists.isEmpty(validActions);
     }
 
