@@ -19,9 +19,9 @@ import java.util.concurrent.TimeUnit;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.TimelineEvent;
 import is.hello.sense.api.model.v2.TimelineEventBuilder;
+import is.hello.sense.flows.timeline.ui.viewModels.TimelineHeaderViewModel;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.graph.SenseTestCase;
-import is.hello.sense.util.Constants;
 import is.hello.sense.util.DateFormatter;
 import is.hello.sense.util.RecyclerAdapterTesting;
 import is.hello.sense.util.markup.text.MarkupString;
@@ -48,9 +48,7 @@ public class TimelineAdapterTests extends SenseTestCase {
     public void setUp() throws Exception {
         this.adapter = new TimelineAdapter(getContext(),
                                            dateFormatter,
-                                           Constants.EMPTY_STRING,
-                                           Mockito.mock(View.OnClickListener.class),
-                                           Mockito.mock(View.OnClickListener.class));
+                                           Mockito.mock(TimelineHeaderViewModel.class));
         adapter.addHeader(headerView);
     }
 

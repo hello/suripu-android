@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import is.hello.go99.Anime;
 import is.hello.sense.R;
 import is.hello.sense.api.model.v2.TimelineEvent;
+import is.hello.sense.flows.timeline.ui.viewModels.TimelineHeaderViewModel;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.ui.widget.SenseBar;
 import is.hello.sense.ui.widget.timeline.TimelineSegmentDrawable;
@@ -83,9 +84,7 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
 
     public TimelineAdapter(@NonNull final Context context,
                            @NonNull final DateFormatter dateFormatter,
-                           @NonNull final String title,
-                           @NonNull final View.OnClickListener historyListener,
-                           @NonNull final View.OnClickListener shareListener) {
+                           @NonNull final TimelineHeaderViewModel timelineHeaderViewModel) {
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.dateFormatter = dateFormatter;
@@ -95,15 +94,20 @@ public class TimelineAdapter extends HeadersRecyclerAdapter<TimelineBaseViewHold
         this.segmentHeightPerHour = resources.getDimensionPixelSize(R.dimen.timeline_segment_height_per_hour);
         this.segmentEventOffsetMax = resources.getDimensionPixelSize(R.dimen.timeline_segment_event_offset_max);
         this.segmentEventStolenHeight = resources.getDimensionPixelSize(R.dimen.timeline_segment_stolen_height);
-        this.senseBar = new SenseBar(context);
-        this.senseBar.setLeftImage(R.drawable.icon_calendar_24);
-        this.senseBar.setRightImage(R.drawable.icon_share_24);
-        this.senseBar.setLeftImageOnClickListener(historyListener);
-        this.senseBar.setRightImageOnClickListener(shareListener);
-        this.senseBar.setText(title);
-        this.senseBar.showLeftImage(true);
-        this.senseBar.showRightImage(false);
+        this.senseBar = createFromViewModel(timelineHeaderViewModel);
         addHeader(this.senseBar);
+    }
+
+    private SenseBar createFromViewModel(@NonNull final TimelineHeaderViewModel viewModel) {
+        final SenseBar header = new SenseBar(context);
+        header.setLeftImage(viewModel.getHistoryIcon());
+        header.setRightImage(viewModel.getShareIcon());
+        header.setLeftImageOnClickListener(ignore -> viewModel.getActionHandler().onHistoryIconAction());
+        header.setRightImageOnClickListener(ignore -> viewModel.getActionHandler().onShareIconAction());
+        header.setText(viewModel.getTitle());
+        header.showLeftImage(viewModel.showHistoryIcon());
+        header.showRightImage(viewModel.showShareIcon());
+        return header;
     }
 
     //region Rendering Cache
