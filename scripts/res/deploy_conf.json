@@ -1,22 +1,28 @@
 {
     "alpha": {
-        "apk_name": "app-development",
+        "apk_name": "app-full-development",
         "assemble_command": "assembleDevelopment",
         "hockey_app_id": "7403b3eb474522963df93184fae37404",
         "reveal": false
     },
     "feature": {
-        "apk_name": "app-release",
+        "apk_name": "app-full-release",
         "assemble_command": "assembleRelease",
         "block_main_branches": true,
         "hockey_app_id": "7473e43cfbb717125f660002969bd448"
     },
     "release": {
-        "apk_name": "app-release",
+        "apk_name": "app-full-release",
         "assemble_command": "assembleRelease",
         "hockey_app_id": "8e00a608839500c49187c67bb20d5826",
         "requires_branch": "master",
         "reveal": true
+    },
+    "lts": {
+        "apk_name": "app-lts-development",
+        "assemble_command": "assembleLtsDevelopment",
+        "hockey_app_id": "805427569ce2035dcda0b99e4d984256",
+        "reveal": false
     },
     "synonyms": {
         "dev": "alpha",
