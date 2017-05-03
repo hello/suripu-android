@@ -5,8 +5,10 @@ import android.support.annotation.NonNull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.AppStats;
+import is.hello.sense.api.model.AppUnreadStats;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.graph.InteractorSubject;
 import rx.Observable;
@@ -39,16 +41,10 @@ import rx.Observable;
 
     @Override
     protected Observable<Boolean> provideUpdateObservable() {
-        return apiService.unreadStats().map(appUnreadStats -> {
-            final boolean hasUnreadItems = (appUnreadStats.hasUnreadInsights() ||
-                    appUnreadStats.hasUnansweredQuestions());
-
-            preferences.edit()
-                       .putBoolean(PreferencesInteractor.HAS_UNREAD_INSIGHT_ITEMS, hasUnreadItems)
-                       .apply();
-
-            return hasUnreadItems;
-        });
+        if (SenseApplication.isLTS()) {
+            return Observable.just(this.hasUnreadItems(AppUnreadStats.getEmptyInstance()));
+        }
+        return apiService.unreadStats().map(this::hasUnreadItems);
     }
 
     public void updateInsightsLastViewed() {
@@ -60,5 +56,17 @@ import rx.Observable;
                                  update();
                              },
                              Functions.LOG_ERROR);
+    }
+
+    @NonNull
+    Boolean hasUnreadItems(@NonNull final AppUnreadStats appUnreadStats) {
+        final boolean hasUnreadItems = (appUnreadStats.hasUnreadInsights() ||
+                appUnreadStats.hasUnansweredQuestions());
+
+        preferences.edit()
+                   .putBoolean(PreferencesInteractor.HAS_UNREAD_INSIGHT_ITEMS, hasUnreadItems)
+                   .apply();
+
+        return hasUnreadItems;
     }
 }
