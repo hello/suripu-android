@@ -167,13 +167,13 @@ public class SelectorView extends LinearLayout implements View.OnClickListener {
 
     //region Properties
 
-    public int getButtonCount() {
-        return buttons.size();
+    @NonNull
+    public List<ToggleButton> getButtons() {
+        return buttons;
     }
 
-    public
-    @NonNull
-    ToggleButton getButtonAt(final int index) {
+    @Nullable
+    public ToggleButton getButtonAt(final int index) {
         return buttons.get(index);
     }
 

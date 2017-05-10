@@ -86,7 +86,6 @@ android {
         def FACEBOOK_APP_ID = "FACEBOOK_APP_ID"
         def GCM_AUTH_ENTITY_IDS = "GCM_AUTH_TOKEN_IDS"
         def IS_BETA = "IS_BETA"
-        def USE_LEAK_CANARY = "USE_LEAK_CANARY"
 
         def TRUE = "true"
         def FALSE = "false"
@@ -155,6 +154,16 @@ android {
             assets.srcDirs = ['src/debug_menu/assets', 'src/debug/assets']
         }
     }
+
+    productFlavors {
+
+        // Lifetime support - reduced feature set supported by client in order to reduce server costs
+        lts {
+        }
+
+        full {
+        }
+    }
 }
 
 retrolambda {
@@ -181,7 +190,7 @@ retrolambda {
  */
 tasks.whenTaskAdded { theTask ->
     def taskName = theTask.name.toString()
-    if ("testDebugUnitTest".toString().equals(taskName)) {
+    if (taskName.startsWith("test") && taskName.endsWith("UnitTest")) {
         /**
          * Listen for when robolectric adds the 'testDebug' task and when it does, add the -noverify
          * option to that task's jvmArgs.  This allows us to turn off byte code verification when

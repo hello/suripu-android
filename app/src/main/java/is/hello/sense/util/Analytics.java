@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatDelegate;
 
 import com.bugsnag.android.Bugsnag;
 import com.bugsnag.android.Severity;
+import com.segment.analytics.Options;
 import com.segment.analytics.Properties;
 import com.segment.analytics.Traits;
 
@@ -867,7 +868,10 @@ public class Analytics {
         final com.segment.analytics.Analytics.Builder builder =
                 new com.segment.analytics.Analytics.Builder(context, BuildConfig.SEGMENT_API_KEY);
         builder.flushQueueSize(1);
-        if (BuildConfig.DEBUG) {
+        if (SenseApplication.isLTS()) {
+            builder.defaultOptions(new Options().setIntegration(Options.ALL_INTEGRATIONS_KEY, false));
+            builder.logLevel(com.segment.analytics.Analytics.LogLevel.NONE);
+        } else if (BuildConfig.DEBUG) {
             builder.logLevel(com.segment.analytics.Analytics.LogLevel.VERBOSE);
         }
         Analytics.segment = builder.build();

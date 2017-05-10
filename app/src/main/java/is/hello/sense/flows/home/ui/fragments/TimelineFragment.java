@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
@@ -39,6 +40,7 @@ import is.hello.sense.flows.generic.ui.adapters.BaseFragmentPagerAdapter;
 import is.hello.sense.flows.home.interactors.LastNightInteractor;
 import is.hello.sense.flows.home.ui.views.TimelineView;
 import is.hello.sense.flows.timeline.ui.activities.TimelineActivity;
+import is.hello.sense.flows.timeline.ui.viewModels.TimelineHeaderViewModel;
 import is.hello.sense.functional.Functions;
 import is.hello.sense.functional.Lists;
 import is.hello.sense.interactors.PreferencesInteractor;
@@ -70,7 +72,8 @@ import rx.Observable;
 
 public class TimelineFragment extends ControllerPresenterFragment<TimelineView>
         implements TimelineAdapter.OnItemClickListener,
-        BaseFragmentPagerAdapter.Controller {
+        BaseFragmentPagerAdapter.Controller,
+        TimelineHeaderViewModel.ActionHandler {
     // !! Important: Do not use setTargetFragment on TimelineFragment.
     // It is not guaranteed to exist at the time of state restoration.
 
@@ -256,14 +259,19 @@ public class TimelineFragment extends ControllerPresenterFragment<TimelineView>
                                ZOOMED_OUT_TIMELINE_REQUEST);
     }
 
-    private void onShareIconClicked(final View ignored) {
+    //region TimelineHeaderViewModel ActionHandler
+    @Override
+    public void onShareIconAction() {
         share();
     }
 
-    private void onHistoryIconClicked(final View ignored) {
+    @Override
+    public void onHistoryIconAction() {
         dismissVisibleOverlaysAndDialogs();
         showTimelineNavigator(getDate(), getCachedTimeline());
     }
+
+    //endregion
 
     public void share() {
         Analytics.trackEvent(Analytics.Timeline.EVENT_SHARE, null);
@@ -303,11 +311,17 @@ public class TimelineFragment extends ControllerPresenterFragment<TimelineView>
 
     @VisibleForTesting
     TimelineAdapter createAdapter() {
+        final TimelineHeaderViewModel timelineHeaderViewModel;
+        if (SenseApplication.isLTS()) {
+            timelineHeaderViewModel = TimelineHeaderViewModel.getShareOnlyInstance(this.dateFormatter.formatAsTimelineDate(getDate()),
+                                                                                   this);
+        } else {
+            timelineHeaderViewModel = TimelineHeaderViewModel.getInstance(this.dateFormatter.formatAsTimelineDate(getDate()),
+                                                                          this);
+        }
         final TimelineAdapter timelineAdapter = new TimelineAdapter(getActivity(),
                                                                     this.dateFormatter,
-                                                                    this.dateFormatter.formatAsTimelineDate(getDate()),
-                                                                    this::onHistoryIconClicked,
-                                                                    this::onShareIconClicked);
+                                                                    timelineHeaderViewModel);
         timelineAdapter.setOnItemClickListener(this.stateSafeExecutor, this);
         return timelineAdapter;
     }
@@ -522,6 +536,11 @@ public class TimelineFragment extends ControllerPresenterFragment<TimelineView>
     public void onEventItemClicked(final int eventPosition, @NonNull final TimelineEvent event) {
         if (this.infoOverlay != null) {
             this.infoOverlay.dismiss(true);
+        }
+
+        if (SenseApplication.isLTS()) {
+            Log.d(TimelineFragment.class.getSimpleName(), "action=onEventItemClicked() ignoring all actions because LTS mode");
+            return;
         }
 
         if (event.hasActions()) {

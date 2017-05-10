@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="alert_message_skip_pair_pill">Sense is not designed to work without a Sleep Pill. You will not be able to track your sleep. If you\'re having trouble, you can skip for now, and pair a Sleep Pill later.</string>
+    <string name="onboarding_room_check_info_success">Everything looks great. Now let’s set up your first alarm.</string>
+    <string name="onboarding_title_smart_alarm">Set an Alarm</string>
+    <string name="onboarding_info_smart_alarm">Set an alarm to wake you up at the right time. To dismiss the alarm, just wave your hand over Sense.</string>
+    <string name="action_set_smart_alarm_now">Set an alarm now</string>
+</resources>

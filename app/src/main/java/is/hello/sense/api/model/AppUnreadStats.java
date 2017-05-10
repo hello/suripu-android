@@ -11,9 +11,14 @@ public class AppUnreadStats extends ApiResponse {
     @SerializedName("has_unanswered_questions")
     private boolean hasUnansweredQuestions;
 
+    public static AppUnreadStats getEmptyInstance() {
+        return new AppUnreadStats(false,
+                                  false);
+    }
+
     @VisibleForTesting
-    public AppUnreadStats(boolean hasUnreadInsights,
-                          boolean hasUnansweredQuestions) {
+    public AppUnreadStats(final boolean hasUnreadInsights,
+                          final boolean hasUnansweredQuestions) {
         this.hasUnreadInsights = hasUnreadInsights;
         this.hasUnansweredQuestions = hasUnansweredQuestions;
     }

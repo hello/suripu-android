@@ -14,17 +14,18 @@ import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.flows.home.ui.fragments.TimelineFragment;
 import is.hello.sense.mvp.view.PresenterView;
 import is.hello.sense.ui.adapter.TimelineFragmentAdapter;
+import is.hello.sense.ui.widget.ExtendedViewPager;
 
 @SuppressLint("ViewConstructor")
 public class TimelinePagerView extends PresenterView {
-    private final ViewPager viewPager;
+    private final ExtendedViewPager viewPager;
     private final TimelineFragmentAdapter viewPagerAdapter;
 
     public TimelinePagerView(@NonNull final Activity activity,
                              @NonNull final TimelineFragmentAdapter viewPagerAdapter,
                              @NonNull final ViewPager.OnPageChangeListener listener) {
         super(activity);
-        this.viewPager = (ViewPager) findViewById(R.id.fragment_timeline_view_pager);
+        this.viewPager = (ExtendedViewPager) findViewById(R.id.fragment_timeline_view_pager);
         this.viewPagerAdapter = viewPagerAdapter;
         this.viewPager.setAdapter(viewPagerAdapter);
         this.viewPager.addOnPageChangeListener(listener);
@@ -103,6 +104,10 @@ public class TimelinePagerView extends PresenterView {
             setCurrentItemToLastNight(true);
         }
 
+    }
+
+    public void enableScrolling(final boolean enable) {
+        this.viewPager.setScrollingEnabled(enable);
     }
 
 

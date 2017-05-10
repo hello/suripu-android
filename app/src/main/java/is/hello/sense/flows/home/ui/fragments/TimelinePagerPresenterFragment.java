@@ -16,6 +16,7 @@ import javax.inject.Inject;
 
 import is.hello.go99.animators.AnimatorContext;
 import is.hello.sense.R;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.api.model.v2.Timeline;
 import is.hello.sense.flows.home.ui.activities.HomeActivity;
 import is.hello.sense.flows.home.ui.views.TimelinePagerView;
@@ -74,12 +75,14 @@ public class TimelinePagerPresenterFragment extends ControllerPresenterFragment<
             this.presenterView = new TimelinePagerView(getActivity(),
                                                        createAdapter(),
                                                        this);
+            this.presenterView.enableScrolling(!SenseApplication.isLTS());
         }
     }
 
     private TimelineFragmentAdapter createAdapter() {
+        final LocalDate oldestTimelineDate = this.preferences.getAccountCreationDate();
         return new TimelineFragmentAdapter(getChildFragmentManager(),
-                                           this.preferences.getAccountCreationDate());
+                                           oldestTimelineDate);
     }
 
     @Override

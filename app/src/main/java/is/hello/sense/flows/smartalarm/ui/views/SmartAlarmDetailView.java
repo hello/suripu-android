@@ -22,7 +22,9 @@ import is.hello.sense.util.NotTested;
 public class SmartAlarmDetailView extends PresenterView {
 
     private final TextView timeTextView;
+    private final View smartRow;
     private final CompoundButton smartAlarmToggle;
+    private final View smartDivider;
     private final TextView toneNameTextView;
     private final TextView repeatDaysTextView;
 
@@ -72,7 +74,8 @@ public class SmartAlarmDetailView extends PresenterView {
         this.repeatDaysTextView = (TextView) findViewById(R.id.view_smart_alarm_detail_repeat_days);
         this.deleteRowDivider = findViewById(R.id.view_smart_alarm_detail_delete_divider);
         this.deleteRow = findViewById(R.id.view_smart_alarm_detail_delete);
-        final View smartRow = findViewById(R.id.view_smart_alarm_detail_smart);
+        smartRow = findViewById(R.id.view_smart_alarm_detail_smart);
+        smartDivider = findViewById(R.id.view_smart_alarm_detail_smart_divider);
         final View timeContainer = findViewById(R.id.view_smart_alarm_detail_time_container);
         final View soundRow = findViewById(R.id.view_smart_alarm_detail_tone);
         final View repeatRow = findViewById(R.id.view_smart_alarm_detail_repeat);
@@ -113,6 +116,18 @@ public class SmartAlarmDetailView extends PresenterView {
             Views.setSafeOnClickListener(this.deleteRow, deleteClickListener);
             this.deleteRowDivider.setVisibility(View.VISIBLE);
             this.deleteRow.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void showSmartAlarmRow(final boolean show) {
+        if (show) {
+            this.smartRow.setVisibility(VISIBLE);
+            this.smartAlarmToggle.setEnabled(true);
+            this.smartDivider.setVisibility(VISIBLE);
+        } else {
+            this.smartRow.setVisibility(GONE);
+            this.smartDivider.setVisibility(GONE);
+            this.smartAlarmToggle.setEnabled(false);
         }
     }
 

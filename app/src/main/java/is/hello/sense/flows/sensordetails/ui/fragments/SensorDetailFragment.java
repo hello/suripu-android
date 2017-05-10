@@ -1,14 +1,12 @@
 package is.hello.sense.flows.sensordetails.ui.fragments;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.view.ViewTreeObserver;
 
 import com.segment.analytics.Properties;
 
@@ -22,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import is.hello.sense.R;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.api.ApiService;
 import is.hello.sense.api.model.v2.sensors.QueryScope;
 import is.hello.sense.api.model.v2.sensors.Sensor;
@@ -90,7 +89,8 @@ public final class SensorDetailFragment extends PresenterFragment<SensorDetailVi
             this.presenterView = new SensorDetailView(getActivity(),
                                                       this.unitFormatter,
                                                       this,
-                                                      this);
+                                                      this,
+                                                      !SenseApplication.isLTS());
             this.presenterView.updateSensor(this.sensor);
         }
     }
