@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
@@ -535,6 +536,11 @@ public class TimelineFragment extends ControllerPresenterFragment<TimelineView>
     public void onEventItemClicked(final int eventPosition, @NonNull final TimelineEvent event) {
         if (this.infoOverlay != null) {
             this.infoOverlay.dismiss(true);
+        }
+
+        if (SenseApplication.isLTS()) {
+            Log.d(TimelineFragment.class.getSimpleName(), "action=onEventItemClicked() ignoring all actions because LTS mode");
+            return;
         }
 
         if (event.hasActions()) {
