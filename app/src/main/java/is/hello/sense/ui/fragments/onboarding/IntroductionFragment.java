@@ -27,6 +27,7 @@ import com.segment.analytics.Properties;
 
 import is.hello.go99.Anime;
 import is.hello.sense.R;
+import is.hello.sense.SenseApplication;
 import is.hello.sense.ui.adapter.ViewPagerAdapter;
 import is.hello.sense.ui.common.OnBackPressedInterceptor;
 import is.hello.sense.ui.common.SenseFragment;
@@ -50,14 +51,7 @@ public class IntroductionFragment extends SenseFragment
     private static final int INTRO_POSITION = 0;
     private static final int DRAWABLE_ON_SCREEN = 0;
     private static final int DRAWABLE_OFF_SCREEN = 1;
-    private static final @DrawableRes int[] DIAGRAMS = {
-            R.color.transparent,
-            R.drawable.onboarding_intro_feature_alarm,
-            R.drawable.onboarding_intro_feature_timeline,
-            R.drawable.onboarding_intro_feature_sleep_score,
-            R.drawable.onboarding_intro_feature_conditions,
-            R.color.transparent,
-    };
+    private static final @DrawableRes int[] DIAGRAMS = IntroductionFragment.getDiagrams();
 
     private ImageView diagramImage;
     private LayerDrawable diagramLayers;
@@ -77,6 +71,26 @@ public class IntroductionFragment extends SenseFragment
 
     private int lastSelectedPage = INTRO_POSITION;
     private boolean statusBarChanging = false;
+
+    @DrawableRes
+    public static int[] getDiagrams() {
+        if (SenseApplication.isLTS()) {
+            return new int[] {R.color.transparent,
+                    R.drawable.onboarding_intro_feature_timeline,
+                    R.drawable.onboarding_intro_feature_sleep_score,
+                    R.drawable.onboarding_intro_feature_conditions,
+                    R.color.transparent,};
+        }
+
+        return new int[] {
+                R.color.transparent,
+                R.drawable.onboarding_intro_feature_alarm,
+                R.drawable.onboarding_intro_feature_timeline,
+                R.drawable.onboarding_intro_feature_sleep_score,
+                R.drawable.onboarding_intro_feature_conditions,
+                R.color.transparent,
+        };
+    }
 
 
     //region Lifecycle
@@ -123,16 +137,7 @@ public class IntroductionFragment extends SenseFragment
         this.onViewPagerChangeAdapter = new OnViewPagerChangeAdapter(viewPager, this);
         viewPager.addOnPageChangeListener(onViewPagerChangeAdapter);
 
-        final Feature[] features = {
-                new Feature(R.string.onboarding_intro_feature_alarm_title,
-                            R.string.onboarding_intro_feature_alarm_message),
-                new Feature(R.string.onboarding_intro_feature_timeline_title,
-                            R.string.onboarding_intro_feature_timeline_message),
-                new Feature(R.string.onboarding_intro_feature_sleep_score_title,
-                            R.string.onboarding_intro_feature_sleep_score_message),
-                new Feature(R.string.onboarding_intro_feature_conditions_title,
-                            R.string.onboarding_intro_feature_conditions_message),
-        };
+        final Feature[] features = this.getFeatures();
         final Adapter adapter = new Adapter(inflater, features,
                                             new SafeOnClickListener(null, this::watchVideo));
 
@@ -160,6 +165,30 @@ public class IntroductionFragment extends SenseFragment
         this.featureStatusBarColor = resources.getColor(R.color.status_bar_primary_darkened);
 
         return view;
+    }
+
+    Feature[] getFeatures() {
+        if (SenseApplication.isLTS()) {
+            return new Feature[] {
+                    new Feature(R.string.onboarding_intro_feature_timeline_title,
+                                R.string.onboarding_intro_feature_timeline_message),
+                    new Feature(R.string.onboarding_intro_feature_sleep_score_title,
+                                R.string.onboarding_intro_feature_sleep_score_message),
+                    new Feature(R.string.onboarding_intro_feature_conditions_title,
+                                R.string.onboarding_intro_feature_conditions_message),
+            };
+        }
+
+        return new Feature[] {
+                    new Feature(R.string.onboarding_intro_feature_alarm_title,
+                                R.string.onboarding_intro_feature_alarm_message),
+                    new Feature(R.string.onboarding_intro_feature_timeline_title,
+                                R.string.onboarding_intro_feature_timeline_message),
+                    new Feature(R.string.onboarding_intro_feature_sleep_score_title,
+                                R.string.onboarding_intro_feature_sleep_score_message),
+                    new Feature(R.string.onboarding_intro_feature_conditions_title,
+                                R.string.onboarding_intro_feature_conditions_message),
+        };
     }
 
     @Override
